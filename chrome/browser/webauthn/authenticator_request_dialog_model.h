@@ -378,13 +378,16 @@ struct AuthenticatorRequestDialogModel {
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
     using Enclave = base::StrongAlias<class EnclaveTag, absl::monostate>;
+    using SignInAgain =
+        base::StrongAlias<class SignInAgainTag, absl::monostate>;
     using Type = absl::variant<Credential,
                                Transport,
                                WindowsAPI,
                                Phone,
                                AddPhone,
                                ICloudKeychain,
-                               Enclave>;
+                               Enclave,
+                               SignInAgain>;
 
     Mechanism(Type type,
               std::u16string name,

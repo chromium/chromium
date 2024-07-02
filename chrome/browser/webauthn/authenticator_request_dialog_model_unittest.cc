@@ -207,6 +207,7 @@ enum class TransportAvailabilityParam {
   kHintHybrid,
   kHintClientDevice,
   kEnclaveCred,
+  kEnclaveNeedsSignIn,
 };
 
 std::string_view TransportAvailabilityParamToString(
@@ -270,6 +271,8 @@ std::string_view TransportAvailabilityParamToString(
       return "kHintClientDevice";
     case TransportAvailabilityParam::kEnclaveCred:
       return "kEnclaveCred";
+    case TransportAvailabilityParam::kEnclaveNeedsSignIn:
+      return "kEnclaveNeedsSignIn";
   }
 }
 
@@ -497,11 +500,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   [[maybe_unused]] const auto ickc_creds =
       TransportAvailabilityParam::kHasICloudKeychainCreds;
   [[maybe_unused]] const auto uv_req = TransportAvailabilityParam::kUVRequired;
+  const auto enclave_needs_sign_in =
+      TransportAvailabilityParam::kEnclaveNeedsSignIn;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
   const auto winapi = AuthenticatorRequestDialogModel::Mechanism::WindowsAPI();
   const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone();
+  const auto sign_in_again =
+      AuthenticatorRequestDialogModel::Mechanism::SignInAgain();
   [[maybe_unused]] const auto ickc =
       AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain();
   const auto usb_ui = Step::kUsbInsertAndActivate;
@@ -902,6 +909,32 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {c(enclave_cred1), add},
        kIsMac ? enclave_touchid : enclave_pin},
+      // When the enclave needs to sign-in again, that should appear as a
+      // mechanism and the MSS should be shown.
+      {L,
+       ga,
+       {cable, usb},
+       {enclave_cred, enclave_needs_sign_in},
+       {},
+       {sign_in_again, add},
+       mss},
+      // Hinting "client-device" should not jump to the sign-in-again option.
+      {L,
+       mc,
+       {cable, usb},
+       {enclave_needs_sign_in, hint_plat},
+       {},
+       {sign_in_again, add},
+       mss},
+      // Hinting "client-device" should not just to any other options, like
+      // the profile authenticator, if GPM needs to sign in again.
+      {L,
+       mc,
+       {cable, usb, internal},
+       {enclave_needs_sign_in, hint_plat},
+       {},
+       {sign_in_again, add, t(internal)},
+       mss},
   };
 
   // Tests for the new UI that lists synced passkeys mixed with local
@@ -1382,6 +1415,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       content::AuthenticatorRequestClientDelegate::Hints hints;
       hints.transport = hint_transport;
       controller.SetHints(hints);
+    }
+
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
+      controller.EnclaveNeedsReauth();
     }
 
     controller.SetAccountPreselectedCallback(base::BindRepeating(

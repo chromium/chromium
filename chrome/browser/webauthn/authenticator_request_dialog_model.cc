@@ -906,7 +906,8 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
   // See https://w3c.github.io/webauthn/#enum-hints
   const auto mech_it = base::ranges::find_if(
       model_->mechanisms,
-      [mechanism_is_transport, transport, profile](const auto& mech) {
+      [mechanism_is_transport, transport, profile,
+       enclave_needs_reauth = enclave_needs_reauth_](const auto& mech) {
         switch (transport) {
           case AuthenticatorTransport::kUsbHumanInterfaceDevice:
             return absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
@@ -917,12 +918,13 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
                     absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
                    absl::get_if<Mechanism::AddPhone>(&mech.type);
           case AuthenticatorTransport::kInternal:
-            return (absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
-                   absl::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
-                   (absl::get_if<Mechanism::Enclave>(&mech.type) &&
-                    CanDefaultToEnclave(profile)) ||
-                   mechanism_is_transport(mech,
-                                          AuthenticatorTransport::kInternal);
+            return !enclave_needs_reauth &&
+                   (absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
+                    absl::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
+                    (absl::get_if<Mechanism::Enclave>(&mech.type) &&
+                     CanDefaultToEnclave(profile)) ||
+                    mechanism_is_transport(mech,
+                                           AuthenticatorTransport::kInternal));
           default:
             NOTREACHED_NORETURN();
             return false;
@@ -2251,7 +2253,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE);
     Mechanism enclave(
-        Mechanism::Enclave(), name, name, vector_icons::kSyncIcon,
+        Mechanism::SignInAgain(), name, name, vector_icons::kSyncIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogController::ReauthForSyncRestore,
             base::Unretained(this)));

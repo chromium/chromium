@@ -1813,16 +1813,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
             AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
       }));
 
-  // The enclave button has text indicating the user they need to sign in.
-  const auto enclave_mech =
+  // The button has text indicating the user they need to sign in.
+  const auto sign_in_again_mech =
       base::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
         return absl::holds_alternative<
-            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+            AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
       });
-  ASSERT_NE(enclave_mech, dialog_model()->mechanisms.end());
-  EXPECT_EQ(enclave_mech->name,
+  ASSERT_NE(sign_in_again_mech, dialog_model()->mechanisms.end());
+  EXPECT_EQ(sign_in_again_mech->name,
             l10n_util::GetStringUTF16(IDS_WEBAUTHN_SIGN_IN_AGAIN_TITLE));
-  std::move(enclave_mech->callback).Run();
+  std::move(sign_in_again_mech->callback).Run();
 
   // Tapping the button should cancel the request and open a new tab for reauth.
   std::string script_result;
