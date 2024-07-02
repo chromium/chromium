@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/metrics/structured/profile_observer.h"
 #include "components/metrics/structured/lib/arena_persistent_proto.h"
 #include "components/metrics/structured/lib/event_buffer.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
@@ -21,6 +22,8 @@
 namespace base {
 class FilePath;
 }
+
+class Profile;
 
 namespace metrics::structured {
 
@@ -32,8 +35,12 @@ namespace metrics::structured {
 // RepeatedPtrField. This is necessary because the events are stored in an arena
 // and the returned RepeatedPtrField isn't allocated from the same arena.
 // Events are flushed by serializing the proto and writing it into the path
-// provided.
-class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
+// provided. An estimation is used to determine the size of an event instead of
+// getting the actual size.
+// TODO(b/347752634) Refactor ProfileObserver classes to use a single helper
+// class.
+class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,
+                         public ProfileObserver {
  public:
   ArenaEventBuffer(const base::FilePath& path,
                    base::TimeDelta write_delay,
@@ -47,6 +54,9 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
   uint64_t Size() override;
   google::protobuf::RepeatedPtrField<StructuredEventProto> Serialize() override;
   void Flush(const base::FilePath& path, FlushedCallback callback) override;
+
+  // ProfileObserver:
+  void ProfileAdded(const Profile& profile) override;
 
   // Updates the path of the persistent proto and merges the content of |path|
   // into |events_|.

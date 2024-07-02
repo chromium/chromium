@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/lib/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -124,6 +125,14 @@ void ArenaEventBuffer::Flush(const base::FilePath& path,
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&WriteEvents, path, std::move(content)),
       std::move(callback));
+}
+
+void ArenaEventBuffer::ProfileAdded(const Profile& profile) {
+  base::FilePath path = profile.GetPath()
+                            .Append(FILE_PATH_LITERAL("structured_metrics"))
+                            .Append(FILE_PATH_LITERAL("storage"))
+                            .Append(FILE_PATH_LITERAL("arena-events"));
+  UpdatePath(path);
 }
 
 void ArenaEventBuffer::UpdatePath(const base::FilePath& path) {

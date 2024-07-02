@@ -15,8 +15,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/structured/lib/event_buffer.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
@@ -47,9 +51,13 @@ class ArenaEventBufferTest : public testing::Test {
  public:
   const base::TimeDelta kWriteDelay = base::Seconds(0);
 
-  ArenaEventBufferTest() = default;
+  ArenaEventBufferTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(profile_manager_.SetUp());
+  }
 
   base::FilePath GetPath() {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("proto_file"));
@@ -65,13 +73,16 @@ class ArenaEventBufferTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
+  TestingProfile* AddProfile() {
+    return profile_manager_.CreateTestingProfile("p1");
+  }
+
  protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::TimeSource::MOCK_TIME};
 
   base::ScopedTempDir temp_dir_;
+  TestingProfileManager profile_manager_;
 };
 
 TEST_F(ArenaEventBufferTest, OkEvent) {
@@ -218,6 +229,33 @@ TEST_F(ArenaEventBufferTest, Flush) {
                               }));
   Wait();
   EXPECT_TRUE(flushed);
+}
+
+// ArenaEventBuffer functions the same regardless of the path, so there is only
+// one test for this.
+TEST_F(ArenaEventBufferTest, ProfileUpdatePath) {
+  std::unique_ptr<ArenaEventBuffer> buffer = CreateTestBuffer(/*max_size=*/512);
+  Wait();
+
+  EXPECT_EQ(buffer->AddEvent(TestEvent(1)), Result::kOk);
+
+  AddProfile();
+  Wait();
+
+  EXPECT_NE(GetPath(), buffer->proto().path());
+
+  EXPECT_EQ(buffer->AddEvent(TestEvent(2)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(3)), Result::kOk);
+
+  // Write to disk at the new path.
+  buffer->proto().StartWriteForTesting();
+  Wait();
+
+  // Expect the flushed size ot be the same as the serialized size of the
+  // in-memory content.
+  int64_t size = 0;
+  EXPECT_TRUE(base::GetFileSize(buffer->proto().path(), &size));
+  EXPECT_EQ(static_cast<uint64_t>(size), buffer->proto()->ByteSizeLong());
 }
 
 }  // namespace metrics::structured
