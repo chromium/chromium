@@ -22,7 +22,6 @@ schema_sources_ = [
   "content_settings.json",
   "context_menus.json",
   "cookies.json",
-  "dashboard_private.json",
   "debugger.json",
   "desktop_capture.json",
   "developer_private.idl",

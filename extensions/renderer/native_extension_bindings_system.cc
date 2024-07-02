@@ -409,7 +409,6 @@ bool DoesContextNeedMessagingApis(ScriptContext* context) {
 // in UpdateBindingsForContext.
 const char* const kWebAvailableFeatures[] = {
     "app",
-    "dashboardPrivate",
     "webstorePrivate",
     "management",
 };

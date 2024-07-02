@@ -297,13 +297,6 @@
       "chrome-untrusted://projector-annotator/*"
     ]
   }],
-  "dashboardPrivate": {
-    "channel": "stable",
-    "contexts": ["privileged_extension"],
-    "allowlist": [
-      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
-    ]
-  },
   "debugger": {
     "dependencies": ["permission:debugger"],
     "contexts": ["privileged_extension"]

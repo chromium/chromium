@@ -101,8 +101,6 @@ source_set("extensions") {
     "api/cookies/cookies_api_constants.h",
     "api/cookies/cookies_helpers.cc",
     "api/cookies/cookies_helpers.h",
-    "api/dashboard_private/dashboard_private_api.cc",
-    "api/dashboard_private/dashboard_private_api.h",
     "api/debugger/debugger_api.cc",
     "api/debugger/debugger_api.h",
     "api/debugger/debugger_api_constants.cc",

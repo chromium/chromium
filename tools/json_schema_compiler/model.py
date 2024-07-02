@@ -558,7 +558,7 @@ class EnumValue(object):
     # Using empty string values as enum key is only allowed in a few namespaces,
     # as an exception to the rule, and we should not add more.
     if (not self.name and
-        namespace.name not in ['enums', 'dashboardPrivate', 'webstorePrivate']):
+        namespace.name not in ['enums', 'webstorePrivate']):
       raise ValueError('Enum value cannot be an empty string')
 
   def CamelName(self):
