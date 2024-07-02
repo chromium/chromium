@@ -76,7 +76,9 @@ class BoundSessionCookieControllerImpl
   void CreateBoundCookiesObservers();
 
   bool AreAllCookiesFresh();
+  bool CanCreateRefreshCookieFetcher() const;
   void MaybeRefreshCookie();
+
   void SetCookieExpirationTimeAndNotify(const std::string& cookie_name,
                                         base::Time expiration_time);
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
@@ -87,10 +89,6 @@ class BoundSessionCookieControllerImpl
   void ResumeBlockedRequests(
       chrome::mojom::ResumeBlockedRequestsTrigger trigger);
   void OnResumeBlockedRequestsTimeout();
-
-  // Added for manual testing, should be inlined after
-  // `artificial_cookie_rotation_delay_` is removed.
-  void StartCookieRefresh();
 
   void set_refresh_cookie_fetcher_factory_for_testing(
       RefreshCookieFetcherFactoryForTesting
@@ -140,11 +138,6 @@ class BoundSessionCookieControllerImpl
       refresh_cookie_fetcher_factory_for_testing_;
 
   bound_session_credentials::RotationDebugInfo debug_info_;
-
-  // Added for testing purposes.
-  std::unique_ptr<base::RetainingOneShotTimer> artifical_cookie_rotation_delay_;
-  std::optional<BoundSessionRefreshCookieFetcher::Result>
-      artificial_cookie_rotation_result_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_CONTROLLER_IMPL_H_

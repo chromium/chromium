@@ -151,23 +151,6 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
   // Preemptively load the binding key to speed up the generation of binding
   // key assertion.
   session_binding_helper_->MaybeLoadBindingKey();
-
-  std::optional<base::TimeDelta> cookie_rotation_delay =
-      bound_session_credentials::GetCookieRotationDelayIfSetByCommandLine();
-
-  if (cookie_rotation_delay) {
-    // `base::Unretained(this)` is safe because `this` owns
-    // `artifical_cookie_rotation_delay_`.
-    artifical_cookie_rotation_delay_ =
-        std::make_unique<base::RetainingOneShotTimer>(
-            FROM_HERE, *cookie_rotation_delay,
-            base::BindRepeating(
-                &BoundSessionCookieControllerImpl::StartCookieRefresh,
-                base::Unretained(this)));
-  }
-
-  artificial_cookie_rotation_result_ =
-      bound_session_credentials::GetCookieRotationResultIfSetByCommandLine();
 }
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
@@ -292,43 +275,27 @@ bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
   return min_cookie_expiration_time() > base::Time::Now();
 }
 
-void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
-  cookie_refresh_timer_.Stop();
-  if (refresh_cookie_fetcher_) {
-    return;
-  }
-
-  if (refresh_cookie_fetcher_backoff_.ShouldRejectRequest()) {
-    return;
-  }
-
-  if (!artifical_cookie_rotation_delay_) {
-    StartCookieRefresh();
-  } else if (!artifical_cookie_rotation_delay_->IsRunning()) {
-    // Runs `StartCookieRefresh()` after a certain delay.
-    artifical_cookie_rotation_delay_->Reset();
-  }
+bool BoundSessionCookieControllerImpl::CanCreateRefreshCookieFetcher() const {
+  return !refresh_cookie_fetcher_ &&
+         !refresh_cookie_fetcher_backoff_.ShouldRejectRequest();
 }
 
-void BoundSessionCookieControllerImpl::StartCookieRefresh() {
-  CHECK(!refresh_cookie_fetcher_);
-  CHECK(!refresh_cookie_fetcher_backoff_.ShouldRejectRequest());
-
-  if (artificial_cookie_rotation_result_) {
-    OnCookieRefreshFetched(*artificial_cookie_rotation_result_);
-  } else {
-    refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
-    std::optional<std::string> sec_session_challenge_response;
-    std::swap(cached_sec_session_challenge_response_,
-              sec_session_challenge_response);
-    // `base::Unretained(this)` is safe because `this` owns
-    // `refresh_cookie_fetcher_`.
-    refresh_cookie_fetcher_->Start(
-        base::BindOnce(
-            &BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
-            base::Unretained(this)),
-        std::move(sec_session_challenge_response));
+void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
+  cookie_refresh_timer_.Stop();
+  if (!CanCreateRefreshCookieFetcher()) {
+    return;
   }
+
+  refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+  std::optional<std::string> sec_session_challenge_response;
+  std::swap(cached_sec_session_challenge_response_,
+            sec_session_challenge_response);
+  // `base::Unretained(this)` is safe because `this` owns
+  // `refresh_cookie_fetcher_`.
+  refresh_cookie_fetcher_->Start(
+      base::BindOnce(&BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
+                     base::Unretained(this)),
+      std::move(sec_session_challenge_response));
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
@@ -350,13 +317,14 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   refresh_cookie_fetcher_.reset();
 
   UpdateCookieFetcherBackoff(result);
-  if (cookie_rotation_retries_on_transient_error_ <
+  if (CanCreateRefreshCookieFetcher() &&
+      cookie_rotation_retries_on_transient_error_ <
           kMaxRetrialsForThrottledRequestsOnTransientError &&
       is_transient_error && !resume_blocked_requests_.empty()) {
     // On transient error, retry the cookie refresh before releasing
     // throttled requests. Do not retry preemptive refreshes.
     cookie_rotation_retries_on_transient_error_++;
-    StartCookieRefresh();
+    MaybeRefreshCookie();
     return;
   }
 
