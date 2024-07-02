@@ -317,11 +317,12 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
   if (is_rewrite_to_right_alt) {
     key_code = ui::VKEY_ASSISTANT;
   }
+  // Use ui::DomKey::NONE so the DomKey is recomputed with applicable flags.
   auto rewritten_event = std::make_unique<ui::KeyEvent>(
       event_type, key_code, static_cast<ui::DomCode>(key_event.dom_code),
       applied_modifier_key_flag | other_modifiers_to_apply | event.flags() |
           ui::EF_IS_CUSTOMIZED_FROM_BUTTON,
-      static_cast<ui::DomKey>(key_event.dom_key), event.time_stamp());
+      ui::DomKey::NONE, event.time_stamp());
   rewritten_event->set_source_device_id(event.source_device_id());
   if (is_rewrite_to_right_alt) {
     ui::SetRightAltProperty(rewritten_event.get());
@@ -1414,7 +1415,9 @@ void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
   // remapped, this will behave incorrectly as it will remove "Ctrl". Instead,
   // this needs to track what keys are being pressed by the device that have
   // modifiers attached to them. For now, this is close enough to being correct.
-  event.SetFlags(event.flags() & ~modifier_flags);
+  if (modifier_flags) {
+    event.SetFlags(event.flags() & ~modifier_flags);
+  }
 }
 
 void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
@@ -1423,7 +1426,9 @@ void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
   for (const auto& [_, flag] : device_button_to_flags_) {
     flags |= flag;
   }
-  event.SetFlags(event.flags() | flags);
+  if (flags) {
+    event.SetFlags(event.flags() | flags);
+  }
 }
 
 std::unique_ptr<ui::Event> PeripheralCustomizationEventRewriter::CloneEvent(
