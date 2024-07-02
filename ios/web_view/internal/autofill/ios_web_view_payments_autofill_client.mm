@@ -72,7 +72,7 @@ void IOSWebViewPaymentsAutofillClient::ShowUnmaskPrompt(
 }
 
 void IOSWebViewPaymentsAutofillClient::OnUnmaskVerificationResult(
-    AutofillClient::PaymentsRpcResult result) {
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   [bridge_ didReceiveUnmaskVerificationResult:result];
 }
 

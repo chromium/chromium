@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -96,7 +96,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // `vcn_3ds_context_`. Run once a response is received from the second
   // UnmaskCardRequest, triggered after the authentication has completed.
   void OnVcn3dsAuthenticationResponseReceived(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
 
   // Resets the state of `this` in relation to the ongoing UnmaskCardRequest.

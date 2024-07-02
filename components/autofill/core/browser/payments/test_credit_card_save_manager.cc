@@ -87,7 +87,7 @@ void TestCreditCardSaveManager::InitVirtualCardEnroll(
 }
 
 void TestCreditCardSaveManager::OnDidUploadCard(
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
         upload_card_response_details) {
   credit_card_was_uploaded_ = true;

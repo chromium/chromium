@@ -52,6 +52,8 @@ using ::testing::HasSubstr;
 namespace autofill::payments {
 namespace {
 
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
+
 int kAllDetectableValues =
     CreditCardSaveManager::DetectedValue::CVC |
     CreditCardSaveManager::DetectedValue::CARDHOLDER_NAME |
@@ -210,21 +212,21 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   void TearDown() override { payments_network_interface_.reset(); }
 
   void OnDidGetUnmaskDetails(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsRpcResult result,
       payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
     result_ = result;
     unmask_details_ = unmask_details;
   }
 
   void OnDidGetRealPan(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsRpcResult result,
       const PaymentsNetworkInterface::UnmaskResponseDetails& response) {
     result_ = result;
     unmask_response_details_ = response;
   }
 
   void OnDidGetOptChangeResult(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsRpcResult result,
       PaymentsNetworkInterface::OptChangeResponseDetails& response) {
     result_ = result;
     opt_change_response_.user_is_opted_in = response.user_is_opted_in;
@@ -235,7 +237,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   }
 
   void OnDidGetUploadDetails(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges) {
@@ -244,16 +246,17 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     supported_card_bin_ranges_ = supported_card_bin_ranges;
   }
 
-  void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                       const PaymentsNetworkInterface::UploadCardResponseDetails&
-                           upload_card_respone_details) {
+  void OnDidUploadCard(
+      PaymentsRpcResult result,
+      const PaymentsNetworkInterface::UploadCardResponseDetails&
+          upload_card_respone_details) {
     result_ = result;
     upload_card_response_details_ = upload_card_respone_details;
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void OnDidMigrateLocalCards(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsRpcResult result,
       std::unique_ptr<std::unordered_map<std::string, std::string>>
           migration_save_results,
       const std::string& display_text) {
@@ -263,23 +266,23 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
+  void OnDidSelectChallengeOption(PaymentsRpcResult result,
                                   const std::string& updated_context_token) {
     result_ = result;
     context_token_ = updated_context_token;
   }
 
   void OnDidGetVirtualCardEnrollmentDetails(
-      AutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails&
-          get_details_for_enrollment_response_fields) {
+      PaymentsRpcResult result,
+      const payments::PaymentsNetworkInterface::
+          GetDetailsForEnrollmentResponseDetails&
+              get_details_for_enrollment_response_fields) {
     result_ = result;
     get_details_for_enrollment_response_fields_ =
         get_details_for_enrollment_response_fields;
   }
 
-  void OnDidGetUpdateVirtualCardEnrollmentResponse(
-      AutofillClient::PaymentsRpcResult result) {
+  void OnDidGetUpdateVirtualCardEnrollmentResponse(PaymentsRpcResult result) {
     result_ = result;
   }
 
@@ -495,8 +498,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  AutofillClient::PaymentsRpcResult result_ =
-      AutofillClient::PaymentsRpcResult::kNone;
+  PaymentsRpcResult result_ = PaymentsRpcResult::kNone;
 
   // Server ID of a saved card via credit card upload save.
   PaymentsNetworkInterface::UploadCardResponseDetails upload_card_response_details_;
@@ -539,7 +541,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUnmaskDetailsSuccess) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"offer_fido_opt_in\": \"false\", "
                  "\"authentication_method\": \"CVC\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(false, unmask_details()->offer_fido_opt_in);
   EXPECT_EQ(PaymentsAutofillClient::UnmaskAuthMethod::kCvc,
             unmask_details()->unmask_auth_method);
@@ -559,7 +561,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OAuthError) {
   StartUnmasking(CardUnmaskOptions());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_TRUE(unmask_response_details()->real_pan.empty());
 }
 
@@ -581,7 +583,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaCVC) {
                  "{ \"pan\": \"1234\" }");
 
   assertCvcIncludedInRequest("111");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
 
@@ -592,7 +594,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaFIDO) {
                  "{ \"pan\": \"1234\" }");
 
   assertCvcNotIncludedInRequest();
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
 
@@ -601,7 +603,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessViaCVCWithCreationOptions) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\", \"dcvv\": \"321\"}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
   EXPECT_EQ("321", unmask_response_details()->dcvv);
 }
@@ -611,7 +613,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessAccountFromSyncTest) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"pan\": \"1234\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("1234", unmask_response_details()->real_pan);
 }
 
@@ -627,7 +629,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardCvcAuth) {
   assertIncludedInRequest("challenge_id");
   assertIncludedInRequest("cvc_length");
   assertIncludedInRequest("cvc_position");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
   EXPECT_EQ("12", unmask_response_details()->expiration_month);
@@ -643,7 +645,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskSuccessWithVirtualCardFidoAuth) {
 
   assertCvcNotIncludedInRequest();
   assertNotIncludedInRequest("cvc_challenge_option");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
   EXPECT_EQ("12", unmask_response_details()->expiration_month);
@@ -665,7 +667,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedGreenPathResponse) {
   // Only merchant_domain is included.
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
   EXPECT_EQ("12", unmask_response_details()->expiration_month);
@@ -679,8 +681,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedRedPathResponse_Error) 
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error\": { \"code\": \"NON-INTERNAL\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest,
@@ -689,7 +690,7 @@ TEST_F(PaymentsNetworkInterfaceTest,
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"context_token\": \"fake_context_token\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedYellowPathResponse) {
@@ -708,7 +709,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedYellowPathResponse) {
       "\"CVC_POSITION_BACK\"}}]}");
 
   // Ensure that it's not treated as failure when no pan is returned.
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details()->context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ(
@@ -748,7 +749,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardCvcRetrieval_FlowStatusPresent) 
 
   // Ensure that it is treated as a try again failure when a flow status is
   // returned.
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kTryAgainFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest,
@@ -765,7 +766,7 @@ TEST_F(PaymentsNetworkInterfaceTest,
       "\"fake_challenge_id_2\" } }] }");
 
   // Ensure that it's not treated as failure when no pan is returned.
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("fake_context_token", unmask_response_details()->context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ(
@@ -799,7 +800,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenFido) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
   EXPECT_EQ("12", unmask_response_details()->expiration_month);
@@ -824,7 +825,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VirtualCardRiskBasedThenOtpSuccess) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
   EXPECT_EQ("999", unmask_response_details()->dcvv);
   EXPECT_EQ("12", unmask_response_details()->expiration_month);
@@ -847,7 +848,7 @@ TEST_F(PaymentsNetworkInterfaceTest, ExpiredOtp) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("FLOW_STATUS_EXPIRED_OTP", unmask_response_details()->flow_status);
 }
 
@@ -867,7 +868,7 @@ TEST_F(PaymentsNetworkInterfaceTest, IncorrectOtp) {
   EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("FLOW_STATUS_INCORRECT_OTP",
             unmask_response_details()->flow_status);
 }
@@ -935,8 +936,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskResponseIncludesDeclineDetails) {
                  "\"test_user_message_title\", \"user_message_description\": "
                  "\"test_user_message_description\"}}");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalTryAgainFailure, result_);
   EXPECT_TRUE(
       unmask_response_details()->autofill_error_dialog_context.has_value());
   AutofillErrorDialogContext autofill_error_dialog_context =
@@ -957,8 +957,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskResponseIncludesEmptyDeclineDetails) 
                  "\"\", \"user_message_description\": "
                  "\"\"}}");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalTryAgainFailure, result_);
   EXPECT_FALSE(
       unmask_response_details()->autofill_error_dialog_context.has_value());
 }
@@ -970,7 +969,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInSuccess) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
                  "\"FIDO_AUTH_ENABLED\"}}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(opt_change_response_.user_is_opted_in.value());
 }
 
@@ -980,7 +979,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInServerUnresponsive) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_REQUEST_TIMEOUT,
                  "");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNetworkError, result_);
+  EXPECT_EQ(PaymentsRpcResult::kNetworkError, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.has_value());
 }
 
@@ -991,7 +990,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
                  "\"FIDO_AUTH_DISABLED\"}}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
 }
 
@@ -1004,7 +1003,7 @@ TEST_F(PaymentsNetworkInterfaceTest, EnrollAttemptReturnsCreationOptions) {
                  "\"FIDO_AUTH_DISABLED\","
                  "\"fido_creation_options\": {"
                  "\"relying_party_id\": \"google.com\"}}}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(opt_change_response_.user_is_opted_in.value());
   EXPECT_EQ("google.com",
             *opt_change_response_.fido_creation_options->FindString(
@@ -1017,7 +1016,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsSuccess) {
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_NE(nullptr, legal_message_.get());
 }
 
@@ -1204,13 +1203,13 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFollowedByUploadSuccess) {
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
 
-  result_ = AutofillClient::PaymentsRpcResult::kNone;
+  result_ = PaymentsRpcResult::kNone;
 
   StartUploading(UploadCardOptions());
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, GetDetailsMissingContextToken) {
@@ -1218,7 +1217,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsMissingContextToken) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, GetDetailsMissingLegalMessage) {
@@ -1226,7 +1225,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsMissingLegalMessage) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"context_token\": \"some_token\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ(nullptr, legal_message_.get());
 }
 
@@ -1240,7 +1239,7 @@ TEST_F(PaymentsNetworkInterfaceTest, SupportedCardBinRangesParsesCorrectly) {
       "  \"legal_message\" : {},"
       "  \"supported_card_bin_ranges_string\" : \"1234,300000-555555,765\""
       "}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   // Check that |supported_card_bin_ranges_| has the two entries specified in
   // ReturnResponse(payments_network_interface_.get(),~) above.
   ASSERT_EQ(3U, supported_card_bin_ranges_.size());
@@ -1301,7 +1300,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessEmptyResponse) {
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_FALSE(upload_card_response_details_.instrument_id.has_value());
   EXPECT_TRUE(upload_card_response_details_.virtual_card_enrollment_state ==
               CreditCard::VirtualCardEnrollmentState::kUnspecified);
@@ -1316,7 +1315,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessInstrumentIdPresent) {
   // Test the conversion from string to int64_t using the max value for int64_t.
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"instrument_id\": \"9223372036854775807\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(upload_card_response_details_.instrument_id, 9223372036854775807);
 }
 
@@ -1355,7 +1354,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessVirtualCardEnrollmentStatePres
       case CreditCard::VirtualCardEnrollmentState::kUnspecified:
         break;
     }
-    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+    EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
     EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
               virtual_card_enrollment_state);
   }
@@ -1373,7 +1372,7 @@ TEST_F(PaymentsNetworkInterfaceTest,
                  "\"template\": \"This is the entire message.\" }] }, "
                  "\"external_legal_message\": {},"
                  "\"context_token\": \"some_token\"} } }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
             CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible);
   EXPECT_EQ(
@@ -1398,7 +1397,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessCardArtUrlPresent) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"card_art_url\": \"https://www.example.com/\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ(upload_card_response_details_.card_art_url.spec(),
             "https://www.example.com/");
 }
@@ -1536,7 +1535,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadDoesNotIncludeCardNicknameEmptyNickna
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskMissingPan) {
   StartUnmasking(CardUnmaskOptions());
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskRetryFailure) {
@@ -1544,7 +1543,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskRetryFailure) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error\": { \"code\": \"INTERNAL\" } }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kTryAgainFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
   EXPECT_EQ("", unmask_response_details()->real_pan);
 }
 
@@ -1553,7 +1552,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailure) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details()->real_pan);
 }
 
@@ -1562,7 +1561,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskMalformedResponse) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error_code\": \"WRONG_JSON_FORMAT\" }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details()->real_pan);
 }
 
@@ -1573,18 +1572,18 @@ TEST_F(PaymentsNetworkInterfaceTest, ReauthNeeded) {
     ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
                    "");
     // No response yet.
-    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
+    EXPECT_EQ(PaymentsRpcResult::kNone, result_);
     EXPECT_EQ(nullptr, unmask_response_details());
 
     // Second HTTP_UNAUTHORIZED causes permanent failure.
     IssueOAuthToken();
     ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
                    "");
-    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+    EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
     EXPECT_EQ("", unmask_response_details()->real_pan);
   }
 
-  result_ = AutofillClient::PaymentsRpcResult::kNone;
+  result_ = PaymentsRpcResult::kNone;
   ResetUnmaskResponseDetails();
 
   {
@@ -1596,14 +1595,14 @@ TEST_F(PaymentsNetworkInterfaceTest, ReauthNeeded) {
     ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
                    "");
     // No response yet.
-    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNone, result_);
+    EXPECT_EQ(PaymentsRpcResult::kNone, result_);
     EXPECT_EQ(nullptr, unmask_response_details());
 
     // HTTP_OK after first HTTP_UNAUTHORIZED results in success.
     IssueOAuthToken();
     ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                    "{ \"pan\": \"1234\" }");
-    EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+    EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
     EXPECT_EQ("1234", unmask_response_details()->real_pan);
   }
 }
@@ -1613,7 +1612,7 @@ TEST_F(PaymentsNetworkInterfaceTest, NetworkError) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_REQUEST_TIMEOUT,
                  std::string());
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kNetworkError, result_);
+  EXPECT_EQ(PaymentsRpcResult::kNetworkError, result_);
   EXPECT_EQ("", unmask_response_details()->real_pan);
 }
 
@@ -1622,7 +1621,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OtherError) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_FORBIDDEN,
                  std::string());
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ("", unmask_response_details()->real_pan);
 }
 
@@ -1632,8 +1631,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VcnRetrievalTryAgainFailure) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_temporary_error\" } }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalTryAgainFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, VcnRetrievalPermanentFailure) {
@@ -1642,8 +1640,7 @@ TEST_F(PaymentsNetworkInterfaceTest, VcnRetrievalPermanentFailure) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingExpiration) {
@@ -1653,7 +1650,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingExpirat
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\" }");
 
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
@@ -1664,7 +1661,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
                  "\"month\":12, \"year\":2099 } }");
 
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 // Tests for the local card migration flow. Desktop only.
@@ -1675,15 +1672,15 @@ TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFollowedByMigrationSuccess) {
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
       "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
 
-  result_ = AutofillClient::PaymentsRpcResult::kNone;
+  result_ = PaymentsRpcResult::kNone;
 
   StartMigrating(/*has_cardholder_name=*/true);
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
       "{\"save_result\":[],\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
 }
 #endif
 
@@ -1781,7 +1778,7 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrationSuccessWithSaveResult) {
                  "\"SUCCESS\"},{\"unique_id\":\"1\",\"status\":\"TEMPORARY_"
                  "FAILURE\"}],\"value_prop_display_text\":\"display text\"}");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_TRUE(migration_save_results_.get());
   EXPECT_TRUE(migration_save_results_->find("0") !=
               migration_save_results_->end());
@@ -1796,7 +1793,7 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrationMissingSaveResult) {
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
   EXPECT_EQ(nullptr, migration_save_results_.get());
 }
 
@@ -1806,7 +1803,7 @@ TEST_F(PaymentsNetworkInterfaceTest, MigrationSuccessWithDisplayText) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{\"save_result\":[{\"unique_id\":\"0\",\"status\":"
                  "\"SUCCESS\"}],\"value_prop_display_text\":\"display text\"}");
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("display text", display_text_);
 }
 #endif
@@ -1818,7 +1815,7 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionWithSmsOtpMethod) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"context_token\": \"new context token\" }");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   assertIncludedInRequest("context_token");
   assertIncludedInRequest("external_customer_id");
   assertIncludedInRequest("selected_idv_challenge_option");
@@ -1836,7 +1833,7 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionSuccess) {
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"context_token\": \"new context token\" }");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
   EXPECT_EQ("new context token", context_token_);
 }
 
@@ -1847,8 +1844,7 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionTemporaryFailure) {
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalTryAgainFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionVcnFlowPermanentFailure) {
@@ -1858,8 +1854,7 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionVcnFlowPermanentFailur
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-            result_);
+  EXPECT_EQ(PaymentsRpcResult::kVcnRetrievalPermanentFailure, result_);
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionResponseMissingContextToken) {
@@ -1867,12 +1862,12 @@ TEST_F(PaymentsNetworkInterfaceTest, SelectChallengeOptionResponseMissingContext
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
 
-  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 typedef std::tuple<VirtualCardEnrollmentSource,
                    VirtualCardEnrollmentRequestType,
-                   AutofillClient::PaymentsRpcResult>
+                   PaymentsRpcResult>
     UpdateVirtualCardEnrollmentTestData;
 
 class UpdateVirtualCardEnrollmentTest
@@ -1892,14 +1887,13 @@ class UpdateVirtualCardEnrollmentTest
                                      virtual_card_enrollment_request_type);
     IssueOAuthToken();
 
-    // |response_type_for_test| is the AutofillClient::PaymentsRpcResult
+    // |response_type_for_test| is the PaymentsRpcResult
     // response type we want to test for the combination of
     // |virtual_card_enrollment_source| and
     // |virtual_card_enrollment_request_type| we are currently on.
-    AutofillClient::PaymentsRpcResult response_type_for_test =
-        std::get<2>(GetParam());
+    PaymentsRpcResult response_type_for_test = std::get<2>(GetParam());
     switch (response_type_for_test) {
-      case AutofillClient::PaymentsRpcResult::kSuccess:
+      case PaymentsRpcResult::kSuccess:
         if (virtual_card_enrollment_request_type ==
             VirtualCardEnrollmentRequestType::kEnroll) {
           ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
@@ -1909,32 +1903,32 @@ class UpdateVirtualCardEnrollmentTest
           ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
         }
         break;
-      case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+      case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
         ReturnResponse(
             payments_network_interface_.get(), net::HTTP_OK,
             "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
             "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
         break;
-      case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+      case PaymentsRpcResult::kTryAgainFailure:
         ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                        "{ \"error\": { \"code\": \"INTERNAL\", "
                        "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
         break;
-      case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
         ReturnResponse(
             payments_network_interface_.get(), net::HTTP_OK,
             "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
             "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
         break;
-      case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+      case PaymentsRpcResult::kPermanentFailure:
         ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                        "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
         break;
-      case AutofillClient::PaymentsRpcResult::kNetworkError:
+      case PaymentsRpcResult::kNetworkError:
         ReturnResponse(payments_network_interface_.get(),
                        net::HTTP_REQUEST_TIMEOUT, "");
         break;
-      case AutofillClient::PaymentsRpcResult::kNone:
+      case PaymentsRpcResult::kNone:
         NOTREACHED_IN_MIGRATION();
         break;
     }
@@ -1966,7 +1960,7 @@ class UpdateVirtualCardEnrollmentTest
 
 // Initializes the parameterized test suite with all possible values of
 // VirtualCardEnrollmentSource, VirtualCardEnrollmentRequestType, and
-// AutofillClient::PaymentsRpcResult.
+// PaymentsRpcResult.
 INSTANTIATE_TEST_SUITE_P(
     ,
     UpdateVirtualCardEnrollmentTest,
@@ -1976,13 +1970,12 @@ INSTANTIATE_TEST_SUITE_P(
                         VirtualCardEnrollmentSource::kSettingsPage),
         testing::Values(VirtualCardEnrollmentRequestType::kEnroll,
                         VirtualCardEnrollmentRequestType::kUnenroll),
-        testing::Values(
-            AutofillClient::PaymentsRpcResult::kSuccess,
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            AutofillClient::PaymentsRpcResult::kTryAgainFailure,
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-            AutofillClient::PaymentsRpcResult::kPermanentFailure,
-            AutofillClient::PaymentsRpcResult::kNetworkError)));
+        testing::Values(PaymentsRpcResult::kSuccess,
+                        PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+                        PaymentsRpcResult::kTryAgainFailure,
+                        PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+                        PaymentsRpcResult::kPermanentFailure,
+                        PaymentsRpcResult::kNetworkError)));
 
 // Parameterized test that tests all combinations of
 // VirtualCardEnrollmentSource and VirtualCardEnrollmentRequestType against all
@@ -1996,15 +1989,14 @@ TEST_P(UpdateVirtualCardEnrollmentTest,
 class GetVirtualCardEnrollmentDetailsTest
     : public PaymentsNetworkInterfaceTest,
       public ::testing::WithParamInterface<
-          std::tuple<VirtualCardEnrollmentSource,
-                     AutofillClient::PaymentsRpcResult>> {
+          std::tuple<VirtualCardEnrollmentSource, PaymentsRpcResult>> {
  public:
   GetVirtualCardEnrollmentDetailsTest() = default;
   ~GetVirtualCardEnrollmentDetailsTest() override = default;
 };
 
 // Initializes the parameterized test suite with all possible combinations of
-// VirtualCardEnrollmentSource and AutofillClient::PaymentsRpcResult.
+// VirtualCardEnrollmentSource and PaymentsRpcResult.
 INSTANTIATE_TEST_SUITE_P(
     ,
     GetVirtualCardEnrollmentDetailsTest,
@@ -2012,13 +2004,12 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(VirtualCardEnrollmentSource::kUpstream,
                         VirtualCardEnrollmentSource::kDownstream,
                         VirtualCardEnrollmentSource::kSettingsPage),
-        testing::Values(
-            AutofillClient::PaymentsRpcResult::kSuccess,
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
-            AutofillClient::PaymentsRpcResult::kTryAgainFailure,
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
-            AutofillClient::PaymentsRpcResult::kPermanentFailure,
-            AutofillClient::PaymentsRpcResult::kNetworkError)));
+        testing::Values(PaymentsRpcResult::kSuccess,
+                        PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+                        PaymentsRpcResult::kTryAgainFailure,
+                        PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+                        PaymentsRpcResult::kPermanentFailure,
+                        PaymentsRpcResult::kNetworkError)));
 
 // Parameterized test that tests all combinations of
 // VirtualCardEnrollmentSource and server PaymentsRpcResult. This test
@@ -2041,41 +2032,41 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
   IssueOAuthToken();
 
   // Ensures the PaymentsRpcResult is set correctly.
-  AutofillClient::PaymentsRpcResult result = std::get<1>(GetParam());
+  PaymentsRpcResult result = std::get<1>(GetParam());
   switch (result) {
-    case AutofillClient::PaymentsRpcResult::kSuccess:
+    case PaymentsRpcResult::kSuccess:
       ReturnResponse(
           payments_network_interface_.get(), net::HTTP_OK,
           "{ \"google_legal_message\": { \"line\" : [{ \"template\": \"This is "
           "the entire message.\" }] }, \"external_legal_message\": {}, "
           "\"context_token\": \"some_token\" }");
       break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
       ReturnResponse(
           payments_network_interface_.get(), net::HTTP_OK,
           "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
           "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
       break;
-    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case PaymentsRpcResult::kTryAgainFailure:
       ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                      "{ \"error\": { \"code\": \"INTERNAL\", "
                      "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
       break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       ReturnResponse(
           payments_network_interface_.get(), net::HTTP_OK,
           "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
           "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
       break;
-    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case PaymentsRpcResult::kPermanentFailure:
       ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                      "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
       break;
-    case AutofillClient::PaymentsRpcResult::kNetworkError:
+    case PaymentsRpcResult::kNetworkError:
       ReturnResponse(payments_network_interface_.get(),
                      net::HTTP_REQUEST_TIMEOUT, "");
       break;
-    case AutofillClient::PaymentsRpcResult::kNone:
+    case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       break;
   }

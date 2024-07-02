@@ -59,7 +59,7 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override;
+      payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
 

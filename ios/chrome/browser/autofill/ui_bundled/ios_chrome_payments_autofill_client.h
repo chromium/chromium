@@ -107,7 +107,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
   void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override;
+      payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(

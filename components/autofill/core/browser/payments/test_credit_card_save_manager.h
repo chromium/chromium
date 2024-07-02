@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
@@ -59,7 +60,7 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
           get_details_for_enrollment_response_details);
 
   void OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details) override;
 

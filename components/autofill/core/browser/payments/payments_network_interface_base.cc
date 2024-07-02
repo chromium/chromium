@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-
 #include "components/autofill/core/browser/payments/account_info_getter.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -22,8 +22,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace autofill::payments {
-
 namespace {
+
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 
 const char kTokenFetchId[] = "wallet_client";
 const char kPaymentsOAuth2Scope[] =
@@ -132,8 +133,7 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
-  AutofillClient::PaymentsRpcResult result =
-      AutofillClient::PaymentsRpcResult::kSuccess;
+  PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
 
   if (!request_) {
     return;
@@ -164,16 +164,14 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
       if (base::EqualsCaseInsensitiveASCII(error_api_error_reason,
                                            "virtual_card_temporary_error")) {
-        result =
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
+        result = PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
       } else if (base::EqualsCaseInsensitiveASCII(
                      error_api_error_reason, "virtual_card_permanent_error")) {
-        result =
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
+        result = PaymentsRpcResult::kVcnRetrievalPermanentFailure;
       } else if (request_->IsRetryableFailure(error_code)) {
-        result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
+        result = PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
-        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+        result = PaymentsRpcResult::kPermanentFailure;
       }
 
       break;
@@ -181,7 +179,7 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
     case net::HTTP_UNAUTHORIZED: {
       if (has_retried_authorization_) {
-        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+        result = PaymentsRpcResult::kPermanentFailure;
         break;
       }
       has_retried_authorization_ = true;
@@ -194,18 +192,18 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     // TODO(estade): is this actually how network connectivity issues are
     // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
-      result = AutofillClient::PaymentsRpcResult::kNetworkError;
+      result = PaymentsRpcResult::kNetworkError;
       break;
     }
 
     // Handle anything else as a generic (permanent) failure.
     default: {
-      result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+      result = PaymentsRpcResult::kPermanentFailure;
       break;
     }
   }
 
-  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result != PaymentsRpcResult::kSuccess) {
     VLOG(1) << "Payments returned error: " << response_code
             << " with data: " << data;
   }
@@ -237,8 +235,7 @@ void PaymentsNetworkInterfaceBase::AccessTokenError(
     simple_url_loader_.reset();
   }
   if (request_) {
-    request_->RespondToDelegate(
-        AutofillClient::PaymentsRpcResult::kPermanentFailure);
+    request_->RespondToDelegate(PaymentsRpcResult::kPermanentFailure);
   }
 }
 

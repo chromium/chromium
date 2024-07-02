@@ -44,8 +44,10 @@
 #import "url/gurl.h"
 
 namespace autofill::payments {
-
 namespace {
+
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
+
 // Creates and returns an infobar for saving credit cards.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate) {
@@ -218,7 +220,7 @@ void IOSChromePaymentsAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
 }
 
 void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsRpcResult result) {
   if (unmask_controller_) {
     unmask_controller_->OnVerificationResult(result);
   }
@@ -226,23 +228,23 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
   // For VCN-related errors, on iOS we show a new error dialog instead of
   // updating the CVC unmask prompt with the error message.
   switch (result) {
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+    case PaymentsRpcResult::kVcnRetrievalPermanentFailure:
       ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/true));
       break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
       ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/false));
       break;
-    case AutofillClient::PaymentsRpcResult::kSuccess:
-    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
-    case AutofillClient::PaymentsRpcResult::kNetworkError:
+    case PaymentsRpcResult::kSuccess:
+    case PaymentsRpcResult::kTryAgainFailure:
+    case PaymentsRpcResult::kPermanentFailure:
+    case PaymentsRpcResult::kNetworkError:
       // Do nothing
       break;
-    case AutofillClient::PaymentsRpcResult::kNone:
+    case PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       return;
   }

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 
@@ -45,7 +46,7 @@ class CreditCard;
 
 // Bridge for AutofillClient's method |onUnmaskVerificationResult|.
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result;
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result;
 
 // Bridge for PaymentsAutofillClient's method `LoadRiskData`.
 - (void)loadRiskData:(base::OnceCallback<void(const std::string&)>)callback;

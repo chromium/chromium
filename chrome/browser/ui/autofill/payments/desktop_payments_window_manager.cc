@@ -254,7 +254,7 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
 }
 
 void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsAutofillClient::PaymentsRpcResult result,
     const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
   Vcn3dsAuthenticationResponse response = CreateVcn3dsAuthenticationResponse(
       result, response_details, std::move(vcn_3ds_context_->card));
