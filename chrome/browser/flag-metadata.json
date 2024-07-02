@@ -4919,6 +4919,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "gts-close-tab-animation",
+    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "happiness-tracking-surveys-for-desktop-demo",
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI

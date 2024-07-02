@@ -702,7 +702,7 @@ public class TabListCoordinator
 
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
-        mRecyclerView.prepareTabSwitcherPaneView();
+        mRecyclerView.setupCustomItemAnimator();
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
@@ -720,6 +720,7 @@ public class TabListCoordinator
 
     public void prepareTabGridView() {
         registerLayoutChangeListener();
+        mRecyclerView.setupCustomItemAnimator();
     }
 
     public void cleanupTabGridView() {

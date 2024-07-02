@@ -37,6 +37,7 @@ import java.lang.ref.WeakReference;
 /** Holds the view for a selectable tab grid. */
 public class TabGridView extends SelectableItemViewBase<Integer> {
     private static final long RESTORE_ANIMATION_DURATION_MS = 50;
+    private static final long BASE_ANIMATION_DURATION_MS = 218;
     private static final float ZOOM_IN_SCALE = 0.8f;
 
     private @TabActionState int mTabActionState = TabActionState.UNSET;
@@ -99,10 +100,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
                 status == AnimationStatus.HOVERED_CARD_ZOOM_IN
                         || status == AnimationStatus.HOVERED_CARD_ZOOM_OUT;
         boolean isRestore = status == AnimationStatus.CARD_RESTORE;
-        long duration =
-                isRestore
-                        ? RESTORE_ANIMATION_DURATION_MS
-                        : TabListRecyclerView.BASE_ANIMATION_DURATION_MS;
+        long duration = isRestore ? RESTORE_ANIMATION_DURATION_MS : BASE_ANIMATION_DURATION_MS;
         float scale = isZoomIn ? ZOOM_IN_SCALE : 1f;
         View animateView = isHovered ? contentView : this;
 

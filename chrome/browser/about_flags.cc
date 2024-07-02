@@ -3753,6 +3753,19 @@ const FeatureEntry::FeatureParam kTabGroupParityAndroidSkipCreationDialog[] = {
 const FeatureEntry::FeatureVariation kTabGroupParityAndroidVariations[] = {
     {"Skip tab group creation dialog", kTabGroupParityAndroidSkipCreationDialog,
      std::size(kTabGroupParityAndroidSkipCreationDialog), nullptr}};
+
+const FeatureEntry::FeatureParam kGtsCloseTabAnimationDefault[] = {
+    {"skip_removal_delay", "false"}};
+const FeatureEntry::FeatureParam kGtsCloseTabAnimationSkipRemovalDelay[] = {
+    {"skip_removal_delay", "true"}};
+
+const FeatureEntry::FeatureVariation kGtsCloseTabAnimationVariations[] = {
+    {"Option A remove and move simultaneously",
+     kGtsCloseTabAnimationSkipRemovalDelay,
+     std::size(kGtsCloseTabAnimationSkipRemovalDelay), nullptr},
+    {"Option B remove then move", kGtsCloseTabAnimationDefault,
+     std::size(kGtsCloseTabAnimationDefault), nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
@@ -10210,6 +10223,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabGroupParityAndroid,
                                     kTabGroupParityAndroidVariations,
                                     "TabGroupParityVariations")},
+
+    {"gts-close-tab-animation", flag_descriptions::kGtsCloseTabAnimationName,
+     flag_descriptions::kGtsCloseTabAnimationDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kGtsCloseTabAnimation,
+                                    kGtsCloseTabAnimationVariations,
+                                    "GtsCloseTabAnimationVariations")},
 
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,

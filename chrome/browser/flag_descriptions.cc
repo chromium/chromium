@@ -4377,6 +4377,11 @@ const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[] =
     "Migration from View#setSystemUiVisibility to WindowInsetsController on "
     "automotive.";
 
+const char kGtsCloseTabAnimationName[] =
+    "Grid tab switcher close tab animation";
+const char kGtsCloseTabAnimationDescription[] =
+    "New grid tab switcher close tab animation.";
+
 const char kRefreshFeedOnRestartName[] = "Enable refreshing feed on restart";
 const char kRefreshFeedOnRestartDescription[] =
     "Refresh feed when Chrome restarts.";

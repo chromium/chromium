@@ -18402,6 +18402,7 @@ from previous Chrome versions.
   <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
+  <int value="-958340040" label="GtsCloseTabAnimation:enabled"/>
   <int value="-958159088" label="RestoreTabsOnFRE:enabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
@@ -25575,6 +25576,7 @@ from previous Chrome versions.
   <int value="2110832901" label="OmniboxPedalsTranslationConsole:enabled"/>
   <int value="2112289297" label="DiacriticsUseReplaceSurroundingText:disabled"/>
   <int value="2112312086" label="EditContext:disabled"/>
+  <int value="2112534003" label="GtsCloseTabAnimation:disabled"/>
   <int value="2112883215" label="AndroidHubV2:enabled"/>
   <int value="2113067450" label="FedCmAutoReauthn:disabled"/>
   <int value="2113804526" label="EnableAppShortcutSearch:enabled"/>

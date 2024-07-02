@@ -239,6 +239,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGcmNativeBackgroundTask,
+    &kGtsCloseTabAnimation,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
     &kLensOnQuickActionSearchWidget,
@@ -721,6 +722,12 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 // notifications.
 BASE_FEATURE(kGcmNativeBackgroundTask,
              "GcmNativeBackgroundTask",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Will likely rollout with waterfall and be used as a killswitch, but is
+// default disabled for now until the animation is polished.
+BASE_FEATURE(kGtsCloseTabAnimation,
+             "GtsCloseTabAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIncognitoReauthenticationForAndroid,

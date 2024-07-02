@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -43,8 +44,6 @@ import java.util.List;
 class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper {
     private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
-
-    public static final long BASE_ANIMATION_DURATION_MS = 218;
 
     private class TabListOnScrollListener extends RecyclerView.OnScrollListener {
         @Override
@@ -70,6 +69,7 @@ class TabListRecyclerView extends RecyclerView
     @Nullable private Runnable mOnNextLayoutRunnable;
 
     private int mToolbarHairlineColor;
+    private TabListItemAnimator mTabListItemAnimator;
 
     /** Basic constructor to use during inflation from xml. */
     public TabListRecyclerView(Context context, AttributeSet attributeSet) {
@@ -136,8 +136,15 @@ class TabListRecyclerView extends RecyclerView
         }
     }
 
-    void prepareTabSwitcherPaneView() {
-        // TODO(crbug.com/346777141): Add a custom remove animator here.
+    void setupCustomItemAnimator() {
+        if (!ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) return;
+
+        if (mTabListItemAnimator == null) {
+            mTabListItemAnimator =
+                    new TabListItemAnimator(
+                            ChromeFeatureList.sGtsCloseTabAnimationSkipRemovalDelay.getValue());
+            setItemAnimator(mTabListItemAnimator);
+        }
     }
 
     /**

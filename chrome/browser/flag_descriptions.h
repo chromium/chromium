@@ -2582,6 +2582,9 @@ extern const char kFullscreenInsetsApiMigrationDescription[];
 extern const char kFullscreenInsetsApiMigrationOnAutomotiveName[];
 extern const char kFullscreenInsetsApiMigrationOnAutomotiveDescription[];
 
+extern const char kGtsCloseTabAnimationName[];
+extern const char kGtsCloseTabAnimationDescription[];
+
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
 
