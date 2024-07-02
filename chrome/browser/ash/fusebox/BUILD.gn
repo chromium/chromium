@@ -6,7 +6,53 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
+static_library("fusebox") {
+  sources = [
+    "fusebox_copy_to_fd.cc",
+    "fusebox_copy_to_fd.h",
+    "fusebox_errno.cc",
+    "fusebox_errno.h",
+    "fusebox_histograms.cc",
+    "fusebox_histograms.h",
+    "fusebox_moniker.cc",
+    "fusebox_moniker.h",
+    "fusebox_read_writer.cc",
+    "fusebox_read_writer.h",
+    "fusebox_server.cc",
+    "fusebox_server.h",
+  ]
+
+  deps = [
+    ":fusebox_proto",
+    "//base",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//content/public/browser",
+    "//net",
+    "//storage/browser",
+    "//storage/common",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/system_web_apps/apps" ]
+}
+
 proto_library("fusebox_proto") {
   sources = [ "//third_party/cros_system_api/dbus/fusebox/fusebox.proto" ]
   proto_out_dir = "chrome/browser/ash/fusebox"
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fusebox_errno_unittest.cc",
+    "fusebox_moniker_unittest.cc",
+  ]
+
+  deps = [
+    ":fusebox",
+    "//net",
+    "//storage/common",
+    "//testing/gtest",
+  ]
 }

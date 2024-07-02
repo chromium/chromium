@@ -19,6 +19,7 @@ static_library("exo") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/fusebox",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/borealis",
     "//components/exo",
