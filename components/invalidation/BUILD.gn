@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("invalidation") {
+  sources = [
+    "invalidation_listener.cc",
+    "invalidation_listener.h",
+    "invalidation_listener_impl.cc",
+    "invalidation_listener_impl.h",
+  ]
+
+  public_deps = [ "//components/invalidation/public" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/gcm_driver",
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "invalidation_listener_impl_unittest.cc" ]
+  deps = [
+    "//base",
+    "//components/gcm_driver:test_support",
+    "//components/gcm_driver/instance_id:test_support",
+    "//components/invalidation",
+    "//google_apis:test_support",
+    "//google_apis/gcm:gcm",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
