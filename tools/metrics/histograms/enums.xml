@@ -14580,6 +14580,20 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19" label="Disabled: user is in Incognito mode"/>
 </enum>
 
+<!-- LINT.IfChange(LensOverlayInvocationSource) -->
+
+<enum name="LensOverlayInvocationSource">
+  <summary>The UI source of a Lens Overlay invocation.</summary>
+  <int value="0" label="App menu"/>
+  <int value="1" label="Content area page context menu"/>
+  <int value="2" label="Content area image context menu"/>
+  <int value="3" label="Toolbar button"/>
+  <int value="4" label="Find in page dialog button"/>
+  <int value="5" label="Omnibox button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
+
 <enum name="LensRegionSearchAspectRatio">
   <summary>
     Enum describing the aspect ratio of the captured region. The aspect ratios

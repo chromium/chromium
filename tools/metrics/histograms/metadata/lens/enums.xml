@@ -48,20 +48,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
 
-<!-- LINT.IfChange(LensOverlayInvocationSource) -->
-
-<enum name="LensOverlayInvocationSource">
-  <summary>The UI source of a Lens Overlay invocation.</summary>
-  <int value="0" label="App menu"/>
-  <int value="1" label="Content area page context menu"/>
-  <int value="2" label="Content area image context menu"/>
-  <int value="3" label="Toolbar button"/>
-  <int value="4" label="Find in page dialog button"/>
-  <int value="5" label="Omnibox button"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
-
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
 <enum name="LensOverlayUserAction">

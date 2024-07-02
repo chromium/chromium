@@ -46,6 +46,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -53,6 +54,8 @@
 #include "content/public/browser/web_ui.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -403,7 +406,14 @@ void LensOverlayController::ShowUI(
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
   fullscreen_observation_.Observe(
       tab_browser->exclusive_access_manager()->fullscreen_controller());
+
+  // Record invocation metrics.
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::Lens_Overlay_Invoked(source_id)
+      .SetSource(static_cast<int64_t>(invocation_source))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void LensOverlayController::CloseUIAsync(

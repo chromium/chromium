@@ -3,4 +3,6 @@ include_rules = [
   "+third_party/lens_server_proto",
   "+third_party/omnibox_proto",
   "+components/endpoint_fetcher",
+  "+components/ukm",
+  "+services/metrics/public/cpp",
 ]
