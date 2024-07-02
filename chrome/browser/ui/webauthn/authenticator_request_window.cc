@@ -117,10 +117,25 @@ class ReauthWebContentsObserver : public content::WebContentsObserver {
 };
 
 // The user may be prompted to reset their passkeys if the MagicArch PIN
-// challenge fails. This observer is responsible for detecting a successful
-// passkeys reset in the Webview.
+// challenge fails. MagicArch will then navigate to either
+// `kGpmPasskeyResetSuccessUrl` or `kGpmPasskeyResetFailUrl` after completing a
+// reset. The pages have a message on and a button. If the user clicks the
+// button, a ref is appended to the URL. This observer will observe which page
+// the user is on and call the `callback_`.
 class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
  public:
+  enum class Status {
+    // Passkeys reset flow not started. The user is still in the PIN screen.
+    kNotStarted,
+    // Passkeys reset flow not completed.
+    kStarted,
+    // Passkeys reset flow succeeded. The user has not clicked the button in the
+    // page yet.
+    kSuccess,
+    // Passkeys reset flow failed. The user has not clicked the button in the
+    // page yet.
+    kFail,
+  };
   PasskeyResetWebContentsObserver(content::WebContents* web_contents,
                                   base::OnceCallback<void(bool)> callback)
       : content::WebContentsObserver(web_contents),
@@ -134,16 +149,32 @@ class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
         !url.has_path()) {
       return;
     }
-    if (url.path() == GURL(kGpmPasskeyResetSuccessUrl).path() &&
-        url.has_ref() && url.ref() == "success") {
-      std::move(callback_).Run(true);
-    } else if (url.path() == GURL(kGpmPasskeyResetFailUrl).path() &&
-               url.has_ref() && url.ref() == "fail") {
-      std::move(callback_).Run(false);
+    status_ = Status::kStarted;
+    if (url.path() == GURL(kGpmPasskeyResetSuccessUrl).path()) {
+      status_ = Status::kSuccess;
+    } else if (url.path() == GURL(kGpmPasskeyResetFailUrl).path()) {
+      status_ = Status::kFail;
     }
+
+    MaybeRunCallback(url.has_ref() ? url.ref() : "");
   }
 
+  Status status() const { return status_; }
+
  private:
+  void MaybeRunCallback(const std::string& ref) {
+    if (status_ == Status::kStarted || ref.empty()) {
+      return;
+    }
+    if (status_ == Status::kSuccess && ref == "success") {
+      std::move(callback_).Run(true);
+    } else if (status_ == Status::kFail && ref == "fail") {
+      std::move(callback_).Run(false);
+    }
+    status_ = Status::kNotStarted;
+  }
+
+  Status status_ = Status::kNotStarted;
   base::OnceCallback<void(bool)> callback_;
 };
 
@@ -153,6 +184,7 @@ class AuthenticatorRequestWindow
     : public content::WebContentsObserver,
       public AuthenticatorRequestDialogModel::Observer {
  public:
+  using PasskeyResetStatus = PasskeyResetWebContentsObserver::Status;
   explicit AuthenticatorRequestWindow(content::WebContents* caller_web_contents,
                                       AuthenticatorRequestDialogModel* model)
       : step_(model->step()), model_(model) {
@@ -246,7 +278,19 @@ class AuthenticatorRequestWindow
  protected:
   void WebContentsDestroyed() override {
     WebContentsObserver::Observe(nullptr);
-    if (model_ && model_->step() == step_) {
+    if (!model_) {
+      return;
+    }
+    // If the passkey reset is complete and the user has not clicked the button
+    // in the page, we still wish to react to the reset.
+    if (passkey_reset_observer_ &&
+        (passkey_reset_observer_->status() == PasskeyResetStatus::kSuccess ||
+         passkey_reset_observer_->status() == PasskeyResetStatus::kFail)) {
+      OnPasskeysReset(passkey_reset_observer_->status() ==
+                      PasskeyResetStatus::kSuccess);
+      return;
+    }
+    if (model_->step() == step_) {
       model_->OnRecoverSecurityDomainClosed();
     }
   }
