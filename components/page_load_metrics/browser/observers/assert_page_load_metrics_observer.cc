@@ -84,6 +84,15 @@ AssertPageLoadMetricsObserver::OnPreviewStart(
 }
 
 PageLoadMetricsObserver::ObservePolicy
+AssertPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
+    content::NavigationHandle* navigation_handle) {
+  CHECK(started_);
+  CHECK(!committed_);
+
+  return CONTINUE_OBSERVING;
+}
+
+PageLoadMetricsObserver::ObservePolicy
 AssertPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   CHECK(started_);

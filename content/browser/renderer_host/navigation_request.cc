@@ -3396,7 +3396,8 @@ void NavigationRequest::OnRequestRedirected(
     common_params_->post_data.reset();
 
   const bool is_first_response = commit_params_->redirects.empty();
-  UpdateNavigationHandleTimingsOnResponseReceived(is_first_response);
+  UpdateNavigationHandleTimingsOnResponseReceived(/*is_redirect=*/true,
+                                                  is_first_response);
 
   // Mark time for the Navigation Timing API.
   if (commit_params_->navigation_timing->redirect_start.is_null()) {
@@ -4336,7 +4337,8 @@ void NavigationRequest::OnResponseStarted(
     net_error_ = net::ERR_ABORTED;
 
   const bool is_first_response = commit_params_->redirects.empty();
-  UpdateNavigationHandleTimingsOnResponseReceived(is_first_response);
+  UpdateNavigationHandleTimingsOnResponseReceived(/*is_redirect=*/false,
+                                                  is_first_response);
 
   commit_params_->http_response_code =
       response_head_->headers ? response_head_->headers->response_code()
@@ -4920,9 +4922,14 @@ void NavigationRequest::OnRequestFailedInternal(
   net_error_ = static_cast<net::Error>(status.error_code);
   extended_error_code_ = status.extended_error_code;
   resolve_error_info_ = status.resolve_error_info;
+  navigation_handle_timing_.request_failed_time = base::TimeTicks::Now();
 
   if (MaybeCancelFailedNavigation())
     return;
+
+  // Only notify the NavigationHandleTiming update if the navigation will commit
+  // an error page (instead of getting ignored and deleted above).
+  GetDelegate()->DidUpdateNavigationHandleTiming(this);
 
   if (collapse_frame) {
     DCHECK_EQ(net::ERR_BLOCKED_BY_CLIENT, status.error_code);
@@ -5309,7 +5316,10 @@ void NavigationRequest::OnStartChecksComplete(
   absl::Cleanup scoped_set_now = [navigation_request =
                                       weak_factory_.GetWeakPtr()] {
     if (navigation_request) {
-      navigation_request->loader_start_time_ = base::TimeTicks::Now();
+      navigation_request->navigation_handle_timing_.loader_start_time =
+          base::TimeTicks::Now();
+      navigation_request->GetDelegate()->DidUpdateNavigationHandleTiming(
+          navigation_request.get());
     }
   };
 
@@ -6485,6 +6495,7 @@ void NavigationRequest::RenderProcessExited(
     const ChildProcessTerminationInfo& info) {}
 
 void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
+    bool is_redirect,
     bool is_first_response) {
   base::TimeTicks loader_callback_time = base::TimeTicks::Now();
 
@@ -6500,6 +6511,13 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
     first_fetch_start_time_ = response_head_->request_start;
   }
 
+  if (!is_redirect) {
+    navigation_handle_timing_.non_redirected_request_start_time =
+        response_head_->load_timing.send_start;
+    navigation_handle_timing_.non_redirect_response_start_time =
+        response_head_->load_timing.receive_headers_start;
+  }
+
   navigation_handle_timing_.final_request_start_time =
       response_head_->load_timing.send_start;
   navigation_handle_timing_.final_response_start_time =
@@ -6513,12 +6531,16 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
   // |navigation_commit_sent_time| will be updated by
   // UpdateNavigationHandleTimingsOnCommitSent() later.
   DCHECK(navigation_handle_timing_.navigation_commit_sent_time.is_null());
+
+  GetDelegate()->DidUpdateNavigationHandleTiming(this);
 }
 
 void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
   DCHECK(navigation_handle_timing_.navigation_commit_sent_time.is_null());
   navigation_handle_timing_.navigation_commit_sent_time =
       base::TimeTicks::Now();
+
+  GetDelegate()->DidUpdateNavigationHandleTiming(this);
 }
 
 void NavigationRequest::UpdateSiteInfo(
@@ -10694,20 +10716,23 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   MAYBE_RECORD_TRACE_AND_HISTOGRAM0("NavigationStartToBeginNavigation",
                                     navigation_start_time,
                                     begin_navigation_time_);
-  MAYBE_RECORD_TRACE_AND_HISTOGRAM0("BeginNavigationToLoaderStart",
-                                    begin_navigation_time_, loader_start_time_);
+  MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
+      "BeginNavigationToLoaderStart", begin_navigation_time_,
+      navigation_handle_timing_.loader_start_time);
   MAYBE_RECORD_TRACE_AND_HISTOGRAM1("LoaderStartToReceiveResponse",
-                                    loader_start_time_, receive_response_time_,
-                                    "URL", common_params_->url.spec());
+                                    navigation_handle_timing_.loader_start_time,
+                                    receive_response_time_, "URL",
+                                    common_params_->url.spec());
 
   // `first_fetch_start_time_` can be earlier than `loader_start_time_`
   // when Prefetch or Prerendering is enabled. The following UMAs are
   // not recorded in such cases because it will skew the data. Also the
   // following trace events are not recorded in such cases because such
   // traces will not be rendered correctly.
-  if (loader_start_time_ <= first_fetch_start_time_) {
+  if (navigation_handle_timing_.loader_start_time <= first_fetch_start_time_) {
     MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
-        "LoaderStartToFetchStart", loader_start_time_, first_fetch_start_time_);
+        "LoaderStartToFetchStart", navigation_handle_timing_.loader_start_time,
+        first_fetch_start_time_);
     MAYBE_RECORD_TRACE_AND_HISTOGRAM0(
         "FetchStart", first_fetch_start_time_,
         navigation_handle_timing_.first_request_start_time);

@@ -990,6 +990,18 @@ void MetricsWebContentsObserver::DidRedirectNavigation(
   it->second->Redirect(navigation_handle);
 }
 
+void MetricsWebContentsObserver::DidUpdateNavigationHandleTiming(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame()) {
+    return;
+  }
+  auto it = provisional_loads_.find(navigation_handle);
+  if (it == provisional_loads_.end()) {
+    return;
+  }
+  it->second->DidUpdateNavigationHandleTiming(navigation_handle);
+}
+
 void MetricsWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
   if (web_contents_will_soon_be_destroyed_) {

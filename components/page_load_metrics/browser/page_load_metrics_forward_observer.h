@@ -47,6 +47,8 @@ class PageLoadMetricsForwardObserver final
                                  const GURL& currently_committed_url) override;
   ObservePolicy OnPreviewStart(content::NavigationHandle* navigation_handle,
                                const GURL& currently_committed_url) override;
+  ObservePolicy OnNavigationHandleTimingUpdated(
+      content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnRedirect(
       content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;

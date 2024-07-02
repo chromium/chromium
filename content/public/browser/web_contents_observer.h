@@ -371,6 +371,16 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // DocumentUserData for more details).
   virtual void DidFinishNavigation(NavigationHandle* navigation_handle) {}
 
+  // Called when the NavigationHandleTiming associated with `navigation_handle`
+  // has been updated, which can be triggered by any of these events:
+  // - The URLLoader for the network request had started (if the navigation
+  //   needs a URLLoader)
+  // - A network response has been received (including redirect responses)
+  // - The navigation got blocked, and will commit an error page.
+  // - The Commit IPC has been sent
+  virtual void DidUpdateNavigationHandleTiming(
+      NavigationHandle* navigation_handle) {}
+
   // Called after the WebContents completes the previewed page activation steps.
   // `activation_time` is the time the activation happened.
   virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) {}

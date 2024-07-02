@@ -1746,7 +1746,8 @@ class CONTENT_EXPORT NavigationRequest
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Updates navigation handle timings.
-  void UpdateNavigationHandleTimingsOnResponseReceived(bool is_first_response);
+  void UpdateNavigationHandleTimingsOnResponseReceived(bool is_redirect,
+                                                       bool is_first_response);
   void UpdateNavigationHandleTimingsOnCommitSent();
 
   // Helper function that computes the SiteInfo for |common_params_.url|.
@@ -2327,9 +2328,6 @@ class CONTENT_EXPORT NavigationRequest
 
   // The time BeginNavigation() was called.
   base::TimeTicks begin_navigation_time_;
-
-  // The time just after NavigationURLLoader::Start() was called.
-  base::TimeTicks loader_start_time_;
 
   // The time OnResponseStarted() was called.
   base::TimeTicks receive_response_time_;

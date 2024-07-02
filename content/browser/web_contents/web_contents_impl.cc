@@ -6955,6 +6955,14 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   }
 }
 
+void WebContentsImpl::DidUpdateNavigationHandleTiming(
+    NavigationHandle* navigation_handle) {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "WebContentsObserver.DidUpdateNavigationHandleTiming");
+  observers_.NotifyObservers(
+      &WebContentsObserver::DidUpdateNavigationHandleTiming, navigation_handle);
+}
+
 bool WebContentsImpl::CanOverscrollContent() const {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::CanOverscrollContent");
   // Disable overscroll when touch emulation is on. See crbug.com/369938.

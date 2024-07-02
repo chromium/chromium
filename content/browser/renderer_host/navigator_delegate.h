@@ -84,6 +84,12 @@ class NavigatorDelegate {
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details) = 0;
 
+  // Called when the NavigationHandleTiming associated with `navigation_handle`
+  // has been updated. See the comment at
+  // `WebContentsObserver::DidUpdateNavigationHandleTiming()` for more details.
+  virtual void DidUpdateNavigationHandleTiming(
+      NavigationHandle* navigation_handle) = 0;
+
   // Notification to the Navigator embedder that navigation state has
   // changed. This method corresponds to
   // WebContents::NotifyNavigationStateChanged.

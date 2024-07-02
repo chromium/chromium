@@ -234,6 +234,13 @@ class PageLoadMetricsObserverInterface {
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) = 0;
 
+  // Called when the NavigationHandleTiming associated with `navigation_handle`
+  // has been updated. This is called only for main frame navigations. See the
+  // comment at `WebContentsObserver::DidUpdateNavigationHandleTiming()` for
+  // more details.
+  virtual ObservePolicy OnNavigationHandleTimingUpdated(
+      content::NavigationHandle* navigation_handle) = 0;
+
   // OnRedirect is triggered when a page load redirects to another URL.
   // The navigation handle holds relevant data for the navigation, but will
   // be destroyed soon after this call. Don't hold a reference to it. This can

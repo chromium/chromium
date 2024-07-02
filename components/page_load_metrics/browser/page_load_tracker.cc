@@ -745,6 +745,19 @@ void PageLoadTracker::FailedProvisionalLoad(
       navigation_handle->GetNavigationDiscardReason().value());
 }
 
+void PageLoadTracker::DidUpdateNavigationHandleTiming(
+    content::NavigationHandle* navigation_handle) {
+  InvokeAndPruneObservers(
+      "PageLoadMetricsObserver::OnNavigationHandleTimingUpdated",
+      base::BindRepeating(
+          [](content::NavigationHandle* navigation_handle,
+             PageLoadMetricsObserverInterface* observer) {
+            return observer->OnNavigationHandleTimingUpdated(navigation_handle);
+          },
+          navigation_handle),
+      /*permit_forwarding=*/false);
+}
+
 void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {
   url_ = navigation_handle->GetURL();
   InvokeAndPruneObservers("PageLoadMetricsObserver::Redirect",

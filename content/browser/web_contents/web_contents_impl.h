@@ -985,6 +985,8 @@ class CONTENT_EXPORT WebContentsImpl
   void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details) override;
+  void DidUpdateNavigationHandleTiming(
+      NavigationHandle* navigation_handle) override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
       bool is_outermost_main_frame_navigation) override;

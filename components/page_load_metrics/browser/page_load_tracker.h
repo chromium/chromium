@@ -310,18 +310,25 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   bool IsTerminalVisit() const override;
   int64_t GetNavigationId() const override;
 
-  void Redirect(content::NavigationHandle* navigation_handle);
-  void WillProcessNavigationResponse(
+  // The following methods are called on navigation related events.
+  //
+  // Called only on main frames.
+  void DidUpdateNavigationHandleTiming(
       content::NavigationHandle* navigation_handle);
+  void Redirect(content::NavigationHandle* navigation_handle);
   void Commit(content::NavigationHandle* navigation_handle);
   void DidCommitSameDocumentNavigation(
       content::NavigationHandle* navigation_handle);
   void DidInternalNavigationAbort(content::NavigationHandle* navigation_handle);
-  void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
-  void DidFinishSubFrameNavigation(
-      content::NavigationHandle* navigation_handle);
   void FailedProvisionalLoad(content::NavigationHandle* navigation_handle,
                              base::TimeTicks failed_load_time);
+  // Called only on subframes.
+  void DidFinishSubFrameNavigation(
+      content::NavigationHandle* navigation_handle);
+  // Called on main and sub-frames.
+  void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
+  void WillProcessNavigationResponse(
+      content::NavigationHandle* navigation_handle);
   void PageHidden();
   void PageShown();
   void RenderFrameDeleted(content::RenderFrameHost* rfh);

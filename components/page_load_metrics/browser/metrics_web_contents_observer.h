@@ -86,6 +86,8 @@ class MetricsWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidUpdateNavigationHandleTiming(
+      content::NavigationHandle* navigation_handle) override;
   void NavigationStopped() override;
   void OnInputEvent(const blink::WebInputEvent& event) override;
   void OnVisibilityChanged(content::Visibility visibility) override;

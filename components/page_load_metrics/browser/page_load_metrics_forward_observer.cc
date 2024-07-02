@@ -74,6 +74,13 @@ PageLoadMetricsForwardObserver::OnPreviewStart(
   return STOP_OBSERVING;
 }
 
+PageLoadMetricsObserverInterface::ObservePolicy
+PageLoadMetricsForwardObserver::OnNavigationHandleTimingUpdated(
+    content::NavigationHandle* navigation_handle) {
+  // New events don't support forward observers.
+  return CONTINUE_OBSERVING;
+}
+
 // Main frame events will be converted as sub-frame events on forwarding, and
 // OnRedirect is an event only for the main frame. We just mask it here.
 PageLoadMetricsObserverInterface::ObservePolicy

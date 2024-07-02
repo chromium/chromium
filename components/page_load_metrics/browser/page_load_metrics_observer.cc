@@ -77,6 +77,12 @@ PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnPreviewStart(
   return STOP_OBSERVING;
 }
 
+PageLoadMetricsObserver::ObservePolicy
+PageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
+    content::NavigationHandle* navigation_handle) {
+  return CONTINUE_OBSERVING;
+}
+
 PageLoadMetricsObserver::ObservePolicy PageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   return CONTINUE_OBSERVING;
