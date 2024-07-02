@@ -411,45 +411,6 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
   return Invalid();
 }
 
-bool MediaQueryExpValue::IsResolution() const {
-  switch (type_) {
-    case Type::kNumeric:
-      return CSSPrimitiveValue::IsResolution(Unit());
-    case Type::kCSSValue:
-      if (const auto* math_function =
-              DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
-        return math_function->IsResolution();
-      }
-      return false;
-    default:
-      return false;
-  }
-}
-
-double MediaQueryExpValue::Value() const {
-  if (const auto* math_function =
-          DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
-    if (math_function->IsResolution()) {
-      return math_function->ComputeDotsPerPixel();
-    }
-  }
-
-  DCHECK(IsNumeric());
-  return numeric_.value;
-}
-
-CSSPrimitiveValue::UnitType MediaQueryExpValue::Unit() const {
-  if (const auto* math_function =
-          DynamicTo<CSSMathFunctionValue>(css_value_.Get())) {
-    if (math_function->IsResolution()) {
-      return CSSPrimitiveValue::UnitType::kDotsPerPixel;
-    }
-  }
-
-  DCHECK(IsNumeric());
-  return numeric_.unit;
-}
-
 std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
     CSSParserTokenRange& range,
@@ -510,7 +471,9 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       return std::nullopt;
     }
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-      return MediaQueryExpValue(value->GetDoubleValue(), 1);
+      return MediaQueryExpValue(*value,
+                                *CSSNumericLiteralValue::Create(
+                                    1, CSSPrimitiveValue::UnitType::kNumber));
     }
     CSSPrimitiveValue* denominator = css_parsing_utils::ConsumeNumber(
         range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
@@ -518,44 +481,19 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       return std::nullopt;
     }
     if (value->GetDoubleValue() == 0 && denominator->GetDoubleValue() == 0) {
-      return MediaQueryExpValue(1, 0);
+      return MediaQueryExpValue(*CSSNumericLiteralValue::Create(
+                                    1, CSSPrimitiveValue::UnitType::kNumber),
+                                *CSSNumericLiteralValue::Create(
+                                    0, CSSPrimitiveValue::UnitType::kNumber));
     }
-    return MediaQueryExpValue(value->GetDoubleValue(),
-                              denominator->GetDoubleValue());
-  }
-
-  if (FeatureWithValidDensity(media_feature, value)) {
-    DCHECK(value->IsResolution());
-
-    if (const auto* math_function = DynamicTo<CSSMathFunctionValue>(value)) {
-      return MediaQueryExpValue(*math_function);
-    }
-
-    const auto* numeric_literal = To<CSSNumericLiteralValue>(value);
-    return MediaQueryExpValue(numeric_literal->DoubleValue(),
-                              numeric_literal->GetType());
+    return MediaQueryExpValue(*value, *denominator);
   }
 
   if (FeatureWithInteger(media_feature, value, context) ||
       FeatureWithNumber(media_feature, value) ||
-      FeatureWithZeroOrOne(media_feature, value)) {
-    return MediaQueryExpValue(value->GetDoubleValue(),
-                              CSSPrimitiveValue::UnitType::kNumber);
-  }
-
-  if (FeatureWithValidLength(media_feature, value)) {
-    if (value->IsNumber()) {
-      return MediaQueryExpValue(value->GetDoubleValue(),
-                                CSSPrimitiveValue::UnitType::kNumber);
-    }
-
-    DCHECK(value->IsLength());
-    if (const auto* numeric_literal =
-            DynamicTo<CSSNumericLiteralValue>(value)) {
-      return MediaQueryExpValue(numeric_literal->GetDoubleValue(),
-                                numeric_literal->GetType());
-    }
-
+      FeatureWithZeroOrOne(media_feature, value) ||
+      FeatureWithValidLength(media_feature, value) ||
+      FeatureWithValidDensity(media_feature, value)) {
     return MediaQueryExpValue(*value);
   }
 
@@ -641,29 +579,21 @@ unsigned MediaQueryExp::GetUnitFlags() const {
   return unit_flags;
 }
 
-static inline String PrintNumber(double number) {
-  return Decimal::FromDouble(number).ToString();
-}
-
 String MediaQueryExpValue::CssText() const {
   StringBuilder output;
   switch (type_) {
     case Type::kInvalid:
       break;
-    case Type::kNumeric:
-      output.Append(PrintNumber(Value()));
-      output.Append(CSSPrimitiveValue::UnitTypeToString(Unit()));
+    case Type::kValue:
+      output.Append(GetCSSValue().CssText());
       break;
     case Type::kRatio:
-      output.Append(PrintNumber(Numerator()));
+      output.Append(Numerator().CssText());
       output.Append(" / ");
-      output.Append(PrintNumber(Denominator()));
+      output.Append(Denominator().CssText());
       break;
     case Type::kId:
       output.Append(getValueName(Id()));
-      break;
-    case Type::kCSSValue:
-      output.Append(GetCSSValue().CssText());
       break;
   }
 
@@ -673,17 +603,10 @@ String MediaQueryExpValue::CssText() const {
 unsigned MediaQueryExpValue::GetUnitFlags() const {
   CSSPrimitiveValue::LengthTypeFlags length_type_flags;
 
-  if (IsCSSValue()) {
+  if (IsValue()) {
     if (auto* primitive = DynamicTo<CSSPrimitiveValue>(GetCSSValue())) {
       primitive->AccumulateLengthUnitTypes(length_type_flags);
     }
-  }
-  if (IsNumeric() && CSSPrimitiveValue::IsLength(Unit())) {
-    CSSPrimitiveValue::LengthUnitType length_unit_type;
-    bool ok =
-        CSSPrimitiveValue::UnitTypeToLengthUnitType(Unit(), length_unit_type);
-    DCHECK(ok);
-    length_type_flags.set(length_unit_type);
   }
 
   unsigned unit_flags = 0;

@@ -2464,14 +2464,15 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     for (wtf_size_t j = 0; j < expressions.size(); ++j) {
       const MediaQueryExp& media_query_exp = expressions.at(j);
       MediaQueryExpValue exp_value = media_query_exp.Bounds().right.value;
-      if (!exp_value.IsNumeric())
+      if (!exp_value.IsNumericLiteralValue()) {
         continue;
+      }
       const char* value_name =
-          CSSPrimitiveValue::UnitTypeToString(exp_value.Unit());
+          CSSPrimitiveValue::UnitTypeToString(exp_value.GetUnitType());
       std::unique_ptr<protocol::CSS::MediaQueryExpression>
           media_query_expression =
               protocol::CSS::MediaQueryExpression::create()
-                  .setValue(exp_value.Value())
+                  .setValue(exp_value.GetDoubleValue())
                   .setUnit(String(value_name))
                   .setFeature(media_query_exp.MediaFeature())
                   .build();
@@ -2483,9 +2484,11 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
       }
 
       int computed_length;
-      if (media_values->ComputeLength(exp_value.Value(), exp_value.Unit(),
-                                      computed_length))
+      if (media_values->ComputeLength(exp_value.GetDoubleValue(),
+                                      exp_value.GetUnitType(),
+                                      computed_length)) {
         media_query_expression->setComputedLength(computed_length);
+      }
 
       expression_array->emplace_back(std::move(media_query_expression));
       has_expression_items = true;

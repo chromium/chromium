@@ -348,19 +348,21 @@ bool CompareDoubleValue(double actual_value,
 static bool CompareAspectRatioValue(const MediaQueryExpValue& value,
                                     int width,
                                     int height,
-                                    MediaQueryOperator op) {
+                                    MediaQueryOperator op,
+                                    const MediaValues& media_values) {
   if (value.IsRatio()) {
-    return CompareDoubleValue(static_cast<double>(width) * value.Denominator(),
-                              static_cast<double>(height) * value.Numerator(),
-                              op);
+    return CompareDoubleValue(
+        static_cast<double>(width) * value.Denominator(media_values),
+        static_cast<double>(height) * value.Numerator(media_values), op);
   }
   return false;
 }
 
-static bool NumberValue(const MediaQueryExpValue& value, float& result) {
-  if (value.IsNumeric() &&
-      value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    result = ClampTo<float>(value.Value());
+static bool NumberValue(const MediaQueryExpValue& value,
+                        float& result,
+                        const MediaValues& media_values) {
+  if (value.IsNumber()) {
+    result = ClampTo<float>(value.Value(media_values));
     return true;
   }
   return false;
@@ -375,7 +377,7 @@ static bool ColorMediaFeatureEval(const MediaQueryExpValue& value,
                                IdentifiableSurface::MediaFeatureName::kColor,
                                bits_per_component);
   if (value.IsValid()) {
-    return NumberValue(value, number) &&
+    return NumberValue(value, number, media_values) &&
            CompareValue(bits_per_component, static_cast<int>(number), op);
   }
 
@@ -384,7 +386,7 @@ static bool ColorMediaFeatureEval(const MediaQueryExpValue& value,
 
 static bool ColorIndexMediaFeatureEval(const MediaQueryExpValue& value,
                                        MediaQueryOperator op,
-                                       const MediaValues&) {
+                                       const MediaValues& media_values) {
   // FIXME: We currently assume that we do not support indexed displays, as it
   // is unknown how to retrieve the information if the display mode is indexed.
   // This matches Firefox.
@@ -395,7 +397,7 @@ static bool ColorIndexMediaFeatureEval(const MediaQueryExpValue& value,
   // Acording to spec, if the device does not use a color lookup table, the
   // value is zero.
   float number;
-  return NumberValue(value, number) &&
+  return NumberValue(value, number, media_values) &&
          CompareValue(0, static_cast<int>(number), op);
 }
 
@@ -408,7 +410,7 @@ static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
       media_values, IdentifiableSurface::MediaFeatureName::kMonochrome,
       bits_per_component);
   if (value.IsValid()) {
-    return NumberValue(value, number) &&
+    return NumberValue(value, number, media_values) &&
            CompareValue(bits_per_component, static_cast<int>(number), op);
   }
   return bits_per_component != 0;
@@ -548,7 +550,7 @@ static bool AspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
       aspect_ratio);
   if (value.IsValid()) {
     return CompareAspectRatioValue(value, *media_values.Width(),
-                                   *media_values.Height(), op);
+                                   *media_values.Height(), op, media_values);
   }
 
   // ({,min-,max-}aspect-ratio)
@@ -561,7 +563,8 @@ static bool DeviceAspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
                                               const MediaValues& media_values) {
   if (value.IsValid()) {
     return CompareAspectRatioValue(value, media_values.DeviceWidth(),
-                                   media_values.DeviceHeight(), op);
+                                   media_values.DeviceHeight(), op,
+                                   media_values);
   }
 
   // ({,min-,max-}device-aspect-ratio)
@@ -634,22 +637,19 @@ static bool EvalResolution(const MediaQueryExpValue& value,
     return !!actual_resolution;
   }
 
-  if (value.IsNumeric() &&
-      value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    return CompareValue(actual_resolution, ClampTo<float>(value.Value()), op);
+  if (value.IsNumber()) {
+    return CompareValue(actual_resolution,
+                        ClampTo<float>(value.Value(media_values)), op);
   }
 
   if (!value.IsResolution()) {
     return false;
   }
 
-  double canonical_factor =
-      CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(value.Unit());
   double dppx_factor = CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
       CSSPrimitiveValue::UnitType::kDotsPerPixel);
-  float value_in_dppx =
-      ClampTo<float>(value.Value() * (canonical_factor / dppx_factor));
-  if (value.Unit() == CSSPrimitiveValue::UnitType::kDotsPerCentimeter) {
+  float value_in_dppx = ClampTo<float>(value.Value(media_values) / dppx_factor);
+  if (value.IsDotsPerCentimeter()) {
     // To match DPCM to DPPX values, we limit to 2 decimal points.
     // The https://drafts.csswg.org/css-values/#absolute-lengths recommends
     // "that the pixel unit refer to the whole number of device pixels that best
@@ -668,8 +668,7 @@ static bool DevicePixelRatioMediaFeatureEval(const MediaQueryExpValue& value,
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kPrefixedDevicePixelRatioMediaFeature);
 
-  return (!value.IsValid() ||
-          value.Unit() == CSSPrimitiveValue::UnitType::kNumber) &&
+  return (!value.IsValid() || value.IsNumber()) &&
          EvalResolution(value, op, media_values);
 }
 
@@ -682,11 +681,11 @@ static bool ResolutionMediaFeatureEval(const MediaQueryExpValue& value,
 
 static bool GridMediaFeatureEval(const MediaQueryExpValue& value,
                                  MediaQueryOperator op,
-                                 const MediaValues&) {
+                                 const MediaValues& media_values) {
   // if output device is bitmap, grid: 0 == true
   // assume we have bitmap device
   float number;
-  if (value.IsValid() && NumberValue(value, number)) {
+  if (value.IsValid() && NumberValue(value, number, media_values)) {
     return CompareValue(static_cast<int>(number), 0, op);
   }
   return false;
@@ -695,24 +694,16 @@ static bool GridMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ComputeLength(const MediaQueryExpValue& value,
                           const MediaValues& media_values,
                           double& result) {
-  if (value.IsCSSValue()) {
-    result = To<CSSPrimitiveValue>(value.GetCSSValue())
-                 .ComputeLength<double>(media_values);
-    return true;
-  }
-
-  if (!value.IsNumeric()) {
-    return false;
-  }
-
-  if (value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    result = ClampTo<int>(value.Value());
+  if (value.IsNumber()) {
+    result = ClampTo<int>(value.Value(media_values));
     return !media_values.StrictMode() || !result;
   }
 
-  if (CSSPrimitiveValue::IsLength(value.Unit())) {
-    return media_values.ComputeLength(value.Value(), value.Unit(), result);
+  if (value.IsValue()) {
+    result = value.Value(media_values);
+    return true;
   }
+
   return false;
 }
 
@@ -1003,7 +994,7 @@ static bool Transform3dMediaFeatureEval(const MediaQueryExpValue& value,
 
   if (value.IsValid()) {
     float number;
-    return NumberValue(value, number) &&
+    return NumberValue(value, number, media_values) &&
            CompareValue(have3d_rendering, static_cast<int>(number), op);
   }
   return return_value_if_no_parameter;
@@ -1396,7 +1387,7 @@ static bool HorizontalViewportSegmentsMediaFeatureEval(
   }
 
   float number;
-  return NumberValue(value, number) &&
+  return NumberValue(value, number, media_values) &&
          CompareValue(horizontal_viewport_segments, static_cast<int>(number),
                       op);
 }
@@ -1420,7 +1411,7 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
   }
 
   float number;
-  return NumberValue(value, number) &&
+  return NumberValue(value, number, media_values) &&
          CompareValue(vertical_viewport_segments, static_cast<int>(number), op);
 }
 

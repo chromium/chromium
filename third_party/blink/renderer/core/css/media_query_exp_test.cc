@@ -15,49 +15,59 @@ namespace blink {
 
 namespace {
 
+const CSSNumericLiteralValue& WrapDouble(
+    double value,
+    CSSPrimitiveValue::UnitType unit_type =
+        CSSPrimitiveValue::UnitType::kNumber) {
+  return *CSSNumericLiteralValue::Create(value, unit_type);
+}
+
 MediaQueryExpValue IdentValue(CSSValueID id) {
   return MediaQueryExpValue(id);
 }
 
 MediaQueryExpValue RatioValue(unsigned numerator, unsigned denominator) {
-  return MediaQueryExpValue(numerator, denominator);
+  return MediaQueryExpValue(WrapDouble(numerator), WrapDouble(denominator));
 }
 
 MediaQueryExpValue PxValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kPixels);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kPixels));
 }
 
 MediaQueryExpValue EmValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kEms);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kEms));
 }
 
 MediaQueryExpValue RemValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kRems);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kRems));
 }
 
 MediaQueryExpValue DvhValue(double value) {
   return MediaQueryExpValue(
-      value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight);
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kDynamicViewportHeight));
 }
 
 MediaQueryExpValue SvhValue(double value) {
-  return MediaQueryExpValue(value,
-                            CSSPrimitiveValue::UnitType::kSmallViewportHeight);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kSmallViewportHeight));
 }
 
 MediaQueryExpValue LvhValue(double value) {
-  return MediaQueryExpValue(value,
-                            CSSPrimitiveValue::UnitType::kLargeViewportHeight);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kLargeViewportHeight));
 }
 
 MediaQueryExpValue VhValue(double value) {
-  return MediaQueryExpValue(value,
-                            CSSPrimitiveValue::UnitType::kViewportHeight);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kViewportHeight));
 }
 
 MediaQueryExpValue CqhValue(double value) {
-  return MediaQueryExpValue(value,
-                            CSSPrimitiveValue::UnitType::kContainerHeight);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kContainerHeight));
 }
 
 MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
@@ -65,7 +75,8 @@ MediaQueryExpValue CssValue(const CSSPrimitiveValue& value) {
 }
 
 MediaQueryExpValue DppxValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kDotsPerPixel);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kDotsPerPixel));
 }
 
 MediaQueryExpValue CalcValue(const String& syntax, const String& value) {
@@ -172,7 +183,7 @@ const MediaQueryExpNode* UnknownNode(String string) {
 TEST(MediaQueryExpTest, ValuesType) {
   test::TaskEnvironment task_environment;
   EXPECT_TRUE(IdentValue(CSSValueID::kTop).IsId());
-  EXPECT_TRUE(PxValue(10).IsNumeric());
+  EXPECT_TRUE(PxValue(10).IsNumericLiteralValue());
   EXPECT_TRUE(RatioValue(0, 1).IsRatio());
 }
 

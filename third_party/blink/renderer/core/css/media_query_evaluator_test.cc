@@ -36,12 +36,20 @@ namespace blink {
 
 namespace {
 
+const CSSNumericLiteralValue& WrapDouble(
+    double value,
+    CSSPrimitiveValue::UnitType unit_type =
+        CSSPrimitiveValue::UnitType::kNumber) {
+  return *CSSNumericLiteralValue::Create(value, unit_type);
+}
+
 MediaQueryExpValue PxValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kPixels);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kPixels));
 }
 
 MediaQueryExpValue RatioValue(unsigned numerator, unsigned denominator) {
-  return MediaQueryExpValue(numerator, denominator);
+  return MediaQueryExpValue(WrapDouble(numerator), WrapDouble(denominator));
 }
 
 }  // namespace
