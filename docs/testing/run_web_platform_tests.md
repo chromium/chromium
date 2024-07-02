@@ -83,7 +83,7 @@ The `webdriver_wpt_tests` step of `linux-blink-rel` runs wdspec tests and can pr
 
 ## Running Web Platform Tests with Chrome Android
 
-To be updated.
+See [here](./run_web_platform_tests_with_chrome_android.md) for Android specific instructions.
 
 ## Running Web Platform Tests with WebView
 
