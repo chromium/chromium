@@ -970,9 +970,6 @@ SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
       break;
   }
 
-  if (HasUnrecoverableError()) {
-    return UserActionableError::kGenericUnrecoverableError;
-  }
   if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
     return UserActionableError::kNeedsPassphrase;
   }

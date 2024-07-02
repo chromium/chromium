@@ -200,8 +200,6 @@ std::string GetUserActionableErrorString(
     case SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return "Trusted vault recoverability degraded for everything";
-    case SyncService::UserActionableError::kGenericUnrecoverableError:
-      return "Generic unrecoverable error";
   }
 
   NOTREACHED_IN_MIGRATION();

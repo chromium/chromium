@@ -90,7 +90,6 @@ bool SyncErrorInfoBarDelegate::Accept() {
       [presenter_ showPrimaryAccountReauth];
       break;
 
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
       DCHECK(ShouldShowSyncSettings(error_state_));
       [presenter_ showAccountSettings];

@@ -765,7 +765,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Sign in needs update"/>
   <int value="2" label="Service unavailable (deprecated)"/>
   <int value="3" label="Needs passphrase"/>
-  <int value="4" label="Unrecoverable error"/>
+  <int value="4" label="Unrecoverable error (deprecated)"/>
   <int value="5" label="Sync settings not confirmed"/>
   <int value="6" label="Sync needs trusted vault key"/>
   <int value="7" label="Sync trusted vault recoverability degraded"/>

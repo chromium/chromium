@@ -956,23 +956,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - Properties
 
 - (BOOL)disabledBecauseOfSyncError {
-  switch (_syncService->GetUserActionableError()) {
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-      return YES;
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-    case syncer::SyncService::UserActionableError::kNone:
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return NO;
-  }
-  NOTREACHED_IN_MIGRATION();
+  return _syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
 }
 
 - (BOOL)shouldSyncDataItemEnabled {
@@ -1475,7 +1460,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 }
 
 // Returns the sync error item type or std::nullopt if the item
-// is not an error.
+// is not an actionable error.
 - (std::optional<SyncSettingsItemType>)syncErrorItemType {
   if (self.isSyncDisabledByAdministrator) {
     return SyncDisabledByAdministratorErrorItemType;
@@ -1495,7 +1480,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return SyncTrustedVaultRecoverabilityDegradedErrorItemType;
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
       return std::nullopt;
   }

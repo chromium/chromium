@@ -4997,9 +4997,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SYNC_ERROR_TITLE" desc="Title of the error message shown for sync errors. [iOS only]">
         Sync Isn't Working
       </message>
-      <message name="IDS_IOS_SYNC_ERROR_UNRECOVERABLE" desc="The error message to display when there is an unrecoverable sync error. [Length: 100em, can be multiple lines] [iOS only]">
-        Try signing in again.
-      </message>
       <message name="IDS_IOS_SYNC_EVERYTHING_TITLE" desc="The title for the Sync Everything item [iOS only]">
         Sync Everything
       </message>
@@ -5026,12 +5023,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
         Sync
-      </message>
-      <message name="IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON" desc="Button title displayed when the signed in user needs sign in again. [Length: 20em] [iOS only]">
-        Sign in again
-      </message>
-      <message name="IDS_IOS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown throughout the sync settings screens when there is an unrecoverable error. [Length: 80em, can be multiple lines] [iOS only]">
-        Sync has stopped working.
       </message>
       <message name="IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE" desc="The text in the 'Continue' button, displayed in a one-time alert when sync is disabled by policy.">
         Continue

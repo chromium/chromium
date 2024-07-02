@@ -322,7 +322,8 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
       .WillOnce(Return(syncer::SyncService::DisableReasonSet()))
       .WillOnce(Return(syncer::SyncService::DisableReasonSet(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
+          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})))
+      .WillRepeatedly(Return(syncer::SyncService::DisableReasonSet()));
 
   // Loads the Sync page once in the disabled by enterprise policy error state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];

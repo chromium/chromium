@@ -115,7 +115,6 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
       return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
       break;
   }
 

@@ -242,7 +242,6 @@
         kTrustedVaultRecoverabilityDegradedForEverything:
       [self.delegate openTrustedVaultReauthForDegradedRecoverability];
       break;
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED_IN_MIGRATION();
   }

@@ -204,10 +204,6 @@ class SyncService : public KeyedService {
     // Same as above, but for the case where data loss may affect all
     // encryptable datatypes.
     kTrustedVaultRecoverabilityDegradedForEverything,
-    // Same as DISABLE_REASON_UNRECOVERABLE_ERROR.
-    // TODO(crbug.com/40890809): Consider removing this value and use disable
-    // reasons instead.
-    kGenericUnrecoverableError,
   };
 
   enum class ModelTypeDownloadStatus {
