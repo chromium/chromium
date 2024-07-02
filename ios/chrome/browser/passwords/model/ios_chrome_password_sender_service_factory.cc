@@ -6,7 +6,6 @@
 
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
@@ -44,11 +43,6 @@ IOSChromePasswordSenderServiceFactory::
 std::unique_ptr<KeyedService>
 IOSChromePasswordSenderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableSenderService)) {
-    return nullptr;
-  }
-
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,

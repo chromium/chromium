@@ -136,9 +136,6 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       std::string("-") + password_manager::kEnableShareButtonUnbranded);
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-    config.features_enabled.push_back(
-        password_manager::features::kPasswordManagerEnableSenderService);
-
   if ([self isRunningTest:@selector
             (testFirstRunExperienceViewDismissedForAuthentication)] ||
       [self isRunningTest:@selector

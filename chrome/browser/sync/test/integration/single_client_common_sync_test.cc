@@ -19,7 +19,6 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -93,17 +92,11 @@ class GetUpdatesObserver : public FakeServer::Observer {
 
 class SingleClientCommonSyncTest : public SyncTest {
  public:
-  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitAndEnableFeature(
-        password_manager::features::kPasswordManagerEnableSenderService);
-  }
+  SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientCommonSyncTest() override = default;
   SingleClientCommonSyncTest(const SingleClientCommonSyncTest&) = delete;
   SingleClientCommonSyncTest& operator=(const SingleClientCommonSyncTest&) =
       delete;
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.

@@ -6,13 +6,12 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
@@ -49,10 +48,11 @@ PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableSenderService)) {
-    return nullptr;
-  }
+// Password sending on Android is handled in GMSCore, and hence no service
+// should be instantiated.
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -73,4 +73,5 @@ PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<password_manager::PasswordSenderServiceImpl>(
       std::move(sync_bridge));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
