@@ -47,6 +47,7 @@ build_webui_tests("build") {
     "next_previous_granularity_test.ts",
     "update_content_selection_test.ts",
     "update_content_test.ts",
+    "update_content_integration_test.ts",
     "speech_uses_max_text_length_test.ts",
     "word_boundaries_used_for_speech_test.ts",
     "word_highlighting_test.ts",

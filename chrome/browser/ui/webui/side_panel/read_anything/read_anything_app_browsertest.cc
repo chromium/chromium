@@ -77,46 +77,8 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_AllHeadings) {
-  ASSERT_TRUE(RunTest("update_content_all_headings.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_HidesLoadingScreen) {
   ASSERT_TRUE(RunTest("update_content_hides_loading_screen.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Paragraph) {
-  ASSERT_TRUE(RunTest("update_content_paragraph.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       UpdateContent_Language_ChildNodeDiffLang) {
-  ASSERT_TRUE(RunTest("update_content_language_child_node_diff_lang.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       UpdateContent_Language_ParentLangSet) {
-  ASSERT_TRUE(RunTest("update_content_language_parent_lang_set.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Heading) {
-  ASSERT_TRUE(RunTest("update_content_heading.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Link) {
-  ASSERT_TRUE(RunTest("update_content_link.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Link_BadInput) {
-  ASSERT_TRUE(RunTest("update_content_link_bad_input.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_StaticText) {
-  ASSERT_TRUE(RunTest("update_content_static_text.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_StaticText_BadInput) {
-  ASSERT_TRUE(RunTest("update_content_static_text_bad_input.js"));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_ClearContainer) {
@@ -160,34 +122,4 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
                        MAYBE_UpdateContent_SetSelectedText) {
   ASSERT_TRUE(RunTest("update_content_set_selected_text.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_TextDirection) {
-  ASSERT_TRUE(RunTest("update_content_text_direction.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       UpdateContent_TextDirection_ParentNodeDiffDir) {
-  ASSERT_TRUE(RunTest("update_content_text_direction_parent_node_diff_dir.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       UpdateContent_TextDirection_VerticalDir) {
-  ASSERT_TRUE(RunTest("update_content_text_direction_vertical_dir.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_TextStyle_Overline) {
-  ASSERT_TRUE(RunTest("update_content_text_style_overline.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_TextStyle_Bold) {
-  ASSERT_TRUE(RunTest("update_content_text_style_bold.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_NoContentNodes) {
-  ASSERT_TRUE(RunTest("update_content_no_content_nodes.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_InteractiveElement) {
-  ASSERT_TRUE(RunTest("update_content_interactive_element.js"));
 }

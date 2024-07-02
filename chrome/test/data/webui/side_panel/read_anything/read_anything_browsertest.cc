@@ -101,6 +101,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContent) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
+  RunSidePanelTest(
+      "side_panel/read_anything/update_content_integration_test.js",
+      "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
   RunSidePanelTest(
       "side_panel/read_anything/app_receives_toolbar_changes_test.js",
