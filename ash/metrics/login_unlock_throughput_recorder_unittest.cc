@@ -25,10 +25,10 @@
 namespace ash {
 namespace {
 
-constexpr char kAshLoginAnimationDurationTabletMode[] =
-    "Ash.LoginAnimation.Duration.TabletMode";
-constexpr char kAshLoginAnimationDurationClamshellMode[] =
-    "Ash.LoginAnimation.Duration.ClamshellMode";
+constexpr char kAshLoginAnimationDuration2TabletMode[] =
+    "Ash.LoginAnimation.Duration2.TabletMode";
+constexpr char kAshLoginAnimationDuration2ClamshellMode[] =
+    "Ash.LoginAnimation.Duration2.ClamshellMode";
 constexpr char kBootTimeLogin3[] = "BootTime.Login3";
 
 // A test shelf item delegate that simulates an activated window when a shelf
@@ -236,8 +236,8 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
        ReportLoginAnimationOnly) {
   EnableTabletMode(GetParam());
   const std::string metrics_name =
-      GetParam() ? kAshLoginAnimationDurationTabletMode
-                 : kAshLoginAnimationDurationClamshellMode;
+      GetParam() ? kAshLoginAnimationDuration2TabletMode
+                 : kAshLoginAnimationDuration2ClamshellMode;
 
   LoginOwner();
   test::RunSimpleAnimation();
@@ -252,8 +252,8 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
   test::RunSimpleAnimation();
 
   test::MetricsWaiter(histogram_tester_.get(),
-                      GetParam() ? kAshLoginAnimationDurationTabletMode
-                                 : kAshLoginAnimationDurationClamshellMode)
+                      GetParam() ? kAshLoginAnimationDuration2TabletMode
+                                 : kAshLoginAnimationDuration2ClamshellMode)
       .Wait();
 }
 
@@ -263,8 +263,8 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
        ReportLoginWithShelfInitialization) {
   EnableTabletMode(GetParam());
   const std::string metrics_name =
-      GetParam() ? kAshLoginAnimationDurationTabletMode
-                 : kAshLoginAnimationDurationClamshellMode;
+      GetParam() ? kAshLoginAnimationDuration2TabletMode
+                 : kAshLoginAnimationDuration2ClamshellMode;
 
   LoginOwner();
   GiveItSomeTime(base::Milliseconds(100));
@@ -431,7 +431,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
 
   // Should not report login histograms until shelf icons are loaded.
   EXPECT_TRUE(histogram_tester_.get()
-                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  ->GetAllSamples(kAshLoginAnimationDuration2ClamshellMode)
                   .empty());
   EXPECT_TRUE(
       histogram_tester_.get()
@@ -465,7 +465,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
   AddScheduledRestoreWindows({1, 2, 3}, is_lacros);
   // Should not report login histograms until shelf icons are loaded.
   EXPECT_TRUE(histogram_tester_.get()
-                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  ->GetAllSamples(kAshLoginAnimationDuration2ClamshellMode)
                   .empty());
   EXPECT_TRUE(histogram_tester_.get()->GetAllSamples(kBootTimeLogin3).empty());
   EXPECT_TRUE(
@@ -506,7 +506,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
                       "Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
       .Wait();
   test::MetricsWaiter(histogram_tester_.get(),
-                      kAshLoginAnimationDurationClamshellMode)
+                      kAshLoginAnimationDuration2ClamshellMode)
       .Wait();
   test::MetricsWaiter(histogram_tester_.get(), kBootTimeLogin3).Wait();
 }
@@ -536,7 +536,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
           ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
           .empty());
   EXPECT_TRUE(histogram_tester_.get()
-                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  ->GetAllSamples(kAshLoginAnimationDuration2ClamshellMode)
                   .empty());
   EXPECT_TRUE(histogram_tester_.get()->GetAllSamples(kBootTimeLogin3).empty());
 
@@ -556,7 +556,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
           ->GetAllSamples("Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
           .empty());
   EXPECT_TRUE(histogram_tester_.get()
-                  ->GetAllSamples(kAshLoginAnimationDurationClamshellMode)
+                  ->GetAllSamples(kAshLoginAnimationDuration2ClamshellMode)
                   .empty());
   EXPECT_TRUE(histogram_tester_.get()->GetAllSamples(kBootTimeLogin3).empty());
   GiveItSomeTime(base::Milliseconds(100));
@@ -592,7 +592,7 @@ TEST_P(LoginUnlockThroughputRecorderWindowRestoreTest,
                       "Ash.LoginSessionRestore.ShelfLoginAnimationEnd")
       .Wait();
   test::MetricsWaiter(histogram_tester_.get(),
-                      kAshLoginAnimationDurationClamshellMode)
+                      kAshLoginAnimationDuration2ClamshellMode)
       .Wait();
   test::MetricsWaiter(histogram_tester_.get(), kBootTimeLogin3).Wait();
 }

@@ -110,10 +110,6 @@ void PostLoginMetricsRecorder::AddLoginTimeMarker(
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Smoothness.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Jank.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Jank.TabletMode");
-    // TODO(b/297957283): Deprecate
-    // Ash.LoginAnimation.Duration.{TabletMode,ClamshellMode} after M122.
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration.ClamshellMode");
-    REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.LoginAnimation.Duration2.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("BootTime.Login2");
@@ -260,9 +256,7 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
 
   constexpr char smoothness_name[] = "Ash.LoginAnimation.Smoothness.";
   constexpr char jank_name[] = "Ash.LoginAnimation.Jank.";
-  // TODO(b/297957283): Deprecate Ash.LoginAnimation.Duration after M122.
-  constexpr char duration_name_short[] = "Ash.LoginAnimation.Duration.";
-  constexpr char duration_name_long[] = "Ash.LoginAnimation.Duration2.";
+  constexpr char duration_name[] = "Ash.LoginAnimation.Duration2.";
   std::string suffix = GetDeviceModeSuffix();
 
   int smoothness = metrics_util::CalculateSmoothnessV3(data);
@@ -278,17 +272,10 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
   base::UmaHistogramPercentage(jank_name + suffix, jank);
   AddLoginTimeMarker(jank_name + suffix);
 
-  // TODO(crbug.com/1143898): Deprecate this metrics once the login/unlock
-  // performance issue is resolved.
-  base::UmaHistogramCustomTimes(duration_name_short + suffix,
-                                base::Milliseconds(duration_ms),
-                                base::Milliseconds(100), base::Seconds(5), 50);
-  AddLoginTimeMarker(duration_name_short + suffix);
-
   base::UmaHistogramCustomTimes(
-      duration_name_long + suffix, base::Milliseconds(duration_ms),
+      duration_name + suffix, base::Milliseconds(duration_ms),
       base::Milliseconds(100), base::Seconds(30), 100);
-  AddLoginTimeMarker(duration_name_long + suffix);
+  AddLoginTimeMarker(duration_name + suffix);
 }
 
 void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
