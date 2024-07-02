@@ -94,7 +94,8 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
             auto stub = CreateEnterpriseCompanionServiceStub(
                 CreateEnterpriseCompanionService(
                     CreateDMClient(GetDefaultCloudPolicyClientProvider(
-                        std::move(pending_shared_url_loader_factory))),
+                        network::SharedURLLoaderFactory::Create(
+                            std::move(pending_shared_url_loader_factory)))),
                     std::move(shutdown)));
           },
           base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));

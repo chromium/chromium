@@ -335,17 +335,15 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
 }  // namespace
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_shared_url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   return base::BindOnce(
-      [](std::unique_ptr<network::PendingSharedURLLoaderFactory>
-             pending_shared_url_loader_factory,
+      [](scoped_refptr<network::SharedURLLoaderFactory>
+             shared_url_loader_factory,
          policy::DeviceManagementService* dm_service) {
         return std::make_unique<policy::CloudPolicyClient>(
-            dm_service, network::SharedURLLoaderFactory::Create(
-                            std::move(pending_shared_url_loader_factory)));
+            dm_service, shared_url_loader_factory);
       },
-      std::move(pending_shared_url_loader_factory));
+      shared_url_loader_factory);
 }
 
 PolicyFetchResponseValidator GetDefaultPolicyFetchResponseValidator() {

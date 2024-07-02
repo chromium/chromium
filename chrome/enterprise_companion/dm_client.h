@@ -15,7 +15,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace network {
-class PendingSharedURLLoaderFactory;
+class SharedURLLoaderFactory;
 }
 
 namespace policy {
@@ -54,8 +54,7 @@ class DMClient {
 };
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_shared_url_loader_factory);
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
 PolicyFetchResponseValidator GetDefaultPolicyFetchResponseValidator();
 
