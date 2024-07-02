@@ -75,6 +75,19 @@ std::u16string PossibleResidentKeyWarning(
   return std::u16string();
 }
 
+ProfileAttributesEntry* GetProfileAttributesEntryForDialogModel(
+    AuthenticatorRequestDialogModel* dialog_model) {
+  Profile* profile =
+      Profile::FromBrowserContext(
+          dialog_model->GetRenderFrameHost()->GetBrowserContext())
+          ->GetOriginalProfile();
+  return g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile->GetPath());
+}
+
+constexpr int kAvatarIconSize = 20;
+
 }  // namespace
 
 // AuthenticatorSheetModelBase ------------------------------------------------
@@ -1627,6 +1640,25 @@ AuthenticatorGpmPinSheetModelBase::AuthenticatorGpmPinSheetModelBase(
 
 AuthenticatorGpmPinSheetModelBase::~AuthenticatorGpmPinSheetModelBase() =
     default;
+
+std::u16string AuthenticatorGpmPinSheetModelBase::GetGpmAccountEmail() const {
+  ProfileAttributesEntry* entry =
+      GetProfileAttributesEntryForDialogModel(dialog_model());
+  return entry ? entry->GetUserName() : std::u16string();
+}
+
+gfx::Image AuthenticatorGpmPinSheetModelBase::GetGpmAccountImage() const {
+  ProfileAttributesEntry* entry =
+      GetProfileAttributesEntryForDialogModel(dialog_model());
+  if (!entry || !entry->IsUsingGAIAPicture()) {
+    return gfx::Image();
+  }
+  return profiles::GetSizedAvatarIcon(
+      gfx::Image(
+          entry->GetAvatarIcon(kAvatarIconSize, /*use_high_res_file=*/false)),
+      /*width=*/kAvatarIconSize, /*height=*/kAvatarIconSize,
+      profiles::SHAPE_CIRCLE);
+}
 
 bool AuthenticatorGpmPinSheetModelBase::ui_disabled() const {
   return dialog_model()->ui_disabled_;

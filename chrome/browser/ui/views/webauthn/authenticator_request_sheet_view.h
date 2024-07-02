@@ -38,6 +38,10 @@ class NonAccessibleImageView;
 // |. . . . I L L U S T R A T I O N   H E R E . . . .|
 // |. . . . . . . . . . . . . . . . . . . . . . . . .|
 // |                                                 |
+// | +---------------------------------------------+ |
+// | |     optional Step-specific header view      | |
+// | +---------------------------------------------+ |
+// |                                                 |
 // | Title of the current step                       |
 // |                                                 |
 // | Description text explaining to the user what    |
@@ -89,8 +93,12 @@ class AuthenticatorRequestSheetView : public views::View {
     kYes,
   };
 
-  // Returns the step-specific view the derived sheet wishes to provide, if any,
-  // and whether that content should be initially focused.
+  // Returns the step specific header view. The header will be below the
+  // illustration of the model and the title.
+  virtual std::unique_ptr<views::View> BuildStepSpecificHeader();
+
+  // Returns the step-specific content view the derived sheet wishes to provide,
+  // if any, and whether that content should be initially focused.
   virtual std::pair<std::unique_ptr<views::View>, AutoFocus>
   BuildStepSpecificContent();
 
@@ -99,6 +107,7 @@ class AuthenticatorRequestSheetView : public views::View {
   // dangling pointers, group references to the children in a struct that is
   // easy to clear.
   struct ChildViews {
+    raw_ptr<views::View> step_specific_header_ = nullptr;
     raw_ptr<views::View> step_specific_content_ = nullptr;
     raw_ptr<NonAccessibleImageView> step_illustration_image_ = nullptr;
     raw_ptr<views::AnimatedImageView> step_illustration_animation_ = nullptr;

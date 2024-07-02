@@ -15,6 +15,10 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "device/fido/pin.h"
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
 // Base class for sheets, implementing the shared behavior used on most sheets,
 // as well as maintaining a weak pointer to the dialog model.
 class AuthenticatorSheetModelBase
@@ -718,6 +722,9 @@ class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model,
       Mode mode);
   ~AuthenticatorGpmPinSheetModelBase() override;
+
+  std::u16string GetGpmAccountEmail() const;
+  gfx::Image GetGpmAccountImage() const;
 
   std::u16string pin() const { return pin_; }
   Mode mode() const { return mode_; }

@@ -4,7 +4,14 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_sheet_view.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_account_info_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 
 AuthenticatorGPMArbitraryPinSheetView::AuthenticatorGPMArbitraryPinSheetView(
     std::unique_ptr<AuthenticatorGpmArbitraryPinSheetModel> sheet_model)
@@ -16,6 +23,12 @@ AuthenticatorGPMArbitraryPinSheetView::
 AuthenticatorGpmArbitraryPinSheetModel*
 AuthenticatorGPMArbitraryPinSheetView::gpm_arbitrary_pin_sheet_model() {
   return static_cast<AuthenticatorGpmArbitraryPinSheetModel*>(model());
+}
+
+std::unique_ptr<views::View>
+AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificHeader() {
+  return std::make_unique<AuthenticatorGpmAccountInfoView>(
+      gpm_arbitrary_pin_sheet_model());
 }
 
 std::pair<std::unique_ptr<views::View>,

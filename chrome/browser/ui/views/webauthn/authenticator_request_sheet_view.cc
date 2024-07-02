@@ -5,8 +5,14 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -20,9 +26,11 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -35,6 +43,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -95,6 +105,11 @@ views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
     // announce the title when the sheet changes.
     return child_views_.title_label_;
   }
+  return nullptr;
+}
+
+std::unique_ptr<views::View>
+AuthenticatorRequestSheetView::BuildStepSpecificHeader() {
   return nullptr;
 }
 
@@ -229,6 +244,12 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     }
     child_views_.title_label_ =
         label_container->AddChildView(title_label.release());
+  }
+
+  std::unique_ptr<views::View> step_specific_header = BuildStepSpecificHeader();
+  if (step_specific_header) {
+    child_views_.step_specific_header_ = step_specific_header.get();
+    contents->AddChildView(step_specific_header.release());
   }
 
   std::u16string description = model()->GetStepDescription();
