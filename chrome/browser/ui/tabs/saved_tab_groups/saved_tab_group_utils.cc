@@ -51,7 +51,17 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTabsTitleItem);
 void SavedTabGroupUtils::RemoveGroupFromTabstrip(
     const Browser* browser,
     const tab_groups::TabGroupId& local_group) {
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  const Browser* const browser_with_local_group_id =
+      browser ? browser
+              : SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group);
+  DCHECK(browser_with_local_group_id);
+  if (!browser_with_local_group_id) {
+    return;
+  }
+
+  TabStripModel* const tab_strip_model =
+      browser_with_local_group_id->tab_strip_model();
+
   const int num_tabs_in_group =
       tab_strip_model->group_model()->GetTabGroup(local_group)->tab_count();
   if (tab_strip_model->count() == num_tabs_in_group) {
@@ -136,7 +146,7 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
 
         if (group->local_group_id().has_value()) {
           SavedTabGroupUtils::RemoveGroupFromTabstrip(
-              browser, group->local_group_id().value());
+              nullptr, group->local_group_id().value());
         }
         saved_tab_group_service->model()->Remove(group->saved_guid());
       },
