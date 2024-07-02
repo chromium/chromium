@@ -3,7 +3,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
       {
