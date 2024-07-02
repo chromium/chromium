@@ -291,8 +291,8 @@ class CupsPrintersHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
-  std::unique_ptr<CupsPrintersHandler> printers_handler_;
   FakeCupsPrintersManager printers_manager_;
+  std::unique_ptr<CupsPrintersHandler> printers_handler_;
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
