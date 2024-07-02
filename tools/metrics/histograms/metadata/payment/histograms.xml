@@ -116,15 +116,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once.DisabledReason"
+    enum="CanMakePaymentPreferenceSetter" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    When the 'payments.can_make_payment_enabled' pref is disabled, this records
+    the reason why (e.g., by the user, an extension, etc). Recorded only when a
+    PaymentRequest object is first constructed, and approximately once per
+    startup (specifically, once per BrowserContext).
+
+    The difference between this histogram and
+    PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason is that
+    this histogram is only recorded if/when the user visits a page that
+    constructs a PaymentRequest object, which means that it sub-selects for
+    users who are likely to be in a payment context.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
     enum="Boolean" expires_after="2024-11-27">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
     Whether or not the 'payments.can_make_payment_enabled' pref is enabled.
-    Recorded approximately once per startup (specifically, when
-    ProfileKeyedServiceFactory subclasses are created for a new browser
-    context).
+    Recorded once per profile load/creation (approximately once per start-up for
+    a normal browsing session).
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    When the 'payments.can_make_payment_enabled' pref is disabled, this records
+    the reason why (e.g., by the user, an extension, etc). Recorded once per
+    profile load/creation (approximately once per start-up for a normal browsing
+    session).
   </summary>
 </histogram>
 
