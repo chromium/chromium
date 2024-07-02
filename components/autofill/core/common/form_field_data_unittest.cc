@@ -451,4 +451,25 @@ TEST(FormFieldDataTest, IsTextInputElement) {
   }
 }
 
+// Tests that FormFieldData::selected_option() finds the first matching option.
+TEST(FormFieldDataTest, SelectedOption) {
+  FormFieldData f;
+  EXPECT_EQ(f.selected_option(), std::nullopt);
+
+  f.set_options({SelectOption{.value = u"value1", .text = u"text1"},
+                 SelectOption{.value = u"value2", .text = u"text2"},
+                 SelectOption{.value = u"value2", .text = u"text3"}});
+
+  f.set_value(u"garbage");
+  EXPECT_EQ(f.selected_option(), std::nullopt);
+
+  f.set_value(u"value1");
+  EXPECT_EQ(f.selected_option().CopyAsOptional(),
+            (SelectOption{.value = u"value1", .text = u"text1"}));
+
+  f.set_value(u"value2");
+  EXPECT_EQ(f.selected_option().CopyAsOptional(),
+            (SelectOption{.value = u"value2", .text = u"text2"}));
+}
+
 }  // namespace autofill

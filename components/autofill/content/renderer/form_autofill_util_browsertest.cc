@@ -260,6 +260,33 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   EXPECT_TRUE(IsValidOption(form_data.fields()[0].options()[0]));
 }
 
+// Tests that the SelectOption::value and SelectOption::text are extracted
+// correctly.
+TEST_F(FormAutofillUtilsTest, ExtractFormData_SelectOptionValueAndText) {
+  LoadHTML(R"(
+    <select>
+    <option value=V label=L     >T</option>
+    <option value=V             >T</option>
+    <option         label=L     >T</option>
+    <option                     >T</option>
+    <option value=V             ></option>
+    <option         label=L     ></option>
+    <option         aria-label=A></option>
+    </select>
+  )");
+  std::optional<FormData> form = ExtractFormData(
+      GetMainFrame()->GetDocument(), WebFormElement(), field_data_manager());
+  ASSERT_TRUE(form);
+  EXPECT_THAT(form->fields().front().options(),
+              ElementsAre(SelectOption{.value = u"V", .text = u"L"},
+                          SelectOption{.value = u"V", .text = u"T"},
+                          SelectOption{.value = u"T", .text = u"L"},
+                          SelectOption{.value = u"T", .text = u"T"},
+                          SelectOption{.value = u"V", .text = u""},
+                          SelectOption{.value = u"", .text = u"L"},
+                          SelectOption{.value = u"", .text = u"A"}));
+}
+
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
   static const AutofillFieldUtilCase test_cases[] = {
       {"simple test", "<div id='target'>test</div>", u"test"},
