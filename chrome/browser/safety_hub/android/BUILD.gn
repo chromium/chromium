@@ -30,6 +30,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceFactory.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTask.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackView.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinder.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewProperties.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
@@ -87,6 +90,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTaskTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
   ]
@@ -206,10 +210,13 @@ source_set("unit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/safety_hub_magic_stack_icon_background.xml",
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",
     "java/res/layout/safety_hub_expandable_preference.xml",
     "java/res/layout/safety_hub_list_menu_widget.xml",
+    "java/res/layout/safety_hub_magic_stack_view.xml",
+    "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/xml/safety_hub_preferences.xml",
     "java/res/xml/safety_hub_subpage_preferences.xml",

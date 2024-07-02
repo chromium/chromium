@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources">
+  <!-- Safety Hub Magic Stack dimens -->
+    <dimen name="safety_hub_magic_stack_container_marginHorizontal">16dp</dimen>
+    <dimen name="safety_hub_magic_stack_container_marginTop">16dp</dimen>
+    <dimen name="safety_hub_magic_stack_container_paddingHorizontal">20dp</dimen>
+    <dimen name="safety_hub_magic_stack_container_paddingVertical">16dp</dimen>
+    <dimen name="safety_hub_magic_stack_content_marginBottom">12dp</dimen>
+    <dimen name="safety_hub_magic_stack_icon_size">60dp</dimen>
+    <dimen name="safety_hub_magic_stack_icon_padding">16dp</dimen>
+    <dimen name="safety_hub_magic_stack_icon_corner_radius">16dp</dimen>
+
+</resources>
