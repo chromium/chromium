@@ -3612,6 +3612,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DownloadUrlEncoded" enum="Boolean"
+    expires_after="2024-10-28">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records whether the pdf download url is successfully encoded. This is
+    recorded when the pdf download starts.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
     expires_after="2024-10-28">
   <owner>shuyng@google.com</owner>

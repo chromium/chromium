@@ -221,11 +221,17 @@ public class PdfUtils {
                     UrlConstants.PDF_URL
                             + UrlConstants.PDF_URL_PARAM
                             + URLEncoder.encode(downloadUrl, "UTF-8");
+            recordIsPdfDownloadUrlEncoded(true);
             return pdfPageUrl;
         } catch (java.io.UnsupportedEncodingException e) {
+            recordIsPdfDownloadUrlEncoded(false);
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;
         }
+    }
+
+    private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {

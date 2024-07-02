@@ -311,4 +311,16 @@ public class PdfPageUnitTest {
         histogramExpectation.assertExpected(
                 "The recorded value should be false when the pdf page is not frozen.");
     }
+
+    @Test
+    public void testRecordIsPdfDownloadUrlEncoded() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.Pdf.DownloadUrlEncoded", true)
+                        .build();
+        mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
+        Assert.assertNotNull("The encoded url should not be null", mPdfPageUrl);
+        histogramExpectation.assertExpected(
+                "The recorded value should be true when the encoded url is not null.");
+    }
 }

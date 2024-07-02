@@ -144,7 +144,6 @@ public class DownloadController {
         }
         String downloadUrl = downloadInfo.getUrl().getSpec();
         String pdfPageUrl = PdfUtils.encodePdfPageUrl(downloadUrl);
-        // TODO(b/350771232): add metric to capture how often the encode fails.
         assert pdfPageUrl != null;
         LoadUrlParams param = new LoadUrlParams(pdfPageUrl);
         // Set isPdf param so that other parts of the code can load the pdf native page instead of
