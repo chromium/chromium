@@ -692,6 +692,9 @@ void CameraDeviceDelegate::ReconfigureStreams(
 void CameraDeviceDelegate::SetRotation(int rotation) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(rotation >= 0 && rotation < 360 && rotation % 90 == 0);
+  if (!device_context_) {
+    return;
+  }
   device_context_->SetScreenRotation(rotation);
 }
 
