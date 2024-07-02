@@ -1583,6 +1583,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="More than two fields in the form"/>
   <int value="7" label="2-field form (username+password)"/>
   <int value="8" label="Password field not found"/>
+  <int value="9" label="Form has child frames (maybe CAPTCHA)"/>
 </enum>
 
 <enum name="TouchToFillPasswordGenerationTriggerOutcome">

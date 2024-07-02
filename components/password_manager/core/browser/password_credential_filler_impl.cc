@@ -25,6 +25,7 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
     case SubmissionReadinessState::kNoPasswordField:
     case SubmissionReadinessState::kFieldBetweenUsernameAndPassword:
     case SubmissionReadinessState::kFieldAfterPasswordField:
+    case SubmissionReadinessState::kHasChildFrames:
       return false;
 
     case SubmissionReadinessState::kEmptyFields:
@@ -85,14 +86,14 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   for (size_t i = password_index + 1; i < number_of_elements; ++i) {
-    // Skip the checkboxes following after the password field as it's most
-    // probably a "remember me" checkmark. But CAPTCHAs often look like
-    // non-focusable text area fields and they should not be skipped (this is
-    // the reason why `ShouldIgnoreField` is not used here).
-    if (form_data.fields()[i].form_control_type() !=
-        autofill::FormControlType::kInputCheckbox) {
+    if (!ShouldIgnoreField(form_data.fields()[i])) {
       return SubmissionReadinessState::kFieldAfterPasswordField;
     }
+  }
+
+  // There is likely a CAPTCHA in the child frame.
+  if (!form_data.child_frames().empty()) {
+    return SubmissionReadinessState::kHasChildFrames;
   }
 
   size_t number_of_visible_elements = 0;

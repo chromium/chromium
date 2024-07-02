@@ -237,6 +237,10 @@ enum SubmissionReadinessState {
   // tap, i.e. TTF should submit both single username and single password
   // forms.
   kNoPasswordField = 8,
+
+  // One or more child frames are detected within the password form. They may
+  // contain a CAPTCHA or other input fields, so don't trigger submission.
+  kHasChildFrames = 9,
 };
 
 // autofill::FrameToken (components/autofill/core/common/unique_ids.h)
