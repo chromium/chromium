@@ -42,9 +42,14 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "net/cert/internal/trust_store_android.h"
 #endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
 #endif  // CHROME_ROOT_STORE_SUPPORTED
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/system/sys_info.h"
+#endif
 
 namespace net {
 
@@ -118,6 +123,10 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
       : trust_store_chrome_(std::move(trust_store_chrome)) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (GetChromeOSTestTrustStore()) {
+      // The fake_root_ca_certs.pem file is only intended for testing purposes,
+      // crash if it is present on a ChromeOS device in a non-test image.
+      base::SysInfo::CrashIfChromeOSNonTestImage();
+
       trust_store_collection_.AddTrustStore(GetChromeOSTestTrustStore());
       non_crs_trust_store_collection_.AddTrustStore(
           GetChromeOSTestTrustStore());
