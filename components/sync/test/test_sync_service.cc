@@ -219,13 +219,14 @@ SyncService::DisableReasonSet TestSyncService::GetDisableReasons() const {
 }
 
 SyncService::TransportState TestSyncService::GetTransportState() const {
+  if (!disable_reasons_.empty()) {
+    return TransportState::DISABLED;
+  }
+
   if (has_persistent_auth_error_) {
     CHECK(!account_info_.IsEmpty())
         << "Detected persistent auth error when there is no signed-in account";
     return TransportState::PAUSED;
-  }
-  if (!disable_reasons_.empty()) {
-    return TransportState::DISABLED;
   }
 
   return max_transport_state_;

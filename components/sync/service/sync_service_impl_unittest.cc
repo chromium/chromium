@@ -1082,6 +1082,31 @@ TEST_F(SyncServiceImplTest, CredentialErrorReturned) {
   service()->RemoveObserver(&observer);
 }
 
+TEST_F(SyncServiceImplTest,
+       TransportIsDisabledIfBothAuthErrorAndDisableReason) {
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
+  InitializeService();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(service()->GetDisableReasons(),
+            SyncService::DisableReasonSet{
+                SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
+
+  // The lower transport state (DISABLED) should be returned.
+  EXPECT_EQ(service()->GetTransportState(),
+            SyncService::TransportState::DISABLED);
+
+  // Remove the disable reason.
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
+  ASSERT_TRUE(service()->GetDisableReasons().empty());
+
+  // Transport is now PAUSED.
+  EXPECT_EQ(service()->GetTransportState(),
+            SyncService::TransportState::PAUSED);
+}
+
 // Verify that credential errors get cleared when a new token is fetched
 // successfully.
 TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {

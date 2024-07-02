@@ -895,12 +895,17 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
 SyncService::TransportState SyncServiceImpl::GetTransportState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsEngineAllowedToRun()) {
-    // We generally shouldn't have an engine while in a disabled state, but it
-    // can happen if this method gets called during ResetEngine().
-    return auth_manager_->IsSyncPaused() ? TransportState::PAUSED
-                                         : TransportState::DISABLED;
+  if (!GetDisableReasons().empty()) {
+    // Note: we generally shouldn't have an engine while in a disabled state,
+    // but it can happen if this method gets called during ResetEngine().
+    return TransportState::DISABLED;
   }
+
+  if (auth_manager_->IsSyncPaused()) {
+    return TransportState::PAUSED;
+  }
+
+  CHECK(IsEngineAllowedToRun());
 
   if (!engine_) {
     // Starting the engine is allowed but didn't happen. There are three
