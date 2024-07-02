@@ -37,9 +37,11 @@
             actionable$=
                 "[[prefs.on_device_app_controls.setup_completed.value]]"
             on-click="onClickParentalControls_">
-          <iron-icon id="parentalControlsRowIcon"
-              icon="[[rowIcons_.parentalControls]]">
-          </iron-icon>
+          <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+            <iron-icon id="parentalControlsRowIcon"
+                icon="[[rowIcons_.parentalControls]]">
+            </iron-icon>
+          </template>
           <div class="start settings-box-text">
             $i18n{appParentalControlsTitle}
             <div class="secondary">
