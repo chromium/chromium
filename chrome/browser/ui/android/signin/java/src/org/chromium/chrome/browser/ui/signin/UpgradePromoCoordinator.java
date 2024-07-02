@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninC
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -312,13 +311,15 @@ public final class UpgradePromoCoordinator
                 }
                 break;
             case ChildView.HISTORY_SYNC:
-                maybeCreateHistorySyncCoordinator();
-                Configuration configuration = mContext.getResources().getConfiguration();
-                mHistorySyncCoordinator.setView(
-                        (HistorySyncView) mHistorySyncView,
-                        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                                && !isLargeScreen());
-
+                mHistorySyncCoordinator =
+                        new HistorySyncCoordinator(
+                                mContext,
+                                this,
+                                mProfileSupplier.get().getOriginalProfile(),
+                                SigninAccessPoint.SIGNIN_PROMO,
+                                /* showEmailInFooter= */ !mDidShowSignin,
+                                /* shouldSignOutOnDecline= */ false,
+                                getCurrentChildView());
                 if (mSigninCoordinator != null) {
                     mSigninCoordinator.destroy();
                     mSigninCoordinator = null;
@@ -333,21 +334,5 @@ public final class UpgradePromoCoordinator
             case ChildView.HISTORY_SYNC -> mHistorySyncView;
             default -> throw new IllegalStateException(mCurrentView + " view index doesn't exist");
         };
-    }
-
-    private void maybeCreateHistorySyncCoordinator() {
-        if (mHistorySyncCoordinator != null) {
-            return;
-        }
-
-        mHistorySyncCoordinator =
-                new HistorySyncCoordinator(
-                        mContext,
-                        this,
-                        mProfileSupplier.get().getOriginalProfile(),
-                        SigninAccessPoint.SIGNIN_PROMO,
-                        /* showEmailInFooter= */ isSignedIn(),
-                        /* shouldSignOutOnDecline= */ false,
-                        null);
     }
 }

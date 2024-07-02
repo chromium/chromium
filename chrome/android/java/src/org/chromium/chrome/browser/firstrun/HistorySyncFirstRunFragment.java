@@ -19,7 +19,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncView;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -41,49 +40,25 @@ public class HistorySyncFirstRunFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        createViewAndAttachToFragment();
+        createCoordinatorAndAddToFragment();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        createViewAndAttachToFragment();
-    }
-
-    private void createViewAndAttachToFragment() {
-        maybeCreateCoordinator();
-        HistorySyncView view = mHistorySyncCoordinator.maybeRecreateView();
-        if (view != null) {
-            // View is non-null when HistorySyncView has created a new view. This new view will
-            // replace any pre-existing view.
-            mFragmentView.removeAllViews();
-            mFragmentView.addView(mHistorySyncCoordinator.getView());
-        }
-    }
-
-    private void maybeCreateCoordinator() {
-        if (mHistorySyncCoordinator != null) return;
-
-        assert getPageDelegate().getProfileProviderSupplier().get() != null;
-        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
-        if (IdentityServicesProvider.get()
-                        .getSigninManager(profile)
-                        .getIdentityManager()
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                == null) {
-            Log.w(TAG, "No primary account set, dismissing the history sync screen.");
-            getPageDelegate().advanceToNextPage();
+        if (mHistorySyncCoordinator == null) {
             return;
         }
-        mHistorySyncCoordinator =
-                new HistorySyncCoordinator(
-                        getContext(),
-                        this,
-                        profile,
-                        SigninAccessPoint.START_PAGE,
-                        false,
-                        false,
-                        null);
+        createCoordinatorAndAddToFragment();
     }
 
     /** Implements {@link FirstRunFragment}. */
@@ -107,15 +82,35 @@ public class HistorySyncFirstRunFragment extends Fragment
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public boolean isLargeScreen() {
+        return !getPageDelegate().canUseLandscapeLayout();
+    }
+
+    private void createCoordinatorAndAddToFragment() {
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
         }
-    }
-
-    @Override
-    public boolean isLargeScreen() {
-        return !getPageDelegate().canUseLandscapeLayout();
+        assert getPageDelegate().getProfileProviderSupplier().get() != null;
+        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
+        if (IdentityServicesProvider.get()
+                        .getSigninManager(profile)
+                        .getIdentityManager()
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                == null) {
+            Log.w(TAG, "No primary account set, dismissing the history sync screen.");
+            getPageDelegate().advanceToNextPage();
+            return;
+        }
+        mHistorySyncCoordinator =
+                new HistorySyncCoordinator(
+                        getContext(),
+                        this,
+                        profile,
+                        SigninAccessPoint.START_PAGE,
+                        false,
+                        false,
+                        null);
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(mHistorySyncCoordinator.getView());
     }
 }

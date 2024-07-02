@@ -307,10 +307,10 @@ public class SigninAndHistoryOptInCoordinator
 
     public void switchHistorySyncLayout() {
         if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
             Profile profile = mProfileSupplier.get();
             assert profile != null;
-            mHistorySyncCoordinator.maybeRecreateView();
-            showDialogContentView();
+            showDialogContentView(profile);
         }
     }
 
@@ -451,12 +451,10 @@ public class SigninAndHistoryOptInCoordinator
                                 })
                         .build();
 
-        createHistorySyncCoordinator(profile);
-        showDialogContentView();
+        showDialogContentView(profile);
     }
 
-    private void createHistorySyncCoordinator(Profile profile) {
-        assert mHistorySyncCoordinator == null;
+    private void showDialogContentView(Profile profile) {
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(
                         mActivity,
@@ -467,10 +465,6 @@ public class SigninAndHistoryOptInCoordinator
                         mDidShowSigninStep && mIsHistorySyncDedicatedFlow,
                         null);
         assert mDialogModel != null;
-        mHistorySyncCoordinator.maybeRecreateView();
-    }
-
-    void showDialogContentView() {
         View view = mHistorySyncCoordinator.getView();
         view.setBackgroundColor(getHistorySyncBackgroundColor());
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, view);

@@ -185,7 +185,7 @@ public class HistorySyncRenderTest {
                                     null);
                     mActivityTestRule
                             .getActivity()
-                            .setContentView(mHistorySyncCoordinator.maybeRecreateView());
+                            .setContentView(mHistorySyncCoordinator.getView());
                 });
         ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_illustration), isDisplayed()));
     }

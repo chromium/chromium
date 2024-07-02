@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 
 /** View that wraps history sync consent screen and caches references to UI elements. */
-public class HistorySyncView extends LinearLayout {
+class HistorySyncView extends LinearLayout {
     private ImageView mAccountImage;
     private Button mDeclineButton;
     private Button mAcceptButton;
@@ -82,7 +82,6 @@ public class HistorySyncView extends LinearLayout {
 
     private void createButtonBar(@ScreenMode int restrictionStatus) {
         DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
-        buttonBar.removeAllViews();
 
         final @DualControlLayout.ButtonType int acceptButtonType;
         final @DualControlLayout.ButtonType int declineButtonType;
