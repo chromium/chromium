@@ -63,24 +63,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
- "ui_proxy_config_service_unittest.cc": [
+  ".*test\.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
- "managed_network_configuration_handler_impl.cc": [
+  "managed_network_configuration_handler_impl.cc": [
     "+ash/components/arc/arc_prefs.h"
- ],
- "managed_network_configuration_handler_unittest.cc": [
+  ],
+  "managed_network_configuration_handler_unittest.cc": [
     "+ash/components/arc/arc_prefs.h",
-    "+components/sync_preferences/testing_pref_service_syncable.h"
-  ],
- "cellular_policy_handler_unittest.cc": [
-    "+components/sync_preferences/testing_pref_service_syncable.h"
-  ],
- "cellular_policy_handler_unittest_legacy.cc": [
-    "+components/sync_preferences/testing_pref_service_syncable.h"
-  ],
- "network_metadata_store_unittest.cc": [
-    "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
 
   # Dependencies specific for fuzz targets and other fuzzing-related code.

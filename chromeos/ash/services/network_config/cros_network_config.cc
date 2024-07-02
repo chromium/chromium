@@ -48,6 +48,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "chromeos/ash/components/network/traffic_counters_handler.h"
 #include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -94,9 +95,6 @@ const char kErrorUserIsProhibitedFromConfiguringVpn[] =
 
 const char kDefaultCellularProviderName[] = "MobileNetwork";
 const char kDefaultCellularProviderCode[] = "000000";
-
-// Default traffic counter reset day.
-const int kDefaultResetDay = 1;
 
 std::string ShillToOnc(const std::string& shill_string,
                        const onc::StringTranslationEntry table[]) {
@@ -1510,6 +1508,29 @@ mojom::ManagedWireGuardPropertiesPtr GetManagedWireGuardProperties(
   return wg;
 }
 
+mojom::TrafficCounterPropertiesPtr CreateTrafficCounterProperties(
+    const base::Value::Dict* properties,
+    const std::string& guid) {
+  auto traffic_counter_properties = mojom::TrafficCounterProperties::New();
+  const std::optional<double> last_reset_time =
+      properties->FindDouble(::onc::network_config::kTrafficCounterResetTime);
+  if (last_reset_time) {
+    traffic_counter_properties->last_reset_time =
+        base::Time::FromDeltaSinceWindowsEpoch(
+            base::Milliseconds(last_reset_time.value()));
+    traffic_counter_properties->friendly_date =
+        base::UTF16ToUTF8(base::TimeFormatFriendlyDate(
+            traffic_counter_properties->last_reset_time.value()));
+  } else {
+    traffic_counter_properties->last_reset_time = std::nullopt;
+    traffic_counter_properties->friendly_date = std::nullopt;
+  }
+  traffic_counter_properties->user_specified_reset_day =
+      traffic_counters::TrafficCountersHandler::Get()->GetUserSpecifiedResetDay(
+          guid);
+  return traffic_counter_properties;
+}
+
 mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     NetworkStateHandler* network_state_handler,
     CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -1721,6 +1742,12 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
 
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewCellular(std::move(cellular));
+
+      if (features::IsTrafficCountersEnabled()) {
+        result->traffic_counter_properties =
+            CreateTrafficCounterProperties(properties, result->guid);
+      }
+
       break;
     }
     case mojom::NetworkType::kEthernet: {
@@ -1853,6 +1880,11 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
 
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewWifi(std::move(wifi));
+
+      if (features::IsTrafficCountersForWiFiTestingEnabled()) {
+        result->traffic_counter_properties =
+            CreateTrafficCounterProperties(properties, result->guid);
+      }
       break;
     }
     case mojom::NetworkType::kAll:
@@ -1862,34 +1894,6 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           << "NetworkStateProperties can not be of type: " << type;
       break;
   }
-
-  // Traffic Counter Properties
-  auto traffic_counter_properties = mojom::TrafficCounterProperties::New();
-  const std::optional<double> last_reset_time =
-      properties->FindDouble(::onc::network_config::kTrafficCounterResetTime);
-  if (last_reset_time) {
-    traffic_counter_properties->last_reset_time =
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::Milliseconds(last_reset_time.value()));
-    traffic_counter_properties->friendly_date =
-        base::UTF16ToUTF8(base::TimeFormatFriendlyDate(
-            traffic_counter_properties->last_reset_time.value()));
-  } else {
-    traffic_counter_properties->last_reset_time = std::nullopt;
-    traffic_counter_properties->friendly_date = std::nullopt;
-  }
-
-  const base::Value* user_specified_reset_day =
-      NetworkHandler::IsInitialized()
-          ? NetworkHandler::Get()
-                ->network_metadata_store()
-                ->GetDayOfTrafficCountersAutoReset(result->guid)
-          : nullptr;
-  traffic_counter_properties->user_specified_reset_day =
-      user_specified_reset_day && user_specified_reset_day->is_int()
-          ? user_specified_reset_day->GetInt()
-          : kDefaultResetDay;
-  result->traffic_counter_properties = std::move(traffic_counter_properties);
 
   return result;
 }
@@ -3468,6 +3472,14 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
 void CrosNetworkConfig::RequestTrafficCounters(
     const std::string& guid,
     RequestTrafficCountersCallback callback) {
+  if (!traffic_counters::TrafficCountersHandler::IsInitialized()) {
+    NET_LOG(ERROR)
+        << "RequestTrafficCounters failure: traffic counters handler not "
+        << "initialized while requesting traffic counters for network guid "
+        << guid;
+    std::move(callback).Run({});
+    return;
+  }
   std::string service_path = GetServicePathFromGuid(guid);
   if (service_path.empty()) {
     NET_LOG(ERROR) << "RequestTrafficCounters: service path for guid " << guid
@@ -3475,7 +3487,7 @@ void CrosNetworkConfig::RequestTrafficCounters(
     std::move(callback).Run({});
     return;
   }
-  network_state_handler_->RequestTrafficCounters(
+  traffic_counters::TrafficCountersHandler::Get()->RequestTrafficCounters(
       service_path,
       base::BindOnce(&CrosNetworkConfig::PopulateTrafficCounters,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -3535,36 +3547,44 @@ void CrosNetworkConfig::PopulateTrafficCounters(
 }
 
 void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
+  if (!traffic_counters::TrafficCountersHandler::IsInitialized()) {
+    NET_LOG(ERROR)
+        << "ResetTrafficCounters failure: traffic counters handler not "
+        << "initialized while resetting traffic counters for network guid "
+        << guid;
+    return;
+  }
   std::string service_path = GetServicePathFromGuid(guid);
   if (service_path.empty()) {
     NET_LOG(ERROR) << "ResetTrafficCounters: service path for guid " << guid
                    << " not found";
     return;
   }
-  network_state_handler_->ResetTrafficCounters(service_path);
+  traffic_counters::TrafficCountersHandler::Get()->ResetTrafficCounters(
+      service_path);
 }
 
 void CrosNetworkConfig::SetTrafficCountersResetDay(
     const std::string& guid,
     mojom::UInt32ValuePtr day,
     SetTrafficCountersResetDayCallback callback) {
-  if (!day) {
-    NET_LOG(ERROR) << "Failed to set reset day for " << guid << ": a valid "
-                   << "day between 1 and 31 (inclusive) must be provided.";
+  if (!traffic_counters::TrafficCountersHandler::IsInitialized()) {
+    NET_LOG(ERROR)
+        << "SetTrafficCountersResetDay failure: traffic counters handler not "
+        << "initialized while setting reset day for network guid " << guid;
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  if (day && (day->value < 1 || day->value > 31)) {
-    NET_LOG(ERROR) << "Failed to set reset day " << day->value << " for "
-                   << guid << ": day must be between 1 and 31 (inclusive)";
+  std::string service_path = GetServicePathFromGuid(guid);
+  if (service_path.empty()) {
+    NET_LOG(ERROR) << "SetTrafficCountersResetDay failure: service path not "
+                      "found for guid "
+                   << guid;
     std::move(callback).Run(/*success=*/false);
     return;
   }
-  NetworkHandler::Get()
-      ->network_metadata_store()
-      ->SetDayOfTrafficCountersAutoReset(
-          guid, day ? std::optional<int>(day->value) : std::nullopt);
-  std::move(callback).Run(/*success=*/true);
+  traffic_counters::TrafficCountersHandler::Get()->SetTrafficCountersResetDay(
+      guid, day->value, std::move(callback));
 }
 
 void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,

@@ -128,7 +128,6 @@
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/browser/ash/net/traffic_counters_handler.h"
 #include "chrome/browser/ash/network_change_manager_client.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
@@ -231,6 +230,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/network/traffic_counters_handler.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/power/dark_resume_controller.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
@@ -1249,11 +1249,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Create the service connection to CrosHealthd platform service instance.
     cros_healthd::ServiceConnection::GetInstance();
 
+    // Initialize the TrafficCountersHandler instance.
     if (features::IsTrafficCountersEnabled()) {
-      // Initialize the TrafficCountersHandler instance.
-      traffic_counters_handler_ =
-          std::make_unique<traffic_counters::TrafficCountersHandler>();
-      traffic_counters_handler_->Start();
+      traffic_counters::TrafficCountersHandler::Initialize();
     }
 
     // Initialize input methods.
@@ -1595,7 +1593,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
   if (features::IsTrafficCountersEnabled()) {
-    traffic_counters_handler_.reset();
+    traffic_counters::TrafficCountersHandler::Shutdown();
   }
   bluetooth_pref_state_observer_.reset();
   auth_events_recorder_.reset();

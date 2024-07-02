@@ -4577,7 +4577,8 @@ bool IsTrafficCountersEnabled() {
 }
 
 bool IsTrafficCountersForWiFiTestingEnabled() {
-  return base::FeatureList::IsEnabled(kTrafficCountersForWiFiTesting);
+  return IsTrafficCountersEnabled() &&
+         base::FeatureList::IsEnabled(kTrafficCountersForWiFiTesting);
 }
 
 bool IsTrilinearFilteringEnabled() {

@@ -48,6 +48,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/components/network/traffic_counters_handler.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/ash/services/network_config/test_apn_data.h"
@@ -308,6 +309,9 @@ class CrosNetworkConfigTest : public testing::Test {
     cros_network_config_test_helper_.reset();
     cros_network_config_.reset();
     helper_.reset();
+    if (traffic_counters::TrafficCountersHandler::IsInitialized()) {
+      traffic_counters::TrafficCountersHandler::Shutdown();
+    }
     NetworkCertLoader::Shutdown();
     scoped_user_manager_.reset();
     SystemTokenCertDbStorage::Shutdown();
@@ -1833,6 +1837,12 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServicesAndVpnProhibited) {
 // translated as strings and not enum values (See ManagedProperties definition
 // in cros_network_config.mojom for details).
 TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kTrafficCountersEnabled,
+                            features::kTrafficCountersForWiFiTesting},
+      /*disabled_features=*/{});
+  traffic_counters::TrafficCountersHandler::InitializeForTesting();
   SetTrafficCountersResetDayAndCompare("eth_guid",
                                        /*day=*/mojom::UInt32Value::New(32),
                                        /*expected_success=*/false,
@@ -1842,10 +1852,12 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ("eth_guid", properties->guid);
   EXPECT_EQ(mojom::NetworkType::kEthernet, properties->type);
   EXPECT_EQ(mojom::ConnectionStateType::kOnline, properties->connection_state);
-  ASSERT_TRUE(properties->traffic_counter_properties);
-  EXPECT_EQ(static_cast<uint32_t>(1),
-            properties->traffic_counter_properties->user_specified_reset_day);
-  EXPECT_FALSE(properties->traffic_counter_properties->last_reset_time);
+  // Traffic counters are not presented for Ethernet networks.
+  ASSERT_FALSE(properties->traffic_counter_properties);
+
+  helper()->SetServiceProperty(wifi1_path(), shill::kStateProperty,
+                               base::Value(shill::kStateOnline));
+  base::RunLoop().RunUntilIdle();
 
   base::Value expected_reset_day(2);
   SetTrafficCountersResetDayAndCompare("wifi1_guid",
@@ -1856,8 +1868,7 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi1_guid", properties->guid);
   EXPECT_EQ(mojom::NetworkType::kWiFi, properties->type);
-  EXPECT_EQ(mojom::ConnectionStateType::kConnected,
-            properties->connection_state);
+  EXPECT_EQ(mojom::ConnectionStateType::kOnline, properties->connection_state);
   ASSERT_TRUE(properties->type_properties);
   ASSERT_TRUE(properties->type_properties->is_wifi());
   EXPECT_EQ(50, properties->type_properties->get_wifi()->signal_strength);
@@ -1872,10 +1883,6 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(static_cast<uint32_t>(2),
             properties->traffic_counter_properties->user_specified_reset_day);
 
-  SetTrafficCountersResetDayAndCompare("wifi2_guid",
-                                       /*day=*/nullptr,
-                                       /*expected_success=*/false,
-                                       /*expected_reset_day=*/nullptr);
   properties = GetManagedProperties("wifi2_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi2_guid", properties->guid);
@@ -1890,8 +1897,6 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(100, wifi->signal_strength);
   EXPECT_EQ(mojom::OncSource::kUserPolicy, properties->source);
   EXPECT_FALSE(properties->type_properties->get_wifi()->is_syncable);
-  EXPECT_EQ(static_cast<uint32_t>(1),
-            properties->traffic_counter_properties->user_specified_reset_day);
 
   properties = GetManagedProperties(kCellularGuid);
   ASSERT_TRUE(properties);
@@ -4613,6 +4618,12 @@ TEST_F(CrosNetworkConfigTest, IsProhibitedFromConfiguringVpn) {
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kTrafficCountersEnabled,
+                            features::kTrafficCountersForWiFiTesting},
+      /*disabled_features=*/{});
+  traffic_counters::TrafficCountersHandler::InitializeForTesting();
   base::Value::List traffic_counters;
 
   base::Value::Dict chrome_dict;
@@ -4635,6 +4646,12 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kTrafficCountersEnabled,
+                            features::kTrafficCountersForWiFiTesting},
+      /*disabled_features=*/{});
+  traffic_counters::TrafficCountersHandler::InitializeForTesting();
   base::Value::List traffic_counters;
 
   base::Value::Dict chrome_dict;
@@ -4672,6 +4689,12 @@ TEST_F(CrosNetworkConfigTest, GetSupportedVpnTypes) {
 }
 
 TEST_F(CrosNetworkConfigTest, SetResetDay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kTrafficCountersEnabled,
+                            features::kTrafficCountersForWiFiTesting},
+      /*disabled_features=*/{});
+  traffic_counters::TrafficCountersHandler::InitializeForTesting();
   SetTrafficCountersResetDayAndCompare("wifi1_guid",
                                        /*day=*/mojom::UInt32Value::New(32),
                                        /*expected_success=*/false,

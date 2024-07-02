@@ -4561,6 +4561,39 @@ chromium-metrics-reviews@google.com.
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
+<histogram name="Network.TrafficCounters.{Technology}.AverageDailyDataUsage"
+    units="MB" expires_after="2025-06-10">
+  <owner>khegde@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
+  <summary>
+    Chrome metric emitted to store the average daily usage of technology
+    {Technology} in megabytes. This metric is emitted once every time the
+    TrafficCountersHandler class resets the data usage (automatically or
+    manually) for this network.
+  </summary>
+  <token key="Technology">
+    <variant name="Cellular"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
+<histogram name="Network.TrafficCounters.{Technology}.DataUsageNoLastResetTime"
+    units="MB" expires_after="2025-06-10">
+  <owner>khegde@google.com</owner>
+  <owner>cros-network-health-team@google.com</owner>
+  <summary>
+    Chrome metric emitted to store the data usage of technology {Technology}
+    when the last reset time is not available. The metric is emitted once every
+    time the TrafficCounterHandler class resets the data usage (automatically or
+    manually) for this network and cannot obtain the last reset time to
+    calculate the daily average data usage.
+  </summary>
+  <token key="Technology">
+    <variant name="Cellular"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2025-06-01">
   <owner>jonmann@chromium.org</owner>

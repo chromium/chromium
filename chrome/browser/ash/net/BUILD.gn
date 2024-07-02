@@ -38,8 +38,6 @@ static_library("net") {
     "secure_dns_manager.h",
     "system_proxy_manager.cc",
     "system_proxy_manager.h",
-    "traffic_counters_handler.cc",
-    "traffic_counters_handler.h",
     "xdr_manager.cc",
     "xdr_manager.h",
   ]
@@ -115,7 +113,6 @@ source_set("unit_tests") {
     "network_throttling_observer_unittest.cc",
     "secure_dns_manager_unittest.cc",
     "system_proxy_manager_unittest.cc",
-    "traffic_counters_handler_unittest.cc",
   ]
 
   deps = [

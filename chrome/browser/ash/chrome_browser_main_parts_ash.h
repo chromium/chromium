@@ -135,10 +135,6 @@ namespace system {
 class DarkResumeController;
 }  // namespace system
 
-namespace traffic_counters {
-class TrafficCountersHandler;
-}  // namespace traffic_counters
-
 // ChromeBrowserMainParts implementation for chromeos specific code.
 // NOTE: Chromeos UI (Ash) support should be added to
 // ChromeBrowserMainExtraPartsAsh instead. This class should not depend on
@@ -297,8 +293,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   // only be used by ChromeFeaturesServiceProvider.
   std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
 
-  std::unique_ptr<traffic_counters::TrafficCountersHandler>
-      traffic_counters_handler_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
   std::unique_ptr<ash::ChromeAuthParts> auth_parts_;
 

@@ -851,8 +851,11 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Contains traffic counter related information for this network.
-  TrafficCounterProperties traffic_counter_properties;
+  // Contains traffic counter related information for this network. This field
+  // is only applicable for Cellular and WiFi networks when
+  // TrafficCountersEnabled and TrafficCountersForWiFiTesting, respectively, is
+  // enabled.
+  TrafficCounterProperties? traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level

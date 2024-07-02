@@ -220,6 +220,8 @@ component("network") {
     "text_message_provider.cc",
     "text_message_provider.h",
     "text_message_suppression_state.h",
+    "traffic_counters_handler.cc",
+    "traffic_counters_handler.h",
   ]
 }
 
@@ -384,5 +386,6 @@ source_set("unit_tests") {
     "system_token_cert_db_storage_unittest.cc",
     "technology_state_controller_unittest.cc",
     "text_message_provider_unittest.cc",
+    "traffic_counters_handler_unittest.cc",
   ]
 }

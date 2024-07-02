@@ -165,8 +165,13 @@ suite('TrafficCountersTest', function() {
         NetworkType.kCellular, 'cellular_guid', 'cellular');
     managedProperties.connectionState = ConnectionStateType.kConnected;
     managedProperties.connectable = true;
-    managedProperties.trafficCounterProperties.lastResetTime =
-        FAKE_INITIAL_LAST_RESET_TIME;
+
+    // Define trafficCounterProps as const and modify its properties
+    const trafficCounterProps = OncMojo.createTrafficCounterProperties();
+    trafficCounterProps.lastResetTime = FAKE_INITIAL_LAST_RESET_TIME;
+    managedProperties.trafficCounterProperties = trafficCounterProps;
+
+    // Set the managed properties for the test
     networkConfigRemote.setManagedPropertiesForTest(managedProperties);
     await flushTasks();
 
