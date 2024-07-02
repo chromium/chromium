@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/347137620): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <optional>
 #include <string>
 #include <string_view>

@@ -61,8 +61,11 @@
 -cc/
 -chrome/
 +chrome/browser/apps/guest_view/
++chrome/browser/autofill/
 +chrome/browser/extensions/api/web_view/
 +chrome/browser/guest_view/
++chrome/browser/ui/autofill/
++chrome/browser/ui/views/autofill/
 -chromecast/
 -chromeos/
 -clank/
