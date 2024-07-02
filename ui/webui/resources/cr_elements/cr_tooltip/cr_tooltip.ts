@@ -222,7 +222,7 @@ export class CrTooltipElement extends CrLitElement {
       return;
     }
 
-    const offsetParent = this.offsetParent;
+    const offsetParent = this.offsetParent || this.composedOffsetParent_();
     if (!offsetParent) {
       return;
     }
@@ -312,6 +312,53 @@ export class CrTooltipElement extends CrLitElement {
 
   private removeListeners_() {
     this.tracker_.removeAll();
+  }
+
+  /**
+   * Polyfills the old offsetParent behavior from before the spec was changed:
+   * https://github.com/w3c/csswg-drafts/issues/159
+   * This is necessary when the tooltip is inside a <slot>, e.g. when it
+   * is used inside a cr-dialog. In such cases, the tooltip's offsetParent
+   * will be null.
+   */
+  private composedOffsetParent_(): Element|null {
+    if ((this.computedStyleMap().get('display') as CSSKeywordValue).value ===
+        'none') {
+      return null;
+    }
+
+    for (let ancestor = flatTreeParent(this); ancestor !== null;
+         ancestor = flatTreeParent(ancestor)) {
+      if (!(ancestor instanceof Element)) {
+        continue;
+      }
+      const style = ancestor.computedStyleMap();
+      if ((style.get('display') as CSSKeywordValue).value === 'none') {
+        return null;
+      }
+      if ((style.get('display') as CSSKeywordValue).value === 'contents') {
+        // display:contents nodes aren't in the layout tree so they should be
+        // skipped.
+        continue;
+      }
+      if ((style.get('position') as CSSKeywordValue).value !== 'static') {
+        return ancestor;
+      }
+      if (ancestor.tagName === 'BODY') {
+        return ancestor;
+      }
+    }
+    return null;
+
+    function flatTreeParent(element: Element): Element|null {
+      if (element.assignedSlot) {
+        return element.assignedSlot;
+      }
+      if (element.parentNode instanceof ShadowRoot) {
+        return element.parentNode.host;
+      }
+      return element.parentElement;
+    }
   }
 }
 
