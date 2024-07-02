@@ -29,6 +29,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -126,9 +127,8 @@ class UdpEchoTestServer : public TestServer {
   std::optional<uint16_t> port_;
 };
 
-template <typename TestHarness,
-          typename = std::enable_if_t<
-              std::is_base_of_v<InProcessBrowserTest, TestHarness>>>
+template <typename TestHarness>
+  requires(std::is_base_of_v<InProcessBrowserTest, TestHarness>)
 class ChromeDirectSocketsTest : public TestHarness {
  public:
   ChromeDirectSocketsTest() = delete;
@@ -587,8 +587,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
 
 #endif
 
-using IsolatedWebAppTestHarnessWithDirectSocketsEnabled =
-    web_app::IsolatedWebAppBrowserTestHarness;
+class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ private:
+  base::test::ScopedFeatureList features_{blink::features::kDirectSockets};
+};
 
 using ChromeDirectSocketsTcpIsolatedWebAppTest = ChromeDirectSocketsTcpTest<
     IsolatedWebAppTestHarnessWithDirectSocketsEnabled>;

@@ -67,6 +67,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace web_app {
@@ -518,6 +519,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
  protected:
+  IsolatedWebAppApiAccessBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kIsolateSandboxedIframes,
+                                    blink::features::kDirectSockets},
+                                   {});
+  }
   std::unique_ptr<ScopedBundledIsolatedWebApp> CreateAppWithSocketPermission() {
     return IsolatedWebAppBuilder(
                ManifestBuilder().AddPermissionsPolicy(
@@ -534,8 +540,7 @@ class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      blink::features::kIsolateSandboxedIframes};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
