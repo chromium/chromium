@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_QUALITY_MODEL_QUALITY_LOG_ENTRY_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_QUALITY_MODEL_QUALITY_LOG_ENTRY_H_
 
+#include <cstdint>
+
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
@@ -49,6 +52,13 @@ class ModelQualityLogEntry {
   void set_error_response(const proto::ErrorResponse& error_response) {
     *(log_ai_data_request_->mutable_model_execution_info()
           ->mutable_error_response()) = error_response;
+  }
+
+  void set_model_execution_error(
+      const OptimizationGuideModelExecutionError& model_execution_error) {
+    log_ai_data_request_->mutable_model_execution_info()
+        ->set_model_execution_error_enum(
+            static_cast<uint32_t>(model_execution_error.error()));
   }
 
   proto::LogAiDataRequest* log_ai_data_request() {

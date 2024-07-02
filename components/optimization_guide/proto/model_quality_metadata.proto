@@ -49,13 +49,19 @@ enum PerformanceClass {
 // done on a server or on a device. This includes an ID that can be mapped to
 // the ModelExecutionService logs on the server.
 message ModelExecutionInfo {
-  reserved 1;
+  reserved 1, 5, 6;
 
   // Information for how the on-device model execution was done.
   OnDeviceModelExecutionInfo on_device_model_execution_info = 2;
 
   // The error code returned by the model execution server, if any.
   ErrorResponse error_response = 3;
+
+  // The model execution error enum. It offers more granularity over
+  // `error_state` in `error_response`. This corresponds to the error enum:
+  // OptimizationGuideModelExecutionError::ModelExecutionError. See more in
+  // components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h
+  uint32 model_execution_error_enum = 7;
 
   // The ID for the execution.
   //

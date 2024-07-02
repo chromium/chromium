@@ -209,7 +209,11 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
              OptimizationGuideModelExecutionResult result,
              std::unique_ptr<ModelQualityLogEntry> log_entry) {
             EXPECT_FALSE(result.has_value());
-            EXPECT_EQ(log_entry.get(), nullptr);
+            EXPECT_NE(log_entry.get(), nullptr);
+            EXPECT_EQ(3u,  // ModelExecutionError::kPermissionDenied
+                      log_entry->log_ai_data_request()
+                          ->model_execution_info()
+                          .model_execution_error_enum());
             run_loop->Quit();
           },
           &run_loop));
@@ -318,13 +322,17 @@ TEST_F(ModelExecutionManagerTest,
                                    ModelExecutionError::kUnsupportedLanguage,
                                result.response.error().error());
                      EXPECT_NE(result.log_entry, nullptr);
-                     // Check that correct error state is recordered.
+                     // Check that the correct error state and error enum are
+                     // recorded:
+                     auto model_execution_info =
+                         result.log_entry->log_ai_data_request()
+                             ->model_execution_info();
                      EXPECT_EQ(
                          proto::ErrorState::ERROR_STATE_UNSUPPORTED_LANGUAGE,
-                         result.log_entry->log_ai_data_request()
-                             ->mutable_model_execution_info()
-                             ->mutable_error_response()
-                             ->error_state());
+                         model_execution_info.error_response().error_state());
+                     EXPECT_EQ(
+                         7u,  // ModelExecutionError::kUnsupportedLanguage
+                         model_execution_info.model_execution_error_enum());
                      run_loop->Quit();
                    },
                    &run_loop));
