@@ -24,7 +24,6 @@ class ModelError;
 
 namespace commerce {
 
-class MockProductSpecificationsSyncBridge;
 class ProductSpecificationsService;
 class ProductSpecificationsServiceTest;
 class ProductSpecificationsSyncBridgeMultiSpecsTest;
@@ -33,10 +32,22 @@ class ProductSpecificationsSyncBridgeTest;
 // Integration point between sync and ProductSpecificationService.
 class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
+  class Delegate {
+   public:
+    // New specifics were added - either locally or from another browser and
+    // then synced.
+    virtual void OnSpecificsAdded(
+        const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {}
+
+    // TODO(crbug.com/350345285) Implement OnSpecificsRemoved
+    // TODO(crbug.com/350349095) Implement OnSpecificsUpdated
+  };
+
   ProductSpecificationsSyncBridge(
       syncer::OnceModelTypeStoreFactory create_store_callback,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      base::OnceCallback<void(void)> init_callback);
+      base::OnceCallback<void(void)> init_callback,
+      Delegate* delegate);
   ~ProductSpecificationsSyncBridge() override;
 
   // syncer::ModelTypeSyncBridge:
@@ -57,11 +68,11 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  private:
-  friend class commerce::MockProductSpecificationsSyncBridge;
   friend class commerce::ProductSpecificationsService;
   friend class commerce::ProductSpecificationsServiceTest;
   friend class commerce::ProductSpecificationsSyncBridgeMultiSpecsTest;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
+
   using CompareSpecificsEntries =
       std::map<std::string, sync_pb::ProductComparisonSpecifics>;
 
@@ -73,9 +84,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
                      product_comparison_specifics);
   }
 
-  virtual ProductSpecificationsSet AddProductSpecifications(
-      const std::string& name,
-      const std::vector<GURL>& urls);
+  virtual void AddSpecifics(
+      const std::vector<sync_pb::ProductComparisonSpecifics> specifics);
 
   // Update the specifics for the provided ProductSpecificationsSet based on its
   // UUID. If no specifics for a UUID are found, this method is a noop and
@@ -100,8 +110,6 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);
   void RemoveObserver(commerce::ProductSpecificationsSet::Observer* observer);
 
-  void OnSpecificsAdded(
-      const ProductSpecificationsSet& product_specifications_set);
   void OnSpecificsUpdated(const sync_pb::ProductComparisonSpecifics& before,
                           const sync_pb::ProductComparisonSpecifics& after);
   void OnSpecificsRemoved(const ProductSpecificationsSet& removed_set);
@@ -119,6 +127,8 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
 
   base::OnceCallback<void(void)> init_callback_;
+
+  raw_ptr<Delegate> const delegate_;
 
   base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };

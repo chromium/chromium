@@ -7,10 +7,8 @@
 #include <optional>
 #include <set>
 
-#include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -40,20 +38,6 @@ const sync_pb::ProductComparisonSpecifics TrimSpecificsForCaching(
   return trimmed_comparison_data;
 }
 
-std::string GetSuffix(const std::string& uuid) {
-  return base::Base64Encode(base::SHA1HashString(uuid));
-}
-
-syncer::UniquePosition GetNextPosition(
-    const syncer::UniquePosition& prev_position,
-    const std::string& suffix) {
-  if (prev_position.IsValid()) {
-    return syncer::UniquePosition::After(prev_position, suffix);
-  } else {
-    return syncer::UniquePosition::InitialPosition(suffix);
-  }
-}
-
 }  // namespace
 
 namespace commerce {
@@ -61,9 +45,11 @@ namespace commerce {
 ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    base::OnceCallback<void(void)> init_callback)
+    base::OnceCallback<void(void)> init_callback,
+    Delegate* delegate)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)),
-      init_callback_(std::move(init_callback)) {
+      init_callback_(std::move(init_callback)),
+      delegate_(delegate) {
   std::move(create_store_callback)
       .Run(syncer::PRODUCT_COMPARISON,
            base::BindOnce(&ProductSpecificationsSyncBridge::OnStoreCreated,
@@ -99,7 +85,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_ADD:
         entries_.emplace(change->storage_key(), specifics);
         batch->WriteData(change->storage_key(), specifics.SerializeAsString());
-        OnSpecificsAdded(ProductSpecificationsSet::FromProto(specifics));
+        delegate_->OnSpecificsAdded({specifics});
         break;
       case syncer::EntityChange::ACTION_UPDATE: {
         auto local_specifics = entries_.find(change->storage_key());
@@ -179,86 +165,21 @@ ProductSpecificationsSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   return trimmed_entity_specifics;
 }
 
-ProductSpecificationsSet
-ProductSpecificationsSyncBridge::AddProductSpecifications(
-    const std::string& name,
-    const std::vector<GURL>& urls) {
+void ProductSpecificationsSyncBridge::AddSpecifics(
+    const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
-  int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
-  if (base::FeatureList::IsEnabled(
-          commerce::kProductSpecificationsMultiSpecifics)) {
     std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
 
-    sync_pb::ProductComparisonSpecifics comparison_specifics;
-    std::string top_level_uuid =
-        base::Uuid::GenerateRandomV4().AsLowercaseString();
-    comparison_specifics.set_uuid(top_level_uuid);
-    comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
-    comparison_specifics.set_update_time_unix_epoch_millis(time_now);
-    comparison_specifics.mutable_product_comparison()->set_name(name);
-    change_processor()->Put(comparison_specifics.uuid(),
-                            CreateEntityData(comparison_specifics),
-                            batch->GetMetadataChangeList());
-
-    entries_.emplace(comparison_specifics.uuid(), comparison_specifics);
-    batch->WriteData(comparison_specifics.uuid(),
-                     comparison_specifics.SerializeAsString());
-    std::string position_suffix = GetSuffix(top_level_uuid);
-    syncer::UniquePosition prev_position;
-    for (const GURL& url : urls) {
-      sync_pb::ProductComparisonSpecifics item_specifics;
-      item_specifics.set_uuid(
-          base::Uuid::GenerateRandomV4().AsLowercaseString());
-      item_specifics.set_creation_time_unix_epoch_millis(time_now);
-      item_specifics.set_update_time_unix_epoch_millis(time_now);
-      item_specifics.mutable_product_comparison_item()
-          ->set_product_comparison_uuid(top_level_uuid);
-      item_specifics.mutable_product_comparison_item()->set_url(url.spec());
-
-      syncer::UniquePosition position =
-          GetNextPosition(prev_position, position_suffix);
-      *item_specifics.mutable_product_comparison_item()
-           ->mutable_unique_position() = position.ToProto();
-      prev_position = position;
-      change_processor()->Put(item_specifics.uuid(),
-                              CreateEntityData(item_specifics),
+    for (const auto& specific : specifics) {
+      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
                               batch->GetMetadataChangeList());
-      batch->WriteData(item_specifics.uuid(),
-                       item_specifics.SerializeAsString());
-      entries_.emplace(item_specifics.uuid(), item_specifics);
+      batch->WriteData(specific.uuid(), specific.SerializeAsString());
+      entries_.emplace(specific.uuid(), specific);
     }
     Commit(std::move(batch));
-    ProductSpecificationsSet set = ProductSpecificationsSet(
-        top_level_uuid, time_now, time_now, urls, name);
-    OnSpecificsAdded(set);
-    return set;
-  } else {
-    sync_pb::ProductComparisonSpecifics specifics;
-    specifics.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-    specifics.set_creation_time_unix_epoch_millis(time_now);
-    specifics.set_update_time_unix_epoch_millis(time_now);
-    specifics.set_name(name);
-    for (const GURL& url : urls) {
-      sync_pb::ComparisonData* comparison_data = specifics.add_data();
-      comparison_data->set_url(url.spec());
-    }
-
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
-        store_->CreateWriteBatch();
-
-    change_processor()->Put(specifics.uuid(), CreateEntityData(specifics),
-                            batch->GetMetadataChangeList());
-
-    entries_.emplace(specifics.uuid(), specifics);
-
-    batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
-    Commit(std::move(batch));
-    OnSpecificsAdded(ProductSpecificationsSet::FromProto(specifics));
-    return ProductSpecificationsSet::FromProto(specifics);
-  }
 }
 
 sync_pb::ProductComparisonSpecifics
@@ -418,13 +339,6 @@ void ProductSpecificationsSyncBridge::AddObserver(
 void ProductSpecificationsSyncBridge::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ProductSpecificationsSyncBridge::OnSpecificsAdded(
-    const ProductSpecificationsSet& product_specifications_set) {
-  for (auto& observer : observers_) {
-    observer.OnProductSpecificationsSetAdded(product_specifications_set);
-  }
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsUpdated(

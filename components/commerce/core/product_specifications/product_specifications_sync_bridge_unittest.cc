@@ -94,7 +94,7 @@ sync_pb::ProductComparisonSpecifics BuildProductComparisonSpecifics(
   return specifics;
 }
 
-const sync_pb::ProductComparisonSpecifics kInitCompareSpecifics[] = {
+const std::vector<sync_pb::ProductComparisonSpecifics> kInitCompareSpecifics = {
     BuildProductComparisonSpecifics(kInitUuid[0],
                                     kCreationTime[0],
                                     kUpdateTime[0],
@@ -111,18 +111,19 @@ const sync_pb::ProductComparisonSpecifics kInitCompareSpecifics[] = {
                                     kInitName[2],
                                     kProductComparisonUrls[2])};
 
-const sync_pb::ProductComparisonSpecifics kProductComparisonSpecifics[] = {
-    BuildProductComparisonSpecifics("abba",
-                                    1000,
-                                    1001,
-                                    "my first set",
-                                    {"https://foo.com", "https://bar.com"}),
-    BuildProductComparisonSpecifics(
-        "baab",
-        2000,
-        2001,
-        "my next set",
-        {"https://some-url.com", "https://another-url.com"})};
+const std::vector<sync_pb::ProductComparisonSpecifics>
+    kProductComparisonSpecifics = {
+        BuildProductComparisonSpecifics("40000000-0000-0000-0000-000000000000",
+                                        1000,
+                                        1001,
+                                        "my first set",
+                                        {"https://foo.com", "https://bar.com"}),
+        BuildProductComparisonSpecifics(
+            "50000000-0000-0000-0000-000000000000",
+            2000,
+            2001,
+            "my next set",
+            {"https://some-url.com", "https://another-url.com"})};
 
 syncer::EntityData MakeEntityData(
     const sync_pb::ProductComparisonSpecifics& specifics) {
@@ -155,6 +156,16 @@ MATCHER_P(IsMetadataSize, size, "") {
 
 namespace commerce {
 
+class ProductSpecificationsSyncBridgeObserver
+    : public ProductSpecificationsSyncBridge::Delegate {
+ public:
+  MOCK_METHOD(
+      void,
+      OnSpecificsAdded,
+      (const std::vector<sync_pb::ProductComparisonSpecifics> specifics),
+      (override));
+};
+
 class ProductSpecificationsSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
@@ -167,7 +178,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     bridge_ = std::make_unique<ProductSpecificationsSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
-        processor_.CreateForwardingProcessor(), base::DoNothing());
+        processor_.CreateForwardingProcessor(), base::DoNothing(), observer());
     base::RunLoop().RunUntilIdle();
     initial_store_ = GetAllStoreData();
     initial_entries_ = entries();
@@ -197,10 +208,9 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     CommitToStoreAndWait(std::move(batch));
   }
 
-  std::optional<ProductSpecificationsSet> AddProductSpecifications(
-      const std::string name,
-      const std::vector<GURL> urls) {
-    return bridge().AddProductSpecifications(name, urls);
+  void AddSpecifics(
+      const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
+    return bridge().AddSpecifics(specifics);
   }
 
   std::optional<sync_pb::ProductComparisonSpecifics>
@@ -322,8 +332,13 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
         commerce::kProductSpecificationsMultiSpecifics);
   }
 
+  testing::NiceMock<ProductSpecificationsSyncBridgeObserver>* observer() {
+    return &observer_;
+  }
+
  private:
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<ProductSpecificationsSyncBridgeObserver> observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
@@ -484,21 +499,14 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestDelete) {
   VerifyEntriesAndStoreSize(2);
 }
 
-TEST_F(ProductSpecificationsSyncBridgeTest, AddProductSpecifications) {
-  const std::optional<ProductSpecificationsSet> new_specifics =
-      AddProductSpecifications(kInitName[0].data(),
-                               {GURL(kProductComparisonUrls[0][0]),
-                                GURL(kProductComparisonUrls[0][1])});
-  EXPECT_TRUE(new_specifics.has_value());
+TEST_F(ProductSpecificationsSyncBridgeTest, AddSpecifics) {
+  AddSpecifics(kProductComparisonSpecifics);
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(new_specifics.has_value());
-  EXPECT_EQ(kInitName[0], new_specifics->name());
-  EXPECT_EQ(kProductComparisonUrls[0][0], new_specifics->urls()[0]);
-  EXPECT_EQ(kProductComparisonUrls[0][1], new_specifics->urls()[1]);
-  VerifySpecificsInitialNonExistence(
-      ProductSpecificationSetToProto(new_specifics.value()));
-  VerifySpecificsExists(ProductSpecificationSetToProto(new_specifics.value()));
-  VerifyStoreAndEntriesSizeIncreasedBy(1);
+  for (size_t i = 0; i < kProductComparisonSpecifics.size(); i++) {
+    VerifySpecificsInitialNonExistence(kProductComparisonSpecifics[i]);
+    VerifySpecificsExists(kProductComparisonSpecifics[i]);
+  }
+  VerifyStoreAndEntriesSizeIncreasedBy(2);
 }
 
 TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
@@ -596,7 +604,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestSupportedFieldsMetadataCache) {
           syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
           processor().CreateForwardingProcessor(),
           base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
-                         loop.QuitClosure()));
+                         loop.QuitClosure()),
+          observer());
   loop.Run();
   EXPECT_EQ(0u, bridge_entries_size(new_bridge.get()));
 }
@@ -619,66 +628,10 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
           syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
           processor().CreateForwardingProcessor(),
           base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
-                         loop.QuitClosure()));
+                         loop.QuitClosure()),
+          observer());
   loop.Run();
   EXPECT_EQ(3u, bridge_entries_size(new_bridge.get()));
-}
-
-TEST_F(ProductSpecificationsSyncBridgeTest,
-       TestAddProductSpecificationsMultipleSpecifics) {
-  EnableMultiSpecFlag();
-  // Clear out all legacy specifics.
-  entries().clear();
-  store()->DeleteAllDataAndMetadata(base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-
-  AddProductSpecifications(kInitName[0], {GURL(kProductComparisonUrls[0][0]),
-                                          GURL(kProductComparisonUrls[0][1])});
-
-  // Check specifics stored in memory as well as the store.
-  for (auto& specifics : {entries(), GetAllStoreData()}) {
-    EXPECT_EQ(3u, specifics.size());
-
-    sync_pb::ProductComparisonItem item_specifics[2];
-    sync_pb::ProductComparisonSpecifics top_level;
-    std::vector<std::string> urls;
-    std::string name = "";
-    for_each(begin(specifics), end(specifics), [&](auto entry) {
-      // Legacy fields should not be used when storing product specifications
-      // across multiple specifics.
-      EXPECT_FALSE(entry.second.has_name());
-      EXPECT_TRUE(entry.second.data().empty());
-
-      // Specific should contain a top level ProductComparison or a
-      // ProductComparisonItem, not both (or neither).
-      EXPECT_EQ(entry.second.has_product_comparison(),
-                !entry.second.has_product_comparison_item());
-
-      // Find item level specifics in the same order the URLs were passed to
-      // AddProductSpecifications
-      if (entry.second.has_product_comparison_item()) {
-        for (int i = 0; i < 2; i++) {
-          if (entry.second.product_comparison_item().url() ==
-              kProductComparisonUrls[0][i]) {
-            item_specifics[i] = entry.second.product_comparison_item();
-          }
-        }
-      }
-      if (entry.second.has_product_comparison()) {
-        top_level = entry.second;
-      }
-    });
-    // Check ordering passed to AddProductSpecifications is preserved
-    EXPECT_TRUE(
-        syncer::UniquePosition::FromProto(item_specifics[0].unique_position())
-            .LessThan(syncer::UniquePosition::FromProto(
-                item_specifics[1].unique_position())));
-    // Check name and URLs.
-    EXPECT_EQ(kInitName[0], top_level.product_comparison().name());
-    for (auto& item_specific : item_specifics) {
-      EXPECT_EQ(top_level.uuid(), item_specific.product_comparison_uuid());
-    }
-  }
 }
 
 }  // namespace commerce

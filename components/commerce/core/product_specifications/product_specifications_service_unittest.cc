@@ -217,16 +217,44 @@ class ProductSpecificationsServiceTest : public testing::Test {
         commerce::kProductSpecificationsMultiSpecifics);
   }
 
+  std::map<std::string, sync_pb::ProductComparisonSpecifics> GetAllStoreData() {
+    base::RunLoop loop;
+    std::map<std::string, sync_pb::ProductComparisonSpecifics>
+        storage_key_to_specifics;
+    store()->ReadAllData(
+        base::BindOnce(
+            [](std::map<std::string, sync_pb::ProductComparisonSpecifics>*
+                   storage_key_to_specifics,
+               const std::optional<syncer::ModelError>& error,
+               std::unique_ptr<syncer::ModelTypeStore::RecordList>
+                   data_records) {
+              for (auto& record : *data_records.get()) {
+                sync_pb::ProductComparisonSpecifics specifics;
+                specifics.ParseFromString(record.value);
+                storage_key_to_specifics->emplace(specifics.uuid(), specifics);
+              }
+            },
+            &storage_key_to_specifics)
+            .Then(loop.QuitClosure()));
+    loop.Run();
+
+    return storage_key_to_specifics;
+  }
+
+  syncer::ModelTypeStore* store() { return store_.get(); }
+
+  std::map<std::string, sync_pb::ProductComparisonSpecifics> entries() {
+    return service()->bridge_->entries_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProductSpecificationsService> service_;
-  raw_ptr<MockProductSpecificationsSyncBridge> bridge_;
+  raw_ptr<ProductSpecificationsSyncBridge> bridge_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   testing::NiceMock<MockProductSpecificationsSetObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  syncer::ModelTypeStore* store() { return store_.get(); }
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor>& change_processor() {
     return processor_;
@@ -545,6 +573,58 @@ TEST_F(ProductSpecificationsServiceTest,
   EXPECT_EQ(kProductSpecsName, sets[0].name());
   for (size_t i = 0; i < expected_product_urls.size(); i++) {
     EXPECT_EQ(expected_product_urls[i], sets[0].urls()[i]);
+  }
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestAddProductSpecificationsMultipleSpecifics) {
+  EnableMultiSpecFlag();
+  std::vector<GURL> expected_urls = {GURL("https://foo.com/"),
+                                     GURL("https://bar.com/")};
+  service()->AddProductSpecificationsSet("name", expected_urls);
+
+  // Check specifics stored in memory as well as the store.
+  for (auto& specifics_map : {entries(), GetAllStoreData()}) {
+    EXPECT_EQ(3u, specifics_map.size());
+
+    sync_pb::ProductComparisonItem item_specifics[2];
+    sync_pb::ProductComparisonSpecifics top_level;
+    std::vector<std::string> urls;
+    std::string name = "";
+    for (auto& [_, specifics] : specifics_map) {
+      // Legacy fields should not be used when storing product specifications
+      // across multiple specifics.
+      EXPECT_FALSE(specifics.has_name());
+      EXPECT_TRUE(specifics.data().empty());
+
+      // Specific should contain a top level ProductComparison or a
+      // ProductComparisonItem, not both (or neither).
+      EXPECT_EQ(specifics.has_product_comparison(),
+                !specifics.has_product_comparison_item());
+
+      // Find item level specifics in the same order the URLs were passed to
+      // AddProductSpecifications
+      if (specifics.has_product_comparison_item()) {
+        for (int i = 0; i < 2; i++) {
+          if (specifics.product_comparison_item().url() == expected_urls[i]) {
+            item_specifics[i] = specifics.product_comparison_item();
+          }
+        }
+      }
+      if (specifics.has_product_comparison()) {
+        top_level = specifics;
+      }
+    };
+    // Check ordering passed to AddProductSpecifications is preserved
+    EXPECT_TRUE(
+        syncer::UniquePosition::FromProto(item_specifics[0].unique_position())
+            .LessThan(syncer::UniquePosition::FromProto(
+                item_specifics[1].unique_position())));
+    // Check name and URLs.
+    EXPECT_EQ("name", top_level.product_comparison().name());
+    for (auto& item_specific : item_specifics) {
+      EXPECT_EQ(top_level.uuid(), item_specific.product_comparison_uuid());
+    }
   }
 }
 

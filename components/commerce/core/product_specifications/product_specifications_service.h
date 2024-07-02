@@ -16,7 +16,9 @@ class ProductSpecificationsServiceTest;
 class ProductSpecificationsSet;
 
 // Acquires synced data about product specifications.
-class ProductSpecificationsService : public KeyedService {
+class ProductSpecificationsService
+    : public KeyedService,
+      public ProductSpecificationsSyncBridge::Delegate {
  public:
   using GetAllCallback =
       base::OnceCallback<void(const std::vector<ProductSpecificationsSet>)>;
@@ -80,9 +82,16 @@ class ProductSpecificationsService : public KeyedService {
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   std::vector<base::OnceCallback<void()>> deferred_operations_;
+  base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
+
   bool is_initialized_{false};
 
   void OnInit();
+  void OnProductSpecificationsSetAdded(
+      const ProductSpecificationsSet& product_specifications_set);
+  void OnSpecificsAdded(const std::vector<sync_pb::ProductComparisonSpecifics>
+                            specifics) override;
+
   base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };
 

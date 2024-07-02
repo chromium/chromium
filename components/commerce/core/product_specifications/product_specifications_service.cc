@@ -7,13 +7,33 @@
 #include <memory>
 #include <optional>
 
+#include "base/base64.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/hash/sha1.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
+
+namespace {
+
+std::string GetSuffix(const std::string& uuid) {
+  return base::Base64Encode(base::SHA1HashString(uuid));
+}
+
+syncer::UniquePosition GetNextPosition(
+    const syncer::UniquePosition& prev_position,
+    const std::string& suffix) {
+  if (prev_position.IsValid()) {
+    return syncer::UniquePosition::After(prev_position, suffix);
+  } else {
+    return syncer::UniquePosition::InitialPosition(suffix);
+  }
+}
+
+}  // namespace
 
 namespace commerce {
 
@@ -24,7 +44,8 @@ ProductSpecificationsService::ProductSpecificationsService(
           std::move(create_store_callback),
           std::move(change_processor),
           base::BindOnce(&ProductSpecificationsService::OnInit,
-                         base::Unretained(this)))) {}
+                         base::Unretained(this)),
+          this)) {}
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
 
@@ -161,7 +182,59 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
     const std::vector<GURL>& urls) {
   // TODO(crbug.com/332545064) add for a product specification set being added.
-  return bridge_->AddProductSpecifications(name, urls);
+  std::vector<sync_pb::ProductComparisonSpecifics> specifics;
+  int64_t time_now = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  if (base::FeatureList::IsEnabled(
+          commerce::kProductSpecificationsMultiSpecifics)) {
+    sync_pb::ProductComparisonSpecifics comparison_specifics;
+    std::string top_level_uuid =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    comparison_specifics.set_uuid(top_level_uuid);
+    comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
+    comparison_specifics.set_update_time_unix_epoch_millis(time_now);
+    comparison_specifics.mutable_product_comparison()->set_name(name);
+    specifics.push_back(comparison_specifics);
+    std::string position_suffix = GetSuffix(top_level_uuid);
+    syncer::UniquePosition prev_position;
+    for (const GURL& url : urls) {
+      sync_pb::ProductComparisonSpecifics item_specifics;
+      item_specifics.set_uuid(
+          base::Uuid::GenerateRandomV4().AsLowercaseString());
+      item_specifics.set_creation_time_unix_epoch_millis(time_now);
+      item_specifics.set_update_time_unix_epoch_millis(time_now);
+      item_specifics.mutable_product_comparison_item()
+          ->set_product_comparison_uuid(top_level_uuid);
+      item_specifics.mutable_product_comparison_item()->set_url(url.spec());
+
+      syncer::UniquePosition position =
+          GetNextPosition(prev_position, position_suffix);
+      *item_specifics.mutable_product_comparison_item()
+           ->mutable_unique_position() = position.ToProto();
+      prev_position = position;
+      specifics.push_back(item_specifics);
+    }
+    bridge_->AddSpecifics(specifics);
+    ProductSpecificationsSet set = ProductSpecificationsSet(
+        top_level_uuid, time_now, time_now, urls, name);
+    OnProductSpecificationsSetAdded(set);
+    return set;
+  } else {
+    sync_pb::ProductComparisonSpecifics comparison_specifics;
+    comparison_specifics.set_uuid(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
+    comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
+    comparison_specifics.set_update_time_unix_epoch_millis(time_now);
+    comparison_specifics.set_name(name);
+    for (const GURL& url : urls) {
+      sync_pb::ComparisonData* comparison_data =
+          comparison_specifics.add_data();
+      comparison_data->set_url(url.spec());
+    }
+    bridge_->AddSpecifics({comparison_specifics});
+    OnProductSpecificationsSetAdded(
+        ProductSpecificationsSet::FromProto(comparison_specifics));
+    return ProductSpecificationsSet::FromProto(comparison_specifics);
+  }
 }
 
 const std::optional<ProductSpecificationsSet>
@@ -213,11 +286,13 @@ void ProductSpecificationsService::DeleteProductSpecificationsSet(
 void ProductSpecificationsService::AddObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   bridge_->AddObserver(observer);
+  observers_.AddObserver(observer);
 }
 
 void ProductSpecificationsService::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   bridge_->RemoveObserver(observer);
+  observers_.RemoveObserver(observer);
 }
 
 void ProductSpecificationsService::OnInit() {
@@ -227,6 +302,29 @@ void ProductSpecificationsService::OnInit() {
     std::move(deferred_operation).Run();
   }
   deferred_operations_.clear();
+}
+
+void ProductSpecificationsService::OnProductSpecificationsSetAdded(
+    const ProductSpecificationsSet& product_specifications_set) {
+  for (auto& observer : observers_) {
+    observer.OnProductSpecificationsSetAdded(product_specifications_set);
+  }
+}
+
+void ProductSpecificationsService::OnSpecificsAdded(
+    const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
+  for (const sync_pb::ProductComparisonSpecifics& specific : specifics) {
+    // Legacy storage format doesn't use ProductComparison &
+    // ProductComparisonItem.
+    if (!specific.has_product_comparison() &&
+        !specific.has_product_comparison_item()) {
+      for (auto& observer : observers_) {
+        observer.OnProductSpecificationsSetAdded(
+            ProductSpecificationsSet::FromProto(specific));
+      }
+    }
+  }
+  // TODO(crbug.com/350346263) Handle new multi specifics format.
 }
 
 }  // namespace commerce
