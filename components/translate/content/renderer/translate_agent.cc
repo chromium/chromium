@@ -5,6 +5,7 @@
 #include "components/translate/content/renderer/translate_agent.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
@@ -21,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/translate/content/renderer/isolated_world_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
@@ -167,6 +169,7 @@ void TranslateAgent::PrepareForUrl(const GURL& url) {
 
 void TranslateAgent::PageCaptured(
     scoped_refptr<const base::RefCountedString16> contents) {
+  TRACE_EVENT("browser", "TranslateAgent::PageCaptured");
   // Get the document language as set by WebKit from the http-equiv
   // meta tag for "content-language".  This may or may not also
   // have a value derived from the actual Content-Language HTTP
@@ -650,6 +653,7 @@ std::string TranslateAgent::BuildTranslationScript(
 }
 
 void TranslateAgent::UpdateLanguageDetectionModel(base::File model_file) {
+  TRACE_EVENT("browser", "TranslateAgent::UpdateLanguageDetectionModel");
   translate::LanguageDetectionModel& language_detection_model =
       GetLanguageDetectionModel();
   language_detection_model.UpdateWithFile(std::move(model_file));

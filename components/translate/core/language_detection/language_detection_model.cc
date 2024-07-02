@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "components/language/core/common/language_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -131,6 +132,7 @@ bool LanguageDetectionModel::IsAvailable() const {
 
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
     const std::u16string& sampled_str) const {
+  TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
   DCHECK(IsAvailable());
   std::string utf8_sample = base::UTF16ToUTF8(sampled_str);
 
