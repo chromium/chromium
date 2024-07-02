@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
+#include "device/fido/enclave/verify/attestation_report.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace device::enclave {
@@ -25,6 +26,14 @@ base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
 // the public key in |signer|.
 base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
     VerifyCertSignature(X509* signer, X509* signee);
+
+// Extracts the Hardware ID from the |cert| extensions.
+base::expected<std::vector<uint8_t>, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    GetChipId(X509* cert);
+
+// Builds the TCB Version from the |cert| extensions.
+base::expected<TcbVersion, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    GetTcbVersion(X509* cert);
 
 }  // namespace device::enclave
 
