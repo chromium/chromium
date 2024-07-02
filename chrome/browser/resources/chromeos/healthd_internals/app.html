@@ -4,19 +4,17 @@
     height: 100%;
   }
 
+  #selector {
+    padding-inline-end: 8px;
+  }
+
   #sidebar {
     border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
     overflow: auto;
-    padding-block-end: 12px;
-    padding-inline-end: 12px;
-    width: 256px;
-  }
-
-  h1 {
-    font-size: 170%;
-    font-weight: 500;
-    padding-inline-start: 24px;
+    padding-block-end: 8px;
+    padding-inline-end: 8px;
+    width: 220px;
   }
 
   #main {
@@ -27,9 +25,9 @@
   <h1>Healthd Internals</h1>
   <cr-menu-selector id="selector"
       selectable="a"
-      selected="{{selectedIndex_}}"
+      selected="{{selectedIndex}}"
       selected-attribute="selected">
-    <template is="dom-repeat" items="[[pages]]">
+    <template is="dom-repeat" items="[[pageList]]">
       <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
         [[item.name]]
       </a>
@@ -37,11 +35,13 @@
   </cr-menu-selector>
 </div>
 
-<iron-location path="{{path_}}"></iron-location>
+<iron-location path="{{currentPath}}"></iron-location>
 
 <div id="main">
-  <iron-pages selected="[[selectedIndex_]]">
-    <div><h1>Telemetry content will be added here</h1></div>
+  <iron-pages selected="[[selectedIndex]]">
+    <div>
+      <healthd-internals-telemetry></healthd-internals-telemetry>
+    </div>
     <div><h1>Diagnostics content will be added here</h1></div>
     <div><h1>Event content will be added here</h1></div>
   </iron-pages>

@@ -8,16 +8,17 @@ import '//resources/ash/common/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
+import './pages/telemetry.js';
 
-import {CrMenuSelector} from '//resources/ash/common/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 
-export interface HealthdInternalsAppElement {
-  $: {
-    selector: CrMenuSelector,
-  };
+// Interface of pages in chrome://healthd-internals.
+interface Page {
+  name: string;
+  path: string;
 }
 
 export class HealthdInternalsAppElement extends PolymerElement {
@@ -31,50 +32,47 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      pages: {
-        type: Array,
-        value: function() {
-          return [
-            {
-              name: 'Telemetry',
-              path: '/telemetry',
-            },
-            {
-              name: 'Diagnostics',
-              path: '/diagnostics',
-            },
-            {
-              name: 'Event',
-              path: '/event',
-            },
-          ];
-        },
-      },
-
-      path_: {
-        type: String,
-        observer: 'pathChanged_',
-      },
-
-      selectedIndex_: {
+      pageList: {type: Array},
+      currentPath: {type: String},
+      selectedIndex: {
         type: Number,
-        value: 0,
-        observer: 'selectedIndexChanged_',
+        observer: 'selectedIndexChanged',
       },
     };
   }
 
-  pages: Array<{name: string, path: string}>;
-  private path_: string;
-  private selectedIndex_: number;
+  override connectedCallback() {
+    super.connectedCallback();
 
-  private pathChanged_() {
-    this.selectedIndex_ =
-        Math.max(0, this.pages.findIndex(pages => pages.path === this.path_));
+    const router = CrRouter.getInstance();
+    this.updateSelectedIndex(router.getPath());
   }
 
-  private selectedIndexChanged_() {
-    this.path_ = this.pages[this.selectedIndex_]!.path;
+  private updateSelectedIndex(newPath: string) {
+    const pageIndex =
+        Math.max(0, this.pageList.findIndex((page) => page.path === newPath));
+    this.selectedIndex = pageIndex;
+  }
+
+  private pageList: Page[] = [
+    {
+      name: 'Telemetry',
+      path: '/telemetry',
+    },
+    {
+      name: 'Diagnostics',
+      path: '/diagnostics',
+    },
+    {
+      name: 'Event',
+      path: '/event',
+    },
+  ];
+  private currentPath: string;
+  private selectedIndex: number;
+
+  private selectedIndexChanged() {
+    this.currentPath = this.pageList[this.selectedIndex]!.path;
   }
 }
 
