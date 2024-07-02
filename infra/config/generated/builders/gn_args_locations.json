@@ -190,6 +190,8 @@
     "android-code-coverage": "ci/android-code-coverage/gn-args.json",
     "android-code-coverage-native": "ci/android-code-coverage-native/gn-args.json",
     "android-cronet-code-coverage-native": "ci/android-cronet-code-coverage-native/gn-args.json",
+    "android-webview-code-coverage": "ci/android-webview-code-coverage/gn-args.json",
+    "android-webview-code-coverage-native": "ci/android-webview-code-coverage-native/gn-args.json",
     "android-x86-code-coverage": "ci/android-x86-code-coverage/gn-args.json",
     "chromeos-js-code-coverage": "ci/chromeos-js-code-coverage/gn-args.json",
     "fuchsia-code-coverage": "ci/fuchsia-code-coverage/gn-args.json",

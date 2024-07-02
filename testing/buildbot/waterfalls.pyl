@@ -2281,6 +2281,30 @@
         },
         'os_type': 'android',
       },
+      'android-webview-code-coverage': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gtest_tests': 'webview_fyi_bot_all_gtests',
+        },
+        'os_type': 'android',
+      },
+      'android-webview-code-coverage-native': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'gtest_tests': 'webview_fyi_bot_all_gtests',
+        },
+        'os_type': 'android',
+      },
       'android-x86-code-coverage': {
         'mixins': [
           'has_native_resultdb_integration',

@@ -108,6 +108,59 @@ coverage_builder(
     use_java_coverage = True,
 )
 
+ci.builder(
+    name = "android-webview-code-coverage",
+    description_html = "Builder for WebView java coverage",
+    # Trigger coverage jobs once a day at 10 am UTC(2 am PST)
+    schedule = "0 10 * * *",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "arm64",
+            "resource_allowlisting",
+            "static_angle",
+            "android_fastbuild",
+            "webview_google",
+            "android_no_proguard",
+            "use_java_coverage",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "webview",
+            short_name = "arm64",
+        ),
+    ],
+    contact_team_email = "woa-engprod@google.com",
+    coverage_test_types = ["overall", "unit"],
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    use_java_coverage = True,
+)
+
 coverage_builder(
     name = "android-x86-code-coverage",
     builder_spec = builder_config.builder_spec(
@@ -208,6 +261,63 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    use_clang_coverage = True,
+)
+
+ci.builder(
+    name = "android-webview-code-coverage-native",
+    description_html = "Builder for WebView clang coverage",
+    # Trigger coverage jobs once a day at 10 am UTC(2 am PST)
+    schedule = "0 10 * * *",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "download_xr_test_apks",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-fyi-archive",
+    ),
+    # No symbols to prevent linker file too large error on
+    # android_webview_unittests target.
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "remoteexec",
+            "arm64",
+            "resource_allowlisting",
+            "static_angle",
+            "android_fastbuild",
+            "webview_google",
+            "android_no_proguard",
+            "use_clang_coverage",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "webview",
+            short_name = "awn",
+        ),
+    ],
+    contact_team_email = "woa-engprod@google.com",
+    coverage_test_types = ["overall", "unit"],
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
