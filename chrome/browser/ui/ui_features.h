@@ -148,9 +148,6 @@ BASE_DECLARE_FEATURE(kResponsiveToolbar);
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 extern const char kTabScrollingButtonPositionParameterName[];
 
-BASE_DECLARE_FEATURE(kScrollableTabStripOverflow);
-extern const char kScrollableTabStripOverflowModeName[];
-
 BASE_DECLARE_FEATURE(kSidePanelWebView);
 
 #if !defined(ANDROID)

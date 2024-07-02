@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -44,9 +45,8 @@ TabStripScrollingOverflowIndicatorStrategy::CreateFromFeatureFlag(
     base::RepeatingCallback<SkColor4f()> get_frame_color,
     base::RepeatingCallback<SkColor4f()> get_shadow_color) {
   const int overflow_feature_flag = base::GetFieldTrialParamByFeatureAsInt(
-      features::kScrollableTabStripOverflow,
-      features::kScrollableTabStripOverflowModeName,
-      OverflowFeatureFlag::kDefault);
+      tabs::kScrollableTabStripOverflow,
+      tabs::kScrollableTabStripOverflowModeName, OverflowFeatureFlag::kDefault);
 
   switch (overflow_feature_flag) {
     case OverflowFeatureFlag::kDivider:
