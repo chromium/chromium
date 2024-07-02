@@ -11,42 +11,36 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 
 namespace policy::local_user_files {
 
 // Shows notifications and dialogs related to SkyVault migration status.
 class MigrationNotificationManager {
  public:
-  explicit MigrationNotificationManager(Profile* profile);
+  MigrationNotificationManager();
   ~MigrationNotificationManager();
 
   // Shows a dialog informing the user that the migration will happen after
   // `migration_delay` (e.g. 24 h or 1 h). From the dialog, the user can select
   // to start the migration immediately which executes the `migration_callback`.
-  void ShowMigrationInfoDialog(CloudProvider provider,
-                               base::TimeDelta migration_delay,
+  void ShowMigrationInfoDialog(base::TimeDelta migration_delay,
                                base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.
-  void ShowMigrationProgressNotification(CloudProvider provider);
+  void ShowMigrationProgressNotification();
 
   // Shows the migration completed successfully notification with a button to
   // open the folder specified by `destination_path`.
   void ShowMigrationCompletedNotification(
-      CloudProvider provider,
       const base::FilePath& destination_path);
 
   // Shows the migration error notification.
-  void ShowMigrationErrorNotification(CloudProvider provider,
-                                      const std::string& message);
-
-  // Closes any open notification or dialog.
-  void CloseAll();
+  void ShowMigrationErrorNotification(const std::string& message);
 
  private:
-  // Profile for which this instance was created.
-  raw_ptr<Profile> profile_;
+  // Opens the location where the files are uploaded.
+  void HandleCompletedNotificationClick(const base::FilePath& destination_path,
+                                        std::optional<int> button_index);
 
   base::WeakPtrFactory<MigrationNotificationManager> weak_factory_{this};
 };

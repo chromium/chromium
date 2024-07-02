@@ -32,5 +32,4 @@ include_rules = [
   "+chrome/browser/notifications/notification_display_service.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
-  "+chrome/browser/notifications/notification_display_service_tester.h",
 ]
