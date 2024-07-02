@@ -51,6 +51,10 @@ base::Time BoundSessionCookieController::min_cookie_expiration_time() const {
 
 chrome::mojom::BoundSessionThrottlerParamsPtr
 BoundSessionCookieController::bound_session_throttler_params() const {
+  if (ShouldPauseThrottlingRequests()) {
+    return nullptr;
+  }
+
   return chrome::mojom::BoundSessionThrottlerParams::New(
       url().host(), url().path(), min_cookie_expiration_time());
 }

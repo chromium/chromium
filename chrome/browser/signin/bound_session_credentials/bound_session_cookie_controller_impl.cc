@@ -25,11 +25,42 @@
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
+using ResumeBlockedRequestsTrigger =
+    chrome::mojom::ResumeBlockedRequestsTrigger;
+
 constexpr size_t kMaxRetrialsForThrottledRequestsOnTransientError = 1u;
+constexpr int kNumberOfErrorsToIgnoreForBackoff = 3;
+
+constexpr net::BackoffEntry::Policy kBackoffPolicy = {
+    // Number of initial errors (in sequence) to ignore before applying
+    // exponential back-off rules.
+    kNumberOfErrorsToIgnoreForBackoff,
+
+    // Initial delay for exponential backoff in ms.
+    500,
+
+    // Factor by which the waiting time will be multiplied.
+    1.5,
+
+    // Fuzzing percentage. ex: 10% will spread requests randomly
+    // between 90%-100% of the calculated time.
+    0.2,  // 20%
+
+    // Maximum amount of time we are willing to delay our request in ms.
+    1000 * 60 * 8,  // 8 Minutes
+
+    // Time to keep an entry from being discarded even when it
+    // has no significant state, -1 to never discard.
+    -1,
+
+    // Don't use initial delay unless the last request was an error.
+    false,
+};
 
 void RecordNumberOfSuccessiveTimeoutIfAny(size_t successive_timeout) {
   if (successive_timeout == 0) {
@@ -110,7 +141,8 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
       key_service_(key_service),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
-      is_off_the_record_profile_(is_off_the_record_profile) {
+      is_off_the_record_profile_(is_off_the_record_profile),
+      refresh_cookie_fetcher_backoff_(&kBackoffPolicy) {
   CHECK(!bound_session_params.wrapped_key().empty());
   base::span<const uint8_t> wrapped_key =
       base::as_bytes(base::make_span(bound_session_params.wrapped_key()));
@@ -140,8 +172,8 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   // On shutdown or session termination, resume blocked requests if any.
-  ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::
-                            kShutdownOrSessionTermination);
+  ResumeBlockedRequests(
+      ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
   RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
 }
 
@@ -168,7 +200,13 @@ void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
   if (AreAllCookiesFresh()) {
     // Cookie is fresh.
     std::move(resume_blocked_request)
-        .Run(chrome::mojom::ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+        .Run(ResumeBlockedRequestsTrigger::kCookieAlreadyFresh);
+    return;
+  }
+
+  if (ShouldPauseThrottlingRequests()) {
+    std::move(resume_blocked_request)
+        .Run(ResumeBlockedRequestsTrigger::kThrottlingRequestsPaused);
     return;
   }
 
@@ -189,6 +227,11 @@ void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
   }
 }
 
+bool BoundSessionCookieControllerImpl::ShouldPauseThrottlingRequests() const {
+  return refresh_cookie_fetcher_backoff_.failure_count() >
+         kNumberOfErrorsToIgnoreForBackoff;
+}
+
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     const std::string& cookie_name,
     base::Time expiration_time) {
@@ -206,8 +249,8 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   base::Time old_min_expiration_time = min_cookie_expiration_time();
   it->second = expiration_time;
   if (AreAllCookiesFresh()) {
-    ResumeBlockedRequests(
-        chrome::mojom::ResumeBlockedRequestsTrigger::kObservedFreshCookies);
+    ResetCookieFetcherBackoff();
+    ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kObservedFreshCookies);
     RecordNumberOfSuccessiveTimeoutIfAny(successive_timeout_);
     successive_timeout_ = 0;
   }
@@ -250,8 +293,12 @@ bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
 }
 
 void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
-  preemptive_cookie_refresh_timer_.Stop();
+  cookie_refresh_timer_.Stop();
   if (refresh_cookie_fetcher_) {
+    return;
+  }
+
+  if (refresh_cookie_fetcher_backoff_.ShouldRejectRequest()) {
     return;
   }
 
@@ -265,6 +312,7 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
 
 void BoundSessionCookieControllerImpl::StartCookieRefresh() {
   CHECK(!refresh_cookie_fetcher_);
+  CHECK(!refresh_cookie_fetcher_backoff_.ShouldRejectRequest());
 
   if (artificial_cookie_rotation_result_) {
     OnCookieRefreshFetched(*artificial_cookie_rotation_result_);
@@ -283,8 +331,7 @@ void BoundSessionCookieControllerImpl::StartCookieRefresh() {
   }
 }
 
-void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
-    BoundSessionRefreshCookieFetcher::Result result) {
+void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(Result result) {
   CHECK(!cached_sec_session_challenge_response_.has_value());
   bool is_transient_error =
       BoundSessionRefreshCookieFetcher::IsTransientError(result);
@@ -302,6 +349,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
                   refresh_cookie_fetcher_->IsChallengeReceived());
   refresh_cookie_fetcher_.reset();
 
+  UpdateCookieFetcherBackoff(result);
   if (cookie_rotation_retries_on_transient_error_ <
           kMaxRetrialsForThrottledRequestsOnTransientError &&
       is_transient_error && !resume_blocked_requests_.empty()) {
@@ -317,14 +365,14 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   // as `OnCookieRefreshFetched()` if the fetch was successful.
 
   if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
-    ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::
-                              kCookieRefreshFetchSuccess);
+    ResumeBlockedRequests(
+        ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess);
     cookie_rotation_retries_on_transient_error_ = 0;
     return;
   }
 
   ResumeBlockedRequests(
-      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
+      ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure);
 
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
@@ -334,10 +382,59 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   }
 }
 
+void BoundSessionCookieControllerImpl::UpdateCookieFetcherBackoff(
+    Result result) {
+  if (result == Result::kSuccess) {
+    ResetCookieFetcherBackoff();
+    return;
+  }
+
+  bool was_throttling_requests_paused = ShouldPauseThrottlingRequests();
+  if (!was_throttling_requests_paused &&
+      result != Result::kServerTransientError) {
+    return;
+  }
+
+  // If throttling is paused, ensure that other types of errors:
+  // - Do not stop cookie rotation in the background
+  // - Do not retry in a loop but with backoff
+  refresh_cookie_fetcher_backoff_.InformOfRequest(/*succeeded=*/false);
+  if (!ShouldPauseThrottlingRequests()) {
+    return;
+  }
+
+  // Request throttling is paused due to an outage, schedule cookie rotation in
+  // the background with backoff.
+  MaybeScheduleCookieRotation();
+
+  if (!was_throttling_requests_paused) {
+    // Notify only once.
+    delegate_->OnBoundSessionThrottlerParamsChanged();
+  }
+}
+
+void BoundSessionCookieControllerImpl::ResetCookieFetcherBackoff() {
+  refresh_cookie_fetcher_backoff_.Reset();
+  // Note: It is expected that required cookies must become fresh with
+  // successful cookie rotation. Cookie rotation request that does not set
+  // required cookies is considered as a persistent failure. We rely on cookie
+  // updates to trigger `delegate->OnBoundSessionThrottlerParamsChanged()`.
+  // Cookie rotation is also expected to be scheduled based on newly rotated
+  // cookie's expiration date.
+}
+
 void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
-  base::TimeDelta refresh_in =
+  base::TimeDelta preemptive_refresh_in =
       min_cookie_expiration_time() - base::Time::Now() - kCookieRefreshInterval;
+
+  // Respect backoff release time if set, otherwise follow the time for
+  // preemptive cookie refresh.
+  base::TimeDelta refresh_in =
+      ShouldPauseThrottlingRequests()
+          ? refresh_cookie_fetcher_backoff_.GetTimeUntilRelease()
+          : preemptive_refresh_in;
+
   if (!refresh_in.is_positive()) {
     MaybeRefreshCookie();
     return;
@@ -346,14 +443,14 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   // If a refresh task is already scheduled, this will reschedule it.
   // `base::Unretained(this)` is safe because `this` owns
   // `cookie_rotation_timer_`.
-  preemptive_cookie_refresh_timer_.Start(
+  cookie_refresh_timer_.Start(
       FROM_HERE, refresh_in,
       base::BindRepeating(&BoundSessionCookieControllerImpl::MaybeRefreshCookie,
                           base::Unretained(this)));
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
-    chrome::mojom::ResumeBlockedRequestsTrigger trigger) {
+    ResumeBlockedRequestsTrigger trigger) {
   resume_blocked_requests_timer_.Stop();
   if (resume_blocked_requests_.empty()) {
     return;
@@ -375,6 +472,6 @@ void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();
-  ResumeBlockedRequests(chrome::mojom::ResumeBlockedRequestsTrigger::kTimeout);
+  ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kTimeout);
   successive_timeout_++;
 }

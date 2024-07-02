@@ -45,6 +45,7 @@ enum ResumeBlockedRequestsTrigger {
   kShutdownOrSessionTermination = 5,
   kCookieAlreadyFresh = 6,
   kRendererDisconnected = 7,
+  kThrottlingRequestsPaused = 8,
 };
 
 // Allows the renderer to notify the browser process that requests in renderer

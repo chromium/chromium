@@ -74,6 +74,12 @@ class BoundSessionCookieController {
 
   BoundSessionKey GetBoundSessionKey();
 
+  // Returns true in case of successive 5xx responses on the cookie rotation
+  // endpoint which indicates the server might be experiencing an outage.
+  // Throttling requests in this case might make the web (within the scope of
+  // the bound session) unusable.
+  virtual bool ShouldPauseThrottlingRequests() const = 0;
+
  protected:
   const GURL url_;
   const std::string session_id_;

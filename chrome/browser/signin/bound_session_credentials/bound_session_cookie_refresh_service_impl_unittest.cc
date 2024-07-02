@@ -118,7 +118,20 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request)
       override {
+    if (ShouldPauseThrottlingRequests()) {
+      std::move(resume_blocked_request)
+          .Run(ResumeBlockedRequestsTrigger::kThrottlingRequestsPaused);
+      return;
+    }
     resume_blocked_requests_.push_back(std::move(resume_blocked_request));
+  }
+
+  bool ShouldPauseThrottlingRequests() const override {
+    return throttling_requests_paused_;
+  }
+
+  void SetThrottlingRequestsPaused(bool paused) {
+    throttling_requests_paused_ = paused;
   }
 
   void SimulateOnCookieExpirationDateChanged(
@@ -155,6 +168,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
                   HandleRequestBlockedOnCookieCallback>
       resume_blocked_requests_;
   std::vector<uint8_t> wrapped_key_;
+  bool throttling_requests_paused_ = false;
   base::WeakPtrFactory<FakeBoundSessionCookieController> weak_ptr_factory_{
       this};
 };
@@ -544,6 +558,20 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), kRefreshCompletedTrigger);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       RequestBlockedOnCookieThrottlingPaused) {
+  SetupPreConditionForBoundSession();
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_TRUE(cookie_controller());
+  cookie_controller()->SetThrottlingRequestsPaused(true);
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  service->HandleRequestBlockedOnCookie(kTestGoogleURL, future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kThrottlingRequestsPaused);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -1215,6 +1243,49 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
   ASSERT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       HandleRequestBlockedOnCookieOneThrottlingPaused) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  GetCookieController(kGoogleSessionKeyOne)->SetThrottlingRequestsPaused(true);
+
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  service->HandleRequestBlockedOnCookie(kTestGoogleURL, future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  GetCookieController(kGoogleSessionKeyTwo)
+      ->SimulateRefreshBoundSessionCompleted();
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kThrottlingRequestsPaused);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       HandleRequestBlockedOnCookieAllThrottlingPaused) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  GetCookieController(kGoogleSessionKeyOne)->SetThrottlingRequestsPaused(true);
+  GetCookieController(kGoogleSessionKeyTwo)->SetThrottlingRequestsPaused(true);
+
+  base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
+  service->HandleRequestBlockedOnCookie(kTestGoogleURL, future.GetCallback());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            ResumeBlockedRequestsTrigger::kThrottlingRequestsPaused);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,

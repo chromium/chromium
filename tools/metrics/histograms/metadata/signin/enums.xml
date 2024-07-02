@@ -366,6 +366,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Cookie is already fresh"/>
   <int value="7"
       label="Mojo connection with the throttle handler disconnected"/>
+  <int value="8"
+      label="Throttling requests paused due to successive server transient
+             errors"/>
 </enum>
 
 <enum name="SessionTerminationTrigger">
