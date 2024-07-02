@@ -140,7 +140,7 @@ class BrowserTabStripController : public TabStripController,
                               content::WebContents* contents,
                               int index) override;
   void SetTabNeedsAttentionAt(int index, bool attention) override;
-
+  bool IsFrameButtonsRightAligned() const override;
   const Browser* browser() const { return browser_view_->browser(); }
 
   // Test-specific methods.

@@ -1712,7 +1712,8 @@ bool TabStrip::IsFocusInTabs() const {
 }
 
 bool TabStrip::ShouldCompactLeadingEdge() const {
-  return tabs::GetTabSearchRightAligned(controller_->GetProfile());
+  return controller_->IsFrameButtonsRightAligned() &&
+         tabs::GetTabSearchRightAligned(controller_->GetProfile());
 }
 
 void TabStrip::MaybeStartDrag(

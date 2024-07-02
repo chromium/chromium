@@ -802,6 +802,14 @@ void BrowserTabStripController::SetTabNeedsAttentionAt(int index,
   tabstrip_->SetTabNeedsAttention(index, attention);
 }
 
+bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
+#if BUILDFLAG(IS_MAC)
+  return false;
+#else
+  return true;
+#endif  // BUILDFLAG(IS_MAC)
+}
+
 BrowserNonClientFrameView* BrowserTabStripController::GetFrameView() {
   return browser_view_->frame()->GetFrameView();
 }
