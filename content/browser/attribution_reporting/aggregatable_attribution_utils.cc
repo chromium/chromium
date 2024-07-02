@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <iterator>
@@ -16,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -66,7 +68,7 @@ CreateAggregatableHistogram(
         aggregatable_trigger_data,
     const std::vector<attribution_reporting::AggregatableValues>&
         aggregatable_values) {
-  int num_trigger_data_filtered = 0;
+  size_t num_trigger_data_filtered = 0;
 
   attribution_reporting::AggregationKeys::Keys buckets = keys.keys();
 
@@ -114,15 +116,23 @@ CreateAggregatableHistogram(
   }
 
   if (!aggregatable_trigger_data.empty()) {
+    base::ClampedNumeric<size_t> percentage = num_trigger_data_filtered;
+    percentage *= 100;
+    percentage /= aggregatable_trigger_data.size();
+
     base::UmaHistogramPercentage(
         "Conversions.AggregatableReport.FilteredTriggerDataPercentage",
-        100 * num_trigger_data_filtered / aggregatable_trigger_data.size());
+        percentage);
   }
 
   if (!buckets.empty()) {
+    base::ClampedNumeric<size_t> percentage = buckets.size();
+    percentage -= contributions.size();
+    percentage *= 100;
+    percentage /= buckets.size();
+
     base::UmaHistogramPercentage(
-        "Conversions.AggregatableReport.DroppedKeysPercentage",
-        100 * (buckets.size() - contributions.size()) / buckets.size());
+        "Conversions.AggregatableReport.DroppedKeysPercentage", percentage);
   }
 
   static_assert(attribution_reporting::kMaxAggregationKeysPerSource == 20,
@@ -131,20 +141,20 @@ CreateAggregatableHistogram(
 
   base::UmaHistogramExactLinear(
       "Conversions.AggregatableReport.NumContributionsPerReport2",
-      contributions.size(),
+      base::saturated_cast<int>(contributions.size()),
       attribution_reporting::kMaxAggregationKeysPerSource + 1);
 
   // If total values exceeds the max, log the metrics as 100,000 to measure
   // how often the max is exceeded.
   static_assert(attribution_reporting::kMaxAggregatableValue == 65536);
   const int64_t max_value = attribution_reporting::kMaxAggregatableValue + 1;
-  int adjusted_value = std::min(
-      max_value,
-      static_cast<int64_t>(
-          GetTotalAggregatableValues(contributions).ValueOrDefault(max_value)));
+  int64_t adjusted_value = std::min(
+      base::MakeStrictNum(max_value),
+      GetTotalAggregatableValues(contributions).ValueOrDefault(max_value));
   base::UmaHistogramCounts100000(
       "Conversions.AggregatableReport.TotalBudgetPerReport",
-      adjusted_value == max_value ? 100000 : adjusted_value);
+      adjusted_value == max_value ? 100000
+                                  : base::saturated_cast<int>(adjusted_value));
 
   return contributions;
 }
