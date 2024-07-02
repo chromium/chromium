@@ -44,10 +44,18 @@ class LocalHttpServer:
     __path_basic_auth = "/401"
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
+    # __path_sw_page_bad_ssl = "/sw_bad_ssl.html"
+    # __path_empty_script = "/empty.js"
 
     __protocol: Literal['http', 'https']
 
     content_200: str = 'default 200 page'
+    content_200_page: str = 'default 200 page'
+
+    # def __content_sw_page_bad_ssl(self) -> str:
+    #     return f"""<script>
+    #       window.registrationPromise = navigator.serviceWorker.register('{self.url_empty_script(protocol='https')}');
+    #     </script>"""
 
     def clear(self):
         self.__http_server.clear()
@@ -175,16 +183,18 @@ class LocalHttpServer:
         """
         return self.__http_server.url_for(self.__path_base)
 
-    def url_200(self, content=None) -> str:
+    def url_200(self, content=None, content_type="text/html") -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
         if content is not None:
             path = f"{self.__path_200}/{str(uuid.uuid4())}"
+            if content_type == "text/html":
+                content = self.__html_doc(content)
             self.__http_server \
                 .expect_request(path) \
                 .respond_with_data(
-                    self.__html_doc(content),
-                    headers={"Content-Type": "text/html"})
+                    content,
+                    headers={"Content-Type": content_type})
 
             return self.__http_server.url_for(path)
 

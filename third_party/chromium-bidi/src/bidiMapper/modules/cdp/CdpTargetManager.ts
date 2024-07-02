@@ -48,7 +48,6 @@ export class CdpTargetManager {
 
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #networkStorage: NetworkStorage;
-  readonly #acceptInsecureCerts: boolean;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -65,12 +64,10 @@ export class CdpTargetManager {
     realmStorage: RealmStorage,
     networkStorage: NetworkStorage,
     preloadScriptStorage: PreloadScriptStorage,
-    acceptInsecureCerts: boolean,
     defaultUserContextId: Browser.UserContext,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
-    this.#acceptInsecureCerts = acceptInsecureCerts;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
     this.#selfTargetId = selfTargetId;
@@ -256,7 +253,6 @@ export class CdpTargetManager {
       this.#preloadScriptStorage,
       this.#browsingContextStorage,
       this.#networkStorage,
-      this.#acceptInsecureCerts,
       this.#unhandledPromptBehavior,
       this.#logger
     );

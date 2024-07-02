@@ -46,7 +46,6 @@ export class CdpTarget {
 
   readonly #unblocked = new Deferred<Result<void>>();
   readonly #unhandledPromptBehavior?: Session.UserPromptHandler;
-  readonly #acceptInsecureCerts: boolean;
   readonly #logger: LoggerFn | undefined;
 
   #networkDomainEnabled = false;
@@ -65,7 +64,6 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
-    acceptInsecureCerts: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ): CdpTarget {
@@ -78,7 +76,6 @@ export class CdpTarget {
       preloadScriptStorage,
       browsingContextStorage,
       networkStorage,
-      acceptInsecureCerts,
       unhandledPromptBehavior,
       logger
     );
@@ -103,7 +100,6 @@ export class CdpTarget {
     preloadScriptStorage: PreloadScriptStorage,
     browsingContextStorage: BrowsingContextStorage,
     networkStorage: NetworkStorage,
-    acceptInsecureCerts: boolean,
     unhandledPromptBehavior?: Session.UserPromptHandler,
     logger?: LoggerFn
   ) {
@@ -115,7 +111,6 @@ export class CdpTarget {
     this.#preloadScriptStorage = preloadScriptStorage;
     this.#networkStorage = networkStorage;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#acceptInsecureCerts = acceptInsecureCerts;
     this.#unhandledPromptBehavior = unhandledPromptBehavior;
     this.#logger = logger;
   }
@@ -166,10 +161,6 @@ export class CdpTarget {
         this.#cdpClient.sendCommand('Runtime.enable'),
         this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
           enabled: true,
-        }),
-        // Set ignore certificate errors for each target.
-        this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-          ignore: this.#acceptInsecureCerts,
         }),
         this.toggleNetworkIfNeeded(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
