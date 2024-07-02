@@ -11,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_executor.h"
@@ -28,6 +30,8 @@
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace enterprise_companion {
 
 namespace {
 
@@ -59,9 +63,58 @@ void InitThreadPool() {
   base::ThreadPoolInstance::Get()->Start(init_params);
 }
 
-}  // namespace
+class EnterpriseCompanionApp {
+ public:
+  EnterpriseCompanionApp() {
+    net_thread_.StartWithOptions({base::MessagePumpType::IO, 0});
+    url_loader_factory_provider_ =
+        base::SequenceBound<URLLoaderFactoryProvider>(
+            net_thread_.task_runner());
+  }
 
-namespace enterprise_companion {
+  ~EnterpriseCompanionApp() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  void RunUntilShutdown() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::RunLoop run_loop;
+    url_loader_factory_provider_
+        .AsyncCall(&URLLoaderFactoryProvider::GetPendingURLLoaderFactory)
+        .Then(base::BindOnce(
+            &EnterpriseCompanionApp::OnUrlLoaderFactoryReceived,
+            weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::Thread net_thread_{"Network"};
+  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider_;
+  std::unique_ptr<mojom::EnterpriseCompanion> stub_;
+
+  void OnUrlLoaderFactoryReceived(
+      base::OnceClosure shutdown_callback,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_url_loader_factory) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+        network::SharedURLLoaderFactory::Create(
+            std::move(pending_url_loader_factory));
+
+    VLOG(1) << "Launching Chrome Enterprise Companion";
+    stub_ =
+        CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
+            CreateDMClient(
+                GetDefaultCloudPolicyClientProvider(url_loader_factory)),
+            std::move(shutdown_callback)));
+  }
+
+  base::WeakPtrFactory<EnterpriseCompanionApp> weak_ptr_factory_{this};
+};
+
+}  // namespace
 
 int EnterpriseCompanionMain(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
@@ -78,29 +131,7 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
     return 1;
   }
 
-  base::Thread net_thread("Network");
-  net_thread.StartWithOptions({base::MessagePumpType::IO, 0});
-  base::SequenceBound<URLLoaderFactoryProvider> url_loader_factory_provider =
-      base::SequenceBound<URLLoaderFactoryProvider>(net_thread.task_runner());
-
-  base::RunLoop run_loop;
-  url_loader_factory_provider
-      .AsyncCall(&URLLoaderFactoryProvider::GetPendingURLLoaderFactory)
-      .Then(base::BindOnce(
-          [](base::OnceClosure shutdown,
-             std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                 pending_shared_url_loader_factory) {
-            VLOG(1) << "Launching Chrome Enterprise Companion";
-            auto stub = CreateEnterpriseCompanionServiceStub(
-                CreateEnterpriseCompanionService(
-                    CreateDMClient(GetDefaultCloudPolicyClientProvider(
-                        network::SharedURLLoaderFactory::Create(
-                            std::move(pending_shared_url_loader_factory)))),
-                    std::move(shutdown)));
-          },
-          base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
-  run_loop.Run();
-
+  EnterpriseCompanionApp().RunUntilShutdown();
   return 0;
 }
 
