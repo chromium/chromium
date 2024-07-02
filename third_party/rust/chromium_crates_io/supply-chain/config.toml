@@ -53,7 +53,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."base64:0.13.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."bitflags:2.5.0"]
+[policy."bitflags:2.6.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck:1.16.1"]

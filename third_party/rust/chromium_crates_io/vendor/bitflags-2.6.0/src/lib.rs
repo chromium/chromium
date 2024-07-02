@@ -17,7 +17,7 @@ Add `bitflags` to your `Cargo.toml`:
 
 ```toml
 [dependencies.bitflags]
-version = "2.5.0"
+version = "2.6.0"
 ```
 
 ## Generating flags types
@@ -38,7 +38,7 @@ bitflags! {
 
 See the docs for the `bitflags` macro for the full syntax.
 
-Also see the [`example_generated`] module for an example of what the `bitflags` macro generates for a flags type.
+Also see the [`example_generated`](./example_generated/index.html) module for an example of what the `bitflags` macro generates for a flags type.
 
 ### Externally defined flags
 
@@ -530,6 +530,7 @@ macro_rules! bitflags {
         }
     };
     (
+        $(#[$outer:meta])*
         impl $BitFlags:ident: $T:ty {
             $(
                 $(#[$inner:ident $($args:tt)*])*
@@ -561,6 +562,7 @@ macro_rules! bitflags {
         )]
         const _: () = {
             $crate::__impl_public_bitflags! {
+                $(#[$outer])*
                 $BitFlags: $T, $BitFlags {
                     $(
                         $(#[$inner $($args)*])*
@@ -593,6 +595,7 @@ macro_rules! bitflags {
 #[doc(hidden)]
 macro_rules! __impl_bitflags {
     (
+        $(#[$outer:meta])*
         $PublicBitFlags:ident: $T:ty {
             fn empty() $empty:block
             fn all() $all:block
@@ -617,6 +620,7 @@ macro_rules! __impl_bitflags {
         }
     ) => {
         #[allow(dead_code, deprecated, unused_attributes)]
+        $(#[$outer])*
         impl $PublicBitFlags {
             /// Get a flags value with all bits unset.
             #[inline]
