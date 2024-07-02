@@ -15,6 +15,10 @@ namespace webnn {
 enum class InputOperandLayout { kNchw, kNhwc };
 
 struct ContextProperties {
+  // Output supported data types are the same as inputs.
+  SupportedDataTypes OutputSupportedDataTypes() const {
+    return input_supported_data_types;
+  }
   InputOperandLayout conv2d_input_layout;
   SupportedDataTypes input_supported_data_types;
   SupportedDataTypes constant_supported_data_types;

@@ -22,6 +22,8 @@ dictionary MLComputeResult {
 dictionary MLOpSupportLimits {
   MLSupportLimits input;
   MLSupportLimits constant;
+  MLSupportLimits output;
+
   MLGatherSupportLimits gather;
 };
 

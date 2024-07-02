@@ -2480,15 +2480,7 @@ GraphBuilderCoreml::PopulateFeatureDescription(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-      if (operand.kind == mojom::Operand::Kind::kInput) {
         NOTREACHED_NORETURN() << "Unsupported input data type";
-      } else {
-        // TODO: crbug.com/345271830 - Move output validation to blink.
-        return NewNotSupportedError(
-            base::StrCat({"Unsupported data type ",
-                          DataTypeToString(operand.descriptor.data_type()),
-                          " for output."}));
-      }
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers

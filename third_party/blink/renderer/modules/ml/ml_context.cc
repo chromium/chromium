@@ -156,6 +156,9 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       properties_.input_supported_data_types));
   op_support_limits->setConstant(SupportedDataTypesToSupportLimits(
       properties_.constant_supported_data_types));
+  op_support_limits->setOutput(SupportedDataTypesToSupportLimits(
+      properties_.OutputSupportedDataTypes()));
+
   MLGatherSupportLimits* gather = MLGatherSupportLimits::Create();
   gather->setInput(SupportedDataTypesToSupportLimits(
       properties_.gather_input_supported_data_types));

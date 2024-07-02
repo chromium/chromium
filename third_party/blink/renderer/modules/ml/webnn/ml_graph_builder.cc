@@ -2189,6 +2189,16 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(outputs),
                                  ScriptPromise<MLGraph>());
 
+  for (const auto& named_output : named_outputs) {
+    if (!ml_context_->GetProperties().OutputSupportedDataTypes().Has(
+            named_output.second->DataType())) {
+      exception_state.ThrowTypeError(String(webnn::NotSupportedOutputTypeError(
+          named_output.first.Utf8(), named_output.second->DataType(),
+          ml_context_->GetProperties().OutputSupportedDataTypes())));
+      return EmptyPromise();
+    }
+  }
+
   ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

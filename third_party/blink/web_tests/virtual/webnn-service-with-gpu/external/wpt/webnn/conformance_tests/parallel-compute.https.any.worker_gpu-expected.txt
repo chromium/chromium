@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] test parallel WebNN API compute operations
-  assert_array_equals: expected property 1 to be 4 but got 6 (expected array [2, 4, 6, 8] got [2, 6, 8, 8])
-Harness: the test ran to completion.
-

@@ -80,11 +80,20 @@ std::string NotSupportedInputTypeError(std::string_view input_name,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedOutputTypeError(std::string_view output_name,
+                                        OperandDataType type,
+                                        SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for output operand named '", output_name, "'",
+                       SupportedDataTypesString(supported_types)});
+}
+
 std::string GetLabelErrorSuffix(std::string_view label) {
   if (label.empty()) {
     return "";
   }
   return base::StrCat({"[", label, "] "});
+
 }
 
 }  // namespace webnn
