@@ -1736,7 +1736,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '38b9cc263bbaeb03ce408a4e26084543a6c0dedb',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'd791d48859c6fc7850c9fd5270d2b236c818068d',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -1764,7 +1764,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + '689da3a7ed50af7448c3f1961d1791c7c1d9c85c',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '6ede1ccc9e24e00d5b19c19d6df0f09fdf1a64fe',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + 'fb9afbafc7dfe226b9db54d4923bfb8839635274',
 
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -2473,7 +2473,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '0c51dc593181858f2570510befeedbd2d1f53853',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '61a995e8622ae42bf9b97055ebf53d57dc330bdb',
 
   'src/third_party/turbine': {
       'packages': [
@@ -2560,7 +2560,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'c2aef747585d1453d682e82ee431317a1e35c7f3',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '6719f5d3a2e1a6b189a6b6398ac6711e30b25b59',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',

@@ -119,6 +119,8 @@ source_set("xnnpack") {
   configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
 
   sources = [
+  "src/include/xnnpack.h",
+  "build_identifier.c",
 %SRCS%
   ]
 
@@ -141,6 +143,8 @@ source_set("xnnpack_standalone") {
   configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
 
   sources = [
+  "src/include/xnnpack.h",
+  "build_identifier.c",
 %SRCS%
   ]
 
@@ -166,6 +170,7 @@ source_set("%TARGET_NAME%") {
   ]
 %ASMFLAGS%
   sources = [
+    "src/include/xnnpack.h",
 %SRCS%
   ]
 
@@ -190,6 +195,7 @@ source_set("%TARGET_NAME%_standalone") {
   ]
 %ASMFLAGS%
   sources = [
+    "src/include/xnnpack.h",
 %SRCS%
   ]
 
@@ -665,7 +671,7 @@ def EnsureAndroidNDK():
     stdout=subprocess.DEVNULL,
     stderr=subprocess.DEVNULL,
   )
-  os.environ['ANDROID_NDK_HOME'] = '/tmp/android-ndk-r25b'
+  os.environ['ANDROID_NDK_HOME'] = os.path.join(extractdir, 'android-ndk-r25b')
 
 
 def MakeXNNPACKSourceSet(ss):

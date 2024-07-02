@@ -7,6 +7,7 @@ import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/cpuinfo/cpuinfo.gni")
+import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
@@ -33,6 +34,7 @@ proto_library("tflite_op_resolver_proto") {
 
 config("tflite_config") {
   include_dirs = [
+    "$root_gen_dir/third_party/tflite/src",
     "shims",
     "src",
     "src/third_party/xla",
@@ -81,6 +83,7 @@ config("tflite_flags") {
       "XNNPACK_DELEGATE_ENABLE_QS8",
       "XNNPACK_DELEGATE_ENABLE_QU8",
       "XNNPACK_DELEGATE_USE_LATEST_OPS",
+      "TFLITE_KERNEL_USE_XNNPACK",
     ]
   } else {
     defines += [ "TFLITE_WITHOUT_XNNPACK" ]
@@ -165,6 +168,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/sign.cc",
     "src/tensorflow/lite/kernels/sign_custom.cc",
     "src/tensorflow/lite/kernels/stablehlo_add.cc",
+    "src/tensorflow/lite/kernels/stablehlo_composite.cc",
     "src/tensorflow/lite/kernels/stablehlo_elementwise.cc",
     "src/tensorflow/lite/kernels/stablehlo_min_max.cc",
     "src/tensorflow/lite/kernels/stablehlo_multiply.cc",
@@ -549,6 +553,10 @@ tflite_static_library("tflite_kernels") {
     include_dirs = [ "//third_party/cpuinfo/src" ]
   }
 
+  if (build_tflite_with_xnnpack) {
+    conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
+  }
+
   configs_to_add = [
     ":tflite_config",
     ":tflite_flags",
@@ -595,11 +603,19 @@ source_set("tflite_logging_standalone") {
   visibility = [ ":*" ]
 }
 
+flatbuffer("weight_cache_schema_generated") {
+  sources = [ "src/tensorflow/lite/delegates/xnnpack/weight_cache_schema.fbs" ]
+  args = [ "--gen-object-api" ]
+}
+
 # TODO(crbug.com/1147996): Update to a component build. Will require updating the
 # tflite version.
 tflite_static_library("tflite") {
   sources = [
+    "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.cc",
+    "src/tensorflow/compiler/mlir/lite/experimental/remat/metadata_util.h",
     "src/tensorflow/compiler/mlir/lite/schema/schema_utils.cc",
+    "src/tensorflow/compiler/mlir/lite/utils/string_utils.cc",
     "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.cc",
     "src/tensorflow/lite/acceleration/configuration/flatbuffer_to_proto.h",
     "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.cc",
@@ -647,8 +663,6 @@ tflite_static_library("tflite") {
     "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
-    "src/tensorflow/lite/experimental/remat/metadata_util.cc",
-    "src/tensorflow/lite/experimental/remat/metadata_util.h",
     "src/tensorflow/lite/experimental/resource/initialization_status.cc",
     "src/tensorflow/lite/experimental/resource/initialization_status.h",
     "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
@@ -767,7 +781,10 @@ tflite_static_library("tflite") {
   ]
 
   if (build_tflite_with_xnnpack) {
-    deps += [ "//third_party/cpuinfo" ]
+    deps += [
+      ":weight_cache_schema_generated",
+      "//third_party/cpuinfo",
+    ]
     conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
   }
 

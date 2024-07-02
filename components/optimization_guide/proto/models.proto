@@ -274,6 +274,8 @@ enum ModelEngineVersion {
   // A model using only operations that are supported by 2.17, and adds int8
   // quantization support in the seq_flow_lite custom ops.
   MODEL_ENGINE_VERSION_TFLITE_2_17 = 17;
+  // A model using only operations that are supported by 2.18.
+  MODEL_ENGINE_VERSION_TFLITE_2_18 = 18;
 }
 
 // The set of parameters that the server can use to vary the served model for
