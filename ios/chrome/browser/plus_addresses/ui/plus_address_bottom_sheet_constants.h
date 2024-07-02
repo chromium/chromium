@@ -66,8 +66,12 @@ extern const CGFloat kPlusAddressSheetBrandingIconContainerViewTopPadding;
 
 // Enum specifying the URL the bottom sheet should open.
 enum class PlusAddressURLType {
+  // A bug reporting URL for plus addresses.
   kErrorReport = 0,
+  // A plus address management surface on accounts.google.com.
   kManagement = 1,
+  // A help center page to learn more about plus addresses.
+  kLearnMore = 2,
 };
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSTANTS_H_

@@ -153,6 +153,15 @@ TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
   EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
 }
 
+TEST_F(PlusAddressBottomSheetMediatorTest, openLearnMoreUrlOnNewTab) {
+  [mediator() openNewTab:PlusAddressURLType::kLearnMore];
+
+  EXPECT_EQ(GURL(plus_addresses::features::kPlusAddressLearnMoreUrl.Get()),
+            url_loader()->last_params.web_params.url);
+  // Ensure one new tab is opened.
+  EXPECT_EQ(1, url_loader()->load_new_tab_call_count);
+}
+
 // Ensure the consumer is notified when plus addresses are refreshed.
 TEST_F(PlusAddressBottomSheetMediatorTest, didTapRefresh) {
   OCMExpect([consumer_

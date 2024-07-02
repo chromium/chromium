@@ -291,8 +291,7 @@ UIImageView* BrandingImageView() {
   if (textView == _errorMessage) {
     [_delegate openNewTab:PlusAddressURLType::kErrorReport];
   } else if (textView == _noticeMessage) {
-    // TODO(crbug.com/348353662): Update it with the notice URL.
-    [_delegate openNewTab:PlusAddressURLType::kManagement];
+    [_delegate openNewTab:PlusAddressURLType::kLearnMore];
   } else {
     [_delegate openNewTab:PlusAddressURLType::kManagement];
   }

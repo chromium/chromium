@@ -172,6 +172,8 @@
       return GURL(plus_addresses::features::kPlusAddressErrorReportUrl.Get());
     case PlusAddressURLType::kManagement:
       return GURL(plus_addresses::features::kPlusAddressManagementUrl.Get());
+    case PlusAddressURLType::kLearnMore:
+      return GURL(plus_addresses::features::kPlusAddressLearnMoreUrl.Get());
   }
 }
 @end
