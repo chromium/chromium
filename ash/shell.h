@@ -985,6 +985,8 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   static Shell* instance_;
 
+  base::ObserverList<ShellObserver>::Unchecked shell_observers_;
+
   // The CompoundEventFilter owned by aura::Env object.
   std::unique_ptr<::wm::CompoundEventFilter> env_filter_;
 
@@ -1280,8 +1282,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate_;
 
   std::unique_ptr<CoralController> coral_controller_;
-
-  base::ObserverList<ShellObserver>::Unchecked shell_observers_;
 
   base::WeakPtrFactory<Shell> weak_factory_{this};
 };
