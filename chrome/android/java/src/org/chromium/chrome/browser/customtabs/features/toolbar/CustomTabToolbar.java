@@ -706,8 +706,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateToolbarLayoutMargin() {
-        // TODO(crbug.com/335609494): Differentiate between isOffTheRecord() & isIncognitoBranded().
-        final boolean shouldShowIncognitoIcon = getToolbarDataProvider().isIncognito();
+        final boolean shouldShowIncognitoIcon = isIncognitoBranded();
         mIncognitoImageView.setVisibility(shouldShowIncognitoIcon ? VISIBLE : GONE);
 
         int startMargin = calculateStartMarginForStartButtonVisibility();
@@ -894,7 +893,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void updateColorsForBackground(@ColorInt int background) {
         final @BrandedColorScheme int brandedColorScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognito(), background);
+                        getContext(), isIncognitoBranded(), background);
         if (mBrandedColorScheme == brandedColorScheme) return;
         mBrandedColorScheme = brandedColorScheme;
         final ColorStateList tint =
@@ -1290,7 +1289,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             /* focusChangeCallback= */ (unused) -> {},
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
-                            locationBarDataProvider.isIncognito());
+                            isIncognitoBranded());
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();
@@ -1386,7 +1385,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         @Override
         public boolean allowKeyboardLearning() {
-            return !CustomTabToolbar.this.isIncognito();
+            return !CustomTabToolbar.this.isOffTheRecord();
         }
 
         @Override
@@ -1683,7 +1682,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             WebContents webContents = tab.getWebContents();
             if (webContents != null) {
                 BrowserContextHandle originalBrowserContext =
-                        tab.isIncognito()
+                        tab.isOffTheRecord()
                                 ? Profile.fromWebContents(webContents).getOriginalProfile()
                                 : null;
                 if (mCookieControlsBridge != null) {

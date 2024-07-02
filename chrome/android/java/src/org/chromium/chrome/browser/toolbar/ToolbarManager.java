@@ -2349,28 +2349,29 @@ public class ToolbarManager
 
     /** Triggered when the selected tab has changed. */
     private void refreshSelectedTab(Tab tab) {
-        boolean wasIncognito = mLocationBarModel.isIncognito();
+        boolean wasIncognitoBranded = mLocationBarModel.isIncognitoBranded();
         Tab previousTab = mLocationBarModel.getTab();
 
         Profile profile =
                 tab != null ? tab.getProfile() : mTabModelSelector.getCurrentModel().getProfile();
         assert profile != null
-                : "Failed to get Profile when incognito = "
-                        + mTabModelSelector.isIncognitoSelected();
+                : "Failed to get Profile when offTheRecord = "
+                        + mTabModelSelector.isOffTheRecordModelSelected();
 
         mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);
 
-        boolean isIncognito = profile.isOffTheRecord();
+        boolean isIncognitoBranded = profile.isIncognitoBranded();
         // This method is called prior to action mode destroy callback for incognito <-> normal
         // tab switch. Makes sure the action mode toolbar is hidden before selecting the new tab.
         if (previousTab != null
-                && wasIncognito != isIncognito
+                && wasIncognitoBranded != isIncognitoBranded
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             mActionModeController.startHideAnimation();
         }
-        if (previousTab != tab || wasIncognito != isIncognito) {
-            int defaultPrimaryColor = ChromeColors.getDefaultThemeColor(mActivity, isIncognito);
+        if (previousTab != tab || wasIncognitoBranded != isIncognitoBranded) {
+            int defaultPrimaryColor =
+                    ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
             int primaryColor =
                     tab != null
                             ? mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor())

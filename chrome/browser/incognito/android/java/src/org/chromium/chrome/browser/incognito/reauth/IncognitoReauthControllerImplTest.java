@@ -85,12 +85,12 @@ public class IncognitoReauthControllerImplTest {
     private boolean mIsIncognitoReauthPendingOnRestore;
 
     private void switchToIncognitoTabModel() {
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onBeforeIncognitoTabModelSelected();
     }
 
     private void switchToRegularTabModel() {
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onAfterRegularTabModelChanged();
     }
 
@@ -106,7 +106,7 @@ public class IncognitoReauthControllerImplTest {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
 
         doReturn(false).when(mTabModelSelectorMock).isTabStateInitialized();
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
 
         doNothing()
                 .when(mTabModelSelectorMock)
@@ -230,7 +230,7 @@ public class IncognitoReauthControllerImplTest {
     @MediumTest
     public void testIncognitoTabsExisting_AndChromeForegroundedWithRegularTabs_DoesNotShowReauth() {
         doReturn(1).when(mIncognitoTabModelMock).getCount();
-        doReturn(false).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         mIncognitoReauthController.onStartWithNative();
 
@@ -347,7 +347,7 @@ public class IncognitoReauthControllerImplTest {
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         // Chrome coming to foregrounded. Re-auth would now be required since there are existing
         // Incognito tabs.
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onStartWithNative();
         switchToIncognitoTabModel();
         assertTrue(
@@ -406,7 +406,7 @@ public class IncognitoReauthControllerImplTest {
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
         // Chrome coming to foregrounded. Re-auth would now be required since there are existing
         // Incognito tabs.
-        doReturn(true).when(mTabModelSelectorMock).isIncognitoSelected();
+        doReturn(true).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
         mIncognitoReauthController.onStartWithNative();
         assertTrue(mIncognitoReauthController.isReauthPageShowing());
 

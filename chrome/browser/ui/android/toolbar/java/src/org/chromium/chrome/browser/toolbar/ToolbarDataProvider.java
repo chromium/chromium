@@ -39,13 +39,31 @@ public interface ToolbarDataProvider {
     NewTabPageDelegate getNewTabPageDelegate();
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
      * @return Whether the toolbar is currently being displayed for incognito.
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
+    @Deprecated
     boolean isIncognito();
 
     /**
+     * @return Whether the toolbar is currently being displayed for an incognito branded browser
+     *     context.
+     * @see {@link Profile#isIncognitoBranded()}
+     */
+    boolean isIncognitoBranded();
+
+    /**
+     * @return Whether the toolbar is currently being displayed for an off the record browser
+     *     context.
+     * @see {@link Profile#isOffTheRecord()}
+     */
+    boolean isOffTheRecord();
+
+    /**
      * @return Whether the toolbar is currently being displayed in overview mode and showing the
-     *  omnibox.
+     *     omnibox.
      */
     boolean isInOverviewAndShowingOmnibox();
 

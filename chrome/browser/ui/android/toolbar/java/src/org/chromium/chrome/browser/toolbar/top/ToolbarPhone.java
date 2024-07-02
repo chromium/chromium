@@ -479,7 +479,7 @@ public class ToolbarPhone extends ToolbarLayout
             return mHomeSurfaceLocationBarBackgroundColor;
         }
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
-                getContext(), toolbarColor, isIncognito());
+                getContext(), toolbarColor, isIncognitoBranded());
     }
 
     /**
@@ -490,14 +490,14 @@ public class ToolbarPhone extends ToolbarLayout
     private @ColorInt int getToolbarDefaultColor(boolean shouldUseFocusColor) {
         if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
             if (mDropdownListScrolled) {
-                return isIncognito()
+                return isIncognitoBranded()
                         ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
                         : ChromeColors.getSurfaceColor(
                                 getContext(), R.dimen.toolbar_text_box_elevation);
             }
-            return mLocationBar.getDropdownBackgroundColor(isIncognito());
+            return mLocationBar.getDropdownBackgroundColor(isIncognitoBranded());
         }
-        return ChromeColors.getDefaultThemeColor(getContext(), isIncognito());
+        return ChromeColors.getDefaultThemeColor(getContext(), isIncognitoBranded());
     }
 
     /**
@@ -514,7 +514,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor) {
 
             // Omnibox has same background as the Omnibox suggestion.
-            return mLocationBar.getSuggestionBackgroundColor(isIncognito());
+            return mLocationBar.getSuggestionBackgroundColor(isIncognitoBranded());
         }
         return getLocationBarColorForToolbarColor(toolbarColor);
     }
@@ -1344,7 +1344,7 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.getPhoneCoordinator().setAlpha(1);
         mForceDrawLocationBarBackground = false;
         mLocationBarBackgroundAlpha = 255;
-        if (isIncognito()
+        if (isIncognitoBranded()
                 || (mUnfocusedLocationBarUsesTransparentBg
                         && !mUrlFocusChangeInProgress
                         && !mLocationBar.getPhoneCoordinator().hasFocus())) {
@@ -1984,7 +1984,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideShadowForRegularNtpTextureCapture() {
-        return !isIncognito()
+        return !isIncognitoBranded()
                 && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl())
                 && mNtpSearchBoxScrollFraction < 1.f;
     }
@@ -2409,7 +2409,7 @@ public class ToolbarPhone extends ToolbarLayout
         mTabCountSupplier = tabCountSupplier;
         mTabCountSupplier.addObserver(mTabCountSupplierObserver);
         if (mToggleTabStackButton != null) {
-            mToggleTabStackButton.setTabCountSupplier(tabCountSupplier, this::isIncognito);
+            mToggleTabStackButton.setTabCountSupplier(tabCountSupplier, this::isIncognitoBranded);
         }
     }
 
@@ -2445,7 +2445,7 @@ public class ToolbarPhone extends ToolbarLayout
     private @ColorInt int getTabThemeColor() {
         if (getToolbarDataProvider() != null) return getToolbarDataProvider().getPrimaryColor();
         return getToolbarColorForVisualState(
-                isIncognito() ? VisualState.INCOGNITO : VisualState.NORMAL);
+                isIncognitoBranded() ? VisualState.INCOGNITO : VisualState.NORMAL);
     }
 
     @Override
@@ -2650,7 +2650,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideShadowForIncognitoNtp() {
-        return isIncognito() && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());
+        return isIncognitoBranded()
+                && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());
     }
 
     private boolean hideShadowForInterstitial() {
@@ -2664,7 +2665,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (mIsSurfacePolishEnabled && isLocationBarShownInGeneralNtp()) {
             return VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO;
         }
-        if (isIncognito()) return VisualState.INCOGNITO;
+        if (isIncognitoBranded()) return VisualState.INCOGNITO;
         if (getToolbarDataProvider().isUsingBrandColor()) return VisualState.BRAND_COLOR;
         return VisualState.NORMAL;
     }
@@ -2787,7 +2788,7 @@ public class ToolbarPhone extends ToolbarLayout
                 && getToolbarDataProvider().getTab() != null
                 && getToolbarDataProvider().getTab().isNativePage()) {
             @VisualState
-            int visualState = isIncognito() ? VisualState.INCOGNITO : VisualState.NORMAL;
+            int visualState = isIncognitoBranded() ? VisualState.INCOGNITO : VisualState.NORMAL;
             themeColorForProgressBar = getToolbarColorForVisualState(visualState);
         }
 
@@ -2798,7 +2799,7 @@ public class ToolbarPhone extends ToolbarLayout
                 visualStateChanged = true;
             } else {
                 updateToolbarBackgroundFromState(VisualState.BRAND_COLOR);
-                getProgressBar().setThemeColor(themeColorForProgressBar, isIncognito());
+                getProgressBar().setThemeColor(themeColorForProgressBar, isIncognitoBranded());
             }
         }
 
@@ -2833,9 +2834,9 @@ public class ToolbarPhone extends ToolbarLayout
 
         mUnfocusedLocationBarUsesTransparentBg = false;
         mLocationBarBackgroundAlpha = 255;
-        getProgressBar().setThemeColor(themeColorForProgressBar, isIncognito());
+        getProgressBar().setThemeColor(themeColorForProgressBar, isIncognitoBranded());
 
-        if (isIncognito()) {
+        if (isIncognitoBranded()) {
             mLocationBarBackgroundAlpha = LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA;
         } else if (mVisualState == VisualState.BRAND_COLOR) {
             mUnfocusedLocationBarUsesTransparentBg =

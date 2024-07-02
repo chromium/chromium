@@ -383,7 +383,7 @@ public class LocationBarLayout extends FrameLayout {
     public int getEndPaddingPixelSizeOnFocusDelta() {
         return getResources()
                 .getDimensionPixelSize(
-                        mLocationBarDataProvider.isIncognito()
+                        mLocationBarDataProvider.isIncognitoBranded()
                                 ? R.dimen.location_bar_icon_end_padding_focused_incognito
                                 : R.dimen.location_bar_icon_end_padding_focused);
     }

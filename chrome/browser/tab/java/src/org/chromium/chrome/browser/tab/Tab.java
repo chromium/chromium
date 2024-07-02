@@ -207,6 +207,8 @@ public interface Tab extends TabLifecycle {
     boolean isThemingAllowed();
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
      * @return {@code true} if the Tab is in incognito mode.
      * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
@@ -215,11 +217,13 @@ public interface Tab extends TabLifecycle {
 
     /**
      * @return {@code true} if the Tab is in an off-the-record profile.
+     * @see {@link Profile#isOffTheRecord()}
      */
     boolean isOffTheRecord();
 
     /**
      * @return {@code true} if the Tab is in Incognito branded profile.
+     * @see {@link Profile#isIncognitoBranded()}
      */
     boolean isIncognitoBranded();
 

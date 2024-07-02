@@ -252,7 +252,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
         Assert.assertTrue(mMediator.shouldDisplaySearchEngineIcon());
 
-        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
         Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
     }
@@ -782,6 +782,7 @@ public final class StatusMediatorUnitTest {
      */
     private void setupStoreIconForTesting(boolean isIncognito) {
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
-        doReturn(isIncognito).when(mLocationBarDataProvider).isIncognito();
+        doReturn(isIncognito).when(mLocationBarDataProvider).isIncognitoBranded();
+        doReturn(isIncognito).when(mLocationBarDataProvider).isOffTheRecord();
     }
 }

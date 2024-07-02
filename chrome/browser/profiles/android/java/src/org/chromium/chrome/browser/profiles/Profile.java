@@ -115,15 +115,24 @@ public class Profile implements BrowserContextHandle {
 
     /**
      * Returns if the profile is a primary OTR Profile or an Incognito CCT. The primary OTR profile
-     * is the OffTheRecord profile for incognito tabs. For this to be true, {@link
-     * #isOffTheRecord()} must also be true.
+     * is the OffTheRecord profile for incognito tabs in the main Chrome App. All Incognito branded
+     * profiles return true for {@link #isOffTheRecord()} but not all OffTheRecord profiles are
+     * Incognito themed. Use this to evaluate features that should appear exclusively for Incognito
+     * themed profiles (Incognito lock, Incognito snapshot controller..) or for usages that force
+     * the Incognito theme (Dark colors, Incognito logo..). If you are unsure whether this fits your
+     * usage, reach out to incognito/OWNERS.
      */
     public boolean isIncognitoBranded() {
         boolean isIncognitoCCT = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
         return isPrimaryOTRProfile() || isIncognitoCCT;
     }
 
-    /** Returns if the profile is off the record. */
+    /**
+     * Returns if the profile is off the record. Off the record sessions are not persistent and
+     * browsing data generated within this profile is cleared after the session ends. Note that this
+     * does not imply Incognito as other OTR sessions (e.g. Ephemeral CCT) are not Incognito
+     * branded.
+     */
     public boolean isOffTheRecord() {
         return mOtrProfileId != null;
     }

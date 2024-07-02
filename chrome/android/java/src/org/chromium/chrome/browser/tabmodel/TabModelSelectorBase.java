@@ -242,6 +242,18 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
+    public boolean isIncognitoBrandedModelSelected() {
+        if (mTabModels.size() == 0) return mStartIncognito;
+        return getCurrentModel().isIncognitoBranded();
+    }
+
+    @Override
+    public boolean isOffTheRecordModelSelected() {
+        if (mTabModels.size() == 0) return mStartIncognito;
+        return getCurrentModel().isOffTheRecord();
+    }
+
+    @Override
     public List<TabModel> getModels() {
         return mTabModels;
     }

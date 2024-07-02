@@ -145,15 +145,16 @@ public class OmniboxResourceProvider {
      * Returns the ColorScheme based on the incognito state and the background color.
      *
      * @param context The {@link Context}.
-     * @param isIncognito Whether incognito mode is enabled.
+     * @param isIncognitoBranded Whether incognito mode is enabled.
      * @param primaryBackgroundColor The primary background color of the omnibox.
      * @return The {@link BrandedColorScheme}.
      */
     public static @BrandedColorScheme int getBrandedColorScheme(
-            Context context, boolean isIncognito, @ColorInt int primaryBackgroundColor) {
-        if (isIncognito) return BrandedColorScheme.INCOGNITO;
+            Context context, boolean isIncognitoBranded, @ColorInt int primaryBackgroundColor) {
+        if (isIncognitoBranded) return BrandedColorScheme.INCOGNITO;
 
-        if (ThemeUtils.isUsingDefaultToolbarColor(context, isIncognito, primaryBackgroundColor)) {
+        if (ThemeUtils.isUsingDefaultToolbarColor(
+                context, isIncognitoBranded, primaryBackgroundColor)) {
             return BrandedColorScheme.APP_DEFAULT;
         }
 

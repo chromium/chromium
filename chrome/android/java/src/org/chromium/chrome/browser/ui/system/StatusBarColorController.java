@@ -99,7 +99,7 @@ public class StatusBarColorController
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable Tab mCurrentTab;
     private boolean mIsInOverviewMode;
-    private boolean mIsIncognito;
+    private boolean mIsIncognitoBranded;
     private boolean mIsOmniboxFocused;
     private boolean mAreSuggestionsScrolled;
 
@@ -256,7 +256,7 @@ public class StatusBarColorController
                 new TabModelSelectorObserver() {
                     @Override
                     public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                        mIsIncognito = newModel.isIncognito();
+                        mIsIncognitoBranded = newModel.isIncognitoBranded();
                         // When opening a new Incognito Tab from a normal Tab (or vice versa), the
                         // status bar color is updated. However, this update is triggered after the
                         // animation, so we update here for the duration of the new Tab animation.
@@ -294,7 +294,7 @@ public class StatusBarColorController
 
     private boolean shouldUpdateStatusBarColorForHomeSurface() {
         return mIsSurfacePolishEnabled
-                && !mIsIncognito
+                && !mIsIncognitoBranded
                 && mStartSurfaceSupplier != null
                 && mStartSurfaceSupplier.hasValue()
                 && mStartSurfaceSupplier.get().isHomepageShown();
@@ -418,7 +418,7 @@ public class StatusBarColorController
         mTabModelSelector = tabModelSelector;
         if (mTabModelSelector != null) {
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
-            mIsIncognito = mTabModelSelector.isIncognitoSelected();
+            mIsIncognitoBranded = mTabModelSelector.isIncognitoBrandedModelSelected();
             updateStatusBarColor();
         }
     }
@@ -469,7 +469,8 @@ public class StatusBarColorController
             // affected by an activity focus change.
             return mTabStripHiddenOnTablet
                     ? mToolbarColor
-                    : TabUiThemeUtil.getTabStripBackgroundColor(mWindow.getContext(), mIsIncognito);
+                    : TabUiThemeUtil.getTabStripBackgroundColor(
+                            mWindow.getContext(), mIsIncognitoBranded);
         }
 
         // When Omnibox gains focus, we want to clear the status bar theme color.
@@ -493,7 +494,7 @@ public class StatusBarColorController
             if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
                 return mToolbarColor;
             }
-            return mIsIncognito ? mIncognitoPrimaryBgColor : mStandardPrimaryBgColor;
+            return mIsIncognitoBranded ? mIncognitoPrimaryBgColor : mStandardPrimaryBgColor;
         }
 
         // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we
@@ -522,13 +523,15 @@ public class StatusBarColorController
     /** Calculates the default status bar color based on the incognito state. */
     private @ColorInt int calculateDefaultStatusBarColor() {
         if (!mIsOmniboxFocused) {
-            return mIsIncognito ? mIncognitoDefaultThemeColor : mStandardDefaultThemeColor;
+            return mIsIncognitoBranded ? mIncognitoDefaultThemeColor : mStandardDefaultThemeColor;
         }
 
         if (mAreSuggestionsScrolled) {
-            return mIsIncognito ? mIncognitoScrolledOmniboxColor : mStandardScrolledOmniboxColor;
+            return mIsIncognitoBranded
+                    ? mIncognitoScrolledOmniboxColor
+                    : mStandardScrolledOmniboxColor;
         } else {
-            return mIsIncognito ? mIncognitoActiveOmniboxColor : mActiveOmniboxDefaultColor;
+            return mIsIncognitoBranded ? mIncognitoActiveOmniboxColor : mActiveOmniboxDefaultColor;
         }
     }
 

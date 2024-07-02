@@ -95,9 +95,26 @@ public interface TabModelSelector {
     TabModel getModelForTabId(int id);
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognitoSelected.
+     *
      * @return If the incognito {@link TabModel} is current.
+     * @deprecated Use {@link #isIncognitoBrandedModelSelected()} or {@link
+     *     #isOffTheRecordModelSelected()}.
      */
+    @Deprecated
     boolean isIncognitoSelected();
+
+    /**
+     * @return If the current {@link TabModel} is Incognito branded.
+     * @see {@link Profile#isIncognitoBranded()}
+     */
+    boolean isIncognitoBrandedModelSelected();
+
+    /**
+     * @return If the current {@link TabModel} is off the record.
+     * @see {@link Profile#isOffTheRecord()}
+     */
+    boolean isOffTheRecordModelSelected();
 
     /**
      * Opens a new tab.

@@ -17,17 +17,27 @@ public interface TabList {
     int INVALID_TAB_INDEX = -1;
 
     /**
-     * Returns whether this tab model contains only incognito tabs or only normal tabs.
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
+     * <p>Returns whether this tab model contains only incognito tabs or only normal tabs.
      *
      * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
     @Deprecated
     boolean isIncognito();
 
-    /** Returns whether this tab model contains only off-the-record tabs or only normal tabs. */
+    /**
+     * Returns whether this tab model contains only off-the-record tabs or only normal tabs.
+     *
+     * @see {@link Profile#isOffTheRecord()}
+     */
     boolean isOffTheRecord();
 
-    /** Returns whether this tab model contains only incognito branded tabs or only normal tabs. */
+    /**
+     * Returns whether this tab model contains only incognito branded tabs or only normal tabs.
+     *
+     * @see {@link Profile#isIncognitoBranded()}
+     */
     boolean isIncognitoBranded();
 
     /** Returns the index of the current tab, or {@link #INVALID_TAB_INDEX} if there are no tabs. */

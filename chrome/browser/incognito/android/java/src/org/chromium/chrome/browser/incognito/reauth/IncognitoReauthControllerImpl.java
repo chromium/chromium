@@ -375,7 +375,7 @@ public class IncognitoReauthControllerImpl
         if (mIncognitoReauthCoordinator != null) return;
         if (mLayoutStateProvider == null && mIsTabbedActivity) return;
         if (!mIncognitoReauthPending) return;
-        if (!mTabModelSelector.isIncognitoSelected()) return;
+        if (!mTabModelSelector.isIncognitoBrandedModelSelected()) return;
         if (mProfile == null) return;
         if (!IncognitoReauthManager.isIncognitoReauthEnabled(mProfile)) return;
 

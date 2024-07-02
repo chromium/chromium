@@ -9,6 +9,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -317,7 +318,12 @@ public class CustomTabActivityIncognitoTest {
     public void toolbarHasIncognitoLogo_ForIncognitoCCT() throws Exception {
         Intent intent = createTestCustomTabIntent();
         launchIncognitoCustomTab(intent);
-        onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(isDisplayed()));
+
+        if (mEphemeralTab) {
+            onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(not(isDisplayed())));
+        } else {
+            onView(withId(R.id.incognito_cct_logo_image_view)).check(matches(isDisplayed()));
+        }
     }
 
     @Test
@@ -723,9 +729,16 @@ public class CustomTabActivityIncognitoTest {
                             (StartStopWithNativeObserver) incognitoReauthController;
                     observer.onStartWithNative();
 
-                    assertTrue(
-                            "Re-auth screen should be shown.",
-                            incognitoReauthController.isReauthPageShowing());
+                    if (mEphemeralTab) {
+                        assertFalse(
+                                "Re-auth screen should not be shown.",
+                                incognitoReauthController.isReauthPageShowing());
+                    } else {
+                        assertTrue(
+                                "Re-auth screen should be shown.",
+                                incognitoReauthController.isReauthPageShowing());
+                    }
+
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
                 });

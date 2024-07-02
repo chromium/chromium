@@ -473,7 +473,7 @@ class LocationBarMediator
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
             GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
-            if (NativePage.isChromePageUrl(currentUrl, mLocationBarDataProvider.isIncognito())) {
+            if (NativePage.isChromePageUrl(currentUrl, mLocationBarDataProvider.isOffTheRecord())) {
                 setUrlBarTextEmpty();
             } else {
                 setUrlBarText(
@@ -1071,7 +1071,7 @@ class LocationBarMediator
         mBrandedColorScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(
                         mContext,
-                        mLocationBarDataProvider.isIncognito(),
+                        mLocationBarDataProvider.isIncognitoBranded(),
                         getPrimaryBackgroundColor());
 
         // The delete button only appears when the url bar has focus, so its tint is rather static,
@@ -1095,7 +1095,7 @@ class LocationBarMediator
         // of whether it is branded or not.
         if (isUrlBarFocused()) {
             return ChromeColors.getDefaultThemeColor(
-                    mContext, mLocationBarDataProvider.isIncognito());
+                    mContext, mLocationBarDataProvider.isIncognitoBranded());
         } else {
             return mLocationBarDataProvider.getPrimaryColor();
         }
@@ -1216,7 +1216,7 @@ class LocationBarMediator
         if (tab == null) return false;
         // The save offline button should not be shown on native pages. Currently, trying to
         // save an offline page in incognito crashes, so don't show it on incognito either.
-        return shouldShowPageActionButtons() && !tab.isIncognito();
+        return shouldShowPageActionButtons() && !tab.isOffTheRecord();
     }
 
     private boolean isSaveOfflineButtonEnabled() {
@@ -1288,7 +1288,7 @@ class LocationBarMediator
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
         // Update the visuals to use correct incognito colors.
-        mUrlCoordinator.setIncognitoColorsEnabled(mLocationBarDataProvider.isIncognito());
+        mUrlCoordinator.setIncognitoColorsEnabled(mLocationBarDataProvider.isIncognitoBranded());
     }
 
     @Override
@@ -1490,7 +1490,7 @@ class LocationBarMediator
 
     @Override
     public boolean allowKeyboardLearning() {
-        return !mLocationBarDataProvider.isIncognito();
+        return !mLocationBarDataProvider.isOffTheRecord();
     }
 
     // Traditional way to intercept keycode_back, which is deprecated from T.

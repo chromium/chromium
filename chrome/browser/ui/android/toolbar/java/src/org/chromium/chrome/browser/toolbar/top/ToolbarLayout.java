@@ -312,6 +312,16 @@ public abstract class ToolbarLayout extends FrameLayout
                     }
 
                     @Override
+                    public boolean isIncognitoBranded() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isOffTheRecord() {
+                        return false;
+                    }
+
+                    @Override
                     public boolean isInOverviewAndShowingOmnibox() {
                         return false;
                     }
@@ -727,10 +737,30 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
+     * TODO(crbug.com/350654700): clean up usages and remove isIncognito.
+     *
      * @return Whether or not the toolbar is incognito.
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
+    @Deprecated
     protected boolean isIncognito() {
         return mToolbarDataProvider.isIncognito();
+    }
+
+    /**
+     * @return Whether or not the toolbar is incognito branded.
+     * @see {@link ToolbarDataProvider#isIncognitoBranded()}
+     */
+    protected boolean isIncognitoBranded() {
+        return mToolbarDataProvider.isIncognitoBranded();
+    }
+
+    /**
+     * @return Whether or not the toolbar is off the record.
+     * @see {@link ToolbarDataProvider#isOffTheRecord()}
+     */
+    protected boolean isOffTheRecord() {
+        return mToolbarDataProvider.isOffTheRecord();
     }
 
     /**
@@ -832,10 +862,12 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Returns the border color between the toolbar and WebContents area.
+     *
      * @param toolbarColor Toolbar color
      */
     public @ColorInt int getToolbarHairlineColor(@ColorInt int toolbarColor) {
-        return ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
+        return ThemeUtils.getToolbarHairlineColor(
+                getContext(), toolbarColor, mToolbarDataProvider.isIncognitoBranded());
     }
 
     /**
