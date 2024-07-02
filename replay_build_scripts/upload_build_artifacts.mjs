@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import process from "process";
+
 import {
   assert,
   currentPlatform,
@@ -50,7 +52,16 @@ function uploadToAllBuckets(localPath, s3Path) {
   }
 }
 
+function copySync(srcDir, dstDir, file) {
+  fs.cpSync(path.join(srcDir, file), path.join(dstDir, file), {
+    recursive: true,
+  });
+}
+
 function copyBuildFiles(dstDir) {
+  // macOS already has all the build files in the proper place in its app bundles
+  assert(currentPlatform() !== Platform.macOS);
+
   const outDir = path.join("out", "Release");
   function shouldCopyFile(file) {
     const names = [
@@ -96,73 +107,65 @@ function copyBuildFiles(dstDir) {
 
   for (const file of fs.readdirSync(outDir)) {
     if (shouldCopyFile(file)) {
-      fs.cpSync(path.join(outDir, file), path.join(dstDir, file), {
-        recursive: true,
-      });
+      copySync(outDir, dstDir, file);
     }
   }
-  fs.cpSync(path.join(outDir, "locales"), path.join(dstDir, "locales"), {
-    recursive: true,
-  });
-
-  copyAssets(dstDir);
+  copySync(outDir, dstDir, "locales");
+  copySync(outDir, dstDir, "replay-assets");
 }
 
-function copyAssets(dstDir) {
-  fs.cpSync(path.join("replay-assets"), path.join(dstDir, "replay-assets"), {
-    recursive: true,
-  });
-}
+// every prepare function below does the same steps:
+// 1. delete/create the releaseArtifactDir (using mkdir for windows/linux, renaming for macOS)
+// 2. (optionally) copy any necessary build files into the releaseArtifactDir.
+// 3. create the binary artifact from the releaseArtifactDir (.tar.xz for linux, .zip for windows, .dmg for macOS)
+// 4. clean up the releaseArtifactDir.
 
 function prepareLinuxBinaries(buildId) {
+  const releaseArtifactDir = "replay-chromium";
   const buildIdArchive = `${buildId}.tar.xz`;
-  const buildArchive = "linux-chromium.tar.xz";
 
-  spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
-  fs.mkdirSync("replay-chromium");
+  fs.rmSync(releaseArtifactDir, { force: true, recursive: true });
+  fs.mkdirSync(releaseArtifactDir);
 
-  copyBuildFiles("replay-chromium");
+  copyBuildFiles(releaseArtifactDir);
 
   // Parallel build (requires xz), unlimited cores, w/ reasonable compression.
   spawnChecked(
     "tar",
-    ["-c", "-I", "xz -2 -T0", "-f", buildIdArchive, "replay-chromium"],
+    ["-c", "-I", "xz -2 -T0", "-f", buildIdArchive, releaseArtifactDir],
     {
       stdio: "inherit",
     }
   );
-  spawnChecked("cp", [buildIdArchive, buildArchive], { stdio: "inherit" });
 
-  spawnChecked("rm", ["-rf", "replay-chromium"], { stdio: "inherit" });
+  fs.rmSync(releaseArtifactDir, { force: true, recursive: true });
   return [buildIdArchive];
 }
 
 function prepareWindowsBinaries(buildId) {
-  const buildArchive = `${buildId}.zip`;
-  fs.rmSync("replay-chromium", { force: true, recursive: true });
-  fs.mkdirSync("replay-chromium");
+  const releaseArtifactDir = "replay-chromium";
+  const buildIdArchive = `${buildId}.zip`;
+  fs.rmSync(releaseArtifactDir, { force: true, recursive: true });
+  fs.mkdirSync(releaseArtifactDir);
 
-  copyBuildFiles("replay-chromium");
+  copyBuildFiles(releaseArtifactDir);
 
   // On windows we need to add a couple OpenSSL DLLs to the archive so that the driver will run.
   // This needs to be fixed, see https://github.com/RecordReplay/backend/issues/2847
   for (const dll of ["libssl-1_1-x64.dll", "libcrypto-1_1-x64.dll"]) {
-    fs.copyFileSync(
-      path.join(getBackendDir(), "lib", dll),
-      path.join("replay-chromium", dll)
-    );
+    copySync(path.join(getBackendDir(), "lib"), releaseArtifactDir, dll);
   }
   spawnChecked(
     // TODO(dmiller): this is gross, we should control this build dependency
     "C:\\mozilla-build\\bin\\zip.exe",
-    ["-r", buildArchive, "replay-chromium"],
+    ["-r", buildIdArchive, releaseArtifactDir],
     {
       stdio: "inherit",
     }
   );
-  fs.rmSync("replay-chromium", { force: true, recursive: true });
+  fs.rmSync(releaseArtifactDir, { force: true, recursive: true });
 
-  return [buildArchive];
+  return [buildIdArchive];
 }
 
 function prepareMacOSBinaries(buildId) {
@@ -173,9 +176,6 @@ function prepareMacOSBinaries(buildId) {
     : `${buildId}-signed.dmg`;
   const outdir = buildArm ? "out/Release-ARM" : "out/Release";
   const appPath = path.join(outdir, "Replay-Chromium.app");
-
-  // Copy assets.
-  copyAssets(path.join(outdir, "Chromium.app"));
 
   // Clean up.
   fs.rmSync(appPath, {
@@ -348,7 +348,7 @@ async function main(options) {
   const platform = currentPlatform();
 
   switch (platform) {
-    case "linux":
+    case Platform.linux:
       buildArchives = prepareLinuxBinaries(buildId);
       break;
 
@@ -623,7 +623,9 @@ function computeBuildId(
       : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
     // NOTE(dmiller): we seem to always download the x86 driver here but that's OK because we're just using
     // the archive to check the date and revision in the metadata JSON file.
-    const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision.trim().substring(0, 12)}.tgz`;
+    const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision
+      .trim()
+      .substring(0, 12)}.tgz`;
     spawnChecked(
       "curl",
       [

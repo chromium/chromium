@@ -352,6 +352,8 @@ if (!is_android && !is_mac) {
       }
     }
 
+    data_deps += [ "//replay-assets" ]
+
     # These files are used by the installer so we need a public dep.
     public_deps += [ ":packed_resources" ]
 
@@ -526,11 +528,16 @@ if (is_win) {
       # This is a bit of a hack, since GN deliberately terminates its search
       # for runtime_deps at create_bundle nodes (https://crbug.com/1010347).
       data_deps = [ ":chrome_framework" ]
+      data_deps += [ "//replay-assets" ]
+    } else {
+      data_deps = [ "//replay-assets" ]
     }
 
     if (enable_chromium_updater) {
       deps += [ ":chromium_updater_privileged_helper" ]
     }
+
+    data_deps += [ "//replay-assets" ]
   }
 
   if (verify_dynamic_libraries) {

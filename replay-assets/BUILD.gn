@@ -1,0 +1,14 @@
+# there's doubtless a better way to do this ... somehow.
+if (is_mac) {
+    out_dir = "$root_out_dir/Chromium.app/replay-assets/"
+} else {
+    out_dir = "$root_out_dir/replay-assets/"
+}
+
+copy("replay-assets") {
+  sources = [
+    "replay_command_handlers.js",
+    "replay_sourcemap_handler.js"
+  ]
+  outputs = [ out_dir + "{{source_file_part}}" ]
+}
