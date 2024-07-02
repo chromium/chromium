@@ -2816,6 +2816,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       frame->deadline_in_frames.value_or(0u), CurrentBeginFrameArgs().interval,
       frame->use_default_lower_bound_deadline);
 
+  base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =
       base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);
   constexpr auto kFudgeDelta = base::Milliseconds(1);
@@ -2839,13 +2840,12 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     // reduction optimization is only applied when a webpage has two or more
     // videos, i.e., very likely a video conferencing scene. It doesn't apply
     // to general webpages.
-    metadata.preferred_frame_interval = kTwiceOfDefaultInterval;
+    preferred_frame_interval = kTwiceOfDefaultInterval;
   } else {
     // There are main-thread, high frequency impl-thread animations, or input
     // events.
     frame_rate_estimator_.WillDraw(CurrentBeginFrameArgs().frame_time);
-    metadata.preferred_frame_interval =
-        frame_rate_estimator_.GetPreferredInterval();
+    preferred_frame_interval = frame_rate_estimator_.GetPreferredInterval();
   }
 
   metadata.activation_dependencies = std::move(frame->activation_dependencies);
@@ -2901,6 +2901,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   DCHECK(frame->begin_frame_ack.frame_id.IsSequenceValid());
   metadata.begin_frame_ack = frame->begin_frame_ack;
+  metadata.begin_frame_ack.preferred_frame_interval = preferred_frame_interval;
 
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
@@ -3181,8 +3182,19 @@ void LayerTreeHostImpl::DidFinishImplFrame(const viz::BeginFrameArgs& args) {
 
 void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                            FrameSkippedReason reason) {
-  if (layer_tree_frame_sink_)
-    layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
+  frame_rate_estimator_.DidNotProduceFrame();
+  if (layer_tree_frame_sink_) {
+    static const bool feature_allowed = base::FeatureList::IsEnabled(
+        features::kThrottleFrameRateOnManyDidNotProduceFrame);
+    if (feature_allowed) {
+      viz::BeginFrameAck adjust_ack = ack;
+      adjust_ack.preferred_frame_interval =
+          frame_rate_estimator_.GetPreferredInterval();
+      layer_tree_frame_sink_->DidNotProduceFrame(adjust_ack, reason);
+    } else {
+      layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
+    }
+  }
 }
 
 void LayerTreeHostImpl::OnBeginImplFrameDeadline() {

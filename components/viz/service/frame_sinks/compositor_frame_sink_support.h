@@ -352,6 +352,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Posts a task to invoke DestroySelf() ASAP.
   void ScheduleSelfDestruction();
 
+  // Applies the preferred frame rate, would call ThrottleBeginFrame if the
+  // conditions are met.
+  void ApplyPreferredFrameRate(uint64_t source_id);
+
   void UpdateThreadIdsPostVerification(
       base::flat_set<base::PlatformThreadId> thread_ids,
       bool passed_verification);

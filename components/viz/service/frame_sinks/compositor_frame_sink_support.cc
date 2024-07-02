@@ -288,6 +288,24 @@ bool CompositorFrameSinkSupport::ThrottleBeginFrame(base::TimeDelta interval,
   }
 }
 
+void CompositorFrameSinkSupport::ApplyPreferredFrameRate(uint64_t source_id) {
+  // Skip throttling for very small changes in frame interval.
+  // A value of 2 ms proved to be enough to not have throttle firing during
+  // a constant video playback but can be changed to a higher value if
+  // over firing occurs in some edge case while always aiming to keep it
+  // lower than a full frame interval.
+  if ((last_known_frame_interval_ - preferred_frame_interval_).magnitude() >
+      base::Milliseconds(2)) {
+    TRACE_EVENT_INSTANT2("viz", "Set sink framerate", TRACE_EVENT_SCOPE_THREAD,
+                         "interval", preferred_frame_interval_, "sourceid",
+                         source_id);
+    last_known_frame_interval_ = preferred_frame_interval_;
+    // Only throttle simple cadences.
+    ThrottleBeginFrame(preferred_frame_interval_,
+                       /*simple_cadence_only=*/true);
+  }
+}
+
 void CompositorFrameSinkSupport::OnSurfaceCommitted(Surface* surface) {
   if (surface->HasPendingFrame()) {
     // Make sure we periodically check if the frame should activate.
@@ -658,6 +676,11 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
     begin_frame_source_->DidFinishFrame(this);
     frame_sink_manager_->DidFinishFrame(frame_sink_id_, last_begin_frame_args_);
   }
+  if (ack.preferred_frame_interval &&
+      frame_sink_type_ == mojom::CompositorFrameSinkType::kLayerTree) {
+    preferred_frame_interval_ = *ack.preferred_frame_interval;
+    ApplyPreferredFrameRate(ack.frame_id.source_id);
+  }
 }
 
 void CompositorFrameSinkSupport::SubmitCompositorFrame(
@@ -819,29 +842,16 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
   // |frame.metadata.frame_token| instead of maintaining a |last_frame_index_|.
   uint64_t frame_index = ++last_frame_index_;
 
-  if (frame.metadata.preferred_frame_interval)
-    preferred_frame_interval_ = *frame.metadata.preferred_frame_interval;
-  else
+  if (frame.metadata.begin_frame_ack.preferred_frame_interval) {
+    preferred_frame_interval_ =
+        *frame.metadata.begin_frame_ack.preferred_frame_interval;
+  } else {
     preferred_frame_interval_ = BeginFrameArgs::MinInterval();
+  }
 
   if (features::ShouldOnBeginFrameThrottleVideo() &&
       frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
-    // Skip throttling for very small changes in frame interval.
-    // A value of 2 ms proved to be enough to not have throttle firing during
-    // a constant video playback but can be changed to a higher value if
-    // over firing occurs in some edge case while always aiming to keep it
-    // lower than a full frame interval.
-    if ((last_known_frame_interval_ - preferred_frame_interval_).magnitude() >
-        base::Milliseconds(2)) {
-      TRACE_EVENT_INSTANT2("viz", "Set sink framerate",
-                           TRACE_EVENT_SCOPE_THREAD, "interval",
-                           preferred_frame_interval_, "sourceid",
-                           frame.metadata.begin_frame_ack.frame_id.source_id);
-      last_known_frame_interval_ = preferred_frame_interval_;
-      // Only throttle simple cadences.
-      ThrottleBeginFrame(preferred_frame_interval_,
-                         /*simple_cadence_only=*/true);
-    }
+    ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
   }
 
   Surface* prev_surface =

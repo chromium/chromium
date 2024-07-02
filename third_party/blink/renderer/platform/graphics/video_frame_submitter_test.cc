@@ -990,7 +990,7 @@ TEST_P(VideoFrameSubmitterTest, PreferredInterval) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(sink_->last_submitted_compositor_frame()
-                .metadata.preferred_frame_interval,
+                .metadata.begin_frame_ack.preferred_frame_interval,
             video_frame_provider_->preferred_interval);
 }
 

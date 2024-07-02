@@ -229,4 +229,15 @@ BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
              "SendExplicitDecodeRequestsImmediately",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame,
+             "ThrottleFrameRateOnManyDidNotProduceFrame",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// By default, frame rate starts being throttled when 4 consecutive "did not
+// produce frame" are observed. It stops being throttled when there's a drawn
+// frame.
+const base::FeatureParam<int> kNumDidNotProduceFrameBeforeThrottle{
+    &kThrottleFrameRateOnManyDidNotProduceFrame,
+    "num_did_not_produce_frame_before_throttle", 4};
+
 }  // namespace features

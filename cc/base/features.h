@@ -234,6 +234,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);
 // away rather than piggy-backing on the next BeginMainFrame.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSendExplicitDecodeRequestsImmediately);
 
+// Whether frame rate should be throttled when there were many "did not produce
+// frame" recently.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleFrameRateOnManyDidNotProduceFrame);
+CC_BASE_EXPORT extern const base::FeatureParam<int>
+    kNumDidNotProduceFrameBeforeThrottle;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

@@ -34,4 +34,10 @@ struct BeginFrameAck {
   uint64 sequence_number;
   int64 trace_id;
   bool has_damage;
+
+  // Specifies the interval at which the client's content is updated. This can
+  // be used to configure the display to the optimal vsync interval available.
+  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
+  // the client can animate at the maximum frame rate supported by the Display.
+  mojo_base.mojom.TimeDelta? preferred_frame_interval;
 };
