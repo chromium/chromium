@@ -2,15 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos_ash)
 
-static_library("floating_workspace_service") {
-  deps = [
-    "//components/sessions",
-    "//components/sync",
-    "//components/sync_device_info",
-    "//components/sync_sessions",
-  ]
+static_library("floating_workspace") {
   sources = [
     "floating_workspace_metrics_util.cc",
     "floating_workspace_metrics_util.h",
@@ -20,5 +16,69 @@ static_library("floating_workspace_service") {
     "floating_workspace_service_factory.h",
     "floating_workspace_util.cc",
     "floating_workspace_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/network",
+    "//chromeos/dbus/power",
+    "//components/app_constants",
+    "//components/desks_storage/",
+    "//components/policy/core/common:common_constants",
+    "//components/sessions",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/sync_sessions",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_restore" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "floating_workspace_service_unittest.cc" ]
+
+  deps = [
+    ":floating_workspace",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/app_restore",
+    "//components/desks_storage",
+    "//components/desks_storage:test_support",
+    "//components/session_manager/core",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
   ]
 }
