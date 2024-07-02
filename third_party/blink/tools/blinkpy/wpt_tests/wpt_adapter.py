@@ -153,6 +153,7 @@ class WPTAdapter:
             self.port,
             artifacts_dir=self.port.artifacts_directory(),
             reset_results=self.options.reset_results,
+            repeat_each=self.options.repeat_each,
             processes=product.processes)
         self._expectations = TestExpectations(self.port)
 

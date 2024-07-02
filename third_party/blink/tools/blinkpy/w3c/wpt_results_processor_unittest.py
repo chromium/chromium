@@ -709,6 +709,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 Harness: the test ran to completion.
                 """))
 
+    def test_extract_text_repeat_within_suite(self):
+        """Extract only the last artifacts from `--repeat-each`."""
+        self.processor.repeat_each = 2
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='ERROR',
+                    message='error 1')
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='ERROR',
+                    message='error 2')
+
+        results_dir = self.fs.join('/mock-checkout', 'out', 'Default',
+                                   'layout-test-results')
+        output = self.fs.read_text_file(
+            self.fs.join(results_dir, 'external', 'wpt', 'test-actual.txt'))
+        self.assertIn('error 2', output)
+        self.assertNotIn('error 1', output)
+        self.assertFalse(self.fs.exists(self.fs.join(results_dir, 'retry_1')))
+
     def test_extract_screenshots(self):
         self._event(action='test_start', test='/reftest.html')
         self._event(action='test_end',

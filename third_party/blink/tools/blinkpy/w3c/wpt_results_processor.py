@@ -395,6 +395,7 @@ class WPTResultsProcessor:
                  failure_threshold: Optional[int] = None,
                  crash_timeout_threshold: Optional[int] = None,
                  reset_results: bool = False,
+                 repeat_each: int = 1,
                  processes: Optional[int] = None):
         self.fs = fs
         self.port = port
@@ -435,6 +436,7 @@ class WPTResultsProcessor:
         self.failure_threshold = failure_threshold or math.inf
         self.crash_timeout_threshold = crash_timeout_threshold or math.inf
         self.reset_results = reset_results
+        self.repeat_each = repeat_each
         assert self.failure_threshold > 0
         assert self.crash_timeout_threshold > 0
 
@@ -1013,7 +1015,8 @@ class WPTResultsProcessor:
                               self.sink.host,
                               iteration=self._iteration,
                               artifacts_base_dir=self.fs.basename(
-                                  self.artifacts_dir))
+                                  self.artifacts_dir),
+                              repeat_tests=(self.repeat_each > 1))
         image_diff_stats = None
         # Dump output for `--reset-results`, even if the test passes, as the
         # current port may fall back to a failing port.
