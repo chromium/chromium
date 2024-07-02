@@ -20,6 +20,7 @@ class ImageModel;
 
 namespace views {
 class ImageView;
+class Label;
 class View;
 }  // namespace views
 
@@ -79,17 +80,22 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
  private:
   void UpdateIconWithPreview();
+  std::u16string GetAccessibilityLabel() const;
+  void UpdateAccessibleName();
 
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
 
   // Contains the item's primary contents, which can be text or an image.
   raw_ptr<views::View> primary_container_ = nullptr;
+  raw_ptr<views::Label> primary_label_ = nullptr;
 
   // Contains the item's secondary text if it has been set.
   raw_ptr<views::View> secondary_container_ = nullptr;
+  raw_ptr<views::Label> secondary_label_ = nullptr;
 
   // Contains the item's trailing badge if it has been set.
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
+  PickerActionType badge_action_ = PickerActionType::kDo;
 
   // These are only used for file items.
   // TODO: b/344457947 - Combine the two async images by allowing the

@@ -145,16 +145,19 @@ PickerListItemView::~PickerListItemView() {
 
 void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
-  views::Label* label = primary_container_->AddChildView(
-      bubble_utils::CreateLabel(TypographyToken::kCrosBody2, primary_text,
-                                cros_tokens::kCrosSysOnSurface));
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  GetViewAccessibility().SetName(primary_text);
+  primary_label_ = primary_container_->AddChildView(
+      views::Builder<views::Label>(
+          bubble_utils::CreateLabel(TypographyToken::kCrosBody2, primary_text,
+                                    cros_tokens::kCrosSysOnSurface))
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
+          .Build());
+  UpdateAccessibleName();
 }
 
 void PickerListItemView::SetPrimaryImage(
     std::unique_ptr<views::ImageView> primary_image) {
+  primary_label_ = nullptr;
   primary_container_->RemoveAllChildViews();
   auto* image_view = primary_container_->AddChildView(std::move(primary_image));
   image_view->SetCanProcessEventsWithinSubtree(false);
@@ -164,8 +167,7 @@ void PickerListItemView::SetPrimaryImage(
         original_size,
         static_cast<float>(kImageDisplayHeight) / original_size.height()));
   }
-  // TODO: b/316936418 - Get accessible name for image contents.
-  GetViewAccessibility().SetName(u"image contents");
+  UpdateAccessibleName();
 }
 
 void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
@@ -174,16 +176,21 @@ void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
 
 void PickerListItemView::SetSecondaryText(
     const std::u16string& secondary_text) {
+  secondary_label_ = nullptr;
   secondary_container_->RemoveAllChildViews();
   if (secondary_text.empty()) {
+    UpdateAccessibleName();
     return;
   }
-  views::Label* label =
-      secondary_container_->AddChildView(bubble_utils::CreateLabel(
-          TypographyToken::kCrosAnnotation2, secondary_text,
-          cros_tokens::kCrosSysOnSurfaceVariant));
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
+  secondary_label_ = secondary_container_->AddChildView(
+      views::Builder<views::Label>(
+          bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2,
+                                    secondary_text,
+                                    cros_tokens::kCrosSysOnSurfaceVariant))
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
+          .Build());
+  UpdateAccessibleName();
 }
 
 void PickerListItemView::SetBadgeAction(PickerActionType action) {
@@ -204,6 +211,8 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
           l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_CREATE));
       break;
   }
+  badge_action_ = action;
+  UpdateAccessibleName();
 }
 
 void PickerListItemView::SetBadgeVisible(bool visible) {
@@ -260,14 +269,7 @@ void PickerListItemView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
-  if (primary_container_->children().empty()) {
-    return u"";
-  }
-  if (const auto* label = views::AsViewClass<views::Label>(
-          primary_container_->children().front().get())) {
-    return label->GetText();
-  }
-  return u"";
+  return primary_label_ == nullptr ? u"" : primary_label_->GetText();
 }
 
 ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
@@ -286,6 +288,35 @@ void PickerListItemView::UpdateIconWithPreview() {
       ->SetCircularMaskEnabled(true);
   SetLeadingIcon(
       ui::ImageModel::FromImageSkia(async_preview_icon_->GetImageSkia()));
+}
+
+std::u16string PickerListItemView::GetAccessibilityLabel() const {
+  // TODO: b/316936418 - Get accessible name for image contents.
+  const std::u16string& primary_accessibililty_label =
+      primary_label_ == nullptr ? u"image contents" : primary_label_->GetText();
+  std::u16string label =
+      secondary_label_ == nullptr
+          ? primary_accessibililty_label
+          : l10n_util::GetStringFUTF16(IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME,
+                                       primary_accessibililty_label,
+                                       secondary_label_->GetText());
+  switch (badge_action_) {
+    case PickerActionType::kDo:
+      return label;
+    case PickerActionType::kInsert:
+      return l10n_util::GetStringFUTF16(
+          IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME, label);
+    case PickerActionType::kOpen:
+      return l10n_util::GetStringFUTF16(
+          IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME, label);
+    case PickerActionType::kCreate:
+      // TODO: b/345303965 - Add internal strings for Create.
+      return label;
+  }
+}
+
+void PickerListItemView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(GetAccessibilityLabel());
 }
 
 BEGIN_METADATA(PickerListItemView)

@@ -7410,6 +7410,15 @@ New install
       <message name="IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that goes back to the Picker zero state page.">
         Back
       </message>
+      <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a search result containing primary and secondary text. The commas are significant as they will introduce a pause in the spoken text.">
+        <ph name="PRIMARY_TEXT">$1<ex>The Chromium Projects</ex></ph>, <ph name="SECONDARY_TEXT">$2<ex>www.chromium.org</ex></ph>
+      </message>
+      <message name="IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to insert a search result.">
+        Insert <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      </message>
+      <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to open a search result.">
+        Open <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

@@ -180,5 +180,95 @@ TEST_F(PickerListItemViewTest, ClosesSubmenuOnEnter) {
       .Wait();
 }
 
+TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryText) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary");
+}
+
+TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryAndSecondaryText) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetSecondaryText(u"secondary");
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
+}
+
+TEST_F(PickerListItemViewTest, AccessibleNameUsesPrimaryTextAndBadgeActionDo) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetBadgeAction(PickerActionType::kDo);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryTextAndBadgeActionInsert) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetBadgeAction(PickerActionType::kInsert);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"Insert primary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryTextAndBadgeActionOpen) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetBadgeAction(PickerActionType::kOpen);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"Open primary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryTextAndBadgeActionCreate) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetBadgeAction(PickerActionType::kCreate);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionDo) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetSecondaryText(u"secondary");
+  view.SetBadgeAction(PickerActionType::kDo);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionInsert) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetSecondaryText(u"secondary");
+  view.SetBadgeAction(PickerActionType::kInsert);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"Insert primary, secondary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionOpen) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetSecondaryText(u"secondary");
+  view.SetBadgeAction(PickerActionType::kOpen);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"Open primary, secondary");
+}
+
+TEST_F(PickerListItemViewTest,
+       AccessibleNameUsesPrimaryAndSecondaryTextAndBadgeActionCreate) {
+  PickerListItemView view(base::DoNothing());
+  view.SetPrimaryText(u"primary");
+  view.SetSecondaryText(u"secondary");
+  view.SetBadgeAction(PickerActionType::kCreate);
+
+  EXPECT_EQ(view.GetAccessibleName(), u"primary, secondary");
+}
+
 }  // namespace
 }  // namespace ash

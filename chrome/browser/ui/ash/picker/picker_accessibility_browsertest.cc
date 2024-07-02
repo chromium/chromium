@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 #include "ash/picker/metrics/picker_performance_metrics.h"
+#include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
+#include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -245,6 +248,34 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 
   sm_.ExpectSpeechPattern("Section2");
   sm_.ExpectSpeechPattern("Heading");
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       ListItemAnnouncesTextWithAction) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  ash::PickerSectionView* section = view->AddSection();
+  section->AddTitleLabel(u"Section1");
+  ash::PickerListItemView* item = section->AddListItem(
+      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  item->SetLeadingIcon(ui::ImageModel::FromImage(gfx::test::CreateImage(1)));
+  item->SetPrimaryText(u"primary");
+  item->SetSecondaryText(u"secondary");
+  item->SetBadgeAction(ash::PickerActionType::kInsert);
+  item->SetBadgeVisible(true);
+
+  sm_.Call([item]() { item->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("Insert primary, secondary");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("Press * to activate");
   sm_.Replay();
 }
 
