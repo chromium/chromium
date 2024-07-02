@@ -1008,6 +1008,8 @@ static_library("browser") {
     "page_load_metrics/observers/formfill_page_load_metrics_observer.h",
     "page_load_metrics/observers/from_gws_page_load_metrics_observer.cc",
     "page_load_metrics/observers/from_gws_page_load_metrics_observer.h",
+    "page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.cc",
+    "page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h",
     "page_load_metrics/observers/gws_page_load_metrics_observer.cc",
     "page_load_metrics/observers/gws_page_load_metrics_observer.h",
     "page_load_metrics/observers/histogram_suffixes.cc",

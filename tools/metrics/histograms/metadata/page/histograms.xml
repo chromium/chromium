@@ -40,6 +40,30 @@ chromium-metrics-reviews@google.com.
   <variant name="5000ms"/>
 </variants>
 
+<variants name="NavigationAbandonReason">
+  <variant name="AppBackgrounded"/>
+  <variant name="ErrorPage"/>
+  <variant name="ExplicitCancellation"/>
+  <variant name="FailedSecurityCheck"/>
+  <variant name="FrameRemoved"/>
+  <variant name="Hidden"/>
+  <variant name="InternalCancellation"/>
+  <variant name="NeverStarted"/>
+  <variant name="NewNavigation"/>
+  <variant name="Other"/>
+  <variant name="RenderProcessGone"/>
+</variants>
+
+<variants name="NavigationMilestone">
+  <variant name="CommitSent"/>
+  <variant name="DidCommit"/>
+  <variant name="FirstRedirectedRequestStart"/>
+  <variant name="FirstRedirectResponseStart"/>
+  <variant name="LoaderStart"/>
+  <variant name="NonRedirectedRequestStart"/>
+  <variant name="NonRedirectResponseStart"/>
+</variants>
+
 <variants name="PagePreloadingTriggerType">
 <!-- Should be kept in sync with variants PreloadingTriggerType in
   tools/metrics/histograms/metadata/navigation/histograms.xml.
@@ -887,6 +911,49 @@ chromium-metrics-reviews@google.com.
     navigations from the side panel that happen entirely in the foreground. The
     metric is emitted when the navigation is completed or the app is
     backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.Leakage.NavigationStart"
+    units="ms" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a navigation takes to emit this
+    metric, on a main frame navigation for Google Search page loads. The metric
+    is emitted when the navigation finishes committing or it gets abandoned for
+    the first time.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Leakage.NavigationStartTo{NavigationMilestone}"
+    units="ms" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that a navigation reaches a specific
+    navigation milestone on a main frame navigation for Google Search page
+    loads. Only recorded for Search navigations that didn't get abandoned at
+    least until the relevant milestone. The metric for all relevent milestones
+    for the navigation is emitted when the navigation finishes committing or it
+    gets abandoned for the first time.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.Leakage.{NavigationMilestone}ToAbandon.{NavigationAbandonReason}"
+    units="ms" expires_after="2024-12-08">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to the specified navigation milestone that a navigation
+    gets abandoned due to the specified reason, on a main frame navigation for
+    Google Search page loads. Only recorded for Search navigations that gets
+    abandoned for the first time after the relevant milestone, and will only
+    record for the latest milestone (if there are multiple milestones reached
+    before the abandonment). The metric is emitted when the navigation gets
+    abandoned for the first time.
   </summary>
 </histogram>
 

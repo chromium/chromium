@@ -1744,6 +1744,8 @@ IN_PROC_BROWSER_TEST_P(
       "\r\n"
       "\r\n");
   original_response2.Done();
+  EXPECT_TRUE(first_reload.WaitForRequestRedirected());
+  first_reload.ResumeNavigation();
   second_redirect_response.WaitForRequest();
   second_redirect_response.Send(
       "HTTP/1.1 200 OK\r\n"

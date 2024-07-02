@@ -382,10 +382,13 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
   TestNavigationManagerThrottle(
       NavigationHandle* handle,
       base::OnceClosure on_will_start_request_closure,
+      base::RepeatingClosure on_will_redirect_request_closure,
       base::OnceClosure on_will_process_response_closure)
       : NavigationThrottle(handle),
         on_will_start_request_closure_(
             std::move(on_will_start_request_closure)),
+        on_will_redirect_request_closure_(
+            std::move(on_will_redirect_request_closure)),
         on_will_process_response_closure_(
             std::move(on_will_process_response_closure)) {}
   ~TestNavigationManagerThrottle() override {}
@@ -403,6 +406,13 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
     return NavigationThrottle::DEFER;
   }
 
+  NavigationThrottle::ThrottleCheckResult WillRedirectRequest() override {
+    CHECK(on_will_redirect_request_closure_);
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                        on_will_redirect_request_closure_);
+    return NavigationThrottle::DEFER;
+  }
+
   NavigationThrottle::ThrottleCheckResult WillProcessResponse() override {
     DCHECK(on_will_process_response_closure_);
     GetUIThreadTaskRunner({})->PostTask(
@@ -411,6 +421,7 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
   }
 
   base::OnceClosure on_will_start_request_closure_;
+  base::RepeatingClosure on_will_redirect_request_closure_;
   base::OnceClosure on_will_process_response_closure_;
 };
 
@@ -3156,16 +3167,28 @@ bool TestNavigationManager::WaitForFirstYieldAfterDidStartNavigation() {
 
 bool TestNavigationManager::WaitForRequestStart() {
   TRACE_EVENT("test", "TestNavigationManager::WaitForRequestStart");
-  desired_state_ = NavigationState::STARTED;
+  desired_state_ = NavigationState::REQUEST_STARTED;
+  return WaitForDesiredState();
+}
+
+bool TestNavigationManager::WaitForLoaderStart() {
+  TRACE_EVENT("test", "TestNavigationManager::WaitForLoaderStart");
+  desired_state_ = NavigationState::LOADER_STARTED;
+  return WaitForDesiredState();
+}
+
+bool TestNavigationManager::WaitForRequestRedirected() {
+  desired_state_ = NavigationState::REDIRECTED;
   return WaitForDesiredState();
 }
 
 void TestNavigationManager::ResumeNavigation() {
   TRACE_EVENT("test", "TestNavigationManager::ResumeNavigation");
-  DCHECK(current_state_ == NavigationState::STARTED ||
-         current_state_ == NavigationState::RESPONSE);
-  DCHECK_EQ(current_state_, desired_state_);
-  DCHECK(navigation_paused_);
+  CHECK(current_state_ == NavigationState::REQUEST_STARTED ||
+        current_state_ == NavigationState::REDIRECTED ||
+        current_state_ == NavigationState::RESPONSE);
+  CHECK_EQ(current_state_, desired_state_);
+  CHECK(navigation_paused_);
   ResumeIfPaused();
 }
 
@@ -3189,7 +3212,7 @@ void TestNavigationManager::WaitForSpeculativeRenderFrameHostCreation() {
   TRACE_EVENT(
       "test",
       "TestNavigationManager::WaitForSpeculativeRenderFrameHostCreation");
-  if (current_state_ < NavigationState::STARTED) {
+  if (current_state_ < NavigationState::REQUEST_STARTED) {
     CHECK(WaitForRequestStart());
   }
   if (!speculative_rfh_created_) {
@@ -3212,6 +3235,8 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
       request_,
       base::BindOnce(&TestNavigationManager::OnWillStartRequest,
                      weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&TestNavigationManager::OnWillRedirectRequest,
+                          weak_factory_.GetWeakPtr()),
       base::BindOnce(&TestNavigationManager::OnWillProcessResponse,
                      weak_factory_.GetWeakPtr()));
   request_->RegisterThrottleForTesting(std::move(throttle));
@@ -3227,8 +3252,37 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
   // WaitForRequestStart.
   if (!request_->IsPageActivation() &&
       desired_state_ == NavigationState::WILL_START) {
-    desired_state_ = NavigationState::STARTED;
+    desired_state_ = NavigationState::REQUEST_STARTED;
   }
+}
+
+void TestNavigationManager::DidUpdateNavigationHandleTiming(
+    NavigationHandle* handle) {
+  if (handle != request_ ||
+      handle->GetNavigationHandleTiming().loader_start_time.is_null() ||
+      current_state_ >= NavigationState::LOADER_STARTED) {
+    return;
+  }
+
+  CHECK(!handle->IsPageActivation())
+      << "For PageActivating navigations, use TestActivationManager.";
+
+  current_state_ = NavigationState::LOADER_STARTED;
+
+  OnNavigationStateChanged();
+}
+
+void TestNavigationManager::DidRedirectNavigation(NavigationHandle* handle) {
+  if (handle != request_) {
+    return;
+  }
+
+  CHECK(!handle->IsPageActivation())
+      << "For PageActivating navigations, use TestActivationManager.";
+
+  current_state_ = NavigationState::REDIRECTED;
+
+  OnNavigationStateChanged();
 }
 
 void TestNavigationManager::DidFinishNavigation(NavigationHandle* handle) {
@@ -3249,7 +3303,13 @@ void TestNavigationManager::DidFinishNavigation(NavigationHandle* handle) {
 }
 
 void TestNavigationManager::OnWillStartRequest() {
-  current_state_ = NavigationState::STARTED;
+  current_state_ = NavigationState::REQUEST_STARTED;
+  navigation_paused_ = true;
+  OnNavigationStateChanged();
+}
+
+void TestNavigationManager::OnWillRedirectRequest() {
+  current_state_ = NavigationState::REDIRECTED;
   navigation_paused_ = true;
   OnNavigationStateChanged();
 }

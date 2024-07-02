@@ -1720,6 +1720,18 @@ class TestNavigationManager : public WebContentsObserver {
   // WillStartRequest. Returns false if the request was aborted before starting.
   [[nodiscard]] bool WaitForRequestStart();
 
+  // Waits for the URLLoader of the navigation has been started. Returns false
+  // if the navigation never started the URLLoader.
+  [[nodiscard]] bool WaitForLoaderStart();
+
+  // Waits until the navigation request has received a redirect response. This
+  // will wait until all NavigationThrottles have proceeded through
+  // WillRedirectRequest. Returns false if the request was aborted before
+  // getting redirected, or it never got redirected. Note that this will only
+  // wait for only one redirection, so if the navigation gets redirected
+  // multiple times, this needs to be called multiple times.
+  [[nodiscard]] bool WaitForRequestRedirected();
+
   // Waits until the navigation response's headers have been received. This
   // will wait until all NavigationThrottles have proceeded through
   // WillProcessResponse. Returns false if the request was aborted before
@@ -1739,6 +1751,8 @@ class TestNavigationManager : public WebContentsObserver {
 
   // Resume the navigation.
   // * Called after |WaitForRequestStart|, it causes the request to be sent.
+  // * Called after |WaitForRequestRedirected|, it causes the redirect to
+  // proceed.
   // * Called after |WaitForResponse|, it causes the response to be committed.
   void ResumeNavigation();
 
@@ -1768,19 +1782,27 @@ class TestNavigationManager : public WebContentsObserver {
   enum class NavigationState {
     INITIAL = 0,
     WILL_START = 1,
-    STARTED = 2,
-    RESPONSE = 3,
-    FINISHED = 4,
+    REQUEST_STARTED = 2,
+    LOADER_STARTED = 3,
+    REDIRECTED = 4,
+    RESPONSE = 5,
+    FINISHED = 6,
   };
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* handle) override;
+  void DidRedirectNavigation(NavigationHandle* handle) override;
   void DidFinishNavigation(NavigationHandle* handle) override;
+  void DidUpdateNavigationHandleTiming(NavigationHandle* handle) override;
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   // Called when the NavigationThrottle pauses the navigation in
   // WillStartRequest.
   void OnWillStartRequest();
+
+  // Called when the NavigationThrottle pauses the navigation in
+  // WillRedirectRequest.
+  void OnWillRedirectRequest();
 
   // Called when the NavigationThrottle pauses the navigation in
   // WillProcessResponse.
