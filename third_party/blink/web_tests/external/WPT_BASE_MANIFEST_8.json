@@ -231065,7 +231065,7 @@
       ]
      ],
      "transparent-accent-color-001.html": [
-      "219e24c1689b11dca0f22670118439d10e6b8813",
+      "6801c5eab9b21bee04401486316b9ba95904c1de",
       [
        null,
        [
@@ -231074,11 +231074,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            225
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transparent-accent-color-002.html": [
-      "46b9835d0c18313885e08e2d469111cb82fa841f",
+      "46d43293f9d7663d85300612208111f2d097d18a",
       [
        null,
        [
@@ -231087,7 +231103,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            225
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "webkit-appearance-auto-001.html": [
@@ -306006,10 +306038,6 @@
       []
      ],
      "parsing": {
-      "position-try-options-parsing-expected.txt": [
-       "eb256bd21fec67c82a34904fa1fdaaf7458962d3",
-       []
-      ],
       "position-visibility-computed.tentative-expected.txt": [
        "236fd0475a9a531b9215e5be8425e210b2a654c2",
        []
@@ -326893,42 +326921,6 @@
       "79a432c4557bbda081a9b1c8d0dd9602c0eb85e5",
       []
      ],
-     "logical-box-border-color-expected.txt": [
-      "51274c89f25b20788e19d8c7b270fa969c640a8e",
-      []
-     ],
-     "logical-box-border-radius-expected.txt": [
-      "5938573d5f016502b7d5b1e130901e6dd29ace14",
-      []
-     ],
-     "logical-box-border-shorthands-expected.txt": [
-      "dc2befe79ce4a8eeb8d26c27b6634fa1bdfb99ec",
-      []
-     ],
-     "logical-box-border-style-expected.txt": [
-      "3dec115ecfad8824ff12422ae6228621a427015a",
-      []
-     ],
-     "logical-box-border-width-expected.txt": [
-      "7c75eccd4b2acc6422a306e091a4c60bed18a8be",
-      []
-     ],
-     "logical-box-inset-expected.txt": [
-      "e4e32b8e8043b61bdf8745838e6d0e69d8bd11d9",
-      []
-     ],
-     "logical-box-margin-expected.txt": [
-      "8e66fc2e5e469f53d5a62b587738779e1b9b4157",
-      []
-     ],
-     "logical-box-padding-expected.txt": [
-      "737889c8fe037ab8eff286cc6d5b275694f71d54",
-      []
-     ],
-     "logical-box-size-expected.txt": [
-      "5ef22a64bb67da00fe5c9d2a44d9c328681d6eca",
-      []
-     ],
      "reference": {
       "logical-values-float-clear-1-ref.html": [
        "0dac4c29b18ec0323ac81b15016d8b0a9f99989b",
@@ -342288,10 +342280,6 @@
        "word-wrap-expected.txt": [
         "9c873f5520858b797620b0b2cb9f476fc61f80b1",
         []
-       ],
-       "writing-mode-expected.txt": [
-        "6543aed59b9d41f6594858800f7babcbfcbb37eb",
-        []
        ]
       }
      }
@@ -342705,11 +342693,11 @@
        []
       ],
       "transparent-accent-color-001-ref.html": [
-       "c9d6eb720f1f8f17285014b0b7fa99f86ec6e4e7",
+       "91a9600e180cd9636b2ec3aa0ad63f79bbc334b5",
        []
       ],
       "transparent-accent-color-002-ref.html": [
-       "819a5852460eeb295a65ac9acf8ce8683c93170f",
+       "db70dede9453312e8864d64ea5d8c29be1f63899",
        []
       ]
      },
@@ -397872,7 +397860,7 @@
       []
      ],
      "toascii.json": [
-      "bca28b4a1e454a8c9ac74a94f6498fda1f6d75ba",
+      "d02c4c7e86654c5056abb6969d9c916a96eb1620",
       []
      ],
      "urltestdata.json": [
@@ -397881,7 +397869,7 @@
      ]
     },
     "toascii.window-expected.txt": [
-     "20ae99ec16549d88eb09d6eab1fbc6c22ba7483f",
+     "d73f7139664dce35919a53aedd84714543d484b4",
      []
     ],
     "tools": {
@@ -401341,7 +401329,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "3e97cfe3ce4c9c321dfe45b1244aa5ea02bdfb20",
+       "7c88abcd2e029ffe2f938d6d187602e05a71ca67",
        []
       ],
       "fixtures_http.py": [
@@ -410722,88 +410710,83 @@
       {}
      ]
     ],
-    "idbfactory_open.htm": [
-     "8e0b2412c9199c9d5542e2184774af04317b431b",
+    "idbfactory_open.any.js": [
+     "edc5d3c8c6c0e9dabeaa814bc10acef0be9282d9",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open10.htm": [
-     "6340bd3cdf7a8df0d7c3643381719d38ae55711c",
+      "IndexedDB/idbfactory_open.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory.open()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open11.htm": [
-     "d4012bea55bcf4ecc9e852f4cdd3cbbf2453d9eb",
+      "IndexedDB/idbfactory_open.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory.open()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open12.htm": [
-     "ee713ef352073b6dc19346a931593c3e5e547233",
+      "IndexedDB/idbfactory_open.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory.open()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open2.htm": [
-     "00ebbd3d0f0d2614a1281d3de03586a122ef327d",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open3.htm": [
-     "19cd5c5254dd1b40d023c5f45f4a02c184f5dc3d",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open4.htm": [
-     "6983ca0737f029f34dd19c0e0afbcdbf5ef5c0b8",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open5.htm": [
-     "f6ddb17001a4bdeb99faf01bbbf6afcbdc6ab5e0",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open6.htm": [
-     "2b2cb334e46875e9d7b2b56eeeab12fab0678011",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open7.htm": [
-     "ccb3d0674893ce4b4066405c6761c160a47ade28",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open8.htm": [
-     "04c57df2ed43aa70d9cf54b6522630ed8cea3a36",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbfactory_open9.htm": [
-     "36a9ef814cb121dd70da5bb265b3b6a6e15001c8",
-     [
-      null,
-      {}
+      "IndexedDB/idbfactory_open.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBFactory.open()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex-cross-realm-methods.html": [
@@ -421399,6 +421382,51 @@
      ]
     ],
     "import_export": {
+     "crashtests": {
+      "importKey-unsettled-promise.https.any.js": [
+       "0ceeea390ebf97d65f22fa20a41e22b0eac68d68",
+       [
+        "WebCryptoAPI/import_export/crashtests/importKey-unsettled-promise.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "WebCryptoAPI: Assure promise returned by importKey is settled."
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "WebCryptoAPI/import_export/crashtests/importKey-unsettled-promise.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "WebCryptoAPI: Assure promise returned by importKey is settled."
+          ],
+          [
+           "timeout",
+           "long"
+          ],
+          [
+           "script",
+           "/common/gc.js"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ]
+     },
      "ec_importKey.https.any.js": [
       "a01bfbb0ef2e1881e83aaefe76f1ca39805c9304",
       [
@@ -446788,13 +446816,6 @@
        {}
       ]
      ],
-     "inset-area-function.html": [
-      "9d68bf9ddf4ec5adc30186fee497294e1d024054",
-      [
-       null,
-       {}
-      ]
-     ],
      "inset-area-in-grid.html": [
       "bbf92e8d1c66a30abf6b5b645966f289cad633a6",
       [
@@ -446818,6 +446839,13 @@
      ],
      "inset-area-parsing.html": [
       "7c7fc8249178279dc640ac2fba9e3aca32d8b15b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-value.html": [
+      "f0c6857447dacb826ae58e4fb7b2c2311fce39d3",
       [
        null,
        {}
@@ -446881,7 +446909,7 @@
        ]
       ],
       "position-try-options-computed.html": [
-       "91b27d4f3172746f5dd567e22b4b9e84d4b35f39",
+       "2d86ae2639898376cba1eefe6a6a0ed1f70aa23d",
        [
         null,
         {}
@@ -473021,7 +473049,7 @@
        ]
       ],
       "transform-non-invertible-no-transition.html": [
-       "7c26c7e2a9cbf9227074744491ce394d9e754f90",
+       "bbb5181a1bd45034a7ab6a9531bc0e21d3a6a604",
        [
         null,
         {}
@@ -643432,7 +643460,7 @@
         ]
        ],
        "grid-order-across-scopes.html": [
-        "9f7772b91185351da72f56ad300fd6c4e3d5d7ff",
+        "76e5af8c74b24201bd73911c3f3720d6f5861292",
         [
          null,
          {
@@ -643441,7 +643469,7 @@
         ]
        ],
        "grid-order-on-shadow-host.html": [
-        "f5a8b3c313e5d20963233cc868b4a8ce27eaab07",
+        "c83e2283f50ea282128de717f80e7a185ecebc17",
         [
          null,
          {
@@ -643479,7 +643507,7 @@
         ]
        ],
        "grid-order-with-slots.html": [
-        "4cfdc79fa4057eee49498bf6d57b912c4e714355",
+        "f52c9ebdc817a4813d3f521c63caa447ddc87db6",
         [
          null,
          {
@@ -643489,7 +643517,7 @@
         ]
        ],
        "grid-order.html": [
-        "358f5c2988c2a5fce8f3702eeb6e1de57a20753f",
+        "b2dd197413ebd2769b39fde4506da295727d843d",
         [
          null,
          {
@@ -668963,8 +668991,8 @@
         {}
        ]
       ],
-      "script-src-blocks-wasm.tentative.html": [
-       "c1232730eab0715b8061689f04b7d2b64c242a51",
+      "script-src-blocks-wasm.tentative.sub.html": [
+       "0d5c7ca6ed57fd8067eca705eec3526f381f5185",
        [
         null,
         {}
