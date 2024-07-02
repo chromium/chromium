@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
-#include "base/memory/raw_ptr.h"
+
 #include "base/run_loop.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
@@ -16,12 +16,13 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
-#include "components/global_media_controls/public/views/media_item_ui_view.h"
-#include "components/media_message_center/media_notification_view_impl.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 
 namespace {
+
+using media_session::mojom::MediaSessionAction;
 
 class MediaToolbarButtonWatcher
     : public MediaToolbarButtonObserver,
@@ -192,18 +193,18 @@ class MediaToolbarButtonWatcher
     run_loop_->Run();
   }
 
-  // Checks the title and artist of each item in the dialog to see if
-  // |text| is contained anywhere in the dialog.
+  // Checks the label texts of each media item to see if |text| is contained
+  // anywhere in the dialog.
   bool DialogContainsText(const std::u16string& text) {
-    for (const auto& item_pair :
-         MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting()) {
-      const media_message_center::MediaNotificationViewImpl* view =
-          item_pair.second->view_for_testing();
-      if (view->title_label_for_testing()->GetText().find(text) !=
+    for (const auto& item_pair : MediaDialogView::GetDialogViewForTesting()
+                                     ->GetUpdatedItemsForTesting()) {
+      global_media_controls::MediaItemUIUpdatedView* view = item_pair.second;
+      if (view->GetSourceLabelForTesting()->GetText().find(text) !=
               std::string::npos ||
-          view->artist_label_for_testing()->GetText().find(text) !=
+          view->GetTitleLabelForTesting()->GetText().find(text) !=
               std::string::npos ||
-          view->GetSourceTitleForTesting().find(text) != std::string::npos) {
+          view->GetArtistLabelForTesting()->GetText().find(text) !=
+              std::string::npos) {
         return true;
       }
     }
@@ -211,19 +212,24 @@ class MediaToolbarButtonWatcher
   }
 
   bool CheckPictureInPictureButtonVisibility(bool visible) {
-    const auto item_pair = MediaDialogView::GetDialogViewForTesting()
-                               ->GetItemsForTesting()
-                               .begin();
-    const media_message_center::MediaNotificationViewImpl* view =
-        item_pair->second->view_for_testing();
-
-    return view->picture_in_picture_button_for_testing()->GetVisible() ==
-           visible;
+    global_media_controls::MediaItemUIUpdatedView* view =
+        MediaDialogView::GetDialogViewForTesting()
+            ->GetUpdatedItemsForTesting()
+            .begin()
+            ->second;
+    global_media_controls::MediaActionButton* button =
+        view->GetMediaActionButtonForTesting(
+            MediaSessionAction::kEnterPictureInPicture);
+    // The button should be invisible if it does not exist.
+    if (!button) {
+      return !visible;
+    }
+    return button->GetVisible() == visible;
   }
 
   int GetItemCount() {
     return MediaDialogView::GetDialogViewForTesting()
-        ->GetItemsForTesting()
+        ->GetUpdatedItemsForTesting()
         .size();
   }
 
