@@ -66,7 +66,11 @@ void WallpaperInfoMigrator::Migrate(const AccountId& account_id,
                                     const WallpaperInfo& unmigrated_info,
                                     MigrateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(completion_callback_.is_null());
+  weak_factory_.InvalidateWeakPtrs();
+  if (completion_callback_) {
+    LOG(WARNING) << __func__ << " Unexpected on-going migration. Cancelling.";
+    std::move(completion_callback_).Run(std::nullopt);
+  }
   completion_callback_ = std::move(callback);
   migrate_start_time_ = base::Time::Now();
   DVLOG(0) << __func__ << " Applying migration for info=" << unmigrated_info;
