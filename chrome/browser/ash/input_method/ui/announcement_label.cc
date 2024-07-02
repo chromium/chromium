@@ -13,7 +13,9 @@ namespace ui {
 namespace ime {
 
 AnnouncementLabel::AnnouncementLabel(const std::u16string& name)
-    : label_name_(name) {}
+    : label_name_(name) {
+  GetViewAccessibility().SetContainerLiveStatus("polite");
+}
 
 AnnouncementLabel::~AnnouncementLabel() = default;
 
@@ -27,8 +29,6 @@ void AnnouncementLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kStatus;
   node_data->SetName(label_name_);
   node_data->SetDescription(announcement_text_);
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kContainerLiveStatus, "polite");
 }
 
 void AnnouncementLabel::AnnounceAfterDelay(const std::u16string& text,
