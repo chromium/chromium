@@ -16505,6 +16505,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_HIDE_PIN" desc="The tooltip of a button that is used to hide the PIN.">
         Hide PIN
       </message>
+      <message name="IDS_WEBAUTHN_CHANGE_PIN" desc="The label of a button that is displayed on a dialog when the user entered their PIN incorrectly too many times, allowing to change it.">
+        Change PIN
+      </message>
+      <message name="IDS_WEBAUTHN_LOCKED_GPM_PIN_TITLE" desc="The title of a dialog that is displayed when the user entered their Google Password Manager PIN incorrectly too many times.">
+        Change your recovery PIN for Google Password Manager
+      </message>
+      <message name="IDS_WEBAUTHN_LOCKED_GPM_PIN_DESCRIPTION" desc="The description of a dialog that is displayed when the user entered their Google Password Manager PIN incorrectly too many times.">
+        You've entered the wrong PIN too many times. To access your passkeys and passwords, change your PIN.
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

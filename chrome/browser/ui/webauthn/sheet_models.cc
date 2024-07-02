@@ -2063,7 +2063,7 @@ AuthenticatorGPMLockedPinSheetModel::AuthenticatorGPMLockedPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
-  // TODO(enclave): Add correct illustrations.
+  // TODO(b/348402866): Add correct illustrations.
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 }
@@ -2072,11 +2072,11 @@ AuthenticatorGPMLockedPinSheetModel::~AuthenticatorGPMLockedPinSheetModel() =
     default;
 
 std::u16string AuthenticatorGPMLockedPinSheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_LOCKED_GPM_PIN_TITLE);
 }
 
 std::u16string AuthenticatorGPMLockedPinSheetModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_DESC);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_LOCKED_GPM_PIN_DESCRIPTION);
 }
 
 bool AuthenticatorGPMLockedPinSheetModel::IsAcceptButtonEnabled() const {
@@ -2089,7 +2089,7 @@ bool AuthenticatorGPMLockedPinSheetModel::IsAcceptButtonVisible() const {
 
 std::u16string AuthenticatorGPMLockedPinSheetModel::GetAcceptButtonLabel()
     const {
-  return u"Change PIN (UT)";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CHANGE_PIN);
 }
 
 void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
