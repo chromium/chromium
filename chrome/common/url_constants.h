@@ -422,6 +422,10 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_autofill";
 #endif
 
+// "Learn more" URL for the performance intervention notification setting.
+inline constexpr char kPerformanceInterventionLearnMoreUrl[] =
+    "https://support.google.com/chrome?p=performance_personalization";
+
 // "Learn more" URL for the preloading section in Performance settings.
 inline constexpr char kPreloadingLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=performance_preload_pages";

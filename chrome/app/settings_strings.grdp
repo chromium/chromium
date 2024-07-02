@@ -1374,6 +1374,12 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_SUBTITLE" desc="Subtitle for the link row that points to tab hover preview card apperance settings.">
     Choose to show memory usage and images in the tab hover preview card
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_LABEL" desc="Label for a performance settings toggle that controls whether performance intervention notifications should be shown.">
+    Performance issue alerts
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION" desc="Label for a performance settings toggle that controls whether performance intervention notifications should be shown and link to learn more about performance issue alerts.">
+    Get notifications that suggest ways to improve detected performance issues. <ph name="BEGIN_LINK">&lt;a href="#" aria-description="$1"&gt;</ph>Learn more about performance issue alerts<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">

@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -29,6 +30,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -157,6 +160,15 @@ class PerformanceInterventionInteractiveTest
       ui::MouseEvent e(ui::EventType::ET_MOUSE_ENTERED, gfx::Point(),
                        gfx::Point(), ui::EventTimeForNow(), 0, 0);
       tab_list_row->OnEvent(&e);
+    });
+  }
+
+  auto SetShowNotificationPref(bool enabled) {
+    return Do([=]() {
+      PrefService* const pref_service = g_browser_process->local_state();
+      pref_service->SetBoolean(performance_manager::user_tuning::prefs::
+                                   kPerformanceInterventionNotificationEnabled,
+                               enabled);
     });
   }
 
@@ -429,6 +441,21 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
                       kPerformanceInterventionDialogDeactivateButton),
       Do([&]() { waiter->Wait(); }), CheckTabDiscardStatus(0, false),
       CheckTabDiscardStatus(1, false), CheckTabDiscardStatus(2, true));
+}
+
+// Intervention dialog should only show when the performance intervention
+// notification pref is enabled
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
+                       UiShowsWhenPrefEnabled) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      SetShowNotificationPref(false), TriggerOnActionableTabListChange({1}),
+      FlushEvents(),
+      EnsureNotPresent(kToolbarPerformanceInterventionButtonElementId),
+      SetShowNotificationPref(true), TriggerOnActionableTabListChange({1, 2}),
+      FlushEvents(),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId));
 }
 
 #if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND))

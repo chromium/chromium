@@ -37,6 +37,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(BatterySaverModeState::kEnabledBelowThreshold));
   registry->RegisterTimePref(kLastBatteryUseTimestamp, base::Time());
   registry->RegisterBooleanPref(kDiscardRingTreatmentEnabled, true);
+  registry->RegisterBooleanPref(kPerformanceInterventionNotificationEnabled,
+                                true);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -108,6 +110,14 @@ bool ShouldShowDiscardRingTreatment(PrefService* pref_service) {
     return true;
   }
   return pref_service->GetBoolean(kDiscardRingTreatmentEnabled);
+#endif
+}
+
+bool ShouldShowPerformanceInterventionNotification(PrefService* pref_service) {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return pref_service->GetBoolean(kPerformanceInterventionNotificationEnabled);
 #endif
 }
 

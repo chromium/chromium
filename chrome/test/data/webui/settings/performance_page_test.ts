@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import type {ExceptionEditDialogElement, ExceptionEntryElement, ExceptionListElement, ExceptionTabbedAddDialogElement, SettingsCheckboxListEntryElement, SettingsPerformancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
+import {convertDateToWindowsEpoch, DISCARD_RING_PREF, MemorySaverModeExceptionListAction, PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -92,6 +92,46 @@ suite('DiscardIndicator', function() {
         'recordDiscardRingTreatmentEnabledChanged');
     assertTrue(enabled);
     assertEquals(performancePage.getPref(DISCARD_RING_PREF).value, true);
+  });
+});
+
+suite('PerformanceIntervention', function() {
+  let performancePage: SettingsPerformancePageElement;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    performancePage = document.createElement('settings-performance-page');
+    performancePage.set('prefs', {
+      performance_tuning: {
+        ...{
+          intervention_notification: {
+            enabled: {
+              type: chrome.settingsPrivate.PrefType.BOOLEAN,
+              value: false,
+            },
+          },
+          ...tabDiscardingMockPrefs(),
+        },
+      },
+    });
+    document.body.appendChild(performancePage);
+    flush();
+  });
+
+  test('testPerformanceInterventionChangeState', async function() {
+    performancePage.setPrefValue(
+        PERFORMANCE_INTERVENTION_NOTIFICATION_PREF, false);
+    const toggle = performancePage.shadowRoot!.querySelector<HTMLElement>(
+        '#performanceInterventionToggleButton');
+    assertTrue(!!toggle);
+    toggle.click();
+    assertTrue(
+        performancePage.getPref(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
+            .value);
+    toggle.click();
+    assertFalse(
+        performancePage.getPref(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
+            .value);
   });
 });
 

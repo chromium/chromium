@@ -85,6 +85,11 @@ inline constexpr char kManagedTabDiscardingExceptions[] =
 inline constexpr char kDiscardRingTreatmentEnabled[] =
     "performance_tuning.discard_ring_treatment.enabled";
 
+// The pref storing whether performance intervention notifications should be
+// shown.
+inline constexpr char kPerformanceInterventionNotificationEnabled[] =
+    "performance_tuning.intervention_notification.enabled";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -101,6 +106,8 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
     PrefService* pref_service);
 
 bool ShouldShowDiscardRingTreatment(PrefService* pref_service);
+
+bool ShouldShowPerformanceInterventionNotification(PrefService* pref_service);
 
 // This function migrates the old, boolean Memory Saver preference to the new,
 // integer one that represents a value of the `MemorySaverModeState` enum. This

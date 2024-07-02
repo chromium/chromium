@@ -574,6 +574,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardRingImprovements));
   html_source->AddBoolean(
+      "isPerformanceInterventionUiEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceInterventionUI));
+  html_source->AddBoolean(
       "isMemorySaverModeAggressivenessEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kMemorySaverModeAggressiveness));

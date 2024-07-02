@@ -813,3 +813,53 @@ IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
                           GURL(chrome::kChromeUINewTabPageURL)),
       WaitForElementToHide(kPerformanceSettingsPage, kExceptionDialogEntry));
 }
+
+class PerformanceInterventionSettingsInteractiveTest
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {performance_manager::features::kPerformanceIntervention,
+         performance_manager::features::kPerformanceInterventionUI},
+        {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionSettingsInteractiveTest,
+                       PerformanceInterventionMetricLogOnToggle) {
+  base::HistogramTester histogram_tester;
+  const WebContentsInteractionTestUtil::DeepQuery
+      performance_intervention_setting = {
+          "settings-ui",
+          "settings-main",
+          "settings-basic-page",
+          "settings-performance-page",
+          "settings-toggle-button#performanceInterventionToggleButton",
+          "cr-toggle#control"};
+  g_browser_process->local_state()->SetBoolean(
+      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled,
+      true);
+
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(
+          kPerformanceSettingsPage,
+          GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage))),
+      WaitForElementToRender(kPerformanceSettingsPage,
+                             performance_intervention_setting),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               performance_intervention_setting, true),
+
+      // Turn Off Performance Intervention notifications
+      ClickElement(kPerformanceSettingsPage, performance_intervention_setting),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               performance_intervention_setting, false),
+      // Turn On performance Intervention notifications
+      ClickElement(kPerformanceSettingsPage, performance_intervention_setting),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               performance_intervention_setting, true));
+}

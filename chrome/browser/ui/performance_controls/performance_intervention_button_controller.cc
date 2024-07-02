@@ -23,6 +23,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -60,7 +61,10 @@ void PerformanceInterventionButtonController::OnActionableTabListChanged(
 
   if (!result.empty()) {
     // Only trigger performance detection UI for the active window.
-    if (browser_ != chrome::FindLastActive()) {
+    if (browser_ != chrome::FindLastActive() ||
+        !performance_manager::user_tuning::prefs::
+            ShouldShowPerformanceInterventionNotification(
+                g_browser_process->local_state())) {
       return;
     }
     Profile* const profile = browser_->profile();

@@ -703,6 +703,19 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardIndicatorTest,
           "runMochaSuite('DiscardIndicator')");
 }
 
+class SettingsPerformancePagePerformanceInterventionTest
+    : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      performance_manager::features::kPerformanceInterventionUI};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsPerformancePagePerformanceInterventionTest,
+                       PerformanceIntervention) {
+  RunTest("settings/performance_page_test.js",
+          "runMochaSuite('PerformanceIntervention')");
+}
+
 using SettingsMemoryPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsMemoryPageTest, MemorySaver) {

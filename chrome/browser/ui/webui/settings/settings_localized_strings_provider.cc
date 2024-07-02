@@ -852,6 +852,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_TITLE},
       {"tabHoverPreviewCardLinkSubtitle",
        IDS_SETTINGS_PERFORMANCE_TAB_HOVER_PREVIEW_CARD_LINK_SUBTITLE},
+      {"performanceInterventionEnabledLabel",
+       IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -859,6 +861,12 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       "discardRingTreatmentEnabledDescriptionWithLearnLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+
+  html_source->AddString(
+      "performanceInterventionEnabledDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
   html_source->AddString(
@@ -919,6 +927,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
                          chrome::kBatterySaverModeLearnMoreUrl);
   html_source->AddString("preloadingLearnMoreUrl",
                          chrome::kPreloadingLearnMoreUrl);
+  html_source->AddString("performanceInterventionLearnMoreUrl",
+                         chrome::kPerformanceInterventionLearnMoreUrl);
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(

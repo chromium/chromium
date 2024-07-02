@@ -26,6 +26,9 @@ import type {ExceptionListElement} from './tab_discard/exception_list.js';
 export const DISCARD_RING_PREF =
     'performance_tuning.discard_ring_treatment.enabled';
 
+export const PERFORMANCE_INTERVENTION_NOTIFICATION_PREF =
+    'performance_tuning.intervention_notification.enabled';
+
 // browser_element_identifiers constants
 const INACTIVE_TAB_SETTING_ELEMENT_ID = 'kInactiveTabSettingElementId';
 
@@ -57,6 +60,14 @@ export class SettingsPerformancePageElement extends
           return loadTimeData.getBoolean('isDiscardRingImprovementsEnabled');
         },
       },
+
+      isPerformanceInterventionUiEnabled_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isPerformanceInterventionUiEnabled');
+        },
+      },
     };
   }
 
@@ -64,6 +75,7 @@ export class SettingsPerformancePageElement extends
       PerformanceMetricsProxyImpl.getInstance();
 
   private isDiscardRingImprovementsEnabled_: boolean;
+  private isPerformanceInterventionUiEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -90,8 +102,17 @@ export class SettingsPerformancePageElement extends
         loadTimeData.getString('discardRingTreatmentLearnMoreUrl'));
   }
 
+  private onPerformanceInterventionLearnMoreLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('performanceInterventionLearnMoreUrl'));
+  }
+
   private onTabHoverPreviewCardLinkClick_(): void {
     Router.getInstance().navigateTo(routes.APPEARANCE);
+  }
+
+  private onPerformanceInterventionToggleButtonChange_() {
+    // TODO(crbug.com/341138308): Record metrics when toggle is clicked
   }
 }
 
