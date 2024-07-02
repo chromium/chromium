@@ -567,6 +567,12 @@ class PixelTestPages():
                           max_different_pixels=0,
                           pixel_delta_threshold=0,
                           edge_threshold=90)),
+        PixelTestPage(
+            'pixel_perspective_paint.html',
+            base_name + '_PerspectiveTest',
+            test_rect=[0, 0, 400, 250],
+            grace_period_end=date(2024, 8, 1),
+        ),
     ]
 
   @staticmethod

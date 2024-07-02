@@ -6513,6 +6513,7 @@ data/gpu/pixel_offscreen_canvas_ibrc_test.js
 data/gpu/pixel_offscreen_canvas_ibrc_webgl_main.html
 data/gpu/pixel_offscreen_canvas_ibrc_webgl_worker.html
 data/gpu/pixel_paintWorklet_transform.html
+data/gpu/pixel_perspective_paint.html
 data/gpu/pixel_precision_rounded_corner.html
 data/gpu/pixel_reflected_div.html
 data/gpu/pixel_render_passes.html

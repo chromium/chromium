@@ -253,6 +253,13 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ win ] Pixel_RenderPasses [ Skip ]
 [ fuchsia ] Pixel_RenderPasses [ Skip ]
 
+# This test ensures correctness of a delegated compositing implementation,
+# enabled today in Lacros. So far verified only on ChromeOS and MacOS.
+[ linux ] Pixel_PerspectiveTest [ Skip ]
+[ android ] Pixel_PerspectiveTest [ Skip ]
+[ win ] Pixel_PerspectiveTest [ Skip ]
+[ fuchsia ] Pixel_PerspectiveTest [ Skip ]
+
 # Fuchsia devices timeout due to this test drawing 300 frames before completion.
 [ fuchsia ] Pixel_Canvas2DBlitText [ Skip ]
 
