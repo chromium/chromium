@@ -7129,16 +7129,16 @@
             ],
             "experiments": [
                 {
-                    "name": "V2Enabled1_20240516",
+                    "name": "V2Enabled3V2_20240625",
                     "params": {
-                        "group_name": "enabled-v2-arm-1",
+                        "group_name": "enabled-v2-arm-3",
                         "max_prompt_count": "5",
                         "reprompt_duration": "21d",
                         "reprompt_duration_multiplier": "1",
                         "show_app_menu_chip": "false",
-                        "show_app_menu_item": "false",
+                        "show_app_menu_item": "true",
                         "show_info_bar": "true",
-                        "updated_info_bar_copy": "true"
+                        "updated_info_bar_copy": "false"
                     },
                     "enable_features": [
                         "DefaultBrowserPromptRefresh",
