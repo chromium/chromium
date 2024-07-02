@@ -64,6 +64,23 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworksList();
 // The cellular network details subpage title.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle();
 
+// The auto connect togle in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsSubpageAutoConnectToggle();
+
+// The allow data roaming togle in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingToggle();
+
+// The advanced setion row in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsAdvancedSection();
+
+// The configurable setion row in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection();
+
+// The proxy setion row in cellular network details subpage.
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection();
+
 // The cellular networks subpage menu rename button.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton();
 

@@ -15,6 +15,10 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage() {
   }});
 }
 
+WebContentsInteractionTestUtil::DeepQuery InternetDetailsSubpage() {
+  return InternetPage() + "settings-internet-detail-subpage";
+}
+
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton() {
   return InternetPage() + "settings-internet-detail-menu" +
          "cr-icon-button#moreNetworkDetail";
@@ -87,6 +91,28 @@ WebContentsInteractionTestUtil::DeepQuery CellularNetworksList() {
 
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsSubpageTitle() {
   return InternetPage() + "os-settings-subpage" + "h1#subpageTitle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsSubpageAutoConnectToggle() {
+  return InternetDetailsSubpage() + "settings-toggle-button#autoConnectToggle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingToggle() {
+  return InternetDetailsSubpage() + "cellular-roaming-toggle-button";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsAdvancedSection() {
+  return InternetDetailsSubpage() + "cr-expand-button#advancedSectionToggle";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection() {
+  return InternetDetailsSubpage() + "cr-expand-button#configurableSections";
+}
+
+WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection() {
+  return InternetDetailsSubpage() + "cr-expand-button#proxySectionToggle";
 }
 
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton() {

@@ -86,6 +86,22 @@ IN_PROC_BROWSER_TEST_F(EsimUiElementsUiTest, OsSettingsDetailsPage) {
           kOSSettingsId, settings::cellular::CellularDetailsSubpageTitle(),
           /*text=*/esim_info().nickname()),
 
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsSubpageAutoConnectToggle()),
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsAllowDataRoamingToggle()),
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsAdvancedSection()),
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsConfigurableSection()),
+      WaitForElementExists(
+          kOSSettingsId,
+          ash::settings::cellular::CellularDetailsProxySection()),
+
       Log("Test complete"));
 }
 
