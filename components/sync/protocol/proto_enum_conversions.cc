@@ -422,6 +422,21 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::SyncEnums::SendTabReceivingType send_tab_receiving_type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, SendTabReceivingType,
+                     SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+                     SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
+  switch (send_tab_receiving_type) {
+    ENUM_CASE(sync_pb::SyncEnums,
+              SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
+    ENUM_CASE(sync_pb::SyncEnums,
+              SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION);
+  }
+  NOTREACHED_IN_MIGRATION();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::SyncEnums::SingletonDebugEventType type) {
   ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, SingletonDebugEventType,
                      CONNECTION_STATUS_CHANGE, TRUSTED_VAULT_KEY_ACCEPTED);

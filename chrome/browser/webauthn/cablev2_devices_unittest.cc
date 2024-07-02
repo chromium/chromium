@@ -442,7 +442,11 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
       /*full_hardware_class=*/"full_hardware_class",
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::TimeDelta(),
-      /*send_tab_to_self_receiving_enabled=*/false,
+      /*send_tab_to_self_receiving_enabled=*/
+      false,
+      /*send_tab_to_self_receiving_type=*/
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info_opt,
       /*fcm_registration_token=*/"fcm_token", syncer::ModelTypeSet());
 }

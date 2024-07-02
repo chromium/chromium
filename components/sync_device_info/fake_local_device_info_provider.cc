@@ -13,24 +13,29 @@
 namespace syncer {
 
 FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
-    : device_info_("id",
-                   "name",
-                   "chrome_version",
-                   "user_agent",
-                   sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                   DeviceInfo::OsType::kLinux,
-                   DeviceInfo::FormFactor::kDesktop,
-                   "device_id",
-                   "fake_manufacturer",
-                   "fake_model",
-                   "fake_full_hardware_class",
-                   /*last_updated_timestamp=*/base::Time::Now(),
-                   DeviceInfoUtil::GetPulseInterval(),
-                   /*send_tab_to_self_receiving_enabled=*/false,
-                   /*sharing_info=*/std::nullopt,
-                   /*paask_info=*/std::nullopt,
-                   /*fcm_registration_token=*/std::string(),
-                   /*interested_data_types=*/ModelTypeSet()) {}
+    : device_info_(
+          "id",
+          "name",
+          "chrome_version",
+          "user_agent",
+          sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
+          DeviceInfo::OsType::kLinux,
+          DeviceInfo::FormFactor::kDesktop,
+          "device_id",
+          "fake_manufacturer",
+          "fake_model",
+          "fake_full_hardware_class",
+          /*last_updated_timestamp=*/base::Time::Now(),
+          DeviceInfoUtil::GetPulseInterval(),
+          /*send_tab_to_self_receiving_enabled=*/
+          false,
+          /*send_tab_to_self_receiving_type=*/
+          sync_pb::
+              SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+          /*sharing_info=*/std::nullopt,
+          /*paask_info=*/std::nullopt,
+          /*fcm_registration_token=*/std::string(),
+          /*interested_data_types=*/ModelTypeSet()) {}
 
 FakeLocalDeviceInfoProvider::~FakeLocalDeviceInfoProvider() = default;
 

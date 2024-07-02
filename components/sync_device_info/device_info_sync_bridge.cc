@@ -173,6 +173,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       ProtoTimeToTime(specifics.last_updated_timestamp()),
       GetPulseIntervalFromSpecifics(specifics),
       specifics.feature_fields().send_tab_to_self_receiving_enabled(),
+      specifics.feature_fields().send_tab_to_self_receiving_type(),
       SpecificsToSharingInfo(specifics),
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
       specifics.invalidation_fields().instance_id_token(),
@@ -234,6 +235,8 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   FeatureSpecificFields* feature_fields = specifics->mutable_feature_fields();
   feature_fields->set_send_tab_to_self_receiving_enabled(
       info.send_tab_to_self_receiving_enabled());
+  feature_fields->set_send_tab_to_self_receiving_type(
+      info.send_tab_to_self_receiving_type());
 
   const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
@@ -294,6 +297,8 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->full_hardware_class() == stored->full_hardware_class() &&
          current->send_tab_to_self_receiving_enabled() ==
              stored->send_tab_to_self_receiving_enabled() &&
+         current->send_tab_to_self_receiving_type() ==
+             stored->send_tab_to_self_receiving_type() &&
          current->sharing_info() == stored->sharing_info() &&
          current->paask_info().has_value() ==
              stored->paask_info().has_value() &&

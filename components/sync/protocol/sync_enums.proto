@@ -222,4 +222,15 @@ message SyncEnums {
                         // datatype, often due to error handling.
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncGetUpdatesOrigin)
+
+  // Type of message sent to the receiving device for the send tab to self
+  // feature.
+  enum SendTabReceivingType {
+    // Send tab notification can be received as an in-app message. This is the
+    // default value.
+    SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED = 0;
+    // Send tab notification can be received as a push notification and/or
+    // in-app message.
+    SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION = 1;
+  }
 }

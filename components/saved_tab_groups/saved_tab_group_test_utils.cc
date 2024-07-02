@@ -118,7 +118,11 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       "scoped_id", "manufacturer", "model", "full_hardware_class",
       /*last_updated_timestamp=*/base::Time::Now(),
       /*pulse_interval=*/base::Days(1),
-      /*send_tab_to_self_receiving_enabled=*/false,
+      /*send_tab_to_self_receiving_enabled=*/
+      false,
+      /*send_tab_to_self_receiving_type=*/
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),

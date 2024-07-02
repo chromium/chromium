@@ -106,6 +106,9 @@ const char* ProtoEnumToString(
 const char* ProtoEnumToString(
     sync_pb::SyncEnums::PageTransitionRedirectType redirect_type);
 
+const char* ProtoEnumToString(
+    sync_pb::SyncEnums::SendTabReceivingType send_tab_receiving_type);
+
 const char* ProtoEnumToString(sync_pb::SyncEnums::SingletonDebugEventType type);
 
 const char* ProtoEnumToString(sync_pb::TabNavigation::BlockedState state);

@@ -16,6 +16,7 @@
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
 #import "components/sync/model/model_type_store_service.h"
+#import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
@@ -48,6 +49,19 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     // Always true starting with M101, see crbug.com/1299833. Older clients and
     // clients from other embedders might still return false.
     return true;
+  }
+
+  // syncer::DeviceInfoSyncClient:
+  sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
+      const override {
+    // TODO(crbug.com/343495515): Check if push notifications are enabled on
+    // device.
+    return base::FeatureList::IsEnabled(
+               send_tab_to_self::kSendTabToSelfIOSPushNotifications)
+               ? sync_pb::
+                     SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION
+               : sync_pb::
+                     SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
   }
 
   // syncer::DeviceInfoSyncClient:

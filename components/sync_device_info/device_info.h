@@ -20,6 +20,7 @@
 namespace sync_pb {
 enum SharingSpecificFields_EnabledFeatures : int;
 enum SyncEnums_DeviceType : int;
+enum SyncEnums_SendTabReceivingType : int;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -123,24 +124,26 @@ class DeviceInfo {
   //
   enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
 
-  DeviceInfo(const std::string& guid,
-             const std::string& client_name,
-             const std::string& chrome_version,
-             const std::string& sync_user_agent,
-             const sync_pb::SyncEnums_DeviceType device_type,
-             const OsType os_type,
-             const FormFactor form_factor,
-             const std::string& signin_scoped_device_id,
-             const std::string& manufacturer_name,
-             const std::string& model_name,
-             const std::string& full_hardware_class,
-             base::Time last_updated_timestamp,
-             base::TimeDelta pulse_interval,
-             bool send_tab_to_self_receiving_enabled,
-             const std::optional<SharingInfo>& sharing_info,
-             const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
-             const std::string& fcm_registration_token,
-             const ModelTypeSet& interested_data_types);
+  DeviceInfo(
+      const std::string& guid,
+      const std::string& client_name,
+      const std::string& chrome_version,
+      const std::string& sync_user_agent,
+      const sync_pb::SyncEnums_DeviceType device_type,
+      const OsType os_type,
+      const FormFactor form_factor,
+      const std::string& signin_scoped_device_id,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      const std::string& full_hardware_class,
+      base::Time last_updated_timestamp,
+      base::TimeDelta pulse_interval,
+      bool send_tab_to_self_receiving_enabled,
+      sync_pb::SyncEnums_SendTabReceivingType send_tab_to_self_receiving_type,
+      const std::optional<SharingInfo>& sharing_info,
+      const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
+      const std::string& fcm_registration_token,
+      const ModelTypeSet& interested_data_types);
 
   DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
@@ -202,6 +205,12 @@ class DeviceInfo {
   // Whether the receiving side of the SendTabToSelf feature is enabled.
   bool send_tab_to_self_receiving_enabled() const;
 
+  // Enabled message types for the receiving side of the SendTabToSelf feature.
+  // This is meaningless if send_tab_to_self_receiving_enabled() returns false.
+  // If not set, the in-app message type will be assumed.
+  sync_pb::SyncEnums_SendTabReceivingType send_tab_to_self_receiving_type()
+      const;
+
   // Returns Sharing related info of the device.
   const std::optional<SharingInfo>& sharing_info() const;
 
@@ -222,6 +231,9 @@ class DeviceInfo {
   void set_full_hardware_class(const std::string& full_hardware_class);
 
   void set_send_tab_to_self_receiving_enabled(bool new_value);
+
+  void set_send_tab_to_self_receiving_type(
+      sync_pb::SyncEnums_SendTabReceivingType new_value);
 
   void set_sharing_info(const std::optional<SharingInfo>& sharing_info);
 
@@ -267,6 +279,8 @@ class DeviceInfo {
   const base::TimeDelta pulse_interval_;
 
   bool send_tab_to_self_receiving_enabled_;
+
+  sync_pb::SyncEnums_SendTabReceivingType send_tab_to_self_receiving_type_;
 
   std::optional<SharingInfo> sharing_info_;
 

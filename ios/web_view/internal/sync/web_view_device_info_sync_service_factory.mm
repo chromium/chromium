@@ -4,23 +4,24 @@
 
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/functional/bind.h"
-#include "base/memory/singleton.h"
-#include "base/time/default_clock.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/signin/public/base/device_id_helper.h"
-#include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/model_type_store_service.h"
-#include "components/sync_device_info/device_info_prefs.h"
-#include "components/sync_device_info/device_info_sync_client.h"
-#include "components/sync_device_info/device_info_sync_service_impl.h"
-#include "components/sync_device_info/local_device_info_provider_impl.h"
-#include "components/version_info/version_info.h"
+#import "base/functional/bind.h"
+#import "base/memory/singleton.h"
+#import "base/time/default_clock.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/signin/public/base/device_id_helper.h"
+#import "components/sync/invalidations/sync_invalidations_service.h"
+#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/protocol/sync_enums.pb.h"
+#import "components/sync_device_info/device_info_prefs.h"
+#import "components/sync_device_info/device_info_sync_client.h"
+#import "components/sync_device_info/device_info_sync_service_impl.h"
+#import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "components/version_info/version_info.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
-#include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace {
 
@@ -40,6 +41,13 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   bool GetSendTabToSelfReceivingEnabled() const override { return false; }
+
+  // syncer::DeviceInfoSyncClient:
+  sync_pb::SyncEnums_SendTabReceivingType GetSendTabToSelfReceivingType()
+      const override {
+    return sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
+  }
 
   // syncer::DeviceInfoSyncClient:
   std::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()

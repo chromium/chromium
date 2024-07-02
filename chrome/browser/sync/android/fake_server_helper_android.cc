@@ -21,6 +21,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "components/sync/test/entity_builder_factory.h"
@@ -247,6 +248,9 @@ static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
   // Every client supports send-tab-to-self these days.
   specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
       true);
+  specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_type(
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
   specifics->set_device_type(
       sync_pb::SyncEnums::DeviceType::SyncEnums_DeviceType_TYPE_PHONE);
   specifics->set_sync_user_agent("UserAgent");

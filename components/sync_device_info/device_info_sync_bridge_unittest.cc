@@ -143,6 +143,9 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .send_tab_to_self_receiving_enabled() ==
              arg.send_tab_to_self_receiving_enabled() &&
+         expected_specifics.feature_fields()
+                 .send_tab_to_self_receiving_type() ==
+             arg.send_tab_to_self_receiving_type() &&
          expected_specifics.invalidation_fields().instance_id_token() ==
              arg.fcm_registration_token();
 }
@@ -289,6 +292,9 @@ DeviceInfoSpecifics CreateSpecifics(
   specifics.set_last_updated_timestamp(TimeToProtoTime(last_updated));
   specifics.mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
       true);
+  specifics.mutable_feature_fields()->set_send_tab_to_self_receiving_type(
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED);
   specifics.mutable_sharing_fields()->set_vapid_fcm_token(
       SharingVapidFcmTokenForSuffix(suffix));
   specifics.mutable_sharing_fields()->set_vapid_p256dh(
@@ -391,7 +397,11 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         kLocalDeviceFormFactor, SigninScopedDeviceIdForSuffix(kLocalSuffix),
         manufacturer_name, model_name, full_hardware_class, base::Time(),
         DeviceInfoUtil::GetPulseInterval(),
-        /*send_tab_to_self_receiving_enabled=*/true,
+        /*send_tab_to_self_receiving_enabled=*/
+        true,
+        /*send_tab_to_self_receiving_type=*/
+        sync_pb::
+            SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
         DeviceInfo::SharingInfo(
             {SharingVapidFcmTokenForSuffix(kLocalSuffix),
              SharingVapidP256dhForSuffix(kLocalSuffix),

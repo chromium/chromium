@@ -66,6 +66,13 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
 }
 
 // syncer::DeviceInfoSyncClient:
+sync_pb::SyncEnums_SendTabReceivingType
+DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingType() const {
+  return sync_pb::
+      SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
+}
+
+// syncer::DeviceInfoSyncClient:
 std::optional<syncer::DeviceInfo::SharingInfo>
 DeviceInfoSyncClientImpl::GetLocalSharingInfo() const {
   return SharingSyncPreference::GetLocalSharingInfoForSync(

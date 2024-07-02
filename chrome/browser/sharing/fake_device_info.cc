@@ -22,7 +22,11 @@ std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
       form_factor, "device_id", manufacturer_name, model_name,
       full_hardware_class, last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      /*send_tab_to_self_receiving_enabled=*/false, sharing_info,
+      /*send_tab_to_self_receiving_enabled=*/
+      false,
+      sync_pb::
+          SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
+      sharing_info,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());

@@ -22,6 +22,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
@@ -76,7 +77,9 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
     const std::string& guid,
     const std::string& name,
     base::Time last_updated_timestamp,
-    bool send_tab_to_self_receiving_enabled = true) {
+    bool send_tab_to_self_receiving_enabled = true,
+    sync_pb::SyncEnums_SendTabReceivingType send_tab_to_self_receiving_type = sync_pb::
+        SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED) {
   return std::make_unique<syncer::DeviceInfo>(
       guid, name, "chrome_version", "user_agent",
       sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
@@ -84,7 +87,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDevice(
       syncer::DeviceInfo::FormFactor::kDesktop, "scoped_id", "manufacturer",
       "model", "full_hardware_class", last_updated_timestamp,
       syncer::DeviceInfoUtil::GetPulseInterval(),
-      send_tab_to_self_receiving_enabled, /*sharing_info=*/std::nullopt,
+      send_tab_to_self_receiving_enabled, send_tab_to_self_receiving_type,
+      /*sharing_info=*/std::nullopt,
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::ModelTypeSet());

@@ -107,8 +107,13 @@ message FeatureSpecificFields {
   // Tracks whether the SendTabToSelf feature is enabled on the device. For this
   // to be true, two things must be true: (1) The receiving side of the feature
   // must be enabled on the device (2) The user has enabled sync for this
-  // feature
+  // feature.
   optional bool send_tab_to_self_receiving_enabled = 1;
+
+  // Tracks which type of Send Tab To Self message(s) can be sent to the
+  // receiving device.
+  // If not set, the in-app message type will be assumed.
+  optional SyncEnums.SendTabReceivingType send_tab_to_self_receiving_type = 2;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end
