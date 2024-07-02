@@ -2944,6 +2944,16 @@ const FeatureEntry::Choice kCameraSuperResOverrideChoices[] = {
      media::switches::kCameraSuperResForceEnabled},
     {"Disabled", media::switches::kCameraSuperResOverride,
      media::switches::kCameraSuperResForceDisabled}};
+
+const FeatureEntry::Choice kFaceRetouchOverrideChoices[] = {
+    {"Default", "", ""},
+    {"Enabled with relighting", media::switches::kFaceRetouchOverride,
+     media::switches::kFaceRetouchForceEnabledWithRelighting},
+    {"Enabled without relighting", media::switches::kFaceRetouchOverride,
+     media::switches::kFaceRetouchForceEnabledWithoutRelighting},
+    {"Disabled", media::switches::kFaceRetouchOverride,
+     media::switches::kFaceRetouchForceDisabled}};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -6022,6 +6032,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCameraSuperResOverrideName,
      flag_descriptions::kCameraSuperResOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kCameraSuperResOverrideChoices)},
+    {"face-retouch-override", flag_descriptions::kFaceRetouchOverrideName,
+     flag_descriptions::kFaceRetouchOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kFaceRetouchOverrideChoices)},
     {"camera-app-autoqr-detection",
      flag_descriptions::kCameraAppAutoQRDetectionName,
      flag_descriptions::kCameraAppAutoQRDetectionDescription, kOsCrOS,

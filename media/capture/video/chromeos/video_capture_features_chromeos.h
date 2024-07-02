@@ -15,12 +15,19 @@ namespace switches {
 CAPTURE_EXPORT extern const char kForceControlFaceAe[];
 
 CAPTURE_EXPORT extern const char kAutoFramingOverride[];
-constexpr char kAutoFramingForceEnabled[] = "force-enabled";
-constexpr char kAutoFramingForceDisabled[] = "force-disabled";
+inline constexpr char kAutoFramingForceEnabled[] = "force-enabled";
+inline constexpr char kAutoFramingForceDisabled[] = "force-disabled";
 
 CAPTURE_EXPORT extern const char kCameraSuperResOverride[];
-constexpr char kCameraSuperResForceEnabled[] = "force-enabled";
-constexpr char kCameraSuperResForceDisabled[] = "force-disabled";
+inline constexpr char kCameraSuperResForceEnabled[] = "force-enabled";
+inline constexpr char kCameraSuperResForceDisabled[] = "force-disabled";
+
+CAPTURE_EXPORT extern const char kFaceRetouchOverride[];
+inline constexpr char kFaceRetouchForceEnabledWithRelighting[] =
+    "force-enabled-with-relighting";
+inline constexpr char kFaceRetouchForceEnabledWithoutRelighting[] =
+    "force-enabled-without-relighting";
+inline constexpr char kFaceRetouchForceDisabled[] = "force-disabled";
 
 }  // namespace switches
 

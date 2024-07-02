@@ -6366,6 +6366,12 @@ const char kFastPairDebugMetadataDescription[] =
     "advertisements, allowing notifications to pop up for debug-mode only "
     "devices.";
 
+const char kFaceRetouchOverrideName[] =
+    "Enable face retouch using the relighting button in the VC panel";
+const char kFaceRetouchOverrideDescription[] =
+    "Enables or disables the face retouch feature using the relighting button "
+    "in the VC panel.";
+
 const char kFastPairHandshakeLongTermRefactorName[] =
     "Enable Fast Pair Handshake Long Term Refactor";
 const char kFastPairHandshakeLongTermRefactorDescription[] =

@@ -4421,6 +4421,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "face-retouch-override",
+    "owners": [
+      "okuji@chromium.org",
+      "chromeos-camera-eng@google.com"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "fast-pair-debug-metadata",
     "owners": [
       "//ash/quick_pair/OWNERS",

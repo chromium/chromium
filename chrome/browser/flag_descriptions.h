@@ -3678,6 +3678,9 @@ extern const char kDisableExplicitDmaFencesDescription[];
 extern const char kDisplayAlignmentAssistanceName[];
 extern const char kDisplayAlignmentAssistanceDescription[];
 
+extern const char kFaceRetouchOverrideName[];
+extern const char kFaceRetouchOverrideDescription[];
+
 extern const char kFastPairDebugMetadataName[];
 extern const char kFastPairDebugMetadataDescription[];
 
