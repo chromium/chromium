@@ -28,9 +28,9 @@ def main(argv):
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
     driver.get(policy_url)
+    # Give the page 10 seconds for enrollment and legend rending
+    time.sleep(10)
     driver.find_element(By.ID, 'reload-policies').click
-    # Give the page 2 seconds to render the legend
-    time.sleep(2)
     status_box = driver.find_element(By.CSS_SELECTOR, "status-box")
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
 
@@ -41,6 +41,9 @@ def main(argv):
     device_id = el.find_element(By.CLASS_NAME,
                                 'machine-enrollment-device-id').text
     print("DEVICE_ID=" + device_id.strip())
+
+    ## Upload a report
+    driver.find_element(By.ID, 'upload-report').click
   except Exception as error:
     print(error)
   finally:
