@@ -888,6 +888,12 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
           {VaapiWrapper::SurfaceUsageHint::kVideoDecoder});
       break;
     }
+    case PIXEL_FORMAT_P010LE: {
+      surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
+          VA_RT_FORMAT_YUV420_10, coded_size,
+          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder});
+      break;
+    }
     case PIXEL_FORMAT_ARGB: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_RGB32, coded_size,

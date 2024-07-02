@@ -627,8 +627,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       std::vector<VASurfaceID>* va_surfaces);
 
   // Syncs and exports |va_surface_id| as a gfx::NativePixmapDmaBuf. Currently,
-  // the only VAAPI surface pixel formats supported are VA_FOURCC_IMC3 and
-  // VA_FOURCC_NV12.
+  // the only VAAPI surface pixel formats supported are VA_FOURCC_IMC3,
+  // VA_FOURCC_NV12, VA_FOURCC_P010 and VA_FOURCC_ARGB.
   //
   // Notes:
   //
@@ -640,6 +640,12 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   //
   // - For VA_FOURCC_NV12, the format of the returned NativePixmapDmaBuf is
   //   gfx::BufferFormat::YUV_420_BIPLANAR.
+  //
+  // - For VA_FOURCC_P010, the format of the returned NativePixmapDmaBuf is
+  //   gfx::BufferFormat::P010.
+  //
+  // - For VA_FOURCC_ARGB, the format of the returned NativePixmapDmaBuf is
+  //   gfx::BufferFormat::BGRA_8888.
   //
   // Returns nullptr on failure, or if the exported surface can't contain
   // |va_surface_size|.

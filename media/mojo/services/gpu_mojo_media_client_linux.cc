@@ -45,6 +45,12 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
 std::vector<Fourcc> GetPreferredRenderableFourccs(
     const gpu::GpuPreferences& gpu_preferences) {
   std::vector<Fourcc> renderable_fourccs;
+  // TODO(crbug.com/349428388): For HEVC Main 10 and VP9 Profile2 10-bit video,
+  // the current implementation requires additional VPP to convert the P010
+  // format to a renderable format. This VPP happens on the Vulkan path
+  // (P010 -> NV12) and OpenGL path (P010 -> AR24). While this VPP introduces a
+  // loss of color depth, it should be optimized for zero-copy path in the
+  // future.
 #if BUILDFLAG(ENABLE_VULKAN)
   // Support for zero-copy NV12 textures preferentially.
   if (gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan) {
