@@ -13,28 +13,63 @@ class RebaseDumpAccessibilityTreeTestTests(unittest.TestCase):
   def test_split_test_logs(self):
     log = """
 Testing: file1.txt
+Expected output: content/test/accessibility/fake_output.txt
 file1 content
 <-- End-of-file -->
 
 Testing: file2.txt
+Expected output: content/test/accessibility/different_output.txt
 file2 has different content
 <-- End-of-file -->
     """.split("\n")
 
-    actual = rebase.SplitTestLogs(log)
-    expected = [
+    actual = rebase._get_individual_test_logs(log)
+    self.assertEqual(
+        next(actual),
         [
             "Testing: file1.txt",
+            "Expected output: content/test/accessibility/fake_output.txt",
             "file1 content",
             "<-- End-of-file -->",
         ],
+    )
+    self.assertEqual(
+        next(actual),
         [
             "Testing: file2.txt",
+            "Expected output: content/test/accessibility/different_output.txt",
             "file2 has different content",
             "<-- End-of-file -->",
         ],
-    ]
-    self.assertEqual(actual, expected)
+    )
+    with self.assertRaises(StopIteration):
+      next(actual)
+
+  def test_split_test_logs_duplicate_removed(self):
+    log = """
+Testing: file1.txt
+Expected output: content/test/accessibility/same_fake_output.txt
+file1 content
+<-- End-of-file -->
+
+Testing: file2.txt
+Expected output: content/test/accessibility/same_fake_output.txt
+file2 has different content
+<-- End-of-file -->
+    """.split("\n")
+
+    actual = rebase._get_individual_test_logs(log)
+    self.assertEqual(
+        next(actual),
+        [
+            "Testing: file1.txt",
+            "Expected output: content/test/accessibility/same_fake_output.txt",
+            "file1 content",
+            "<-- End-of-file -->",
+        ],
+    )
+    with self.assertRaises(StopIteration):
+      next(actual)
 
   def test_parse_log(self):
     log = """
@@ -50,7 +85,7 @@ Actual
 actual file content
 <-- End-of-file -->
 """.split("\n")
-    filename, data = rebase.ParseLog(log)
+    filename, data = rebase._parse_log(log)
 
     self.assertEqual(filename, "expectation_file")
     self.assertEqual(data, "actual file content\n")

@@ -19,17 +19,13 @@ of the changes look reasonable, then upload the change for code review.
 Optional argument: patchset number, otherwise will default to latest patchset
 '''
 
-from __future__ import print_function
 
 import json
 import os
 import re
 import sys
-import tempfile
-import time
-from typing import List, Tuple
-import urllib
-import urllib.parse
+from typing import List, Tuple, Optional, Generator
+import subprocess
 
 # The location of the DumpAccessibilityTree html test files and expectations.
 TEST_DATA_PATH = os.path.join(os.getcwd(), 'content/test/data/accessibility')
@@ -39,149 +35,131 @@ TEST_DATA_PATH = os.path.join(os.getcwd(), 'content/test/data/accessibility')
 BRIGHT_COLOR = '\033[93m'
 NORMAL_COLOR = '\033[0m'
 
+TEST_START_STR = 'Testing: '
+TEST_EXPECTED_STR = 'Expected output: '
+TEST_ACTUAL_STR = 'Actual'
+TEST_END_STR = '<-- End-of-file -->'
+
+TEST_NAME_REGEX = re.compile('content.test.*accessibility.([^@]*)')
+
 # A global that keeps track of files we've already updated, so we don't
 # bother to update the same file twice.
 completed_files = set()
 
 
-def Fix(line):
+def _clean_line(line: str) -> str:
+  '''Format a line to remove unnecessary test output.'''
   if line[:3] == '@@@':
-    result = re.search('[^@]@([^@]*)@@@', line)
-    if result:
+    if result := re.search('[^@]@([^@]*)@@@', line):
       line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ' or line[:2] == 'E ':
-    result = re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)', line)
-    if result:
+    if result := re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)', line):
       line = result.group(1)
   # For Android content_shell_test_apk tests:
   elif line[:2] == 'C ':
-    result = re.search('C\s+\d+\.\d+s Main\s+([T|E|A|a|W|\+](.*))', line)
-
-    if result:
+    if result := re.search('C\s+\d+\.\d+s Main\s+([T|E|A|a|W|\+](.*))', line):
       line = result.group(1)
   return line
 
 
-def SplitTestLogs(lines: List[str]) -> List[List[str]]:
-  '''Separate log lines of many tests into groups of individual test logs.'''
-  files = []
-  for i, line in enumerate(lines):
-    if 'Testing: ' in line:
+def _get_individual_test_logs(
+    log: List[str]) -> Generator[List[str], None, None]:
+  '''Yields logs for an individual test from a log containing several tests.
+
+  Each distinct expectations filename is only included once.
+  '''
+  expected_file = None
+  for i, line in enumerate(log):
+    if TEST_START_STR in line:
       start_i = i
-    elif '<-- End-of-file -->' in line:
-      end_i = i
-      files.append(lines[start_i:end_i + 1])
-  return files
+    elif TEST_EXPECTED_STR in line:
+      if result := TEST_NAME_REGEX.search(line):
+        expected_file = result.group(1)
+    elif TEST_END_STR in line:
+      assert expected_file, "Malformed log."
+      if expected_file not in completed_files:
+        yield (log[start_i:i + 1])
+        completed_files.add(expected_file)
 
 
-def WriteFileOnce(filename: str, data: List[str], directory=TEST_DATA_PATH):
-  '''Write data to a file, limited to once per unique filepath.'''
-  full_path = os.path.join(directory, filename)
-  if full_path in completed_files:
-    return
-  with open(full_path, 'w') as f:
+def _write_file(filename: str, data: List[str], directory=TEST_DATA_PATH):
+  '''Write data to a file.'''
+  with open(full_path := os.path.join(directory, filename), 'w') as f:
     f.writelines(data)
     completed_files.add(full_path)
+    print(f'Wrote to expectations file: {full_path}')
 
 
-def ParseLog(lines: List[str]) -> Tuple[str, str]:
+def _parse_log(lines: List[str]) -> Tuple[str, str]:
   '''Parses a single failing test into an expectation file and test results.'''
-  test_file = None
-  expected_file = ''
-  start = None
-  actual_text = ''
+  test_file, expected_file, start, actual_text = None, None, None, None
   for i in range(len(lines)):
-    line = Fix(lines[i])
-    if line.find('Testing:') >= 0:
-      result = re.search('content.test.*accessibility.([^@]*)', line)
-      if result:
+    line = lines[i]
+    if TEST_START_STR in line:
+      if result := TEST_NAME_REGEX.search(line):
         test_file = result.group(1)
-      expected_file = ''
-      start = None
-    if line.find('Expected output:') >= 0:
-      result = re.search('content.test.*accessibility.([^@]*)', line)
-      if result:
+    elif TEST_EXPECTED_STR in line:
+      if result := TEST_NAME_REGEX.search(line):
         expected_file = result.group(1)
-    if line == 'Actual':
+    elif TEST_ACTUAL_STR in line:
+      # Skip this line (header) and the next line (separator hyphens).
       start = i + 2
-    if (start and test_file and expected_file
-        and line.find('End-of-file') >= 0):
-      actual = [Fix(line) for line in lines[start:i] if line]
-
-      actual_text = '\n'.join(actual)
-      # Make sure the text ends with a newline.
-      if len(actual) > 0 and actual[-1][-1] != '\n':
+    elif TEST_END_STR in line:
+      actual_text = '\n'.join([_clean_line(line) for line in lines[start:i]])
+      # Ensure expectation files end with a newline for consistency, even though
+      #  it don't appear in test output.
+      if not actual_text.endswith('\n'):
         actual_text += '\n'
 
-      start = None
-      test_file = None
-  return expected_file, actual_text
+  assert test_file and expected_file and actual_text, 'Malformed log.'
+  return (expected_file, actual_text)
 
 
-def Run():
-  '''Main. Get the issue number and parse the code review page.'''
-  if len(sys.argv) == 2:
-    patchSetArg = '--patchset=%s' % sys.argv[1]
-  else:
-    patchSetArg = ''
+def get_trybot_log(patch_set: Optional[int]) -> List:
+  '''Get trybot data for the current branch's issue.'''
+  patch_set_arg = f'--patchset={patch_set}' if patch_set is not None else ''
 
-  try:
-    (fd, tmppath) = tempfile.mkstemp()
-    print('Temp file: %s' % tmppath)
-    os.system('git cl try-results --json %s %s' % (tmppath, patchSetArg))
+  return json.loads(
+      subprocess.run(f'git cl try-results --json=- {patch_set_arg}',
+                     shell=True,
+                     capture_output=True,
+                     text=True).stdout)
 
-    with open(tmppath) as file:
-      try_result = file.read()
-      if len(try_result) < 1000:
-        print('Did not seem to get try bot data.')
-        print(try_result)
-        return
-  finally:
-    os.close(fd)
-    os.unlink(tmppath)
 
-  data = json.loads(try_result)
+def _get_builder_steps(
+    builder_ids: Generator[str, None, None]
+) -> Generator[Tuple[str, str], None, None]:
+  '''Yields (builder_id, content_test_step_name) for the provided builders.'''
 
-  for builder in data:
-    print(builder['builder']['builder'], builder['status'])
-    if builder['status'] == 'FAILURE':
-      bb_command = [
-          'bb',
-          'get',
-          builder['id'],
-          '-steps',
-          '-json',
-      ]
-      bb_command_expanded = ' '.join(bb_command)
-      # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
-      output = os.popen(bb_command_expanded).read()
-      steps_json = json.loads(output)
+  def _is_content_test(name: str) -> bool:
+    return (name.startswith('content_shell_test_apk') or
+            name.startswith('content_browsertests')) and '(with patch)' in name
 
-      s_name = None
-      for step in steps_json['steps']:
-        name = step['name']
-        if (name.startswith('content_shell_test_apk') or
-            name.startswith('content_browsertests')) and '(with patch)' in name:
-          s_name = name
+  for b in builder_ids:
+    steps = json.loads(
+        subprocess.run(f'bb get {b} -steps -json',
+                       shell=True,
+                       capture_output=True,
+                       text=True).stdout)['steps']
+    step_names = (s["name"] for s in steps if _is_content_test(s["name"]))
+    for s in step_names:
+      yield (b, s)
 
-          bb_command = [
-              'bb',
-              'log',
-              builder['id'],
-              '\"%s\"' % s_name,
-          ]
-          bb_command_expanded = ' '.join(bb_command)
-          # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
-          output = os.popen(bb_command_expanded).readlines()
-          for log in SplitTestLogs(output):
-            filename, actual_text = ParseLog(log)
-            if actual_text:
-              WriteFileOnce(filename, actual_text)
-      if not output:
-        print('No content_browsertests (with patch) step found')
-        continue
 
+def main():
+  patch_set = sys.argv[1] if len(sys.argv) > 1 else None
+
+  failing_builder_ids = (b["id"] for b in get_trybot_log(patch_set)
+                         if b['status'] == 'FAILURE')
+
+  for (b, s) in _get_builder_steps(failing_builder_ids):
+    output = subprocess.run(f'bb log {b} "{s}"',
+                            shell=True,
+                            capture_output=True,
+                            text=True).stdout.split('\n')
+    for log in _get_individual_test_logs(output):
+      _write_file(*_parse_log(log))
 
 if __name__ == '__main__':
-  sys.exit(Run())
+  sys.exit(main())
