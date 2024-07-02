@@ -548,6 +548,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString(
       "fullResetTitle",
       InsertBrandedPasswordManager(IDS_PASSWORD_MANAGER_UI_FULL_RESET_TITLE));
+  source->AddString("fullResetRowDescription",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_FULL_RESET_DESCRIPTION));
   source->AddString("fullResetConfirmationTitle",
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRMATION_TITLE));
