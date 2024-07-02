@@ -1011,4 +1011,12 @@ void ViewAccessibility::SetPopupForId(ui::AXPlatformNodeId popup_for_id) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, popup_for_id);
 }
 
+void ViewAccessibility::SetIsProtected(bool is_protected) {
+  if (data_.HasState(ax::mojom::State::kProtected) == is_protected) {
+    return;
+  }
+
+  SetState(ax::mojom::State::kProtected, is_protected);
+}
+
 }  // namespace views
