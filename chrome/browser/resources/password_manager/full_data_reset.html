@@ -3,6 +3,21 @@
   cr-link-row[hide-icon]::part(icon) {
     display: none;
   }
+
+  #warning-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 8px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: var(--sys-color-error-container);
+  }
+
+  #warning-icon {
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-height: var(--cr-icon-size);
+    color: var(--error-color);
+  }
 </style>
 
 <cr-link-row class="cr-row" non-clickable hide-icon
@@ -18,7 +33,11 @@
     $i18n{fullResetConfirmationTitle}
   </div>
   <div slot="body">
-    $i18n{fullResetConfirmationDescription}
+    <div id="warning-container">
+      <iron-icon id="warning-icon" icon="passwords-icon:outlined-warning">
+      </iron-icon>
+      <div>$i18n{fullResetConfirmationDescription}</div>
+    </div>
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"

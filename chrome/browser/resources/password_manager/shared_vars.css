@@ -23,10 +23,16 @@ html {
   --two-line-section-min-height: 64px;
 
   --error-color: var(--google-red-700);
+
+  --ref-palette-error30: rgba(140, 29, 24, 1);
+  --ref-palette-error90: rgba(249, 222, 220, 1);
+
+  --sys-color-error-container: var(--ref-palette-error90);
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     --error-color: var(--google-red-300);
+    --sys-color-error-container: var(--ref-palette-error30);
   }
 }
