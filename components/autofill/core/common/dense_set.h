@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 
@@ -146,7 +141,7 @@ class Bitset<Word, 1u> {
   friend constexpr bool operator==(Bitset lhs, Bitset rhs) = default;
 
   constexpr base::span<const Word, 1> data() const {
-    return base::span<const Word, 1>(&word_, 1u);
+    return base::span_from_ref(word_);
   }
 
  private:
