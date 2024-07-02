@@ -38,6 +38,7 @@ class MetricEventObserverManager;
 class MetricReportQueue;
 class CollectorBase;
 class Sampler;
+class FatalCrashEventsObserver;
 
 BASE_DECLARE_FEATURE(kEnableAppEventsObserver);
 BASE_DECLARE_FEATURE(kEnableFatalCrashEventsObserver);
@@ -93,6 +94,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // EventDrivenTelemetryCollectorPool:
   std::vector<raw_ptr<CollectorBase, VectorExperimental>>
   GetTelemetryCollectors(MetricEventType event_type) override;
+
+  // Can be nullptr of the feature flag is not enabled.
+  FatalCrashEventsObserver* fatal_crash_events_observer();
 
  private:
   MetricReportingManager(
@@ -349,6 +353,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   std::vector<std::unique_ptr<MetricEventObserverManager>>
       event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Fatal crash event observer. Life time of this object is owned by
+  // `event_observer_managers_`.
+  raw_ptr<FatalCrashEventsObserver> fatal_crash_events_observer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // App usage observer used to observe and collect app usage reports from the
   // `AppPlatformMetrics` component.

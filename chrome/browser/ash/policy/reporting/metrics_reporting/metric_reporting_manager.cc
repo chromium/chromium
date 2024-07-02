@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -291,6 +292,9 @@ void MetricReportingManager::Shutdown() {
   website_usage_observer_.reset();
   app_usage_observer_.reset();
   delegate_.reset();
+  // Reset the raw pointer `fatal_crash_events_observer_` before the actual
+  // class is destructed by `event_observer_managers_`.
+  fatal_crash_events_observer_ = nullptr;
   event_observer_managers_.clear();
   info_collectors_.clear();
   telemetry_collectors_.clear();
@@ -714,8 +718,11 @@ void MetricReportingManager::InitFatalCrashCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (base::FeatureList::IsEnabled(kEnableFatalCrashEventsObserver)) {
+    std::unique_ptr<FatalCrashEventsObserver> fatal_crash_observer =
+        FatalCrashEventsObserver::Create();
+    fatal_crash_events_observer_ = fatal_crash_observer.get();
     event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
-        FatalCrashEventsObserver::Create(), crash_event_report_queue_.get(),
+        std::move(fatal_crash_observer), crash_event_report_queue_.get(),
         &reporting_settings_, ash::kReportDeviceCrashReportInfo,
         metrics::kReportDeviceCrashReportInfoDefaultValue,
         /*collector_pool=*/this));
@@ -901,6 +908,12 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
 base::TimeDelta MetricReportingManager::GetUploadDelay() const {
   // Upload delay time starts after init delay.
   return delegate_->GetInitDelay() + delegate_->GetInitialUploadDelay();
+}
+
+FatalCrashEventsObserver*
+MetricReportingManager::fatal_crash_events_observer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return fatal_crash_events_observer_;
 }
 
 }  // namespace reporting

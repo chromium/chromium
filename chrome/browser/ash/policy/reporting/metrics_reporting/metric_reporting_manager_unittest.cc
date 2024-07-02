@@ -38,6 +38,7 @@
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/metrics/fakes/fake_sampler.h"
+#include "components/reporting/metrics/metric_event_observer.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/sampler.h"
@@ -62,6 +63,7 @@ using testing::Pointer;
 using testing::Return;
 using testing::SizeIs;
 using testing::StrEq;
+using testing::WithArg;
 
 namespace reporting {
 namespace {
@@ -77,6 +79,21 @@ class FakeMetricEventObserverManager : public MetricEventObserverManager {
             /*enable_setting_path=*/"",
             /*setting_enabled_default_value=*/false,
             /*collector_pool=*/nullptr),
+        observer_manager_count_(observer_manager_count) {
+    ++(*observer_manager_count_);
+  }
+
+  // For event observers that require lifetime management.
+  FakeMetricEventObserverManager(
+      ReportingSettings* reporting_settings,
+      int* observer_manager_count,
+      std::unique_ptr<MetricEventObserver> event_observer)
+      : MetricEventObserverManager(std::move(event_observer),
+                                   /*metric_report_queue=*/nullptr,
+                                   reporting_settings,
+                                   /*enable_setting_path=*/"",
+                                   /*setting_enabled_default_value=*/false,
+                                   /*collector_pool=*/nullptr),
         observer_manager_count_(observer_manager_count) {
     ++(*observer_manager_count_);
   }
@@ -616,10 +633,14 @@ TEST_P(MetricReportingManagerEventTest, Default) {
           _, crash_event_queue_ptr_.get(), _,
           test_case.setting_data.enable_setting_path,
           test_case.setting_data.setting_enabled_default_value, _, init_delay))
-      .WillByDefault([&]() {
-        return std::make_unique<FakeMetricEventObserverManager>(
-            fake_reporting_settings.get(), &observer_manager_count);
-      });
+      .WillByDefault(
+          // We expect `FatalCrashEventObserver` to be owned by
+          // `MetricEventObserverManager`.
+          WithArg<0>([&](std::unique_ptr<MetricEventObserver> event_observer) {
+            return std::make_unique<FakeMetricEventObserverManager>(
+                fake_reporting_settings.get(), &observer_manager_count,
+                std::move(event_observer));
+          }));
   ON_CALL(
       *mock_delegate_ptr,
       CreateEventObserverManager(

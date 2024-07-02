@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_FATAL_CRASH_EVENTS_OBSERVER_H_
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 
@@ -15,6 +16,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -49,6 +53,16 @@ class FatalCrashEventsObserver
     int64_t capture_timestamp_us;
   };
 
+  // Interface for observing reported fatal crash events for event based log
+  // upload. The observer lifetime is managed by `EventBasedLogManager`.
+  class FatalCrashEventLogObserver : public base::CheckedObserver {
+   public:
+    // Called when fatal crash event is reported with the generated `upload_id`
+    // for the log upload. Only the crashes with uploaded crash report will be
+    // notified.
+    virtual void OnFatalCrashEvent(const std::string& upload_id) = 0;
+  };
+
   // UMA name for recording the reason that an unuploaded crash should not be
   // reported.
   static constexpr char kUmaUnuploadedCrashShouldNotReportReason[] =
@@ -65,6 +79,10 @@ class FatalCrashEventsObserver
 
   // Convert a `base::Time` to a timestamp in microseconds.
   static int64_t ConvertTimeToMicroseconds(base::Time t);
+
+  void AddEventLogObserver(FatalCrashEventLogObserver* observer);
+
+  void RemoveEventLogObserver(FatalCrashEventLogObserver* observer);
 
  protected:
   // Get allowed crash types.
@@ -108,7 +126,8 @@ class FatalCrashEventsObserver
   FatalCrashEventsObserver();
 
   MetricData FillFatalCrashTelemetry(
-      const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info);
+      const ::ash::cros_healthd::mojom::CrashEventInfoPtr& info,
+      std::optional<std::string> event_based_log_upload_id);
 
   // ash::cros_healthd::mojom::EventObserver:
   void OnEvent(ash::cros_healthd::mojom::EventInfoPtr info) override;
@@ -133,6 +152,10 @@ class FatalCrashEventsObserver
   // Processes events that was received before the save files have been loaded.
   void ProcessEventsBeforeSaveFilesLoaded();
 
+  // Notifies `event_log_observers_` about the fatal crash event. Returns upload
+  // ID generated for event based log upload if there's observers that exists.
+  std::optional<std::string> NotifyFatalCrashEventLog();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Manages saved local IDs for reported unuploaded crashes.
@@ -150,6 +173,10 @@ class FatalCrashEventsObserver
       event_queue_before_save_files_loaded_
           GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Note that the observer list will be empty if LogUploadEnabled policy is
+  // disabled for the device.
+  base::ObserverList<FatalCrashEventLogObserver> event_log_observers_;
+
   // Callbacks and variables used for test only.
   std::unique_ptr<SettingsForTest> settings_for_test_ GUARDED_BY_CONTEXT(
       sequence_checker_){std::make_unique<SettingsForTest>()};
@@ -157,4 +184,27 @@ class FatalCrashEventsObserver
   base::WeakPtrFactory<FatalCrashEventsObserver> weak_factory_{this};
 };
 }  // namespace reporting
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    reporting::FatalCrashEventsObserver,
+    reporting::FatalCrashEventsObserver::FatalCrashEventLogObserver> {
+  static void AddObserver(
+      reporting::FatalCrashEventsObserver* source,
+      reporting::FatalCrashEventsObserver::FatalCrashEventLogObserver*
+          observer) {
+    source->AddEventLogObserver(observer);
+  }
+  static void RemoveObserver(
+      reporting::FatalCrashEventsObserver* source,
+      reporting::FatalCrashEventsObserver::FatalCrashEventLogObserver*
+          observer) {
+    source->RemoveEventLogObserver(observer);
+  }
+};
+
+}  // namespace base
+
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_FATAL_CRASH_EVENTS_OBSERVER_H_

@@ -4844,6 +4844,7 @@ if (!is_android) {
         "../browser/ash/policy/remote_commands/device_command_reboot_job_browsertest.cc",
         "../browser/ash/policy/remote_commands/device_command_set_volume_job_browsertest.cc",
         "../browser/ash/policy/reporting/event_based_logs/event_based_log_manager_browsertest.cc",
+        "../browser/ash/policy/reporting/event_based_logs/event_observers/fatal_crash_event_log_observer_browsertest.cc",
         "../browser/ash/policy/reporting/event_based_logs/event_observers/os_update_event_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler_browsertest.cc",

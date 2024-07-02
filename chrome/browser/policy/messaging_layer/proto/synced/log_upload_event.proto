@@ -48,7 +48,11 @@ message RemoteCommandDetails {
 // The event type that triggers event based log upload.
 enum TriggerEventType {
   TRIGGER_EVENT_TYPE_UNSPECIFIED = 0;
+  // The OS update failed.
   OS_UPDATE_FAILED = 1;
+  // The device crashed. This is triggered on fatal kernel and embedded
+  // controller crashes.
+  FATAL_CRASH = 2;
 }
 
 // The event details for the event that triggered the event based log upload.

@@ -865,6 +865,10 @@ message FatalCrashTelemetry {
   // crash report ID and only has a crash report ID when it is reported for the
   // second time.
   optional bool been_reported_without_crash_report_id = 7;
+  // Event based log upload ID that contains the logs related to the crash
+  // event. This Id will be used in the server to connect the uploaded log file
+  // to the specific crash event.
+  optional string event_based_log_id = 8;
 }
 
 // Runtime counters retrieved from CPU. Currently the runtime counters telemetry

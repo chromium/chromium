@@ -166,6 +166,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   reporting::OsUpdatesReporter* GetOsUpdatesReporter() const;
 
+  reporting::MetricReportingManager* GetMetricReportingManager();
+
  protected:
   // Object that monitors managed session related events used by reporting
   // services, protected for testing.
