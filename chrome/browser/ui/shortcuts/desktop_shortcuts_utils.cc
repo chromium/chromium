@@ -10,6 +10,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace shortcuts {
 
@@ -30,13 +35,6 @@ bool CanCreateDesktopShortcut(Browser* browser) {
     return false;
   }
 
-  // Do not allow if the site_url is invalid or doesn't have a HTTP/HTTPS
-  // scheme.
-  const GURL site_url = web_contents->GetLastCommittedURL();
-  if (!site_url.is_valid() || !site_url.SchemeIsHTTPOrHTTPS()) {
-    return false;
-  }
-
   // Do not allow for error pages (like network errors etc).
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
@@ -44,7 +42,21 @@ bool CanCreateDesktopShortcut(Browser* browser) {
     return false;
   }
 
-  return true;
+  // Do not allow if the site_url is invalid.
+  const GURL site_url = web_contents->GetLastCommittedURL();
+  if (!site_url.is_valid()) {
+    return false;
+  }
+
+  // Only URLs that have a scheme of `HTTP/HTTPs` or `chrome-extension` is
+  // allowed.
+  bool is_valid_for_shortcuts = site_url.SchemeIsHTTPOrHTTPS();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  is_valid_for_shortcuts =
+      is_valid_for_shortcuts || site_url.SchemeIs(extensions::kExtensionScheme);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return is_valid_for_shortcuts;
 }
 
 }  // namespace shortcuts

@@ -36,8 +36,19 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && \
+     BUILDFLAG(ENABLE_EXTENSIONS))
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_builder.h"
+#endif  // ((BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS))
 
 class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
  public:
@@ -577,6 +588,27 @@ class CreateShortcutBrowserCommandControllerTest
  public:
   CreateShortcutBrowserCommandControllerTest() = default;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  scoped_refptr<const extensions::Extension> CreateAndInstallExtension() {
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ExtensionBuilder("ext").Build();
+    CHECK(extension);
+
+    // Simulate installing the extension.
+    extensions::TestExtensionSystem* extension_system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(browser()->profile()));
+    extensions::ExtensionService* extension_service =
+        extension_system->CreateExtensionService(
+            base::CommandLine::ForCurrentProcess(),
+            /*install_directory=*/base::FilePath(),
+            /*autoupdate_enabled=*/false);
+    extension_service->AddExtension(extension.get());
+
+    return extension;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kShortcutsNotApps};
@@ -626,5 +658,16 @@ TEST_F(CreateShortcutBrowserCommandControllerTest, InvalidSchemeDisabled) {
   AddTab(browser(), GURL("abc://apps"));
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(CreateShortcutBrowserCommandControllerTest,
+       ChromeExtensionSchemeEnabled) {
+  const char kResource[] = "resource.html";
+  scoped_refptr<const extensions::Extension> extension =
+      CreateAndInstallExtension();
+  AddTab(browser(), extension->GetResourceURL(kResource));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
