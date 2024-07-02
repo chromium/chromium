@@ -837,6 +837,21 @@ TEST_F(LabelButtonTest, UpdateImageAfterSettingImageModel) {
   EXPECT_TRUE(is_showing_image(normal_image));
 }
 
+TEST_F(LabelButtonTest, AccessibiltyDefaultState) {
+  ui::AXNodeData node_data = ui::AXNodeData();
+  /// Initially, kDefault should be set to false.
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kDefault));
+
+  button()->SetIsDefault(true);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kDefault));
+
+  node_data = ui::AXNodeData();  // Reset the node data.
+  button()->SetIsDefault(false);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kDefault));
+}
+
 // Test fixture for a LabelButton that has an ink drop configured.
 class InkDropLabelButtonTest : public ViewsTestBase {
  public:

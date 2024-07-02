@@ -77,6 +77,7 @@ LabelButton::LabelButton(
   SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
+  GetViewAccessibility().SetIsDefault(is_default_);
 }
 
 LabelButton::~LabelButton() {
@@ -263,6 +264,7 @@ void LabelButton::SetIsDefault(bool is_default) {
     AddAccelerator(accel);
   else
     RemoveAccelerator(accel);
+  GetViewAccessibility().SetIsDefault(is_default);
   OnPropertyChanged(&is_default_, UpdateStyleToIndicateDefaultStatus());
 }
 
@@ -452,9 +454,6 @@ ProposedLayout LabelButton::CalculateProposedLayout(
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
-  if (GetIsDefault()) {
-    node_data->AddState(ax::mojom::State::kDefault);
-  }
 }
 
 ui::NativeTheme::Part LabelButton::GetThemePart() const {
