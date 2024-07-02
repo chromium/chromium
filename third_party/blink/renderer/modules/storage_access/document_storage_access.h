@@ -59,17 +59,23 @@ class DocumentStorageAccess final
 
   // Attempt permission checks for unpartitioned storage access and enable
   // unpartitioned cookie access based on success if
-  // `request_unpartitioned_cookie_access` is true.
-  ScriptPromise<IDLUndefined> RequestStorageAccessImpl(
+  // `request_unpartitioned_cookie_access` is true. On success, resolved with
+  // `on_resolve`.
+  template <typename T>
+  ScriptPromise<T> RequestStorageAccessImpl(
       ScriptState* script_state,
-      bool request_unpartitioned_cookie_access);
-
-  // Resolves the promise if the `status` can approve; rejects the promise
-  // otherwise, and consumes user activation. Enables unpartitioned cookie
-  // access if `request_unpartitioned_cookie_access` is true.
-  void ProcessStorageAccessPermissionState(
-      ScriptPromiseResolver<IDLUndefined>* resolver,
       bool request_unpartitioned_cookie_access,
+      base::OnceCallback<void(ScriptPromiseResolver<T>*)> on_resolve);
+
+  // Resolves the promise if the `status` can approve using `on_resolve`;
+  // rejects the promise otherwise, and consumes user activation. Enables
+  // unpartitioned cookie access if `request_unpartitioned_cookie_access` is
+  // true.
+  template <typename T>
+  void ProcessStorageAccessPermissionState(
+      ScriptPromiseResolver<T>* resolver,
+      bool request_unpartitioned_cookie_access,
+      base::OnceCallback<void(ScriptPromiseResolver<T>*)> on_resolve,
       mojom::blink::PermissionStatus status);
 
   // Resolves the promise if the `status` can approve; rejects the promise
