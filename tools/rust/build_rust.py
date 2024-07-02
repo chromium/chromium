@@ -452,10 +452,10 @@ changelog-seen = 2'''
     def run(self, sub, args):
         ''' Run x.py subcommand with specified args. '''
         os.chdir(RUST_SRC_DIR)
-        cmd = [sys.executable, 'x.py', sub] + args + ['--color', 'never']
+        cmd = [sys.executable, 'x.py', sub]
         if self._verbose and self._verbose > 0:
             cmd.append('-' + self._verbose * 'v')
-        RunCommand(cmd, setenv=True, env=self._env)
+        RunCommand(cmd + args, setenv=True, env=self._env)
         os.chdir(CHROMIUM_DIR)
 
     def get_env(self):
