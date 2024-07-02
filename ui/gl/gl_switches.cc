@@ -349,12 +349,6 @@ BASE_FEATURE(kDXGISwapChainPresentInterval0,
              "DXGISwapChainPresentInterval0",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch using floating point based rounding adjustments in
-// SwapChainPresenter::Adjust* functions.
-BASE_FEATURE(kUseSwapChainPresenterFloatingPointAdjustments,
-             "UseSwapChainPresenterFloatingPointAdjustments",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool SupportsEGLDualGPURendering() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::FeatureList::IsEnabled(kEGLDualGPURendering);

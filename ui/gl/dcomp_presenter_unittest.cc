@@ -2875,13 +2875,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          &DCompPresenterBufferCountTest::GetParamName);
 
 struct LetterboxingTestParams {
-  LetterboxingTestParams(bool use_letterbox_video_optimization,
-                         bool use_float_rounding)
-      : use_letterbox_video_optimization(use_letterbox_video_optimization),
-        use_float_rounding(use_float_rounding) {}
+  LetterboxingTestParams(bool use_letterbox_video_optimization)
+      : use_letterbox_video_optimization(use_letterbox_video_optimization) {}
 
   bool use_letterbox_video_optimization;
-  bool use_float_rounding;
 };
 
 class DCompPresenterLetterboxingTest
@@ -2906,13 +2903,6 @@ class DCompPresenterLetterboxingTest
           features::kDirectCompositionLetterboxVideoOptimization);
     }
 
-    if (std::get<0>(GetParam()).use_float_rounding) {
-      DCompPresenterTestBase::EnableFeature(
-          features::kUseSwapChainPresenterFloatingPointAdjustments);
-    } else {
-      DCompPresenterTestBase::DisableFeature(
-          features::kUseSwapChainPresenterFloatingPointAdjustments);
-    }
     if (std::get<1>(GetParam())) {
       DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
     } else {
@@ -2924,25 +2914,13 @@ class DCompPresenterLetterboxingTest
 INSTANTIATE_TEST_SUITE_P(
     None,
     DCompPresenterLetterboxingTest,
-    testing::Combine(::testing::Values(LetterboxingTestParams(false, false)),
+    testing::Combine(::testing::Values(LetterboxingTestParams(false)),
                      testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     LetterBoxOpt,
     DCompPresenterLetterboxingTest,
-    testing::Combine(::testing::Values(LetterboxingTestParams(true, false)),
-                     testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    FloatRounding,
-    DCompPresenterLetterboxingTest,
-    testing::Combine(::testing::Values(LetterboxingTestParams(false, true)),
-                     testing::Bool()));
-
-INSTANTIATE_TEST_SUITE_P(
-    LetterBoxOptFloatRounding,
-    DCompPresenterLetterboxingTest,
-    testing::Combine(::testing::Values(LetterboxingTestParams(true, true)),
+    testing::Combine(::testing::Values(LetterboxingTestParams(true)),
                      testing::Bool()));
 
 TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingResizeVideoLayer) {
@@ -3624,36 +3602,9 @@ TEST_P(DCompPresenterLetterboxingTest,
   }
 }
 
-class DCompPresenterFullscreenRoundingTest
-    : public DCompPresenterTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- protected:
-  void SetUp() override {
-    SetupScopedFeatureList();
-    DCompPresenterTestBase::SetUp();
-  }
+class DCompPresenterFullscreenRoundingTest : public DCompPresenterTestBase {};
 
-  virtual void SetupScopedFeatureList() {
-    if (std::get<0>(GetParam())) {
-      DCompPresenterTestBase::EnableFeature(
-          features::kUseSwapChainPresenterFloatingPointAdjustments);
-    } else {
-      DCompPresenterTestBase::DisableFeature(
-          features::kUseSwapChainPresenterFloatingPointAdjustments);
-    }
-    if (std::get<1>(GetParam())) {
-      DCompPresenterTestBase::EnableFeature(features::kGpuVsync);
-    } else {
-      DCompPresenterTestBase::DisableFeature(features::kGpuVsync);
-    }
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DCompPresenterFullscreenRoundingTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
-
-TEST_P(DCompPresenterFullscreenRoundingTest,
+TEST_F(DCompPresenterFullscreenRoundingTest,
        FullScreenRoundingWithHalfPixelTranslation) {
   // Define 1920x1080 monitor size.
   const gfx::Size monitor_size(1920, 1080);
@@ -3697,15 +3648,8 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
   ASSERT_TRUE(swap_chain);
   EXPECT_HRESULT_SUCCEEDED(swap_chain->GetDesc1(&desc));
 
-  if (std::get<0>(GetParam())) {
-    EXPECT_EQ(1920u, desc.Width);
-    EXPECT_EQ(1080u, desc.Height);
-  } else {
-    // Without float based rounding we expect full screen
-    // rounding to fail today.
-    EXPECT_NE(1920u, desc.Width);
-    EXPECT_NE(1080u, desc.Height);
-  }
+  EXPECT_EQ(1920u, desc.Width);
+  EXPECT_EQ(1080u, desc.Height);
 
   Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
   EXPECT_HRESULT_SUCCEEDED(
@@ -3715,27 +3659,14 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
   EXPECT_HRESULT_SUCCEEDED(
       decode_swap_chain->GetDestSize(&dest_width, &dest_height));
 
-  if (std::get<0>(GetParam())) {
-    EXPECT_EQ(1920u, dest_width);
-    EXPECT_EQ(1080u, dest_height);
-  } else {
-    // Without float based rounding we expect full screen
-    // rounding to fail today.
-    EXPECT_NE(1920u, dest_width);
-    EXPECT_NE(1080u, dest_height);
-  }
+  EXPECT_EQ(1920u, dest_width);
+  EXPECT_EQ(1080u, dest_height);
 
   // The target rect has been set to the onscreen content rect.
   RECT target_rect;
   EXPECT_HRESULT_SUCCEEDED(decode_swap_chain->GetTargetRect(&target_rect));
 
-  if (std::get<0>(GetParam())) {
-    EXPECT_EQ(clip_rect, gfx::Rect(target_rect));
-  } else {
-    // Without float based rounding we expect full screen
-    // rounding to fail today.
-    EXPECT_NE(clip_rect, gfx::Rect(target_rect));
-  }
+  EXPECT_EQ(clip_rect, gfx::Rect(target_rect));
 
   // Ensure translation was removed.
   gfx::Transform visual_transform;
@@ -3745,13 +3676,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
       0, &visual_transform, &visual_offset, &visual_clip_rect);
   DVLOG(1) << "visual_transform" << visual_transform.ToString();
 
-  if (std::get<0>(GetParam())) {
-    EXPECT_TRUE(visual_transform.IsIdentity());
-  } else {
-    // Without float based rounding we expect full screen
-    // rounding to fail today.
-    EXPECT_FALSE(visual_transform.IsIdentity());
-  }
+  EXPECT_TRUE(visual_transform.IsIdentity());
 }
 
 // This test attempts to emulate the behavior of
@@ -3760,7 +3685,7 @@ TEST_P(DCompPresenterFullscreenRoundingTest,
 // upper left portion of the frame being shown. When in full screen on a
 // 1920x1080 monitor the video at 200% scaling should have a swap chain size of
 // 3840 x 2160 but the clipping rect should match the monitor size of 1920x1080.
-TEST_P(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
+TEST_F(DCompPresenterFullscreenRoundingTest, FullScreenContentWithClipping) {
   // Define 1920x1080 monitor size.
   const gfx::Size monitor_size(1920, 1080);
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);

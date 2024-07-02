@@ -145,15 +145,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // as in AdjustTargetForFullScreenLetterboxing.
   void AdjustTargetToOptimalSizeIfNeeded(
       const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
-
-  void AdjustTargetToOptimalSizeIfNeededF(
-      const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
       gfx::SizeF* swap_chain_size,
       gfx::Transform* visual_transform,
@@ -165,14 +156,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the full screen DWM optimizations.
   bool AdjustTargetToFullScreenSizeIfNeeded(
-      const gfx::Size& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect) const;
-
-  bool AdjustTargetToFullScreenSizeIfNeededF(
       const gfx::SizeF& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
@@ -189,16 +172,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Desktop Window Manager(DWM) take over the letterboxing/positioning job, and
   // turn off the topmost desktop plane at the same time.
   void AdjustTargetForFullScreenLetterboxing(
-      const gfx::Size& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
-
-  void AdjustTargetForFullScreenLetterboxingF(
       const gfx::SizeF& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
@@ -214,13 +187,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
                                    gfx::Rect* visual_clip_rect,
                                    std::optional<gfx::Size>* dest_size,
                                    std::optional<gfx::Rect>* target_rect) const;
-
-  gfx::Size CalculateSwapChainSizeF(
-      const DCLayerOverlayParams& params,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
