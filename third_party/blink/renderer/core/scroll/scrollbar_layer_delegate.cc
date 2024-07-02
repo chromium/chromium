@@ -167,6 +167,25 @@ gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
 }
 
+bool ScrollbarLayerDelegate::UsesNinePatchTrackAndButtonsResource() const {
+  return scrollbar_->UsesNinePatchTrackAndButtonsResource();
+}
+
+void ScrollbarLayerDelegate::SetUsesNinePatchTrackAndButtonsResource(
+    bool uses_nine_patch) {
+  scrollbar_->SetUsesNinePatchTrackAndButtonsResource(uses_nine_patch);
+}
+
+gfx::Size ScrollbarLayerDelegate::NinePatchTrackAndButtonsCanvasSize() const {
+  CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource());
+  return scrollbar_->GetTheme().NinePatchTrackAndButtonsCanvasSize(*scrollbar_);
+}
+
+gfx::Rect ScrollbarLayerDelegate::NinePatchTrackAndButtonsAperture() const {
+  CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource());
+  return scrollbar_->GetTheme().NinePatchTrackAndButtonsAperture(*scrollbar_);
+}
+
 bool ScrollbarLayerDelegate::ShouldPaint() const {
   // TODO(crbug.com/860499): Remove this condition, it should not occur.
   // Layers may exist and be painted for a |scrollbar_| that has had its
@@ -201,7 +220,8 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       scrollbar_->ClearThumbNeedsRepaint();
       break;
     case cc::ScrollbarPart::kTrackButtonsTickmarks: {
-      DCHECK_EQ(rect.size(), scrollbar_->FrameRect().size());
+      CHECK(scrollbar_->UsesNinePatchTrackAndButtonsResource() ||
+            rect.size() == scrollbar_->FrameRect().size());
       gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();

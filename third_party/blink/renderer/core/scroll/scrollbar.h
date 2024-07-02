@@ -185,6 +185,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
                                                 : "VerticalScrollbar";
   }
 
+  bool UsesNinePatchTrackAndButtonsResource() const;
+  void SetUsesNinePatchTrackAndButtonsResource(bool supports);
+
   // Marks the scrollbar as needing to be redrawn.
   //
   // If invalid parts are provided, then those parts will also be repainted.
@@ -273,6 +276,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool track_needs_repaint_ = true;
   bool thumb_needs_repaint_ = true;
   bool needs_update_display_ = true;
+  bool uses_nine_patch_track_and_buttons_ = false;
 
   bool injected_gesture_scroll_begin_;
 

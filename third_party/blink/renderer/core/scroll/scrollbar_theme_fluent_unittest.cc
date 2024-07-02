@@ -86,6 +86,13 @@ class ScrollbarThemeFluentTest : public ::testing::TestWithParam<float> {
   int ScrollbarTrackInsetPx() const {
     return theme_->ScrollbarTrackInsetPx(ScaleFromDIP());
   }
+  gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar& scrollbar) const {
+    return theme_->NinePatchTrackAndButtonsAperture(scrollbar);
+  }
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(
+      const Scrollbar& scrollbar) const {
+    return theme_->NinePatchTrackAndButtonsCanvasSize(scrollbar);
+  }
   float ScaleFromDIP() const { return GetParam(); }
 
   Persistent<MockScrollableArea> mock_scrollable_area() const {
@@ -211,6 +218,47 @@ TEST_P(ScrollbarThemeFluentTest, ScrollbarTrackPartInvalidationTest) {
   mock_scrollable_area()->SetScrollOffset(
       ScrollOffset(0, 0), mojom::blink::ScrollType::kCompositor);
   EXPECT_FALSE(scrollbar->TrackNeedsRepaint());
+}
+
+// Verify that the NinePatchCanvas function returns the correct minimal image
+// size when the scrollbars are larger and smaller than the minimal size (enough
+// space for two buttons and a pixel in the middle).
+TEST_P(ScrollbarThemeFluentTest, NinePatchCanvas) {
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
+
+  // Test that a scrollbar larger than the minimal size is properly shrunk
+  // when asked for the aperture.
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 3));
+  gfx::Size expected_size(scrollbar->Width(), scrollbar->Width() * 2 + 1);
+  EXPECT_EQ(expected_size, NinePatchTrackAndButtonsCanvasSize(*scrollbar));
+
+  // Test that a scrollbar smaller than the minimal size is not shrunk when
+  // asked for the aperture.
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 3));
+  expected_size = scrollbar->Size();
+  EXPECT_EQ(expected_size, NinePatchTrackAndButtonsCanvasSize(*scrollbar));
+}
+
+// Verify that the NinePatchAperture function returns the correct point in the
+// middle of the canvas taking into consideration when the scrollbars' width is
+// even to expand the width of the center-patch.
+TEST_P(ScrollbarThemeFluentTest, NinePatchAperture) {
+  Scrollbar* scrollbar = Scrollbar::CreateForTesting(
+      mock_scrollable_area(), kVerticalScrollbar, &(theme_->GetInstance()));
+  scrollbar->SetUsesNinePatchTrackAndButtonsResource(true);
+  scrollbar->SetFrameRect(
+      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 3));
+  const gfx::Size canvas = NinePatchTrackAndButtonsCanvasSize(*scrollbar);
+  gfx::Rect expected_rect(canvas.width() / 2, canvas.height() / 2, 1, 1);
+  if (canvas.width() % 2 == 0) {
+    expected_rect.set_x(expected_rect.x() - 1);
+    expected_rect.set_width(2);
+  }
+  EXPECT_EQ(expected_rect, NinePatchTrackAndButtonsAperture(*scrollbar));
 }
 
 // Test that Scrollbar objects are correctly sized with Overlay Fluent theme

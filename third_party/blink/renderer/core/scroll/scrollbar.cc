@@ -847,6 +847,14 @@ void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
     scrollable_area_->SetScrollbarNeedsPaintInvalidation(Orientation());
 }
 
+bool Scrollbar::UsesNinePatchTrackAndButtonsResource() const {
+  return uses_nine_patch_track_and_buttons_;
+}
+
+void Scrollbar::SetUsesNinePatchTrackAndButtonsResource(bool supports) {
+  uses_nine_patch_track_and_buttons_ = supports;
+}
+
 CompositorElementId Scrollbar::GetElementId() const {
   DCHECK(scrollable_area_);
   return scrollable_area_->GetScrollbarElementId(orientation_);

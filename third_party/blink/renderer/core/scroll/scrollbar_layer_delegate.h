@@ -57,6 +57,10 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
+  bool UsesNinePatchTrackAndButtonsResource() const override;
+  void SetUsesNinePatchTrackAndButtonsResource(bool uses_nine_patch) override;
+  gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture() const override;
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const override;
 

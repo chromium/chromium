@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "cc/base/features.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/trees/draw_property_utils.h"
@@ -50,7 +51,13 @@ PaintedScrollbarLayer::PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar)
       supports_drag_snap_back_(scrollbar_.Read(*this)->SupportsDragSnapBack()),
       is_overlay_(scrollbar_.Read(*this)->IsOverlay()),
       is_fluent_(scrollbar_.Read(*this)->IsFluent()),
-      is_web_test_(scrollbar_.Read(*this)->IsRunningWebTest()) {}
+      is_web_test_(scrollbar_.Read(*this)->IsRunningWebTest()),
+      uses_nine_patch_track_and_buttons_(
+          is_fluent_ && base::FeatureList::IsEnabled(
+                            features::kFluentScrollbarUsesNinePatchTrack)) {
+  scrollbar_.Write(*this)->SetUsesNinePatchTrackAndButtonsResource(
+      uses_nine_patch_track_and_buttons_);
+}
 
 PaintedScrollbarLayer::~PaintedScrollbarLayer() = default;
 
@@ -102,9 +109,26 @@ void PaintedScrollbarLayer::PushPropertiesTo(
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
   scrollbar_layer->set_is_web_test(is_web_test_);
 
-  if (is_fluent_ && fluent_thumb_color_.Read(*this).has_value()) {
-    scrollbar_layer->SetFluentThumbColor(
-        fluent_thumb_color_.Read(*this).value());
+  if (is_fluent_) {
+    if (fluent_thumb_color_.Read(*this).has_value()) {
+      scrollbar_layer->SetFluentThumbColor(
+          fluent_thumb_color_.Read(*this).value());
+    }
+    if (uses_nine_patch_track_and_buttons_ && track_resource_.Read(*this)) {
+      const auto iter = commit_state.ui_resource_sizes.find(
+          track_resource_.Read(*this)->id());
+      const gfx::Size image_bounds =
+          (iter == commit_state.ui_resource_sizes.end()) ? gfx::Size()
+                                                         : iter->second;
+      scrollbar_layer->SetFluentTrackImageBounds(image_bounds);
+      scrollbar_layer->SetFluentTrackAperture(
+          fluent_track_aperture_.Read(*this));
+    } else {
+      scrollbar_layer->SetFluentTrackImageBounds(gfx::Size());
+      scrollbar_layer->SetFluentTrackAperture(gfx::Rect());
+    }
+    scrollbar_layer->set_uses_nine_patch_track_and_buttons(
+        uses_nine_patch_track_and_buttons_);
   }
 }
 
@@ -187,10 +211,7 @@ bool PaintedScrollbarLayer::Update() {
   updated |= UpdateThumbAndTrackGeometry();
   updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
 
-  gfx::Size size = bounds();
-  gfx::Size scaled_size = internal_content_bounds_.Read(*this);
-
-  if (scaled_size.IsEmpty()) {
+  if (internal_content_bounds_.Read(*this).IsEmpty()) {
     if (track_resource_.Read(*this)) {
       track_resource_.Write(*this) = nullptr;
       thumb_resource_.Write(*this) = nullptr;
@@ -206,9 +227,31 @@ bool PaintedScrollbarLayer::Update() {
     updated = true;
   }
 
+  updated |= UpdateTrackIfNeeded();
+  updated |= UpdateThumbIfNeeded();
+
+  return updated;
+}
+
+bool PaintedScrollbarLayer::UpdateTrackIfNeeded() {
+  bool updated = false;
+  gfx::Size size = bounds();
+  gfx::Size scaled_size = internal_content_bounds_.Read(*this);
   if (!track_resource_.Read(*this) ||
       scrollbar_.Read(*this)->NeedsRepaintPart(
           ScrollbarPart::kTrackButtonsTickmarks)) {
+    // Fluent scrollbars only use nine-patch scaling when tickmarks are not
+    // present. Otherwise, the generate the full-sized track and buttons bitmap
+    // with the tickmarks in it.
+    if (is_fluent_ && uses_nine_patch_track_and_buttons_ &&
+        !scrollbar_.Read(*this)->HasTickmarks()) {
+      size = scrollbar_.Read(*this)->NinePatchTrackAndButtonsCanvasSize();
+      scaled_size =
+          gfx::ScaleToCeiledSize(size, internal_contents_scale_.Read(*this));
+      fluent_track_aperture_.Write(*this) =
+          scrollbar_.Read(*this)->NinePatchTrackAndButtonsAperture();
+    }
+
     track_resource_.Write(*this) = ScopedUIResource::Create(
         layer_tree_host()->GetUIResourceManager(),
         RasterizeScrollbarPart(size, scaled_size,
@@ -217,7 +260,6 @@ bool PaintedScrollbarLayer::Update() {
     updated = true;
   }
 
-  updated |= UpdateThumbIfNeeded();
   return updated;
 }
 

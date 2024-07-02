@@ -6,9 +6,11 @@
 #define CC_LAYERS_PAINTED_SCROLLBAR_LAYER_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
+#include "cc/layers/nine_patch_generator.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
 #include "cc/resources/ui_resource_client.h"
 
@@ -54,7 +56,12 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetTrackRect(gfx::Rect track_rect);
   void SetScrollbarPaintedOpacity(float opacity);
   void SetFluentThumbColor(SkColor4f thumb_color);
+  void SetFluentTrackImageBounds(const gfx::Size& bounds);
+  void SetFluentTrackAperture(const gfx::Rect& aperture);
 
+  void set_uses_nine_patch_track_and_buttons(bool uses_nine_patch) {
+    uses_nine_patch_track_and_buttons_ = uses_nine_patch;
+  }
   void set_track_ui_resource_id(UIResourceId uid) {
     track_ui_resource_id_ = uid;
   }
@@ -96,7 +103,10 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void AppendThumbQuads(viz::CompositorRenderPass* render_pass,
                         AppendQuadsData* append_quads_data) const;
   void AppendTrackQuads(viz::CompositorRenderPass* render_pass,
-                        AppendQuadsData* append_quads_data) const;
+                        AppendQuadsData* append_quads_data);
+  void AppendFluentNinePatchScaledTrack(viz::CompositorRenderPass* render_pass,
+                                        viz::SharedQuadState* shared_quad_state,
+                                        gfx::Rect& track_quad_rect);
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
   gfx::Rect ExpandFluentScrollbarThumb(gfx::Rect thumb_rect) const;
@@ -121,6 +131,12 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   gfx::Rect forward_button_rect_;
   gfx::Rect track_rect_;
   std::optional<SkColor4f> fluent_thumb_color_;
+
+  bool uses_nine_patch_track_and_buttons_ = false;
+  gfx::Size fluent_track_image_bounds_;
+  gfx::Rect fluent_track_aperture_;
+  NinePatchGenerator fluent_quad_generator_;
+  std::vector<NinePatchGenerator::Patch> fluent_track_patches_;
 };
 
 }  // namespace cc

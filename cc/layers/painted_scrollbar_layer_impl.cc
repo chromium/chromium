@@ -81,11 +81,15 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 
   scrollbar_layer->set_track_ui_resource_id(track_ui_resource_id_);
   scrollbar_layer->set_thumb_ui_resource_id(thumb_ui_resource_id_);
+  scrollbar_layer->set_uses_nine_patch_track_and_buttons(
+      uses_nine_patch_track_and_buttons_);
 
   scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_);
   if (fluent_thumb_color_.has_value()) {
     scrollbar_layer->SetFluentThumbColor(fluent_thumb_color_.value());
   }
+  scrollbar_layer->SetFluentTrackImageBounds(fluent_track_image_bounds_);
+  scrollbar_layer->SetFluentTrackAperture(fluent_track_aperture_);
 }
 
 float PaintedScrollbarLayerImpl::OverlayScrollbarOpacity() const {
@@ -187,7 +191,7 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
 
 void PaintedScrollbarLayerImpl::AppendTrackQuads(
     viz::CompositorRenderPass* render_pass,
-    AppendQuadsData* append_quads_data) const {
+    AppendQuadsData* append_quads_data) {
   if (IsFluentOverlayScrollbarEnabled() &&
       thumb_thickness_scale_factor() <= GetIdleThicknessScale() &&
       !has_find_in_page_tickmarks()) {
@@ -222,6 +226,14 @@ void PaintedScrollbarLayerImpl::AppendTrackQuads(
         (1.f - GetIdleThicknessScale());
     track_shared_quad_state->opacity *= scaled_opacity;
   }
+
+  if (IsFluentScrollbarEnabled() && uses_nine_patch_track_and_buttons_ &&
+      !has_find_in_page_tickmarks()) {
+    AppendFluentNinePatchScaledTrack(render_pass, track_shared_quad_state,
+                                     track_quad_rect);
+    return;
+  }
+
   gfx::Rect scaled_track_quad_rect(internal_content_bounds_);
   gfx::Rect scaled_visible_track_quad_rect = gfx::ScaleToEnclosingRect(
       visible_track_quad_rect, internal_contents_scale_);
@@ -237,6 +249,33 @@ void PaintedScrollbarLayerImpl::AppendTrackQuads(
                /*nearest=*/false, /*secure_output=*/false,
                /*video_type=*/gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
+}
+
+void PaintedScrollbarLayerImpl::AppendFluentNinePatchScaledTrack(
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    gfx::Rect& track_quad_rect) {
+  CHECK(uses_nine_patch_track_and_buttons_);
+  gfx::Rect border(fluent_track_aperture_.x(), fluent_track_aperture_.y(),
+                   fluent_track_aperture_.x() * 2,
+                   fluent_track_aperture_.y() * 2);
+  gfx::Rect layer_occlusion;
+  bool layout_changed = fluent_quad_generator_.SetLayout(
+      fluent_track_image_bounds_, track_quad_rect.size(),
+      fluent_track_aperture_, border, layer_occlusion,
+      /*fill_center=*/true, /*nearest_neighbor=*/false);
+  if (layout_changed) {
+    fluent_quad_generator_.CheckGeometryLimitations();
+    fluent_track_patches_ = fluent_quad_generator_.GeneratePatches();
+    gfx::Vector2dF offset = track_quad_rect.OffsetFromOrigin();
+    for (auto& patch : fluent_track_patches_) {
+      patch.output_rect += offset;
+    }
+  }
+
+  fluent_quad_generator_.AppendQuadsForCc(this, track_ui_resource_id_,
+                                          render_pass, shared_quad_state,
+                                          fluent_track_patches_);
 }
 
 gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingVisibleRectInTargetSpace()
@@ -322,6 +361,24 @@ void PaintedScrollbarLayerImpl::SetSupportsDragSnapBack(
   if (supports_drag_snap_back_ == supports_drag_snap_back)
     return;
   supports_drag_snap_back_ = supports_drag_snap_back;
+  NoteLayerPropertyChanged();
+}
+
+void PaintedScrollbarLayerImpl::SetFluentTrackImageBounds(
+    const gfx::Size& bounds) {
+  if (fluent_track_image_bounds_ == bounds) {
+    return;
+  }
+  fluent_track_image_bounds_ = bounds;
+  NoteLayerPropertyChanged();
+}
+
+void PaintedScrollbarLayerImpl::SetFluentTrackAperture(
+    const gfx::Rect& aperture) {
+  if (fluent_track_aperture_ == aperture) {
+    return;
+  }
+  fluent_track_aperture_ = aperture;
   NoteLayerPropertyChanged();
 }
 

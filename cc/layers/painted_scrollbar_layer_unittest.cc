@@ -43,6 +43,7 @@ class MockScrollbar : public FakeScrollbar {
     set_has_thumb(true);
     set_is_overlay(false);
     set_is_fluent(is_fluent);
+    set_uses_nine_patch_track_and_buttons_resource(is_fluent);
   }
   MOCK_METHOD3(PaintPart,
                void(PaintCanvas* canvas,

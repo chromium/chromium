@@ -95,6 +95,11 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual bool UsesNinePatchThumbResource() const = 0;
   virtual gfx::Size NinePatchThumbCanvasSize() const = 0;
   virtual gfx::Rect NinePatchThumbAperture() const = 0;
+  virtual bool UsesNinePatchTrackAndButtonsResource() const = 0;
+  virtual void SetUsesNinePatchTrackAndButtonsResource(
+      bool uses_nine_patch) = 0;
+  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize() const = 0;
+  virtual gfx::Rect NinePatchTrackAndButtonsAperture() const = 0;
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const = 0;
 

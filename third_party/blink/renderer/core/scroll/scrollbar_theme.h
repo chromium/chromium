@@ -236,6 +236,20 @@ class CORE_EXPORT ScrollbarTheme {
     return gfx::Rect();
   }
 
+  // For a nine-patch scrollbar, this defines the painting canvas size which the
+  // painting code will use to paint the scrollbar into. The actual scrollbar
+  // dimensions will be ignored for purposes of painting since the resource can
+  // be then resized without a repaint.
+  virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const {
+    NOTREACHED_NORETURN();
+  }
+
+  // For a nine-patch resource, the aperture defines the center patch that will
+  // be stretched out.
+  virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const {
+    NOTREACHED_NORETURN();
+  }
+
   virtual bool AllowsHitTest() const { return true; }
 
  protected:

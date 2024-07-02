@@ -48,6 +48,10 @@ class FakeScrollbar : public Scrollbar {
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
+  bool UsesNinePatchTrackAndButtonsResource() const override;
+  void SetUsesNinePatchTrackAndButtonsResource(bool uses_nine_patch) override {}
+  gfx::Size NinePatchTrackAndButtonsCanvasSize() const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture() const override;
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       gfx::Rect& rect) const override;
   bool IsOpaque() const override;
@@ -64,6 +68,9 @@ class FakeScrollbar : public Scrollbar {
   void set_is_fluent(bool b) { is_fluent_ = b; }
   void set_uses_nine_patch_thumb_resource(bool b) {
     uses_nine_patch_thumb_resource_ = b;
+  }
+  void set_uses_nine_patch_track_and_buttons_resource(bool b) {
+    uses_nine_patch_track_and_buttons_resource_ = b;
   }
   void set_track_rect(const gfx::Rect& track_rect) { track_rect_ = track_rect; }
   void set_thumb_size(const gfx::Size& thumb_size) { thumb_size_ = thumb_size; }
@@ -93,6 +100,7 @@ class FakeScrollbar : public Scrollbar {
   bool is_overlay_ = false;
   bool is_fluent_ = false;
   bool uses_nine_patch_thumb_resource_ = false;
+  bool uses_nine_patch_track_and_buttons_resource_ = false;
   gfx::Size thumb_size_{5, 10};
   float thumb_opacity_ = 1;
   bool needs_repaint_thumb_ = true;

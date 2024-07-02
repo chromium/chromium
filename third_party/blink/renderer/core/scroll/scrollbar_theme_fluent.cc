@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/gfx/geometry/rect.h"
@@ -245,6 +246,91 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
     thumb_rect.set_width(rect.width() * idle_thickness_scale);
   }
   return gfx::ToEnclosingRect(thumb_rect);
+}
+
+void ScrollbarThemeFluent::PaintTrackAndButtons(GraphicsContext& context,
+                                                const Scrollbar& scrollbar,
+                                                const gfx::Vector2d& offset) {
+  if (!scrollbar.UsesNinePatchTrackAndButtonsResource() ||
+      scrollbar.HasTickmarks()) {
+    ScrollbarTheme::PaintTrackAndButtons(context, scrollbar, offset);
+    return;
+  }
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          context, scrollbar, DisplayItem::kScrollbarTrackAndButtons)) {
+    return;
+  }
+  const int aperture_track_space =
+      scrollbar.Orientation() == kVerticalScrollbar
+          ? NinePatchTrackAndButtonsAperture(scrollbar).height()
+          : NinePatchTrackAndButtonsAperture(scrollbar).width();
+
+  gfx::Size paint_size = NinePatchTrackAndButtonsCanvasSize(scrollbar);
+  gfx::Rect visual_rect = scrollbar.FrameRect();
+  visual_rect.Offset(offset);
+  visual_rect.set_size(paint_size);
+  DrawingRecorder recorder(context, scrollbar,
+                           DisplayItem::kScrollbarTrackAndButtons, visual_rect);
+
+  gfx::Rect back_button_rect = BackButtonRect(scrollbar);
+  back_button_rect.Offset(offset);
+  PaintButton(context, scrollbar, back_button_rect, kBackButtonStartPart);
+
+  gfx::Rect forward_button_rect = back_button_rect;
+  if (scrollbar.Orientation() == kVerticalScrollbar) {
+    forward_button_rect.Offset(
+        0, ButtonSize(scrollbar).height() + aperture_track_space);
+  } else {
+    forward_button_rect.Offset(
+        ButtonSize(scrollbar).width() + aperture_track_space, 0);
+  }
+  PaintButton(context, scrollbar, forward_button_rect, kForwardButtonEndPart);
+
+  gfx::Rect track_rect = back_button_rect;
+  if (scrollbar.Orientation() == kVerticalScrollbar) {
+    track_rect.Offset(0, ButtonSize(scrollbar).height());
+    track_rect.set_height(aperture_track_space);
+  } else {
+    track_rect.Offset(ButtonSize(scrollbar).width(), 0);
+    track_rect.set_width(aperture_track_space);
+  }
+  PaintTrack(context, scrollbar, track_rect);
+}
+
+gfx::Size ScrollbarThemeFluent::NinePatchTrackAndButtonsCanvasSize(
+    const Scrollbar& scrollbar) const {
+  const gfx::Size scrollbar_size = scrollbar.Size();
+  gfx::Size canvas_size = ButtonSize(scrollbar);
+  if (scrollbar.Orientation() == kVerticalScrollbar) {
+    canvas_size.set_height(
+        std::min(scrollbar_size.height(), canvas_size.height() * 2 + 1));
+  } else if (scrollbar.Orientation() == kHorizontalScrollbar) {
+    canvas_size.set_width(
+        std::min(scrollbar_size.width(), canvas_size.width() * 2 + 1));
+  }
+  return canvas_size;
+}
+
+gfx::Rect ScrollbarThemeFluent::NinePatchTrackAndButtonsAperture(
+    const Scrollbar& scrollbar) const {
+  const gfx::Size canvas = NinePatchTrackAndButtonsCanvasSize(scrollbar);
+  static constexpr int kFluentCenterPixelSize = 1;
+  static constexpr int kFluentEvenCenterPixelWidth = 2;
+  gfx::Rect aperture(canvas.width() / 2, canvas.height() / 2,
+                     kFluentCenterPixelSize, kFluentCenterPixelSize);
+
+  // If the scrollbars width is even, the center patch will be two pixels wide
+  // with one pixel on each half of the scrollbar.
+  if (canvas.width() % 2 == 0 &&
+      scrollbar.Orientation() == kVerticalScrollbar) {
+    aperture.set_x(aperture.x() - 1);
+    aperture.set_width(kFluentEvenCenterPixelWidth);
+  } else if (canvas.height() % 2 == 0 &&
+             scrollbar.Orientation() == kHorizontalScrollbar) {
+    aperture.set_y(aperture.y() - 1);
+    aperture.set_height(kFluentEvenCenterPixelWidth);
+  }
+  return aperture;
 }
 
 SkColor4f ScrollbarThemeFluent::FluentThumbColor(
