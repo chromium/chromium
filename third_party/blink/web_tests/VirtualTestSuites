@@ -258,7 +258,6 @@
               "external/wpt/css/css-animations",
               "external/wpt/css/css-transforms/animation",
               "external/wpt/css/css-transforms/individual-transform/animation"],
-    "exclusive_tests": ["external/wpt/css/css-animations/display-none-dont-cancel-pseudo.tentative.html"],
     "args": ["--enable-threaded-compositing",
              "--disable-composited-antialiasing",
              "--disable-features=CompositedAnimationsCancelledAsynchronously"],
