@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -32,6 +33,19 @@
 namespace gl {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+// Used to represent maximum GLES version for UMA.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MaximumGLESVersion {
+  kGLES2_0 = 0,
+  kGLES3_0 = 1,
+  kGLES3_1 = 2,
+  kGLES3_2 = 3,
+  kMaxValue = kGLES3_2
+};
+#endif
 
 ABSL_CONST_INIT thread_local GLContext* current_context = nullptr;
 ABSL_CONST_INIT thread_local GLContext* current_real_context = nullptr;
@@ -191,6 +205,27 @@ CurrentGL* GLContext::GetCurrentGL() {
     current_gl_->Driver = driver_gl_.get();
     current_gl_->Api = gl_api_wrapper_->api();
     current_gl_->Version = version_info_.get();
+
+#if BUILDFLAG(IS_ANDROID)
+    // Record the maximum GLES version supported for metrics if not using ANGLE
+    // (we don't record this for ANGLE currently because ANGLE reports the exact
+    // version recorded by the client, which is always <= 3.0 for Chrome).
+    static bool recorded_max_gles_version_if_feasible = false;
+    if (!recorded_max_gles_version_if_feasible &&
+        GetGLImplementation() == kGLImplementationEGLGLES2 &&
+        current_gl_->Version) {
+      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
+      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_2;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_1;
+      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
+        max_gles_version = MaximumGLESVersion::kGLES3_0;
+      }
+      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
+    }
+    recorded_max_gles_version_if_feasible = true;
+#endif
 
     static_bindings_initialized_ = true;
   }

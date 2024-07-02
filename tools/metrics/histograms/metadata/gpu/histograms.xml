@@ -1104,6 +1104,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.MaximumGLESVersion" enum="MaximumGLESVersion"
+    expires_after="2025-02-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the maximum GLES version supported on Android. Recorded once per GPU
+    process launch and recorded only for non-ANGLE due to complexities in
+    obtaining this information for ANGLE.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
     enum="MetalReadWriteTextureSupportTier" expires_after="2024-09-01">
   <owner>cwallez@chromium.org</owner>
