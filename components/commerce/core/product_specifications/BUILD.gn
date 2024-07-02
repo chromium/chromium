@@ -12,6 +12,7 @@ source_set("product_specifications") {
     "product_specifications_sync_bridge.h",
   ]
   deps = [
+    "//base",
     "//components/commerce/core:feature_list",
     "//components/keyed_service/core",
     "//components/sync",

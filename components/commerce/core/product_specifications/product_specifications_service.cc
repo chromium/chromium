@@ -7,7 +7,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/map_util.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
@@ -33,18 +36,65 @@ ProductSpecificationsService::GetSyncControllerDelegate() {
 
 const std::vector<ProductSpecificationsSet>
 ProductSpecificationsService::GetAllProductSpecifications() {
-  std::vector<ProductSpecificationsSet> product_specifications;
-  for (auto& entry : bridge_->entries()) {
-    std::vector<GURL> urls;
-    for (auto& data : entry.second.data()) {
-      urls.emplace_back(data.url());
+  if (base::FeatureList::IsEnabled(
+          commerce::kProductSpecificationsMultiSpecifics)) {
+    std::map<std::string, std::vector<sync_pb::ProductComparisonSpecifics>>
+        items_lookup;
+    // Map product_comparison_uuid to product_comparison_item so the data for
+    // each item can be merged the top level specific stored in
+    // product_comparison.
+    for (auto& [_, specifics] : bridge_->entries()) {
+      if (specifics.has_product_comparison_item()) {
+        std::string uuid =
+            specifics.product_comparison_item().product_comparison_uuid();
+        if (!items_lookup.contains(uuid)) {
+          items_lookup[uuid] = {};
+        }
+        items_lookup[uuid].push_back(specifics);
+      }
     }
-    product_specifications.emplace_back(
-        entry.second.uuid(), entry.second.creation_time_unix_epoch_millis(),
-        entry.second.update_time_unix_epoch_millis(), urls,
-        entry.second.name());
+    // Order items, as defined by UniquePosition.
+    for (auto& [_, item_specifics] : items_lookup) {
+      std::sort(
+          item_specifics.begin(), item_specifics.end(),
+          [](const auto& specifics_a, const auto& specifics_b) {
+            return syncer::UniquePosition::FromProto(
+                       specifics_a.product_comparison_item().unique_position())
+                .LessThan(syncer::UniquePosition::FromProto(
+                    specifics_b.product_comparison_item().unique_position()));
+          });
+    }
+    // Create ProductSpecificationSets.
+    std::vector<ProductSpecificationsSet> sets;
+    for (auto& [uuid, specifics] : bridge_->entries()) {
+      if (specifics.has_product_comparison()) {
+        std::vector<GURL> urls;
+        if (base::FindOrNull(items_lookup, uuid)) {
+          for (auto& specific : items_lookup.find(uuid)->second) {
+            urls.emplace_back(specific.product_comparison_item().url());
+          }
+        }
+        sets.emplace_back(specifics.uuid(),
+                          specifics.creation_time_unix_epoch_millis(),
+                          specifics.update_time_unix_epoch_millis(), urls,
+                          specifics.product_comparison().name());
+      }
+    }
+    return sets;
+  } else {
+    std::vector<ProductSpecificationsSet> product_specifications;
+    for (auto& entry : bridge_->entries()) {
+      std::vector<GURL> urls;
+      for (auto& data : entry.second.data()) {
+        urls.emplace_back(data.url());
+      }
+      product_specifications.emplace_back(
+          entry.second.uuid(), entry.second.creation_time_unix_epoch_millis(),
+          entry.second.update_time_unix_epoch_millis(), urls,
+          entry.second.name());
+    }
+    return product_specifications;
   }
-  return product_specifications;
 }
 
 void ProductSpecificationsService::GetAllProductSpecifications(

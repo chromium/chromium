@@ -12,9 +12,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
@@ -101,6 +103,13 @@ void AddTestSpecifics(commerce::ProductSpecificationsSyncBridge* bridge) {
   bridge->ApplyIncrementalSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>(),
       std::move(add_changes));
+}
+
+template <class T>
+void Swap(std::vector<T>& items, std::vector<std::pair<int, int>> indices) {
+  for (auto& indice_pair : indices) {
+    std::swap(items[indice_pair.first], items[indice_pair.second]);
+  }
 }
 
 MATCHER_P(HasAllProductSpecs, product_comparison_specifics, "") {
@@ -203,6 +212,11 @@ class ProductSpecificationsServiceTest : public testing::Test {
     return service()->deferred_operations_.size();
   }
 
+  void EnableMultiSpecFlag() {
+    scoped_feature_list_.InitAndEnableFeature(
+        commerce::kProductSpecificationsMultiSpecifics);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ProductSpecificationsService> service_;
@@ -210,6 +224,7 @@ class ProductSpecificationsServiceTest : public testing::Test {
   std::unique_ptr<syncer::ModelTypeStore> store_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   testing::NiceMock<MockProductSpecificationsSetObserver> observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   syncer::ModelTypeStore* store() { return store_.get(); }
 
@@ -481,6 +496,56 @@ TEST_F(ProductSpecificationsServiceTest, TestObserverRemoveSpecifics) {
   bridge()->ApplyIncrementalSyncChanges(
       std::make_unique<syncer::InMemoryMetadataChangeList>(),
       std::move(remove_changes));
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestGetProductSpecificationsMultiSpecifics) {
+  EnableMultiSpecFlag();
+
+  std::vector<GURL> expected_product_urls{GURL(kProductOneUrl),
+                                          GURL(kProductTwoUrl)};
+  service()->AddProductSpecificationsSet(kProductSpecsName,
+                                         expected_product_urls);
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<ProductSpecificationsSet> sets =
+      service()->GetAllProductSpecifications();
+  EXPECT_EQ(1u, sets.size());
+  EXPECT_EQ(kProductSpecsName, sets[0].name());
+  for (size_t i = 0; i < expected_product_urls.size(); i++) {
+    EXPECT_EQ(expected_product_urls[i], sets[0].urls()[i]);
+  }
+}
+
+TEST_F(ProductSpecificationsServiceTest,
+       TestGetProductSpecificationsLargeURLList) {
+  EnableMultiSpecFlag();
+
+  // Test robustness of ordering - restored product specifications should be
+  // in the same order they are passed to AddProductSpecificationsSet.
+  std::vector<GURL> expected_product_urls;
+  for (int i = 1; i <= 20; i++) {
+    expected_product_urls.push_back(
+        GURL(base::StringPrintf("https://example.com/%d", i)));
+  }
+  // Randomize order
+  // Items are ordered according to the input order, but some randomization
+  // has been added here to make the test example more realistic (i.e. it's
+  // unlikely the input order would be alphabetical in a real input case.
+  Swap(expected_product_urls, {{2, 10}, {4, 3}, {15, 1}});
+
+  service()->AddProductSpecificationsSet(kProductSpecsName,
+                                         expected_product_urls);
+
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<ProductSpecificationsSet> sets =
+      service()->GetAllProductSpecifications();
+  EXPECT_EQ(1u, sets.size());
+  EXPECT_EQ(kProductSpecsName, sets[0].name());
+  for (size_t i = 0; i < expected_product_urls.size(); i++) {
+    EXPECT_EQ(expected_product_urls[i], sets[0].urls()[i]);
+  }
 }
 
 }  // namespace commerce
