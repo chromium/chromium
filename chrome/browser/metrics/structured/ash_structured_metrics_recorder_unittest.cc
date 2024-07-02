@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -248,7 +249,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
   void Init() {
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
-    recorder_ = base::WrapUnique(new AshStructuredMetricsRecorder(
+    recorder_ = base::WrapRefCounted(new AshStructuredMetricsRecorder(
         std::make_unique<KeyDataProviderAsh>(DeviceKeyFilePath(),
                                              base::Seconds(0)),
         std::make_unique<AshEventStorage>(base::Seconds(0),
@@ -268,7 +269,7 @@ class AshStructuredMetricsRecorderTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
-  std::unique_ptr<AshStructuredMetricsRecorder> recorder_;
+  scoped_refptr<AshStructuredMetricsRecorder> recorder_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   raw_ptr<TestingProfile> test_profile_;

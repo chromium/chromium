@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -29,7 +30,9 @@ namespace metrics::structured {
 StructuredMetricsRecorder::StructuredMetricsRecorder(
     std::unique_ptr<KeyDataProvider> key_data_provider,
     std::unique_ptr<EventStorage<StructuredEventProto>> event_storage)
-    : key_data_provider_(std::move(key_data_provider)),
+    : RefCountedDeleteOnSequence(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      key_data_provider_(std::move(key_data_provider)),
       event_storage_(std::move(event_storage)) {
   CHECK(key_data_provider_);
   CHECK(event_storage_);

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,28 +17,49 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_metrics_scheduler.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
 namespace metrics::structured {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+StructuredMetricsService::ServiceIOHelper::ServiceIOHelper(
+    scoped_refptr<StructuredMetricsRecorder> recorder)
+    : recorder_(std::move(recorder)) {}
+
+StructuredMetricsService::ServiceIOHelper::~ServiceIOHelper() = default;
+
+ChromeUserMetricsExtension
+StructuredMetricsService::ServiceIOHelper::ProvideEvents() {
+  ChromeUserMetricsExtension uma_proto;
+  recorder_->ProvideEventMetrics(uma_proto);
+  return uma_proto;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 StructuredMetricsService::StructuredMetricsService(
     MetricsServiceClient* client,
     PrefService* local_state,
-    std::unique_ptr<StructuredMetricsRecorder> recorder)
+    scoped_refptr<StructuredMetricsRecorder> recorder)
     : recorder_(std::move(recorder)),
       // This service is only enabled if both structured metrics and the service
       // flags are enabled.
       structured_metrics_enabled_(
           base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
           base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
-      client_(client),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-           // Blocking because the works being done isn't to expensive.
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+      client_(client) {
   CHECK(client_);
   CHECK(local_state);
   CHECK(recorder_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+       // Blocking because the works being done isn't to expensive.
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+
+  io_helper_.emplace(task_runner_, recorder_);
+#endif
 
   // If the StructuredMetricsService is not enabled then return early. The
   // recorder needs to be initialized, but not the reporting service or
@@ -136,7 +159,9 @@ void StructuredMetricsService::Flush(
 
   ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
-  CollectEventsAndStoreLog(std::move(uma_proto), reason);
+  recorder_->ProvideEventMetrics(uma_proto);
+  const std::string serialized_log = SerializeLog(uma_proto);
+  reporting_service_->StoreLog(serialized_log, reason);
 
   reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
 }
@@ -192,19 +217,19 @@ void StructuredMetricsService::CreateLogs(
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void StructuredMetricsService::BuildAndStoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler) {
   ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
 
-  task_runner_->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&StructuredMetricsService::CollectEventsAndStoreLog,
-                     base::Unretained(this), std::move(uma_proto), reason),
-      base::BindOnce(&StructuredMetricsService::OnCollectEventsAndStoreLog,
-                     base::Unretained(this), notify_scheduler));
+  io_helper_.AsyncCall(&ServiceIOHelper::ProvideEvents)
+      .Then(base::BindOnce(&StructuredMetricsService::StoreLogAndStartUpload,
+                           weak_factory_.GetWeakPtr(), reason,
+                           notify_scheduler));
 }
+#endif
 
 void StructuredMetricsService::BuildAndStoreLogSync(
     metrics::MetricsLogsEventManager::CreateReason reason,
@@ -213,22 +238,29 @@ void StructuredMetricsService::BuildAndStoreLogSync(
 
   ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
+  recorder_->ProvideEventMetrics(uma_proto);
 
-  CollectEventsAndStoreLog(std::move(uma_proto), reason);
-
-  OnCollectEventsAndStoreLog(notify_scheduler);
+  StoreLogAndStartUpload(reason, notify_scheduler, std::move(uma_proto));
 }
 
-void StructuredMetricsService::CollectEventsAndStoreLog(
-    ChromeUserMetricsExtension&& uma_proto,
-    metrics::MetricsLogsEventManager::CreateReason reason) {
-  recorder_->ProvideEventMetrics(uma_proto);  // Potentially blocking.
+void StructuredMetricsService::StoreLogAndStartUpload(
+    metrics::MetricsLogsEventManager::CreateReason reason,
+    bool notify_scheduler,
+    ChromeUserMetricsExtension uma_proto) {
+  // The |uma_proto| is created by |io_helper_|, this adds all additional
+  // metadata to the output proto.
+  InitializeUmaProto(uma_proto);
+
   const std::string serialized_log = SerializeLog(uma_proto);
   reporting_service_->StoreLog(serialized_log, reason);
-}
 
-void StructuredMetricsService::OnCollectEventsAndStoreLog(
-    bool notify_scheduler) {
+  // If this callback is set, then run it and return.
+  // It will only be set from tests where we do not want to upload.
+  if (create_log_callback_for_tests_) {
+    std::move(create_log_callback_for_tests_).Run();
+    return;
+  }
+
   reporting_service_->Start();
   if (notify_scheduler) {
     scheduler_->RotationFinished();
@@ -263,8 +295,13 @@ void StructuredMetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void StructuredMetricsService::SetRecorderForTest(
-    std::unique_ptr<StructuredMetricsRecorder> recorder) {
+    scoped_refptr<StructuredMetricsRecorder> recorder) {
   recorder_ = std::move(recorder);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reset the |io_helper_| with the new recorder.
+  io_helper_.emplace(task_runner_, recorder_);
+#endif
 }
 
 MetricsServiceClient* StructuredMetricsService::GetMetricsServiceClient()
@@ -303,6 +340,11 @@ void StructuredMetricsService::MaybeStartUpload() {
   // Starts an upload. If a log is not staged the next log will be staged for
   // upload.
   reporting_service_->Start();
+}
+
+void StructuredMetricsService::SetCreateLogsCallbackInTests(
+    base::OnceClosure callback) {
+  create_log_callback_for_tests_ = std::move(callback);
 }
 
 // static:

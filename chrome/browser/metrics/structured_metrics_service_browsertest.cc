@@ -340,4 +340,32 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   EXPECT_EQ(sm_service->recorder()->event_storage()->RecordedEventsCount(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, CreateLogs) {
+  auto* sm_service = GetSMService();
+  structured_metrics_mixin_.UpdateRecordingState(true);
+  WaitForConsentChanges();
+
+  structured::StructuredMetricsClient::Record(
+      structured::events::v2::test_project_seven::TestEventEight());
+
+  structured_metrics_mixin_.WaitUntilEventRecorded(kProjectSevenHash,
+                                                   kEventEightHash);
+
+  // Makes sure that the logs are created without issues.
+  // Disable upload, CreateLogs: creates the logs and starts the upload process.
+  base::RunLoop run_loop;
+  sm_service->SetCreateLogsCallbackInTests(run_loop.QuitClosure());
+  sm_service->CreateLogs(
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown,
+      /*notify_scheduler=*/false);
+  run_loop.Run();
+
+  EXPECT_TRUE(HasUnsentLogs());
+
+  std::unique_ptr<ChromeUserMetricsExtension> uma_proto = GetStagedLog();
+  EXPECT_NE(uma_proto.get(), nullptr);
+
+  EXPECT_EQ(uma_proto->structured_data().events_size(), 1);
+}
+
 }  // namespace metrics

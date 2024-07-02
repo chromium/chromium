@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
@@ -37,8 +38,10 @@ namespace metrics::structured {
 // StructuredMetricsRecorder::OnRecord via Recorder::Record via
 // Event::Record. These events are not uploaded immediately, and are cached
 // in ready-to-upload form.
-class StructuredMetricsRecorder : public Recorder::RecorderImpl,
-                                  KeyDataProvider::Observer {
+class StructuredMetricsRecorder
+    : public Recorder::RecorderImpl,
+      public base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>,
+      KeyDataProvider::Observer {
  public:
   // Interface for watching for the recording of Structured Metrics Events.
   class Observer : public base::CheckedObserver {
@@ -49,7 +52,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   StructuredMetricsRecorder(
       std::unique_ptr<KeyDataProvider> key_data_provider,
       std::unique_ptr<EventStorage<StructuredEventProto>> event_storage);
-  ~StructuredMetricsRecorder() override;
   StructuredMetricsRecorder(const StructuredMetricsRecorder&) = delete;
   StructuredMetricsRecorder& operator=(const StructuredMetricsRecorder&) =
       delete;
@@ -205,6 +207,10 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl,
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
  protected:
+  friend class base::RefCountedDeleteOnSequence<StructuredMetricsRecorder>;
+  friend class base::DeleteHelper<StructuredMetricsRecorder>;
+  ~StructuredMetricsRecorder() override;
+
   void NotifyEventRecorded(const StructuredEventProto& event);
 
   // Key data provider that provides device and profile keys.

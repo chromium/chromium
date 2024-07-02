@@ -21,6 +21,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -1457,13 +1458,13 @@ void ChromeMetricsServiceClient::ResetClientStateWhenMsbbOrAppConsentIsRevoked(
 
 void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
   PrefService* local_state = g_browser_process->local_state();
-  std::unique_ptr<metrics::structured::StructuredMetricsRecorder> recorder;
+  scoped_refptr<metrics::structured::StructuredMetricsRecorder> recorder;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   cros_system_profile_provider_ =
       std::make_unique<ChromeOSSystemProfileProvider>();
 
   recorder =
-      std::make_unique<metrics::structured::AshStructuredMetricsRecorder>(
+      base::MakeRefCounted<metrics::structured::AshStructuredMetricsRecorder>(
           cros_system_profile_provider_.get());
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
@@ -1472,9 +1473,8 @@ void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
   // and Lacros but isn't needed for the other platforms. So here is fine.
   metrics::structured::ChromeStructuredMetricsDelegate::Get()->Initialize();
   if (base::FeatureList::IsEnabled(::features::kChromeStructuredMetrics)) {
-    recorder =
-        std::make_unique<metrics::structured::ChromeStructuredMetricsRecorder>(
-            local_state);
+    recorder = base::MakeRefCounted<
+        metrics::structured::ChromeStructuredMetricsRecorder>(local_state);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

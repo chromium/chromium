@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -128,6 +129,8 @@ class TestSMRecorder : public StructuredMetricsRecorder {
   }
 
  private:
+  ~TestSMRecorder() override = default;
+
   raw_ptr<TestKeyDataProvider> test_key_data_provider_;
 };
 
@@ -233,8 +236,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // user logging in.
   void Init() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ =
-        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -247,8 +250,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Enables recording without adding a profile.
   void InitWithoutLogin() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ =
-        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     recorder_->EnableRecording();
@@ -257,8 +260,8 @@ class StructuredMetricsRecorderTest : public testing::Test {
   // Sets up StructuredMetricsRecorder.
   void InitWithoutEnabling() {
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    recorder_ =
-        std::make_unique<TestSMRecorder>(device_key_path_, profile_key_path_);
+    recorder_ = base::MakeRefCounted<TestSMRecorder>(device_key_path_,
+                                                     profile_key_path_);
   }
 
   bool is_initialized() { return recorder_->IsInitialized(); }
@@ -294,7 +297,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestSMRecorder> recorder_;
+  scoped_refptr<TestSMRecorder> recorder_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{

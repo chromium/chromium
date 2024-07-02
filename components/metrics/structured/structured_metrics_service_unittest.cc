@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -81,13 +82,17 @@ class StructuredMetricsServiceTest : public testing::Test {
     WriteTestingProfileKeys();
   }
 
-  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
+  void TearDown() override {
+    StructuredMetricsClient::Get()->UnsetDelegate();
+    service_.reset();
+    Wait();
+  }
 
   void Init() {
     auto key_data_provider =
         std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath());
     TestKeyDataProvider* test_key_data_provider = key_data_provider.get();
-    auto recorder = std::make_unique<StructuredMetricsRecorder>(
+    auto recorder = base::MakeRefCounted<StructuredMetricsRecorder>(
         std::move(key_data_provider), std::make_unique<TestEventStorage>());
 
     service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,

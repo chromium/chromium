@@ -21,7 +21,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
  public:
   TestStructuredMetricsProvider();
   explicit TestStructuredMetricsProvider(
-      std::unique_ptr<StructuredMetricsRecorder> recorder);
+      scoped_refptr<StructuredMetricsRecorder> recorder);
   virtual ~TestStructuredMetricsProvider();
   TestStructuredMetricsProvider(const TestStructuredMetricsProvider&) = delete;
   TestStructuredMetricsProvider& operator=(
@@ -56,7 +56,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   // Recorder::RecorderImpl:
   void OnEventRecord(const Event& event) override;
 
-  std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
+  scoped_refptr<StructuredMetricsRecorder> structured_metrics_recorder_;
 
   base::ScopedTempDir temp_dir_;
 
