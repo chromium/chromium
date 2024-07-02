@@ -107,7 +107,7 @@ class ClientSidePhishingModelObserverTracker
 
 class ClientSideDetectionServiceTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   ClientSideDetectionServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
@@ -121,17 +121,10 @@ class ClientSideDetectionServiceTest
       enabled_features.push_back(
           {kSafeBrowsingDailyPhishingReportsLimit, params});
     }
-
-    if (ShouldEnableImageEmbeddingModelCacao()) {
-      enabled_features.push_back({kClientSideDetectionModelImageEmbedder, {}});
-    }
-
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
-  bool ShouldEnableESBDailyPhishingLimit() { return get<0>(GetParam()); }
-
-  bool ShouldEnableImageEmbeddingModelCacao() { return get<1>(GetParam()); }
+  bool ShouldEnableESBDailyPhishingLimit() { return GetParam(); }
 
  protected:
   void SetUp() override {
@@ -313,9 +306,7 @@ class ClientSideDetectionServiceTest
   bool is_phishing_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClientSideDetectionServiceTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, ClientSideDetectionServiceTest, testing::Bool());
 
 TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
@@ -676,10 +667,6 @@ TEST_P(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
 
 TEST_P(ClientSideDetectionServiceTest,
        TestReceivingImageEmbedderUpdatesAfterResubscription) {
-  if (!base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
-    return;
-  }
-
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   csd_service_ = std::make_unique<ClientSideDetectionService>(

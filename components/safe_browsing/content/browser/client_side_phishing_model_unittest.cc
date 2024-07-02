@@ -90,18 +90,9 @@ class ClientSidePhishingModelObserverTracker
   raw_ptr<optimization_guide::OptimizationTargetModelObserver> model_observer_;
 };
 
-class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
-                                    public testing::WithParamInterface<bool> {
+class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
  public:
-  ClientSidePhishingModelTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-
-    if (ShouldEnableImageEmbedder()) {
-      enabled_features.push_back(kClientSideDetectionModelImageEmbedder);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  ClientSidePhishingModelTest() = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -145,13 +136,7 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness,
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  bool ShouldEnableImageEmbedder() { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<ClientSidePhishingModelObserverTracker>
@@ -181,9 +166,7 @@ void GetFlatBufferStringFromMappedMemory(
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, ClientSidePhishingModelTest, testing::Bool());
-
-TEST_P(ClientSidePhishingModelTest, ValidModel) {
+TEST_F(ClientSidePhishingModelTest, ValidModel) {
   base::FilePath model_file_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
   model_file_path = model_file_path.AppendASCII("components")
@@ -212,23 +195,21 @@ TEST_P(ClientSidePhishingModelTest, ValidModel) {
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", true, 1);
   EXPECT_TRUE(service()->IsEnabled());
-  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
-    base::FilePath image_embedding_model_file_path;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
-                           &image_embedding_model_file_path);
-    image_embedding_model_file_path =
-        image_embedding_model_file_path.AppendASCII("components")
-            .AppendASCII("test")
-            .AppendASCII("data")
-            .AppendASCII("safe_browsing")
-            .AppendASCII("image_embedding.tflite");
-    ValidateImageEmbeddingModel(image_embedding_model_file_path);
-    histogram_tester().ExpectUniqueSample(
-        "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 1);
-  }
+  base::FilePath image_embedding_model_file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                         &image_embedding_model_file_path);
+  image_embedding_model_file_path =
+      image_embedding_model_file_path.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("safe_browsing")
+          .AppendASCII("image_embedding.tflite");
+  ValidateImageEmbeddingModel(image_embedding_model_file_path);
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 1);
 }
 
-TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
+TEST_F(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
   base::ScopedTempDir model_dir;
   EXPECT_TRUE(model_dir.CreateUniqueTempDir());
   base::FilePath model_file_path =
@@ -257,7 +238,7 @@ TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
   EXPECT_FALSE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, RejectsInvalidFlatbuffer) {
+TEST_F(ClientSidePhishingModelTest, RejectsInvalidFlatbuffer) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -265,7 +246,7 @@ TEST_P(ClientSidePhishingModelTest, RejectsInvalidFlatbuffer) {
   EXPECT_FALSE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
+TEST_F(ClientSidePhishingModelTest, NotifiesForFile) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -299,7 +280,7 @@ TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
   EXPECT_TRUE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
+TEST_F(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -322,7 +303,7 @@ TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
   EXPECT_FALSE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
+TEST_F(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -363,7 +344,7 @@ TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
   EXPECT_TRUE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
+TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -404,7 +385,7 @@ TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
   EXPECT_TRUE(called);
 }
 
-TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
+TEST_F(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -443,7 +424,7 @@ TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
   EXPECT_TRUE(called);
 }
 
-TEST_P(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
+TEST_F(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);

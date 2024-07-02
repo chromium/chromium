@@ -158,11 +158,8 @@ void ClientSideDetectionService::OnPrefsUpdated() {
     update_model_subscription_ = client_side_phishing_model_->RegisterCallback(
         base::BindRepeating(&ClientSideDetectionService::SendModelToRenderers,
                             weak_factory_.GetWeakPtr()));
-    if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
-      if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-        client_side_phishing_model_
-            ->SubscribeToImageEmbedderOptimizationGuide();
-      }
+    if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+      client_side_phishing_model_->SubscribeToImageEmbedderOptimizationGuide();
     }
   } else {
     // Invoke pending callbacks with a false verdict.
@@ -598,9 +595,7 @@ void ClientSideDetectionService::SetPhishingModel(
       return;
     case CSDModelType::kFlatbuffer:
       if (delegate_ && delegate_->GetPrefs() &&
-          IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-          base::FeatureList::IsEnabled(
-              kClientSideDetectionModelImageEmbedder)) {
+          IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
         // The check for image embedding model is important because the
         // OptimizationGuide server can send a null image embedding model to
         // signal there is a bad model in disk. If the image embedding model
@@ -735,20 +730,14 @@ int ClientSideDetectionService::GetTriggerModelVersion() {
 }
 
 bool ClientSideDetectionService::HasImageEmbeddingModel() {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
-    return client_side_phishing_model_ &&
-           client_side_phishing_model_->HasImageEmbeddingModel();
-  }
-  return false;
+  return client_side_phishing_model_ &&
+         client_side_phishing_model_->HasImageEmbeddingModel();
 }
 
 bool ClientSideDetectionService::IsSubscribedToImageEmbeddingModelUpdates() {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionModelImageEmbedder)) {
-    return client_side_phishing_model_ &&
-           client_side_phishing_model_
-               ->IsSubscribedToImageEmbeddingModelUpdates();
-  }
-  return false;
+  return client_side_phishing_model_ &&
+         client_side_phishing_model_
+             ->IsSubscribedToImageEmbeddingModelUpdates();
 }
 
 base::CallbackListSubscription
