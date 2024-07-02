@@ -8,6 +8,8 @@
 #include "base/base64url.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -486,12 +488,12 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
+  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
+      g_browser_process->GetApplicationLocale(),
+      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
   source->AddString("realboxWidthBehavior",
-                    base::GetFieldTrialParamValueByFeature(
-                        ntp_features::kRealboxWidthBehavior,
-                        ntp_features::kNtpRealboxWidthBehaviorParam));
-  source->AddBoolean("realboxIsTall", base::FeatureList::IsEnabled(
-                                          ntp_features::kRealboxIsTall));
+                    redesigned_modules_enabled ? "wide" : "");
+  source->AddBoolean("realboxIsTall", redesigned_modules_enabled);
   if ((base::FeatureList::IsEnabled(
            ntp_features::kRealboxCr23ExpandedStateIcons) ||
        base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All))) {

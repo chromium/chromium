@@ -3030,9 +3030,6 @@ extern const char kNtpPhotosModuleSoftOptOutDescription[];
 extern const char kNtpRealboxContextualAndTrendingSuggestionsName[];
 extern const char kNtpRealboxContextualAndTrendingSuggestionsDescription[];
 
-extern const char kNtpRealboxIsTallName[];
-extern const char kNtpRealboxIsTallDescription[];
-
 extern const char kNtpRealboxCr23AllName[];
 extern const char kNtpRealboxCr23AllDescription[];
 
@@ -3057,26 +3054,17 @@ extern const char kNtpRealboxMatchSearchboxThemeDescription[];
 extern const char kNtpRealboxPedalsName[];
 extern const char kNtpRealboxPedalsDescription[];
 
-extern const char kNtpRealboxWidthBehaviorName[];
-extern const char kNtpRealboxWidthBehaviorDescription[];
-
 extern const char kNtpRealboxUseGoogleGIconName[];
 extern const char kNtpRealboxUseGoogleGIconDescription[];
 
 extern const char kNtpRecipeTasksModuleName[];
 extern const char kNtpRecipeTasksModuleDescription[];
 
-extern const char kNtpReducedLogoSpaceName[];
-extern const char kNtpReducedLogoSpaceDescription[];
-
 extern const char kNtpSafeBrowsingModuleName[];
 extern const char kNtpSafeBrowsingModuleDescription[];
 
 extern const char kNtpSharepointModuleName[];
 extern const char kNtpSharepointModuleDescription[];
-
-extern const char kNtpSingleRowShortcutsName[];
-extern const char kNtpSingleRowShortcutsDescription[];
 
 extern const char kNtpWallpaperSearchButtonName[];
 extern const char kNtpWallpaperSearchButtonDescription[];

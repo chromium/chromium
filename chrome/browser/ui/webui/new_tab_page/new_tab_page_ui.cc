@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
@@ -234,14 +235,13 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
-  source->AddBoolean(
-      "singleRowShortcutsEnabled",
-      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpSingleRowShortcuts));
+  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
+      g_browser_process->GetApplicationLocale(),
+      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  source->AddBoolean("singleRowShortcutsEnabled", redesigned_modules_enabled);
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
-  source->AddBoolean(
-      "reducedLogoSpaceEnabled",
-      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpReducedLogoSpace));
+  source->AddBoolean("reducedLogoSpaceEnabled", redesigned_modules_enabled);
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
@@ -655,9 +655,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
           ntp_features::kNtpChromeCartModule,
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
           "true");
-  source->AddBoolean(
-      "modulesRedesignedEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned));
+  source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
 
   std::vector<std::string> splitExperimentGroup = base::SplitString(
       base::GetFieldTrialParamValueByFeature(

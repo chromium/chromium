@@ -1328,7 +1328,10 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
       base::FeatureList::IsEnabled(
           ntp_features::kNtpHistoryClustersModuleLoad)) {
-    if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+    if (ntp_features::IsNtpModulesRedesignedEnabled(
+            g_browser_process->GetApplicationLocale(),
+            GetVariationsServiceCountryCode(
+                g_browser_process->variations_service()))) {
       RegisterWebUIControllerInterfaceBinder<
           ntp::history_clusters_v2::mojom::PageHandler, NewTabPageUI>(map);
     } else {

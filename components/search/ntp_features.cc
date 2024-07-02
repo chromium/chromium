@@ -13,6 +13,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+namespace {
+
+bool IsEnUSInUS(std::string application_locale, std::string country_code) {
+  return application_locale == "en-US" && country_code == "us";
+}
+
+}  // namespace
+
 namespace ntp_features {
 
 // If enabled, shows a confirm dialog before removing search suggestions from
@@ -107,17 +115,6 @@ BASE_FEATURE(kRealboxMatchSearchboxTheme,
              "NtpRealboxMatchSearchboxTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Determines the behavior of the width of the realbox in relation to the width
-// for secondary column.
-BASE_FEATURE(kRealboxWidthBehavior,
-             "NtpRealboxWidthBehavior",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, the realbox will be taller.
-BASE_FEATURE(kRealboxIsTall,
-             "NtpRealboxIsTall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the real search box ("realbox") on the New Tab page will show a
 // Google (g) icon instead of the typical magnifying glass (aka loupe).
 BASE_FEATURE(kRealboxUseGoogleGIcon,
@@ -180,11 +177,6 @@ BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
 // If enabled, logo will be shown.
 BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, logo will fill up less vertical space.
-BASE_FEATURE(kNtpReducedLogoSpace,
-             "NtpReducedLogoSpace",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, middle slot promo will be shown.
 BASE_FEATURE(kNtpMiddleSlotPromo,
              "NtpMiddleSlotPromo",
@@ -243,10 +235,10 @@ BASE_FEATURE(kNtpModulesLoad,
              "NtpModulesLoad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, redesigned modules will be shown.
+// If enabled, redesigned NTP launchpad + modules will be shown.
 BASE_FEATURE(kNtpModulesRedesigned,
              "NtpModulesRedesigned",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, MostVisited tiles will reflow when overflowing.
 BASE_FEATURE(kNtpMostVisitedReflowOnOverflow,
@@ -318,15 +310,10 @@ BASE_FEATURE(kNtpSharepointModule,
 // If enabled, shortcuts will be shown.
 BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, shortcuts will be shown in a wide single row.
-BASE_FEATURE(kNtpSingleRowShortcuts,
-             "NtpSingleRowShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the History clusters module will be shown.
 BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set kNtpHistoryClustersModuleBeginTimeDurationHoursParam.
 BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
@@ -527,7 +514,6 @@ const char kNtpHistoryClustersModuleRankingMetricsQueryDaysParam[] =
     "NtpHistoryClustersModuleRankingMetricsQueryDaysParam";
 const char kNtpHistoryClustersModuleScoreThresholdParam[] =
     "NtpHistoryClustersModuleScoreThresholdParam";
-const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
@@ -595,6 +581,16 @@ std::vector<std::string> GetModulesOrder() {
                                kNtpModulesOrder, kNtpModulesOrderParam),
                            ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
                            base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
+bool IsNtpModulesRedesignedEnabled(std::string application_locale,
+                                   std::string country_code) {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          kNtpModulesRedesigned.name)) {
+    return base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
+  }
+
+  return IsEnUSInUS(application_locale, country_code);
 }
 
 }  // namespace ntp_features

@@ -13,11 +13,13 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -197,7 +199,10 @@ void CartService::RestoreHidden() {
 }
 
 bool CartService::IsHidden() {
-  return !base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+  return !ntp_features::IsNtpModulesRedesignedEnabled(
+             g_browser_process->GetApplicationLocale(),
+             GetVariationsServiceCountryCode(
+                 g_browser_process->variations_service())) &&
          profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
 }
 

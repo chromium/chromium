@@ -12,7 +12,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/modules/recipes/time_format_util.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -288,7 +290,10 @@ void RecipesService::OnJsonParsed(
 }
 
 bool RecipesService::IsTaskDismissed(const std::string& task_name) {
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
+      g_browser_process->GetApplicationLocale(),
+      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  if (redesigned_modules_enabled) {
     return false;
   }
   const base::Value::List& dismissed_tasks =

@@ -5202,10 +5202,6 @@ const char kNtpRealboxContextualAndTrendingSuggestionsDescription[] =
     "Allows NTP Realbox's second column to display contextual and trending "
     "text suggestions.";
 
-const char kNtpRealboxIsTallName[] = "NTP Realbox Is Tall";
-const char kNtpRealboxIsTallDescription[] =
-    "Makes NTP Realbox taller when enabled.";
-
 const char kNtpRealboxCr23AllName[] = "Realbox Chrome Refresh 2023";
 const char kNtpRealboxCr23AllDescription[] =
     "Enables all NTP Realbox Chrome Refresh features";
@@ -5244,10 +5240,6 @@ const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";
 
-const char kNtpRealboxWidthBehaviorName[] = "NTP Realbox Width Behavior";
-const char kNtpRealboxWidthBehaviorDescription[] =
-    "Determines the width of the NTP realbox.";
-
 const char kNtpRealboxUseGoogleGIconName[] = "NTP Realbox Google G Icon";
 const char kNtpRealboxUseGoogleGIconDescription[] =
     "Shows Google G icon "
@@ -5257,10 +5249,6 @@ const char kNtpRecipeTasksModuleName[] = "NTP Recipe Tasks Module";
 const char kNtpRecipeTasksModuleDescription[] =
     "Shows the recipe tasks module on the New Tab Page.";
 
-const char kNtpReducedLogoSpaceName[] = "NTP Reduced Logo Space";
-const char kNtpReducedLogoSpaceDescription[] =
-    "Reduces space the logo fills up vertically.";
-
 const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
 const char kNtpSafeBrowsingModuleDescription[] =
     "Shows the safe browsing module on the New Tab Page.";
@@ -5268,10 +5256,6 @@ const char kNtpSafeBrowsingModuleDescription[] =
 const char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 const char kNtpSharepointModuleDescription[] =
     "Shows the Sharepoint module on the New Tab Page.";
-
-const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
-const char kNtpSingleRowShortcutsDescription[] =
-    "Shows shortcuts in a single wide row on the New Tab Page.";
 
 const char kNtpWallpaperSearchButtonName[] = "NTP Wallpaper Search Button";
 const char kNtpWallpaperSearchButtonDescription[] =

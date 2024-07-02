@@ -15,6 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -146,8 +148,11 @@ void PhotosService::GetMemories(GetMemoriesCallback get_memories_callback) {
   }
 
   // Bail if module is still dismissed or user soft opted out.
+  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
+      g_browser_process->GetApplicationLocale(),
+      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
   if (IsModuleSoftOptedOut() ||
-      (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+      (!redesigned_modules_enabled &&
        !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
        base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
            kDismissDuration)) {

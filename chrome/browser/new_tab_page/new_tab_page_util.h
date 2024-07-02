@@ -7,11 +7,18 @@
 
 #include "base/feature_list.h"
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 bool IsRecipeTasksModuleEnabled();
 bool IsCartModuleEnabled();
 bool IsDriveModuleEnabled();
 bool IsHistoryClustersModuleEnabled();
-
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature);
+
+// Return the country code as provided by the variations service.
+std::string GetVariationsServiceCountryCode(
+    variations::VariationsService* variations_service);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_
