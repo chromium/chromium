@@ -11,6 +11,7 @@ source_set("interactive_ui_tests") {
 
   sources = [
     "esim_installation_interactive_uitest.cc",
+    "esim_ui_elements_interactive_uitest.cc",
     "rename_esim_profile_interactive_uitest.cc",
     "toggle_cellular_from_os_settings_interactive_uitest.cc",
   ]
