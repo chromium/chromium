@@ -67,16 +67,6 @@ export class AppStateController {
     this.directoryModel_ = directoryModel;
     const {table} = ui.listContainer;
 
-    // Register event listeners.
-    table.addEventListener(
-        'column-resize-end', this.saveViewOptions.bind(this));
-    directoryModel.getFileList().addEventListener(
-        'sorted', this.onFileListSorted_.bind(this));
-    directoryModel.getFileFilter().addEventListener(
-        'changed', this.onFileFilterChanged_.bind(this));
-    directoryModel.addEventListener(
-        'directory-changed', this.onDirectoryChanged_.bind(this));
-
     // Restore preferences.
     ui.setCurrentListType(this.viewOptions_.listType || ListType.DETAIL);
     if (this.viewOptions_.sortField) {
@@ -97,6 +87,16 @@ export class AppStateController {
       // normalization here after restoration.
       table.columnModel.normalizeWidths(table.clientWidth);
     }
+
+    // Register event listeners.
+    table.addEventListener(
+        'column-resize-end', this.saveViewOptions.bind(this));
+    directoryModel.getFileList().addEventListener(
+        'sorted', this.onFileListSorted_.bind(this));
+    directoryModel.getFileFilter().addEventListener(
+        'changed', this.onFileFilterChanged_.bind(this));
+    directoryModel.addEventListener(
+        'directory-changed', this.onDirectoryChanged_.bind(this));
   }
 
   /**
