@@ -29,11 +29,6 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               (),
               (override));
   MOCK_METHOD(void,
-              FetchGifSearch,
-              (const std::string& query, FetchGifsCallback callback),
-              (override));
-  MOCK_METHOD(void, StopGifSearch, (), (override));
-  MOCK_METHOD(void,
               StartCrosSearch,
               (const std::u16string& query,
                std::optional<PickerCategory> category,

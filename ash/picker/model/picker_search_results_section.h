@@ -21,6 +21,7 @@ enum class ASH_EXPORT PickerSectionType {
   kLinks,
   kFiles,
   kDriveFiles,
+  // TODO: b/349891147 - Remove GIFs.
   kGifs,
   kEditorWrite,
   kEditorRewrite,

@@ -44,8 +44,6 @@
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_lacros_omnibox_search_provider.h"
 #include "chrome/browser/ui/ash/picker/picker_thumbnail_loader.h"
-#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
-#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
@@ -64,8 +62,6 @@ enum class AppListSearchResultType;
 }
 
 namespace {
-
-constexpr int kMaxGifsToSearch = 4;
 
 bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
   for (std::string_view extension :
@@ -251,56 +247,6 @@ scoped_refptr<network::SharedURLLoaderFactory>
 PickerClientImpl::GetSharedURLLoaderFactory() {
   CHECK(profile_);
   return profile_->GetURLLoaderFactory();
-}
-
-void PickerClientImpl::FetchGifSearch(const std::string& query,
-                                      FetchGifsCallback callback) {
-  CHECK(profile_);
-  content::StoragePartition* storage_partition =
-      profile_->GetDefaultStoragePartition();
-  CHECK(storage_partition);
-  // This will cancel the previous in-flight request if there is one.
-  current_gif_fetcher_ = gif_tenor_api_fetcher_.FetchGifSearchCancellable(
-      base::BindOnce(&PickerClientImpl::OnGifSearchResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback), query),
-      storage_partition->GetURLLoaderFactoryForBrowserProcess(), query,
-      std::nullopt, kMaxGifsToSearch);
-  current_gif_search_query_ = query;
-}
-
-void PickerClientImpl::OnGifSearchResponse(
-    PickerClientImpl::FetchGifsCallback callback,
-    std::string gif_search_query,
-    emoji_picker::mojom::Status status,
-    emoji_picker::mojom::TenorGifResponsePtr response) {
-  if (gif_search_query != current_gif_search_query_) {
-    // Do not call the callback at all if this is an old request.
-    return;
-  }
-  if (status != emoji_picker::mojom::Status::kHttpOk) {
-    // TODO: b/325368650 - Add better handling of errors.
-    std::move(callback).Run({});
-    return;
-  }
-
-  std::vector<ash::PickerSearchResult> picker_results;
-  CHECK(response);
-  picker_results.reserve(response->results.size());
-  for (const emoji_picker::mojom::GifResponsePtr& result : response->results) {
-    CHECK(result);
-    const emoji_picker::mojom::GifUrlsPtr& urls = result->url;
-    CHECK(urls);
-    picker_results.push_back(ash::PickerSearchResult::Gif(
-        urls->preview, urls->preview_image, result->preview_size, urls->full,
-        result->full_size, base::UTF8ToUTF16(result->content_description)));
-  }
-
-  std::move(callback).Run(std::move(picker_results));
-}
-
-void PickerClientImpl::StopGifSearch() {
-  current_gif_fetcher_.reset();
-  current_gif_search_query_.reset();
 }
 
 void PickerClientImpl::StartCrosSearch(
