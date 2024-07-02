@@ -20,7 +20,7 @@ namespace {
 class SyncStartupTrackerTest : public testing::Test {
  public:
   void SetupNonInitializedSyncService() {
-    sync_service_.SetTransportState(
+    sync_service_.SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
   }
 
@@ -33,7 +33,8 @@ class SyncStartupTrackerTest : public testing::Test {
 };
 
 TEST_F(SyncStartupTrackerTest, SyncAlreadyInitialized) {
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   EXPECT_CALL(callback_,
               Run(SyncStartupTracker::ServiceStartupState::kComplete));
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
@@ -62,7 +63,8 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedInitialization) {
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
   Mock::VerifyAndClearExpectations(&callback_);
   // Now, mark the Sync Service as initialized.
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   EXPECT_CALL(callback_,
               Run(SyncStartupTracker::ServiceStartupState::kComplete));
   tracker.OnStateChanged(&sync_service_);

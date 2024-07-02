@@ -41,7 +41,7 @@ class TestSyncService : public SyncService {
   ~TestSyncService() override;
 
   // High-level setters that configure common scenarios. These will override
-  // any previous call to SetTransportState(), SetAllowedByEnterprisePolicy()
+  // any previous call to SetAllowedByEnterprisePolicy()
   // and SetHasUnrecoverableError().
   // TODO(crbug.com/350495915): This currently resets the above but not things
   // like SetPassphraseRequired(). It should override all or none.
@@ -55,18 +55,27 @@ class TestSyncService : public SyncService {
   // this also flips SetSyncFeatureDisabledViaDashboard().
   void MimicDashboardClear();
 
-  // Lower-level setters.
+  // Controls DISABLE_REASON_ENTERPRISE_POLICY and consequently
+  // GetTransportState(). The default is true.
   void SetAllowedByEnterprisePolicy(bool allowed);
+
+  // Controls DISABLE_REASON_UNRECOVERABLE_ERROR and consequently
+  // GetTransportState(). The default is false.
   void SetHasUnrecoverableError(bool has_error);
-  // TODO(crbug.com/348605115): Remove, so it's not possible to set a transport
-  // state inconsistent with the rest of the fake's state. In the meantime,
-  // calling with DISABLED and PAUSED is disallowed, i.e. will cause a crash.
-  // Use SetSignedOut() or SetPersistentAuthError(), respectively.
-  void SetTransportState(TransportState transport_state);
+
+  // The "max transport state" is the one yielded by GetTransportState() *if*
+  // there is no auth error set by SetPersistentAuthError() - in which the
+  // TransportState would be PAUSED - and no DisableReason - in which case it'd
+  // be DISABLED. The default "max transport state" is ACTIVE.
+  // Use this method only to test intermediate states like INITIALIZING or
+  // START_DEFERRED. Calling with DISABLED or PAUSED will crash.
+  void SetMaxTransportState(TransportState max_transport_state);
+
   void SetLocalSyncEnabled(bool local_sync_enabled);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
+  // SetSignedOut() resets the auth error.
   void SetPersistentAuthError();
   void ClearAuthError();
 
@@ -177,12 +186,11 @@ class TestSyncService : public SyncService {
 
  private:
   void OnSetupInProgressHandleDestroyed();
-  void AddDisableReasonAndUpdateTransportMode(DisableReason reason);
-  void RemoveDisableReasonAndUpdateTransportMode(DisableReason reason);
 
   TestSyncUserSettings user_settings_;
   DisableReasonSet disable_reasons_;
-  TransportState transport_state_ = TransportState::ACTIVE;
+  TransportState max_transport_state_ = TransportState::ACTIVE;
+  bool has_persistent_auth_error_ = false;
   bool local_sync_enabled_ = false;
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;

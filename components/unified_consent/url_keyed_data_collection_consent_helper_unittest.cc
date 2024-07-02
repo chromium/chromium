@@ -79,7 +79,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest, PersonalizedDataCollection) {
   EXPECT_FALSE(helper->IsEnabled());
   EXPECT_TRUE(state_changed_notifications_.empty());
 
-  sync_service_.SetTransportState(
+  sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -93,7 +93,8 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest, PersonalizedDataCollection) {
       << "No state change notifications fired, because it's still not enabled, "
          "it's just initializing.";
 
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_.FireStateChanged();
   EXPECT_EQ(helper->GetConsentState(),
             UrlKeyedDataCollectionConsentHelper::State::kEnabled);

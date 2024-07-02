@@ -33,7 +33,7 @@ namespace {
 class FakeSyncService : public syncer::TestSyncService {
  public:
   FakeSyncService() {
-    SetTransportState(TransportState::INITIALIZING);
+    SetMaxTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
   }
 
@@ -43,8 +43,8 @@ class FakeSyncService : public syncer::TestSyncService {
   ~FakeSyncService() override { Shutdown(); }
 
   void SetStatus(bool has_passphrase, bool active) {
-    SetTransportState(active ? TransportState::ACTIVE
-                             : TransportState::INITIALIZING);
+    SetMaxTransportState(active ? TransportState::ACTIVE
+                                : TransportState::INITIALIZING);
     SetIsUsingExplicitPassphrase(has_passphrase);
 
     // It doesn't matter what exactly we set here, it's only relevant that the

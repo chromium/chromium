@@ -113,7 +113,7 @@ class ChromeMetricsServiceClientTestWithoutUKMProviders
 class MockSyncService : public syncer::TestSyncService {
  public:
   MockSyncService() {
-    SetTransportState(TransportState::INITIALIZING);
+    SetMaxTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
   }
 
@@ -123,8 +123,8 @@ class MockSyncService : public syncer::TestSyncService {
   ~MockSyncService() override { Shutdown(); }
 
   void SetStatus(bool has_passphrase, bool history_enabled, bool active) {
-    SetTransportState(active ? TransportState::ACTIVE
-                             : TransportState::INITIALIZING);
+    SetMaxTransportState(active ? TransportState::ACTIVE
+                                : TransportState::INITIALIZING);
     SetIsUsingExplicitPassphrase(has_passphrase);
 
     GetUserSettings()->SetSelectedTypes(

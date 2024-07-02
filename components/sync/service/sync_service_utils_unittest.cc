@@ -28,7 +28,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
   // Once sync gets allowed (e.g. policy is updated), uploading should not be
   // disabled anymore (though not necessarily active yet).
   service.SetAllowedByEnterprisePolicy(true);
-  service.SetTransportState(
+  service.SetMaxTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
 
   EXPECT_NE(UploadState::NOT_ACTIVE,
@@ -38,7 +38,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
 TEST(SyncServiceUtilsTest,
      UploadToGoogleInitializingUntilConfiguredAndActiveAndSyncCycleComplete) {
   TestSyncService service;
-  service.SetTransportState(
+  service.SetMaxTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
@@ -50,7 +50,7 @@ TEST(SyncServiceUtilsTest,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
   // Finished configuration is not enough, still INITIALIZING.
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  service.SetMaxTransportState(syncer::SyncService::TransportState::ACTIVE);
   EXPECT_EQ(UploadState::INITIALIZING,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 

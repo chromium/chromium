@@ -101,7 +101,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, NoSyncConsent) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, Initializing) {
   // Sync-the-feature is enabled, but the SyncService is still in the process
   // of initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
@@ -167,7 +167,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, SyncPaused) {
 
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   // Initially, everything is enabled, but SyncService is still initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
@@ -185,7 +185,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
 
   // The SyncService moves on to "configuring". This shouldn't make a difference
   // to the recorder.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
   sync_service().FireStateChanged();
 
@@ -196,7 +196,8 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
   EXPECT_FALSE(GetDataTypeStatus(syncer::READING_LIST));
 
   // Finally, the SyncService becomes active.
-  sync_service().SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service().SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::BOOKMARKS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_TRUE(sync_service().GetActiveDataTypes().Has(syncer::READING_LIST));
@@ -212,7 +213,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, StartupSequence) {
 TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   // First run of Chrome: No pre-existing status is recorded in prefs yet.
   // Initially, everything is enabled, but SyncService is still initializing.
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service().IsSyncFeatureEnabled());
   ASSERT_FALSE(sync_service().IsSyncFeatureActive());
@@ -239,7 +240,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   {
     base::HistogramTester histograms;
 
-    sync_service().SetTransportState(
+    sync_service().SetMaxTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service().FireStateChanged();
     ASSERT_EQ(GetSyncFeatureStatus(),
@@ -260,7 +261,7 @@ TEST_F(SyncFeatureStatusForMigrationsRecorderTest, RecordsMetricsOnStartup) {
   // were active at the end of the previous run, that should be recorded in the
   // histograms.
   DestroyRecorder();
-  sync_service().SetTransportState(
+  sync_service().SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   {
     base::HistogramTester histograms;

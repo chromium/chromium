@@ -292,7 +292,7 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
 
 TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
   // The user is signed in and opted in to Sync, but Sync is still initializing.
-  sync_service_.SetTransportState(
+  sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
 
@@ -624,7 +624,7 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
 }
 
 TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
-  sync_service_.SetTransportState(
+  sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
   ASSERT_TRUE(sync_service_.HasSyncConsent());
   ASSERT_TRUE(sync_service_.GetActiveDataTypes().empty());

@@ -27,7 +27,7 @@ class PrivacyMetricsServiceTest : public testing::Test {
                      signin::ConsentLevel consent_level) {
     SetClearOnExitEnabled(clear_on_exit_enabled);
     SetPrimaryAccountConsentLevel(consent_level);
-    sync_service()->SetTransportState(
+    sync_service()->SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
 
     privacy_metrics_service_ = std::make_unique<PrivacyMetricsService>(
@@ -46,18 +46,27 @@ class PrivacyMetricsServiceTest : public testing::Test {
 
   void ActivateSync() {
     SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSync);
+    sync_service()->ClearAuthError();
+    sync_service()->SetMaxTransportState(
+        syncer::SyncService::TransportState::ACTIVE);
+    ASSERT_EQ(sync_service()->GetTransportState(),
+              syncer::SyncService::TransportState::ACTIVE);
     sync_service()->FireStateChanged();
   }
 
   void PauseSync() {
     SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSync);
     sync_service()->SetPersistentAuthError();
+    ASSERT_EQ(sync_service()->GetTransportState(),
+              syncer::SyncService::TransportState::PAUSED);
     sync_service()->FireStateChanged();
   }
 
   void DisableSync() {
     identity_test_env_.ClearPrimaryAccount();
     sync_service()->SetSignedOut();
+    ASSERT_EQ(sync_service()->GetTransportState(),
+              syncer::SyncService::TransportState::DISABLED);
     sync_service()->FireStateChanged();
   }
 

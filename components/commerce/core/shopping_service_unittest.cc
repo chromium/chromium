@@ -125,7 +125,7 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
     } else {
       sync_service_->SetSignedInWithSyncFeatureOn();
     }
-    sync_service_->SetTransportState(initial_sync_transport_state);
+    sync_service_->SetMaxTransportState(initial_sync_transport_state);
 
     static_cast<bookmarks::TestBookmarkClient*>(bookmark_model_->client())
         ->SetIsSyncFeatureEnabledIncludingBookmarks(
@@ -1300,7 +1300,8 @@ TEST_P(ShoppingServiceReadyTest,
   // The ready check shouldn't have run since transport state is INITIALIZING.
   ASSERT_FALSE(service_ready);
 
-  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
   base::RunLoop().RunUntilIdle();
@@ -1313,7 +1314,8 @@ TEST_P(ShoppingServiceReadyTest,
        TestServiceReadyDelaysForSync_TransportStartsActive) {
   test_features_.InitWithFeatures({kShoppingList}, {});
 
-  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
   bool service_ready = false;

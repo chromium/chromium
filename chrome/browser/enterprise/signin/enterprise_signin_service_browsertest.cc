@@ -110,10 +110,10 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
 
   syncer::TestSyncService& sync_service() { return *sync_service_; }
 
-  auto SetTransportState(TransportState transport_state) {
+  auto SetMaxTransportState(TransportState transport_state) {
     return Steps(Do([this, transport_state]() {
       CHECK(sync_service_);
-      sync_service_->SetTransportState(transport_state);
+      sync_service_->SetMaxTransportState(transport_state);
       sync_service_->FireStateChanged();
     }));
   }
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
   GURL about_blank = GURL(url::kAboutBlankURL);
   browser()->profile()->GetPrefs()->ClearPref(prefs::kProfileReauthPrompt);
   RunTestSequence(
-      SetTransportState(TransportState::START_DEFERRED),
+      SetMaxTransportState(TransportState::START_DEFERRED),
       CheckTabs(browser(), {{about_blank, ACTIVE}}),
       // Sync becomes paused. The policy is not set, so this does nothing.
       SetPersistentAuthError(), CheckTabs(browser(), {{about_blank, ACTIVE}}),
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
 IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
   GURL example_url(kExampleUrl);
   GURL auth_url(kAuthUrl);
-  RunTestSequence(SetTransportState(TransportState::START_DEFERRED),
+  RunTestSequence(SetMaxTransportState(TransportState::START_DEFERRED),
                   Navigate(browser(), example_url),
                   CheckTabs(browser(), {{example_url, ACTIVE}}),
                   // Sync becomes paused. This should open a new tab pointing to
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
   Browser* browser2 = CreateBrowser(browser()->profile());
 
   RunTestSequence(
-      SetTransportState(TransportState::START_DEFERRED),
+      SetMaxTransportState(TransportState::START_DEFERRED),
       Navigate(browser(), example_url), NewTab(browser(), example_url),
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       Navigate(browser2, example_url), NewTab(browser2, auth_url),

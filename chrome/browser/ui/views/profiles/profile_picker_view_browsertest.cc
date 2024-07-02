@@ -2846,7 +2846,7 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
           // before either showing or exiting it.
           // `GoThroughFirstRunFlow()` will do this, or the test
           // should call `sync_service()` to do this manually.
-          sync_service->SetTransportState(
+          sync_service->SetMaxTransportState(
               syncer::SyncService::TransportState::INITIALIZING);
 
           return sync_service;
@@ -2891,7 +2891,7 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
         FirstRunService::EntryPoint::kProcessStartup, 1);
 
     // Unblock the sync service.
-    sync_service()->SetTransportState(
+    sync_service()->SetMaxTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service()->FireStateChanged();
 

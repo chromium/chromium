@@ -262,7 +262,7 @@ void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
       sync_service(profile)->SetPersistentAuthError();
       break;
     case signin::ConsentLevel::kSync:
-      sync_service(profile)->SetTransportState(
+      sync_service(profile)->SetMaxTransportState(
           syncer::SyncService::TransportState::ACTIVE);
       break;
   }

@@ -86,7 +86,7 @@ TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_Configuring) {
-  test_sync_service_.SetTransportState(
+  test_sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,

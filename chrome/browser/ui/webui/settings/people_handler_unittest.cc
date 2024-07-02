@@ -404,7 +404,7 @@ TEST_F(PeopleHandlerTest, DisplayConfigureWithEngineDisabledAndCancel) {
 
   ASSERT_THAT(sync_service_->GetDisableReasons(), IsEmpty());
 
-  sync_service_->SetTransportState(
+  sync_service_->SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
 
   // We're simulating a user setting up sync, which would cause the engine to
@@ -438,21 +438,23 @@ TEST_F(PeopleHandlerTest,
   ASSERT_THAT(sync_service_->GetDisableReasons(), IsEmpty());
 
   // Sync engine is stopped initially, and will start up.
-  sync_service_->SetTransportState(
+  sync_service_->SetMaxTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
 
   handler_->HandleShowSyncSetupUI(base::Value::List());
 
-  // `SetSyncFeatureRequested()` should have triggered initialization.
-  EXPECT_EQ(sync_service_->GetTransportState(),
-            syncer::SyncService::TransportState::INITIALIZING);
+  // Mimic engine initialization.
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  sync_service_->FireStateChanged();
 
   // No pref updates sent yet, because the engine is not initialized.
   EXPECT_EQ(0U, GetFiredSyncPrefsChanged().size());
   web_ui_.ClearTrackedCalls();
 
   // Now, act as if the SyncService has started up.
-  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
   // Updates for the sync status, sync prefs and trusted vault opt-in are sent.
@@ -518,7 +520,8 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   EXPECT_EQ(0U, GetFiredSyncPrefsChanged().size());
 
   // Now, act as if the SyncService has started up.
-  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
   // Upon initialization of the engine, the new prefs should be sent.
@@ -530,7 +533,7 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
 TEST_F(PeopleHandlerTest, OnlyStartEngineWhenConfiguringSync) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
-  sync_service_->SetTransportState(
+  sync_service_->SetMaxTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
   sync_service_->FireStateChanged();
   EXPECT_EQ(sync_service_->GetTransportState(),
@@ -997,7 +1000,8 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
 
   // The user waits a while before doing anything, so sync starts up in
   // transport mode.
-  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
 
   // Now the user confirms sync again. This should set the sync-requested bit
