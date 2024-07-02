@@ -22,11 +22,8 @@ using testing::NiceMock;
 class SingleClientPasswordSharingPolicyTest : public SyncTest {
  public:
   SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {password_manager::features::kPasswordManagerEnableReceiverService,
-         password_manager::features::kPasswordManagerEnableSenderService},
-        /*disabled_features=*/{});
+    override_features_.InitAndEnableFeature(
+        password_manager::features::kPasswordManagerEnableSenderService);
   }
   ~SingleClientPasswordSharingPolicyTest() override = default;
 

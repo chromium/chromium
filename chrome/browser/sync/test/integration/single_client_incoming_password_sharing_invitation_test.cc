@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -151,10 +149,6 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
  public:
   SingleClientIncomingPasswordSharingInvitationTest()
       : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {password_manager::features::kPasswordManagerEnableReceiverService},
-        /*disabled_features=*/{});
   }
 
   sync_pb::CrossUserSharingPublicKey GetPublicKeyFromServer() const {
@@ -201,9 +195,6 @@ class SingleClientIncomingPasswordSharingInvitationTest : public SyncTest {
 
     return true;
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,

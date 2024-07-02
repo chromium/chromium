@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/metrics/metrics_service.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -323,15 +322,7 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
 class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
     : public SingleClientNigoriSyncTest {
  public:
-  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() {
-    // Enable the password receiving flow to verify cross-user sharing keys by
-    // decrypting incoming password sharing invitations.
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{password_manager::features::
-                                  kPasswordManagerEnableReceiverService},
-        /*disabled_features=*/{});
-  }
-
+  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() = default;
   SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest(
       const SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest&) =
       delete;
@@ -417,9 +408,6 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
         "title", GURL("http://abc.com")));
     return bookmarks_helper::BookmarksTitleChecker(0, "title", 1).Wait();
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 // Some tests are flaky on Chromeos when run with IP Protection enabled.

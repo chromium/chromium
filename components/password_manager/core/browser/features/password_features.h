@@ -87,10 +87,6 @@ BASE_DECLARE_FEATURE(kLocalStateEnterprisePasswordHashes);
 BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Enables password receiving service including incoming password sharing
-// invitation sync data type.
-BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
-
 // Enables password sender service including outgoing password sharing
 // invitation sync data type.
 BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);

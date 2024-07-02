@@ -6,12 +6,10 @@
 
 #import <memory>
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
@@ -56,11 +54,6 @@ IOSChromePasswordReceiverServiceFactory::
 std::unique_ptr<KeyedService>
 IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableReceiverService)) {
-    return nullptr;
-  }
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   // Since Password Manager doesn't work for non-standard profiles, the

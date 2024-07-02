@@ -6,15 +6,14 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 #include "components/sync/base/model_type.h"
@@ -54,10 +53,11 @@ PasswordReceiverServiceFactory::~PasswordReceiverServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PasswordReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableReceiverService)) {
-    return nullptr;
-  }
+// Password receiving on Android is handled in GMSCore, and hence no service
+// should be instantiated.
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
 
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -84,4 +84,5 @@ PasswordReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get());
+#endif  // BUILDFLAG(IS_ANDROID)
 }

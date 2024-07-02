@@ -94,11 +94,8 @@ class GetUpdatesObserver : public FakeServer::Observer {
 class SingleClientCommonSyncTest : public SyncTest {
  public:
   SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {password_manager::features::kPasswordManagerEnableReceiverService,
-         password_manager::features::kPasswordManagerEnableSenderService},
-        /*disabled_features=*/{});
+    override_features_.InitAndEnableFeature(
+        password_manager::features::kPasswordManagerEnableSenderService);
   }
   ~SingleClientCommonSyncTest() override = default;
   SingleClientCommonSyncTest(const SingleClientCommonSyncTest&) = delete;
