@@ -254,7 +254,7 @@ TEST_F(TlsStreamAttemptTest, TcpTimeout) {
   FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
 
   rv = helper.WaitForCompletion();
-  EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
+  EXPECT_THAT(rv, IsError(ERR_TIMED_OUT));
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_FALSE(stream_socket);
@@ -276,7 +276,7 @@ TEST_F(TlsStreamAttemptTest, TlsTimeout) {
   FastForwardBy(TlsStreamAttempt::kTlsHandshakeTimeout);
 
   rv = helper.WaitForCompletion();
-  EXPECT_THAT(rv, IsError(ERR_CONNECTION_TIMED_OUT));
+  EXPECT_THAT(rv, IsError(ERR_TIMED_OUT));
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_FALSE(stream_socket);

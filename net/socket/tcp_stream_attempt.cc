@@ -86,7 +86,9 @@ void TcpStreamAttempt::OnIOComplete(int rv) {
 
 void TcpStreamAttempt::OnTimeout() {
   SetStreamSocket(nullptr);
-  OnIOComplete(ERR_CONNECTION_TIMED_OUT);
+  // TODO(bashi): The error code should be ERR_CONNECTION_TIMED_OUT but use
+  // ERR_TIMED_OUT for consistency with ConnectJobs.
+  OnIOComplete(ERR_TIMED_OUT);
 }
 
 }  // namespace net
