@@ -95,6 +95,11 @@ def _get_gn_args_resolver():
         if gn_args:
             config["gn_args"] = gn_args
 
+            if "target_os" not in gn_args:
+                fail("target_os is required for gn_args: {}".format(gn_config_node.key.id))
+            if "target_cpu" not in gn_args:
+                fail("target_cpu is required for gn_arg: {}".format(gn_config_node.key.id))
+
         return config
 
     return resolve

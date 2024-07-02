@@ -560,9 +560,9 @@ This builder measures build performance for Linux developer builds, by simulatin
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso"]),
-        "siso_reproxy": gn_args.config(configs = ["developer", "remoteexec"]),
-        "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient"]),
+        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "linux", "x64"]),
+        "siso_reproxy": gn_args.config(configs = ["developer", "remoteexec", "linux", "x64"]),
+        "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "linux", "x64"]),
     },
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
