@@ -133,11 +133,11 @@ animations/svg/animated-filter-svg-element.html
 compositing/culling/filter-occlusion-blur-large.html
 compositing/culling/filter-occlusion-blur.html
 css3/blending/mix-blend-mode-with-filters.html
-css3/filters/backdrop-filter-basic-blur.html
 css3/filters/blur-filter-page-scroll-self.html
 css3/filters/effect-blur-hw.html
 css3/filters/effect-combined-hw.html
 css3/filters/effect-drop-shadow-hw.html
+external/wpt/css/filter-effects/backdrop-filter-basic-blur.html
 images/yuv-decode-eligible/color-profile-layer-filter.html
 transforms/3d/point-mapping/3d-point-mapping-deep.html
 

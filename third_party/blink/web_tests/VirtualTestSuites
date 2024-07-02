@@ -471,10 +471,15 @@
   {
     "prefix": "backdrop-filter-mirror-edge",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/css/filter-effects/backdrop-filter-edge-behavior.html",
+    "bases": ["external/wpt/css/filter-effects/backdrop-filter-basic-blur.html",
+              "external/wpt/css/filter-effects/backdrop-filter-boundary.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-behavior.html",
               "external/wpt/css/filter-effects/backdrop-filter-edge-clipping.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-clipping-2.html",
               "external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html",
-              "external/wpt/css/filter-effects/backdrop-filter-edge-pixels.html"],
+              "external/wpt/css/filter-effects/backdrop-filter-edge-pixels.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-pixels-2.html",
+              "external/wpt/css/filter-effects/backdrop-filter-svg-blur.html"],
     "args": ["--enable-features=BackdropFilterMirrorEdgeMode"],
     "owners": ["flackr@chromium.org"],
     "expires": "Jul 1, 2025"

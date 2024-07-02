@@ -1,5 +1,4 @@
 compositing/geometry/preserve-3d-switching.html
-css3/filters/backdrop-filter-boundary.html
 custom-elements/form-validation-bubble-appearance.html
 editing/selection/editable-links.html
 editing/selection/inline-closest-leaf-child.html

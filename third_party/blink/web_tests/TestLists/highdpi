@@ -212,7 +212,6 @@ css3/blending/svg-blend-overlapping-elements.html
 css3/calc/css3-radial-gradients.html
 css3/calc/gradient-color-stops.html
 css3/filters/add-filter-rendering.html
-css3/filters/backdrop-filter-basic-blur.html
 css3/filters/backdrop-filter-border-radius.html
 css3/filters/backdrop-filter-clip-rect-zoom.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-composited-shadow.html
@@ -577,6 +576,7 @@ external/wpt/css/cssom-view/pt-to-px-width.html
 external/wpt/css/cssom-view/table-border-collapse-client-width-height.html
 external/wpt/css/cssom/style-sheet-interfaces-002.html
 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-004.html
+external/wpt/css/filter-effects/backdrop-filter-basic-blur.html
 external/wpt/css/filter-effects/filter-function/filter-function-007.html
 external/wpt/css/filter-effects/parsing/backdrop-filter-parsing-valid.html
 external/wpt/css/filter-effects/svg-shorthand-drop-shadow-001.html

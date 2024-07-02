@@ -38,7 +38,6 @@ crbug.com/1266821 css3/blending/effect-background-blend-mode-tiled.html [ Failur
 crbug.com/1266821 css3/blending/effect-background-blend-mode.html [ Failure ]
 crbug.com/1266821 css3/blending/mix-blend-mode-isolated-group-1.html [ Failure ]
 crbug.com/1266821 css3/blending/mix-blend-mode-isolated-group-2.html [ Failure ]
-crbug.com/1266821 css3/filters/backdrop-filter-basic-blur.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-brightness-clamping.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined-hw.html [ Failure ]
 crbug.com/1266821 css3/filters/effect-combined.html [ Failure ]

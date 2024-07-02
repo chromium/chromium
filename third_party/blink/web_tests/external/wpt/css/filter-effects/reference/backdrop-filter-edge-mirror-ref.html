@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<meta name=fuzzy content="maxDifference=0-10;totalPixels=0-10000">
 <title>backdrop-filter: Sampled pixels beyond edge should mirror back into the content.</title>
 <link rel="author" href="mailto:flackr@chromium.org">
 <link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#backdrop-filter-operation">
-<link rel="match"  href="reference/backdrop-filter-edge-mirror-ref.html">
+<script src="../support/simulate-backdrop-blur.js"></script>
 
 <div class="box border"></div>
 <div class="box filter"></div>
@@ -21,10 +20,10 @@
   left: 8px;
   box-sizing: border-box;
 }
-.filter {
-  backdrop-filter: blur(10px);
-}
 .border {
   border: 1px solid blue;
 }
 </style>
+<script>
+simulateBackdropBlur(document.querySelector('.filter'), [document.querySelector('.border')], 10);
+</script>

@@ -1532,10 +1532,6 @@ crbug.com/1310079 [ Linux ] virtual/elastic-overscroll/fixed-elements-dont-overs
 # version.
 crbug.com/1393294 virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Crash Failure Pass Timeout ]
 
-crbug.com/904592 css3/filters/backdrop-filter-svg.html [ Failure ]
-crbug.com/904592 [ Linux ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
-crbug.com/904592 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
-
 crbug.com/280342 http/tests/media/progress-events-generated-correctly.html [ Failure Pass Timeout ]
 
 # This test is flaky when FixedElementsDontOverscroll is enabled.
@@ -4704,7 +4700,6 @@ crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-
 # Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
 
 # For SkiaRenderer on MacOS
-crbug.com/1208173 [ Mac ] css3/filters/backdrop-filter-boundary.html [ Failure ]
 crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
@@ -7440,7 +7435,16 @@ crbug.com/40336192 external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-04
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Pass ]
 
 # backdrop-filter-mirror-edge
+crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [ Failure ]
+# Failures without BackdropFilterMirrorEdgeMode enabled
+crbug.com/40040614 external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Failure ]
+crbug.com/40040614 external/wpt/css/filter-effects/backdrop-filter-edge-clipping-2.html [ Failure ]
+crbug.com/40040614 external/wpt/css/filter-effects/backdrop-filter-edge-pixels-2.html [ Failure ]
 crbug.com/40040614 external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Failure ]
+# Passes with BackdropFilterMirrorEdgeMode enabled
+crbug.com/40040614 virtual/backdrop-filter-mirror-edge/external/wpt/css/filter-effects/backdrop-filter-boundary.html [ Pass ]
+crbug.com/40040614 virtual/backdrop-filter-mirror-edge/external/wpt/css/filter-effects/backdrop-filter-edge-clipping-2.html [ Pass ]
+crbug.com/40040614 virtual/backdrop-filter-mirror-edge/external/wpt/css/filter-effects/backdrop-filter-edge-pixels-2.html [ Pass ]
 crbug.com/40040614 virtual/backdrop-filter-mirror-edge/external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html [ Pass ]
 
 # Branch Gardener 2024-04-10
