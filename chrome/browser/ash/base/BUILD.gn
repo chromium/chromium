@@ -29,3 +29,21 @@ static_library("base") {
     "//ui/gfx",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "locale_util_browsertest.cc" ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+  ]
+}

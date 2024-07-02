@@ -4576,7 +4576,6 @@ if (!is_android) {
         "../browser/ash/arc/session/arc_session_manager_browsertest.cc",
         "../browser/ash/arc/user_session/arc_user_session_service_browsertest.cc",
         "../browser/ash/arc/vmm/arc_vmm_manager_browsertest.cc",
-        "../browser/ash/base/locale_util_browsertest.cc",
         "../browser/ash/child_accounts/family_user_device_metrics_browsertest.cc",
         "../browser/ash/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/ash/child_accounts/screen_time_controller_browsertest.cc",
