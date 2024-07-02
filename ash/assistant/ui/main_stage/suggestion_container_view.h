@@ -47,7 +47,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   // AnimatedContainerView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   void OnContentsPreferredSizeChanged(views::View* content_view) override;
   void OnAssistantControllerDestroying() override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;

@@ -35,7 +35,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerDestroying() override;

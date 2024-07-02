@@ -27,7 +27,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnLayerOpacityChanged(ui::PropertyChangeReason reason) override;

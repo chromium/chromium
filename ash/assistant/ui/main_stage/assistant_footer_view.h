@@ -40,7 +40,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
 
   // AssistantStateObserver:
   void OnAssistantConsentStatusChanged(int consent_status) override;

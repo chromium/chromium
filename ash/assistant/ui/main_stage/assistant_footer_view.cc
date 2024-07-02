@@ -55,11 +55,7 @@ AssistantFooterView::~AssistantFooterView() {
 
 gfx::Size AssistantFooterView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
-}
-
-int AssistantFooterView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return gfx::Size(INT_MAX, kPreferredHeightDip);
 }
 
 void AssistantFooterView::InitLayout() {

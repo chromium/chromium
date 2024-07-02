@@ -43,7 +43,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   // AnimatedContainerView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
   void Layout(PassKey) override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;

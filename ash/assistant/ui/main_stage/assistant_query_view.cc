@@ -58,11 +58,7 @@ AssistantQueryView::~AssistantQueryView() = default;
 
 gfx::Size AssistantQueryView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(kMaxWidthDip, GetHeightForWidth(kMaxWidthDip));
-}
-
-int AssistantQueryView::GetHeightForWidth(int width) const {
-  return kHeightDip;
+  return gfx::Size(kMaxWidthDip, kHeightDip);
 }
 
 void AssistantQueryView::OnThemeChanged() {

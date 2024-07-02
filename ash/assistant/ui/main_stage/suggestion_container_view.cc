@@ -124,11 +124,7 @@ SuggestionContainerView::~SuggestionContainerView() {
 
 gfx::Size SuggestionContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
-}
-
-int SuggestionContainerView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return gfx::Size(INT_MAX, kPreferredHeightDip);
 }
 
 void SuggestionContainerView::OnContentsPreferredSizeChanged(

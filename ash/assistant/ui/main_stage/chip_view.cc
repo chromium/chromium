@@ -107,12 +107,9 @@ gfx::Size ChipView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_width =
       views::View::CalculatePreferredSize(available_size).width();
-  return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
-}
-
-int ChipView::GetHeightForWidth(int width) const {
-  return type_ == Type::kDefault ? kPreferredHeightDipDefault
-                                 : kPreferredHeightDipLarge;
+  return gfx::Size(preferred_width, type_ == Type::kDefault
+                                        ? kPreferredHeightDipDefault
+                                        : kPreferredHeightDipLarge);
 }
 
 void ChipView::ChildVisibilityChanged(views::View* child) {

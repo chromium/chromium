@@ -96,11 +96,7 @@ UiElementContainerView::~UiElementContainerView() = default;
 
 gfx::Size UiElementContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
-}
-
-int UiElementContainerView::GetHeightForWidth(int width) const {
-  return content_view()->GetHeightForWidth(width);
+  return gfx::Size(INT_MAX, content_view()->GetHeightForWidth(INT_MAX));
 }
 
 gfx::Size UiElementContainerView::GetMinimumSize() const {
