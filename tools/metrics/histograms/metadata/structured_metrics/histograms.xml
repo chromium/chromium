@@ -83,7 +83,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -98,7 +98,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -110,7 +110,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.Dropped" units="logs"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -123,7 +123,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.DroppedSize" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -198,7 +198,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.RejectedSize" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2025-07-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
