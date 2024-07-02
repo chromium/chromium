@@ -19,6 +19,7 @@ import sys
 import tempfile
 import threading
 import time
+import uuid
 
 import psutil
 
@@ -131,22 +132,30 @@ def run_executable(cmd,
   # It might seem counterintuitive to support a --no-xvfb flag in a script
   # whose only job is to start xvfb, but doing so allows us to consolidate
   # the logic in the layers of buildbot scripts so that we *always* use
-  # xvfb by default and don't have to worry about the distinction, it
+  # this script by default and don't have to worry about the distinction, it
   # can remain solely under the control of the test invocation itself.
-  use_xvfb = True
+  # Historically, this flag turned off xvfb, but now turns off both X11 backings
+  # (xvfb/Xorg). As of crrev.com/c/5631242, Xorg became the default backing when
+  # no flags are supplied. Xorg is mostly a drop in replacement to Xvfb but has
+  # better support for dummy drivers and multi-screen testing (See:
+  # crbug.com/40257169 and http://tinyurl.com/4phsuupf). Requires Xorg binaries
+  # (package: xserver-xorg-core)
+  use_xvfb = False
+  use_xorg = True
+
   if '--no-xvfb' in cmd:
     use_xvfb = False
+    use_xorg = False  # Backwards compatibly turns off all X11 backings.
     cmd.remove('--no-xvfb')
 
-  # Xorg is mostly a drop in replacement to Xvfb but has better support for
-  # dummy drivers and multi-screen testing (See: crbug.com/40257169 and
-  # http://tinyurl.com/4phsuupf). Requires Xorg binaries
-  # (package: xserver-xorg-core)
-  use_xorg = False
-  if '--use-xorg' in cmd:
-    use_xvfb = False
-    use_xorg = True
-    cmd.remove('--use-xorg')
+  # Support forcing legacy xvfb backing.
+  if '--use-xvfb' in cmd:
+    if not use_xorg and not use_xvfb:
+      print('Conflicting flags --use-xvfb and --no-xvfb\n', file=sys.stderr)
+      return 1
+    use_xvfb = True
+    use_xorg = False
+    cmd.remove('--use-xvfb')
 
   # Tests that run on Linux platforms with Ozone/Wayland backend require
   # a Weston instance. However, it is also required to disable xvfb so
@@ -240,7 +249,8 @@ Section "Screen"
   EndSubSection
 EndSection
   """ % ("\n".join(modelines), depth, " ".join(mode_labels))
-  config_file = os.path.join(tempfile.gettempdir(), 'xorg.config')
+  config_file = os.path.join(tempfile.gettempdir(),
+                             'xorg-%s.config' % uuid.uuid4().hex)
   with open(config_file, 'w') as f:
     f.write(config)
   return config_file
@@ -361,18 +371,26 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
       # Setup the signal handlers before starting the openbox instance.
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
       signal.signal(signal.SIGUSR1, set_openbox_ready)
-      openbox_proc = subprocess.Popen(
-          ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
-          stderr=subprocess.STDOUT,
-          env=env)
+      # Retry up to 10 times due to flaky fails (crbug.com/349187865)
+      for _ in range(10):
+        openbox_ready.setvalue(False)
+        openbox_proc = subprocess.Popen(
+            ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
+            stderr=subprocess.STDOUT,
+            env=env)
+        for _ in range(30):
+          time.sleep(.1)  # gives Openbox time to start or fail.
+          if openbox_ready.getvalue() or openbox_proc.poll() is not None:
+            break  # openbox sent ready signal, or failed and stopped.
 
-      for _ in range(30):
-        time.sleep(.1)  # gives Openbox time to start or fail.
-        if openbox_ready.getvalue() or openbox_proc.poll() is not None:
-          break  # openbox sent ready signal, or failed and stopped.
+        if openbox_proc.poll() is None:
+          if openbox_ready.getvalue():
+            break  # openbox is ready
+          kill(openbox_proc, 'openbox')  # still not ready, give up and retry
+          print('Openbox failed to start. Retrying.', file=sys.stderr)
 
-      if openbox_proc.poll() is not None or not openbox_ready.getvalue():
-        raise _X11ProcessError('Failed to start OpenBox.')
+      if openbox_proc.poll() is not None:
+        raise _X11ProcessError('Failed to start openbox after 10 tries')
 
     if use_xcompmgr:
       xcompmgr_proc = subprocess.Popen('xcompmgr',
@@ -649,8 +667,10 @@ def _set_xdg_runtime_dir(env):
 
 
 def main():
-  usage = ('Usage: xvfb.py '
-           '[command [--no-xvfb or --use_xorg or --use-weston] args...]')
+  usage = ('[command [--no-xvfb or --use-xvfb or --use-weston] args...]\n'
+           '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
+           '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
+           '\t --use-weston\t\tEnable Wayland server.')
   # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)
