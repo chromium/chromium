@@ -102,9 +102,9 @@ void LogPriceDropMetrics(web::WebState* web_state) {
 
 // Returns the Browser with `identifier` in its WebStateList. Returns `nullptr`
 // if not found.
-Browser* GetBrowserForTabWithId(BrowserList* browser_list,
-                                web::WebStateID identifier,
-                                bool is_otr_tab) {
+Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
+                                         web::WebStateID identifier,
+                                         bool is_otr_tab) {
   std::set<Browser*> browsers = is_otr_tab
                                     ? browser_list->AllIncognitoBrowsers()
                                     : browser_list->AllRegularBrowsers();
@@ -777,7 +777,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     // before giving up.
     BrowserList* browserList =
         BrowserListFactory::GetForBrowserState(self.browserState);
-    Browser* browser = GetBrowserForTabWithId(
+    Browser* browser = GetBrowserForNonPinnedTabWithId(
         browserList, itemID, self.browserState->IsOffTheRecord());
 
     if (!browser) {
@@ -960,7 +960,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(self.browserState);
-  Browser* browser = GetBrowserForTabWithId(
+  Browser* browser = GetBrowserForNonPinnedTabWithId(
       browserList, itemID, self.browserState->IsOffTheRecord());
 
   // If this tab is still associated with another browser, remove it from the

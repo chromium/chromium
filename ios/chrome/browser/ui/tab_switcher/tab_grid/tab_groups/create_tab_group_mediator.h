@@ -11,6 +11,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_creation_mutator.h"
 
+class Browser;
 class TabGroup;
 @protocol TabGroupCreationConsumer;
 class WebStateList;
@@ -25,15 +26,16 @@ class WebStateID;
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
 // - `identifiers` the list of selected tabs ID
-// - `webStateList` the web state list where the `identifiers` are from
+// - `browser` the browser containing the selected tabs.
 - (instancetype)
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
-                        webStateList:(WebStateList*)webStateList;
+                             browser:(Browser*)browser;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
-// - `tabGroup` the group to edit
+// - `tabGroup` the group to edit.
+// - `webStateList` the web state list containing `tabGroup`.
 - (instancetype)initTabGroupEditionWithConsumer:
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup

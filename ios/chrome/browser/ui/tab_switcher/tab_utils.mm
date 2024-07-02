@@ -6,6 +6,8 @@
 
 #import <set>
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
@@ -53,3 +55,19 @@ bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items) {
   return identifiers.size() != items.count;
 }
 
+Browser* GetBrowserForTabWithId(BrowserList* browser_list,
+                                web::WebStateID identifier,
+                                bool is_otr_tab) {
+  std::set<Browser*> browsers = is_otr_tab
+                                    ? browser_list->AllIncognitoBrowsers()
+                                    : browser_list->AllRegularBrowsers();
+  for (Browser* browser : browsers) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    int index = GetWebStateIndex(
+        web_state_list, WebStateSearchCriteria{.identifier = identifier});
+    if (index != WebStateList::kInvalidIndex) {
+      return browser;
+    }
+  }
+  return nullptr;
+}

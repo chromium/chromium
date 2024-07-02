@@ -7,9 +7,11 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
@@ -1044,6 +1046,91 @@ void DeleteGroupAtIndex(int group_cell_index) {
   [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:TabWithTitle(aboutTabTitle)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Ensures inactive tabs are moved correctly when creating a group from search
+// result.
+- (void)testCreateGroupFromInactiveTab {
+  // This test is not relevant on iPads because there is no inactive tabs in
+  // iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  std::string URL1 = "chrome://version";
+  std::string content1 = "Revision";
+
+  // Load the first website.
+  [ChromeEarlGrey loadURL:GURL(URL1)];
+  [ChromeEarlGrey waitForWebStateContainingText:content1];
+  NSString* versionTabTitle = [ChromeEarlGrey currentTabTitle];
+
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
+      kTabInactivityThresholdParameterName + "/" +
+      kTabInactivityThresholdImmediateDemoParam);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // The Inactive Tabs button should be visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kInactiveTabsButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // There should be one inactive tab.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+
+  // The previously opened website should be in inactive now.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      assertWithMatcher:grey_nil()];
+
+  // Search for the inactive tab.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(versionTabTitle)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
+      assertWithMatcher:grey_notNil()];
+
+  // Create a group with the displayed tab.
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+  // The Inactive Tabs button should be no longer present in the grid.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kInactiveTabsButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
+                 @"Main tab count should be 2");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+
+  // The inactive tab should be in the group now.
+  OpenTabGroupAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
       assertWithMatcher:grey_notNil()];
 }
 

@@ -108,7 +108,7 @@
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
                             selectedTabs:_identifiers
-                            webStateList:browser->GetWebStateList()];
+                                 browser:browser];
   }
   _viewController.mutator = _mediator;
   _viewController.delegate = self;

@@ -9,6 +9,10 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -34,12 +38,15 @@
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
+  // Source browser. Only set when creating a new group, not when editing an
+  // existing one.
+  Browser* _browser;
 }
 
 - (instancetype)
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
-                        webStateList:(WebStateList*)webStateList {
+                             browser:(Browser*)browser {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
@@ -47,13 +54,18 @@
   if (self) {
     CHECK(consumer);
     CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
-    CHECK(webStateList);
+    CHECK(browser);
+    _identifiers = identifiers;
+
+    _browser = browser;
+    _webStateList = browser->GetWebStateList();
     _consumer = consumer;
     [_consumer setDefaultGroupColor:TabGroup::DefaultColorForNewTabGroup(
-                                        webStateList)];
+                                        _webStateList)];
 
-    _identifiers = identifiers;
-    _webStateList = webStateList;
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(browserState);
 
     _tabGroupInfos = [[NSMutableArray alloc] init];
 
@@ -62,15 +74,29 @@
       if (numberOfRequestedImages >= 7) {
         break;
       }
+      WebStateList* currentWebStateList = _webStateList;
       // TODO(crbug.com/333032676): Replace this with the appropriate helper
       // once it exists.
       int index = GetWebStateIndex(
-          webStateList, WebStateSearchCriteria{.identifier = identifier});
-      CHECK_NE(index, WebStateList::kInvalidIndex);
+          _webStateList, WebStateSearchCriteria{.identifier = identifier});
+      if (index == WebStateList::kInvalidIndex) {
+        // The user is creating a group from a long press on search result. Tab
+        // search can display all tabs from the same profile at the same time.
+        // The selected tab is currently in a different web state list (inactive
+        // tab, or tab from another window).
+        Browser* selectedTabBrowser = GetBrowserForTabWithId(
+            browserList, identifier, browserState->IsOffTheRecord());
+        CHECK(browser);
+        currentWebStateList = selectedTabBrowser->GetWebStateList();
+        index =
+            GetWebStateIndex(currentWebStateList,
+                             WebStateSearchCriteria{.identifier = identifier});
+      }
 
       __weak CreateTabGroupMediator* weakSelf = self;
       [TabGroupUtils
-          fetchTabGroupInfoFromWebState:webStateList->GetWebStateAt(index)
+          fetchTabGroupInfoFromWebState:currentWebStateList->GetWebStateAt(
+                                            index)
                              completion:^(GroupTabInfo* info) {
                                [weakSelf addInfo:info];
                                [weakSelf updateConsumer];
@@ -143,9 +169,11 @@
       int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{
                                                       .identifier = identifier,
                                                   });
-      if (index != WebStateList::kInvalidIndex) {
-        tabIndexes.insert(index);
+      if (index == WebStateList::kInvalidIndex) {
+        index = _webStateList->count();
+        MoveTabToBrowser(identifier, _browser, index);
       }
+      tabIndexes.insert(index);
     }
     if (!tabIndexes.empty()) {
       _webStateList->CreateGroup(tabIndexes, visualData,
