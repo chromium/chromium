@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.sync.settings;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -61,26 +63,40 @@ public class CentralAccountCardPreference extends Preference implements ProfileD
         DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mAccountInfo.getEmail());
 
-        ImageView image = (ImageView) holder.findViewById(R.id.central_account_image);
-        image.setImageDrawable(profileData.getImage());
+        ImageView imageView = (ImageView) holder.findViewById(R.id.central_account_image);
+        imageView.setImageDrawable(profileData.getImage());
 
-        TextView name = (TextView) holder.findViewById(R.id.central_account_name);
-        TextView email = (TextView) holder.findViewById(R.id.central_account_email);
-        if (profileData.getFullName() != null) {
-            email.setTextAppearance(R.style.TextAppearance_TextSmall_Secondary);
-            name.setVisibility(View.VISIBLE);
-            name.setText(profileData.getFullName());
+        Pair<String, String> primaryAndSecondaryText = getPrimaryAndSecondaryText(profileData);
+
+        TextView primaryText = (TextView) holder.findViewById(R.id.central_account_primary_text);
+        primaryText.setText(primaryAndSecondaryText.first);
+
+        TextView secondaryText =
+                (TextView) holder.findViewById(R.id.central_account_secondary_text);
+        if (!primaryAndSecondaryText.second.isEmpty()) {
+            secondaryText.setText(primaryAndSecondaryText.second);
+            secondaryText.setVisibility(View.VISIBLE);
         } else {
-            // TODO(crbug.com/345687670): Add render test for this case.
-            name.setVisibility(View.GONE);
-            email.setTextAppearance(R.style.TextAppearance_TextLarge_Primary);
+            secondaryText.setVisibility(View.GONE);
         }
-        email.setText(profileData.getAccountEmail());
     }
 
     /** ProfileDataCache.Observer implementation. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         notifyChanged();
+    }
+
+    private Pair<String, String> getPrimaryAndSecondaryText(DisplayableProfileData profileData) {
+        if (!TextUtils.isEmpty(profileData.getFullName())
+                && profileData.hasDisplayableEmailAddress()) {
+            return new Pair<>(profileData.getFullName(), profileData.getAccountEmail());
+        } else if (!TextUtils.isEmpty(profileData.getFullName())) {
+            return new Pair<>(profileData.getFullName(), "");
+        } else if (profileData.hasDisplayableEmailAddress()) {
+            return new Pair<>(profileData.getAccountEmail(), "");
+        }
+        // When email and full name cannot be shown, use the default account string instead.
+        return new Pair<>(getContext().getString(R.string.default_google_account_username), "");
     }
 }

@@ -78,6 +78,11 @@ public class AccountManagerTestRule implements TestRule {
                     .accountImage(createAvatar())
                     .build();
 
+    public static final AccountInfo TEST_ACCOUNT_NO_NAME =
+            new AccountInfo.Builder(
+                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                    .build();
+
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),
