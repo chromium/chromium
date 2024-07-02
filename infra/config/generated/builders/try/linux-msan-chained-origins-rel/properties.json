@@ -44,7 +44,8 @@
           "builder": "MSAN Release (chained origins)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-msan-chained-origins-rel/targets"
     }
   },
   "$build/reclient": {

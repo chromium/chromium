@@ -42,7 +42,8 @@
           "builder": "UBSan Release",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-ubsan-rel/targets"
     }
   },
   "$build/reclient": {

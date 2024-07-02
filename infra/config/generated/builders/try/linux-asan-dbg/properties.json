@@ -43,7 +43,8 @@
           "builder": "ASAN Debug",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-dbg/targets"
     }
   },
   "$build/reclient": {

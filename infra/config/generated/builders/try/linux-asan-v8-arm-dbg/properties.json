@@ -44,7 +44,8 @@
           "builder": "ASan Debug (32-bit x86 with V8-ARM)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-v8-arm-dbg/targets"
     }
   },
   "$build/reclient": {

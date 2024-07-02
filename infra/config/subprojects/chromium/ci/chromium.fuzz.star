@@ -10,6 +10,7 @@ load("//lib/builders.star", "builders", "cpu", "gardener_rotations", "os", "siso
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
 
@@ -102,6 +103,10 @@ ci.builder(
             "linux",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
         short_name = "dbg",
@@ -145,6 +150,10 @@ ci.builder(
             "linux",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "dbg",
@@ -186,6 +195,10 @@ ci.builder(
             "x64",
             "linux",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
@@ -231,6 +244,10 @@ ci.builder(
             "linux",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "rel",
@@ -273,6 +290,10 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan",
@@ -421,6 +442,10 @@ ci.builder(
             "x86",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux asan|x64 v8-ARM",
         short_name = "med",
@@ -468,6 +493,10 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "cros asan",
     ),
@@ -507,6 +536,10 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
@@ -550,6 +583,10 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "linux msan",
@@ -592,6 +629,10 @@ ci.builder(
             "mac",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     builderless = False,
     cores = 12,
@@ -644,6 +685,10 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     builderless = False,
     cores = 12,
     os = os.MAC_DEFAULT,
@@ -686,6 +731,10 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "dbg",
@@ -727,6 +776,10 @@ ci.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "linux tsan",
         short_name = "rel",
@@ -763,6 +816,10 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
@@ -802,6 +859,10 @@ ci.builder(
             "linux",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",
@@ -845,6 +906,10 @@ ci.builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
@@ -892,6 +957,10 @@ ci.builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = ["chromium_builder_asan"],
+        mixins = ["chromium-tester-service-account"],
     ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,

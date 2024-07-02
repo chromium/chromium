@@ -1,0 +1,7 @@
+{
+  "MSAN Release (chained origins)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  }
+}

@@ -44,7 +44,8 @@
           "builder": "MSAN Release (no origins)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-msan-no-origins-rel/targets"
     }
   },
   "$build/reclient": {

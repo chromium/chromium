@@ -1,0 +1,7 @@
+{
+  "ASan Release (32-bit x86 with V8-ARM)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  }
+}

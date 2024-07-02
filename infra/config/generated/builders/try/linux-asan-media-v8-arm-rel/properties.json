@@ -44,7 +44,8 @@
           "builder": "ASan Release Media (32-bit x86 with V8-ARM)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-asan-media-v8-arm-rel/targets"
     }
   },
   "$build/reclient": {

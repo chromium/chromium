@@ -43,7 +43,8 @@
           "builder": "Mac ASAN Release",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-asan-rel/targets"
     }
   },
   "$build/reclient": {

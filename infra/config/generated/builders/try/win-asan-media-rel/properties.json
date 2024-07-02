@@ -44,7 +44,8 @@
           "builder": "Win ASan Release Media",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-asan-media-rel/targets"
     }
   },
   "$build/reclient": {
