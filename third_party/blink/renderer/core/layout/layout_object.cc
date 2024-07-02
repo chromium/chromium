@@ -708,7 +708,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     DCHECK(LayoutTextCombine::ShouldBeParentOf(*new_child)) << new_child;
     new_child->SetStyle(Style());
     children->InsertChildNode(this, new_child, before_child);
-  } else if (!IsHorizontalWritingMode() &&
+  } else if (!IsHorizontalTypographicMode(StyleRef().GetWritingMode()) &&
              LayoutTextCombine::ShouldBeParentOf(*new_child)) {
     if (before_child) {
       if (IsA<LayoutTextCombine>(before_child)) {
