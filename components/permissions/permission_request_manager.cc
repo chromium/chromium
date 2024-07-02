@@ -1144,9 +1144,6 @@ void PermissionRequestManager::CurrentRequestsDecided(
         browser_context, request, permission_action));
   }
 
-  // IGNORED is not a decision on the prompt and it occurs because of external
-  // factors (e.g. tab switching). Therefore |ShouldFinalizeRequestAfterDecided|
-  // does not take effect when the action is IGNORED.
   if (ShouldFinalizeRequestAfterDecided(permission_action)) {
     FinalizeCurrentRequests();
   }

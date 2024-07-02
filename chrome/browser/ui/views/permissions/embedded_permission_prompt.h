@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_H_
 
+#include <optional>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -95,6 +97,12 @@ class EmbeddedPermissionPrompt
   void DismissScrim() override;
 
  private:
+  enum class Action {
+    kAllow,
+    kAllowThisTime,
+    kDeny,
+    kDismiss,
+  };
   Variant DeterminePromptVariant(ContentSetting setting,
                                  const content_settings::SettingInfo& info,
                                  ContentSettingsType type);
@@ -120,6 +128,9 @@ class EmbeddedPermissionPrompt
   EmbeddedPermissionPrompt::SystemPermissionDelegate*
   GetSystemPermissionDelegate(ContentSettingsType type);
 
+  void FinalizePrompt();
+  void SendDelegateAction(Action action);
+
   // Store precalculated OS variants for metrics
   Variant site_level_prompt_variant_ = Variant::kUninitialized;
   Variant os_prompt_variant_ = Variant::kUninitialized;
@@ -140,6 +151,8 @@ class EmbeddedPermissionPrompt
 
   base::flat_map<ContentSettingsType, std::unique_ptr<SystemPermissionDelegate>>
       system_permission_delegates_;
+
+  std::optional<Action> sent_action_ = std::nullopt;
 
   base::WeakPtrFactory<EmbeddedPermissionPrompt> weak_factory_{this};
 };

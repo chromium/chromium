@@ -363,7 +363,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
             type, accepted_once_count),
         CheckHistogram(tester,
                        permissions::PermissionUmaUtil::kPermissionsPromptDenied,
-                       type, 0));
+                       type, 0),
+        CheckHistogram(
+            tester, permissions::PermissionUmaUtil::kPermissionsPromptDismissed,
+            type, 0));
   }
 
  protected:

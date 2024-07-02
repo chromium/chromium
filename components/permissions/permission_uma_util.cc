@@ -719,6 +719,8 @@ const char PermissionUmaUtil::kPermissionsPromptDeniedGesture[] =
     "Permissions.Prompt.Denied.Gesture";
 const char PermissionUmaUtil::kPermissionsPromptDeniedNoGesture[] =
     "Permissions.Prompt.Denied.NoGesture";
+const char PermissionUmaUtil::kPermissionsPromptDismissed[] =
+    "Permissions.Prompt.Dismissed";
 const char PermissionUmaUtil::kPermissionsExperimentalUsagePrefix[] =
     "Permissions.Experimental.Usage.";
 const char PermissionUmaUtil::kPermissionsActionPrefix[] =

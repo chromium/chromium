@@ -428,7 +428,7 @@ bool EmbeddedPermissionPrompt::IsAskPrompt() const {
 void EmbeddedPermissionPrompt::Allow() {
   PrecalculateVariantsForMetrics();
   RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kGranted);
-  delegate_->Accept();
+  SendDelegateAction(Action::kAllow);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
@@ -436,7 +436,7 @@ void EmbeddedPermissionPrompt::AllowThisTime() {
   PrecalculateVariantsForMetrics();
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kGrantedOnce);
-  delegate_->AcceptThisTime();
+  SendDelegateAction(Action::kAllowThisTime);
   CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
@@ -448,23 +448,23 @@ void EmbeddedPermissionPrompt::Dismiss() {
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedXButton);
 
-  delegate_->Dismiss();
-  delegate_->FinalizeCurrentRequests();
+  SendDelegateAction(Action::kDismiss);
+  FinalizePrompt();
 }
 
 void EmbeddedPermissionPrompt::Acknowledge() {
-  // TOOO(crbug.com/1462930): Find how to distinguish between a dismiss and an
-  // acknowledge.
   RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kOk);
-  CloseView();
-  delegate_->FinalizeCurrentRequests();
+
+  SendDelegateAction(Action::kDismiss);
+  FinalizePrompt();
 }
 
 void EmbeddedPermissionPrompt::StopAllowing() {
   PrecalculateVariantsForMetrics();
   RecordPermissionActionUKM(permissions::ElementAnchoredBubbleAction::kDenied);
-  delegate_->Deny();
-  delegate_->FinalizeCurrentRequests();
+
+  SendDelegateAction(Action::kDeny);
+  FinalizePrompt();
 }
 
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
@@ -498,10 +498,9 @@ void EmbeddedPermissionPrompt::DismissScrim() {
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kDismissedScrim);
 
-  CloseView();
   PrecalculateVariantsForMetrics();
-  delegate_->Dismiss();
-  delegate_->FinalizeCurrentRequests();
+  SendDelegateAction(Action::kDismiss);
+  FinalizePrompt();
 }
 
 void EmbeddedPermissionPrompt::PromptForOsPermission() {
@@ -568,8 +567,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
     // Do not finalize request until all the necessary system permissions are
     // granted.
     if (other_permission_determined) {
-      CloseView();
-      delegate_->FinalizeCurrentRequests();
+      FinalizePrompt();
     }
   } else {
     NOTREACHED_IN_MIGRATION();
@@ -636,4 +634,37 @@ EmbeddedPermissionPrompt::GetSystemPermissionDelegate(
                    type)});
   }
   return system_permission_delegates_.at(type).get();
+}
+
+void EmbeddedPermissionPrompt::FinalizePrompt() {
+  CloseView();
+
+  // If by this point we've not sent an action to the delegate, send a dismiss
+  // action.
+  if (!sent_action_.has_value()) {
+    SendDelegateAction(Action::kDismiss);
+  }
+  delegate_->FinalizeCurrentRequests();
+}
+
+void EmbeddedPermissionPrompt::SendDelegateAction(Action action) {
+  if (sent_action_.has_value()) {
+    return;
+  }
+
+  sent_action_ = action;
+  switch (action) {
+    case Action::kAllow:
+      delegate_->Accept();
+      break;
+    case Action::kAllowThisTime:
+      delegate_->AcceptThisTime();
+      break;
+    case Action::kDeny:
+      delegate_->Deny();
+      break;
+    case Action::kDismiss:
+      delegate_->Dismiss();
+      break;
+  }
 }
