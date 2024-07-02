@@ -746,6 +746,23 @@ void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
                            status);
 }
 
+void ViewAccessibility::SetValue(const std::string& value) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
+  NotifyEvent(ax::mojom::Event::kValueChanged, true);
+}
+
+void ViewAccessibility::SetValue(const std::u16string& value) {
+  SetValue(base::UTF16ToUTF8(value));
+}
+
+void ViewAccessibility::RemoveValue() {
+  if (!data_.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
+    return;
+  }
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
+  NotifyEvent(ax::mojom::Event::kValueChanged, true);
+}
+
 void ViewAccessibility::UpdateFocusableState() {
   bool is_focusable = view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
                       GetIsEnabled() && view_->IsDrawn() &&

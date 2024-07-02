@@ -324,6 +324,13 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetContainerLiveStatus(const std::string& status);
 
+  // Sets the kValue attribute of the accessible object.
+  // In case of ProgressBar, if progressBarIndicator value is negative,
+  // then kValue attribute should not be set.
+  void SetValue(const std::string& value);
+  void SetValue(const std::u16string& value);
+  void RemoveValue();
+
   void SetHierarchicalLevel(int hierarchical_level);
 
   // Updates the focusable state of the `data_` object.
