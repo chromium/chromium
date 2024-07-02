@@ -4188,6 +4188,22 @@ TEST_F(TextfieldTest, AccessibilityAttributes) {
 }
 #endif
 
+TEST_F(TextfieldTest, AccessiblePlaceholderTest) {
+  InitTextfield();
+
+  ui::AXNodeData data;
+  textfield_->SetPlaceholderText(u"Some placeholder");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder),
+            u"Some placeholder");
+
+  data = ui::AXNodeData();
+  textfield_->SetPlaceholderText(u"Updated placeholder");
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder),
+            u"Updated placeholder");
+}
+
 TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   InitTextfield();
 

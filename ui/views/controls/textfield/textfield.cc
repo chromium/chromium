@@ -498,6 +498,7 @@ void Textfield::SetPlaceholderText(const std::u16string& text) {
     return;
 
   placeholder_text_ = text;
+  GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(text));
   OnPropertyChanged(&placeholder_text_, kPropertyEffectsPaint);
 }
 
@@ -1052,8 +1053,6 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   } else {
     node_data->SetValue(GetText());
   }
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
-                                base::UTF16ToUTF8(GetPlaceholderText()));
 
   const gfx::Range range = GetSelectedRange();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
