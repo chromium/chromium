@@ -61,6 +61,7 @@ source_set("base") {
     "mojom/",
     "//base",
     "//chrome/enterprise_companion/device_management_storage",
+    "//chrome/enterprise_companion/proto",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
