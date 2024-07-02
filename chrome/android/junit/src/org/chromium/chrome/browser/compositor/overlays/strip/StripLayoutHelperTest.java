@@ -2041,7 +2041,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
 
         // Start reorder for tab drop between the 2nd and 3rd tab.
-        mStripLayoutHelper.startReorderModeForTabDrop(300.f);
+        mStripLayoutHelper.updateStripForExternalTabDrop(300.f);
 
         // Test tab outline should show for the foregrounded tab in destination window during tab
         // drop.
@@ -2750,7 +2750,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Start reorder for tab drop between the 1st and 2nd tab.
-        mStripLayoutHelper.startReorderModeForTabDrop(150.f);
+        mStripLayoutHelper.updateStripForExternalTabDrop(150.f);
 
         float expectedEndWidth =
                 expectedStartWidth + mStripLayoutHelper.getCachedTabWidthForTesting() / 2;
@@ -2770,7 +2770,7 @@ public class StripLayoutHelperTest {
         StripLayoutHelper stripLayoutHelperSpy = spy(mStripLayoutHelper);
 
         // Start and stop reorder mode for tab drop.
-        stripLayoutHelperSpy.startReorderModeForTabDrop(10.f);
+        stripLayoutHelperSpy.updateStripForExternalTabDrop(10.f);
         stripLayoutHelperSpy.stopReorderModeForTesting();
 
         // Verify: folio reattachment animation does not run for tab drop.
@@ -3678,7 +3678,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getActiveClickedTabForTesting() == null);
 
         // Act and verify.
-        mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab, DRAG_START_POINT);
+        mStripLayoutHelper.startDragAndDropTab(theClickedTab, DRAG_START_POINT);
 
         verify(mTabDragSource, times(1))
                 .startTabDragAction(any(), any(), any(), anyFloat(), anyFloat());

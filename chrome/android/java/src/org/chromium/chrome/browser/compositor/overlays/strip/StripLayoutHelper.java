@@ -1959,10 +1959,11 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mInteractingTab = null;
         }
 
+        // If event is from mouse, allow tab drag.
         if (MotionEventUtils.isMousePrimaryButton(fromMouse, buttons)
                 && !clickedClose
                 && clickedTab != null) {
-            startReorderMode(time, x, x);
+            startDragOrReorderTab(time, x, x, clickedTab);
         }
     }
 
@@ -1981,18 +1982,22 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         } else {
             resetResizeTimeout(false);
 
-            // Allow the user to drag the selected tab out of the tab toolbar.
-            if (clickedTab != null) {
-                boolean res = allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
-                // If tab drag did not succeed, fallback to reorder within strip.
-                if (!res) {
-                    startReorderMode(time, x, x);
-                }
-            } else {
-                // Broadcast to start moving the window instance as the user has long pressed on the
-                // open space of the tab strip.
-                sendMoveWindowBroadcast(mToolbarContainerView, x, y);
+            startDragOrReorderTab(time, x, y, clickedTab);
+        }
+    }
+
+    private void startDragOrReorderTab(long time, float x, float y, StripLayoutTab clickedTab) {
+        // Allow the user to drag the selected tab out of the tab toolbar.
+        if (clickedTab != null) {
+            boolean res = startDragAndDropTab(clickedTab, new PointF(x, y));
+            // If tab drag did not succeed, fallback to reorder within strip.
+            if (!res) {
+                startReorderTab(time, x, x);
             }
+        } else {
+            // Broadcast to start moving the window instance as the user has long pressed on the
+            // open space of the tab strip.
+            sendMoveWindowBroadcast(mToolbarContainerView, x, y);
         }
     }
 
@@ -3617,7 +3622,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     public void startReorderModeAtIndexForTesting(int index) {
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
-        startReorderMode(INVALID_TIME, 0f, tab.getDrawX() + (tab.getWidth() / 2));
+        startReorderTab(INVALID_TIME, 0f, tab.getDrawX() + (tab.getWidth() / 2));
     }
 
     public void stopReorderModeForTesting() {
@@ -3625,7 +3630,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     @VisibleForTesting
-    void startReorderMode(long time, float currentX, float startX) {
+    void startReorderTab(long time, float currentX, float startX) {
         if (mInReorderMode) return;
         RecordUserAction.record("MobileToolbarStartReorderTab");
 
@@ -3649,7 +3654,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()), false);
 
         // 4. Set initial state.
-        ArrayList<Animator> animationList = startReorderInternal(startX);
+        ArrayList<Animator> animationList = updateStripForReorder(startX);
 
         // 5. Lift the container off the toolbar and perform haptic feedback.
         Tab tab = getTabById(mInteractingTab.getId());
@@ -3663,7 +3668,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mUpdateHost.requestUpdate();
     }
 
-    void startReorderModeForTabDrop(float startX) {
+    void updateStripForExternalTabDrop(float startX) {
         // 1. StartX indicates the position where the tab drag entered the destination tab strip.
         // Adjust by a half tab-width so that we target the nearest tab gap.
         startX = adjustXForTabDrop(startX);
@@ -3677,7 +3682,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // 3. Set initial state.
         mInReorderMode = true;
         mReorderingForTabDrop = true;
-        ArrayList<Animator> animationList = startReorderInternal(startX);
+        ArrayList<Animator> animationList = updateStripForReorder(startX);
 
         // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
         // inserted should the drag be dropped.
@@ -3690,7 +3695,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mUpdateHost.requestUpdate();
     }
 
-    private ArrayList<Animator> startReorderInternal(float startX) {
+    private ArrayList<Animator> updateStripForReorder(float startX) {
         // 1. Set initial state parameters.
         finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> animationList =
@@ -5335,7 +5340,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     @VisibleForTesting
-    boolean allowMovingTabOutOfStripLayout(
+    boolean startDragAndDropTab(
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
         if (mTabDragSource == null) return false;
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
@@ -5374,7 +5379,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (isSourceStrip) {
             dragActiveClickedTabOntoStrip(time, lastX, true);
         } else if (mIncognito == draggedTabIncognito) {
-            startReorderModeForTabDrop(currX);
+            updateStripForExternalTabDrop(currX);
         }
     }
 
@@ -5400,7 +5405,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             draggedTab.setOffsetY(0);
             mLastOffsetX = 0.f;
             resizeTabStrip(false, false, false);
-            startReorderMode(time, x, x);
+            startReorderTab(time, x, x);
         } else {
             // Else, animate the tab translating back up onto the tab strip.
             draggedTab.setWidth(0.f);
