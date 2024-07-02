@@ -109,7 +109,7 @@ function draw(state: State, overlay: HTMLCanvasElement) {
 
 function getCameraStream(): Promise<MediaStream | null> {
   return navigator.mediaDevices.getUserMedia({
-    video: true,
+    video: { aspectRatio: 4 / 3 },
     audio: false,
   }).catch((error) => {
     console.error('Failed to get camera stream:', error);

@@ -9,16 +9,46 @@ found in the LICENSE file. -->
     font-weight: bold;
   }
 
-  #cameraFeedContainer,
-  #cameraFeed {
-    width: 56vw;
+  #rootContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    /* Viewport width minus padding. */
+    width: calc(100vw - 20px);
+    /* Viewport height minus padding. */
+    height: calc(100vh - 20px);
+    background: #3f3f46;
   }
 
   #cameraFeedContainer {
     position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    border: 2px #333 solid;
+  }
+
+  #cameraFeed {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow:
+      0 0 #0000,
+      0 0 #0000,
+      0 10px 15px -3px rgb(0 0 0 / 0.4),
+      0 4px 6px -4px rgb(0 0 0 / 0.4);
+  }
+
+  @media(max-aspect-ratio: 4/3) {
+
+    #cameraFeedContainer,
+    #cameraFeed {
+      width: 100%;
+    }
+  }
+
+  @media(min-aspect-ratio: 4/3) {
+
+    #cameraFeedContainer,
+    #cameraFeed {
+      height: 100%;
+    }
   }
 
   #overlay {
@@ -28,18 +58,16 @@ found in the LICENSE file. -->
   }
 </style>
 
-<h1>Kiosk Vision Internals</h1>
-
 <div hidden$="[[!statusIs_(state_, 'kRunning')]]">
-  <p>
-    The Kiosk Vision feature <span id="featureRunningText">is running</span>.
-  </p>
-
-  <div id="cameraFeedContainer">
-    <video id="cameraFeed" autoplay="true"></video>
-    <canvas id="overlay"></canvas>
+  <div id="rootContainer">
+    <div id="cameraFeedContainer">
+      <video id="cameraFeed" autoplay="true"></video>
+      <canvas id="overlay"></canvas>
+    </div>
   </div>
 </div>
+
+<h1 hidden$="[[statusIs_(state_, 'kRunning')]]">Kiosk Vision Internals</h1>
 
 <div hidden$="[[!statusIs_(state_, 'kUnknown')]]">
   <p>Unknown status. Possibly still loading...</p>
