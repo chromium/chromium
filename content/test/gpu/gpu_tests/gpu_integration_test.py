@@ -272,10 +272,6 @@ class GpuIntegrationTest(
         # RenderDocument is not the culprit or it is and the root cause of
         # flakiness is fixed.
         '--disable-features=RenderDocument',
-        # Without this, a popup can appear and impact certain tests. See
-        # crbug.com/349132647.
-        ('--enable-features=NotificationPermissionVariant:'
-         'enable_contextual_permission_requests/false'),
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
