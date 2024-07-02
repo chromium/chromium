@@ -208,13 +208,13 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         assertTrue(!!keepAction);
         keepAction.click();
         await mockDelegate.whenCalled(
-            'dismissMv2DeprecationWarningForExtension');
+            'dismissMv2DeprecationNoticeForExtension');
         assertEquals(
             1,
             mockDelegate.getCallCount(
-                'dismissMv2DeprecationWarningForExtension'));
+                'dismissMv2DeprecationNoticeForExtension'));
         assertDeepEquals(
             [panelElement.extensions[0]?.id],
-            mockDelegate.getArgs('dismissMv2DeprecationWarningForExtension'));
+            mockDelegate.getArgs('dismissMv2DeprecationNoticeForExtension'));
       });
 });

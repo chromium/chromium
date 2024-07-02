@@ -798,6 +798,7 @@ suite('ExtensionDetailViewTest', function() {
     // recommendations url.
     const findAlternativeAction =
         item.shadowRoot!.querySelector<HTMLElement>('#findAlternativeAction');
+    assertTrue(!!findAlternativeAction);
     assertFalse(isVisible(findAlternativeAction));
 
     // Add a recommendations url to the extension.
@@ -812,6 +813,16 @@ suite('ExtensionDetailViewTest', function() {
     // recommendations url.
     assertTrue(isVisible(findAlternativeAction));
 
+    // Click on the find alternative action, and verify it triggered the
+    // correct delegate call.
+    await mockDelegate.testClickingCalls(
+        findAlternativeAction, 'openUrl', [recommendationsUrl]);
+
+    // Keep action is always visible.
+    actionMenu.click();
+    const keepAction =
+        item.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+    assertTrue(isVisible(keepAction));
   });
 
   test('PinnedToToolbar', async function() {

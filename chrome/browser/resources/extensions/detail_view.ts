@@ -40,6 +40,7 @@ import {getTemplate} from './detail_view.html.js';
 import type {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, convertSafetyCheckReason, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE, sortViews, userCanChangeEnablement} from './item_util.js';
+import type {Mv2DeprecationDelegate} from './mv2_deprecation_delegate.js';
 import {getMv2ExperimentStage, Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import type {ExtensionsToggleRowElement} from './toggle_row.js';
@@ -173,7 +174,7 @@ export class ExtensionsDetailViewElement extends
   }
 
   data: chrome.developerPrivate.ExtensionInfo;
-  delegate: ItemDelegate;
+  delegate: ItemDelegate&Mv2DeprecationDelegate;
   inDevMode: boolean;
   enableEnhancedSiteControls: boolean;
   incognitoAvailable: boolean;
@@ -613,6 +614,19 @@ export class ExtensionsDetailViewElement extends
     const recommendationsUrl: string|undefined = this.data.recommendationsUrl;
     assert(!!recommendationsUrl);
     this.delegate.openUrl(recommendationsUrl);
+  }
+
+  /**
+   * Dismisses the notice for a given extension in the disable experiment stage.
+   * It will not be shown again during this stage.
+   */
+  private onKeepActionClick_(): void {
+    assert(
+        this.mv2ExperimentStage_ === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
+    // TODO(crbug.com/339061151): record user action once we connect the
+    // delegate call to actually dismissing the notice for this stage.
+    this.$.actionMenu.close();
+    // TODO(crbug.com/339061151): dismiss notice.
   }
 
   /**

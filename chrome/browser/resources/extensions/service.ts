@@ -11,7 +11,7 @@ import type {ErrorPageDelegate} from './error_page.js';
 import type {ItemDelegate} from './item.js';
 import type {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
 import type {LoadErrorDelegate} from './load_error.js';
-import type {Mv2DeprecationPanelDelegate} from './mv2_deprecation_panel.js';
+import type {Mv2DeprecationDelegate} from './mv2_deprecation_delegate.js';
 import {Dialog, navigation, Page} from './navigation_helper.js';
 import type {PackDialogDelegate} from './pack_dialog.js';
 import type {SiteSettingsDelegate} from './site_permissions/site_settings_mixin.js';
@@ -22,7 +22,7 @@ export interface ServiceInterface extends ActivityLogDelegate,
                                           ErrorPageDelegate, ItemDelegate,
                                           KeyboardShortcutDelegate,
                                           LoadErrorDelegate,
-                                          Mv2DeprecationPanelDelegate,
+                                          Mv2DeprecationDelegate,
                                           PackDialogDelegate,
                                           SiteSettingsDelegate,
                                           ToolbarDelegate {
@@ -511,7 +511,7 @@ export class Service implements ServiceInterface {
         {isMv2DeprecationWarningDismissed: true});
   }
 
-  dismissMv2DeprecationWarningForExtension(id: string) {
+  dismissMv2DeprecationNoticeForExtension(id: string) {
     chrome.developerPrivate.updateExtensionConfiguration({
       extensionId: id,
       acknowledgeMv2DeprecationWarning: true,

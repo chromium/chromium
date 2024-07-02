@@ -276,9 +276,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
             on-click="onFindAlternativeActionClick_">
           $i18n{mv2DeprecationPanelFindAlternativeButton}
         </button>
-        <!-- TODO(crbug.com/339061151): Add "keep for now" action. This action
-          should always be visible (meaning the action menu will always have at
-          least one item.)-->
+        <button class="dropdown-item" id="keepAction"
+            on-click="onKeepActionClick_">
+          $i18n{mv2DeprecationPanelKeepForNowButton}
+        </button>
       </cr-action-menu>
     </div>
 

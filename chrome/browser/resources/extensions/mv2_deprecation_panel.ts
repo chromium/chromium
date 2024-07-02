@@ -16,13 +16,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ItemDelegate} from './item.js';
+import type {Mv2DeprecationDelegate} from './mv2_deprecation_delegate.js';
 import {getTemplate} from './mv2_deprecation_panel.html.js';
 import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
-
-export interface Mv2DeprecationPanelDelegate {
-  dismissMv2DeprecationWarning(): void;
-  dismissMv2DeprecationWarningForExtension(id: string): void;
-}
 
 export interface ExtensionsMv2DeprecationPanelElement {
   $: {
@@ -84,7 +80,8 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   extensions: chrome.developerPrivate.ExtensionInfo[];
-  delegate: ItemDelegate&Mv2DeprecationPanelDelegate;
+  delegate:
+    ItemDelegate&Mv2DeprecationDelegate;
   mv2ExperimentStage: Mv2ExperimentStage;
   showTitle: boolean;
   private headerString_: string;
@@ -227,14 +224,15 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Dismisses the warning for a given extension. It will not be shown again.
+   * Dismisses the notice for a given extension in the warning experiment stage.
+   * It will not be shown again during this stage.
    */
   private onKeepExtensionActionClick_(): void {
     assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
     this.$.actionMenu.close();
-    this.delegate.dismissMv2DeprecationWarningForExtension(
+    this.delegate.dismissMv2DeprecationNoticeForExtension(
         this.extensionWithActionMenuOpened_.id);
   }
 }
