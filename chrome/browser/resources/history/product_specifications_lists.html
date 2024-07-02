@@ -33,7 +33,7 @@
       </div>
     </div>
   </div>
-  <template is="dom-repeat" items="[[allItems_]]" as="item"
+  <template is="dom-repeat" items="[[allItems_]]" as="item" id="allItemsList"
       on-dom-change="updateFocusGrid_">
     <product-specifications-item item="[[item]]"
         on-product-spec-item-select="onItemSelected_"
@@ -68,5 +68,4 @@
       </cr-dialog>
     </template>
   </cr-lazy-render>
-
 </div>

@@ -8,7 +8,8 @@ import './shared_style.css.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
-import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {DomRepeat} from '//resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
+import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -24,6 +25,7 @@ export interface ProductSpecificationsListsElement {
   $: {
     'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
     'deleteItemDialog': CrLazyRenderElement<CrDialogElement>,
+    'allItemsList': DomRepeat,
   };
 }
 
@@ -56,10 +58,27 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   private allItems_: ProductSpecificationsSet[] = [];
   private focusGrid_: FocusGrid|null = null;
   private uuidOfOpenMenu_: Uuid|null = null;
+  private callbackRouter_: PageCallbackRouter;
+  private listenerIds_: number[] = [];
+
+  constructor() {
+    super();
+    this.callbackRouter_ = this.shoppingApi_.getCallbackRouter();
+  }
 
   override async connectedCallback() {
     super.connectedCallback();
     this.focusGrid_ = new FocusGrid();
+
+    this.listenerIds_.push(
+        this.callbackRouter_.onProductSpecificationsSetAdded.addListener(
+            (set: ProductSpecificationsSet) => this.onSetAdded_(set)),
+        this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
+            (set: ProductSpecificationsSet) => this.onSetUpdated_(set)),
+        this.callbackRouter_.onProductSpecificationsSetRemoved.addListener(
+            (uuid: Uuid) => this.onSetRemoved_(uuid)),
+    );
+
     const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
     if (!sets) {
       return;
@@ -69,6 +88,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.listenerIds_.forEach(id => this.callbackRouter_.removeListener(id));
     if (this.focusGrid_) {
       this.focusGrid_!.destroy();
     }
@@ -147,6 +167,36 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     const deleteItemDialog = this.$.deleteItemDialog.getIfExists();
     assert(deleteItemDialog);
     deleteItemDialog.close();
+  }
+
+  /**
+   * Finds index of element with given uuid.
+   * Returns -1 if not found.
+   */
+  private findIndexForSet_(uuid: Uuid): number {
+    return this.allItems_.findIndex(existingSet => {
+      return existingSet.uuid.value === uuid.value;
+    });
+  }
+
+  private onSetUpdated_(set: ProductSpecificationsSet) {
+    const setIndex = this.findIndexForSet_(set.uuid);
+    if (setIndex < 0) {
+      return;
+    }
+    this.splice('allItems_', setIndex, 1, set);
+  }
+
+  private onSetAdded_(set: ProductSpecificationsSet) {
+    this.push('allItems_', set);
+  }
+
+  private onSetRemoved_(id: Uuid) {
+    const setIndex = this.findIndexForSet_(id);
+    if (setIndex < 0) {
+      return;
+    }
+    this.splice('allItems_', setIndex, 1);
   }
 }
 

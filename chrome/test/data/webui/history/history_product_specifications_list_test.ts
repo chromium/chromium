@@ -6,6 +6,7 @@ import 'chrome://history/history.js';
 
 import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
 import type {CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
+import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -15,6 +16,9 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 suite('ProductSpecificationsListTest', () => {
   const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
   let productSpecificationsList: ProductSpecificationsListsElement;
+
+  const callbackRouter = new ShoppingPageCallbackRouter();
+  const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
   function createProductSpecsList(): ProductSpecificationsListsElement {
     productSpecificationsList =
@@ -30,12 +34,12 @@ suite('ProductSpecificationsListTest', () => {
             {
               name: 'example1',
               uuid: {value: 'ex1'},
-              urls: ['dot com 1'],
+              urls: [{url: 'dot com 1'}],
             },
             {
               name: 'example2',
               uuid: {value: 'ex2'},
-              urls: ['dot com 2a', 'dot com 2b'],
+              urls: [{url: 'dot com 2a'}, {url: 'dot com 2b'}],
             },
           ],
         }));
@@ -43,6 +47,7 @@ suite('ProductSpecificationsListTest', () => {
 
   setup(function() {
     shoppingServiceApi.reset();
+    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
@@ -59,13 +64,13 @@ suite('ProductSpecificationsListTest', () => {
     const firstItem = items[0]!.item;
     assertEquals('example1', firstItem.name);
     assertEquals('ex1', firstItem.uuid.value);
-    assertEquals('dot com 1', firstItem.urls[0]);
+    assertDeepEquals([{url: 'dot com 1'}], firstItem.urls);
 
     const secondItem = items[1]!.item;
     assertEquals('example2', secondItem.name);
     assertEquals('ex2', secondItem.uuid.value);
-    assertEquals('dot com 2a', secondItem.urls[0]);
-    assertEquals('dot com 2b', secondItem.urls[1]);
+    assertDeepEquals(
+        [{url: 'dot com 2a'}, {url: 'dot com 2b'}], secondItem.urls);
   });
 
   test('displays correct header', async () => {
@@ -232,5 +237,35 @@ suite('ProductSpecificationsListTest', () => {
     assertEquals(focusedLink, getDeepActiveElement());
     assertTrue(focusGrid.rows[1]!.isActive());
     assertFalse(focusGrid.rows[0]!.isActive());
+  });
+
+
+  test('update list in response to observers', async () => {
+    callbackRouterRemote.onProductSpecificationsSetUpdated({
+      name: 'example1',
+      urls: [{url: 'dot com 1'}, {url: 'dot com 2'}],
+      uuid: {value: 'ex1'},
+    });
+    callbackRouterRemote.onProductSpecificationsSetRemoved({value: 'ex2'});
+    callbackRouterRemote.onProductSpecificationsSetAdded({
+      name: 'example3',
+      urls: [{url: 'dot com 3'}, {url: 'dot com 4'}],
+      uuid: {value: 'ex3'},
+    });
+    await flushTasks();
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(2, items.length);
+
+    const firstItem = items[0]!.item;
+    assertEquals('example1', firstItem.name);
+    assertEquals('ex1', firstItem.uuid.value);
+    assertDeepEquals([{url: 'dot com 1'}, {url: 'dot com 2'}], firstItem.urls);
+
+    const secondItem = items[1]!.item;
+    assertEquals('example3', secondItem.name);
+    assertEquals('ex3', secondItem.uuid.value);
+    assertDeepEquals([{url: 'dot com 3'}, {url: 'dot com 4'}], secondItem.urls);
   });
 });

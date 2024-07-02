@@ -5,6 +5,7 @@
 import './app.js';
 
 export {BrowserProxyImpl as ShoppingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+export {PageCallbackRouter as ShoppingPageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 export {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 export {ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 export {MetricsProxy, MetricsProxyImpl} from 'chrome://resources/cr_components/history_clusters/metrics_proxy.js';
