@@ -17,6 +17,9 @@ export class WebCamFaceLandmarker {
   declare private intervalID_: number|null;
   private drawingUtils_: DrawingUtils|undefined;
   private weights_: Map<string, number> = new Map();
+  // TODO(b/309121742): Wire up type checking for ImageCapture.
+  //@ts-ignore
+  private imageCapture_: ImageCapture|undefined;
   constructor() {
     this.intervalID_ = null;
   }
@@ -111,7 +114,7 @@ export class WebCamFaceLandmarker {
       const options: FaceLandmarkerOptions = {
         outputFaceBlendshapes: true,
         outputFacialTransformationMatrixes: true,
-        runningMode: 'VIDEO',
+        runningMode: 'IMAGE',
         numFaces: 1,
       };
       this.faceLandmarker_!.setOptions(options);
@@ -124,11 +127,18 @@ export class WebCamFaceLandmarker {
   }
 
   private async connectToWebCam_(): Promise<void> {
-    const constraints = {video: true};
+    const constraints = {
+      video: {
+        height: WebCamFaceLandmarker.VIDEO_FRAME_DIMENSIONS,
+        width: WebCamFaceLandmarker.VIDEO_FRAME_DIMENSIONS,
+        facingMode: 'user',
+      },
+    };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const videoElement =
-        document.getElementById('cameraStream') as HTMLMediaElement;
-    videoElement.srcObject = stream;
+    const tracks = stream.getVideoTracks();
+    // TODO(b/309121742): Wire up type checking for ImageCapture.
+    //@ts-ignore
+    this.imageCapture_ = new ImageCapture(tracks[0]);
   }
 
   private startDetectingFaceLandmarks_(): void {
@@ -137,16 +147,14 @@ export class WebCamFaceLandmarker {
         WebCamFaceLandmarker.DETECT_FACE_LANDMARKS_INTERVAL_MS);
   }
 
-  private detectFaceLandmarks_(): void {
+  private async detectFaceLandmarks_(): Promise<void> {
     if (!this.faceLandmarker_) {
       return;
     }
 
-    const videoElement =
-        document.getElementById('cameraStream') as HTMLVideoElement;
+    const frame = await this.imageCapture_.grabFrame();
     const startTime = performance.now();
-    const result = this.faceLandmarker_.detectForVideo(
-        /*videoFrame=*/ videoElement, /*timestamp=*/ performance.now());
+    const result = this.faceLandmarker_.detect(/*image=*/ frame);
     const latency = performance.now() - startTime;
     // Send result to the background page for processing.
     chrome.runtime.sendMessage(
@@ -225,6 +233,13 @@ export namespace WebCamFaceLandmarker {
    * feeling.
    */
   export const DETECT_FACE_LANDMARKS_INTERVAL_MS = 60;
+
+  /**
+   * The dimensions used for the camera stream. 192 x 192 are the dimensions
+   * used by the FaceLandmarker, so frames that are larger than this must go
+   * through a downsampling process, which takes extra work.
+   */
+  export const VIDEO_FRAME_DIMENSIONS = 192;
 }
 
 declare global {
