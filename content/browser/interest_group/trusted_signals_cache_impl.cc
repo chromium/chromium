@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -133,16 +134,37 @@ struct TrustedSignalsCacheImpl::Fetch {
 };
 
 struct TrustedSignalsCacheImpl::BiddingCacheEntry {
-  explicit BiddingCacheEntry(base::optional_ref<const std::vector<std::string>>
-                                 trusted_bidding_signals_keys) {
-    AddKeys(trusted_bidding_signals_keys);
+  BiddingCacheEntry(const std::string& interest_group_name,
+                    bool is_group_by_origin,
+                    base::optional_ref<const std::vector<std::string>>
+                        trusted_bidding_signals_keys)
+      : interest_group_names{interest_group_name},
+        is_group_by_origin(is_group_by_origin) {
+    if (trusted_bidding_signals_keys.has_value()) {
+      keys.insert(trusted_bidding_signals_keys->begin(),
+                  trusted_bidding_signals_keys->end());
+    }
   }
 
-  // Returns `true` if `keys` contains all elements of
-  // `trusted_bidding_signals_keys`. Always returns `true` if
-  // `trusted_bidding_signals_keys` is empty.
-  bool ContainsKeys(base::optional_ref<const std::vector<std::string>>
-                        trusted_bidding_signals_keys) const {
+  // Returns `true` if `interest_group_names` contains `interest_group_name` and
+  // `keys` contains all elements of `trusted_bidding_signals_keys`. The latter
+  // is considered true if `trusted_bidding_signals_keys` is nullopt or empty.
+  // Expects the BiddingCacheKey to already have been checked, so ignore
+  // `interest_group_name` if `is_group_by_origin` is true, though does DCHECK
+  // if `is_group_by_origin` is true but `interest_group_names` does not contain
+  // `interest_group_name`.
+  bool ContainsInterestGroup(const std::string& interest_group_name,
+                             base::optional_ref<const std::vector<std::string>>
+                                 trusted_bidding_signals_keys) const {
+    if (is_group_by_origin) {
+      if (!interest_group_names.contains(interest_group_name)) {
+        return false;
+      }
+    } else {
+      DCHECK_EQ(1u, interest_group_names.size());
+      DCHECK(interest_group_names.contains(interest_group_name));
+    }
+
     if (trusted_bidding_signals_keys.has_value()) {
       for (const auto& key : *trusted_bidding_signals_keys) {
         if (!keys.contains(key)) {
@@ -153,14 +175,32 @@ struct TrustedSignalsCacheImpl::BiddingCacheEntry {
     return true;
   }
 
-  // If `trusted_bidding_signals_keys` is non-null, merges it into `keys`.
-  void AddKeys(base::optional_ref<const std::vector<std::string>>
-                   trusted_bidding_signals_keys) {
+  // Adds `interest_group_name` into `interest_group_names`, if
+  // `is_group_by_origin` is false, otherwise DCHECKs if it's not already the
+  // only entry in `interest_group_names`. Also, if
+  // `trusted_bidding_signals_keys` is non-null, merges it into `keys`.
+  void AddInterestGroup(const std::string& interest_group_name,
+                        base::optional_ref<const std::vector<std::string>>
+                            trusted_bidding_signals_keys) {
+    if (is_group_by_origin) {
+      interest_group_names.emplace(interest_group_name);
+    } else {
+      DCHECK_EQ(1u, interest_group_names.size());
+      DCHECK(interest_group_names.contains(interest_group_name));
+    }
+
     if (trusted_bidding_signals_keys.has_value()) {
       keys.insert(trusted_bidding_signals_keys->begin(),
                   trusted_bidding_signals_keys->end());
     }
   }
+
+  // Names of all interest groups in this CacheEntry. If this entry is
+  // a group-by-origin cluster of interest groups, with a nullopt
+  // `interest_group_name` key, this may contain multiple interest group names.
+  // Otherwise, contains the same name as BiddingCacheKey::interest_group_name
+  // and no others.
+  std::set<std::string> interest_group_names;
 
   std::set<std::string> keys;
 
@@ -172,18 +212,26 @@ struct TrustedSignalsCacheImpl::BiddingCacheEntry {
   // All CacheEntries with the same CompressionGroupData have unique
   // `partition_ids`.  Default value should never be used.
   int partition_id = 0;
+
+  // Whether this entry is a group-by-origin entry or not. Group-by-origin
+  // entries may contain multiple interest groups with group-by-origin mode
+  // enabled, all joined by the same origin, while non-group-by-origin entries
+  // may only contain a single interest group (though if re-joined from the same
+  // origin, they can theoretically contain merged different versions of the
+  // same interest group).
+  bool is_group_by_origin = false;
 };
 
 TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey() = default;
 
 TrustedSignalsCacheImpl::BiddingCacheKey::BiddingCacheKey(
     const url::Origin& owner,
-    const std::string& interest_group_name,
+    std::optional<std::string> interest_group_name,
     const GURL& trusted_signals_url,
     const url::Origin& main_frame_origin,
     const url::Origin& joining_origin,
     base::Value::Dict additional_params)
-    : interest_group_name(interest_group_name),
+    : interest_group_name(std::move(interest_group_name)),
       fetch_key(main_frame_origin,
                 SignalsType::kBidding,
                 owner,
@@ -370,15 +418,22 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     const url::Origin& main_frame_origin,
     const url::Origin& owner,
     const std::string& interest_group_name,
+    blink::mojom::InterestGroup_ExecutionMode execution_mode,
     const url::Origin& joining_origin,
     const GURL& trusted_signals_url,
     base::optional_ref<const std::vector<std::string>>
         trusted_bidding_signals_keys,
     base::Value::Dict additional_params,
     int& partition_id) {
-  BiddingCacheKey cache_key(owner, interest_group_name, trusted_signals_url,
-                            main_frame_origin, joining_origin,
-                            std::move(additional_params));
+  bool is_group_by_origin =
+      execution_mode ==
+      blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+  BiddingCacheKey cache_key(owner,
+                            is_group_by_origin
+                                ? std::nullopt
+                                : std::make_optional(interest_group_name),
+                            trusted_signals_url, main_frame_origin,
+                            joining_origin, std::move(additional_params));
 
   BiddingCacheEntryMap::iterator cache_entry_it =
       bidding_cache_entries_.find(cache_key);
@@ -393,14 +448,17 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
     // be modified.
     if (!compression_group_data->has_data() &&
         !compression_group_data->fetch()->second.fetcher) {
-      cache_entry->AddKeys(trusted_bidding_signals_keys);
+      cache_entry->AddInterestGroup(interest_group_name,
+                                    trusted_bidding_signals_keys);
       partition_id = cache_entry->partition_id;
       return scoped_refptr<Handle>(compression_group_data);
     }
 
-    // Otherwise, check if all keys (if there are any) already appear in the
-    // entry. If so, can reuse the cache entry without doing any more work.
-    if (cache_entry->ContainsKeys(trusted_bidding_signals_keys)) {
+    // Otherwise, check if the interest group name and all keys (if there are
+    // any) already appear in the entry. If so, can reuse the cache entry
+    // without doing any more work.
+    if (cache_entry->ContainsInterestGroup(interest_group_name,
+                                           trusted_bidding_signals_keys)) {
       partition_id = cache_entry->partition_id;
       return scoped_refptr<Handle>(compression_group_data);
     }
@@ -426,12 +484,13 @@ TrustedSignalsCacheImpl::RequestTrustedBiddingSignals(
 
   // Create a new cache entry, moving `cache_key` and creating a CacheEntry
   // in-place.
-  cache_entry_it =
-      bidding_cache_entries_
-          .emplace(std::piecewise_construct,
-                   std::forward_as_tuple(std::move(cache_key)),
-                   std::forward_as_tuple(trusted_bidding_signals_keys))
-          .first;
+  cache_entry_it = bidding_cache_entries_
+                       .emplace(std::piecewise_construct,
+                                std::forward_as_tuple(std::move(cache_key)),
+                                std::forward_as_tuple(
+                                    interest_group_name, is_group_by_origin,
+                                    trusted_bidding_signals_keys))
+                       .first;
 
   scoped_refptr<CompressionGroupData> compression_group_data =
       FindOrCreateCompressionGroupDataAndQueueFetch(
@@ -583,8 +642,8 @@ void TrustedSignalsCacheImpl::StartFetch(FetchMap::iterator fetch_it) {
       auto* bidding_partition = &bidding_partitions.back();
 
       bidding_partition->partition_id = cache_entry->partition_id;
-      bidding_partition->interest_group_names.insert(
-          cache_key->interest_group_name);
+      bidding_partition->interest_group_names =
+          cache_entry->interest_group_names;
       bidding_partition->keys = cache_entry->keys;
       bidding_partition->hostname =
           cache_key->fetch_key.main_frame_origin.host();

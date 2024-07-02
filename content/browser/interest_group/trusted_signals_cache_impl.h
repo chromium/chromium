@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -169,6 +170,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
       const url::Origin& main_frame_origin,
       const url::Origin& owner,
       const std::string& interest_group_name,
+      blink::mojom::InterestGroup_ExecutionMode execution_mode,
       const url::Origin& joining_origin,
       const GURL& trusted_signals_url,
       base::optional_ref<const std::vector<std::string>>
@@ -266,13 +268,19 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   // entry cannot be reused, in which case a new Entry is used and the old one
   // is thrown out (though the CompressionGroupData will remain valid). This can
   // happen in the case of cache expiration or the Entry not having the
-  // necessary `trusted_bidding_signals_keys` after the corresponding network
-  // request has been sent over the wire.
+  // necessary `trusted_bidding_signals_keys` or `interest_group_name` after the
+  // corresponding network request has been sent over the wire.
   struct BiddingCacheKey {
     BiddingCacheKey();
     BiddingCacheKey(BiddingCacheKey&&);
+
+    // `interest_group_name` should be nullopt in the case of the
+    // group-by-origin execution mode, in which case all such groups will be
+    // pooled together, if the other values match, and the interest group names
+    // will be stored as a value in the BiddingCacheEntry, rather than as part
+    // of the key.
     BiddingCacheKey(const url::Origin& owner,
-                    const std::string& interest_group_name,
+                    std::optional<std::string> interest_group_name,
                     const GURL& trusted_signals_url,
                     const url::Origin& main_frame_origin,
                     const url::Origin& joining_origin,
@@ -287,10 +295,10 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
     // Values where mismatches are expected to be more likely are listed
     // earlier.
 
-    // TODO(https://crbug.com/333445540): Switch this to an optional, and in the
-    // case of group-by-origin mode, make it null, and allow adding trusted
-    // bidding signals keys while network requests are still pending.
-    std::string interest_group_name;
+    // The interest group name, or nullopt, in the case of the group-by-origin
+    // execution mode, as all such interest groups can be fetched together, in a
+    // single partition.
+    std::optional<std::string> interest_group_name;
 
     FetchKey fetch_key;
     url::Origin joining_origin;

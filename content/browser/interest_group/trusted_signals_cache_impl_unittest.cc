@@ -24,6 +24,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -47,7 +48,15 @@ const char kRequestCancelledError[] = "Request cancelled";
 struct BiddingParams {
   url::Origin main_frame_origin;
   url::Origin bidder;
-  std::string interest_group_name;
+
+  // Actual requests may only have a single interest group, so only one name.
+  // This is a set because this struct is also used to validate fetch
+  // parameters, which may include a set of interest groups in the
+  // group-by-origin case.
+  std::set<std::string> interest_group_names;
+
+  blink::mojom::InterestGroup_ExecutionMode execution_mode =
+      blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
   url::Origin joining_origin;
   GURL trusted_bidding_signals_url;
   std::optional<std::vector<std::string>> trusted_bidding_signals_keys;
@@ -184,7 +193,7 @@ void ValidateFetchParamsForPartition(
     int expected_partition_id) {
   EXPECT_EQ(partition.hostname, params.main_frame_origin.host());
   EXPECT_THAT(partition.interest_group_names,
-              testing::ElementsAre(params.interest_group_name));
+              testing::ElementsAreArray(params.interest_group_names));
   if (!params.trusted_bidding_signals_keys) {
     EXPECT_THAT(partition.keys, testing::ElementsAre());
   } else {
@@ -441,7 +450,9 @@ class TrustedSignalsCacheTest : public testing::Test {
     BiddingParams out;
     out.main_frame_origin = kMainFrameOrigin;
     out.bidder = kBidder;
-    out.interest_group_name = kInterestGroupName;
+    out.interest_group_names = {kInterestGroupName};
+    out.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kCompatibilityMode;
     out.joining_origin = kJoiningOrigin;
     out.trusted_bidding_signals_url = kTrustedBiddingSignalsUrl;
     out.trusted_bidding_signals_keys = {{"key1", "key2"}};
@@ -474,7 +485,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different interest group names";
     out.back().request_relation = RequestRelation::kDifferentPartitions;
-    out.back().bidding_params2.interest_group_name = "other interest group";
+    out.back().bidding_params2.interest_group_names = {"other interest group"};
 
     out.emplace_back(CreateDefaultTestCase());
     out.back().description = "Different joining origins";
@@ -522,6 +533,90 @@ class TrustedSignalsCacheTest : public testing::Test {
     out.back().request_relation = RequestRelation::kDifferentPartitions;
     out.back().bidding_params2.additional_params.Set("additional", "param");
 
+    // Group-by-origin tests.
+
+    // Same interest group name is unlikely when other fields don't match, but
+    // best to test it.
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: First request group-by-origin";
+    out.back().request_relation = RequestRelation::kDifferentPartitions;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+
+    // Same interest group name is unlikely when other fields don't match, but
+    // best to test it.
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: Second request group-by-origin";
+    out.back().request_relation = RequestRelation::kDifferentPartitions;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: Different interest group names";
+    out.back().request_relation = RequestRelation::kSamePartitionModified;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.interest_group_names = {"other interest group"};
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: Different keys.";
+    out.back().request_relation = RequestRelation::kSamePartitionModified;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.trusted_bidding_signals_keys = {{"other key"}};
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description =
+        "Group-by-origin: Different keys and interest group names.";
+    out.back().request_relation = RequestRelation::kSamePartitionModified;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.interest_group_names = {"other interest group"};
+    out.back().bidding_params2.trusted_bidding_signals_keys = {{"other key"}};
+
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: Different main frame origins";
+    out.back().request_relation = RequestRelation::kDifferentFetches;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.main_frame_origin =
+        url::Origin::Create(GURL("https://other.origin.test/"));
+
+    // It would be unusual to have the same IG with different joining origins,
+    // since one would overwrite the other, but if it does happen, the requests
+    // should use different compression groups.
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description = "Group-by-origin: Different joining origin.";
+    out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.joining_origin =
+        url::Origin::Create(GURL("https://other.joining.origin.test"));
+
+    // Like above test, but the more common case of different IGs with different
+    // joining origins.
+    out.emplace_back(CreateDefaultTestCase());
+    out.back().description =
+        "Group-by-origin: Different joining origin, different IGs.";
+    out.back().request_relation = RequestRelation::kDifferentCompressionGroups;
+    out.back().bidding_params1.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.execution_mode =
+        blink::mojom::InterestGroup_ExecutionMode::kGroupedByOriginMode;
+    out.back().bidding_params2.interest_group_names = {"group2"};
+    out.back().bidding_params2.joining_origin =
+        url::Origin::Create(GURL("https://other.joining.origin.test"));
+
     return out;
   }
 
@@ -531,13 +626,12 @@ class TrustedSignalsCacheTest : public testing::Test {
   BiddingParams CreateMergedBiddingParams(
       const BiddingParams& bidding_params1,
       const BiddingParams& bidding_params2) {
-    // In order to merge two sets of params, only `trusted_bidding_signals_keys`
-    // may be different.
+    // In order to merge two sets of params, only `interest_group_names` and
+    // `trusted_bidding_signals_keys` may be different.
     EXPECT_EQ(bidding_params1.main_frame_origin,
               bidding_params2.main_frame_origin);
     EXPECT_EQ(bidding_params1.bidder, bidding_params2.bidder);
-    EXPECT_EQ(bidding_params1.interest_group_name,
-              bidding_params2.interest_group_name);
+    EXPECT_EQ(bidding_params1.execution_mode, bidding_params2.execution_mode);
     EXPECT_EQ(bidding_params1.joining_origin, bidding_params2.joining_origin);
     EXPECT_EQ(bidding_params1.trusted_bidding_signals_url,
               bidding_params2.trusted_bidding_signals_url);
@@ -547,11 +641,16 @@ class TrustedSignalsCacheTest : public testing::Test {
     BiddingParams merged_bidding_params{
         bidding_params1.main_frame_origin,
         bidding_params1.bidder,
-        bidding_params1.interest_group_name,
+        bidding_params1.interest_group_names,
+        bidding_params1.execution_mode,
         bidding_params1.joining_origin,
         bidding_params1.trusted_bidding_signals_url,
         bidding_params1.trusted_bidding_signals_keys,
         bidding_params1.additional_params.Clone()};
+
+    merged_bidding_params.interest_group_names.insert(
+        bidding_params2.interest_group_names.begin(),
+        bidding_params2.interest_group_names.end());
     if (bidding_params2.trusted_bidding_signals_keys) {
       if (!merged_bidding_params.trusted_bidding_signals_keys) {
         merged_bidding_params.trusted_bidding_signals_keys.emplace();
@@ -572,9 +671,13 @@ class TrustedSignalsCacheTest : public testing::Test {
   std::pair<scoped_refptr<TestTrustedSignalsCache::Handle>, int>
   RequestTrustedBiddingSignals(const BiddingParams& bidding_params) {
     int partition_id = -1;
+    // There should only be a single name for each request. It's a std::set
+    // solely for the ValidateFetchParams family of methods.
+    CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
         bidding_params.main_frame_origin, bidding_params.bidder,
-        bidding_params.interest_group_name, bidding_params.joining_origin,
+        *bidding_params.interest_group_names.begin(),
+        bidding_params.execution_mode, bidding_params.joining_origin,
         bidding_params.trusted_bidding_signals_url,
         bidding_params.trusted_bidding_signals_keys,
         bidding_params.additional_params.Clone(), partition_id);
