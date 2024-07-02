@@ -133,7 +133,7 @@ def _CheckModificationOfFormAutofillUtil(input_api, output_api):
   if (IsComponentsAutofillFileAffected(input_api, "fill.ts") !=
       IsComponentsAutofillFileAffected(input_api, "form_autofill_util.cc")):
     return [
-        output_api.PresubmitPromptWarning(
+        output_api.PresubmitNotifyResult(
             'Form extraction/label inference has a separate iOS ' +
             'implementation in components/autofill/ios/form_util/resources/' +
             'fill.ts. Try to keep it in sync with form_autofill_util.cc.')
