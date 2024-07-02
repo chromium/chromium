@@ -722,6 +722,7 @@ src/webgpu/shader/validation/decl/let.spec.ts
 src/webgpu/shader/validation/decl/override.spec.ts
 src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/validation/decl/var.spec.ts
+src/webgpu/shader/validation/expression/early_evaluation.spec.ts
 src/webgpu/shader/validation/expression/overload_resolution.spec.ts
 src/webgpu/shader/validation/expression/precedence.spec.ts
 src/webgpu/shader/validation/expression/access/array.spec.ts
