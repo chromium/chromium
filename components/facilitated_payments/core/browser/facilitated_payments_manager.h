@@ -132,6 +132,10 @@ class FacilitatedPaymentsManager {
                            GetClientTokenHistogram_ClientTokenNotEmpty);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            GetClientTokenHistogram_ClientTokenEmpty);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PixPaymentPromptAccepted_ProgressSceenShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PixPaymentPromptRejected_ProgressSceenNotShown);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm);

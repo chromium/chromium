@@ -269,6 +269,8 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
 
+  client_->ShowProgressScreen();
+
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
   get_client_token_loading_start_time_ = base::TimeTicks::Now();
   GetApiClient()->GetClientToken(

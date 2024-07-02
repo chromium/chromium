@@ -154,6 +154,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (base::span<autofill::BankAccount> pix_account_suggestions,
                base::OnceCallback<void(bool, int64_t)>),
               (override));
+  MOCK_METHOD(void, ShowProgressScreen, (), (override));
 };
 
 class MockFacilitatedPaymentsNetworkInterface
@@ -997,6 +998,22 @@ TEST_F(FacilitatedPaymentsManagerTest,
       "FacilitatedPayments.Pix.GetClientToken.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       PixPaymentPromptAccepted_ProgressSceenShown) {
+  EXPECT_CALL(*client_, ShowProgressScreen());
+
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/-1);
+}
+
+TEST_F(FacilitatedPaymentsManagerTest,
+       PixPaymentPromptRejected_ProgressSceenNotShown) {
+  EXPECT_CALL(*client_, ShowProgressScreen()).Times(0);
+
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
+                                     /*selected_instrument_id=*/-1);
 }
 
 TEST_F(FacilitatedPaymentsManagerTest,
