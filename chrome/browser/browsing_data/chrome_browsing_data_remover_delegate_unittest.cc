@@ -784,14 +784,32 @@ class RemovePermissionPromptCountsTest {
   raw_ptr<permissions::PermissionDecisionAutoBlocker> autoblocker_;
 };
 
+namespace {
+
+class TestTpcdManagerDelegate : public tpcd::metadata::Manager::Delegate {
+ public:
+  explicit TestTpcdManagerDelegate(ScopedTestingLocalState& local_state)
+      : local_state_(local_state) {}
+
+  void SetTpcdMetadataGrants(const ContentSettingsForOneType& grants) override {
+  }
+  PrefService& GetLocalState() override { return *local_state_->Get(); }
+
+ private:
+  const raw_ref<ScopedTestingLocalState> local_state_;
+};
+
+}  // namespace
+
 class RemoveTpcdMetadataCohortsTester {
  public:
-  explicit RemoveTpcdMetadataCohortsTester(TestingProfile* profile) {
+  explicit RemoveTpcdMetadataCohortsTester(ScopedTestingLocalState& local_state,
+                                           TestingProfile* profile)
+      : test_delegate_(local_state) {
     det_generator_ = new tpcd::metadata::DeterministicGenerator();
-    tpcd::metadata::RegisterLocalStatePrefs(local_state_.registry());
     manager_ = tpcd::metadata::ManagerFactory::GetForProfile(profile);
     manager_->SetRandGeneratorForTesting(det_generator_);
-    manager_->SetPrefServiceForTesting(&local_state_);
+    manager_->set_delegate_for_testing(test_delegate_);
   }
   ~RemoveTpcdMetadataCohortsTester() {
     det_generator_ = nullptr;
@@ -814,9 +832,9 @@ class RemoveTpcdMetadataCohortsTester {
   }
 
  private:
+  TestTpcdManagerDelegate test_delegate_;
   raw_ptr<tpcd::metadata::Manager> manager_;
   raw_ptr<tpcd::metadata::DeterministicGenerator> det_generator_;
-  TestingPrefServiceSimple local_state_;
 };
 
 // Custom matcher to test the equivalence of two URL filters. Since those are
@@ -1206,7 +1224,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     // check if a feature is enabled, to avoid tsan data races.
     CHECK(temp_dir_.CreateUniqueTempDir());
     profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
+        TestingBrowserProcess::GetGlobal(), &local_state_);
     CHECK(profile_manager_->SetUp(temp_dir_.GetPath()));
     profile_ = profile_manager_->CreateTestingProfile("test_profile",
                                                       GetTestingFactories());
@@ -1271,8 +1289,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
     background_tracing_manager_.reset();
     base::RunLoop().RunUntilIdle();
-
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   virtual TestingProfile::TestingFactories GetTestingFactories() {
@@ -1428,6 +1444,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     return &task_environment_;
   }
 
+  ScopedTestingLocalState& local_state() { return local_state_; }
+
  protected:
   // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
   // tsan flakes caused by other tasks running while |feature_list_| is
@@ -1447,6 +1465,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;  // Owned by `profile_manager_`.
@@ -4605,7 +4624,7 @@ class ChromeBrowsingDataRemoverDelegateTpcdMetadataTest
 };
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetAllCohorts) {
-  auto tester = RemoveTpcdMetadataCohortsTester(GetProfile());
+  auto tester = RemoveTpcdMetadataCohortsTester(local_state(), GetProfile());
 
   const std::string primary_pattern_spec = "https://example1.com";
   const std::string primary_pattern_spec_2 = "https://example2.com";
@@ -4680,7 +4699,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest, ResetAllCohorts) {
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest,
        ResetAllCohort_PreserveSome) {
-  auto tester = RemoveTpcdMetadataCohortsTester(GetProfile());
+  auto tester = RemoveTpcdMetadataCohortsTester(local_state(), GetProfile());
 
   const std::string primary_pattern_spec = "https://example1.com";
   const std::string primary_pattern_spec_2 = "https://example2.com";

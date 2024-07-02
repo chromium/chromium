@@ -19,11 +19,6 @@
 #include "net/base/features.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-// GrantsSyncCallback is used to update downstream isolated services with a
-// fresh copy to the grants.
-using GrantsSyncCallback =
-    base::RepeatingCallback<void(const ContentSettingsForOneType&)>;
-
 using PatternSourcePredicate = base::RepeatingCallback<bool(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern)>;
@@ -40,12 +35,19 @@ namespace tpcd::metadata {
 // and will affect cookie access decisions.
 class Manager : public common::ManagerBase, public Parser::Observer {
  public:
-  static Manager* GetInstance(Parser* parser,
-                              GrantsSyncCallback callback,
-                              PrefService* local_state = nullptr);
-  Manager(Parser* parser,
-          GrantsSyncCallback callback,
-          PrefService* local_state);
+  class Delegate {
+   public:
+    virtual ~Delegate() {}
+
+    // Used to update downstream isolated services with a fresh copy to the
+    // grants.
+    virtual void SetTpcdMetadataGrants(
+        const ContentSettingsForOneType& grants) = 0;
+    virtual PrefService& GetLocalState() = 0;
+  };
+
+  static Manager* GetInstance(Parser* parser, Delegate& delegate);
+  Manager(Parser* parser, Delegate& delegate);
   virtual ~Manager();
 
   Manager(const Manager&) = delete;
@@ -89,11 +91,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
     rand_generator_.reset(generator);
   }
 
-  // TODO(b/333529481): This shouldn't be needed for unittest relying i on the
-  // "forever" instance `this` after restructuring.
-  void SetPrefServiceForTesting(PrefService* local_state) {
-    local_state_ = local_state;
-  }
+  void set_delegate_for_testing(Delegate& delegate) { delegate_ = delegate; }
 
  private:
   friend base::NoDestructor<Manager>;
@@ -111,15 +109,11 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   void OnMetadataReady() override;
 
   raw_ptr<Parser> parser_;
-  GrantsSyncCallback grants_sync_callback_;
+  raw_ref<Delegate> delegate_;
   mutable base::Lock grants_lock_;
 
   content_settings::HostIndexedContentSettings grants_ GUARDED_BY(grants_lock_);
   std::unique_ptr<RandGenerator> rand_generator_;
-
-  // TODO(b/333529481): Get rid of this dangling pointer during re-architecture
-  // of the code
-  raw_ptr<PrefService, DisableDanglingPtrDetection> local_state_;
 };
 
 namespace helpers {

@@ -15,6 +15,22 @@
 
 namespace tpcd::metadata {
 
+namespace {
+
+// Intentionally stateless to prevent memory safety issues in tests.
+class ManagerDelegateImpl : public Manager::Delegate {
+ public:
+  void SetTpcdMetadataGrants(const ContentSettingsForOneType& grants) override {
+    content::GetNetworkService()->SetTpcdMetadataGrants(grants);
+  }
+
+  PrefService& GetLocalState() override {
+    return *g_browser_process->local_state();
+  }
+};
+
+}  // namespace
+
 // static
 Manager* ManagerFactory::GetForProfile(Profile* profile) {
   if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
@@ -25,13 +41,9 @@ Manager* ManagerFactory::GetForProfile(Profile* profile) {
     return nullptr;
   }
 
-  auto sync_network_service = [](const ContentSettingsForOneType& grants) {
-    content::GetNetworkService()->SetTpcdMetadataGrants(grants);
-  };
+  static base::NoDestructor<ManagerDelegateImpl> delegate;
 
-  return tpcd::metadata::Manager::GetInstance(
-      Parser::GetInstance(), base::BindRepeating(sync_network_service),
-      g_browser_process->local_state());
+  return tpcd::metadata::Manager::GetInstance(Parser::GetInstance(), *delegate);
 }
 
 }  // namespace tpcd::metadata

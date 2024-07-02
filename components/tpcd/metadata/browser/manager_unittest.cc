@@ -33,6 +33,36 @@
 
 namespace tpcd::metadata {
 
+namespace {
+
+class TestTpcdManagerDelegate : public Manager::Delegate {
+ public:
+  TestTpcdManagerDelegate() {
+    RegisterLocalStatePrefs(local_state_.registry());
+  }
+
+  void SetTpcdMetadataGrants(const ContentSettingsForOneType& grants) override {
+    if (grants_callback_) {
+      grants_callback_.Run(grants);
+    }
+  }
+
+  PrefService& GetLocalState() override { return local_state_; }
+
+  void set_grants_callback(
+      base::RepeatingCallback<void(const ContentSettingsForOneType&)>
+          grants_callback) {
+    grants_callback_ = std::move(grants_callback);
+  }
+
+ private:
+  base::RepeatingCallback<void(const ContentSettingsForOneType&)>
+      grants_callback_;
+  TestingPrefServiceSimple local_state_;
+};
+
+}  // namespace
+
 class ManagerTest : public testing::Test,
                     public testing::WithParamInterface<
                         std::tuple</*kTpcdMetadataGrants*/ bool,
@@ -53,16 +83,14 @@ class ManagerTest : public testing::Test,
     return parser_.get();
   }
 
-  Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
+  Manager* GetManager() {
     if (!manager_) {
-      manager_ = std::make_unique<Manager>(GetParser(), callback, nullptr);
+      manager_ = std::make_unique<Manager>(GetParser(), test_delegate_);
     }
     return manager_.get();
   }
 
  protected:
-  base::test::TaskEnvironment env_;
-
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -90,9 +118,10 @@ class ManagerTest : public testing::Test,
     delete parser_.release();
   }
 
- private:
+  base::test::TaskEnvironment env_;
   base::test::ScopedFeatureList scoped_list_;
   std::unique_ptr<Parser> parser_;
+  TestTpcdManagerDelegate test_delegate_;
   std::unique_ptr<Manager> manager_;
 };
 
@@ -187,7 +216,9 @@ TEST_P(ManagerTest, FireSyncCallback) {
                 content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
     }
   };
-  Manager* manager = GetManager(base::BindLambdaForTesting(dummy_callback));
+  Manager* manager = GetManager();
+  test_delegate_.set_grants_callback(
+      base::BindLambdaForTesting(dummy_callback));
 
   Metadata metadata;
   helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
@@ -217,9 +248,9 @@ class ManagerCohortsTest : public testing::Test,
     return parser_.get();
   }
 
-  Manager* GetManager(GrantsSyncCallback callback = base::NullCallback()) {
+  Manager* GetManager() {
     if (!manager_) {
-      manager_ = std::make_unique<Manager>(GetParser(), callback, nullptr);
+      manager_ = std::make_unique<Manager>(GetParser(), test_delegate_);
     }
     return manager_.get();
   }
@@ -276,6 +307,7 @@ class ManagerCohortsTest : public testing::Test,
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Parser> parser_;
+  TestTpcdManagerDelegate test_delegate_;
   std::unique_ptr<Manager> manager_;
 };
 
@@ -471,15 +503,14 @@ class ManagerPrefsTest : public testing::Test {
 
   Manager* GetManager() {
     if (!manager_) {
-      manager_ = std::make_unique<Manager>(GetParser(), base::NullCallback(),
-                                           &local_state_);
+      manager_ = std::make_unique<Manager>(GetParser(), test_delegate_);
     }
     return manager_.get();
   }
 
   DeterministicGenerator* GetDetGenerator() { return det_generator_; }
 
-  PrefService* GetLocalState() { return &local_state_; }
+  PrefService* GetLocalState() { return &test_delegate_.GetLocalState(); }
 
  protected:
   base::test::TaskEnvironment env_;
@@ -488,8 +519,6 @@ class ManagerPrefsTest : public testing::Test {
     scoped_list_.InitWithFeatures({net::features::kTpcdMetadataGrants,
                                    net::features::kTpcdMetadataStageControl},
                                   {});
-
-    RegisterLocalStatePrefs(local_state_.registry());
   }
 
   // Guarantees proper tear down of dependencies.
@@ -503,8 +532,8 @@ class ManagerPrefsTest : public testing::Test {
   base::test::ScopedFeatureList scoped_list_;
   raw_ptr<DeterministicGenerator> det_generator_;
   std::unique_ptr<Parser> parser_;
+  TestTpcdManagerDelegate test_delegate_;
   std::unique_ptr<Manager> manager_;
-  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(ManagerPrefsTest, PersistedCohorts) {
