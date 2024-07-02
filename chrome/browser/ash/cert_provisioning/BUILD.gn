@@ -44,6 +44,8 @@ static_library("cert_provisioning") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",
@@ -82,6 +84,10 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys:test_support",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/platform_keys/key_permissions:test_support",
     "//chrome/test:test_support",
     "//components/invalidation/impl:test_support",
     "//net:test_support",
