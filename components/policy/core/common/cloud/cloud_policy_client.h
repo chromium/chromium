@@ -463,6 +463,11 @@ class POLICY_EXPORT CloudPolicyClient {
       enterprise_management::ClientCertificateProvisioningRequest request,
       ClientCertProvisioningRequestCallback callback);
 
+  // Sends a request to store FM registration token used for invalidations.
+  virtual void UploadFmRegistrationToken(
+      enterprise_management::FmRegistrationTokenUploadRequest request,
+      ResultCallback callback);
+
   // Used the update the current service account email associated with this
   // policy client and notify observers.
   void UpdateServiceAccount(const std::string& account_email);
@@ -707,6 +712,10 @@ class POLICY_EXPORT CloudPolicyClient {
   void OnClientCertProvisioningRequestResponse(
       ClientCertProvisioningRequestCallback callback,
       DMServerJobResult result);
+
+  // Callback for `UploadFmRegistrationToken` request.
+  void OnUploadFmRegistrationTokenResponse(ResultCallback callback,
+                                           DMServerJobResult result);
 
   // Helper to remove a job from request_jobs_.
   void RemoveJob(const DeviceManagementService::Job* job);

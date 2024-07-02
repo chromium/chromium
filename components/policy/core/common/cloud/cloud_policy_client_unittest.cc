@@ -435,6 +435,13 @@ em::DeviceManagementResponse GetRobotAuthCodeFetchResponse() {
   return robot_auth_code_fetch_response;
 }
 
+em::DeviceManagementResponse GetFmRegistrationTokenUploadResponse() {
+  em::DeviceManagementResponse fm_registration_token_upload_response;
+  fm_registration_token_upload_response
+      .mutable_fm_registration_token_upload_response();
+  return fm_registration_token_upload_response;
+}
+
 em::DeviceManagementResponse GetEmptyResponse() {
   return em::DeviceManagementResponse();
 }
@@ -3035,6 +3042,39 @@ TEST_F(CloudPolicyClientTest,
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+}
+
+TEST_F(CloudPolicyClientTest, UploadFmRegistrationTokenRequest) {
+  RegisterClient();
+
+  em::FmRegistrationTokenUploadRequest request;
+  request.set_token("fake token");
+  request.set_protocol_version(101);
+  request.set_token_type(em::FmRegistrationTokenUploadRequest::USER);
+  request.set_expiration_timestamp_ms(
+      (base::Time::Now() + base::Minutes(5)).InMillisecondsSinceUnixEpoch());
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_fm_registration_token_upload_request()->CopyFrom(
+      request);
+
+  ExpectAndCaptureJob(GetFmRegistrationTokenUploadResponse());
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
+
+  client_->UploadFmRegistrationToken(std::move(request), std::move(callback));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::
+                TYPE_UPLOAD_FM_REGISTRATION_TOKEN,
+            job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
 struct MockClientCertProvisioningRequestCallbackObserver {

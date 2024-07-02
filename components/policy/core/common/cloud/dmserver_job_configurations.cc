@@ -106,6 +106,9 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueRequestUploadEuiccInfo;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
       return dm_protocol::kValueRequestChromeProfileReport;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
+      return dm_protocol::kValueRequestFmRegistrationTokenUpload;
   }
   NOTREACHED_IN_MIGRATION() << "Invalid job type " << type;
   return "";

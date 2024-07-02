@@ -1154,6 +1154,48 @@ void CloudPolicyClient::ClientCertProvisioningRequest(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
+void CloudPolicyClient::UploadFmRegistrationToken(
+    enterprise_management::FmRegistrationTokenUploadRequest request,
+    ResultCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_registered()) {
+    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
+    return;
+  }
+
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::
+          TYPE_UPLOAD_FM_REGISTRATION_TOKEN,
+      this);
+  params.callback =
+      base::BindOnce(&CloudPolicyClient::OnUploadFmRegistrationTokenResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  std::unique_ptr<RegistrationJobConfiguration> config =
+      std::make_unique<RegistrationJobConfiguration>(std::move(params));
+
+  *config->request()->mutable_fm_registration_token_upload_request() =
+      std::move(request);
+
+  unique_request_job_ = service_->CreateJob(std::move(config));
+}
+
+void CloudPolicyClient::OnUploadFmRegistrationTokenResponse(
+    ResultCallback callback,
+    DMServerJobResult result) {
+  last_dm_status_ = result.dm_status;
+  if (result.dm_status != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  } else if (result.dm_status == DM_STATUS_SUCCESS &&
+             !result.response.has_fm_registration_token_upload_response()) {
+    LOG_POLICY(WARNING, REMOTE_COMMANDS)
+        << "Empty fm registration token upload response.";
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
+  }
+  std::move(callback).Run(CloudPolicyClient::Result(result.dm_status));
+}
+
 void CloudPolicyClient::UpdateServiceAccount(const std::string& account_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

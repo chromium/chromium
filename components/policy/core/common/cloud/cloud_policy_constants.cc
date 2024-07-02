@@ -78,6 +78,8 @@ const char kValueRequestUploadPolicyValidationReport[] =
 const char kValueRequestPublicSamlUser[] = "public_saml_user_request";
 const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
 const char kValueRequestChromeProfileReport[] = "chrome_profile_report";
+const char kValueRequestFmRegistrationTokenUpload[] =
+    "fm_registration_token_upload";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
