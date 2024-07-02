@@ -792,6 +792,68 @@ template("single_apple_toolchain") {
   }
 }
 
+# Make an additional toolchain which is used for making tools that are run
+# on the host machine as part of the build process (such as proc macros
+# and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+# comes with the compiler, so it doesn't have to wait for the stdlib to be
+# built before building other stuff. And this ensures its proc macro
+# outputs have the right ABI to be loaded by the compiler, and it can be
+# used to compile build scripts that are part of the stdlib that is built
+# for the default toolchain.
+template("apple_rust_host_build_tools_toolchain") {
+  single_apple_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "toolchain_args" ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_for_rust_host_build_tools = true
+
+      # The host build tools are static release builds to make the Chromium
+      # build faster. They do not need PGO etc, so no official builds.
+      is_debug = false
+      is_component_build = false
+      is_official_build = false
+      use_clang_coverage = false
+      use_sanitizer_coverage = false
+      generate_linker_map = false
+      use_thin_lto = false
+    }
+  }
+}
+
+# If PartitionAlloc is part of the build (even as a transitive dependency), then
+# it replaces the system allocator. If this toolchain is used, that will be
+# overridden and the system allocator will be used regardless. This is important
+# in some third-party binaries outside of Chrome.
+template("apple_system_allocator_toolchain") {
+  single_apple_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "toolchain_args" ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_allows_use_partition_alloc_as_malloc = false
+
+      # Disable component build so that we can copy the exes to the
+      # root_build_dir and support the default_toolchain redirection on Windows.
+      # See also the comment in //build/symlink.gni.
+      is_component_build = false
+
+      # Only one toolchain can be configured with MSAN support with our current
+      # GN setup, or they all try to make the instrumented libraries and
+      # collide.
+      is_msan = false
+    }
+  }
+}
+
 # Makes an Apple toolchain for the target, and an equivalent toolchain with the
 # prebuilt Rust stdlib for building proc macros (and other for-build-use
 # artifacts).
@@ -799,51 +861,28 @@ template("apple_toolchain") {
   single_apple_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
            "Toolchains must declare toolchain_args")
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "visibility",
-                             "test_only",
-                           ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
 
     # No need to forward visibility and test_only as they apply to targets not
     # toolchains, but presubmit checks require that we explicitly exclude them
   }
 
-  if (enable_rust && current_toolchain == default_toolchain) {
-    # Make an additional toolchain which is used for making tools that are run
-    # on the host machine as part of the build process (such as proc macros
-    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
-    # comes with the compiler, so it doesn't have to wait for the stdlib to be
-    # built before building other stuff. And this ensures its proc macro
-    # outputs have the right ABI to be loaded by the compiler, and it can be
-    # used to compile build scripts that are part of the stdlib that is built
-    # for the default toolchain.
-    single_apple_toolchain("${target_name}_for_rust_host_build_tools") {
-      assert(defined(invoker.toolchain_args),
-             "Toolchains must declare toolchain_args")
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "toolchain_args",
-                               "visibility",
-                               "test_only",
-                             ])
-      toolchain_args = {
-        # Populate toolchain args from the invoker.
-        forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_for_rust_host_build_tools = true
+  apple_rust_host_build_tools_toolchain(
+      "${target_name}_for_rust_host_build_tools") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+  }
 
-        # The host build tools are static release builds to make the Chromium
-        # build faster. They do not need PGO etc, so no official builds.
-        is_debug = false
-        is_component_build = false
-        is_official_build = false
-        use_clang_coverage = false
-        use_sanitizer_coverage = false
-        generate_linker_map = false
-        use_thin_lto = false
-      }
-    }
+  apple_system_allocator_toolchain(
+      "${target_name}_host_with_system_allocator") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+  }
+  apple_system_allocator_toolchain("${target_name}_with_system_allocator") {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 }
