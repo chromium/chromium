@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/password_manager/ios/password_generation_provider.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
@@ -94,6 +95,11 @@ class AutofillBottomSheetTabHelper
   // Sets the bottom sheet CommandDispatcher.
   void SetAutofillBottomSheetHandler(id<AutofillCommands> commands_handler);
 
+  // Sets the password generation provider used for proactive password
+  // generation.
+  void SetPasswordGenerationProvider(
+      id<PasswordGenerationProvider> generation_provider);
+
   // Prepare bottom sheet using data from the password form prediction.
   void AttachPasswordListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
@@ -176,6 +182,13 @@ class AutofillBottomSheetTabHelper
 
   // Send command to show the Payments Bottom Sheet.
   void ShowPaymentsBottomSheet(const autofill::FormActivityParams params);
+
+  // Shows the password generation suggestion view controller.
+  void ShowProactivePasswordGenerationBottomSheet(
+      const autofill::FormActivityParams& params);
+
+  // Password generation provider used to trigger proactive password generation
+  id<PasswordGenerationProvider> generation_provider_;
 
   // Handler used to request showing the password bottom sheet.
   __weak id<AutofillCommands> commands_handler_;

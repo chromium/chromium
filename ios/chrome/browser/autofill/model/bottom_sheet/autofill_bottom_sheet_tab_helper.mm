@@ -97,6 +97,11 @@ void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
   commands_handler_ = commands_handler;
 }
 
+void AutofillBottomSheetTabHelper::SetPasswordGenerationProvider(
+    id<PasswordGenerationProvider> generation_provider) {
+  generation_provider_ = generation_provider;
+}
+
 void AutofillBottomSheetTabHelper::AddObserver(
     autofill::AutofillBottomSheetObserver* observer) {
   observers_.AddObserver(observer);
@@ -140,6 +145,26 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
+}
+
+void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
+    const autofill::FormActivityParams& params) {
+  if (!web_state_) {
+    return;
+  }
+
+  web::WebFrame* frame =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state_)
+          ->GetFrameWithId(params.frame_id);
+  if (!frame) {
+    return;
+  }
+  [generation_provider_
+      triggerPasswordGenerationForFormId:params.form_renderer_id
+                         fieldIdentifier:params.field_renderer_id
+                                 inFrame:frame
+                             asProactive:YES];
 }
 
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(

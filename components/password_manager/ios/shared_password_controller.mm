@@ -191,6 +191,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   // Delegate for the PasswordAutofillAgent that receives information from
   // Autofill.
   std::unique_ptr<PasswordAutofillAgentDelegateImpl> _agentDelegate;
+
+  // Tracks whether the potential generated password has been proactively shown
+  // or through the keyboard accessory
+  BOOL _isProactivePasswordGeneration;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -215,9 +219,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     _webState->AddObserver(_webStateObserverBridge.get());
     _webFramesManagerObserverBridge =
         std::make_unique<web::WebFramesManagerObserverBridge>(self);
-    web::WebFramesManager* framesManager =
-        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
+    web::WebFramesManager* framesManager = [self webFramesManager];
     framesManager->AddObserver(_webFramesManagerObserverBridge.get());
     _autofillManagerObserverBridge =
         std::make_unique<AutofillManagerObserverBridge>(self);
@@ -233,6 +235,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     _suggestionHelper.delegate = self;
     _passwordManager = passwordManager;
     _driverHelper = driverHelper;
+    _isProactivePasswordGeneration = NO;
   }
   return self;
 }
@@ -251,14 +254,26 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 #pragma mark - PasswordGenerationProvider
 
 - (void)triggerPasswordGeneration {
-  if (!_lastFocusedFieldIdentifier) {
+  [self triggerPasswordGenerationForFormId:_lastFocusedFormIdentifier
+                           fieldIdentifier:_lastFocusedFieldIdentifier
+                                   inFrame:_lastFocusedFrame
+                               asProactive:NO];
+}
+
+- (void)triggerPasswordGenerationForFormId:(FormRendererId)formIdentifier
+                           fieldIdentifier:(FieldRendererId)fieldIdentifier
+                                   inFrame:(web::WebFrame*)frame
+                               asProactive:(BOOL)proactivePasswordGeneration {
+  if (!fieldIdentifier) {
     return;
   }
+  _isProactivePasswordGeneration = proactivePasswordGeneration;
+
   LogPasswordGenerationEvent(
       autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
-  [self generatePasswordForFormId:_lastFocusedFormIdentifier
-                  fieldIdentifier:_lastFocusedFieldIdentifier
-                          inFrame:_lastFocusedFrame
+  [self generatePasswordForFormId:formIdentifier
+                  fieldIdentifier:fieldIdentifier
+                          inFrame:frame
               isManuallyTriggered:YES];
 }
 
@@ -315,10 +330,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
   if (!webState->ContentIsHTML()) {
     // If the current page is not HTML, it does not contain any HTML forms.
-    password_manager::PasswordManagerJavaScriptFeature* feature =
-        password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    web::WebFrame* mainFrame =
-        feature->GetWebFramesManager(_webState)->GetMainWebFrame();
+    web::WebFramesManager* framesManager = [self webFramesManager];
+    web::WebFrame* mainFrame = framesManager->GetMainWebFrame();
     [self didFinishPasswordFormExtraction:std::vector<FormData>()
                     triggeredByFormChange:false
                                   inFrame:mainFrame];
@@ -347,7 +360,8 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   if (_webState->IsBeingDestroyed()) {
     return;
   }
-  web::WebFrame* webFrame = webFramesManager->GetFrameWithId(frameId);
+  web::WebFramesManager* framesManager = [self webFramesManager];
+  web::WebFrame* webFrame = framesManager->GetFrameWithId(frameId);
   if (!webFrame) {
     return;
   }
@@ -376,9 +390,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webStateObserverBridge.reset();
-    web::WebFramesManager* framesManager =
-        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
+    web::WebFramesManager* framesManager = [self webFramesManager];
     framesManager->RemoveObserver(_webFramesManagerObserverBridge.get());
     _webFramesManagerObserverBridge.reset();
     _formActivityObserverBridge.reset();
@@ -526,11 +538,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  password_manager::PasswordManagerJavaScriptFeature* feature =
-      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   const std::string frameId = SysNSStringToUTF8(formQuery.frameID);
-  web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState)->GetFrameWithId(frameId);
+  web::WebFramesManager* framesManager = [self webFramesManager];
+  web::WebFrame* frame = framesManager->GetFrameWithId(frameId);
 
   if (frame == nullptr) {
     completion({}, self);
@@ -604,11 +614,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
             fieldRendererID:(FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
-  password_manager::PasswordManagerJavaScriptFeature* feature =
-      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   const std::string frameId = SysNSStringToUTF8(frameID);
-  web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState)->GetFrameWithId(frameId);
+  web::WebFramesManager* framesManager = [self webFramesManager];
+  web::WebFrame* frame = framesManager->GetFrameWithId(frameId);
   if (!frame) {
     completion();
     return;
@@ -626,6 +634,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     case autofill::SuggestionType::kGeneratePasswordEntry: {
       // Don't call completion because current suggestion state should remain
       // whether user injects a generated password or cancels.
+      _isProactivePasswordGeneration = NO;
       [self generatePasswordForFormId:formRendererID
                       fieldIdentifier:fieldRendererID
                               inFrame:frame
@@ -984,6 +993,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   _passwordManager->OnPresaveGeneratedPassword(
       [_driverHelper PasswordManagerDriver:frame], formData,
       SysNSStringToUTF16(generatedPassword));
+}
+
+- (web::WebFramesManager*)webFramesManager {
+  return password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+      ->GetWebFramesManager(_webState);
 }
 
 #pragma mark - FormActivityObserver

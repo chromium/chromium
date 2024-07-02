@@ -97,6 +97,9 @@
       AutofillBottomSheetTabHelper::FromWebState(webState);
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(
       HandlerForProtocol(_commandDispatcher, AutofillCommands));
+  id<PasswordGenerationProvider> generationProvider =
+      passwordTabHelper->GetPasswordGenerationProvider();
+  bottomSheetTabHelper->SetPasswordGenerationProvider(generationProvider);
 
   if (ios::provider::IsLensSupported()) {
     LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
