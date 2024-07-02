@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/cursors/webcursor.h"
-
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "content/common/cursors/webcursor.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace content {
@@ -45,12 +46,16 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Ash has its own SetDisplayInfo that takes rotation into account.
-void WebCursor::SetDisplayInfo(const display::Display& display) {
-  if (device_scale_factor_ == display.device_scale_factor())
+// Ash has its own UpdateDisplayInfoForWindow that takes rotation into account.
+void WebCursor::UpdateDisplayInfoForWindow(aura::Window* window) {
+  float preferred_scale = display::Screen::GetScreen()
+                              ->GetPreferredScaleFactorForWindow(window)
+                              .value_or(1.0f);
+  if (device_scale_factor_ == preferred_scale) {
     return;
+  }
 
-  device_scale_factor_ = display.device_scale_factor();
+  device_scale_factor_ = preferred_scale;
   custom_cursor_.reset();
 }
 

@@ -877,9 +877,7 @@ void RenderWidgetHostViewAura::UpdateCursor(const ui::Cursor& cursor) {
 
 void RenderWidgetHostViewAura::DisplayCursor(const ui::Cursor& cursor) {
   current_cursor_ = WebCursor(cursor);
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-  current_cursor_.SetDisplayInfo(display);
+  current_cursor_.UpdateDisplayInfoForWindow(window_);
   UpdateCursorIfOverSelf();
 }
 
@@ -3026,8 +3024,7 @@ void RenderWidgetHostViewAura::ProcessDisplayMetricsChanged() {
   // TODO(crbug.com/40165350): Unify per-platform DisplayObserver instances.
   needs_to_update_display_metrics_ = false;
   UpdateScreenInfo();
-  current_cursor_.SetDisplayInfo(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_));
+  current_cursor_.UpdateDisplayInfoForWindow(window_);
   UpdateCursorIfOverSelf();
 }
 
