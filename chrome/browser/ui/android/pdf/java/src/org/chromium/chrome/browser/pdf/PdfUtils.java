@@ -34,6 +34,7 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -77,7 +78,7 @@ public class PdfUtils {
             String type = ContentUriUtils.getMimeType(url);
             return type != null && type.equals(MimeTypeUtils.PDF_MIME_TYPE);
         }
-        if (scheme.equals(UrlConstants.HTTP_SCHEME) || scheme.equals(UrlConstants.HTTPS_SCHEME)) {
+        if (scheme.equals(UrlConstants.CHROME_NATIVE_SCHEME)) {
             return params != null && params.getIsPdf();
         }
         return false;
@@ -103,10 +104,9 @@ public class PdfUtils {
         Uri uri = Uri.parse(url);
         String scheme = uri.getScheme();
         assert scheme != null;
-        assert scheme.equals(UrlConstants.HTTP_SCHEME)
-                || scheme.equals(UrlConstants.HTTPS_SCHEME)
-                || scheme.equals(UrlConstants.CONTENT_SCHEME)
-                || scheme.equals(UrlConstants.FILE_SCHEME);
+        assert scheme.equals(UrlConstants.CONTENT_SCHEME)
+                || scheme.equals(UrlConstants.FILE_SCHEME)
+                || scheme.equals(UrlConstants.CHROME_NATIVE_SCHEME);
         String fileName = defaultTitle;
         if (scheme.equals(UrlConstants.CONTENT_SCHEME)) {
             String displayName = ContentUriUtils.maybeGetDisplayName(url);
@@ -207,6 +207,25 @@ public class PdfUtils {
         }
         RecordHistogram.recordBooleanHistogram(
                 "Android.Pdf.IsFrozenWhenDisplayed", nativePage.isFrozen());
+    }
+
+    /**
+     * Encode the download url and generate the pdf page url.
+     *
+     * @param downloadUrl The url which is interpreted as download.
+     * @return The pdf page url including the encoded downloadUrl.
+     */
+    public static String encodePdfPageUrl(String downloadUrl) {
+        try {
+            String pdfPageUrl =
+                    UrlConstants.PDF_URL
+                            + UrlConstants.PDF_URL_PARAM
+                            + URLEncoder.encode(downloadUrl, "UTF-8");
+            return pdfPageUrl;
+        } catch (java.io.UnsupportedEncodingException e) {
+            Log.e(TAG, "Unsupported encoding: " + e.getMessage());
+            return null;
+        }
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {

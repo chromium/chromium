@@ -129,8 +129,10 @@ public class UrlConstants {
     public static final String MANAGEMENT_HOST = "management";
     public static final String MANAGEMENT_URL = "chrome://management/";
 
-    /* Host used for PDF native pages. */
+    /* Host and url used for PDF native pages. */
     public static final String PDF_HOST = "pdf";
+    public static final String PDF_URL = "chrome-native://pdf/";
+    public static final String PDF_URL_PARAM = "link?url=";
 
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =

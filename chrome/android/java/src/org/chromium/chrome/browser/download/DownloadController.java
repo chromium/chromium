@@ -142,14 +142,17 @@ public class DownloadController {
         if (!PdfUtils.shouldOpenPdfInline()) {
             return;
         }
-        // TODO(b/338138743): Cancel download and skip loadUrl if there is another navigation before
-        //  pdf download started.
-        LoadUrlParams param = new LoadUrlParams(downloadInfo.getUrl());
+        String downloadUrl = downloadInfo.getUrl().getSpec();
+        String pdfPageUrl = PdfUtils.encodePdfPageUrl(downloadUrl);
+        // TODO(b/350771232): add metric to capture how often the encode fails.
+        assert pdfPageUrl != null;
+        LoadUrlParams param = new LoadUrlParams(pdfPageUrl);
+        // Set isPdf param so that other parts of the code can load the pdf native page instead of
+        // starting a download.
         param.setIsPdf(true);
         // If the download url matches the tab’s url, avoid duplicate navigation entries by
         // replacing the current entry.
-        param.setShouldReplaceCurrentEntry(
-                downloadInfo.getUrl().getSpec().equals(tab.getUrl().getSpec()));
+        param.setShouldReplaceCurrentEntry(downloadUrl.equals(tab.getUrl().getSpec()));
         tab.loadUrl(param);
         tab.addObserver(
                 new EmptyTabObserver() {

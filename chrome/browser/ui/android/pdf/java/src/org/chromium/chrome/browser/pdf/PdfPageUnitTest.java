@@ -55,6 +55,7 @@ public class PdfPageUnitTest {
     private Activity mActivity;
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
+    private String mPdfPageUrl;
 
     private static final String DEFAULT_TAB_TITLE = "Loading PDF…";
     private static final String CONTENT_URL = "content://media/external/downloads/1000000022";
@@ -80,6 +81,7 @@ public class PdfPageUnitTest {
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         PdfUtils.skipLoadPdfForTesting(true);
+        mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
     }
 
     @After
@@ -154,7 +156,7 @@ public class PdfPageUnitTest {
                         mMockNativePageHost,
                         mMockProfile,
                         mActivity,
-                        PDF_LINK,
+                        mPdfPageUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE);
         Assert.assertNotNull(pdfPage);
@@ -167,7 +169,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
-        Assert.assertEquals("Pdf page url should match.", PDF_LINK, pdfPage.getUrl());
+        Assert.assertEquals("Pdf page url should match.", mPdfPageUrl, pdfPage.getUrl());
         Assert.assertFalse(
                 "Pdf should not be loaded when the view is not attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
@@ -225,7 +227,7 @@ public class PdfPageUnitTest {
         String filename = PdfUtils.getFileNameFromUrl(FILE_URL, DEFAULT_TAB_TITLE);
         Assert.assertEquals("Filename does not match for file url.", FILE_NAME, filename);
 
-        filename = PdfUtils.getFileNameFromUrl(PDF_LINK, DEFAULT_TAB_TITLE);
+        filename = PdfUtils.getFileNameFromUrl(mPdfPageUrl, DEFAULT_TAB_TITLE);
         Assert.assertEquals("Filename does not match for pdf link.", DEFAULT_TAB_TITLE, filename);
     }
 
@@ -241,15 +243,15 @@ public class PdfPageUnitTest {
     @Test
     public void testIsPdfNavigation_PdfLink() {
         doReturn(true).when(mLoadUrlParams).getIsPdf();
-        boolean result = PdfUtils.isPdfNavigation(PDF_LINK, mLoadUrlParams);
+        boolean result = PdfUtils.isPdfNavigation(mPdfPageUrl, mLoadUrlParams);
         Assert.assertTrue("It is pdf navigation when IsPdf is set in LoadUrlParams.", result);
 
         doReturn(false).when(mLoadUrlParams).getIsPdf();
-        result = PdfUtils.isPdfNavigation(PDF_LINK, mLoadUrlParams);
+        result = PdfUtils.isPdfNavigation(mPdfPageUrl, mLoadUrlParams);
         Assert.assertFalse(
                 "It is not pdf navigation when IsPdf is not set in LoadUrlParams.", result);
 
-        result = PdfUtils.isPdfNavigation(PDF_LINK, null);
+        result = PdfUtils.isPdfNavigation(mPdfPageUrl, null);
         Assert.assertFalse("It is not pdf navigation when LoadUrlParams is null.", result);
     }
 
