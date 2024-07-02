@@ -114,8 +114,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  raw_ptr<char, AcrossTasksDanglingUntriaged | AllowPtrArithmetic> data_ =
-      nullptr;
+  raw_ptr<char, AllowPtrArithmetic> data_ = nullptr;
   int size_ = 0;
 };
 

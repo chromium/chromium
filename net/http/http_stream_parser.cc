@@ -175,8 +175,7 @@ class HttpStreamParser::SeekableIOBuffer : public IOBufferWithSize {
     data_ = real_data_;
   }
 
-  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-  raw_ptr<char, AcrossTasksDanglingUntriaged | AllowPtrArithmetic> real_data_;
+  raw_ptr<char, AllowPtrArithmetic> real_data_;
   const int capacity_;
   int size_ = 0;
   int used_ = 0;

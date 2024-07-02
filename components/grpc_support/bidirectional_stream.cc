@@ -224,11 +224,22 @@ void BidirectionalStream::OnDataSent() {
     return;
   DCHECK_EQ(WRITING, write_state_);
   write_state_ = WAITING_FOR_FLUSH;
+
+  // BidirectionalStream::WriteData() uses WrappedIOBuffers, which don't own
+  // their contents, so OnDataSent may well delete the data backing those
+  // buffers. As a result, to avoid trigging dangling pointer warnings, the
+  // WrappedIOBuffers must be destroyed before calling OnDataSent().
+  std::vector<char*> buffer_ptrs;
   for (const scoped_refptr<net::IOBuffer>& buffer :
        sending_write_data_->buffers()) {
-    delegate_->OnDataSent(buffer->data());
+    buffer_ptrs.push_back(buffer->data());
   }
   sending_write_data_->Clear();
+
+  for (char* buffer_ptr : buffer_ptrs) {
+    delegate_->OnDataSent(buffer_ptr);
+  }
+
   // Send data flushed while other data was sending.
   if (!flushing_write_data_->Empty()) {
     SendFlushingWriteData();
