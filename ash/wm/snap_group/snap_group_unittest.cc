@@ -3488,17 +3488,17 @@ TEST_F(SnapGroupTest, ReSnapToOppositeSnapRatio) {
   SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
                     chromeos::kOneThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  EXPECT_NEAR(
+  EXPECT_EQ(
       std::round(GetWorkAreaBounds().width() * chromeos::kOneThirdSnapRatio),
-      w1->GetBoundsInScreen().width(), 1);
+      w1->GetBoundsInScreen().width());
 
   // Re-snap `w1` to primary 2/3.
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  EXPECT_NEAR(
+  EXPECT_EQ(
       std::round(GetWorkAreaBounds().width() * chromeos::kTwoThirdSnapRatio),
-      w1->GetBoundsInScreen().width(), 1);
+      w1->GetBoundsInScreen().width());
 
   // Re-snap `w1` to secondary 1/2.
   SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,

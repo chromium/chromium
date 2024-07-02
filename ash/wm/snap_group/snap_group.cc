@@ -319,21 +319,6 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
         old_type == WindowStateType::kSecondarySnapped);
   const chromeos::WindowStateType new_type = window_state->GetStateType();
   if (new_type != old_type) {
-    // The window may be getting snapped to the opposite side, in which case use
-    // the *newly requested snap ratio*, which is saved in
-    // `WindowState::snap_ratio()`. This is needed because when we remove the
-    // group in `UpdateGroupWindowsBounds()`, the window is still snapped so it
-    // will use the window's current snapped bounds and divider position to
-    // update the value in `WindowState::ForceUpdateSnapRatio()`.
-    // TODO(b/331304137): Fix the cyclic bounds dependency.
-    if (chromeos::IsSnappedWindowStateType(new_type)) {
-      aura::Window* window = window_state->window();
-      const float snap_ratio =
-          window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
-      ApplyPrimarySnapRatio(IsPhysicallyLeftOrTop(window) ? 1.f - snap_ratio
-                                                          : snap_ratio);
-    }
-
     // `this` will be shut down and removed from the controller immediately, and
     // then destroyed asynchronously soon.
     SnapGroupController::Get()->RemoveSnapGroup(

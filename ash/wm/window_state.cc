@@ -551,7 +551,11 @@ void WindowState::OnWMEvent(const WMEvent* event) {
     return;
   }
 
+  std::unique_ptr<base::AutoReset<bool>> snap_event_lock;
+  std::unique_ptr<base::AutoReset<bool>> float_event_lock;
   if (const WindowSnapWMEvent* snap_event = event->AsSnapEvent()) {
+    snap_event_lock =
+        std::make_unique<base::AutoReset<bool>>(&is_handling_snap_event_, true);
     // Save `event` requested snap ratio.
     const float target_snap_ratio = GetTargetSnapRatio(window_, snap_event);
     snap_ratio_ = std::make_optional(target_snap_ratio);
@@ -562,16 +566,14 @@ void WindowState::OnWMEvent(const WMEvent* event) {
       // If a different snap ratio was requested, partial may have just ended.
       MaybeRecordPartialDuration();
     }
-  }
-
-  std::unique_ptr<base::AutoReset<bool>> auto_reset;
-  // Ignore received events during the float animation, except for float -> snap
-  // events in order to process the received snapped bounds events.
-  // TODO(b/347723336): See if we can re-enable this for snap events.
-  if (event->type() == WM_EVENT_FLOAT ||
-      (current_state_->GetType() == chromeos::WindowStateType::kFloated &&
-       event->IsTransitionEvent() && !event->IsSnapEvent())) {
-    auto_reset = std::make_unique<base::AutoReset<bool>>(
+  } else if (event->type() == WM_EVENT_FLOAT ||
+             (current_state_->GetType() ==
+                  chromeos::WindowStateType::kFloated &&
+              event->IsTransitionEvent() && !event->IsSnapEvent())) {
+    // Ignore received events during the float animation, except for float ->
+    // snap events in order to process the received snapped bounds events.
+    // TODO(b/347723336): See if we can re-enable this for snap events.
+    float_event_lock = std::make_unique<base::AutoReset<bool>>(
         &is_handling_float_event_, true);
   }
 
@@ -579,7 +581,10 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   // The current snap ratio may be different from the requested snap ratio, if
   // the window has a minimum size requirement.
-  if (event->IsBoundsEvent()) {
+  // A snap event may cause nested bounds events, during which we don't need to
+  // force update the snap ratio. We'll respect the snap ratio requested by the
+  // snap event.
+  if (!is_handling_snap_event_ && event->IsBoundsEvent()) {
     UpdateSnapRatio();
   }
 }
