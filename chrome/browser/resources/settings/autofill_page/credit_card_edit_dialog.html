@@ -136,7 +136,8 @@
             value="{{nickname_}}" spellcheck="false" maxlength="25"
             on-input="validateNickname_"
             invalid="[[nicknameInvalid_]]"
-            error-message="$i18n{creditCardNicknameInvalid}">
+            error-message="$i18n{creditCardNicknameInvalid}"
+            aria-description="[[i18n('inputMaxLengthDescription', 25)]]">
             <div id="charCount" slot="suffix" aria-hidden="true">
               [[computeNicknameCharCount_(nickname_)]]/25
             </div>

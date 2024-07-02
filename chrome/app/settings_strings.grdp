@@ -490,6 +490,9 @@
   <message name="IDS_SETTINGS_NOT_VALID_WEB_ADDRESS_FOR_CONTENT_TYPE" desc="Text indicating that the content setting can't take effect because the setting is limited to secure origins." >
     Origin must be secure
   </message>
+  <message name="IDS_SETTINGS_INPUT_MAX_LENGTH_DESCRIPTION" desc="Descriptive text read by screen readers indicating that an input has a maximum character limit." >
+    Maximum length <ph name="MAX">$1<ex>20</ex></ph> characters
+  </message>
   <message name="IDS_SETTINGS_RETRY" desc="The label text of the retry button because there is an error.">
     Retry
   </message>
