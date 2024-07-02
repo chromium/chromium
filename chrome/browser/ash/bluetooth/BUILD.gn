@@ -50,3 +50,28 @@ source_set("unit_tests") {
     "//device/bluetooth",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "hats_bluetooth_revamp_trigger_impl_browsertest.cc" ]
+
+  deps = [
+    ":bluetooth",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/notifications",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+  ]
+}

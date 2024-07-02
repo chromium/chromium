@@ -6000,6 +6000,7 @@ group("browser_tests") {
     "//chrome/browser/ash/app_mode:browser_tests",
     "//chrome/browser/ash/app_restore:browser_tests",
     "//chrome/browser/ash/apps:browser_tests",
+    "//chrome/browser/ash/bluetooth:browser_tests",
     "//chrome/browser/ash/bruschetta:browser_tests",
     "//chrome/browser/ash/customization:browser_tests",
     "//chrome/browser/ash/display:browser_tests",
