@@ -4393,6 +4393,7 @@ enum WebFeature {
   kV8MLContext_Compute_Method = 5024,
   kV8MLContext_Dispatch_Method = 5025,
   kCSSMixins = 5026,
+  kDurationFormat = 5027,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

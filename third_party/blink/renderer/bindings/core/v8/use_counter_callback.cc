@@ -387,6 +387,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kDocumentAllLegacyConstruct:
       blink_feature = WebFeature::kV8DocumentAllLegacyConstruct;
       break;
+    case v8::Isolate::kDurationFormat:
+      blink_feature = WebFeature::kDurationFormat;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.
