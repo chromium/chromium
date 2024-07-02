@@ -692,8 +692,7 @@ public class CompositorViewHolder extends FrameLayout
     private void updateInMotion() {
         // TODO(crbug.com/40244051): Track fling as well.
         boolean inMotion = mContentViewScrolling;
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END)) {
+        if (ChromeFeatureList.sSuppressToolbarCapturesAtGestureEnd.isEnabled()) {
             inMotion |= mNumGestureActiveTouches > 0;
         } else {
             inMotion |= mInGesture;
