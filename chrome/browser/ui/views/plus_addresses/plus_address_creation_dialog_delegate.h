@@ -71,7 +71,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   raw_ptr<views::ImageButton> refresh_button_ = nullptr;
   raw_ptr<views::StyledLabel> error_report_label_ = nullptr;
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
-  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
 };
 
 }  // namespace plus_addresses

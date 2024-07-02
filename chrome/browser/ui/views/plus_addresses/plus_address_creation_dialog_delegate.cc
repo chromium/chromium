@@ -42,6 +42,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -137,33 +138,31 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                           gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
   primary_view->AddChildView(std::move(logo_image));
 
-  // Add title view.
-  views::StyledLabel* modal_title = primary_view->AddChildView(
+  // The title.
+  primary_view->AddChildView(
       views::Builder<views::StyledLabel>()
-          .SetTextContext(views::style::STYLE_PRIMARY)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetText(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE))
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetDefaultTextStyle(views::style::STYLE_BODY_1_BOLD)
           .Build());
 
-  views::StyledLabel* description_paragraph = primary_view->AddChildView(
+  // The description.
+  primary_view->AddChildView(
       views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetProperty(views::kElementIdentifierKey,
+                       kPlusAddressDescriptionTextElementId)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
+                           0, 0, 0))
+          .SetText(l10n_util::GetStringFUTF16(
+              IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
+              {base::UTF8ToUTF16(primary_email_address)}))
           .Build());
-  description_paragraph->SetProperty(views::kElementIdentifierKey,
-                                     kPlusAddressDescriptionTextElementId);
-
-  modal_title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_paragraph->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_paragraph->SetText(
-      l10n_util::GetStringFUTF16(IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
-                                 {base::UTF8ToUTF16(primary_email_address)}));
-  description_paragraph->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(views::LayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-                        0, 0, 0));
 
   // Create a bubble for the plus address to be displayed in.
   std::unique_ptr<views::Background> background =
@@ -208,13 +207,12 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
       views::Builder<views::Label>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER))
-          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
+          .SetProperty(views::kElementIdentifierKey,
+                       kPlusAddressSuggestedEmailElementId)
+          .SetSelectable(true)
           .Build());
-  plus_address_label_->SetProperty(views::kElementIdentifierKey,
-                                   kPlusAddressSuggestedEmailElementId);
-  plus_address_label_->SetSelectable(true);
   plus_address_label_->SetLineHeight(2 * plus_address_label_->GetLineHeight());
 
   // The refresh button.
@@ -246,11 +244,11 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
           .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
           .SetDefaultTextStyle(views::style::STYLE_HINT)
           .SetVisible(false)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0))
+          .SetProperty(views::kElementIdentifierKey,
+                       kPlusAddressErrorTextElementId)
           .Build());
-  error_report_label_->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(kPlusAddressLabelVerticalMargin, 0));
-  error_report_label_->SetProperty(views::kElementIdentifierKey,
-                                   kPlusAddressErrorTextElementId);
   // Update style for error link.
   gfx::Range error_link_range(error_link_offsets[0],
                               error_link_offsets[0] + error_link_text.length());
@@ -266,47 +264,49 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Initialize buttons.
-  views::BoxLayoutView* buttons_view = primary_view->AddChildView(
+  primary_view->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd)
           .SetBetweenChildSpacing(
               ChromeLayoutProvider::Get()->GetDistanceMetric(
                   views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL))
+          .AddChildren(
+              views::Builder<views::MdTextButton>()
+                  .SetCallback(base::BindRepeating(
+                      &PlusAddressCreationDialogDelegate::HandleButtonPress,
+                      // Safe because this delegate outlives the Widget (and
+                      // this view).
+                      base::Unretained(this),
+                      PlusAddressViewButtonType::kCancel))
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
+                  .SetTooltipText(l10n_util::GetStringUTF16(
+                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT))
+                  .SetProperty(views::kElementIdentifierKey,
+                               kPlusAddressCancelButtonElementId)
+                  .SetStyle(ui::ButtonStyle::kTonal)
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)),
+              views::Builder<views::MdTextButton>()
+                  .CopyAddressTo(&confirm_button_)
+                  .SetCallback(base::BindRepeating(
+                      &PlusAddressCreationDialogDelegate::HandleButtonPress,
+                      // Safe because this delegate outlives the Widget (and
+                      // this view).
+                      base::Unretained(this),
+                      PlusAddressViewButtonType::kConfirm))
+                  .SetText(
+                      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
+                  .SetTooltipText(
+                      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT))
+                  .SetStyle(ui::ButtonStyle::kProminent)
+                  .SetEnabled(false)
+                  .SetProperty(views::kElementIdentifierKey,
+                               kPlusAddressConfirmButtonElementId)
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_PLUS_ADDRESS_MODAL_OK_TEXT)))
           .Build());
-
-  cancel_button_ =
-      buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &PlusAddressCreationDialogDelegate::HandleButtonPress,
-              // Safe because this delegate outlives the Widget (and this view).
-              base::Unretained(this), PlusAddressViewButtonType::kCancel),
-          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT)));
-  cancel_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  cancel_button_->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-  cancel_button_->SizeToPreferredSize();
-  cancel_button_->SetProperty(views::kElementIdentifierKey,
-                              kPlusAddressCancelButtonElementId);
-  cancel_button_->SetStyle(ui::ButtonStyle::kTonal);
-
-  confirm_button_ =
-      buttons_view->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &PlusAddressCreationDialogDelegate::HandleButtonPress,
-              // Safe because this delegate outlives the Widget (and this view).
-              base::Unretained(this), PlusAddressViewButtonType::kConfirm),
-          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT)));
-  confirm_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
-  confirm_button_->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
-  confirm_button_->SizeToPreferredSize();
-  confirm_button_->SetStyle(ui::ButtonStyle::kProminent);
-  confirm_button_->SetEnabled(false);
-  confirm_button_->SetProperty(views::kElementIdentifierKey,
-                               kPlusAddressConfirmButtonElementId);
 
   SetContentsView(std::move(primary_view));
 }
