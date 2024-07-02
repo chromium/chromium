@@ -470,43 +470,6 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   }
 }
 
-- (void)generateDumpReport {
-  // There has been evidence that unitMenuButtonTitle may be nil (see
-  // crbug/1512445) but this could not be reproduced. To prevent further
-  // crash, set the title to a valid string and log more info so this can
-  // be debugged.
-  // TODO(crbug.com/41485741): remove when the issue is fixed.
-  NSString* debugSourceUnit = _formattedSourceUnit;
-  if (!debugSourceUnit) {
-    debugSourceUnit = [_sourceUnit description];
-  }
-  if (!debugSourceUnit) {
-    debugSourceUnit = @"";
-  }
-  if ([debugSourceUnit length] > 31) {
-    debugSourceUnit = [debugSourceUnit substringToIndex:31];
-  }
-  NSString* debugTargetUnit = _formattedTargetUnit;
-  if (!debugTargetUnit) {
-    debugTargetUnit = [_targetUnit description];
-  }
-  if (!debugTargetUnit) {
-    debugTargetUnit = @"";
-  }
-  if ([debugTargetUnit length] > 31) {
-    debugTargetUnit = [debugTargetUnit substringToIndex:31];
-  }
-  static crash_reporter::CrashKeyString<32> sourceKey("source_unit");
-  crash_reporter::ScopedCrashKeyString crashSourceKey(
-      &sourceKey, base::SysNSStringToUTF8(debugSourceUnit));
-
-  static crash_reporter::CrashKeyString<32> targetKey("target_unit");
-  crash_reporter::ScopedCrashKeyString crashTargetKey(
-      &targetKey, base::SysNSStringToUTF8(debugTargetUnit));
-
-  base::debug::DumpWithoutCrashing();
-}
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
@@ -542,10 +505,6 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
       NOTREACHED_NORETURN();
     }
 
-    if (!unitMenuButtonTitle) {
-      unitMenuButtonTitle = @"";
-      [self generateDumpReport];
-    }
     UIButtonConfiguration* unitMenuButtonConfiguration =
         cell.unitMenuButton.configuration;
     unitMenuButtonConfiguration.attributedTitle = [self
