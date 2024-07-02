@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Feche o grupo de separadores com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Feche o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restaurar separador}other{Restaurar separadores}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link do Chrome}other{<ph name="TABS_COUNT_MANY" /> links do Chrome}}</translation>
 <translation id="575494663145460764">Quer obter alertas para descidas de preços?</translation>
 <translation id="58326064309361797">Arraste os separadores para os agrupar.</translation>
@@ -139,6 +140,7 @@
 <translation id="7885132941432959125">Mover separador para a direita</translation>
 <translation id="7939917283308035850">Cor <ph name="COLOR_NAME" /> não selecionada</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="7961015016161918242">Nunca</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
 <translation id="799469866974412355">Novo grupo do seu outro dispositivo</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>

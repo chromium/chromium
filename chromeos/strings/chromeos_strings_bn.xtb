@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">ডন টু ডার্ক স্ক্রিন সেভার</translation>
 <translation id="1167755866710282443">কী কাস্টমাইজ করার জন্য মেনু খুলুন। সরানোর জন্য মেনু টেনে আনুন।</translation>
 <translation id="1171349345463658120">বালুকাময় উপহ্রদ</translation>
+<translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1174073918202301297">শর্টকাট যোগ করা হয়েছে</translation>
 <translation id="11743817593307477">তীরচিহ্ন বোতামে প্রেস করে এই নিয়ন্ত্রণ আপনার পছন্দের গেম অ্যাকশনে সরান। নিয়ন্ত্রণটি পছন্দসই লোকেশনে নিয়ে যেতে Enter বোতামে প্রেস করুন। এটি বাতিল করতে, Escape বোতামে প্রেস করুন।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে।</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">অ্যালবাম</translation>
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
+<translation id="1591562245178063882">এই মাস</translation>
 <translation id="1593528591614229756">শুধুমাত্র আপনার মোবাইল পরিষেবা প্রদানকারী বা অ্যাডমিনিস্ট্রেটরের দেওয়া APN বেছে নিয়েছেন কিনা দেখে নিন। APN বেছে নিলে যেকোনও কাস্টম APN বন্ধ হয়ে যাবে। ভুল APN বেছে নেওয়া হলে আপনার মোবাইল কানেকশন কাজ নাও করতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">ছবির প্রিভিউ দেখুন</translation>
 <translation id="1611649489706141841">ফরওয়ার্ড</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">জোন <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ছবি লোড করা যায়নি। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা আবার ছবি লোড করার চেষ্টা করুন।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
+<translation id="1751335846119670066">আমাকে পড়তে সাহায্য করো</translation>
 <translation id="1753496554272155572">ওয়ালপেপার প্রিভিউ থেকে বেরিয়ে আসুন</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />-এর জন্য এডিট বোতাম।</translation>
 <translation id="1755556344721611131">ডায়াগনস্টিকস অ্যাপ</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> এডিট করুন</translation>
 <translation id="2138109643290557664">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">আজ</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="2157660087437850958">ইমোজি চয়নকারি</translation>
 <translation id="2157959690810728433">সারিতে আছে</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">অবসিডিয়ান</translation>
 <translation id="4021031199988160623">পরীক্ষার জন্য ল্যাপটপ মোড চালু করুন</translation>
 <translation id="4034824040120875894">প্রিন্টার</translation>
+<translation id="4035877632587724847">অনুমতি দেবেন না</translation>
 <translation id="4044093238444069296">গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="404928562651467259">সতর্কতা</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">কনফার্ম বোতাম এখন অ্যাক্টিভ নেই</translation>
 <translation id="5144887194300568405">অনুবাদ কপি করুন</translation>
 <translation id="5145081769226915336">'ডার্ক' মোড অটোমেটিক চালু করবেন?</translation>
+<translation id="5145331109270917438">পরিবর্তনের তারিখ</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">AI ব্যবহার করে কোনও ছবি তৈরি করতে, "তৈরি করুন" বিকল্পটি বেছে নিন।
         তৈরি করা সবকটি ছবি অটোমেটিক এখানে দেখা যাবে।</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">আর দেখতে চাই না</translation>
 <translation id="5975130252842127517">কোরাল</translation>
 <translation id="5984145644188835034">ডিফল্ট ওয়ালপেপার</translation>
 <translation id="5996832681196460718">সিল্ক</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6061772781719867950">HTTP অনুরোধ সফল হয়নি</translation>
 <translation id="6073292342939316679">কীবোর্ডের উজ্জ্বলতা কমান</translation>
+<translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6091080061796993741">হলুদ</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">ম্যানুয়ালি ডেটার ব্যবহার রিসেট করুন</translation>
 <translation id="6243280677745499710">বর্তমানে সেট করা রয়েছে</translation>
 <translation id="6250316632541035980">বেকন ও ডিম</translation>
-<translation id="6255213378196499011">'আমাকে লিখতে সাহায্য করুন' ফিচার সম্পর্কিত সেটিংস</translation>
 <translation id="6265268291107409527"><ph name="KEYS" /> কী বেছে নেওয়া হয়েছে। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ডানদিকের তীরচিহ্ন</translation>
 <translation id="6278428485366576908">থীম</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">ডোমেন সাফিক্সের সাথে মিল থাকা</translation>
 <translation id="7769672763586021400">মডেল আইডি</translation>
 <translation id="7778717409420828014">আপনার প্রতিক্রিয়া আমাদের Chromebook অভিজ্ঞতা উন্নত করতে সাহায্য করে এবং আমাদের টিম দ্বারা পর্যালোচনা করা হবে। অনেক বেশি সংখ্যক রিপোর্টের কারণে, আমরা উত্তর দিতে পারব না।</translation>
+<translation id="7781829728241885113">গতকাল</translation>
 <translation id="7784116172884276937">কোনও ডিএনএস সার্ভার সেট আপ করা হয়নি</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="779591286616261875">নতুন রিপোর্ট পাঠান</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">কীবোর্ড</translation>
 <translation id="7849030488395653706">সুমেরুপ্রভা</translation>
 <translation id="7849737607196682401">লেস</translation>
+<translation id="7850320739366109486">বিরক্ত করবে না</translation>
 <translation id="7850847810298646851">Google AI দ্বারা পরিচালিত ওয়ালপেপার</translation>
 <translation id="785170686607360576">টিউলিপ</translation>
 <translation id="7856267634822906833">ব্লুটুথ টাচস্ক্রিন</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">টেস্ট রান করানো ও হার্ডওয়্যার সংক্রান্ত সমস্যার সমাধান</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">নিচে</translation>
+<translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8431300646573772016">ChromeOS-এ নতুন কী আছে</translation>
 <translation id="843568408673868420">ইন্টারনেট কানেক্টিভিটি</translation>
 <translation id="844521431886043384">DNS সেট আপ করা হয়নি</translation>

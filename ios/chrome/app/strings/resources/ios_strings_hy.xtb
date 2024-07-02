@@ -760,7 +760,7 @@
 <translation id="4854345657858711387">Սահմանեք անցակոդ</translation>
 <translation id="4856498338299082007">Ձեր Google հաշվում</translation>
 <translation id="4856841893565072365">Խելացի դասավորման ընտրացանկի գոտի</translation>
-<translation id="4860895144060829044">Զանգեք</translation>
+<translation id="4860895144060829044">Զանգել</translation>
 <translation id="4881695831933465202">Բացել</translation>
 <translation id="4883824756452868502">Հայտնաբերել չափման միավորներ</translation>
 <translation id="488785315393301722">Ցույց տալ մանրամասները</translation>
@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="519530786644929958">Ներբեռնումը ձախողվեց, և այն հնարավոր չէ կրկնել։</translation>
 <translation id="5197255632782567636">Համացանց</translation>
+<translation id="5205197603258285592">Պահել պատկերը…</translation>
 <translation id="5211488077761630279">Թույլատրե՞լ «<ph name="SITE_NAME" />» կայքին օգտագործել ձեր <ph name="PERMISSION" />։</translation>
 <translation id="5219295696240154694">Օգնեք բարելավել համացանցի օգտատերերի անվտանգությունը</translation>
 <translation id="5220945116117011963">Օրացույցի միջոցառումներ ստեղծել ամսաթվերից</translation>
@@ -1413,6 +1414,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8023878949384262191">Ընդարձակում է բաժինը:</translation>
 <translation id="8027581147000338959">Բացել նոր պատուհանում</translation>
 <translation id="8032569120109842252">Հետևում եք</translation>
+<translation id="8035412398498507358">Լուսանկարներ</translation>
 <translation id="8040207962129315716">Ամեն անգամ հարցնել</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Որոնումների պատմությունը<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
@@ -1525,6 +1527,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8556590991644167667">{count,plural, =1{Դուք փակել եք {count} նախազգուշացում}one{Դուք փակել եք {count} նախազգուշացում}other{Դուք փակել եք {count} նախազգուշացում}}</translation>
 <translation id="8560253818350321773">Սկզբում ցուցադրել հաճախակի օգտագործվող տարրերը</translation>
 <translation id="8569721750632860947">Ի՞նչ URL եք ուզում ավելացնել ձեր ընթերցանության ցանկում</translation>
+<translation id="8570765991595769633">Հարմարեցնել քարտերը</translation>
 <translation id="8577056989960190117">Ինքնալրացնել ժամկետի սպառման տարեթիվը՝ <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Անջատված է</translation>
 <translation id="8591976964826315682">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
@@ -1664,6 +1667,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="948048872540558976">Ստեղծել նոր ներդիր</translation>
 <translation id="952218985181984374">{count,plural, =1{Էջանիշը պահվել է}one{{count} էջանիշ պահվել է}other{{count} էջանիշ պահվել է}}</translation>
 <translation id="952704832371081537">Չեղարկել</translation>
+<translation id="955587716023217544">Փոփոխել հաշիվների ցանկը</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>
 <translation id="96615566463761848">Ցույց տալ ներդիրների համար հուշումներ այլ սարքերից</translation>
 <translation id="973493300226275298">Հետագծեք ապրանքի գները տարբեր առցանց խանութներում։ Երբ գնիջեցում լինի, դուք ծանուցում կստանաք այդ մասին։</translation>

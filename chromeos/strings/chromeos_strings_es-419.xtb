@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Protector de pantalla Del amanecer a la noche</translation>
 <translation id="1167755866710282443">Abre el menú para personalizar las teclas. Arrastra el menú para moverlo.</translation>
 <translation id="1171349345463658120">laguna de arena</translation>
+<translation id="1173894706177603556">Cambiar nombre</translation>
 <translation id="1174073918202301297">Acceso directo agregado</translation>
 <translation id="11743817593307477">Usa las teclas de flecha para mover este control a la acción del juego que quieras. Usa la tecla Intro para colocar el control. Usa la tecla Escape para cancelar.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Establecer como fondo de pantalla</translation>
 <translation id="1578784163189013834">Elegir el fondo del protector de pantalla</translation>
+<translation id="1591562245178063882">Este mes</translation>
 <translation id="1593528591614229756">Asegúrate de seleccionar los APN que proporcione tu administrador o proveedor de telefonía celular. Si seleccionas un APN, se inhabilitará cualquier APN personalizado. Los APN no válidos pueden interrumpir tu conexión móvil. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Obtener vista previa de la imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">No se pudieron cargar las imágenes. Revisa tu conexión de red o intenta volver a cargar las imágenes.</translation>
 <translation id="1751249301761991853">Personal</translation>
+<translation id="1751335846119670066">Help me read</translation>
 <translation id="1753496554272155572">Salir de la vista previa de fondo de pantalla</translation>
 <translation id="1754578112426924640">Botón Editar para <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App de diagnóstico</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Editar <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Sigue flotando</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Hoy</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidiana</translation>
 <translation id="4021031199988160623">Cambiar al modo de laptop para realizar pruebas</translation>
 <translation id="4034824040120875894">Impresora</translation>
+<translation id="4035877632587724847">No permitir</translation>
 <translation id="4044093238444069296">No se puede establecer contacto con la puerta de enlace</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Se inhabilitó el botón para confirmar</translation>
 <translation id="5144887194300568405">Copiar traducción</translation>
 <translation id="5145081769226915336">¿Quieres activar el modo oscuro automáticamente?</translation>
+<translation id="5145331109270917438">Fecha de modificación</translation>
 <translation id="5154917547274118687">Memoria</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5168185087976003268">Estado de la batería</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Selecciona "Crear" para crear una imagen con IA.
         Todas las imágenes creadas aparecerán aquí de forma automática.</translation>
 <translation id="5972388717451707488">Actualizar motor</translation>
+<translation id="5972801171078377748">No volver a mostrar</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
 <translation id="5996832681196460718">seda</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Para finalizar, ingresa tu contraseña anterior y la nueva</translation>
 <translation id="6061772781719867950">Solicitudes HTTPS con error</translation>
 <translation id="6073292342939316679">disminuir el brillo del teclado</translation>
+<translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Agregar acceso directo</translation>
 <translation id="6091080061796993741">amarillo</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Restablecer el uso de datos manualmente</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6250316632541035980">tocino y huevos</translation>
-<translation id="6255213378196499011">Configuración de Ayúdame a escribir</translation>
 <translation id="6265268291107409527">La tecla seleccionada es <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Flecha hacia la derecha</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Coincidencia del sufijo de dominio</translation>
 <translation id="7769672763586021400">ID del modelo</translation>
 <translation id="7778717409420828014">Nuestro equipo revisará tus comentarios, que nos ayudan a mejorar la experiencia con las Chromebooks. Debido a la gran cantidad de informes, no podremos enviarte una respuesta.</translation>
+<translation id="7781829728241885113">Ayer</translation>
 <translation id="7784116172884276937">No hay ningún servidor DNS configurado</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="779591286616261875">Enviar informe nuevo</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7849030488395653706">aurora boreal</translation>
 <translation id="7849737607196682401">encaje</translation>
+<translation id="7850320739366109486">No interrumpir</translation>
 <translation id="7850847810298646851">Fondo de pantalla potenciado por la IA de Google</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Pantalla táctil con conexión Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Ejecuta pruebas y soluciona problemas de hardware.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">abajo</translation>
+<translation id="8428213095426709021">Configuración</translation>
 <translation id="8431300646573772016">Novedades de ChromeOS</translation>
 <translation id="843568408673868420">Conexión a Internet</translation>
 <translation id="844521431886043384">No se configuró el DNS</translation>

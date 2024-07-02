@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> පද්ධතිය</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
 <translation id="5613020302032141669">වම් ඊතලය</translation>
+<translation id="5633029987065897167">හිස්</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{මිනි 1}one{මිනි #}other{මිනි #}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{අද ක්‍රියාත්මකයි}=1{1 දිනකට පෙර ක්‍රියාත්මකයි}one{දින #-කට පෙර ක්‍රියාත්මකයි}other{දින #-කට පෙර ක්‍රියාත්මකයි}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{දින 1 ක් සහ }one{දින # ක් සහ }other{දින # ක් සහ }}</translation>

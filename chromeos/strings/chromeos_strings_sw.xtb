@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Taswira ya skrini ya asubuhi mpaka usiku</translation>
 <translation id="1167755866710282443">Fungua menyu ili uweke mapendeleo kwenye vitufe. Buruta menyu ili uhamishe.</translation>
 <translation id="1171349345463658120">wangwa wenye mchanga</translation>
+<translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1174073918202301297">Njia ya mkato imeongezwa</translation>
 <translation id="11743817593307477">Tumia vitufe vya vishale ili uhamishie kidhibiti hiki kwenye kitendo cha mchezo unachokitaka. Tumia kitufe cha 'Enter' ili uweke kidhibiti. Tumia kitufe cha 'Escape' ili ubatilishe.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1578784163189013834">Chagua mandharinyuma ya taswira ya skrini</translation>
+<translation id="1591562245178063882">Mwezi huu</translation>
 <translation id="1593528591614229756">Hakikisha unachagua APN zilizotolewa na mtoa huduma za vifaa vya mkononi au msimamizi wako. Kuchagua APN kutazima APN zozote maalum. Huenda APN zisizo sahihi zikakatiza muunganisho wako wa mtandao wa simu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Kagua kwanza Picha</translation>
 <translation id="1611649489706141841">sambaza</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Eneo la <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Imeshindwa kupakia picha. Angalia muunganisho wa mtandao wako au jaribu kupakia picha tena.</translation>
 <translation id="1751249301761991853">Binafsi</translation>
+<translation id="1751335846119670066">Kipengele cha Nisaidie kusoma</translation>
 <translation id="1753496554272155572">Funga onyesho la kukagua mandhari</translation>
 <translation id="1754578112426924640">Kitufe cha kubadilisha cha <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Programu ya uchunguzi</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Badilisha <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Hali ya kuelea</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Leo</translation>
 <translation id="2152882202543497059">Picha <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">kiteua emoji</translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">kito cha rangi ya nyeusi iliyoiva</translation>
 <translation id="4021031199988160623">Badilisha utumie hali ya kompyuta ya kupakata ili ujaribu</translation>
 <translation id="4034824040120875894">Printa</translation>
+<translation id="4035877632587724847">Usiruhusu</translation>
 <translation id="4044093238444069296">Imeshindwa kuwasiliana na lango</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="404928562651467259">ONYO</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Kitufe cha kuthibitisha sasa kimezimwa</translation>
 <translation id="5144887194300568405">Nakili tafsiri</translation>
 <translation id="5145081769226915336">Ungependa kuwasha hali nyeusi kiotomatiki?</translation>
+<translation id="5145331109270917438">Tarehe ilipobadilishwa</translation>
 <translation id="5154917547274118687">Kumbukumbu</translation>
 <translation id="5160857336552977725">Ingia katika <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Muda wa kudumu wa betri</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Chagua "Buni" ili ubuni picha ukitumia AI.
         Picha zote zinazobuniwa zitaonekana hapa kiotomatiki.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Usionyeshe tena</translation>
 <translation id="5975130252842127517">rangi ya tumbawe</translation>
 <translation id="5984145644188835034">Mandhari chaguomsingi</translation>
 <translation id="5996832681196460718">hariri</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Ili ukamilishe, weka nenosiri lako la awali na lile jipya</translation>
 <translation id="6061772781719867950">Maombi ya HTTP hayakutumwa</translation>
 <translation id="6073292342939316679">kupunguza mwangaza wa kibodi</translation>
+<translation id="6073451960410192870">Acha kurekodi</translation>
 <translation id="6075872808778243331">Muda wa Kusubiri Maombi ya HTTP (Android)</translation>
 <translation id="6078323886959318429">Ongeza njia ya mkato</translation>
 <translation id="6091080061796993741">rangi ya njano</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Weka upya matumizi ya data wewe mwenyewe</translation>
 <translation id="6243280677745499710">Mandhari yaliyopo</translation>
 <translation id="6250316632541035980">nyama ya nguruwe na mayai</translation>
-<translation id="6255213378196499011">Mipangilio ya nisaidie kuandika</translation>
 <translation id="6265268291107409527">Kitufe kilichochaguliwa ni <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Kishale cha kulia</translation>
 <translation id="6278428485366576908">Mandhari</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Kiambishi cha kikoa kinacholingana</translation>
 <translation id="7769672763586021400">Aina ya Kitambulisho</translation>
 <translation id="7778717409420828014">Maoni yako hutusaidia kuboresha hali ya Chromebook na yatakaguliwa na timu yetu. Kutokana na idadi kubwa ya ripoti, hatutaweza kukujibu.</translation>
+<translation id="7781829728241885113">Jana</translation>
 <translation id="7784116172884276937">Hakuna seva za DNS zilizowekwa mipangilio</translation>
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="779591286616261875">Tuma ripoti mpya</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Kibodi</translation>
 <translation id="7849030488395653706">mwangaza wa kaskazini</translation>
 <translation id="7849737607196682401">lesi</translation>
+<translation id="7850320739366109486">Usinisumbue</translation>
 <translation id="7850847810298646851">Mandhari yanaendeshwa na Google AI</translation>
 <translation id="785170686607360576">ua la tulipu</translation>
 <translation id="7856267634822906833">Skrini ya kugusa yenye bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Tekeleza majaribio na utatuzi wa hitilafu za maunzi</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">chini</translation>
+<translation id="8428213095426709021">Mipangilio</translation>
 <translation id="8431300646573772016">Mapya katika ChromeOS</translation>
 <translation id="843568408673868420">Muunganisho wa Intaneti</translation>
 <translation id="844521431886043384">Mipangilio ya DNS haijawekwa</translation>

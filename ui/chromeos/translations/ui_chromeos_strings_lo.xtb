@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">ຍົກເລີກ <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ບໍ່ໄດ້ເປີດໃຊ້, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="3691184985318546178">ພາສາຊິນຮາລາ</translation>
+<translation id="3702842351052426940">ຊິມກາດ ຫຼື ໂປຣໄຟລ໌ eSIM ຂອງທ່ານອາດຖືກປິດການນຳໃຊ້. ລອງປ່ຽນຊິມກາດຂອງທ່ານ ຫຼື ສະຫຼັບໂປຣໄຟລ໌ eSIM.</translation>
 <translation id="3722341589402358578">ມີຄວາມຜິດພາດເກີດຂຶ້ນ. ບາງລາຍການອາດຈະບໍ່ໄດ້ຖືກສົ່ງໄປຖັງຂີ້ເຫຍື້ອ.</translation>
 <translation id="3726463242007121105">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຮອງຮັບ.</translation>
 <translation id="3727148787322499904">ການປ່ຽນການຕັ້ງຄ່ານີ້ຈະມີຜົນຕໍ່ກັບທຸກເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">ພຣັອກຊີນີ້ຖືກບັງຄັບໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="3830674330436234648">ບໍ່ມີການຫຼິ້ນຄືນ</translation>
 <translation id="383652340667548381">ພາສາເຊີ​ເບຍ</translation>
+<translation id="3839045880592694915">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ໂມເດັມຂອງທ່ານ. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດເພີ່ມເຕີມ.</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="3855472144336161447">ພາສາເຢຍລະັມນ Neo 2</translation>
 <translation id="3858860766373142691">ຊື່</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="6269630227984243955">ມາເລ</translation>
 <translation id="6271903698064569429">ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ໄດ້ເນື່ອງຈາກ "<ph name="SHARED_DRIVE_NAME" />" ບໍ່ມີບ່ອນຈັດເກັບຂໍ້ມູນພຽງພໍ.</translation>
+<translation id="6279140785485544797">ແພັກເກດອິນເຕີເນັດມືຖືຂອງທ່ານອາດໝົດອາຍຸແລ້ວ. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານເພື່ອຂໍຄວາມຊ່ວຍເຫຼືອ.</translation>
 <translation id="6287852322318138013">ເລືອກແອັບທີ່ຈະເປີດຢູ່ໃນໄຟລ໌ນີ້</translation>
 <translation id="6295542640242147836">ລັອກຊິມ</translation>
 <translation id="6296410173147755564">PUK ບໍ່ຖືກຕ້ອງ</translation>
@@ -757,7 +760,7 @@
 <translation id="6876155724392614295">ຖີບລົດ</translation>
 <translation id="6878261347041253038">ຄີບອດພາສາເດວັນນາກາຣີ (ການອອກສຽງ)</translation>
 <translation id="6885780034956018177">ຫອຍທາດ</translation>
-<translation id="6896758677409633944">ກັອບປີ້</translation>
+<translation id="6896758677409633944">ສຳເນົາ</translation>
 <translation id="6898028766943174120">ໂຟນເດີຍ່ອຍເພີ່ມເຕີມ...</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">US Workman</translation>
@@ -1000,7 +1003,7 @@
 <translation id="854655314928502177">URL ການຄົ້ນຫາອັດຕະໂນມັດຂອງພຣັອກຊີເວັບ</translation>
 <translation id="8549186985808798022">ພາສາອີຕາລຽນ</translation>
 <translation id="8551494947769799688">ພາສາລັດເວຍ</translation>
-<translation id="8560515948038859357">ພາສາຈີນກວາງຕຸ້ງ</translation>
+<translation id="8560515948038859357">ຈີນກວາງຕຸ້ງ</translation>
 <translation id="8561206103590473338">ຊ້າງ</translation>
 <translation id="8566466896628108558">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="8568374623837201676">ລຶບໄຟລ໌ນີ້ອອກຢ່າງຖາວອນບໍ?</translation>

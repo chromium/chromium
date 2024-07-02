@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Skjermsparer: Fra morgen til kveld</translation>
 <translation id="1167755866710282443">Åpne menyen for å tilpasse tastene. Dra menyen for å flytte den.</translation>
 <translation id="1171349345463658120">sandlagune</translation>
+<translation id="1173894706177603556">Gi nytt navn</translation>
 <translation id="1174073918202301297">Snarveien er lagt til</translation>
 <translation id="11743817593307477">Bruk piltastene for å flytte denne kontrollen til spillhandlingen du ønsker. Trykk på Enter-tasten for å plassere kontrollen. Bruk Escape-tasten for å avbryte.</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angi som bakgrunn</translation>
 <translation id="1578784163189013834">Velg skjermsparerbakgrunn</translation>
+<translation id="1591562245178063882">Denne måneden</translation>
 <translation id="1593528591614229756">Sørg for at du velger APN-ene du har fått av mobiloperatøren eller administratoren din. Hvis du velger et APN, deaktiveres eventuelle egendefinerte APN. Ugyldige APN kan forstyrre mobiltilkoblingen. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
 <translation id="1611649489706141841">fremover</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Sone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kunne ikke laste inn bilder. Kontroller nettverkstilkoblingen din, eller prøv å laste inn bildene på nytt.</translation>
 <translation id="1751249301761991853">Personlig</translation>
+<translation id="1751335846119670066">Hjelp meg å lese</translation>
 <translation id="1753496554272155572">Avslutt forhåndsvisning av bakgrunn</translation>
 <translation id="1754578112426924640">Endreknapp for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Endre <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Svev av gårde</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> bilder</translation>
 <translation id="2157660087437850958">emojivelger</translation>
 <translation id="2157959690810728433">I KØ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Bytt til laptopmodus for å teste</translation>
 <translation id="4034824040120875894">Skriver</translation>
+<translation id="4035877632587724847">Ikke tillat</translation>
 <translation id="4044093238444069296">Kan ikke kontakte gatewayen</translation>
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
@@ -571,7 +576,7 @@
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4250229828105606438">Skjermdump</translation>
+<translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="4251839292699800785">Stilig kontor</translation>
 <translation id="4258281355379922695">HTTP-tidsforsinkelse</translation>
 <translation id="4266143281602681663">garn</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Bekreft-knappen er nå deaktivert</translation>
 <translation id="5144887194300568405">Kopier oversettelsen</translation>
 <translation id="5145081769226915336">Vil du slå på mørk modus automatisk?</translation>
+<translation id="5145331109270917438">Dato endret</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Batterihelse</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Velg «Opprett» for å lage et bilde med AI.
         Alle bilder du oppretter, vises automatisk her.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Ikke vis igjen</translation>
 <translation id="5975130252842127517">korallfarget</translation>
 <translation id="5984145644188835034">Standardbakgrunn</translation>
 <translation id="5996832681196460718">silke</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-forespørsler</translation>
 <translation id="6073292342939316679">tastaturlysstyrke ned</translation>
+<translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6091080061796993741">gul</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Tilbakestill databruken manuelt</translation>
 <translation id="6243280677745499710">Nåværende bakgrunn</translation>
 <translation id="6250316632541035980">bacon og egg</translation>
-<translation id="6255213378196499011">Innstillinger for Hjelp meg å skrive</translation>
 <translation id="6265268291107409527">Den valgte tasten er <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Høyrepil</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Samsvarende domenesuffiks</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7778717409420828014">Tilbakemeldingen din hjelper oss med å gjøre Chromebook-opplevelsen bedre, og den blir gjennomgått av teamet vårt. På grunn av det store antallet rapporter kan vi ikke sende svar.</translation>
+<translation id="7781829728241885113">I går</translation>
 <translation id="7784116172884276937">Ingen DNS-tjenere er konfigurert</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="779591286616261875">Send ny rapport</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7849030488395653706">nordlys</translation>
 <translation id="7849737607196682401">blonde</translation>
+<translation id="7850320739366109486">Ikke forstyrr</translation>
 <translation id="7850847810298646851">Bakgrunn basert på AI-løsninger fra Google</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth-berøringsskjerm</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
 <translation id="843568408673868420">Internettilkobling</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>

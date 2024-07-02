@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">ক্লিপব'ৰ্ড</translation>
 <translation id="2597457036804169544">ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ নকৰিব</translation>
 <translation id="2606760465469169465">স্বয়ংক্ৰিয় সত্যাপন</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">নিৰ্দিষ্ট ছাইটৰ বাবে JavaScriptক অনুমতি দিয়ক।</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
 <translation id="2677748264148917807">ত্যাগ কৰক</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">পূৰ্বদৰ্শন</translation>
 <translation id="3628308229821498208">পৰামৰ্শিত সন্ধানসমূহ</translation>
 <translation id="3697164069658504920">অন কৰা থাকিলে, ছাইটে ইউএছবি ডিভাইচ ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে ইউএছবি ডিভাইচ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">আপুনি চোৱা এটা ছাইটে Chromeৰ জৰিয়তে সামান্য পৰিমাণৰ তথ্য ছেভ কৰিব পাৰে, যি প্ৰধানকৈ আপুনি ব’ট নহয় বুলি সত্যাপন কৰে</translation>
 <translation id="3721953990244350188">পৰৱৰ্তী উপলব্ধ কাৰ্য অগ্ৰাহ্য কৰক আৰু দেখুৱাওক</translation>
 <translation id="3744111561329211289">নেপথ্যত ছিংক কৰা</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">ডিভাইচৰ বাবে সকলো অনুমতি প্ৰত্যাহাৰ কৰক</translation>
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
 <translation id="4976702386844183910">শেষবাৰে <ph name="DATE" /> তাৰিখে চাইছে</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">আপুনি এই ছাইটটোৰ বাবে তৃতীয় পক্ষৰ কুকিসমূহ অনুমতি দিছে</translation>
 <translation id="4994033804516042629">কোনো সম্পৰ্ক বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4996978546172906250">ইয়াৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android ছেটিংসমূহত কেমেৰাটো অফ কৰা হ’ল</translation>
 <translation id="5691080386278724773">আপুনি ব্ৰাউজ কৰি থাকোঁতে <ph name="SITE" />এ আপোনাৰ তথ্য ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5700761515355162635">তৃতীয় পক্ষৰ কুকিসমূহক অনুমতি দিয়া হৈছে</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">এইটোৱে <ph name="WEBSITE" />ৰ বাবে কুকি আৰু ছাইটৰ অন্য ডেটা মচে</translation>
 <translation id="5723967018671998714">ইনক'গনিট' ম'ডত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হয়</translation>
 <translation id="5740126560802162366">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰিব পাৰে</translation>

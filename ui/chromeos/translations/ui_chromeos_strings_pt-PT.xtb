@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Cancele <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Desativada, <ph name="CONNECTION_STATUS" />, Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, Detalhes</translation>
 <translation id="3691184985318546178">Cingalês</translation>
+<translation id="3702842351052426940">O seu cartão SIM ou perfil do eSIM pode ser desativado. Experimente substituir o cartão SIM ou mudar de perfil do eSIM.</translation>
 <translation id="3722341589402358578">Ocorreu um erro. Alguns itens podem não ter sido movidos para o lixo.</translation>
 <translation id="3726463242007121105">Não é possível abrir este aparelho porque o sistema de ficheiros não é suportado.</translation>
 <translation id="3727148787322499904">Alterar esta definição afetará todas as redes partilhadas</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Este proxy é imposto pelo gestor</translation>
 <translation id="3830674330436234648">Reprodução não disponível</translation>
 <translation id="383652340667548381">Sérvio</translation>
+<translation id="3839045880592694915">A operadora não permite estabelecer ligação ao modem. Contacte a sua operadora para saber mais detalhes.</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3855472144336161447">Alemão Neo 2</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, ligar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6271903698064569429">Não é possível carregar os ficheiros porque "<ph name="SHARED_DRIVE_NAME" />" não tem armazenamento suficiente.</translation>
+<translation id="6279140785485544797">O seu plano de dados móveis pode ter expirado. Contacte a operadora para receber apoio técnico.</translation>
 <translation id="6287852322318138013">Selecionar uma aplicação para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">PUK inválido</translation>

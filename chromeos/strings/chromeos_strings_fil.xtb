@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Screen saver na pagtakipsilim</translation>
 <translation id="1167755866710282443">Buksan ang menu para mag-customize ng mga key. I-drag ang menu para maglipat.</translation>
 <translation id="1171349345463658120">mabuhanging lagoon</translation>
+<translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1174073918202301297">Naidagdag na ang shortcut</translation>
 <translation id="11743817593307477">Gumamit ng mga arrow key para ilipat ang kontrol na ito sa gusto mong pagkilos sa laro. Gamitin ang enter key para ilagay ang kontrol. Gamitin ang escape key para kanselahin.</translation>
 <translation id="1175697296044146566">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Mga Album</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
+<translation id="1591562245178063882">Buwang ito</translation>
 <translation id="1593528591614229756">Tiyaking pipiliin ang mga APN na ibinigay ng iyong mobile provider o administrator. Kapag pumili ng APN, madi-disable ang anumang custom na APN. Posibleng maantala ng mga invalid na APN ang iyong koneksyon sa mobile. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Hindi ma-load ang mga larawan. Suriin ang iyong koneksyon sa network o subukang i-load ulit ang mga larawan.</translation>
 <translation id="1751249301761991853">Personal</translation>
+<translation id="1751335846119670066">Tulungan akong magbasa</translation>
 <translation id="1753496554272155572">Lumabas sa preview ng wallpaper</translation>
 <translation id="1754578112426924640">I-edit ang button para sa <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostics app</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">I-edit ang <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> (na) larawan</translation>
 <translation id="2157660087437850958">picker ng emoji</translation>
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Lumipat sa laptop mode para suriin</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4035877632587724847">Huwag payagan</translation>
 <translation id="4044093238444069296">Hindi makaugnayan ang gateway</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="404928562651467259">BABALA</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Naka-disable na ang button sa pagkumpirma</translation>
 <translation id="5144887194300568405">Kopyahin ang pagsasalin</translation>
 <translation id="5145081769226915336">Awtomatikong i-on ang dark mode?</translation>
+<translation id="5145331109270917438">Petsa ng pagbabago</translation>
 <translation id="5154917547274118687">Memorya</translation>
 <translation id="5160857336552977725">Mag-sign in sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Piliin ang "Gumawa" para gumawa ng larawan gamit ang AI.
         Awtomatikong lalabas dito ang lahat ng ginawang larawan.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Huwag nang ipakita ulit</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
 <translation id="5996832681196460718">silk</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Para tapusin, ilagay ang iyong luma at bagong password</translation>
 <translation id="6061772781719867950">Mga hindi naisagawang kahilingang HTTP</translation>
 <translation id="6073292342939316679">babaan ang liwanag ng keyboard</translation>
+<translation id="6073451960410192870">Ihinto ang pag-record</translation>
 <translation id="6075872808778243331">(Android) Latency ng HTTP</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
 <translation id="6091080061796993741">dilaw</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
 <translation id="6243280677745499710">Kasalukuyang nakatakda</translation>
 <translation id="6250316632541035980">mga bacon at itlog</translation>
-<translation id="6255213378196499011">Mga setting ng Tulungan akong magsulat</translation>
 <translation id="6265268291107409527"><ph name="KEYS" /> ang piniling key. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Pakanang arrow</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Pagtugma sa domain suffix</translation>
 <translation id="7769672763586021400">Model ID</translation>
 <translation id="7778717409420828014">Nakakatulong ang iyong feedback sa amin para mapahusay ang experience sa Chromebook at susuriin ito ng aming team. Dahil sa napakaraming ulat, hindi kami makakapagpadala ng sagot.</translation>
+<translation id="7781829728241885113">Kahapon</translation>
 <translation id="7784116172884276937">Walang naka-set up na DNS server</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="779591286616261875">Magpadala ng bagong ulat</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7849030488395653706">northern lights</translation>
 <translation id="7849737607196682401">lace</translation>
+<translation id="7850320739366109486">Huwag Istorbohin</translation>
 <translation id="7850847810298646851">Wallpaper na mula sa Google AI</translation>
 <translation id="785170686607360576">tulip</translation>
 <translation id="7856267634822906833">Bluetooth na touchscreen</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Magpatakbo ng mga pagsusuri at pag-troubleshoot para sa mga isyu sa hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">pababa</translation>
+<translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8431300646573772016">Ano'ng bago sa ChromeOS</translation>
 <translation id="843568408673868420">Koneksyon sa Internet</translation>
 <translation id="844521431886043384">Hindi naka-set up ang DNS</translation>

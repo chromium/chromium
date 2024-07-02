@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2597457036804169544">ဝဘ်ဆိုက်များကို အမှောင်နောက်ခံသို့ မပြောင်းပါနှင့်</translation>
 <translation id="2606760465469169465">အော်တို အတည်ပြုခြင်း</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">တိကျသည့်ဆိုက်အတွက် JavaScript ကိုခွင့်ပြုပါ။</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">ကြိုကြည့်ရန်</translation>
 <translation id="3628308229821498208">အကြံပြုထားသည့် ရှာဖွေမှုများ</translation>
 <translation id="3697164069658504920">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက USB စက်များသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက USB စက်များ မသုံးနိုင်ပါ။</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">အဓိကအားဖြင့် သင်ဘော့တ်မဟုတ်ကြောင်း အတည်ပြုရန် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်က အချက်အလက်အနည်းငယ်ကို Chrome ဖြင့် သိမ်းနိုင်သည်</translation>
 <translation id="3721953990244350188">ပယ်ပြီး နောက်လာမည့် ရနိုင်သော လုပ်ဆောင်ချက်ကို ပြပါ</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">စက်ပစ္စည်းအတွက် ခွင့်ပြုချက်အားလုံး ရုပ်သိမ်းသည်</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
 <translation id="4976702386844183910"><ph name="DATE" /> က နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ဤဝဘ်ဆိုက်အတွက် သင်ခွင့်ပြုထားသည်</translation>
 <translation id="4994033804516042629">အဆက်အသွယ်များ မတွေ့ပါ</translation>
 <translation id="4996978546172906250">မှတစ်ဆင့် မျှဝေရန်</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android ဆက်တင်များတွင် 'ကင်မရာ' ပိတ်ထားသည်</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> က သင်ကြည့်နေစဉ် သင့်အချက်အလက်ကို သုံးနိုင်သည်</translation>
 <translation id="5700761515355162635">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ခွင့်ပြုထားသည်</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">၎င်းက <ph name="WEBSITE" /> အတွက် ကွတ်ကီးနှင့် အခြားဝဘ်ဆိုက်ဒေတာကို ဖျက်သည်</translation>
 <translation id="5723967018671998714">'ရုပ်ဖျက်' မုဒ်တွင် ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="5740126560802162366">ဝဘ်ဆိုက်များသည် သင့်စက်တွင် ဒေတာသိမ်းနိုင်သည်</translation>

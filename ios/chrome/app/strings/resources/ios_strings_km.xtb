@@ -126,6 +126,7 @@
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1622717322707146952">ជ្រើសរើស “បញ្ចូល​ទៅ Google ប្រតិទិន“ ឬ “បញ្ចូលទៅ Apple Calendar“។</translation>
 <translation id="1626771852476987600">ពាក្យសម្ងាត់​ដែលប្រើ​ឡើងវិញ <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">ទទួល​បានទិសដៅ​ទៅកាន់​គោលដៅ​របស់អ្នកដោយមាន​ការណែនាំផ្លូវលម្អិត ដោយប្រើមុខងាររុករកផ្លូវ</translation>
 <translation id="1641113438599504367">ការរុករកសុវត្ថិភាព</translation>
 <translation id="1641316430523156212">តាមដាន</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
@@ -209,6 +210,7 @@
 <translation id="2059166748188874810">ក្រុង</translation>
 <translation id="2062410130322589403">ការណែនាំជម្រើសឯកជនភាពរបស់អ្នក</translation>
 <translation id="20638360198452347">ផ្ទាំងជ្រើសរើសប្រភេទឯកតា</translation>
+<translation id="2067852168641682340">រក្សាទុកទៅក្នុងគណនីនេះរាល់ពេល</translation>
 <translation id="2073572773299281212">ដំណើរការ <ph name="DAYS" /> ថ្ងៃ​មុន</translation>
 <translation id="2074131957428911366">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
 <translation id="2078437078822043850">អ្នកអាច​រំកិលទៅស្ដាំ​ដើម្បីរុករក​នៅក្នុង​មុខងារឯកជន។</translation>
@@ -314,6 +316,7 @@
 <translation id="261739049332372104">ដើម្បីទទួលបានព័ត៌មានថ្មីៗអំពីខ្លឹមសារដែលសំខាន់សម្រាប់អ្នក សូមបើកការជូនដំណឹងនៅក្នុងការកំណត់ iOS របស់អ្នក។</translation>
 <translation id="2625189173221582860">បានចម្លង​ពាក្យសម្ងាត់</translation>
 <translation id="2626236249646841566">សូម​ពិនិត្យមើល​ការតភ្ជាប់​របស់អ្នក រួចសាកល្បង​ចូលគណនី​ម្ដងទៀត។</translation>
+<translation id="2635918910848538771">បំពេញ CVC ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2637313651144986786">ស្វែងរកផ្ទាំង...</translation>
 <translation id="2640733327287333451">គ្មានឈ្មោះ​អ្នកប្រើប្រាស់ ••••••</translation>
 <translation id="2648721026697078500">កុំ​ផ្លាស់​ទី</translation>
@@ -497,6 +500,7 @@
 <translation id="3533202363250687977">បិទផ្ទាំងឯកជនទាំងអស់</translation>
 <translation id="3533436815740441613">ផ្ទាំងថ្មី</translation>
 <translation id="3540141921715814660">បញ្ចូល​ទៅ​ក្នុង​ចំណាំ</translation>
+<translation id="3547356470684043247">អាន​ការវាយតម្លៃ​ផលិតផល សេវាកម្ម ឬ​បទពិសោធប្រើប្រាស់​របស់​អតិថិជន ដើម្បីជួយ​ឱ្យអ្នក​មានព័ត៌មាន​គ្រប់ជ្រុងជ្រោយ​ក្នុងការ​សម្រេចចិត្តដោយផ្អែកលើការវាយតម្លៃ</translation>
 <translation id="355101282835380364">រក្សាទុកនៅក្នុងគណនី…</translation>
 <translation id="3551320343578183772">បិទផ្ទាំង</translation>
 <translation id="3565930036634619844">ផ្ទាំង។ <ph name="TAB_INDEX" /> នៃ <ph name="NUMBER_OF_TABS" />។</translation>
@@ -716,6 +720,7 @@
 <translation id="4659194143325814340">{count,plural, =1{ទំព័រ {count} នៅលើ​បញ្ជីអាន​របស់​អ្នក}other{ទំព័រ {count} នៅលើ​បញ្ជីអានរបស់​អ្នក}}</translation>
 <translation id="4659667755519643272">ចូលទៅទិដ្ឋភាពប្តូរផ្ទាំង</translation>
 <translation id="46614316059270592">រក្សាទុកពាក្យសម្ងាត់</translation>
+<translation id="467189612236587057">ភ្ជាប់​ទំនាក់ទំនង​ជាមួយ​អាជីវកម្ម​ដោយចាប់ផ្ដើម​ការហៅទូរសព្ទ</translation>
 <translation id="4682686630151240767">1. បើក​ការកំណត់ iPhone</translation>
 <translation id="4689564913179979534">គ្រប់គ្រង​វិធីបង់ប្រាក់...</translation>
 <translation id="469300482518076788">បិទផ្ទាំង</translation>

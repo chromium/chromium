@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Čuvar ekrana od zore do mraka</translation>
 <translation id="1167755866710282443">Otvorite meni da prilagodite tipke. Prevucite meni da ga premjestite.</translation>
 <translation id="1171349345463658120">pješčana laguna</translation>
+<translation id="1173894706177603556">Promijeni naziv</translation>
 <translation id="1174073918202301297">Prečica je dodana</translation>
 <translation id="11743817593307477">Premještanje kontrole na željenu radnju igre pomoću tipki sa strelicom. Postavljanje kontrole pomoću tipke Enter. Otkazivanje pomoću tipku Esc.</translation>
 <translation id="1175697296044146566">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinsku sliku</translation>
 <translation id="1578784163189013834">Odaberite pozadinu čuvara ekrana</translation>
+<translation id="1591562245178063882">Ovaj mjesec</translation>
 <translation id="1593528591614229756">Obavezno odaberite APN-ove koje pruža mobilni operater ili administrator. Odabirom APN-a će se onemogućiti prilagođeni APN-ovi. Nevažeći APN-ovi mogu poremetiti mobilnu mrežu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Slika pregleda</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Slike se nisu mogle učitati. Provjerite mrežnu vezu ili ponovo pokušajte učitati slike.</translation>
 <translation id="1751249301761991853">Lično</translation>
+<translation id="1751335846119670066">Pomoć u čitanju</translation>
 <translation id="1753496554272155572">Izlaz iz pregleda pozadinske slike</translation>
 <translation id="1754578112426924640">Uredite dugme za <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplikacija Diagnostics</translation>
@@ -221,12 +224,14 @@
 <translation id="2085089206770112532">Smanjivanje osvjetljenja ekrana</translation>
 <translation id="2086091080968010660">Promjene koje se zasnivaju na vremenu možda neće biti tačne. Uključite pristup lokaciji sistema u postavkama.</translation>
 <translation id="2102231663024125441">Uređivanje teksta</translation>
+<translation id="2102648867808308635">Pomoć s čitanjem stranice</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2135668738111962377">Uređivanje dugmeta <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Lebdite</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Danas</translation>
 <translation id="2152882202543497059">Broj fotografija: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">izbornik emoji sličica</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
@@ -533,6 +538,7 @@
 <translation id="401147258241215701">opsidijana</translation>
 <translation id="4021031199988160623">Prebacite se na način rada laptopa da testirate</translation>
 <translation id="4034824040120875894">Štampač</translation>
+<translation id="4035877632587724847">Nemoj dozvoliti</translation>
 <translation id="4044093238444069296">Nije moguće kontaktirati pristupnika</translation>
 <translation id="4046123991198612571">Sljedeća numera</translation>
 <translation id="404928562651467259">UPOZORENJE</translation>
@@ -734,6 +740,7 @@
 <translation id="5144311987923128508">Dugme za potvrdu je sada onemogućeno</translation>
 <translation id="5144887194300568405">Kopiranje prijevoda</translation>
 <translation id="5145081769226915336">Automatski uključivati tamni način rada?</translation>
+<translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="5154917547274118687">Memorija</translation>
 <translation id="5160857336552977725">Prijavite se na uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
@@ -875,6 +882,7 @@
 <translation id="594989847980441553">Odaberite "Kreiraj" da kreirate sliku pomoću AI-ja.
         Sve kreirane slike će se automatski prikazivati ovdje.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Ne prikazuj ponovo</translation>
 <translation id="5975130252842127517">narandžastocrvena</translation>
 <translation id="5984145644188835034">Zadana pozadinska slika</translation>
 <translation id="5996832681196460718">svile</translation>
@@ -891,6 +899,7 @@
 <translation id="6058625436358447366">Unesite staru i novu lozinku da završite</translation>
 <translation id="6061772781719867950">HTTP zahtjevi nisu uspjeli</translation>
 <translation id="6073292342939316679">smanjivanje osvjetljenja tastature</translation>
+<translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6075872808778243331">(Android) HTTP latentnost</translation>
 <translation id="6078323886959318429">Dodaj prečicu</translation>
 <translation id="6091080061796993741">žute</translation>
@@ -926,7 +935,6 @@
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
 <translation id="6243280677745499710">Trenutno postavljeno</translation>
 <translation id="6250316632541035980">Slanina i jaja</translation>
-<translation id="6255213378196499011">Postavke Pomoći za pisanje</translation>
 <translation id="6265268291107409527">Odabrana tipka je <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Strelica udesno</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1223,7 @@
 <translation id="7763470514545477072">Podudaranje sufiksa domene</translation>
 <translation id="7769672763586021400">ID modela</translation>
 <translation id="7778717409420828014">Vaše povratne informacije nam pomažu da poboljšamo iskustvo s Chrombookom i naš tim će ih pregledati. Zbog velikog broja prijava, nećemo moći poslati odgovor.</translation>
+<translation id="7781829728241885113">Jučer</translation>
 <translation id="7784116172884276937">Nije postavljen nijedan DNS server</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="779591286616261875">Pošalji novu prijavu</translation>
@@ -1230,6 +1239,7 @@
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7849030488395653706">polarna svjetlost</translation>
 <translation id="7849737607196682401">čipke</translation>
+<translation id="7850320739366109486">Ne ometaj</translation>
 <translation id="7850847810298646851">Pozadinske slike koje omogućava Google AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth ekran na dodir</translation>
@@ -1332,6 +1342,7 @@
 <translation id="8420955526972171689">Pokrenite testove i riješite probleme s hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">dolje</translation>
+<translation id="8428213095426709021">Postavke</translation>
 <translation id="8431300646573772016">Novosti iz ChromeOS-a</translation>
 <translation id="843568408673868420">Povezivanje s internetom</translation>
 <translation id="844521431886043384">DNS nije postavljen</translation>

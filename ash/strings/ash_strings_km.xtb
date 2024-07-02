@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">បើកកម្មវិធី​រុករក</translation>
+<translation id="129469256578833241">ត្រឡប់ទៅសេចក្ដីសង្ខេប</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">ចុច <ph name="LAUNCHER_KEY_NAME" /> + g នៅពេលណា​ក៏បាន</translation>
 <translation id="1306549533752902673">កម្មវិធី​ដែល​បាន​ណែនាំ</translation>
@@ -142,6 +143,7 @@
 <translation id="147310119694673958">ថ្មទូរសព្ទ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">បិទ/បើក​ហតស្ប៉ត។ ហតស្ប៉ត​ត្រូវបានបើក បានភ្ជាប់​ឧបករណ៍ 1 គ្រឿង។</translation>
 <translation id="1479909375538722835">ម៉ឺនុយភាពងាយស្រួលអណ្ដែត</translation>
+<translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">តាមរយៈ​ការសរសេរ​តាមអាន អ្នកអាច​វាយបញ្ចូល​ដោយប្រើ​សំឡេង​របស់អ្នក។ ចុចគ្រាប់ចុច​សរសេរ​តាមអាន ឬ​ជ្រើសរើស​រូបមីក្រូហ្វូន​នៅផ្នែកខាងក្រោមនៃ​អេក្រង់ នៅពេល​ដែលអ្នក​ស្ថិតនៅ​កន្លែងបញ្ចូល​អក្សរ។ ភាសា​សរសេរ​តាមអាន​របស់អ្នក​ត្រូវបាន​កំណត់ទៅជា​ភាសា<ph name="LANGUAGE" />។ ការនិយាយ​ត្រូវបានផ្ញើទៅ Google ដើម្បី​ដំណើរការ។ អ្នកអាចប្ដូរ​ភាសា​សរសេរ​តាមអាន​នៅពេលណាក៏បាន​នៅក្នុង​ការកំណត់ &gt; ភាពងាយស្រួល។</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> បានប្ដូរ​ជាមួយ <ph name="SECOND_ITEM_TITLE" /></translation>
@@ -256,6 +258,7 @@
 <translation id="1923539912171292317">ចុចដោយស្វ័យប្រវត្តិ</translation>
 <translation id="1925320505152357008">តិចជាង 1 នាទី</translation>
 <translation id="1928739107511554905">ដើម្បី​ទទួល​បាន​កំណែថ្មី សូម​ប្រើ​អេក្រង់ចុច ដើម្បី​ចាប់ផ្តើម Chromebook របស់អ្នក​ឡើងវិញ​ដោយប្រើក្តារចុច​ដែល​ភ្ជាប់​មក​ជាមួយ។</translation>
+<translation id="1929331825127010451">ត្រឡប់ទៅសំណួរ</translation>
 <translation id="1948405482892809935">ប្ដូរ​ទៅ​អ្នកប្រើប្រាស់​បន្ទាប់</translation>
 <translation id="1951012854035635156">ជំនួយ​ការ</translation>
 <translation id="1954252331066828794">បានបញ្ចប់ការថតវីដេអូអេក្រង់</translation>
@@ -1151,6 +1154,7 @@
 <translation id="5238719049014159442">បិទ/បើក​កម្មវិធី​ចាប់ផ្ដើម</translation>
 <translation id="5240725217819182328">ការចូលប្រើរហ័សទៅកាន់ទំព័រ ឬសកម្មភាពជាក់លាក់នៅក្នុងកម្មវិធីដែលបានដំឡើង</translation>
 <translation id="5245201184978705914">មិនអាចបង្កើតប្រតិចារឹកបានទេ</translation>
+<translation id="5251174953851719648">ផ្ទុក​ខ្លឹមសារ​ឡើងវិញ</translation>
 <translation id="5253783950165989294">បានភ្ជាប់ជាមួយ​ឧបករណ៍ដែលមាន​ឈ្មោះថា <ph name="DEVICE_NAME" /> ថ្ម <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">មិន​មាន​តុ​ដែលបានរក្សាទុក​ទេ</translation>
 <translation id="5260676007519551770">តុទី 4</translation>
@@ -1415,6 +1419,7 @@
 <translation id="6147182561428020853">ឥឡូវនេះ អ្នកអាច​ទប់ស្កាត់​កម្មវិធី​ដែលបាន​ដំឡើង​នៅលើ <ph name="DEVICE_TYPE" /> នេះ​បានហើយ</translation>
 <translation id="6154006699632741460">មិនអាចប្រើ​ឧបករណ៍ខាងក្រៅ​បានទេ</translation>
 <translation id="6156960295318603523">ការកំណត់ភាសា</translation>
+<translation id="6158923546703693047">ព័ត៌មានអំពីប្រភពខ្លឹមសារ</translation>
 <translation id="615957422585914272">បង្ហាញក្តារចុចលើអេក្រង់</translation>
 <translation id="616543563528926612">ផ្លូវកាត់​សម្រាប់ចុច​កណ្ដុរខាងស្ដាំ​ត្រូវបានប្ដូរពី​គ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + ចុចទៅ alt + ចុច</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
@@ -1998,6 +2003,7 @@
 <translation id="8315514906653279104">កំពុង​បើក...</translation>
 <translation id="8331351032546853669">កំពុងរង់ចាំទាញយក</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">សួរសំណួរ។</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">ធាតុចេញ​មិនល្អ</translation>
 <translation id="8345019317483336363">បានជ្រើសរើស​វិនដូ <ph name="WINDOW_TITLE" /></translation>

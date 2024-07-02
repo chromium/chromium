@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Stäng flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Stäng flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Återställ flik}other{Återställ flikar}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> länk från Chrome}other{<ph name="TABS_COUNT_MANY" /> länkar från Chrome}}</translation>
 <translation id="575494663145460764">Vill du få aviseringar om sänkt pris?</translation>
 <translation id="58326064309361797">Gruppera flikar genom att dra dem</translation>
@@ -139,6 +140,7 @@
 <translation id="7885132941432959125">Flytta fliken åt höger</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> har inte valts</translation>
 <translation id="7942349550061667556">Röd</translation>
+<translation id="7961015016161918242">Aldrig</translation>
 <translation id="7966321538264951561">Ignorera förslagen.</translation>
 <translation id="799469866974412355">Ny grupp från din andra enhet</translation>
 <translation id="8029301326595421733">Information om den här butiken har öppnats över hela skärmen</translation>

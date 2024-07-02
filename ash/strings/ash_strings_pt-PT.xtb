@@ -97,6 +97,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Abrir Explore</translation>
+<translation id="129469256578833241">Regressar ao resumo</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Prima <ph name="LAUNCHER_KEY_NAME" /> + g em qualquer altura</translation>
 <translation id="1306549533752902673">APLICAÇÕES RECOMENDADAS</translation>
@@ -142,6 +143,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="147310119694673958">Bateria do telemóvel a <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, 1 dispositivo ligado.</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
+<translation id="1483493594462132177">Enviar</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Com o ditado, pode escrever através da voz. Prima a tecla de ditado ou selecione o ícone de microfone na parte inferior do ecrã quando estiver num campo de texto. O idioma do ditado está definido como <ph name="LANGUAGE" />. A voz é enviada para a Google para processamento. Pode alterar o idioma do ditado em qualquer altura em Definições &gt; Acessibilidade.</translation>
 <translation id="1487931858675166540">Houve uma troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" />.</translation>
@@ -256,6 +258,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
+<translation id="1929331825127010451">Voltar à pergunta</translation>
 <translation id="1948405482892809935">Mudar para o utilizador seguinte</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954252331066828794">Gravação de ecrã concluída</translation>
@@ -1151,6 +1154,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5238719049014159442">Abrir/fechar o Launcher</translation>
 <translation id="5240725217819182328">Acesso rápido a páginas ou ações específicas nas apps instaladas</translation>
 <translation id="5245201184978705914">Não é possível gerar a transcrição</translation>
+<translation id="5251174953851719648">Atualizar o conteúdo</translation>
 <translation id="5253783950165989294">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="5258528442992323769">Nenhum espaço de trabalho guardado</translation>
 <translation id="5260676007519551770">Secretária 4</translation>
@@ -1358,6 +1362,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5975235751479998104">Avançar através das janelas</translation>
 <translation id="5978382165065462689">A partilhar o controlo do seu ecrã através da Assistência remota.</translation>
 <translation id="5980301590375426705">Sair sess. de conv.</translation>
+<translation id="5982119059638483922">Prima Fn + Pesquisar ou Shift para cancelar.</translation>
 <translation id="5983567367406220847">Devido à inatividade, a zona Wi-Fi foi desativada.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para obter a atualização, reinicie o Chromebook com o teclado ligado.</translation>
@@ -1414,6 +1419,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6147182561428020853">Já pode bloquear apps instaladas neste dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">O periférico não é suportado</translation>
 <translation id="6156960295318603523">Definições de idioma</translation>
+<translation id="6158923546703693047">Informações da fonte de conteúdo</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>
 <translation id="616543563528926612">O atalho do clique com o botão direito do rato foi atualizado da tecla <ph name="LAUNCHER_KEY_NAME" /> + clique para alt + clique</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
@@ -1998,6 +2004,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8315514906653279104">A ativar…</translation>
 <translation id="8331351032546853669">Transferência pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Faça uma pergunta.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Mau resultado</translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>

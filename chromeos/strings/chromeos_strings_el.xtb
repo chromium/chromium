@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Προστασία οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1171349345463658120">αμμώδης λιμνοθάλασσα</translation>
+<translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1174073918202301297">Η συντόμευση προστέθηκε</translation>
 <translation id="11743817593307477">Χρησιμοποιήστε τα πλήκτρα βέλους για να μετακινήσετε αυτό το στοιχείο ελέγχου στην ενέργεια παιχνιδιού που θέλετε. Χρησιμοποιήστε το πλήκτρο enter για να τοποθετήσετε το στοιχείο ελέγχου. Χρησιμοποιήστε το πλήκτρο escape για ακύρωση.</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Λευκώματα</translation>
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
 <translation id="1578784163189013834">Επιλέξτε το παρασκήνιο της προφύλαξης οθόνης</translation>
+<translation id="1591562245178063882">Αυτόν το μήνα</translation>
 <translation id="1593528591614229756">Βεβαιωθείτε ότι έχετε επιλέξει τα APN που παρέχονται από τον πάροχο κινητής τηλεφωνίας ή τον διαχειριστή σας. Η επιλογή ενός APN θα απενεργοποιήσει τυχόν προσαρμοσμένα APN. Τα μη έγκυρα APN ενδέχεται να προκαλέσουν προβλήματα στη σύνδεση κινητής τηλεφωνίας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Ζώνη <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Δεν ήταν δυνατή η φόρτωση των εικόνων. Ελέγξτε τη σύνδεση δικτύου ή δοκιμάστε να φορτώσετε ξανά τις εικόνες.</translation>
 <translation id="1751249301761991853">Προσωπικές</translation>
+<translation id="1751335846119670066">Βοήθησέ με να διαβάσω</translation>
 <translation id="1753496554272155572">Έξοδος από προεπισκόπηση ταπετσαρίας</translation>
 <translation id="1754578112426924640">Κουμπί επεξεργασίας για <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Εφαρμογή Διαγνωστικά στοιχεία</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Επεξεργασία <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Ακολουθήστε το ρεύμα</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> φωτογραφίες</translation>
 <translation id="2157660087437850958">εργαλείο επιλογής emoji</translation>
 <translation id="2157959690810728433">ΣΤΗΝ ΟΥΡΑ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">οψιδιανός</translation>
 <translation id="4021031199988160623">Κάντε εναλλαγή σε λειτουργία φορητού υπολογιστή για δοκιμή</translation>
 <translation id="4034824040120875894">Εκτυπωτής</translation>
+<translation id="4035877632587724847">Να μην επιτραπεί</translation>
 <translation id="4044093238444069296">Δεν είναι δυνατή η επικοινωνία με την πύλη.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="404928562651467259">ΠΡΟΕΙΔΟΠΟΙΗΣΗ</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Το κουμπί επιβεβαίωσης είναι πλέον απενεργοποιημένο</translation>
 <translation id="5144887194300568405">Αντιγραφή μετάφρασης</translation>
 <translation id="5145081769226915336">Να ενεργοποιείται αυτόματα η λειτουργία χαμηλού φωτισμού;</translation>
+<translation id="5145331109270917438">Ημερομηνία τροποποίησης</translation>
 <translation id="5154917547274118687">Μνήμη</translation>
 <translation id="5160857336552977725">Συνδεθείτε στη συσκευή σας <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Επιλέξτε Δημιουργία, για να δημιουργήσετε μια εικόνα με AI.
         Όλες οι εικόνες που δημιουργούνται θα εμφανίζονται αυτόματα εδώ.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Να μην εμφανιστεί ξανά</translation>
 <translation id="5975130252842127517">κοραλί</translation>
 <translation id="5984145644188835034">Προεπιλεγμένη ταπετσαρία</translation>
 <translation id="5996832681196460718">μετάξι</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Για να τελειώσετε, εισαγάγετε τον παλιό και τον νέο κωδικό πρόσβασης</translation>
 <translation id="6061772781719867950">Αποτυχημένα αιτήματα HTTP</translation>
 <translation id="6073292342939316679">μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="6073451960410192870">Διακοπή εγγραφής</translation>
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
 <translation id="6091080061796993741">κίτρινο</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Μη αυτόματη επαναφορά χρήσης δεδομένων</translation>
 <translation id="6243280677745499710">Έχει οριστεί</translation>
 <translation id="6250316632541035980">μπέικον και αυγά</translation>
-<translation id="6255213378196499011">Ρυθμίσεις λειτουργίας Βοήθησέ με να γράψω</translation>
 <translation id="6265268291107409527">Το επιλεγμένο πλήκτρο είναι <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Δεξί βέλος</translation>
 <translation id="6278428485366576908">Θέμα</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Αντιστοιχία επιθήματος τομέα</translation>
 <translation id="7769672763586021400">Αναγνωριστικό μοντέλου</translation>
 <translation id="7778717409420828014">Τα σχόλιά σας μας βοηθούν να βελτιώσουμε την εμπειρία του Chromebook και θα ελεγχθούν από την ομάδα μας. Λόγω του μεγάλου αριθμού αναφορών, δεν θα μπορέσουμε να στείλουμε απάντηση.</translation>
+<translation id="7781829728241885113">Χθες</translation>
 <translation id="7784116172884276937">Δεν έχουν ρυθμιστεί διακομιστές DNS.</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="779591286616261875">Αποστολή νέας αναφοράς</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Πληκτρολόγιο</translation>
 <translation id="7849030488395653706">Βόρειο Σέλας</translation>
 <translation id="7849737607196682401">δαντέλα</translation>
+<translation id="7850320739366109486">Μην ενοχλείτε</translation>
 <translation id="7850847810298646851">Ταπετσαρία με την υποστήριξη του Google AI</translation>
 <translation id="785170686607360576">τουλίπα</translation>
 <translation id="7856267634822906833">Οθόνη αφής Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Εκτέλεση δοκιμών και αντιμετώπιση προβλημάτων για προβλήματα εξοπλισμού</translation>
 <translation id="8422748173858722634">Αριθμός ΙΜΕΙ</translation>
 <translation id="8424039430705546751">κάτω</translation>
+<translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8431300646573772016">Νέα στοιχεία Chrome OS</translation>
 <translation id="843568408673868420">Συνδεσιμότητα στο διαδίκτυο</translation>
 <translation id="844521431886043384">Το DNS δεν έχει ρυθμιστεί.</translation>

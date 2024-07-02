@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">கிளிப்போர்டு</translation>
 <translation id="2597457036804169544">தளங்களில் டார்க் தீமினைப் பயன்படுத்த வேண்டாம்</translation>
 <translation id="2606760465469169465">தானியங்குச் சரிபார்ப்பு</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">குறிப்பிட்ட தளத்திற்கு JavaScriptஐ அனுமதி.</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
 <translation id="3628308229821498208">பரிந்துரைக்கப்படும் தேடல்கள்</translation>
 <translation id="3697164069658504920">இயக்கப்பட்டிருக்கும்போது, USB சாதனங்களைப் பயன்படுத்த தளங்கள் அனுமதி கேட்கலாம். முடக்கப்பட்டிருக்கும்போது, USB சாதனங்களைத் தளங்களால் பயன்படுத்த முடியாது.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">நீங்கள் ஒரு நபர்தானா என்பதைச் சரிபார்ப்பதற்காக நீங்கள் பார்வையிடும் தளம் Chrome உலாவியில் சிறிதளவு தகவலைச் சேமிக்கலாம்</translation>
 <translation id="3721953990244350188">நிராகரித்துவிட்டு அடுத்ததாக உள்ள செயலைப் பார்க்கலாம்</translation>
 <translation id="3744111561329211289">பின்புல ஒத்திசைவு</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">சாதனத்திற்கான அனைத்து அனுமதிகளையும் ரத்துசெய்யும்</translation>
 <translation id="497421865427891073">முன் செல்க</translation>
 <translation id="4976702386844183910">கடைசியாகப் பார்த்தது: <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">இந்தத் தளத்தில் மூன்றாம் தரப்புக் குக்கீகளை அனுமதித்துள்ளீர்கள்</translation>
 <translation id="4994033804516042629">தொடர்புகள் எதுவும் இல்லை</translation>
 <translation id="4996978546172906250">இதன்வழியாக பகிர்</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android அமைப்புகளில் கேமரா முடக்கப்பட்டுள்ளது</translation>
 <translation id="5691080386278724773">நீங்கள் உலாவும்போது உங்கள் தகவல்களை <ph name="SITE" /> தளம் பயன்படுத்தலாம்</translation>
 <translation id="5700761515355162635">மூன்றாம் தரப்புக் குக்கீகள் அனுமதிக்கப்பட்டுள்ளன</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">இதனால் <ph name="WEBSITE" /> தளத்தின் குக்கீகளும் பிற தளத் தரவும் நீக்கப்படும்</translation>
 <translation id="5723967018671998714">மறைநிலைப் பயன்முறையில் மூன்றாம் தரப்புக் குக்கீகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="5740126560802162366">தளங்கள் உங்கள் சாதனத்தில் தரவைச் சேமிக்கலாம்</translation>

@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519530786644929958">Ошибка скачивания. Повтор действия невозможен.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5205197603258285592">Сохранить изображение в…</translation>
 <translation id="5211488077761630279">Разрешить сайту <ph name="SITE_NAME" /> использовать разрешения <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помочь сделать интернет безопаснее для всех</translation>
 <translation id="5220945116117011963">Как создать мероприятия в календаре на странице с датами</translation>
@@ -1413,6 +1414,7 @@
 <translation id="8023878949384262191">Разворачивает раздел.</translation>
 <translation id="8027581147000338959">Открыть в новом окне</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
+<translation id="8035412398498507358">Фото</translation>
 <translation id="8040207962129315716">Спрашивать каждый раз</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />История поиска<ph name="END_LINK" /> и сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
@@ -1525,6 +1527,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Вы закрыли {count} предупреждение}one{Вы закрыли {count} предупреждение}few{Вы закрыли {count} предупреждения}many{Вы закрыли {count} предупреждений}other{Вы закрыли {count} предупреждения}}</translation>
 <translation id="8560253818350321773">Сначала показывать самые часто используемые элементы</translation>
 <translation id="8569721750632860947">Какой URL добавить в список для чтения?</translation>
+<translation id="8570765991595769633">Настроить карточки</translation>
 <translation id="8577056989960190117">Автозаполнить поле годом окончания срока действия: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
@@ -1664,6 +1667,7 @@
 <translation id="948048872540558976">Создать вкладку</translation>
 <translation id="952218985181984374">{count,plural, =1{Закладка сохранена.}one{{count} закладка сохранена.}few{{count} закладки сохранены.}many{{count} закладок сохранено.}other{{count} закладки сохранено.}}</translation>
 <translation id="952704832371081537">Отмена</translation>
+<translation id="955587716023217544">Изменить список аккаунтов</translation>
 <translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="96615566463761848">Показывать подсказки для вкладок с других устройств</translation>
 <translation id="973493300226275298">Отслеживайте цены на товар в разных интернет-магазинах. Если появится скидка, вы получите оповещение.</translation>

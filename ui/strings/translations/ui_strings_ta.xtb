@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> சாதனம்</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">இடது அம்பு</translation>
+<translation id="5633029987065897167">எதுவுமில்லை</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 நிமிடம்}other{# நிமிடங்கள்}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{இன்று பயன்படுத்தியுள்ளார்}=1{நேற்று பயன்படுத்தியுள்ளார்}other{# நாட்களுக்கு முன்பு பயன்படுத்தியுள்ளார்}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 நாள், }other{# நாட்கள், }}</translation>

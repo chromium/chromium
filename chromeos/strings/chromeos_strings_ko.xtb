@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">새벽부터 밤까지 화면 보호기</translation>
 <translation id="1167755866710282443">메뉴를 열어 키를 맞춤설정하세요. 이동하려면 메뉴를 드래그하세요.</translation>
 <translation id="1171349345463658120">모래 석호</translation>
+<translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1174073918202301297">바로가기 추가됨</translation>
 <translation id="11743817593307477">화살표 키를 사용하여 이 컨트롤을 원하는 게임 액션으로 이동합니다. Enter 키를 사용하여 컨트롤을 배치합니다. 취소하려면 Esc 키를 누르세요.</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">앨범</translation>
 <translation id="1572585716423026576">배경화면으로 설정</translation>
 <translation id="1578784163189013834">화면 보호기 배경 선택</translation>
+<translation id="1591562245178063882">이번 달</translation>
 <translation id="1593528591614229756">이동통신사 또는 관리자가 제공한 APN을 선택해야 합니다. APN을 선택하면 모든 맞춤 APN이 사용 중지됩니다. 잘못된 APN은 모바일 데이터 연결을 방해할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">미리보기 이미지</translation>
 <translation id="1611649489706141841">앞으로</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263"><ph name="ZONE_NUMBER" /> 영역</translation>
 <translation id="1745577949879301685">이미지를 로드할 수 없습니다. 네트워크 연결을 확인하거나 이미지를 다시 로드해 보세요.</translation>
 <translation id="1751249301761991853">개인</translation>
+<translation id="1751335846119670066">읽기 도우미</translation>
 <translation id="1753496554272155572">배경화면 미리보기 종료</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />의 수정 버튼입니다.</translation>
 <translation id="1755556344721611131">진단 앱</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> 수정</translation>
 <translation id="2138109643290557664">바다에 누워</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">오늘</translation>
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2157660087437850958">그림 이모티콘 선택 도구입니다</translation>
 <translation id="2157959690810728433">대기 중</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">흑요석</translation>
 <translation id="4021031199988160623">테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="4034824040120875894">프린터</translation>
+<translation id="4035877632587724847">허용 안함</translation>
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">확인 버튼이 사용 중지되었습니다.</translation>
 <translation id="5144887194300568405">번역 복사</translation>
 <translation id="5145081769226915336">어두운 모드를 자동으로 사용 설정하시겠습니까?</translation>
+<translation id="5145331109270917438">수정된 날짜</translation>
 <translation id="5154917547274118687">메모리</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5168185087976003268">배터리 상태</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">AI로 이미지를 만들려면 '만들기'를 선택하세요.
         생성된 모든 이미지가 여기에 자동으로 표시됩니다.</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
+<translation id="5972801171078377748">다시 표시 안함</translation>
 <translation id="5975130252842127517">산호색</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="5996832681196460718">실크</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">완료하려면 이전 및 새 비밀번호를 입력하세요.</translation>
 <translation id="6061772781719867950">HTTPS 요청 실패함</translation>
 <translation id="6073292342939316679">키보드 밝기를 낮춥니다</translation>
+<translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6075872808778243331">(Android) HTTP 지연 시간</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6091080061796993741">노란색</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">데이터 사용량 수동 재설정</translation>
 <translation id="6243280677745499710">현재 설정</translation>
 <translation id="6250316632541035980">베이컨과 달걀</translation>
-<translation id="6255213378196499011">작성 지원 기능 설정</translation>
 <translation id="6265268291107409527">선택한 키는 <ph name="KEYS" />입니다. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">오른쪽 화살표</translation>
 <translation id="6278428485366576908">테마</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
 <translation id="7778717409420828014">사용자의 의견은 Google팀에서 검토할 예정이며 Chromebook 사용 환경을 개선하는 데 도움이 됩니다. 접수되는 의견이 많아 직접 답변해 드리기는 어렵습니다.</translation>
+<translation id="7781829728241885113">어제</translation>
 <translation id="7784116172884276937">DNS 서버가 설정되어 있지 않습니다.</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="779591286616261875">신규 보고서 보내기</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">키보드</translation>
 <translation id="7849030488395653706">북극광</translation>
 <translation id="7849737607196682401">레이스</translation>
+<translation id="7850320739366109486">알림 일시중지</translation>
 <translation id="7850847810298646851">Google AI 기반 배경화면</translation>
 <translation id="785170686607360576">튤립</translation>
 <translation id="7856267634822906833">블루투스 터치스크린</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">테스트 실행 및 하드웨어 문제 해결</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">아래</translation>
+<translation id="8428213095426709021">설정</translation>
 <translation id="8431300646573772016">ChromeOS의 새로운 기능</translation>
 <translation id="843568408673868420">인터넷 연결</translation>
 <translation id="844521431886043384">DNS가 설정되어 있지 않습니다.</translation>

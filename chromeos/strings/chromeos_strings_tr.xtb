@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Şafaktan geceye ekran koruyucu</translation>
 <translation id="1167755866710282443">Tuşları özelleştirmek için menüyü açın. Taşımak için menüyü sürükleyin.</translation>
 <translation id="1171349345463658120">kumlu lagün</translation>
+<translation id="1173894706177603556">Yeniden adlandır</translation>
 <translation id="1174073918202301297">Kısayol eklendi</translation>
 <translation id="11743817593307477">Bu kontrolü, istediğiniz oyun işlemine taşımak için ok tuşlarını kullanın. Kontrolü yerleştirmek için Enter tuşunu kullanın. İptal etmek için Escape tuşunu kullanın.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
+<translation id="1591562245178063882">Bu ay</translation>
 <translation id="1593528591614229756">Mobil sağlayıcınız veya yöneticiniz tarafından sağlanan APN'leri seçtiğinizden emin olun. Bir APN'yi seçtiğinizde tüm özel APN'ler devre dışı bırakılır. Geçersiz APN'ler, mobil bağlantınızın kesilmesine neden olabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263"><ph name="ZONE_NUMBER" />. Bölge</translation>
 <translation id="1745577949879301685">Resimler yüklenemedi. Ağ bağlantınızı kontrol edin veya resimleri tekrar yüklemeyi deneyin.</translation>
 <translation id="1751249301761991853">Kişisel</translation>
+<translation id="1751335846119670066">Okumama yardım et</translation>
 <translation id="1753496554272155572">Duvar kağıdı önizlemesinden çık</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> için düzenle düğmesi.</translation>
 <translation id="1755556344721611131">Teşhis Aracı uygulaması</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Düzenle: <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Ekranda süzülün</translation>
 <translation id="2141644705054017895">%<ph name="PERCENTAGE_VALUE" /></translation>
+<translation id="2148716181193084225">Bugün</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="2157660087437850958">emoji seç</translation>
 <translation id="2157959690810728433">SIRAYA ALINDI</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidiyen</translation>
 <translation id="4021031199988160623">Test etmek için dizüstü bilgisayar moduna geçin</translation>
 <translation id="4034824040120875894">Yazıcı</translation>
+<translation id="4035877632587724847">İzin verme</translation>
 <translation id="4044093238444069296">Ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="404928562651467259">UYARI</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Onayla düğmesi şu anda devre dışı</translation>
 <translation id="5144887194300568405">Çeviriyi kopyala</translation>
 <translation id="5145081769226915336">Koyu mod otomatik olarak açılsın mı?</translation>
+<translation id="5145331109270917438">Değiştirilme tarihi</translation>
 <translation id="5154917547274118687">Bellek</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> cihazınızda oturum açın</translation>
 <translation id="5168185087976003268">Pil sağlığı</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Yapay zeka ile resim oluşturmak için "Oluştur"u seçin.
         Oluşturulan tüm resimler otomatik olarak burada gösterilir.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Bir daha gösterme</translation>
 <translation id="5975130252842127517">mercan</translation>
 <translation id="5984145644188835034">Varsayılan Duvar Kağıdı</translation>
 <translation id="5996832681196460718">ipek</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
 <translation id="6061772781719867950">Başarısız HTTP istekleri</translation>
 <translation id="6073292342939316679">klavye parlaklığını azalt</translation>
+<translation id="6073451960410192870">Kaydı durdur</translation>
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6091080061796993741">sarı</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Veri kullanımını manuel olarak sıfırla</translation>
 <translation id="6243280677745499710">Şu anda ayarlı</translation>
 <translation id="6250316632541035980">pastırmalı yumurta</translation>
-<translation id="6255213378196499011">Yazmama yardım et ayarları</translation>
 <translation id="6265268291107409527"><ph name="KEYS" /> tuşu seçildi. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Sağ ok</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Alan adı son eki eşleşmesi</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
 <translation id="7778717409420828014">Geri bildiriminiz ekibimiz tarafından incelenecek ve Chromebook deneyimini iyileştirmemize yardımcı olacaktır. Çok sayıda rapor aldığımız için yanıt gönderemiyoruz.</translation>
+<translation id="7781829728241885113">Dün</translation>
 <translation id="7784116172884276937">DNS sunucusu ayarlanmamış</translation>
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="779591286616261875">Yeni rapor gönder</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Klavye</translation>
 <translation id="7849030488395653706">kuzey ışıkları</translation>
 <translation id="7849737607196682401">bağcık</translation>
+<translation id="7850320739366109486">Rahatsız Etmeyin</translation>
 <translation id="7850847810298646851">Google Yapay Zeka destekli duvar kağıdı</translation>
 <translation id="785170686607360576">lale</translation>
 <translation id="7856267634822906833">Bluetooth dokunmatik ekran</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Donanım sorunlarına yönelik testler yapıp ve sorun giderme adımları uygulayın</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">aşağı</translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8431300646573772016">ChromeOS yenilikleri</translation>
 <translation id="843568408673868420">İnternet Bağlantısı</translation>
 <translation id="844521431886043384">DNS ayarlanmamış</translation>

@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2597457036804169544">අඩවිවලට අඳුරු තේමාව නොයොදන්න</translation>
 <translation id="2606760465469169465">ස්වයංව සත්‍යාපනය කරන්න</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">නිශ්චිත අඩවියක් සඳහා ජාවාස්ක්‍රිප්ට් වලට ඉඩ දෙන්න.</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2677748264148917807">හැර යන්න</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">පෙරදසුන</translation>
 <translation id="3628308229821498208">යෝජිත සෙවීම්</translation>
 <translation id="3697164069658504920">සක්‍රීය වූ විට, අඩවිවලට USB උපාංග භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට USB උපාංග භාවිත කළ නොහැක.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">ඔබ පිවිසෙන අඩවියකට ප්‍රධාන වශයෙන් ඔබ බොට් කෙනෙක් නොවන බව වලංගු කිරීමට, Chrome සමග කුඩා තතු ප්‍රමාණයක් සුරැකීමට හැක</translation>
 <translation id="3721953990244350188">අස් කර මීළඟ පවතින ක්‍රියාව පෙන්වන්න</translation>
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">උපාංගය සඳහා සියලුම අවසර අහෝසි කරන්න</translation>
 <translation id="497421865427891073">ඉදිරියට යන්න</translation>
 <translation id="4976702386844183910">අවසන් වරට <ph name="DATE" /> පිවිසි</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ඔබ මෙම අඩවිය සඳහා තුන්වන පාර්ශ්ව කුකීස් ඉඩ දී ඇත</translation>
 <translation id="4994033804516042629">සම්බන්ධතා කිසිවක් හමු නොවීය</translation>
 <translation id="4996978546172906250">හරහා බෙදාගන්න</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android සැකසීම් තුළ කැමරාව අක්‍රිය කර ඇත</translation>
 <translation id="5691080386278724773">ඔබ බ්‍රවුස් කරන විට <ph name="SITE" /> හට ඔබේ තොරතුරු භාවිත කළ හැක</translation>
 <translation id="5700761515355162635">තුන්වන පාර්ශ්ව කුකීස් ඉඩ දී ඇත</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">මෙය <ph name="WEBSITE" /> සඳහා වන කුකී සහ අනෙකුත් අඩවි දත්ත මකයි</translation>
 <translation id="5723967018671998714">අප්‍රසිද්ධ ප්‍රකාරය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කෙරේ</translation>
 <translation id="5740126560802162366">අඩවිවලට ඔබේ උපාංගයෙහි දත්ත සුරැකිය හැක</translation>

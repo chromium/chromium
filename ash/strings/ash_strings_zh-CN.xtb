@@ -142,6 +142,7 @@
 <translation id="147310119694673958">手机电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">开启/关闭热点。热点处于开启状态，且已连接 1 部设备。</translation>
 <translation id="1479909375538722835">悬浮无障碍功能菜单</translation>
+<translation id="1483493594462132177">发送</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">借助语音输入功能，您可以通过说话来输入内容。选中某个文本字段后，按语音输入键或选择屏幕底部的麦克风图标。您的语音输入语言已设置为<ph name="LANGUAGE" />。系统会将语音发送给 Google 以供处理。您可以随时在“设置”&gt;“无障碍”中更改语音输入语言。</translation>
 <translation id="1487931858675166540">“<ph name="FIRST_ITEM_TITLE" />”与“<ph name="SECOND_ITEM_TITLE" />”交换了位置</translation>
@@ -1356,6 +1357,7 @@
 <translation id="5975235751479998104">正向浏览各个窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
+<translation id="5982119059638483922">按 Fn+搜索键或按 Shift 键可停用。</translation>
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>

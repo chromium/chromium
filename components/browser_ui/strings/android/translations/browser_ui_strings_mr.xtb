@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटवर गडद थीम लागू करू नका</translation>
 <translation id="2606760465469169465">ऑटो पडताळणी</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">विशिष्ट साइटसाठी JavaScript ला अनुमती द्या.</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2677748264148917807">सोडा</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3628308229821498208">सुचवलेले शोध</translation>
 <translation id="3697164069658504920">सुरू असताना, साइट USB डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट USB डिव्हाइस वापरू शकत नाहीत.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">तुम्ही भेट देता ती साइट Chrome सह थोड्या प्रमाणात माहिती सेव्ह करू शकते, जी प्रामुख्याने तुम्ही बॉट नाही हे प्रमाणित करते</translation>
 <translation id="3721953990244350188">डिसमिस करा आणि पुढील उपलब्ध कृती दाखवा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">डिव्हाइससाठीच्या सर्व परवानग्या रद्द करा</translation>
 <translation id="497421865427891073">पुढे जा</translation>
 <translation id="4976702386844183910"><ph name="DATE" /> रोजी शेवटची भेट दिली</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">तुम्ही या साइटसाठी तृतीय पक्ष कुकीना अनुमती दिली आहे</translation>
 <translation id="4994033804516042629">संपर्क सापडले नाहीत</translation>
 <translation id="4996978546172906250">याद्वारे शेअर करा</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android सेटिंग्जमध्ये कॅमेरा बंद केला आहे</translation>
 <translation id="5691080386278724773">तुम्ही ब्राउझ करत असताना <ph name="SITE" /> तुमची माहिती वापरू शकते</translation>
 <translation id="5700761515355162635">तृतीय पक्ष कुकीना अनुमती दिली</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">हे <ph name="WEBSITE" /> साठी कुकी आणि इतर साइट डेटा हटवते</translation>
 <translation id="5723967018671998714">गुप्त मोडमध्ये तृतीय पक्ष कुकी ब्लॉक केल्या जातात</translation>
 <translation id="5740126560802162366">साइट या तुमच्या डिव्हाइसवर डेटा सेव्ह करू शकतात</translation>

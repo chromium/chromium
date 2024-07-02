@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> isistimu</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
 <translation id="5613020302032141669">Umcibisholo ongakwesokunxele</translation>
+<translation id="5633029987065897167">Akunalutho</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 iminithi}one{# amaminithi}other{# amaminithi}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Iyasebenza namhlanje}=1{Isebenze ngosuku olungu-1 oludlule}one{Isebenze ngezinsuku ezingu-# ezedlule}other{Isebenze ngezinsuku ezingu-# ezedlule}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 usuku ne- }one{# izinsuku ne- }other{# izinsuku ne- }}</translation>

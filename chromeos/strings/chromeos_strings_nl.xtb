@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Screensaver Van dageraad tot donker</translation>
 <translation id="1167755866710282443">Open het menu om sleutels aan te passen. Sleep het menu om te verplaatsen.</translation>
 <translation id="1171349345463658120">lagune met zandstrand</translation>
+<translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1174073918202301297">Snelkoppeling toegevoegd</translation>
 <translation id="11743817593307477">Gebruik de pijltoetsen om dit bedieningselement naar de gewenste game-actie te verplaatsen. Druk op Enter om het bedieningselement te plaatsen. Druk op Escape om te annuleren.</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
 <translation id="1578784163189013834">Achtergrond voor screensaver selecteren</translation>
+<translation id="1591562245178063882">Deze maand</translation>
 <translation id="1593528591614229756">Zorg dat je APN's selecteert die worden geleverd door je mobiele provider of beheerder. Als je een APN selecteert, worden aangepaste APN's uitgezet. Ongeldige APN's kunnen je mobiele verbinding verstoren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Voorbeeld van afbeelding bekijken</translation>
 <translation id="1611649489706141841">vooruit</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kan afbeeldingen niet laden. Check de netwerkverbinding of probeer de afbeeldingen opnieuw te laden.</translation>
 <translation id="1751249301761991853">Persoonlijk</translation>
+<translation id="1751335846119670066">Help me met lezen</translation>
 <translation id="1753496554272155572">Achtergrondvoorbeeld sluiten</translation>
 <translation id="1754578112426924640">Knop Bewerken voor <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> bewerken</translation>
 <translation id="2138109643290557664">Voorbijzweven</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Vandaag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2157660087437850958">emoji-kiezer</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidiaan</translation>
 <translation id="4021031199988160623">Schakel over naar de laptopmodus om te testen</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4035877632587724847">Niet toestaan</translation>
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">De knop Bevestigen staat nu uit</translation>
 <translation id="5144887194300568405">Vertaling kopiëren</translation>
 <translation id="5145081769226915336">Donkere modus automatisch aanzetten?</translation>
+<translation id="5145331109270917438">Bijgewerkt op</translation>
 <translation id="5154917547274118687">Geheugen</translation>
 <translation id="5160857336552977725">Log in bij je <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Batterijconditie</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Selecteer Maken om een afbeelding met AI te maken.
         Alle gemaakte afbeeldingen komen automatisch hier te staan.</translation>
 <translation id="5972388717451707488">Engine updaten</translation>
+<translation id="5972801171078377748">Niet opnieuw laten zien</translation>
 <translation id="5975130252842127517">koraal</translation>
 <translation id="5984145644188835034">Standaardachtergrond</translation>
 <translation id="5996832681196460718">zijde</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Geef je oude en nieuwe wachtwoord op om te voltooien</translation>
 <translation id="6061772781719867950">Mislukte HTTPS-verzoeken</translation>
 <translation id="6073292342939316679">helderheid van toetsenbord verlagen</translation>
+<translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6075872808778243331">(Android) HTTP-vertraging</translation>
 <translation id="6078323886959318429">Snelle link toevoegen</translation>
 <translation id="6091080061796993741">geel</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Datagebruik handmatig resetten</translation>
 <translation id="6243280677745499710">Momenteel ingesteld</translation>
 <translation id="6250316632541035980">eieren met spek</translation>
-<translation id="6255213378196499011">Instellingen voor Help me met schrijven</translation>
 <translation id="6265268291107409527">De geselecteerde toets is <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Pijl-rechts</translation>
 <translation id="6278428485366576908">Thema</translation>
@@ -1215,6 +1222,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7763470514545477072">Overeenkomst voor domeinextensie</translation>
 <translation id="7769672763586021400">Model-ID</translation>
 <translation id="7778717409420828014">Met jouw feedback kunnen we de functionaliteit van de Chromebook verbeteren. Je feedback wordt beoordeeld door ons team. Vanwege het grote aantal rapporten kunnen we je geen antwoord sturen.</translation>
+<translation id="7781829728241885113">Gisteren</translation>
 <translation id="7784116172884276937">Er zijn geen DNS-servers ingesteld</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="779591286616261875">Nieuw rapport sturen</translation>
@@ -1230,6 +1238,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7849030488395653706">noorderlicht</translation>
 <translation id="7849737607196682401">kant</translation>
+<translation id="7850320739366109486">Niet storen</translation>
 <translation id="7850847810298646851">Achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
@@ -1332,6 +1341,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8420955526972171689">Tests uitvoeren en hardwareproblemen oplossen</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">omlaag</translation>
+<translation id="8428213095426709021">Instellingen</translation>
 <translation id="8431300646573772016">Nieuw bij Chrome OS</translation>
 <translation id="843568408673868420">Internetverbinding</translation>
 <translation id="844521431886043384">DNS is niet ingesteld</translation>

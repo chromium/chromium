@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Pauseskærmen Daggry til mørkets frembrud</translation>
 <translation id="1167755866710282443">Åbn menuen for at tilpasse nøgler. Træk i menuen for at flytte den.</translation>
 <translation id="1171349345463658120">sandet lagune</translation>
+<translation id="1173894706177603556">Omdøb</translation>
 <translation id="1174073918202301297">Genvejen blev tilføjet</translation>
 <translation id="11743817593307477">Brug piletasterne til at flytte dette styringselement til den ønskede spilhandling. Brug Enter-tasten til at placere styringselementet. Brug Escape-tasten for at annullere.</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1578784163189013834">Vælg baggrund til Pauseskærm</translation>
+<translation id="1591562245178063882">Denne måned</translation>
 <translation id="1593528591614229756">Sørg for at vælge APN'er fra dit mobilselskab eller din administrator. Når du vælger et APN, deaktiveres alle tilpassede APN'er. Ugyldige APN'er kan forstyrre din mobilforbindelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Billederne kunne ikke indlæses. Tjek din netværksforbindelse, eller prøv at indlæse billederne igen.</translation>
 <translation id="1751249301761991853">Personlig</translation>
+<translation id="1751335846119670066">Hjælp mig med at læse</translation>
 <translation id="1753496554272155572">Forlad forhåndsvisning af baggrund</translation>
 <translation id="1754578112426924640">Knappen Rediger for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Rediger <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
 <translation id="2157660087437850958">emojivælger</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Skift til computertilstand for at teste</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4035877632587724847">Tillad ikke</translation>
 <translation id="4044093238444069296">Gateway kan ikke kontaktes</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="404928562651467259">ADVARSEL</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Knappen Bekræft er nu deaktiveret</translation>
 <translation id="5144887194300568405">Kopiér oversættelse</translation>
 <translation id="5145081769226915336">Vil du aktivere mørk tilstand automatisk?</translation>
+<translation id="5145331109270917438">Dato for ændring</translation>
 <translation id="5154917547274118687">Hukommelse</translation>
 <translation id="5160857336552977725">Log ind på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Batteriets tilstand</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Vælg "Opret" for at oprette et billede med AI.
         Alle oprettede billeder vises automatisk her.</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
+<translation id="5972801171078377748">Vis ikke igen</translation>
 <translation id="5975130252842127517">koralrød</translation>
 <translation id="5984145644188835034">Standardbaggrund</translation>
 <translation id="5996832681196460718">silke</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
 <translation id="6061772781719867950">Mislykkede HTTP-anmodninger</translation>
 <translation id="6073292342939316679">reducer tastaturets lysstyrke</translation>
+<translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6091080061796993741">gul</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Nulstil dataforbrug manuelt</translation>
 <translation id="6243280677745499710">Nuværende</translation>
 <translation id="6250316632541035980">bacon og æg</translation>
-<translation id="6255213378196499011">Indstillinger for Hjælp mig med at skrive</translation>
 <translation id="6265268291107409527">Den valgte tast er <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Højrepil</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Match af domænesuffiks</translation>
 <translation id="7769672763586021400">Model-id</translation>
 <translation id="7778717409420828014">Din feedback hjælper os med at forbedre Chromebook-oplevelsen, og den vil blive gennemgået af vores team. Vi modtager mange indrapporteringer, så vi kan ikke sende dig et personligt svar.</translation>
+<translation id="7781829728241885113">I går</translation>
 <translation id="7784116172884276937">Der er ikke konfigureret nogen DNS-servere</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="779591286616261875">Send ny rapport</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7849030488395653706">nordlys</translation>
 <translation id="7849737607196682401">blonde</translation>
+<translation id="7850320739366109486">Vil ikke forstyrres</translation>
 <translation id="7850847810298646851">Baggrund fra Googles AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth-touchskærm</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Kør tests og fejlfinding af hardwareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8431300646573772016">Nyt i ChromeOS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>

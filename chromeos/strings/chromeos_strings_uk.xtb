@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Заставка "Від світанку до заходу сонця"</translation>
 <translation id="1167755866710282443">Відкрийте меню, щоб налаштувати клавіші. Щоб перемістити меню, перетягніть його.</translation>
 <translation id="1171349345463658120">піщана лагуна</translation>
+<translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1174073918202301297">Ярлик додано</translation>
 <translation id="11743817593307477">За допомогою клавіш зі стрілками перемістіть цей елемент керування до потрібної дії в грі. Щоб розмістити елемент керування, натисніть клавішу Enter. Щоб скасувати, натисніть клавішу Escape.</translation>
 <translation id="1175697296044146566">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Альбоми</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
 <translation id="1578784163189013834">Вибрати фон для заставки</translation>
+<translation id="1591562245178063882">Цей місяць</translation>
 <translation id="1593528591614229756">Виберіть точки доступу (APN), надані вашим мобільним оператором або адміністратором. Якщо вибрати APN, усі спеціальні APN буде вимкнено. Недійсні APN можуть переривати роботу мобільної мережі. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Попередній перегляд зображення</translation>
 <translation id="1611649489706141841">уперед</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Не вдалося завантажити зображення. Перевірте з’єднання з мережею або повторіть спробу.</translation>
 <translation id="1751249301761991853">Персоналізація</translation>
+<translation id="1751335846119670066">Допомога із читанням</translation>
 <translation id="1753496554272155572">Закрити попередній перегляд фонового малюнка</translation>
 <translation id="1754578112426924640">Кнопка "Редагувати" для комбінації клавіш <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Додаток Діагностика</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Редагувати (<ph name="ACTION_NAME" />)</translation>
 <translation id="2138109643290557664">Потік</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2157660087437850958">панель смайлів</translation>
 <translation id="2157959690810728433">У ЧЕРЗІ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">обсидіану</translation>
 <translation id="4021031199988160623">Щоб перевірити клавіатуру, перейдіть у режим ноутбука</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4035877632587724847">Не дозволяти</translation>
 <translation id="4044093238444069296">Не вдається зв’язатися зі шлюзом</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Кнопку підтвердження вимкнено</translation>
 <translation id="5144887194300568405">Копіювати переклад</translation>
 <translation id="5145081769226915336">Вмикати темний режим автоматично?</translation>
+<translation id="5145331109270917438">Дата змінення</translation>
 <translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Щоб створити зображення за допомогою ШІ, натисніть "Створити".
         Усі згенеровані зображення з’являтимуться тут автоматично.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Більше не показувати</translation>
 <translation id="5975130252842127517">кораловий</translation>
 <translation id="5984145644188835034">Фоновий малюнок за умовчанням</translation>
 <translation id="5996832681196460718">шовку</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Щоб завершити, введіть старий і новий паролі</translation>
 <translation id="6061772781719867950">невдалі запити HTTPS</translation>
 <translation id="6073292342939316679">зменшити яскравість клавіатури</translation>
+<translation id="6073451960410192870">Припинити запис</translation>
 <translation id="6075872808778243331">Затримка HTTP (Android)</translation>
 <translation id="6078323886959318429">Додати ярлик</translation>
 <translation id="6091080061796993741">жовтого</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Вручну скидати дані про використання трафіку</translation>
 <translation id="6243280677745499710">Налаштовано зараз</translation>
 <translation id="6250316632541035980">яєчня з беконом</translation>
-<translation id="6255213378196499011">Налаштування функції "Допомога з текстом"</translation>
 <translation id="6265268291107409527">Вибрано клавішу <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Стрілка вправо</translation>
 <translation id="6278428485366576908">Тема</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Збіг із суфіксом домену</translation>
 <translation id="7769672763586021400">Ідентифікатор моделі</translation>
 <translation id="7778717409420828014">Наша команда перегляне ваш відгук. Він допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
+<translation id="7781829728241885113">Учора</translation>
 <translation id="7784116172884276937">DNS-сервери не налаштовано</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="779591286616261875">Надіслати новий звіт</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7849030488395653706">полярне сяйво</translation>
 <translation id="7849737607196682401">мережива</translation>
+<translation id="7850320739366109486">Не турбувати</translation>
 <translation id="7850847810298646851">Фоновий малюнок, створений за допомогою ШІ від Google</translation>
 <translation id="785170686607360576">тюльпан</translation>
 <translation id="7856267634822906833">Сенсорний екран із Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Проводьте тести й вирішуйте проблеми з апаратним забезпеченням</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">униз</translation>
+<translation id="8428213095426709021">Налаштування</translation>
 <translation id="8431300646573772016">Нові функції ОС Chrome</translation>
 <translation id="843568408673868420">Інтернет-з’єднання</translation>
 <translation id="844521431886043384">DNS не налаштовано</translation>

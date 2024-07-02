@@ -97,6 +97,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Otvorite aplikaciju Istražite</translation>
+<translation id="129469256578833241">Natrag na sažetak</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pritisnite <ph name="LAUNCHER_KEY_NAME" /> + g bilo kada</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
@@ -142,6 +143,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena i povezan je 1 uređaj.</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
+<translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Uz diktiranje možete pisati putem glasovnih komandi. Pritisnite tipku za diktiranje ili odaberite ikonu mikrofona u donjem dijelu ekrana dok ste u polju za unos teksta. Jezik diktiranja je postavljen na <ph name="LANGUAGE" />. Govor se šalje Googleu na obradu. Jezik diktiranja možete promijeniti bilo kada u Postavkama &gt; Pristupačnost.</translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> je zamijenjena stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
@@ -256,6 +258,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da primate ažuriranja pomoću ekrana na dodir, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
+<translation id="1929331825127010451">Natrag na pitanje</translation>
 <translation id="1948405482892809935">Prebacite se na sljedećeg korisnika</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">Snimanje ekrana je završeno</translation>
@@ -1151,6 +1154,7 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="5238719049014159442">Otvorite/zatvorite Pokretač</translation>
 <translation id="5240725217819182328">Brzi pristup određenim stranicama ili radnjama u instaliranim aplikacijama</translation>
 <translation id="5245201184978705914">Nije moguće generirati transkript</translation>
+<translation id="5251174953851719648">Osvježavanje sadržaja</translation>
 <translation id="5253783950165989294">Povezano je s uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
@@ -1358,6 +1362,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5975235751479998104">Kretanje kroz prozore naprijed</translation>
 <translation id="5978382165065462689">Dijeljenje kontrole nad vašim ekranom putem pomoći na daljinu.</translation>
 <translation id="5980301590375426705">Napusti sesiju gosta</translation>
+<translation id="5982119059638483922">Da otkažete, pritisnite Fn i tipku za pretraživanje ili Shift.</translation>
 <translation id="5983567367406220847">Pristupna tačka je isključena zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Za primanje ažuriranja, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
@@ -1414,6 +1419,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6147182561428020853">Sada možete blokirati aplikacije instalirane na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
+<translation id="6158923546703693047">Podaci o izvoru sadržaja</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
 <translation id="616543563528926612">Prečica desnog klika je ažurirana iz tipke <ph name="LAUNCHER_KEY_NAME" /> i klik u Alt i klik</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
@@ -1998,6 +2004,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8315514906653279104">Uključivanje…</translation>
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Postavite pitanje.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Loš rezultat</translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>

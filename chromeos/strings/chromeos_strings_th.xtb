@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">ภาพพักหน้าจอรุ่งเช้าจนถึงกลางคืน</translation>
 <translation id="1167755866710282443">เปิดเมนูเพื่อปรับแต่งคีย์ ลากเมนูเพื่อย้าย</translation>
 <translation id="1171349345463658120">ทะเลสาบที่เต็มไปด้วยทราย</translation>
+<translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1174073918202301297">เพิ่มทางลัดแล้ว</translation>
 <translation id="11743817593307477">ใช้ปุ่มลูกศรเพื่อย้ายตัวควบคุมนี้ไปยังการดำเนินการในเกมที่ต้องการ ใช้ปุ่ม Enter เพื่อวางตัวควบคุม ใช้ปุ่ม Escape เพื่อยกเลิก</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> เครื่องนี้จัดการโดย <ph name="MANAGER" /></translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">อัลบั้ม</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
 <translation id="1578784163189013834">เลือกพื้นหลังของโปรแกรมรักษาหน้าจอ</translation>
+<translation id="1591562245178063882">เดือนนี้</translation>
 <translation id="1593528591614229756">โปรดเลือก APN ที่มาจากผู้ให้บริการเครือข่ายมือถือหรือผู้ดูแลระบบ การเลือก APN จะปิดใช้ APN ที่กําหนดเอง APN ที่ไม่ถูกต้องอาจทำให้การเชื่อมต่อมือถือของคุณหยุดชะงัก <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">โซน <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">โหลดรูปภาพไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายหรือลองโหลดรูปภาพอีกครั้ง</translation>
 <translation id="1751249301761991853">ส่วนบุคคล</translation>
+<translation id="1751335846119670066">ช่วยฉันอ่าน</translation>
 <translation id="1753496554272155572">ออกจากตัวอย่างวอลเปเปอร์</translation>
 <translation id="1754578112426924640">ปุ่มแก้ไขสำหรับ <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="1755556344721611131">แอปการวินิจฉัย</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">แก้ไข<ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">ล่องลอยผ่านไป</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">วันนี้</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
 <translation id="2157660087437850958">เครื่องมือเลือกอีโมจิ</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">ออบซิเดียน</translation>
 <translation id="4021031199988160623">เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
+<translation id="4035877632587724847">ไม่อนุญาต</translation>
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="404928562651467259">คำเตือน</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">ปิดใช้ปุ่มยืนยันแล้ว</translation>
 <translation id="5144887194300568405">คัดลอกคำแปล</translation>
 <translation id="5145081769226915336">เปิดโหมดมืดโดยอัตโนมัติใช่ไหม</translation>
+<translation id="5145331109270917438">วันที่แก้ไข</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>
 <translation id="5160857336552977725">ลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">เลือก "สร้าง" เพื่อสร้างรูปภาพด้วย AI
         รูปภาพที่สร้างขึ้นทั้งหมดจะปรากฏที่นี่โดยอัตโนมัติ</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
+<translation id="5972801171078377748">ไม่ต้องแสดงข้อความนี้อีก</translation>
 <translation id="5975130252842127517">ส้มแดงคอรัล</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
 <translation id="5996832681196460718">ไหม</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">ป้อนรหัสผ่านเดิมและรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่านให้เสร็จ</translation>
 <translation id="6061772781719867950">คำขอ HTTPS ที่ไม่สำเร็จ</translation>
 <translation id="6073292342939316679">ลดความสว่างของแป้นพิมพ์</translation>
+<translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6075872808778243331">(Android) เวลาในการตอบสนองของ HTTP</translation>
 <translation id="6078323886959318429">เพิ่มทางลัด</translation>
 <translation id="6091080061796993741">เหลือง</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตด้วยตนเอง</translation>
 <translation id="6243280677745499710">วอลเปเปอร์ปัจจุบัน</translation>
 <translation id="6250316632541035980">เบคอนและไข่</translation>
-<translation id="6255213378196499011">การตั้งค่าฟีเจอร์ช่วยฉันเขียน</translation>
 <translation id="6265268291107409527">คีย์ที่เลือกคือ <ph name="KEYS" /> <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ลูกศรขวา</translation>
 <translation id="6278428485366576908">ธีม</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">การจับคู่ส่วนต่อท้ายโดเมน</translation>
 <translation id="7769672763586021400">รหัสรุ่น</translation>
 <translation id="7778717409420828014">ความคิดเห็นของคุณจะช่วยเราปรับปรุงประสบการณ์การใช้งาน Chromebook และได้รับการตรวจสอบจากทีม แต่เราจะตอบกลับไม่ได้เนื่องจากได้รับรายงานเข้ามาเป็นจำนวนมาก</translation>
+<translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7784116172884276937">ไม่มีเซิร์ฟเวอร์ DNS ที่ตั้งค่าไว้</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="779591286616261875">ส่งรายงานใหม่</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7849030488395653706">แสงเหนือ</translation>
 <translation id="7849737607196682401">ลูกไม้</translation>
+<translation id="7850320739366109486">ห้ามรบกวน</translation>
 <translation id="7850847810298646851">วอลเปเปอร์ที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="785170686607360576">ทิวลิป</translation>
 <translation id="7856267634822906833">หน้าจอสัมผัสบลูทูธ</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ลง</translation>
+<translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>
 <translation id="843568408673868420">การเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="844521431886043384">ไม่ได้ตั้งค่า DNS</translation>

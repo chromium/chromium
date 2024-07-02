@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="519530786644929958">Помилка завантаження.</translation>
 <translation id="5197255632782567636">Інтернет</translation>
+<translation id="5205197603258285592">Зберегти зображення в…</translation>
 <translation id="5211488077761630279">Дозволити сайту <ph name="SITE_NAME" /> використовувати <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="5220945116117011963">Створюйте події в календарі через дати</translation>
@@ -1413,6 +1414,7 @@
 <translation id="8023878949384262191">Розгортає розділ.</translation>
 <translation id="8027581147000338959">Відкрити в новому вікні</translation>
 <translation id="8032569120109842252">У підписках</translation>
+<translation id="8035412398498507358">Фото</translation>
 <translation id="8040207962129315716">Запитувати щоразу</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="804225253087497565">Коли ви входите в обліковий запис Google, у ньому можуть зберігатись <ph name="BEGIN_LINK" />Історія пошуку<ph name="END_LINK" /> та <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" />. Ви можете будь-коли видалити їх.</translation>
@@ -1525,6 +1527,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Ви відхилили {count} попередження}one{Ви відхилили {count} попередження}few{Ви відхилили {count} попередження}many{Ви відхилили {count} попереджень}other{Ви відхилили {count} попередження}}</translation>
 <translation id="8560253818350321773">Спочатку показувати продукти, які часто використовуються.</translation>
 <translation id="8569721750632860947">Яку URL-адресу ви хочете додати в список читання?</translation>
+<translation id="8570765991595769633">Налаштувати картки</translation>
 <translation id="8577056989960190117">Автоматично заповнити рік закінчення строку дії (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Вимкнено</translation>
 <translation id="8591976964826315682">Блокувати сторонні файли cookie в анонімному режимі</translation>
@@ -1664,6 +1667,7 @@
 <translation id="948048872540558976">Створити нову вкладку</translation>
 <translation id="952218985181984374">{count,plural, =1{Закладку збережено}one{{count} закладку збережено}few{{count} закладки збережено}many{{count} закладок збережено}other{{count} закладки збережено}}</translation>
 <translation id="952704832371081537">Скасувати</translation>
+<translation id="955587716023217544">Редагувати список облікових записів</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="96615566463761848">Показувати пропозиції щодо вкладок з інших пристроїв</translation>
 <translation id="973493300226275298">Відстежуйте ціну на товар в онлайн-магазинах. Коли вона знизиться, ви отримаєте сповіщення.</translation>

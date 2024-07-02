@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Чувар екрана који приказује цео дан од свитања до мрака</translation>
 <translation id="1167755866710282443">Отворите мени да бисте прилагодили тастере. Превуците мени да бисте га преместили.</translation>
 <translation id="1171349345463658120">пешчана лагуна</translation>
+<translation id="1173894706177603556">Преименуј</translation>
 <translation id="1174073918202301297">Пречица је додата</translation>
 <translation id="11743817593307477">Користите тастере са стрелицама да бисте преместили ову контролу на радњу у игри коју желите. Користите тастер Enter да бисте поставили контролу. Користите тастер Escape да бисте отказали.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави као позадину</translation>
 <translation id="1578784163189013834">Одаберите позадину чувара екрана</translation>
+<translation id="1591562245178063882">Овај месец</translation>
 <translation id="1593528591614229756">Обавезно изаберите називе приступних тачака које пружа мобилни оператер или администратор. Ако изаберете назив приступне тачке, онемогућићете све прилагођене називе приступних тачака. Неважећи називи приступних тачака могу да прекину мобилну везу. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Преглед слике</translation>
 <translation id="1611649489706141841">кретање напред</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263"><ph name="ZONE_NUMBER" />. зона</translation>
 <translation id="1745577949879301685">Учитавање слика није успело. Проверите мрежну везу или пробајте да поново учитате слику.</translation>
 <translation id="1751249301761991853">Лично</translation>
+<translation id="1751335846119670066">Помоћ при читању</translation>
 <translation id="1753496554272155572">Изађите из прегледа позадине</translation>
 <translation id="1754578112426924640">Дугме Измени за <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Апликација Дијагностика</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Измените <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Наставите да плутате</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Данас</translation>
 <translation id="2152882202543497059">Слика: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">бирач емоџија</translation>
 <translation id="2157959690810728433">НА ЧЕКАЊУ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">опсидијана</translation>
 <translation id="4021031199988160623">Пређите на режим лаптопа да бисте га тестирали</translation>
 <translation id="4034824040120875894">Штампач</translation>
+<translation id="4035877632587724847">Не дозволи</translation>
 <translation id="4044093238444069296">Контакт са мрежним пролазом не успева</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="404928562651467259">УПОЗОРЕЊЕ</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Дугме за потврду је сада онемогућено</translation>
 <translation id="5144887194300568405">Копирајте превод</translation>
 <translation id="5145081769226915336">Желите да аутоматски укључите тамни режим?</translation>
+<translation id="5145331109270917438">Датум измене</translation>
 <translation id="5154917547274118687">Меморија</translation>
 <translation id="5160857336552977725">Пријавите се на <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Стање батерије</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Изаберите Направи да бисте направили слику помоћу вештачке интелигенције.
         Све направљене слике ће се аутоматски приказивати овде.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Не приказуј поново</translation>
 <translation id="5975130252842127517">корал</translation>
 <translation id="5984145644188835034">Подразумевана позадина</translation>
 <translation id="5996832681196460718">свиле</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Да бисте завршили, унесите стару и нову лозинку</translation>
 <translation id="6061772781719867950">Неуспешни HTTPS захтеви</translation>
 <translation id="6073292342939316679">смањите осветљеност тастатуре</translation>
+<translation id="6073451960410192870">Заустави снимање</translation>
 <translation id="6075872808778243331">(Android) HTTP кашњење</translation>
 <translation id="6078323886959318429">Додај пречицу</translation>
 <translation id="6091080061796993741">жуте</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Ручно ресетуј потрошњу података</translation>
 <translation id="6243280677745499710">Тренутно подешена</translation>
 <translation id="6250316632541035980">сланина и јаја</translation>
-<translation id="6255213378196499011">Подешавања функције Помоћ при писању</translation>
 <translation id="6265268291107409527">Изабрани тастер је <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Стрелица надесно</translation>
 <translation id="6278428485366576908">Тема</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Подударање суфикса домена</translation>
 <translation id="7769672763586021400">ИД модела</translation>
 <translation id="7778717409420828014">Повратне информације нам помажу да побољшамо доживљај Chromebook-а и прегледаће их наш тим. Због великог броја извештаја не можемо да шаљемо одговоре.</translation>
+<translation id="7781829728241885113">Јуче</translation>
 <translation id="7784116172884276937">Није подешен ниједан DNS сервер</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="779591286616261875">Пошаљи нови извештај</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7849030488395653706">поларна светла</translation>
 <translation id="7849737607196682401">чипке</translation>
+<translation id="7850320739366109486">Не узнемиравај</translation>
 <translation id="7850847810298646851">Позадину омогућава Google AI</translation>
 <translation id="785170686607360576">лала</translation>
 <translation id="7856267634822906833">Bluetooth додирни екран</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Покретање тестова и решавање проблема са хардвером</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">надоле</translation>
+<translation id="8428213095426709021">Подешавања</translation>
 <translation id="8431300646573772016">Новости у Chrome ОС-у</translation>
 <translation id="843568408673868420">Повезивање на интернет</translation>
 <translation id="844521431886043384">DNS није подешен</translation>

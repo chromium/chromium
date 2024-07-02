@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
 <translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
 <translation id="1171349345463658120">לגונה חולית</translation>
+<translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1174073918202301297">קיצור הדרך נוסף</translation>
 <translation id="11743817593307477">‏אפשר להשתמש במקשי החיצים כדי להעביר את הרכיב האינטראקטיבי הזה לפעולת המשחק הרצויה. מציבים את הרכיב באמצעות מקש Enter. כדי לבטל, אפשר להשתמש במקש Escape.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> זה מנוהל על-ידי <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">אלבומים</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
+<translation id="1591562245178063882">החודש</translation>
 <translation id="1593528591614229756">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">אזור <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">לא ניתן היה לטעון את התמונות. כדאי לבדוק את החיבור לרשת או לנסות לטעון את התמונות שוב.</translation>
 <translation id="1751249301761991853">התאמה אישית</translation>
+<translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
 <translation id="1754578112426924640">לחצן לעריכת מקש הקיצור <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">עריכה של <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">צפים ונהנים</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
+<translation id="2148716181193084225">היום</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">אובסידיאן</translation>
 <translation id="4021031199988160623">צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה</translation>
 <translation id="4034824040120875894">מדפסת</translation>
+<translation id="4035877632587724847">אין אישור</translation>
 <translation id="4044093238444069296">לא ניתן ליצור קשר עם השער</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="404928562651467259">אזהרה</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">לחצן האישור מושבת עכשיו</translation>
 <translation id="5144887194300568405">העתקת התרגום</translation>
 <translation id="5145081769226915336">להפעיל את המצב הכהה באופן אוטומטי?</translation>
+<translation id="5145331109270917438">תאריך שינוי</translation>
 <translation id="5154917547274118687">זיכרון</translation>
 <translation id="5160857336552977725">יש להיכנס אל ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">‏לוחצים על 'יצירה' כדי ליצור תמונה בעזרת AI.
         כל התמונות שנוצרו יופיעו כאן אוטומטית.</translation>
 <translation id="5972388717451707488">עדכון המנוע</translation>
+<translation id="5972801171078377748">לא להציג שוב</translation>
 <translation id="5975130252842127517">בצבע קורל</translation>
 <translation id="5984145644188835034">הטפט המוגדר כברירת מחדל</translation>
 <translation id="5996832681196460718">משי</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">כדי לסיים יש להזין את הסיסמה הישנה והחדשה</translation>
 <translation id="6061772781719867950">‏בקשות HTTP שנכשלו</translation>
 <translation id="6073292342939316679">הפחתת הבהירות של המקלדת</translation>
+<translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
 <translation id="6075872808778243331">‏זמן אחזור של HTTP ‏(Android)</translation>
 <translation id="6078323886959318429">הוספת קיצור דרך</translation>
 <translation id="6091080061796993741">צהוב</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">איפוס ידני של השימוש בחבילת הגלישה</translation>
 <translation id="6243280677745499710">מוגדר עכשיו</translation>
 <translation id="6250316632541035980">בייקון וביצים</translation>
-<translation id="6255213378196499011">ההגדרות של 'עזרה בכתיבה'</translation>
 <translation id="6265268291107409527">המקש שנבחר הוא <ph name="KEYS" />. ‫<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">חץ ימינה</translation>
 <translation id="6278428485366576908">עיצוב</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
 <translation id="7778717409420828014">‏המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
+<translation id="7781829728241885113">אתמול</translation>
 <translation id="7784116172884276937">‏לא הוגדרו שרתי DNS</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="779591286616261875">שליחת דוח חדש</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">מקלדת</translation>
 <translation id="7849030488395653706">הזוהר הצפוני</translation>
 <translation id="7849737607196682401">תחרה</translation>
+<translation id="7850320739366109486">נא לא להפריע</translation>
 <translation id="7850847810298646851">‏טפטים שנוצרו על ידי AI מבית Google</translation>
 <translation id="785170686607360576">צבעוני</translation>
 <translation id="7856267634822906833">‏מסך מגע של Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">הרצת בדיקות ופתרון בעיות בחומרה</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">למטה</translation>
+<translation id="8428213095426709021">הגדרות</translation>
 <translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>

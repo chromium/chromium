@@ -142,6 +142,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="147310119694673958">Phone battery <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Toggle hotspot. Hotspot is on, 1 device connected.</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
+<translation id="1483493594462132177">Send</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">With dictation, you can type using your voice. Press the dictation key or select the microphone icon at the bottom of the screen when you’re on a text field. Your dictation language is set to <ph name="LANGUAGE" />. Speech is sent to Google for processing. You can change the dictation language at any time in Settings &gt; Accessibility.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
@@ -1358,6 +1359,7 @@ No devices connected.</translation>
 <translation id="5975235751479998104">Cycle forward through windows</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
+<translation id="5982119059638483922">Press Fn+Search or shift to cancel.</translation>
 <translation id="5983567367406220847">Due to inactivity, hotspot has been turned off.</translation>
 <translation id="598407983968395253">Use template</translation>
 <translation id="598882571027504733">To get the update, restart your Chromebook with the keyboard attached.</translation>

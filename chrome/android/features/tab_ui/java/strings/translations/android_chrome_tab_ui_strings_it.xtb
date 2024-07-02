@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Ripristina la scheda}other{Ripristina le schede}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="575494663145460764">Vuoi ricevere avvisi sui cali di prezzo?</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
@@ -139,6 +140,7 @@
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
 <translation id="7939917283308035850">Colore <ph name="COLOR_NAME" /> non selezionato</translation>
 <translation id="7942349550061667556">Rosso</translation>
+<translation id="7961015016161918242">Mai</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
 <translation id="799469866974412355">Nuovo gruppo dall'altro dispositivo</translation>
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>

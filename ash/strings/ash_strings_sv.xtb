@@ -97,6 +97,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Öppna Utforska</translation>
+<translation id="129469256578833241">Tillbaka till översikten</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Tryck på <ph name="LAUNCHER_KEY_NAME" /> + g när som helst</translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
@@ -142,6 +143,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="147310119694673958">Telefonbatteri <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1475340220124222168">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. 1 enhet är ansluten.</translation>
 <translation id="1479909375538722835">Flytande tillgänglighetsmeny</translation>
+<translation id="1483493594462132177">Skicka</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1486307154719069822">Med diktering kan du skriva med rösten. Tryck på dikteringstangenten eller välj mikrofonikonen längst ned på skärmen när du är i ett textfält. Dikteringsspråket är inställt på <ph name="LANGUAGE" />. Tal skickas till Google för bearbetning. Du kan när som helst ändra dikteringsspråket i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har bytts ut mot <ph name="SECOND_ITEM_TITLE" /></translation>
@@ -256,6 +258,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
 <translation id="1925320505152357008">mindre än 1 min</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
+<translation id="1929331825127010451">Tillbaka till frågan</translation>
 <translation id="1948405482892809935">Byt till nästa användare</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skärminspelningen har slutförts</translation>
@@ -1151,6 +1154,7 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="5238719049014159442">Öppna/stäng appstartaren</translation>
 <translation id="5240725217819182328">Snabbåtkomst till specifika sidor eller åtgärder i installerade appar</translation>
 <translation id="5245201184978705914">Det gick inte att generera transkription</translation>
+<translation id="5251174953851719648">Uppdatera innehållet</translation>
 <translation id="5253783950165989294">Ansluten till enheten <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
@@ -1358,6 +1362,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5975235751479998104">Bläddra framåt bland fönster</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
+<translation id="5982119059638483922">Avbryt genom att trycka på Fn + söktangenten eller Skift.</translation>
 <translation id="5983567367406220847">Surfzonen har inaktiverats på grund av inaktivitet.</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
@@ -1414,6 +1419,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6147182561428020853">Nu kan du blockera appar som har installerats på denna <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Tillbehöret stöds inte</translation>
 <translation id="6156960295318603523">Språkinställningar</translation>
+<translation id="6158923546703693047">Information om innehållskälla</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
 <translation id="616543563528926612">Kortkommandot för högerklick har uppdaterats från <ph name="LAUNCHER_KEY_NAME" />-tangenten + klick till Alt + klick</translation>
 <translation id="6165508094623778733">Läs mer</translation>
@@ -1998,6 +2004,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8315514906653279104">Aktiverar …</translation>
 <translation id="8331351032546853669">Nedladdning väntar</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Ställ en fråga.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Dålig output</translation>
 <translation id="8345019317483336363">Fönstret <ph name="WINDOW_TITLE" /> har valts</translation>

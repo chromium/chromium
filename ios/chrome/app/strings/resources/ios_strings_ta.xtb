@@ -825,6 +825,7 @@
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
 <translation id="519530786644929958">பதிவிறக்க முடியவில்லை, இதை மீண்டும் முயல முடியாது.</translation>
 <translation id="5197255632782567636">இணையம்</translation>
+<translation id="5205197603258285592">இதில் படத்தைச் சேமி...</translation>
 <translation id="5211488077761630279">உங்கள் <ph name="PERMISSION" /> பயன்படுத்த "<ph name="SITE_NAME" />" தளத்தை அனுமதிக்கவா?</translation>
 <translation id="5219295696240154694">இணையத்தில் உள்ள அனைவரின் பாதுகாப்பையும் மேம்படுத்த உதவுங்கள்</translation>
 <translation id="5220945116117011963">தேதிகளில் கேலெண்டர் நிகழ்வுகளை உருவாக்குங்கள்</translation>
@@ -1413,6 +1414,7 @@
 <translation id="8023878949384262191">பிரிவை விரிவாக்கும்.</translation>
 <translation id="8027581147000338959">புதிய சாளரத்தில் திற</translation>
 <translation id="8032569120109842252">பின்தொடர்கிறீர்கள்</translation>
+<translation id="8035412398498507358">Photos</translation>
 <translation id="8040207962129315716">ஒவ்வொரு முறையும் என்னிடம் கேள்</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="804225253087497565">நீங்கள் உள்நுழைந்திருக்கும்போது <ph name="BEGIN_LINK" />தேடல் விவரங்களும்<ph name="END_LINK" /> <ph name="BEGIN_LINK" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். அவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.</translation>
@@ -1525,6 +1527,7 @@
 <translation id="8556590991644167667">{count,plural, =1{{count} எச்சரிக்கையை நிராகரித்துள்ளீர்கள்}other{{count} எச்சரிக்கைகளை நிராகரித்துள்ளீர்கள்}}</translation>
 <translation id="8560253818350321773">அடிக்கடி பயன்படுத்தியவற்றை முதலில் காட்டும்.</translation>
 <translation id="8569721750632860947">உங்கள் வாசிப்புப் பட்டியலில் எந்த URLலைச் சேர்க்க விரும்புகிறீர்கள்?</translation>
+<translation id="8570765991595769633">கார்டுகளைப் பிரத்தியேகமாக்கு</translation>
 <translation id="8577056989960190117"><ph name="YEAR" /> என்ற காலாவதியாகும் வருடத்தைத் தானாக நிரப்பும்</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8591976964826315682">மறைநிலையில் மூன்றாம் தரப்பு குக்கீகளைத் தடு</translation>
@@ -1664,6 +1667,7 @@
 <translation id="948048872540558976">புதிய உலாவிப் பக்கத்தை உருவாக்கும்</translation>
 <translation id="952218985181984374">{count,plural, =1{புக்மார்க் சேமிக்கப்பட்டது}other{{count} புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="952704832371081537">ரத்துசெய்</translation>
+<translation id="955587716023217544">கணக்குப் பட்டியலில் மாற்றம் செய்</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> ஐப் பின்தொடர்கிறீர்கள்</translation>
 <translation id="96615566463761848">மற்ற சாதனங்களில் இருந்து உலாவிப் பக்கத்திற்கான பரிந்துரைகளைக் காட்டு</translation>
 <translation id="973493300226275298">ஆன்லைன் ஸ்டோர்கள் அனைத்திலும் தயாரிப்பின் விலையைக் கண்காணியுங்கள். விலை குறைந்தால் அதுகுறித்த விழிப்பூட்டல்களைப் பெறுவீர்கள்.</translation>

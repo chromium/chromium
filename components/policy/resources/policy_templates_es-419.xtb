@@ -824,6 +824,7 @@ La "Entrada del usuario" se define con las APIs del sistema operativo y comprend
 
       Si la inhabilitas o no la estableces, se mostrarán advertencias en sistemas no compatibles.</translation>
 <translation id="1634989431648355062">Permitir el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios</translation>
+<translation id="1635450837608153975">Inhabilitar las optimizaciones avanzadas de JavaScript en todos los sitios</translation>
 <translation id="1635748761015837179">Permitir la escritura en los dispositivos de almacenamiento externo</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el protector de pantalla en la pantalla de acceso</translation>
@@ -1067,6 +1068,30 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
       La lista aparecerá en el mismo orden que se especifica en la sección "Ordena los idiomas según tus preferencias" de chrome://settings/languages. Los usuarios no podrán cambiar el orden de los idiomas establecidos por la política ni quitarlos, pero podrán agregar idiomas debajo de los que estableció la política. Los usuarios también podrán controlar el idioma de la IU del navegador y las opciones de configuración del corrector ortográfico y de traducción, a menos que se apliquen otras políticas para estas configuraciones.
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
+<translation id="1803637633751407847">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
+se inhabilitan las optimizaciones avanzadas de JavaScript.
+
+Si inhabilitas las optimizaciones de JavaScript, es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web más lentamente.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
+del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
+aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
+el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
+debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
+a subdomain.site.com.
+
+Esta política se aplica por marco y no se basa solamente en la URL de origen
+de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco
+que incluye site-two.com, por ejemplo, site-one.com tendrá inhabilitadas las optimizaciones de JavaScript,
+pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
+las optimizaciones de JavaScript de forma predeterminada.
+
+Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
+la optimización de JavaScript para el sitio.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
@@ -1417,6 +1442,7 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 
       Esta política dejó de estar disponible; usa <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2033200857253268661">Inhabilitar la configuración de F12</translation>
+<translation id="2034497350905878772">Habilitar las optimizaciones avanzadas de JavaScript en todos los sitios</translation>
 <translation id="2035995535603698706">Si habilitas la política, las imágenes de terceros de una página podrán mostrar una solicitud de autenticación.
 
 Si inhabilitas la política o no la estableces, las imágenes de terceros no podrán mostrar una solicitud de autenticación.
@@ -2747,6 +2773,7 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
 
       Si no estableces la política, estará habilitada.</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
+<translation id="3039862327847526651">Controlar el uso de optimizadores de JavaScript</translation>
 <translation id="3041887182529293512">Si estableces la política como verdadera o no la estableces, se mostrarán las sugerencias de contenido autogenerado en la página Nueva pestaña, según el historial de navegación del usuario, sus intereses y su ubicación.
 
       Si la estableces como falsa, no se mostrarán estas sugerencias en la página Nueva pestaña.</translation>
@@ -4766,6 +4793,7 @@ a estas APIs.</translation>
 
       Si estableces la política como verdadera o no la estableces, el usuario podrá realizar capturas de paquetes de red en el dispositivo.
       Si la estableces como falsa, el usuario no podrá realizar capturas de paquetes de red en el dispositivo.</translation>
+<translation id="4599810650416623373">Bloquear las optimizaciones de JavaScript en estos sitios</translation>
 <translation id="4600786265870346112">Habilita el cursor grande.</translation>
 <translation id="4602988345256038309">Permitir las conexiones de asistencia remota a esta máquina</translation>
 <translation id="4607416370554533118">Si estableces la política, podrás crear una lista de patrones de URL que especifiquen los sitios para los cuales Chrome podrá seleccionar un certificado de cliente automáticamente. El valor es un arreglo de diccionarios convertidos en strings de JSON. Cada diccionario debe tener el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los cuales el navegador seleccionará automáticamente. Más allá del filtro, solo se seleccionarán certificados que se ajusten a la solicitud del servidor.
@@ -5171,6 +5199,11 @@ No se recomienda inhabilitar la decodificación de video acelerada por hardware,
       para procesar las solicitudes (https://fetch.spec.whatwg.org/#request-keepalive-flag) de keepalive.
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
+<translation id="4933339133618140916">Si estableces la política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> podrá mostrarles a los usuarios contenido promocional de productos.
+
+Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá mostrar contenido promocional de productos.
+
+El establecimiento de esta política permite controlar la presentación de contenido promocional, lo que incluye las páginas de bienvenida que ayudan a los usuarios a acceder a <ph name="PRODUCT_NAME" />, elegir <ph name="PRODUCT_NAME" /> como navegador predeterminado o recibir información sobre funciones de productos.</translation>
 <translation id="4933780993367313536">Permitir que los administradores empresariales establezcan conexiones de acceso remoto con esta máquina</translation>
 <translation id="4937423591320233496">Inhabilitar el contenido sugerido</translation>
 <translation id="4942096314850617489">Inhabilitar la certificación remota para el usuario</translation>
@@ -5758,6 +5791,7 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 <translation id="5405289061476885481">Establece los diseños de teclado compatibles con la pantalla de acceso de <ph name="PRODUCT_OS_NAME" />.
 
       Si esta política se establece como una lista de identificadores de método de entrada, estos métodos estarán disponibles en la pantalla de acceso y se preseleccionará el primero de ellos. Cuando se activa un módulo de sesión de usuario en la pantalla de acceso, el último método de entrada que este utilizó estará disponible junto con aquellos que especifica esta política. Si no se establece esta política, los métodos de entrada de la pantalla de acceso se obtendrán a partir de la configuración regional que se muestra en la pantalla de acceso. Se ignorarán los valores que no sean identificadores válidos de métodos de entrada.</translation>
+<translation id="5406626703145660021">Habilitar el acuerdo de claves poscuántico en TLS para el dispositivo</translation>
 <translation id="5407008856008996384">Permite acceder a impresoras CUPS</translation>
 <translation id="5413051574966911176">Inhabilitar la IU relacionada con la conexión en el escritorio del host remoto cuando una conexión está activa</translation>
 <translation id="5415713057512333739">URL de los datos que se descargarán.</translation>
@@ -5819,11 +5853,6 @@ los accesos directos basados en la búsqueda funcionarán de forma predeterminad
 
       Si no estableces esta política o la estableces como vacía, se mostrará al usuario el mensaje predeterminado sobre el vencimiento de las actualizaciones automáticas en los dos casos descritos anteriormente.
       El mensaje sobre el vencimiento de las actualizaciones automáticas debe emplear texto sin formato. No puede incluir lenguaje de marcado.</translation>
-<translation id="5445719321399313760">Si estableces la política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> podrá mostrarles a los usuarios información de productos en pestaña completa.
-
-      Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá mostrar información de productos en pestaña completa.
-
-      El establecimiento de esta política permite controlar la presentación de páginas de bienvenida que ayudan a los usuarios a acceder a <ph name="PRODUCT_NAME" />, elegir <ph name="PRODUCT_NAME" /> como navegador predeterminado o recibir información sobre funciones de productos.</translation>
 <translation id="544654037134815017">Esta política controla la visibilidad de las tarjetas en la página Nueva pestaña. Las tarjetas proporcionan puntos de entrada para iniciar trayectorias comunes de los usuarios en función de su comportamiento de navegación.
 
       Si habilitas la política, la página Nueva pestaña mostrará tarjetas si hay contenido disponible.
@@ -5956,6 +5985,13 @@ También consulta https://wiki.samba.org/index.php/Samba_4.6_Features_added/chan
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilita el contraste alto en la pantalla de acceso</translation>
 <translation id="555077880566103058">Permitir que todos los sitios ejecuten el complemento <ph name="FLASH_PLUGIN_NAME" /> de manera automática</translation>
+<translation id="5555361544583789006">Si estableces la política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> podrá mostrarles a los usuarios información de productos en pestaña completa.
+
+      Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá mostrar información de productos en pestaña completa.
+
+      El establecimiento de esta política permite controlar la presentación de páginas de bienvenida que ayudan a los usuarios a acceder a <ph name="PRODUCT_NAME" />, elegir <ph name="PRODUCT_NAME" /> como navegador predeterminado o recibir información sobre funciones de productos.
+
+      Esta política dejó de estar disponible. Usa <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5556607617517096419">Borealis</translation>
 <translation id="5558394213067608844">Habilitar el controlador de telemetría y diagnósticos wilco</translation>
 <translation id="5559079916187891399">Esta política no tiene efecto en las apps de Android.</translation>
@@ -6159,6 +6195,21 @@ Esta política afecta los flujos de autenticación de acceso y de pantalla de bl
 <translation id="5695907219125832836">Habilitar la función, pero no enviar datos para entrenar modelos de IA</translation>
 <translation id="5697306356229823047">Informa sobre los usuarios de dispositivos.</translation>
 <translation id="5697387906103995839">Inhabilitar el registro del sistema de extensiones empresariales</translation>
+<translation id="5697466839975082179">Esta política a nivel del dispositivo configura si <ph name="PRODUCT_OS_NAME" /> ofrecerá Kyber, un algoritmo de acuerdo de claves poscuántico, en TLS. Esto permite admitir servidores para evitar que las computadoras cuánticas desencripten el tráfico de usuarios posteriormente.
+
+Si habilitas esta política, <ph name="PRODUCT_OS_NAME" /> ofrecerá Kyber en las conexiones TLS. Las conexiones TLS estarán protegidas con un acuerdo de clave Kyber cuando se comuniquen con los servidores compatibles que seleccionen Kyber durante el protocolo de enlace TLS.
+
+Si la inhabilitas, <ph name="PRODUCT_OS_NAME" /> no ofrecerá Kyber en las conexiones TLS. El tráfico de usuarios no estará protegido contra las computadoras cuánticas.
+
+Si no estableces esta política, <ph name="PRODUCT_OS_NAME" /> seguirá el proceso de lanzamiento predeterminado para ofrecer Kyber.
+
+La oferta de Kyber es retrocompatible. Se espera que los servidores TLS existentes y el middleware de red ignoren la opción nueva y continúen seleccionando opciones anteriores.
+
+Sin embargo, es posible que los dispositivos que no implementan TLS correctamente no funcionen bien cuando se les ofrezca la opción nueva. Por ejemplo, es posible que se desconecten en respuesta a opciones no reconocidas o a mensajes más extensos. Estos dispositivos no están preparados para la poscuantificación y pueden interferir en la transición poscuántica de una empresa. Si se detectan errores, los administradores deben comunicarse con el proveedor para corregirlos.
+
+Esta política es una medida temporal y se quitará en las futuras versiones de <ph name="PRODUCT_OS_NAME" />. Es posible se habilite para permitirte buscar errores y que se inhabilite mientras se resuelven.
+
+Si se configuran esta política y la política PostQuantumKeyAgreementEnabled, esta política tendrá prioridad.</translation>
 <translation id="569777361305162263">Inhabilitar la presentación del contenido promocional en la pestaña completa</translation>
 <translation id="5698923148503075597">Si habilitas la política, la política de la nube tendrá prioridad en el caso de que entre en conflicto con la política de la plataforma.
 
@@ -6937,6 +6988,27 @@ de esa versión, las restricciones en las anclas de confianza siempre se aplican
 Los orígenes deben corresponder a las aplicaciones web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125) o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.
 
 Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos (desde la versión 127), consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="6286225066315435650">Te permite establecer una lista de patrones de URL de sitios que especifican los sitios para los cuales
+se habilitan las optimizaciones avanzadas de JavaScript.
+
+Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta
+https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
+
+Las excepciones de la política correspondiente a las optimizaciones de JavaScript solo se aplicarán en el nivel de detalle
+del sitio (eTLD+1). Si una política se establece solo para subdomain.site.com, no se
+aplicará correctamente a site.com ni a subdomain.site.com dado que a ambos sitios les corresponde
+el mismo eTLD+1 (site.com), para el cual no se estableció ninguna política. En este caso, la política
+debe establecerse para site.com de modo que se aplique correctamente tanto a site.com como
+a subdomain.site.com.
+
+Esta política se aplica por marco y no se basa solamente en la URL de origen
+de nivel superior. Entonces, si site-one.com aparece en la política de <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, pero site-one.com carga un marco que incluye site-two.com, por ejemplo, site-one.com tendrá habilitadas las optimizaciones de JavaScript,
+pero site-two.com utilizará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, si se establece, o bien habilitará
+las optimizaciones de JavaScript de forma predeterminada.
+
+Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, se habilitará
+la optimización de JavaScript para el sitio.</translation>
 <translation id="6287128640500683781">Permitir que acceda cualquier usuario</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6287742528823584153">Habilitar el servicio de <ph name="PRODUCT_NAME" /> y abrir el escritorio remoto al acceder</translation>
@@ -7887,6 +7959,7 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_N
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
 <translation id="6897730193187922386">Se suprimen los mensajes de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Configuración de proxy de detección automática</translation>
+<translation id="6901462246839613666">Habilitar la presentación de contenido promocional</translation>
 <translation id="6902561336084511004">Ofrece opciones de configuración de servidores de impresión disponibles.
 
       Esta política permite ofrecer archivos JSON de configuración de servidores de impresión externos para dispositivos con el <ph name="PRODUCT_OS_NAME" />.
@@ -8366,6 +8439,7 @@ Nota importante: Es posible que los programas establecidos por esta política no
 <translation id="7211368186050418507">Nunca detectar de forma automática la zona horaria</translation>
 <translation id="721617466745658461">Permitir que los usuarios seleccionen el objeto binario del navegador <ph name="LACROS_NAME" /></translation>
 <translation id="7216442368414164495">Permitir que los usuarios acepten informes extendidos de navegación segura</translation>
+<translation id="7218238054592349618">Permitir la optimización de JavaScript en estos sitios</translation>
 <translation id="721970071627370558">Inhabilitar los informes de estado de energía del dispositivo</translation>
 <translation id="7221574724100909818">Usar el ícono de bloqueo para conexiones seguras</translation>
 <translation id="7227348936232766462">Permitir que los usuarios incluyan los datos de depuración de bajo nivel de todos los tipos de dispositivos disponibles a continuación en los comentarios de los usuarios</translation>
@@ -10227,6 +10301,16 @@ No hay un parámetro de configuración del usuario para controlar esta función.
 
 Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función.
 Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.</translation>
+<translation id="8668928485126473293">Te permite establecer si <ph name="PRODUCT_NAME" />
+ejecutará el motor v8 de JavaScript con las optimizaciones de JavaScript más avanzadas habilitadas.
+
+Si inhabilitas las optimizaciones de JavaScript (estableciendo el valor de esta política como 2),
+es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web
+más lentamente.
+
+Esta política puede anularse para patrones de URL específicos a través de las políticas <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> y <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />.
+
+Si no estableces esta política, se habilitarán las optimizaciones de JavaScript.</translation>
 <translation id="8671119576957984818">Habilitar el centro para compartir el escritorio</translation>
 <translation id="8671193325113134911">Habilitar la verificación estricta del tipo de MIME para secuencias de comandos para workers</translation>
 <translation id="8671303329680827168">Esta política dejó de estar disponible. En su lugar, usa la política "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".</translation>
@@ -10973,6 +11057,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 
       Si no se establece o se establece como falsa, AppCache funcionará según la configuración predeterminada de Chrome.</translation>
 <translation id="930930237275114205">Configurar directorio de datos de usuario de <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="931156018951676976">Inhabilitar la presentación de contenido promocional</translation>
 <translation id="935779984563655842">Envía información del Bluetooth</translation>
 <translation id="936188865879911137">Si habilitas la política, <ph name="PRODUCT_NAME" /> permitirá que se instalen y actualicen las extensiones alojadas fuera de Chrome Web Store. Su contenido solo se podrá proteger de forma mínima.
 

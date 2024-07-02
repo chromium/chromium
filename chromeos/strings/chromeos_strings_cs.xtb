@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Spořič obrazovky Od úsvitu do setmění</translation>
 <translation id="1167755866710282443">Otevřete nabídku pro přizpůsobení kláves. Nabídku přesunete přetažením.</translation>
 <translation id="1171349345463658120">písečná laguna</translation>
+<translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="1174073918202301297">Zkratka byla přidána</translation>
 <translation id="11743817593307477">Pomocí kláves se šipkami přesuňte tento ovládací prvek na požadovanou herní akci. Stisknutím klávesy Enter ovládací prvek přiřaďte. Ke zrušení použijte klávesu Escape.</translation>
 <translation id="1175697296044146566">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Alba</translation>
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
+<translation id="1591562245178063882">Tento měsíc</translation>
 <translation id="1593528591614229756">Vyberte APN, které vám poskytl mobilní operátor nebo administrátor. Výběrem APN deaktivujete všechny vlastní APN. Neplatné APN mohou narušit vaše mobilní připojení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Náhled obrázku</translation>
 <translation id="1611649489706141841">vpřed</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zóna <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Obrázky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste je načíst znovu.</translation>
 <translation id="1751249301761991853">Osobní</translation>
+<translation id="1751335846119670066">Pomoz mi číst</translation>
 <translation id="1753496554272155572">Zavřít náhled tapety</translation>
 <translation id="1754578112426924640">Tlačítko Upravit pro <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Diagnostická aplikace</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Upravit akci <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Album</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">Dnes</translation>
 <translation id="2152882202543497059">Počet fotek: <ph name="NUMBER" /></translation>
 <translation id="2157660087437850958">výběr smajlíků</translation>
 <translation id="2157959690810728433">VE FRONTĚ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidián</translation>
 <translation id="4021031199988160623">Pokud to chcete otestovat, přepněte na režim notebooku</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
+<translation id="4035877632587724847">Nepovolovat</translation>
 <translation id="4044093238444069296">Nelze kontaktovat bránu</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="404928562651467259">UPOZORNĚNÍ</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Tlačítko Potvrdit teď není aktivní</translation>
 <translation id="5144887194300568405">Kopírovat překlad</translation>
 <translation id="5145081769226915336">Zapínat tmavý režim automaticky?</translation>
+<translation id="5145331109270917438">Datum úpravy</translation>
 <translation id="5154917547274118687">Paměť</translation>
 <translation id="5160857336552977725">Přihlaste se do zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Výběrem možnosti Vytvořit můžete vytvořit obrázek pomocí AI.
         Všechny vytvořené obrázky se automaticky zobrazí tady.</translation>
 <translation id="5972388717451707488">Modul aktualizací</translation>
+<translation id="5972801171078377748">Tuto zprávu příště nezobrazovat</translation>
 <translation id="5975130252842127517">korálová</translation>
 <translation id="5984145644188835034">Výchozí tapeta</translation>
 <translation id="5996832681196460718">hedvábí</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Chcete-li akci dokončit, zadejte své staré a nové heslo</translation>
 <translation id="6061772781719867950">Neúspěšné požadavky HTTP</translation>
 <translation id="6073292342939316679">snížit jas klávesnice</translation>
+<translation id="6073451960410192870">Zastavit nahrávání</translation>
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
 <translation id="6091080061796993741">žlutá</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Využití dat resetovat ručně</translation>
 <translation id="6243280677745499710">Aktuálně nastaveno</translation>
 <translation id="6250316632541035980">slanina s vejci</translation>
-<translation id="6255213378196499011">Nastavení funkce Pomozte mi s psaním</translation>
 <translation id="6265268291107409527">Vybraná klávesa je <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Šipka vpravo</translation>
 <translation id="6278428485366576908">Motiv</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Shoda přípon domén</translation>
 <translation id="7769672763586021400">ID modelu</translation>
 <translation id="7778717409420828014">Vaše zpětná vazba nám pomáhá vylepšovat Chromebooky a náš tým se jí bude věnovat. Vzhledem k velkému počtu hlášení vám nebudeme moci odpovědět.</translation>
+<translation id="7781829728241885113">Včera</translation>
 <translation id="7784116172884276937">Nejsou nastaveny žádné servery DNS</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="779591286616261875">Odeslat nové hlášení</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Klávesnice</translation>
 <translation id="7849030488395653706">polární záře</translation>
 <translation id="7849737607196682401">krajka</translation>
+<translation id="7850320739366109486">Nerušit</translation>
 <translation id="7850847810298646851">Tapeta vytvořená pomocí Google AI</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Dotyková obrazovka Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Testování a odstraňování problémů s hardwarem</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">dolů</translation>
+<translation id="8428213095426709021">Nastavení</translation>
 <translation id="8431300646573772016">Novinky v ChromeOS</translation>
 <translation id="843568408673868420">Připojení k internetu</translation>
 <translation id="844521431886043384">Není nastaven server DNS</translation>

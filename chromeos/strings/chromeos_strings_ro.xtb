@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Screensaver din zori până seara</translation>
 <translation id="1167755866710282443">Deschide meniul pentru a personaliza tastele. Trage meniul pentru a muta.</translation>
 <translation id="1171349345463658120">lagună cu nisip</translation>
+<translation id="1173894706177603556">Redenumește</translation>
 <translation id="1174073918202301297">Comanda rapidă a fost adăugată</translation>
 <translation id="11743817593307477">Folosește tastele săgeți pentru a muta comanda la acțiunea de joc dorită. Folosește tasta Enter pentru a plasa comanda. Folosește tasta Escape pentru a anula.</translation>
 <translation id="1175697296044146566">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Albume</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
 <translation id="1578784163189013834">Alege fundalul screensaverului</translation>
+<translation id="1591562245178063882">Luna aceasta</translation>
 <translation id="1593528591614229756">Selectează doar APN-uri oferite de furnizorul de servicii de telefonie mobilă sau de administrator. Selectarea unui APN va dezactiva toate APN-urile personalizate. APN-urile nevalide pot întrerupe conexiunea mobilă. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Previzualizează imaginea</translation>
 <translation id="1611649489706141841">înainte</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Nu s-au putut încărca imagini. Verifică-ți conexiunea la rețea sau încearcă să încarci din nou imaginile.</translation>
 <translation id="1751249301761991853">Personal</translation>
+<translation id="1751335846119670066">Ajută-mă să citesc</translation>
 <translation id="1753496554272155572">Ieși din previzualizarea imaginii de fundal</translation>
 <translation id="1754578112426924640">Buton de editare pentru <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Aplicația Diagnosticare</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Editează <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">Astăzi</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografii</translation>
 <translation id="2157660087437850958">selector de emoji</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Treci la modul laptop pentru a testa</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
+<translation id="4035877632587724847">Nu permite</translation>
 <translation id="4044093238444069296">Nu se poate contacta gateway-ul</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="404928562651467259">AVERTISMENT</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Butonul de confirmare este acum dezactivat</translation>
 <translation id="5144887194300568405">Copiază traducerea</translation>
 <translation id="5145081769226915336">Activezi automat modul întunecat?</translation>
+<translation id="5145331109270917438">Data modificării</translation>
 <translation id="5154917547274118687">Memorie</translation>
 <translation id="5160857336552977725">Conectează-te la <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Buna funcționare a bateriei:</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Selectează Creează pentru a crea o imagine cu AI.
         Toate imaginile create vor apărea automat aici.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Nu mai afișa</translation>
 <translation id="5975130252842127517">corai</translation>
 <translation id="5984145644188835034">Imagine de fundal prestabilită</translation>
 <translation id="5996832681196460718">mătase</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
 <translation id="6061772781719867950">Solicitări HTTPS nereușite</translation>
 <translation id="6073292342939316679">redu luminozitatea tastaturii</translation>
+<translation id="6073451960410192870">Oprește înregistrarea</translation>
 <translation id="6075872808778243331">(Android) Latența solicitărilor HTTP</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
 <translation id="6091080061796993741">galben</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Resetează manual utilizarea datelor</translation>
 <translation id="6243280677745499710">Setată în prezent</translation>
 <translation id="6250316632541035980">șuncă și ouă</translation>
-<translation id="6255213378196499011">Setări Ajută-mă să scriu</translation>
 <translation id="6265268291107409527">Tasta selectată este <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Săgeată spre dreapta</translation>
 <translation id="6278428485366576908">Temă</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
 <translation id="7778717409420828014">Feedbackul tău ne ajută să îmbunătățim experiența Chromebookurilor și va fi examinat de echipa noastră. Din cauza numărului mare de rapoarte, nu vom putea să trimitem un răspuns.</translation>
+<translation id="7781829728241885113">Ieri</translation>
 <translation id="7784116172884276937">Nu există servere DNS configurate</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="779591286616261875">Trimite un raport nou</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7849030488395653706">aurora boreală</translation>
 <translation id="7849737607196682401">dantelă</translation>
+<translation id="7850320739366109486">Nu deranja</translation>
 <translation id="7850847810298646851">Imagine de fundal bazată pe Google AI</translation>
 <translation id="785170686607360576">lalea</translation>
 <translation id="7856267634822906833">Ecran tactil cu Bluetooth</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Rulează teste și remediază erorile hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">jos</translation>
+<translation id="8428213095426709021">Setări</translation>
 <translation id="8431300646573772016">Noutăți în SO Chrome</translation>
 <translation id="843568408673868420">Conexiune la internet</translation>
 <translation id="844521431886043384">Sistemul DNS nu este configurat</translation>

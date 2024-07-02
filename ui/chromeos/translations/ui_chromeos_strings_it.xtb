@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="3691184985318546178">Singalese</translation>
+<translation id="3702842351052426940">La tua scheda SIM o il tuo profilo eSIM potrebbero essere disattivati. Prova a sostituire la scheda SIM o a cambiare i profili eSIM.</translation>
 <translation id="3722341589402358578">Si è verificato un errore. Alcuni elementi potrebbero non essere stati messi nel cestino.</translation>
 <translation id="3726463242007121105">Impossibile aprire il dispositivo perché il suo filesystem non è supportato.</translation>
 <translation id="3727148787322499904">La modifica di questa impostazione avrà effetto su tutte le reti condivise</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Questo proxy è stato applicato dall'amministratore</translation>
 <translation id="3830674330436234648">Riproduzione non disponibile</translation>
 <translation id="383652340667548381">Serbo</translation>
+<translation id="3839045880592694915">Il tuo operatore non ha autorizzato il modem a connettersi. Contatta il tuo operatore per ulteriori dettagli.</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -683,6 +685,7 @@
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
 <translation id="6269630227984243955">Malese</translation>
 <translation id="6271903698064569429">Impossibile caricare i file perché lo spazio di archiviazione a disposizione su <ph name="SHARED_DRIVE_NAME" /> non è sufficiente.</translation>
+<translation id="6279140785485544797">Il tuo piano dati mobili potrebbe essere scaduto. Contatta il tuo operatore per ricevere assistenza.</translation>
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
 <translation id="6295542640242147836">Blocca SIM</translation>
 <translation id="6296410173147755564">PUK non valido</translation>

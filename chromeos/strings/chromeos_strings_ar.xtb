@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">شاشة استراحة تعرض منظرًا من الفجر إلى الليل</translation>
 <translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
 <translation id="1171349345463658120">بحيرة ساحلية رملية</translation>
+<translation id="1173894706177603556">إعادة تسمية</translation>
 <translation id="1174073918202301297">تمت إضافة الاختصار</translation>
 <translation id="11743817593307477">‏استخدِم مفاتيح الأسهم لنقل عنصر التحكّم هذا إلى الإجراء الذي تريده في اللعبة. استخدِم مفتاح Enter لوضع عنصر التحكّم. واستخدِم مفتاح Esc للإلغاء.</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">الألبومات</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
 <translation id="1578784163189013834">اختيار خلفية شاشة التوقف</translation>
+<translation id="1591562245178063882">هذا الشهر</translation>
 <translation id="1593528591614229756">‏يُرجى التأكّد من اختيار أسماء نقاط الوصول (APN) التي يوفّرها المشرف أو مقدِّم خدمات شبكة الجوّال. سيؤدي اختيار اسم نقطة وصول إلى إيقاف أي أسماء نقاط وصول مخصَّصة. وقد تؤدي أسماء نقاط الوصول غير الصالحة إلى إيقاف الاتصال بشبكة الجوّال. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">معاينة الصورة</translation>
 <translation id="1611649489706141841">للأمام</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">المنطقة <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">تعذَّر تحميل الصور. يُرجى التحقُّق من الاتصال بالشبكة أو إعادة محاولة تحميل الصور.</translation>
 <translation id="1751249301761991853">إعدادات التخصيص</translation>
+<translation id="1751335846119670066">ساعدني في القراءة</translation>
 <translation id="1753496554272155572">إغلاق معاينة الخلفية</translation>
 <translation id="1754578112426924640">زر تعديل <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">تعديل <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">التحليق عاليًا</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">اليوم</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> صورة</translation>
 <translation id="2157660087437850958">أداة اختيار الرموز التعبيرية</translation>
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">السّبَج</translation>
 <translation id="4021031199988160623">انتقِل إلى وضع "الكمبيوتر المحمول" لتتمكّن من اختبار لوحة المفاتيح.</translation>
 <translation id="4034824040120875894">الطابعة</translation>
+<translation id="4035877632587724847">عدم السماح</translation>
 <translation id="4044093238444069296">تعذَّر الاتصال بالبوابة.</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
 <translation id="404928562651467259">تحذير</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">تم إيقاف زر "تأكيد" الآن</translation>
 <translation id="5144887194300568405">نسخ الترجمة</translation>
 <translation id="5145081769226915336">هل تريد تفعيل "الوضع الداكن" تلقائيًا؟</translation>
+<translation id="5145331109270917438">تاريخ التعديل</translation>
 <translation id="5154917547274118687">الذاكرة</translation>
 <translation id="5160857336552977725">سجّل الدخول إلى <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">حالة البطارية</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">‏انقر على "إنشاء" لإنشاء صورة باستخدام الذكاء الاصطناعي (AI).
         ستظهر هنا تلقائيًا جميع الصور التي تم إنشاؤها.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">عدم عرض بطاقة الترحيب مرة أخرى</translation>
 <translation id="5975130252842127517">مرجاني</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
 <translation id="5996832681196460718">الحرير</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6061772781719867950">‏حدث خطأ في طلبات HTTPS.</translation>
 <translation id="6073292342939316679">تقليل سطوع لوحة المفاتيح</translation>
+<translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6091080061796993741">أصفر</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">إعادة ضبط استخدام البيانات يدويًا</translation>
 <translation id="6243280677745499710">المحدّدة حاليًا</translation>
 <translation id="6250316632541035980">لحم مقدّد وبيض</translation>
-<translation id="6255213378196499011">إعدادات ميزة "مساعدة في الكتابة"</translation>
 <translation id="6265268291107409527">المفتاح الذي تم اختياره: <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">السهم المتّجه لليمين</translation>
 <translation id="6278428485366576908">المظهر</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
 <translation id="7778717409420828014">‏تساعدنا ملاحظاتك في تحسين تجربة استخدام أجهزة Chromebook وسيراجعها فريقنا. وبسبب التقارير التي تصلنا بأعداد هائلة، لن نتمكّن من إرسال ردّ إليك.</translation>
+<translation id="7781829728241885113">أمس</translation>
 <translation id="7784116172884276937">لم يتم ضبط أي خوادم لنظام أسماء النطاقات.</translation>
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="779591286616261875">إرسال تقرير جديد</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">لوحة المفاتيح</translation>
 <translation id="7849030488395653706">الشفق القطبي الشمالي</translation>
 <translation id="7849737607196682401">الدانتيل</translation>
+<translation id="7850320739366109486">عدم الإزعاج</translation>
 <translation id="7850847810298646851">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="785170686607360576">توليب</translation>
 <translation id="7856267634822906833">شاشة تعمل باللمس وتتضمّن بلوتوث</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">يمكنك إجراء اختبارات وتحديد مشاكل الجهاز وحلّها.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">لأسفل</translation>
+<translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8431300646573772016">‏الجديد في نظام Chrome</translation>
 <translation id="843568408673868420">اتصال الإنترنت</translation>
 <translation id="844521431886043384">لم يتم ضبط إعدادات نظام أسماء النطاقات.</translation>

@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">«Լուսաբացից մայրամուտ» էկրանապահ</translation>
 <translation id="1167755866710282443">Բացեք ընտրացանկը՝ ստեղները կարգավորելու համար։ Տեղաշարժելու համար քաշեք ընտրացանկը։</translation>
 <translation id="1171349345463658120">ավազե ծովածոց</translation>
+<translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1174073918202301297">Դյուրանցումն ավելացվեց</translation>
 <translation id="11743817593307477">Այս կարգավորումը սլաքներով ստեղների միջոցով տեղափոխեք ձեզ անհրաժեշտ գործողություն խաղում։ Enter կոճակի օգնությամբ զետեղեք կարգավորումը։ Չեղարկելու համար օգտագործեք Esc ստեղնը։</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Ալբոմներ</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
 <translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
+<translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1593528591614229756">Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։ APN ընտրելու արդյունքում բոլոր հատուկ APN-ները կանջատվեն։ Անվավեր APN-ները կարող են խաթարել ձեր բջջային կապը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Գոտի <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Չհաջողվեց բեռնել պատկերները։ Ստուգեք ձեր կապը կամ նորից փորձեք բեռնել պատկերները։</translation>
 <translation id="1751249301761991853">Անձնական կարգավորումներ</translation>
+<translation id="1751335846119670066">Օգնիր ինձ կարդալ</translation>
 <translation id="1753496554272155572">Փակել պաստառի նախադիտումը</translation>
 <translation id="1754578112426924640">Փոփոխելու կոճակ <ph name="ACCELERATOR_INFO" /> ստեղների համադրության համար։</translation>
 <translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377">Փոփոխել՝ <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Տատանումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">Այսօր</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="2157660087437850958">զմայլիկների ընտրիչ</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">օբսիդիան</translation>
 <translation id="4021031199988160623">Փորձարկելու համար անցեք նոթբուքի ռեժիմին</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
+<translation id="4035877632587724847">Չթույլատրել</translation>
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">Հաստատել կոճակն այժմ ընտրված չէ</translation>
 <translation id="5144887194300568405">Պատճենել թարգմանությունը</translation>
 <translation id="5145081769226915336">Ավտոմատ միացնե՞լ մուգ ռեժիմը</translation>
+<translation id="5145331109270917438">Փոփոխման ամսաթիվ</translation>
 <translation id="5154917547274118687">Հիշողություն</translation>
 <translation id="5160857336552977725">Մուտք գործեք ձեր <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">Ընտրեք «Ստեղծել»՝ ԱԲ-ի միջոցով պատկեր ստեղծելու համար։
         Բոլոր ստեղծված պատկերներն ավտոմատ կհայտնվեն այստեղ։</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
+<translation id="5972801171078377748">Այլևս ցույց չտալ</translation>
 <translation id="5975130252842127517">կորալ</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
 <translation id="5996832681196460718">մետաքս</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6061772781719867950">Անհաջող HTTP հարցումներ</translation>
 <translation id="6073292342939316679">պակասեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
+<translation id="6073451960410192870">Դադարեցնել տեսագրումը</translation>
 <translation id="6075872808778243331">HTTP-ի հապաղում (Android)</translation>
 <translation id="6078323886959318429">Ավելացնել դյուրանցում</translation>
 <translation id="6091080061796993741">դեղին</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">Տվյալների օգտագործման մասին տեղեկությունների զրոյացումը կատարել ձեռքով</translation>
 <translation id="6243280677745499710">Այժմ տեղադրված է</translation>
 <translation id="6250316632541035980">բեկոնով ձվածեղ</translation>
-<translation id="6255213378196499011">«Օգնիր ինձ գրել» գործառույթի կարգավորումներ</translation>
 <translation id="6265268291107409527">Ընտրված է <ph name="KEYS" /> ստեղնը։ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Աջ սլաք</translation>
 <translation id="6278428485366576908">Թեմա</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
 <translation id="7778717409420828014">Մեր թիմը կդիտարկի ձեր կարծիքը։ Այն կօգնի մեզ բարելավել Chromebook-ի աշխատանքը։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
+<translation id="7781829728241885113">Երեկ</translation>
 <translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="779591286616261875">Ուղարկել նոր հաղորդում</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">Ստեղնաշար</translation>
 <translation id="7849030488395653706">հյուսիսափայլ</translation>
 <translation id="7849737607196682401">ժանյակ</translation>
+<translation id="7850320739366109486">Չանհանգստացնել</translation>
 <translation id="7850847810298646851">Պաստառը ստեղծվել է Google AI-ի կողմից</translation>
 <translation id="785170686607360576">կակաչ</translation>
 <translation id="7856267634822906833">Bluetooth հպէկրան</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">Գործարկեք թեստեր և սարքակազմի հետ կապված խնդիրների վերացման գործընթացներ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ներքև</translation>
+<translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
 <translation id="843568408673868420">Ինտերնետ կապ</translation>
 <translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>

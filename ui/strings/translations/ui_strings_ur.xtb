@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> سسٹم</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
 <translation id="5613020302032141669">بایاں تیر کا نشان</translation>
+<translation id="5633029987065897167">خالی ہے</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 منٹ}other{# منٹ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{آج فعال تھا}=1{1 دن پہلے فعال تھا}other{# دن پہلے فعال تھا}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 دن اور }other{# دن اور }}</translation>

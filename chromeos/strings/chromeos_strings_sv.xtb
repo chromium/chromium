@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">Morgon till kväll-skärmsläckare</translation>
 <translation id="1167755866710282443">Öppna menyn för att anpassa tangenter. Flytta menyn genom att trycka och dra.</translation>
 <translation id="1171349345463658120">sandig lagun</translation>
+<translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1174073918202301297">Genvägen har lagts till</translation>
 <translation id="11743817593307477">Flytta kontrollen till önskad spelåtgärd med piltangenterna. Placera kontrollen med returtangenten. Avbryt med Esc-tangenten.</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1578784163189013834">Välj bakgrund för skärmsläckare</translation>
+<translation id="1591562245178063882">Den här månaden</translation>
 <translation id="1593528591614229756">Välj endast APN:er som tillhandahålls av mobiloperatören eller administratören. När du väljer en APN inaktiveras eventuella anpassade APN:er. Ogiltiga APN:er kan störa mobilanslutningen. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">Förhandsgranska bild</translation>
 <translation id="1611649489706141841">framåt</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">Zon <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Det gick inte att läsa in bilder. Kontrollera nätverksanslutningen eller testa att läsa in bilderna igen.</translation>
 <translation id="1751249301761991853">Personligt</translation>
+<translation id="1751335846119670066">Hjälp mig läsa</translation>
 <translation id="1753496554272155572">Stäng förhandsgranskning av bakgrund</translation>
 <translation id="1754578112426924640">Redigeringsknapp för <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
@@ -221,12 +224,14 @@
 <translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
 <translation id="2086091080968010660">Tidsbaserade ändringar kanske inte är korrekta. Aktivera platsåtkomst i inställningarna.</translation>
 <translation id="2102231663024125441">Textredigering</translation>
+<translation id="2102648867808308635">Hjälp mig läsa den här sidan</translation>
 <translation id="2105810540595158374">Enheten är en spelkontroll.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB är tillgängligt</translation>
 <translation id="2135668738111962377">Redigera <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Med strömmen</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
+<translation id="2148716181193084225">Idag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
 <translation id="2157660087437850958">emojiväljare</translation>
 <translation id="2157959690810728433">I KÖ</translation>
@@ -533,6 +538,7 @@
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Byt till laptopläge för att testa</translation>
 <translation id="4034824040120875894">Skrivare</translation>
+<translation id="4035877632587724847">Tillåt inte</translation>
 <translation id="4044093238444069296">Det gick inte att kontakta gateway</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="404928562651467259">VARNING</translation>
@@ -734,6 +740,7 @@
 <translation id="5144311987923128508">Knappen Bekräfta är nu inaktiverad</translation>
 <translation id="5144887194300568405">Kopiera översättning</translation>
 <translation id="5145081769226915336">Vill du aktivera mörkt läge automatiskt?</translation>
+<translation id="5145331109270917438">Ändringsdatum</translation>
 <translation id="5154917547274118687">Minne</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Batterihälsa</translation>
@@ -875,6 +882,7 @@
 <translation id="594989847980441553">Välj Skapa för att skapa en bild med AI.
         Alla skapade bilder visas automatiskt här.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">Visa inte igen</translation>
 <translation id="5975130252842127517">korallfärgad</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
 <translation id="5996832681196460718">siden</translation>
@@ -891,6 +899,7 @@
 <translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
 <translation id="6061772781719867950">Misslyckade HTTP-förfrågningar</translation>
 <translation id="6073292342939316679">minska ljusstyrkan på tangentbordet</translation>
+<translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
 <translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6091080061796993741">gul</translation>
@@ -926,7 +935,6 @@
 <translation id="6235460611964961764">Återställ dataanvändningen manuellt</translation>
 <translation id="6243280677745499710">Nuvarande</translation>
 <translation id="6250316632541035980">bacon och ägg</translation>
-<translation id="6255213378196499011">Inställningar för Hjälp mig skriva</translation>
 <translation id="6265268291107409527">Tangenten <ph name="KEYS" /> har valts. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">Högerpiltangenten</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -1215,6 +1223,7 @@
 <translation id="7763470514545477072">Matchning av domänsuffix</translation>
 <translation id="7769672763586021400">Modell-id</translation>
 <translation id="7778717409420828014">Din feedback hjälper oss att förbättra Chromebook-upplevelsen och granskas av vårt team. Vi får många rapporter och därför kan vi inte svara på dem.</translation>
+<translation id="7781829728241885113">Igår</translation>
 <translation id="7784116172884276937">Inga DNS-servrar har konfigurerats</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="779591286616261875">Skicka ny rapport</translation>
@@ -1230,6 +1239,7 @@
 <translation id="7846634333498149051">Tangentbord</translation>
 <translation id="7849030488395653706">polarsken</translation>
 <translation id="7849737607196682401">spets</translation>
+<translation id="7850320739366109486">Stör inte</translation>
 <translation id="7850847810298646851">Bakgrunder som drivs av Googles AI</translation>
 <translation id="785170686607360576">tulpan</translation>
 <translation id="7856267634822906833">Bluetooth-pekskärm</translation>
@@ -1332,6 +1342,7 @@
 <translation id="8420955526972171689">Kör tester och felsök vid problem med hårdvara</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8428213095426709021">Inställningar</translation>
 <translation id="8431300646573772016">Nyheter i ChromeOS</translation>
 <translation id="843568408673868420">Internetanslutning</translation>
 <translation id="844521431886043384">DNS har inte konfigurerats</translation>

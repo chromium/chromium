@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">ડૉન ટુ ડાર્ક સ્ક્રીન સેવર</translation>
 <translation id="1167755866710282443">કી કસ્ટમાઇઝ કરવા માટે મેનૂ ખોલો. ખસેડવા માટે મેનૂ ખેંચો.</translation>
 <translation id="1171349345463658120">રેતી જેવો લગૂન</translation>
+<translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1174073918202301297">શૉર્ટકટ ઉમેર્યો</translation>
 <translation id="11743817593307477">તમે ઇચ્છતા હો તે ગેમ ઍક્શન પર આ કન્ટ્રોલ ખસેડવા માટે ઍરો કીનો ઉપયોગ કરો. આ કન્ટ્રોલ મૂકવા માટે Enter કીનો ઉપયોગ કરો. રદ કરવા માટે Escape કીનો ઉપયોગ કરો.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> દ્વારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે.</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">આલ્બમ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
+<translation id="1591562245178063882">આ મહિને</translation>
 <translation id="1593528591614229756">તમારા મોબાઇલ પ્રદાતા કે ઍડમિનિસ્ટ્રેટરે પ્રદાન કરેલા APNs પસંદ કરવાની ખાતરી કરો. કોઈ APN પસંદ કરવાથી જે પણ કસ્ટમ APNs હશે, તે બંધ થઈ જશે. અમાન્ય APNs તમારા મોબાઇલ કનેક્શનને વિક્ષેપિત કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">છબીનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="1611649489706141841">ફોરવર્ડ કરો</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">ઝોન <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">છબીઓ લોડ કરી શકાઈ નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા છબીઓ ફરી લોડ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1751249301761991853">વ્યક્તિગત</translation>
+<translation id="1751335846119670066">વાંચવામાં મારી સહાય કરો</translation>
 <translation id="1753496554272155572">વૉલપેપર પ્રીવ્યૂમાંથી બહાર નીકળો</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> માટે ફેરફાર કરવાનું બટન.</translation>
 <translation id="1755556344721611131">ડાયગ્નોસ્ટિક્સ ઍપ</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377"><ph name="ACTION_NAME" />માં ફેરફાર કરો</translation>
 <translation id="2138109643290557664">આસપાસમાં ફરો</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">આજે</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">ઑબ્સિડિઅન</translation>
 <translation id="4021031199988160623">પરીક્ષણ કરવા માટે લૅપટૉપ મોડ પર સ્વિચ કરો</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
+<translation id="4035877632587724847">મંજૂરી આપશો નહીં</translation>
 <translation id="4044093238444069296">ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="404928562651467259">ચેતવણી</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">કન્ફર્મ બટન હવે બંધ છે</translation>
 <translation id="5144887194300568405">અનુવાદ કૉપિ કરો</translation>
 <translation id="5145081769226915336">શું ડાર્ક મોડ ઑટોમૅટિક રીતે ચાલુ કરીએ?</translation>
+<translation id="5145331109270917438">સંશોધિત કર્યાની તારીખ</translation>
 <translation id="5154917547274118687">મેમરી</translation>
 <translation id="5160857336552977725">તમારા <ph name="DEVICE_TYPE" /> પર સાઇન ઇન કરો</translation>
 <translation id="5168185087976003268">બૅટરીની ક્ષમતા</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">AI વડે છબી બનાવવા માટે "બનાવો" પસંદ કરો.
         બનાવવામાં આવેલી બધી છબીઓ ઑટોમૅટિક રીતે અહીં દેખાશે.</translation>
 <translation id="5972388717451707488">એન્જિન અપડેટ કરો</translation>
+<translation id="5972801171078377748">ફરીથી બતાવશો નહીં</translation>
 <translation id="5975130252842127517">કોરલ</translation>
 <translation id="5984145644188835034">ડિફૉલ્ટ વૉલપેપર</translation>
 <translation id="5996832681196460718">સિલ્ક</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">સમાપ્ત કરવા માટે, તમારા જૂના અને નવા પાસવર્ડ દાખલ કરો</translation>
 <translation id="6061772781719867950">HTTPSની નિષ્ફળ વિનંતીઓ</translation>
 <translation id="6073292342939316679">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
+<translation id="6073451960410192870">રેકોર્ડિંગ બંધ કરો</translation>
 <translation id="6075872808778243331">(Android) HTTPની વિલંબતા</translation>
 <translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6091080061796993741">પીળો</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">ડેટા વપરાશ મૅન્યુઅલી રીસેટ કરો</translation>
 <translation id="6243280677745499710">હાલમાં સેટ કરેલ</translation>
 <translation id="6250316632541035980">બેકન અને ઈંડાં</translation>
-<translation id="6255213378196499011">'લખવામાં મારી સહાય કરો' માટેના સેટિંગ</translation>
 <translation id="6265268291107409527">પસંદ કરેલી કી <ph name="KEYS" /> છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">જમણી ઍરો કી</translation>
 <translation id="6278428485366576908">થીમ</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">ડોમેન સફિક્સનો મેળ</translation>
 <translation id="7769672763586021400">મોડલ ID</translation>
 <translation id="7778717409420828014">તમારો પ્રતિસાદ અમને Chromebookના અનુભવને બહેતર બનાવવામાં સહાય કરે છે અને અમારી ટીમ દ્વારા તેનો રિવ્યૂ કરવામાં આવશે. મોટી સંખ્યામાં મળેલા રિપોર્ટને કારણે, અમે કોઈ જવાબ મોકલી શકીશું નહીં.</translation>
+<translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7784116172884276937">કોઈપણ DNS સર્વરનું સેટઅપ કરવામાં આવ્યું નથી</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="779591286616261875">નવો રિપોર્ટ મોકલો</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">કીબોર્ડ</translation>
 <translation id="7849030488395653706">નોર્ધન લાઇટ</translation>
 <translation id="7849737607196682401">લેસ</translation>
+<translation id="7850320739366109486">ખલેલ પાડશો નહીં</translation>
 <translation id="7850847810298646851">Google AI દ્વારા સંચાલિત વૉલપેપર</translation>
 <translation id="785170686607360576">ટ્યૂલિપ</translation>
 <translation id="7856267634822906833">બ્લૂટૂથ ટચસ્ક્રીન</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">હાર્ડવેર સંબંધિત સમસ્યાઓ માટે, પરીક્ષણો અને સમસ્યા નિવારણ ચલાવો</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">નીચે</translation>
+<translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8431300646573772016">ChromeOSમાં નવું શું છે</translation>
 <translation id="843568408673868420">ઇન્ટરનેટ કનેક્ટિવિટી</translation>
 <translation id="844521431886043384">DNSનું સેટઅપ કર્યું</translation>

@@ -35,6 +35,7 @@
 <translation id="1164939766849482256">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে দেখুওৱা স্ক্ৰীন ছেভাৰ</translation>
 <translation id="1167755866710282443">কীসমূহ কাষ্টমাইজ কৰিবলৈ মেনু খোলক। মেনু স্থানান্তৰ কৰিবলৈ টানি আনি এৰক।</translation>
 <translation id="1171349345463658120">বালিময় উপহ্ৰদ</translation>
+<translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1174073918202301297">শ্বর্টকাট যোগ কৰা হ’ল</translation>
 <translation id="11743817593307477">আপুনি বিচৰা গে’মৰ কাৰ্যটোলৈ এই নিয়ন্ত্ৰণটো স্থানান্তৰ কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক। নিয়ন্ত্ৰণ প্ৰয়োগ কৰিবলৈ এণ্টাৰ কীটো ব্যৱহাৰ কৰক। বাতিল কৰিবলৈ এস্কে’প কীটো ব্যৱহাৰ কৰক।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
@@ -115,6 +116,7 @@
 <translation id="1567064801249837505">এলবাম</translation>
 <translation id="1572585716423026576">ৱালপেপাৰ হিচাপে ছেট কৰক</translation>
 <translation id="1578784163189013834">স্ক্ৰীন ছেভাৰৰ পটভূমি বাছনি কৰক</translation>
+<translation id="1591562245178063882">এইটো মাহ</translation>
 <translation id="1593528591614229756">আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা এপিএনসমূহ বাছনি কৰাটো নিশ্চিত কৰক। কোনো এপিএন বাছনি কৰাটোৱে যিকোনো কাষ্টম এপিএন অক্ষম কৰিব। অমান্য এপিএনসমূহে আপোনাৰ ম’বাইল সংযোগত ব্যাঘাত জন্মাব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="160633243685262989">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1611649489706141841">ফৰৱাৰ্ড কৰক</translation>
@@ -151,6 +153,7 @@
 <translation id="1738949837603788263">জ’ন <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">প্ৰতিচ্ছবি ল’ড কৰিব পৰা নগ’ল। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক অথবা প্ৰতিচ্ছবিসমূহ পুনৰ ল’ড কৰিবলৈ চেষ্টা কৰক।</translation>
 <translation id="1751249301761991853">ব্যক্তিগত</translation>
+<translation id="1751335846119670066">হেল্প মী ৰীড</translation>
 <translation id="1753496554272155572">ৱালপেপাৰৰ পূৰ্বদৰ্শনৰ পৰা বাহিৰ হওক</translation>
 <translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" />ৰ বাবে সম্পাদনা কৰাৰ বুটাম।</translation>
 <translation id="1755556344721611131">ডায়েগন’ষ্টিক্স এপ্</translation>
@@ -227,6 +230,7 @@
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> সম্পাদনা কৰক</translation>
 <translation id="2138109643290557664">ভাসমান</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2148716181193084225">আজি</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="2157660087437850958">ইম’জি বাছনি কৰোঁতা</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
@@ -533,6 +537,7 @@
 <translation id="401147258241215701">অবছিদিয়ান</translation>
 <translation id="4021031199988160623">পৰীক্ষা কৰিবলৈ লেপটপ ম’ডলৈ সলনি কৰক</translation>
 <translation id="4034824040120875894">প্ৰিণ্টাৰ</translation>
+<translation id="4035877632587724847">অনুমতি নিদিব</translation>
 <translation id="4044093238444069296">গে’টৱে’ সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="404928562651467259">সকীয়নি</translation>
@@ -734,6 +739,7 @@
 <translation id="5144311987923128508">নিশ্চিত কৰক বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
 <translation id="5144887194300568405">অনুবাদ প্ৰতিলিপি কৰক</translation>
 <translation id="5145081769226915336">স্বয়ংক্ৰিয়ভাৱে গাঢ় ম’ড অন কৰিবনে?</translation>
+<translation id="5145331109270917438">তাৰিখ সংশোধন কৰা হৈছে</translation>
 <translation id="5154917547274118687">মেম’ৰি</translation>
 <translation id="5160857336552977725">আপোনাৰ <ph name="DEVICE_TYPE" />ত ছাইন ইন কৰক</translation>
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
@@ -875,6 +881,7 @@
 <translation id="594989847980441553">AIৰ জৰিয়তে কোনো প্ৰতিচ্ছবি সৃষ্টি কৰিবলৈ "সৃষ্টি কৰক" বাছনি কৰক।
         সৃষ্টি কৰা আটাইবোৰ প্ৰতিচ্ছবি ইয়াত স্বয়ংক্ৰিয়ভাৱে দেখা পোৱা যাব।</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5972801171078377748">পুনৰাই নেদেখুৱাব</translation>
 <translation id="5975130252842127517">প্ৰৱাল</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
 <translation id="5996832681196460718">ছিল্ক</translation>
@@ -891,6 +898,7 @@
 <translation id="6058625436358447366">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি আৰু নতুন পাছৱর্ডসমূহ দিয়ক</translation>
 <translation id="6061772781719867950">HTTPৰ অনুৰোধ বিফল হৈছে</translation>
 <translation id="6073292342939316679">কীব’ৰ্ডৰ উজ্জ্বলতা কমাওক</translation>
+<translation id="6073451960410192870">ৰেকৰ্ডিং কৰা বন্ধ কৰক</translation>
 <translation id="6075872808778243331">(Android) HTTP বিলম্বতা</translation>
 <translation id="6078323886959318429">শ্বর্টকাট যোগ কৰক</translation>
 <translation id="6091080061796993741">হালধীয়া</translation>
@@ -926,7 +934,6 @@
 <translation id="6235460611964961764">ডেটাৰ ব্যৱহাৰ মেনুৱেলভাৱে ৰিছেট কৰক</translation>
 <translation id="6243280677745499710">বর্তমান ছেট কৰা ৱালপেপাৰ</translation>
 <translation id="6250316632541035980">বেকন আৰু কণী</translation>
-<translation id="6255213378196499011">হেল্প মী ৰাইটৰ ছেটিং</translation>
 <translation id="6265268291107409527">বাছনি কৰা কীটো <ph name="KEYS" />। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="6275224645089671689">ৰাইট এৰ’</translation>
 <translation id="6278428485366576908">থীম</translation>
@@ -1215,6 +1222,7 @@
 <translation id="7763470514545477072">ডমেইন চাফিক্সৰ সৈতে মিলা</translation>
 <translation id="7769672763586021400">মডেল আইডি:</translation>
 <translation id="7778717409420828014">আপোনাৰ মতামতে আমাক Chromebook ব্যৱহাৰৰ অভিজ্ঞতা উন্নত কৰাত সহায় কৰে আৰু আমাৰ দলে সেয়া পৰ্যালোচনা কৰিব। ৰিপ’ৰ্টৰ সংখ্যা বেছি হোৱাৰ বাবে আমি কোনো প্ৰত্যুত্তৰ পঠিয়াব নোৱাৰিম।</translation>
+<translation id="7781829728241885113">কালি</translation>
 <translation id="7784116172884276937">কোনো DNS ছাৰ্ভাৰ ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="779591286616261875">এটা নতুন ৰিপ’ৰ্ট পঠিয়াওক</translation>
@@ -1230,6 +1238,7 @@
 <translation id="7846634333498149051">কীব'ৰ্ড</translation>
 <translation id="7849030488395653706">নৰ্ডাৰ্ন লাইট</translation>
 <translation id="7849737607196682401">জৰি</translation>
+<translation id="7850320739366109486">অসুবিধা নিদিব ম’ড</translation>
 <translation id="7850847810298646851">Google AIএ সঞ্চালন কৰা ৱালপেপাৰ</translation>
 <translation id="785170686607360576">টিউলিপ</translation>
 <translation id="7856267634822906833">ব্লুটুথ টাচ্‌স্ক্ৰীন</translation>
@@ -1332,6 +1341,7 @@
 <translation id="8420955526972171689">হাৰ্ডৱেৰ সম্পৰ্কীয় সমস্যাৰ বাবে পৰীক্ষা কৰাৰ আৰু সমস্যা নিবাৰণৰ সুবিধা চলাওক</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">তল</translation>
+<translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8431300646573772016">ChromeOSত নতুন কি আছে</translation>
 <translation id="843568408673868420">ইণ্টাৰনেট সংযোগ</translation>
 <translation id="844521431886043384">DNS ছেট আপ কৰা হোৱা নাই</translation>
