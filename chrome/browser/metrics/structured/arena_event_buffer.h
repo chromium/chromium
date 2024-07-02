@@ -37,7 +37,7 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
  public:
   ArenaEventBuffer(const base::FilePath& path,
                    base::TimeDelta write_delay,
-                   int32_t max_size_bytes);
+                   uint64_t max_size_bytes);
 
   ~ArenaEventBuffer() override;
 
@@ -63,7 +63,7 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto> {
   // * Size of StructuredEventProto
   // * Size of Metrics, times the number of metrics
   // * Size of event sequence metadata if it has one.
-  static int32_t EstimateEventSize(const StructuredEventProto& event);
+  static uint64_t EstimateEventSize(const StructuredEventProto& event);
 
  private:
   void OnEventRead(const ReadStatus status);

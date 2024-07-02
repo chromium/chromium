@@ -59,7 +59,7 @@ class ArenaEventBufferTest : public testing::Test {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("alt_proto_file"));
   }
 
-  std::unique_ptr<ArenaEventBuffer> CreateTestBuffer(int32_t max_size) {
+  std::unique_ptr<ArenaEventBuffer> CreateTestBuffer(uint64_t max_size) {
     return std::make_unique<ArenaEventBuffer>(GetPath(), kWriteDelay, max_size);
   }
 
@@ -109,7 +109,7 @@ TEST_F(ArenaEventBufferTest, Purge) {
   buffer->Purge();
   Wait();
 
-  EXPECT_EQ(buffer->resource_info().used_size_bytes, 0);
+  EXPECT_EQ(buffer->resource_info().used_size_bytes, 0ul);
 
   EXPECT_FALSE(base::PathExists(GetPath()));
 }
@@ -212,7 +212,9 @@ TEST_F(ArenaEventBufferTest, Flush) {
                                 EXPECT_GE(key->creation_time,
                                           info.creation_time);
                                 EXPECT_EQ(buffer->proto()->events_size(), 0);
-                                EXPECT_EQ(buffer->resource_info().used_size_bytes, 0);
+                                EXPECT_EQ(
+                                    buffer->resource_info().used_size_bytes,
+                                    0ul);
                               }));
   Wait();
   EXPECT_TRUE(flushed);

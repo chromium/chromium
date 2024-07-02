@@ -31,6 +31,13 @@ source_set("structured") {
     "structured_metrics_service.h",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "flushed_map.cc",
+      "flushed_map.h",
+    ]
+  }
+
   public_deps = [
     ":common",
     ":events",
@@ -298,6 +305,10 @@ source_set("unit_tests") {
     "structured_metrics_recorder_unittest.cc",
     "structured_metrics_service_unittest.cc",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "flushed_map_unittest.cc" ]
+  }
 
   deps = [
     ":events",

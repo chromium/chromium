@@ -42,7 +42,9 @@ base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
   }
 
   base::File::Info info;
-  CHECK(base::GetFileInfo(path, &info));
+  if (!base::GetFileInfo(path, &info)) {
+    return base::unexpected(kWriteError);
+  }
 
   return FlushedKey{
       .size = static_cast<int64_t>(content.size()),
@@ -54,7 +56,7 @@ base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
 
 ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
                                    base::TimeDelta write_delay,
-                                   int32_t max_size_bytes)
+                                   uint64_t max_size_bytes)
     : EventBuffer(ResourceInfo(max_size_bytes)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -70,7 +72,7 @@ ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
 ArenaEventBuffer::~ArenaEventBuffer() = default;
 
 Result ArenaEventBuffer::AddEvent(StructuredEventProto event) {
-  const int32_t event_size = EstimateEventSize(event);
+  const uint64_t event_size = EstimateEventSize(event);
 
   if (!resource_info_.HasRoom(event_size)) {
     return Result::kFull;
@@ -132,7 +134,8 @@ void ArenaEventBuffer::UpdatePath(const base::FilePath& path) {
 }
 
 // static
-int32_t ArenaEventBuffer::EstimateEventSize(const StructuredEventProto& event) {
+uint64_t ArenaEventBuffer::EstimateEventSize(
+    const StructuredEventProto& event) {
   return sizeof(StructuredEventProto) +
          event.metrics_size() * sizeof(StructuredEventProto::Metric) +
          sizeof(StructuredEventProto) * event.has_event_sequence_metadata();

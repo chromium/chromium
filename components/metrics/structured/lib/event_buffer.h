@@ -12,27 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/metrics/structured/lib/resource_info.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace metrics::structured {
-
-// The current usage and limits of some recourse.
-//
-// These resources could be disk space or memory consumption.
-struct ResourceInfo {
-  int32_t used_size_bytes;
-  int32_t max_size_bytes;
-
-  explicit ResourceInfo(int32_t max_size_bytes);
-  ResourceInfo(int32_t used_size_bytes, int32_t max_size_bytes);
-
-  // Check whether |this| can accommodate |size|.
-  bool HasRoom(int32_t size) const;
-
-  // Increases currently used space with |size|.
-  bool Consume(int32_t size);
-};
-
 // The result of adding an event to a buffer.
 enum class Result {
   // Event was added successfully.
@@ -64,7 +47,7 @@ struct FlushedKey {
 };
 
 using FlushedCallback =
-    base::OnceCallback<void(base::expected<FlushedKey, FlushError> key)>;
+    base::OnceCallback<void(base::expected<FlushedKey, FlushError>)>;
 
 // Abstraction for how in-memory events are managed on device.
 template <typename T>
