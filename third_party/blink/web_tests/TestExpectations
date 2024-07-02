@@ -2568,6 +2568,9 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-043.html [ Failure ]
+external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-044.html [ Failure ]
+external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-042.html [ Failure ]
 [ Linux ] wpt_internal/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/349898743 external/wpt/css/css-writing-modes/block-flow-direction-slr-054.xht [ Failure ]
 crbug.com/349898743 external/wpt/css/css-writing-modes/block-flow-direction-slr-055.xht [ Failure ]

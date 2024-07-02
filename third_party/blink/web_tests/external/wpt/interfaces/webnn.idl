@@ -11,7 +11,8 @@ WorkerNavigator includes NavigatorML;
 
 enum MLDeviceType {
   "cpu",
-  "gpu"
+  "gpu",
+  "npu"
 };
 
 enum MLPowerPreference {

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PermissionsPolicy interface: existence and properties of interface object
   assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
 [FAIL] PermissionsPolicy interface object length
@@ -47,6 +47,8 @@ Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's "constructor" property
   assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 [FAIL] PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+[FAIL] PermissionsPolicyViolationReportBody interface: operation toJSON()
   assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 [FAIL] PermissionsPolicyViolationReportBody interface: attribute featureId
   assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
