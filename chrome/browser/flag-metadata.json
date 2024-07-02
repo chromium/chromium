@@ -916,6 +916,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "backdrop-filter-mirror-edge",
+    "owners": [ "flackr@chromium.org", "michaelludwig@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "background-listening",
     "owners": [
       "jiamingc@chromium.org",

@@ -3363,6 +3363,12 @@ const char kSkiaGraphiteDescription[] =
     "be overridden with command line flags for testing on non-official "
     "developer builds. See --skia-graphite-backend flag in gpu_switches.h.";
 
+const char kBackdropFilterMirrorEdgeName[] = "Backdrop Filter Mirror Edge";
+const char kBackdropFilterMirrorEdgeDescription[] =
+    "When sampling being the backdrop edge for backdrop-filter, samples "
+    "beyond the edge are mirrored back into the backdrop rather than "
+    "duplicating the pixels at the edge.";
+
 const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";

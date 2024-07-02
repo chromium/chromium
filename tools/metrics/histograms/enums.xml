@@ -17410,6 +17410,7 @@ from previous Chrome versions.
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
   <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
+  <int value="-1383524717" label="BackdropFilterMirrorEdgeMode:disabled"/>
   <int value="-1383226125" label="Cr2023MacFontSmoothing:enabled"/>
   <int value="-1383145700"
       label="AutofillDoNotMigrateUnsupportedLocalCards:enabled"/>
@@ -20594,6 +20595,7 @@ from previous Chrome versions.
   <int value="-13918890" label="disable-download-notification"/>
   <int value="-13180015" label="WebUsbDeviceDetection:disabled"/>
   <int value="-13062128" label="IsolateSandboxedIframes:disabled"/>
+  <int value="-12687883" label="BackdropFilterMirrorEdgeMode:enabled"/>
   <int value="-12338441" label="GoogleOneOfferFilesBanner:disabled"/>
   <int value="-12225998" label="ShareButtonInTopToolbar:disabled"/>
   <int value="-12048430" label="IsNameEnabled:enabled"/>

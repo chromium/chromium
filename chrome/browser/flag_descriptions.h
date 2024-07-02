@@ -1953,6 +1953,9 @@ extern const char kSiteIsolationOptOutChoiceOptOut[];
 extern const char kSkiaGraphiteName[];
 extern const char kSkiaGraphiteDescription[];
 
+extern const char kBackdropFilterMirrorEdgeName[];
+extern const char kBackdropFilterMirrorEdgeDescription[];
+
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
