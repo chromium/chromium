@@ -6,12 +6,16 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 
 namespace plus_addresses {
 // static
@@ -55,9 +59,12 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   if (!suppress_ui_for_testing_) {
     view_ = std::make_unique<PlusAddressCreationViewAndroid>(GetWeakPtr(),
                                                              &GetWebContents());
+    // TODO: crbug.com/347022597 - Only trigger if
+    // `PlusAddressSettingService::GetHasAcceptedNotice()` is `false`.
     view_->ShowInit(
         maybe_email.value(),
-        plus_address_service->IsRefreshingSupported(relevant_origin_));
+        plus_address_service->IsRefreshingSupported(relevant_origin_),
+        /*has_accepted_notice=*/true);
   }
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
@@ -83,6 +90,15 @@ void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
 void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed);
+  PlusAddressSettingService* service =
+      PlusAddressSettingServiceFactory::GetForBrowserContext(
+          GetWebContents().GetBrowserContext());
+  // TODO: crbug.com/347022597 - Only trigger if
+  // `PlusAddressSettingService::GetHasAcceptedNotice()` is `false`.
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUserOnboardingEnabled)) {
+    service->SetHasAcceptedNotice();
+  }
   if (plus_profile_->is_confirmed) {
     OnPlusAddressConfirmed(plus_profile_.value());
     return;

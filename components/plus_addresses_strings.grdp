@@ -2,6 +2,7 @@
 <grit-part>
     <!-- Experimental enterprise plus_addresses feature strings -->
     <!-- Fallback strings -->
+    <!-- TODO(b/326392415): Make all strings translatable. -->
     <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
       Lorem Ipsum
     </message>
@@ -31,6 +32,15 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT_ANDROID" desc="The content shown in the plus address label of the modal while a refresh is ongoing" formatter_data="android_java" translateable="false">
       Refreshing ...
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android used when the modal is shown for the first time." translateable="false">
+      First time usage title placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID" desc="The description text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+      First time usage feature description placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID" desc="The notice text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+      First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link <ph name="BEGIN_LINK">&lt;link&gt;</ph>link placeholder<ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
 
     <!-- iOS strings -->

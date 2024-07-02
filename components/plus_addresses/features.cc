@@ -16,6 +16,7 @@ constexpr char kEnterprisePlusAddressServerUrlName[] = "server-url";
 constexpr char kSyncWithEnterprisePlusAddressServerName[] = "sync-with-server";
 constexpr char kEnterprisePlusAddressTimerDelayName[] = "timer-delay";
 constexpr char kPlusAddressManagementUrlName[] = "manage-url";
+constexpr char kPlusAddressLearnMoreUrlName[] = "learn-more";
 constexpr char kPlusAddressExcludedSitesName[] = "excluded-sites";
 constexpr char kPlusAddressErrorReportUrlName[] = "error-report-url";
 constexpr char kDisableForForbiddenUsersName[] = "disable-for-forbidden-users";
@@ -38,6 +39,8 @@ const base::FeatureParam<base::TimeDelta> kEnterprisePlusAddressTimerDelay{
     base::Hours(24)};
 const base::FeatureParam<std::string> kPlusAddressManagementUrl{
     &kPlusAddressesEnabled, kPlusAddressManagementUrlName, ""};
+const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl{
+    &kPlusAddressesEnabled, kPlusAddressLearnMoreUrlName, ""};
 const base::FeatureParam<std::string> kPlusAddressExcludedSites{
     &kPlusAddressesEnabled, kPlusAddressExcludedSitesName, ""};
 const base::FeatureParam<std::string> kPlusAddressErrorReportUrl{
@@ -60,6 +63,12 @@ BASE_FEATURE(kPlusAddressRefresh,
 // addresses for affiliated domains.
 BASE_FEATURE(kPlusAddressAffiliations,
              "PlusAddressAffiliations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the plus address creation dialogs or bottom sheets include
+// extended feature description and usage notice.
+BASE_FEATURE(kPlusAddressUserOnboardingEnabled,
+             "PlusAddressUserOnboardingEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace plus_addresses::features

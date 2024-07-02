@@ -37,6 +37,10 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kPlusAddressManagementUrl;
 
+// Url used to redirect the user to the feature description page.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string> kPlusAddressLearnMoreUrl;
+
 // Used to exclude certain sites from PlusAddressService. Must be a
 // comma-separated list of site names (eTLD+1).
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
@@ -59,6 +63,9 @@ BASE_DECLARE_FEATURE(kPlusAddressRefresh);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressAffiliations);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressUserOnboardingEnabled);
 
 }  // namespace plus_addresses::features
 

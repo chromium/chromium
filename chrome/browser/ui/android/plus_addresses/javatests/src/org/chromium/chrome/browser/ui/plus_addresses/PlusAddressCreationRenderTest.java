@@ -30,8 +30,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -43,6 +41,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -56,10 +55,8 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.PLUS_ADDRESSES_ENABLED})
 public class PlusAddressCreationRenderTest {
-    private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN =
-            "For example@gmail.com.";
+    private static final String MANAGE_PLUS_ADDRESSES_DESCRIPTION = "For example@gmail.com.";
     private static final String PROPOSED_PLUS_ADDRESS = "example.foo@gmail.com";
 
     @ParameterAnnotations.ClassParameter
@@ -109,6 +106,10 @@ public class PlusAddressCreationRenderTest {
     }
 
     private void openBottomSheet(String description, boolean refreshSupported) {
+        openBottomSheet(description, refreshSupported, null);
+    }
+
+    private void openBottomSheet(String description, boolean refreshSupported, String notice) {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -121,11 +122,14 @@ public class PlusAddressCreationRenderTest {
                                     mBridge,
                                     "Modal title",
                                     description,
+                                    notice,
                                     "Plus address placeholder",
                                     "Accept",
+                                    "Cancel",
                                     "Report an error <link>link</link>.",
                                     refreshSupported,
-                                    null);
+                                    new GURL("https://help.google.com"),
+                                    new GURL("https://error.google.com"));
                     mCoordinator.requestShowContent();
                 });
     }
@@ -145,8 +149,7 @@ public class PlusAddressCreationRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowBottomSheet() throws IOException {
-        openBottomSheet(
-                MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN, /* refreshSupported= */ false);
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView =
@@ -158,8 +161,7 @@ public class PlusAddressCreationRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowBottomSheet_RefreshSupported() throws IOException {
-        openBottomSheet(
-                MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN, /* refreshSupported= */ true);
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ true);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView =
@@ -171,8 +173,7 @@ public class PlusAddressCreationRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowProposedPlusAddress() throws IOException {
-        openBottomSheet(
-                MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN, /* refreshSupported= */ false);
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
@@ -189,8 +190,7 @@ public class PlusAddressCreationRenderTest {
     @Feature({"RenderTest"})
     public void testShowProposedPlusAddress_UiRedesignEnabled_RefreshSupported()
             throws IOException {
-        openBottomSheet(
-                MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN, /* refreshSupported= */ true);
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ true);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
@@ -207,8 +207,7 @@ public class PlusAddressCreationRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testErrorShown() throws IOException {
-        openBottomSheet(
-                MANAGE_PLUS_ADDRESSES_DESCRIPTION_WITH_REDESIGN, /* refreshSupported= */ false);
+        openBottomSheet(MANAGE_PLUS_ADDRESSES_DESCRIPTION, /* refreshSupported= */ false);
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showError();

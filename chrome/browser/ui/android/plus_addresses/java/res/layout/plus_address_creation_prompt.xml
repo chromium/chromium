@@ -111,6 +111,16 @@ found in the LICENSE file.
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
     />
 
+  <org.chromium.ui.widget.TextViewWithClickableSpans
+      android:id="@+id/plus_address_first_time_use_notice"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="8dp"
+      android:textAlignment="center"
+      android:breakStrategy="simple"
+      android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
   <org.chromium.ui.widget.ButtonCompat
       android:id="@+id/plus_address_confirm_button"
       style="@style/FilledButton.Flat"
@@ -120,6 +130,16 @@ found in the LICENSE file.
       android:textAlignment="center"
       android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
       android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:minWidth="@dimen/min_touch_target_size" />
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/plus_address_cancel_button"
+      style="@style/TextButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAlignment="center"
+      android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
       android:minHeight="@dimen/min_touch_target_size"
       android:minWidth="@dimen/min_touch_target_size" />
 

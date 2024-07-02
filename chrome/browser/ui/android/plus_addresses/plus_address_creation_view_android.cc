@@ -42,7 +42,8 @@ PlusAddressCreationViewAndroid::~PlusAddressCreationViewAndroid() {
 
 void PlusAddressCreationViewAndroid::ShowInit(
     const std::string& primary_email_address,
-    bool refresh_supported) {
+    bool refresh_supported,
+    bool has_accepted_notice) {
   JNIEnv* env = base::android::AttachCurrentThread();
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents_);
   if (!tab_model) {
@@ -57,13 +58,35 @@ void PlusAddressCreationViewAndroid::ShowInit(
 
   // TODO(b/303054310): Once project exigencies allow for it, convert all of
   // these back to the android view XML.
-  ScopedJavaLocalRef<jstring> j_title = ConvertUTF16ToJavaString(
-      env,
-      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID));
-  ScopedJavaLocalRef<jstring> j_formatted_description = ConvertUTF8ToJavaString(
-      env, l10n_util::GetStringFUTF8(
-               IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID,
-               base::UTF8ToUTF16(primary_email_address)));
+  ScopedJavaLocalRef<jstring> j_title;
+  ScopedJavaLocalRef<jstring> j_formatted_description;
+  ScopedJavaLocalRef<jstring> j_formatted_notice;
+  ScopedJavaLocalRef<jstring> j_plus_address_modal_cancel;
+
+  if (!has_accepted_notice) {
+    j_title = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(
+                 IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID));
+    j_formatted_description = ConvertUTF8ToJavaString(
+        env, l10n_util::GetStringUTF8(
+                 IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID));
+    j_formatted_notice = ConvertUTF8ToJavaString(
+        env,
+        l10n_util::GetStringFUTF8(IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID,
+                                  base::UTF8ToUTF16(primary_email_address)));
+    j_plus_address_modal_cancel = ConvertUTF16ToJavaString(
+        env, l10n_util::GetStringUTF16(
+                 IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID));
+  } else {
+    j_title = ConvertUTF16ToJavaString(
+        env,
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID));
+    j_formatted_description = ConvertUTF8ToJavaString(
+        env, l10n_util::GetStringFUTF8(
+                 IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID,
+                 base::UTF8ToUTF16(primary_email_address)));
+  }
+
   ScopedJavaLocalRef<jstring> j_proposed_plus_address_placeholder =
       ConvertUTF16ToJavaString(
           env,
@@ -79,13 +102,17 @@ void PlusAddressCreationViewAndroid::ShowInit(
           l10n_util::GetStringUTF16(
               IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID));
 
+  ScopedJavaLocalRef<jstring> j_learn_more_url =
+      base::android::ConvertUTF8ToJavaString(
+          env, features::kPlusAddressLearnMoreUrl.Get());
   ScopedJavaLocalRef<jstring> j_error_report_url =
       base::android::ConvertUTF8ToJavaString(
           env, features::kPlusAddressErrorReportUrl.Get());
   Java_PlusAddressCreationViewBridge_show(
-      env, java_object_, j_title, j_formatted_description,
+      env, java_object_, j_title, j_formatted_description, j_formatted_notice,
       j_proposed_plus_address_placeholder, j_plus_address_modal_ok,
-      j_error_report_instruction, j_error_report_url, refresh_supported);
+      j_plus_address_modal_cancel, j_error_report_instruction, j_learn_more_url,
+      j_error_report_url, refresh_supported);
 }
 
 void PlusAddressCreationViewAndroid::OnRefreshClicked(

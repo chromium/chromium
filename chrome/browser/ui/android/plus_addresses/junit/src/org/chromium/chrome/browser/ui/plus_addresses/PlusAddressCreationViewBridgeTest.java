@@ -44,10 +44,14 @@ public class PlusAddressCreationViewBridgeTest {
     private static final long NATIVE_PLUS_ADDRESS_CREATION_VIEW = 100L;
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
+    private static final String MODAL_PLUS_ADDRESS_NOTICE =
+            "lorem ipsum description <link>test link</link> <b>test bold</b>";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
+    private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
+    private static final String LEARN_MORE_URL = "learn.more.com";
     private static final String ERROR_URL = "bug.com";
     private static final boolean REFRESH_SUPPORTED = true;
 
@@ -101,10 +105,13 @@ public class PlusAddressCreationViewBridgeTest {
                         mPlusAddressCreationViewBridge,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_PLUS_ADDRESS_NOTICE,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
+                        MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
                         REFRESH_SUPPORTED,
+                        new GURL(LEARN_MORE_URL),
                         new GURL(ERROR_URL)))
                 .thenReturn(mCoordinator);
     }
@@ -113,9 +120,12 @@ public class PlusAddressCreationViewBridgeTest {
         mPlusAddressCreationViewBridge.show(
                 MODAL_TITLE,
                 MODAL_PLUS_ADDRESS_DESCRIPTION,
+                MODAL_PLUS_ADDRESS_NOTICE,
                 MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                 MODAL_OK,
+                MODAL_CANCEL,
                 MODAL_ERROR_MESSAGE,
+                LEARN_MORE_URL,
                 ERROR_URL,
                 REFRESH_SUPPORTED);
     }

@@ -12,6 +12,8 @@ public interface PlusAddressCreationDelegate {
 
     public void onConfirmRequested();
 
+    public void onCanceled();
+
     public void onConfirmFinished();
 
     public void onPromptDismissed();

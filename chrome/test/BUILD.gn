@@ -7806,6 +7806,7 @@ test("unit_tests") {
       "//components/offline_pages/task",
       "//components/page_image_service:page_image_service",
       "//components/password_manager/content/browser:test_support",
+      "//components/plus_addresses/settings:test_support",
       "//components/pref_registry",
       "//components/services/unzip:in_process",
       "//components/signin/core/browser",

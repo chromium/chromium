@@ -40,11 +40,15 @@ import org.chromium.url.GURL;
 public class PlusAddressCreationBottomSheetContentTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
     private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
+    private static final String MODAL_PLUS_ADDRESS_NOTICE =
+            "lorem ipsum description <link>test link</link>";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
+    private static final String MODAL_CANCEL = "ok";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
     private static final String MODAL_FORMATTED_ERROR_MESSAGE = "error! test link";
+    private static final GURL LEARN_MORE_URL = new GURL("learn.more.com");
     private static final GURL ERROR_URL = new GURL("bug.com");
     private static final boolean REFRESH_SUPPORTED = true;
 
@@ -62,9 +66,12 @@ public class PlusAddressCreationBottomSheetContentTest {
                         mActivity,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_PLUS_ADDRESS_NOTICE,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
+                        MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
+                        LEARN_MORE_URL,
                         ERROR_URL,
                         REFRESH_SUPPORTED);
         mBottomSheetContent.setDelegate(mDelegate);
@@ -117,14 +124,59 @@ public class PlusAddressCreationBottomSheetContentTest {
                         mActivity,
                         MODAL_TITLE,
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        MODAL_PLUS_ADDRESS_NOTICE,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
+                        MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
+                        LEARN_MORE_URL,
                         ERROR_URL,
                         /* refreshSupported= */ false);
         ImageView refreshIcon =
                 bottomSheetContent.getContentView().findViewById(R.id.refresh_plus_address_icon);
         Assert.assertEquals(refreshIcon.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testFirstTimeUsage() {
+        TextView firstTimeNotice =
+                mBottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_first_time_use_notice);
+        Button cancelButton =
+                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
+        Assert.assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(cancelButton.getVisibility(), View.VISIBLE);
+
+        cancelButton.callOnClick();
+        verify(mDelegate).onCanceled();
+    }
+
+    @Test
+    @SmallTest
+    public void testSecondTimeUsage() {
+        PlusAddressCreationBottomSheetContent bottomSheetContent =
+                new PlusAddressCreationBottomSheetContent(
+                        mActivity,
+                        MODAL_TITLE,
+                        MODAL_PLUS_ADDRESS_DESCRIPTION,
+                        /* plusAddressNotice= */ null,
+                        MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
+                        MODAL_OK,
+                        MODAL_CANCEL,
+                        MODAL_ERROR_MESSAGE,
+                        LEARN_MORE_URL,
+                        ERROR_URL,
+                        /* refreshSupported= */ false);
+        TextView firstTimeNotice =
+                bottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_first_time_use_notice);
+        Button cancelButton =
+                bottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);
+        Assert.assertEquals(firstTimeNotice.getVisibility(), View.GONE);
+        Assert.assertEquals(cancelButton.getVisibility(), View.GONE);
     }
 
     @Test
@@ -258,6 +310,20 @@ public class PlusAddressCreationBottomSheetContentTest {
         spans[0].onClick(errorReportInstruction);
 
         verify(mDelegate).openUrl(ERROR_URL);
+    }
+
+    @Test
+    @SmallTest
+    public void testLearnMoreLickClicked_callsDelegateOpenLearnMoreLink() {
+        TextViewWithClickableSpans learnMoreInstruction =
+                mBottomSheetContent
+                        .getContentView()
+                        .findViewById(R.id.plus_address_first_time_use_notice);
+        ClickableSpan[] spans = learnMoreInstruction.getClickableSpans();
+        Assert.assertEquals(spans.length, 1);
+        spans[0].onClick(learnMoreInstruction);
+
+        verify(mDelegate).openUrl(LEARN_MORE_URL);
     }
 
     @Test
