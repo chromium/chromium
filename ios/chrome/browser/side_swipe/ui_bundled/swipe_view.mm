@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/web/common/features.h"

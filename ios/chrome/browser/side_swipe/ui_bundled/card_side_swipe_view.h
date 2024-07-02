@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SIDE_SWIPE_CARD_SIDE_SWIPE_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_SIDE_SWIPE_CARD_SIDE_SWIPE_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_CARD_SIDE_SWIPE_VIEW_H_
+#define IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_CARD_SIDE_SWIPE_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 
 using TabSwipeHandler = void (^)(int destinationWebStateIndex);
 
@@ -33,4 +33,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SIDE_SWIPE_CARD_SIDE_SWIPE_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_SIDE_SWIPE_UI_BUNDLED_CARD_SIDE_SWIPE_VIEW_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/card_side_swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
 
 #import <cmath>
 
@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
-#import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/swipe_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"

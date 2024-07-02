@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 
 #import <memory>
 
@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ui/side_swipe/card_side_swipe_view.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator+Testing.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/card_side_swipe_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"

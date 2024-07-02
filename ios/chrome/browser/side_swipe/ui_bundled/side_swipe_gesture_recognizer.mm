@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 
 #import <cmath>
 

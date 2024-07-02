@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_navigation_view.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_navigation_view.h"
 
 #import <cmath>
 #import <numbers>
@@ -10,8 +10,8 @@
 #import "base/check.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_gesture_recognizer.h"
-#import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
+#import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

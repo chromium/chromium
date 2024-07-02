@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("side_swipe") {
+source_set("ui_bundled") {
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
@@ -36,7 +36,7 @@ source_set("side_swipe") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/ntp",
-    "//ios/chrome/browser/ui/side_swipe/resources",
+    "//ios/chrome/browser/side_swipe/ui_bundled/resources",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/ui/toolbar/public",
@@ -65,7 +65,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "side_swipe_mediator_unittest.mm" ]
   deps = [
-    ":side_swipe",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
