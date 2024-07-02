@@ -144,8 +144,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="HttpsFirstModeSetting">
   <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled in Incognito"/>
   <int value="2" label="Fully enabled"/>
-  <int value="3" label="Enabled in Incognito"/>
 </enum>
 
 <enum name="JsonParserExtension">

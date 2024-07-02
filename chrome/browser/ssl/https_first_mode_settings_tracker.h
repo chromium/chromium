@@ -33,8 +33,8 @@ class StatefulSSLHostStateDelegate;
 // The set of valid states of the user-controllable HTTPS-First Mode setting.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Must be kept in sync with the HttpsFirstModeSetting enum located in
-// chrome/browser/resources/settings/privacy_page/security_page.js.
+// Must be kept in sync with the HttpsFirstModeSetting enums located in
+// chrome/browser/resources/settings/privacy_page/security_page.ts and enums.xml
 enum class HttpsFirstModeSetting {
   kDisabled = 0,
   kEnabledIncognito = 1,
