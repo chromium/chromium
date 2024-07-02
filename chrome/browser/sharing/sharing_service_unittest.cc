@@ -303,8 +303,6 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegistration) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});
@@ -342,8 +340,6 @@ TEST_F(SharingServiceTest, DeviceRegistration) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
@@ -361,9 +357,6 @@ TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegistrationTransportMode) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
 
@@ -378,8 +371,6 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransportMode) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});
@@ -408,8 +399,7 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
 }
 
 TEST_F(SharingServiceTest, DeviceUnregistrationSyncDisabled) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  test_sync_service_.SetSignedOut();
 
   // Create new SharingService instance with sync disabled at constructor.
   GetSharingService();
@@ -419,8 +409,6 @@ TEST_F(SharingServiceTest, DeviceUnregistrationSyncDisabled) {
 }
 
 TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});
@@ -458,8 +446,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
             GetSharingService()->GetStateForTesting());
 
   // Disable sync and un-registration should happen.
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  test_sync_service_.SetSignedOut();
   EXPECT_CALL(*fcm_handler_, StopListening()).Times(1);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->registration_attempts());
@@ -476,8 +463,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
             GetSharingService()->GetStateForTesting());
 
   // Should be able to register once again when sync is back on.
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_.SetSignedInWithSyncFeatureOn();
   EXPECT_CALL(*fcm_handler_, StartListening()).Times(1);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());
@@ -499,8 +485,6 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
 }
 
 TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});

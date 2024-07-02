@@ -17,7 +17,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
   // If sync is not allowed, uploading should never be enabled, even if all the
   // data types are enabled.
   service.SetAllowedByEnterprisePolicy(false);
-  service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
 
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
@@ -63,7 +62,6 @@ TEST(SyncServiceUtilsTest,
 
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
   TestSyncService service;
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sync is enabled only for a specific model type.
@@ -86,7 +84,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
 TEST(SyncServiceUtilsTest,
      UploadToGoogleDisabledForModelTypeThatFailedToStart) {
   TestSyncService service;
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sync is enabled for some model types.
@@ -112,7 +109,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sanity check: Upload is active now.
@@ -132,7 +128,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sanity check: Upload is active now.
@@ -149,7 +144,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   // Once the auth error is resolved (e.g. user re-authenticated), uploading is
   // active again.
   service.ClearAuthError();
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
 
   EXPECT_EQ(UploadState::ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
@@ -160,7 +154,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sanity check: Upload is ACTIVE, even for data types that are always
@@ -190,7 +183,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledInTransportMode) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sanity check: Everything's looking good, so upload is considered active.
@@ -213,7 +205,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleEnabledDespiteInitialSetupIncomplete) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sanity check: Everything's looking good, so upload is considered active.

@@ -275,10 +275,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  void SetPausedSynServiceState() {
-    sync_service_.SetTransportState(
-        syncer::SyncService::TransportState::PAUSED);
-  }
+  void SetPausedSynServiceState() { sync_service_.SetPersistentAuthError(); }
 
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }
   const MediaSinkInternal& cast_sink_2() { return cast_sink_2_; }

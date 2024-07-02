@@ -92,8 +92,6 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedUnrecoverableError) {
 
   // Now, mark the Sync Service as having an unrecoverable error.
   sync_service_.SetHasUnrecoverableError(true);
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   tracker.OnStateChanged(&sync_service_);
 }

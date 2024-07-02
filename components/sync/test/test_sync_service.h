@@ -43,7 +43,7 @@ class TestSyncService : public SyncService {
   // High-level setters that configure common scenarios. These will override
   // any previous call to SetTransportState(), SetAllowedByEnterprisePolicy()
   // and SetHasUnrecoverableError().
-  // TODO(crbug.com/348605115): This currently resets the above but not things
+  // TODO(crbug.com/350495915): This currently resets the above but not things
   // like SetPassphraseRequired(). It should override all or none.
   void SetSignedInWithoutSyncFeature();
   void SetSignedInWithoutSyncFeature(const CoreAccountInfo& account_info);
@@ -58,6 +58,10 @@ class TestSyncService : public SyncService {
   // Lower-level setters.
   void SetAllowedByEnterprisePolicy(bool allowed);
   void SetHasUnrecoverableError(bool has_error);
+  // TODO(crbug.com/348605115): Remove, so it's not possible to set a transport
+  // state inconsistent with the rest of the fake's state. In the meantime,
+  // calling with DISABLED and PAUSED is disallowed, i.e. will cause a crash.
+  // Use SetSignedOut() or SetPersistentAuthError(), respectively.
   void SetTransportState(TransportState transport_state);
   void SetLocalSyncEnabled(bool local_sync_enabled);
 

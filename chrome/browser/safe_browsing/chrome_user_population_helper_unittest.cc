@@ -95,45 +95,32 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
           &profile, base::BindRepeating(&CreateTestSyncService)));
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
-    sync_service->SetLocalSyncEnabled(false);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
-
+    ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(
+        syncer::HISTORY_DELETE_DIRECTIVES));
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_TRUE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::DISABLED);
-    sync_service->SetLocalSyncEnabled(false);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
+    sync_service->SetSignedOut();
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
+    // Enabling local sync reports the sync service as signed-out, so this is
+    // consistent with the SetSignedOut() call above.
+    // TODO(crbug.com/350494796): TestSyncService should honor that.
     sync_service->SetLocalSyncEnabled(true);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
+    sync_service->SetSignedInWithSyncFeatureOn();
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/syncer::UserSelectableTypeSet());

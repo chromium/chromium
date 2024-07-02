@@ -129,7 +129,7 @@ TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsNotPreviouslySet) {
   google_groups_updater.OnSyncServiceInitialized(&sync_service);
   // This just checks that ClearSigninScopedState() deals with the case where
   // the source pref was unset (i.e. is a no-op and doesn't crash).
-  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  sync_service.SetSignedOut();
   google_groups_updater.OnStateChanged(&sync_service);
 
   CheckTargetPref({});
@@ -143,7 +143,7 @@ TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
   SetSourcePref({"123", "456"});
   CheckTargetPref({"123", "456"});
 
-  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  sync_service.SetSignedOut();
   google_groups_updater.OnStateChanged(&sync_service);
 
   // Check the source and target prefs have been cleared.

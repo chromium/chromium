@@ -1085,7 +1085,7 @@ TEST_F(AddressDataManagerTest,
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::PAUSED);
+  sync_service_.SetPersistentAuthError();
 
   // User is still signed in.
   ASSERT_TRUE(identity_test_env_.identity_manager()->HasPrimaryAccount(

@@ -37,8 +37,6 @@ class SharingUtilsTest : public testing::Test {
 }  // namespace
 
 TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   // PREFERENCES is actively synced.
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -49,8 +47,6 @@ TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_FullySynced_MissingDataTypes) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   // Missing PREFERENCES.
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -63,16 +59,12 @@ TEST_F(SharingUtilsTest, SyncDisabled_FullySynced_MissingDataTypes) {
 }
 
 TEST_F(SharingUtilsTest, SyncEnabled_SigninOnly) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   // SHARING_MESSAGE is actively synced.
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
   // Missing SHARING_MESSAGE.
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -84,8 +76,7 @@ TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
 }
 
 TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  test_sync_service_.SetSignedOut();
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPreferences});

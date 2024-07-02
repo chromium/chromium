@@ -118,6 +118,14 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     }));
   }
 
+  auto SetPersistentAuthError() {
+    return Steps(Do([this]() {
+      CHECK(sync_service_);
+      sync_service_->SetPersistentAuthError();
+      sync_service_->FireStateChanged();
+    }));
+  }
+
   auto NewTab(Browser* browser, GURL url) {
     return Steps(Do([browser, url = std::move(url)]() {
       ui_test_utils::NavigateToURLWithDisposition(
@@ -170,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, DoesNothingIfPolicyNotSet) {
       SetTransportState(TransportState::START_DEFERRED),
       CheckTabs(browser(), {{about_blank, ACTIVE}}),
       // Sync becomes paused. The policy is not set, so this does nothing.
-      SetTransportState(TransportState::PAUSED),
-      CheckTabs(browser(), {{about_blank, ACTIVE}}),
+      SetPersistentAuthError(), CheckTabs(browser(), {{about_blank, ACTIVE}}),
       // Sanity check: not observing SyncService.
       Check([this]() {
         EnterpriseSigninService* signin_service =
@@ -189,13 +196,13 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest, OpensNewTabOnSyncPaused) {
                   CheckTabs(browser(), {{example_url, ACTIVE}}),
                   // Sync becomes paused. This should open a new tab pointing to
                   // accounts.google.com.
-                  SetTransportState(TransportState::PAUSED),
+                  SetPersistentAuthError(),
                   CheckTabs(browser(), {{example_url}, {auth_url, ACTIVE}}),
                   // Call OnStateChanged() again, with the same TransportState.
                   // This should do nothing.
                   ActivateTab(browser(), 0),
                   CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}),
-                  SetTransportState(TransportState::PAUSED),
+                  SetPersistentAuthError(),
                   CheckTabs(browser(), {{example_url, ACTIVE}, {auth_url}}));
 }
 
@@ -219,14 +226,14 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSigninServiceTest,
       CheckTabs(browser2, {{example_url}, {auth_url, ACTIVE}}),
       // Sync becomes paused. The currently active tab already points to
       // accounts.google.com, so do nothing.
-      SetTransportState(TransportState::PAUSED),
+      SetPersistentAuthError(),
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       CheckTabs(browser2, {{example_url}, {auth_url, ACTIVE}}),
       // Call OnStateChanged() again, with the same TransportState. This is not
       // a TransportState change, so it should do nothing.
       ActivateTab(browser2, 0),
       CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}),
-      SetTransportState(TransportState::PAUSED),
+      SetPersistentAuthError(),
       CheckTabs(browser(), {{example_url, ACTIVE}, {example_url}}),
       CheckTabs(browser2, {{example_url, ACTIVE}, {auth_url}}));
 }

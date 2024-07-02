@@ -564,8 +564,6 @@ TEST_F(PeopleHandlerTest, UnrecoverableErrorInitializingSync) {
   CreatePeopleHandler();
   sync_service_->SetHasUnrecoverableError(true);
   sync_user_settings()->ClearInitialSyncFeatureSetupComplete();
-  sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
 
   // Open the web UI.
   handler_->HandleShowSyncSetupUI(base::Value::List());

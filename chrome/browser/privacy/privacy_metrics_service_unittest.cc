@@ -51,8 +51,7 @@ class PrivacyMetricsServiceTest : public testing::Test {
 
   void PauseSync() {
     SetPrimaryAccountConsentLevel(signin::ConsentLevel::kSync);
-    sync_service()->SetTransportState(
-        syncer::SyncService::TransportState::PAUSED);
+    sync_service()->SetPersistentAuthError();
     sync_service()->FireStateChanged();
   }
 

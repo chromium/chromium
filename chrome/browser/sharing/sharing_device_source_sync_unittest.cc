@@ -143,8 +143,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_UnknownGuid) {
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceByGuid_SyncDisabled) {
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/true);
-  test_sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
+  test_sync_service_.SetSignedOut();
   EXPECT_FALSE(device_source->GetDeviceByGuid(local_device_info_->guid()));
 }
 

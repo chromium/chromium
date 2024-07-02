@@ -147,7 +147,6 @@ SyncStatusLabels SetUpDistinctCase(
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
       service->SetAllowedByEnterprisePolicy(false);
-      service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
       return {SyncStatusMessageType::kSynced,
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};

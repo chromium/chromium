@@ -110,6 +110,12 @@ void TestSyncService::SetHasUnrecoverableError(bool has_error) {
 }
 
 void TestSyncService::SetTransportState(TransportState transport_state) {
+  CHECK_NE(transport_state, TransportState::DISABLED)
+      << "DISABLED should not be set directly, instead you should use one of "
+         "SetSignedOut(), SetAllowedByEnterprisePolicy(false) or "
+         "SetHasUnrecoverableError(true)";
+  CHECK_NE(transport_state, TransportState::PAUSED)
+      << "Use SetPersistentAuthError() instead";
   transport_state_ = transport_state;
 }
 
