@@ -247,10 +247,10 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
         {kPaymentInstrumentType, "INTEGER NOT NULL DEFAULT 0"},
         {kSerializedValueEncrypted, "VARCHAR NOT NULL"}};
 
-void BindEncryptedValueToColumn(sql::Statement* s,
-                                int column_index,
-                                const std::u16string& value,
-                                const AutofillTableEncryptor& encryptor) {
+void BindEncryptedU16StringToColumn(sql::Statement* s,
+                                    int column_index,
+                                    const std::u16string& value,
+                                    const AutofillTableEncryptor& encryptor) {
   std::string encrypted_data;
   encryptor.EncryptString16(value, &encrypted_data);
   s->BindBlob(column_index, encrypted_data);
@@ -268,7 +268,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
                          CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
     s->BindString16(index++, Truncate(credit_card.GetRawInfo(type)));
   }
-  BindEncryptedValueToColumn(
+  BindEncryptedU16StringToColumn(
       s, index++, credit_card.GetRawInfo(CREDIT_CARD_NUMBER), encryptor);
 
   s->BindInt64(index++, credit_card.use_count());
@@ -288,7 +288,7 @@ void BindLocalStoredCvcToStatement(const std::string& guid,
   int index = 0;
   s->BindString(index++, guid);
 
-  BindEncryptedValueToColumn(s, index++, cvc, encryptor);
+  BindEncryptedU16StringToColumn(s, index++, cvc, encryptor);
   s->BindInt64(index++, modification_date.ToTimeT());
 }
 
@@ -297,7 +297,7 @@ void BindServerCvcToStatement(const ServerCvc& server_cvc,
                               sql::Statement* s) {
   int index = 0;
   s->BindInt64(index++, server_cvc.instrument_id);
-  BindEncryptedValueToColumn(s, index++, server_cvc.cvc, encryptor);
+  BindEncryptedU16StringToColumn(s, index++, server_cvc.cvc, encryptor);
   s->BindInt64(index++, server_cvc.last_updated_timestamp.ToTimeT());
 }
 
@@ -323,7 +323,7 @@ void BindIbanToStatement(const Iban& iban,
   s->BindInt64(index++, iban.use_count());
   s->BindInt64(index++, iban.use_date().ToTimeT());
 
-  BindEncryptedValueToColumn(s, index++, iban.value(), encryptor);
+  BindEncryptedU16StringToColumn(s, index++, iban.value(), encryptor);
   s->BindString16(index++, iban.nickname());
 }
 
@@ -351,7 +351,7 @@ std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageDataFromStatement(
       url::Origin::Create(GURL(merchant_domain)));
 }
 
-std::u16string UnencryptValueFromColumn(
+std::u16string DecryptU16StringFromColumn(
     sql::Statement& s,
     int column_index,
     const AutofillTableEncryptor& encryptor) {
@@ -380,7 +380,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   }
   credit_card->SetRawInfo(
       CREDIT_CARD_NUMBER,
-      UnencryptValueFromColumn(card_statement, index++, encryptor));
+      DecryptU16StringFromColumn(card_statement, index++, encryptor));
   credit_card->set_use_count(card_statement.ColumnInt64(index++));
   credit_card->set_use_date(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
@@ -392,7 +392,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   // Only set cvc if we retrieve cvc from local_stored_cvc table.
   if (cvc_statement) {
     credit_card->set_cvc(
-        UnencryptValueFromColumn(cvc_statement.value(), 0, encryptor));
+        DecryptU16StringFromColumn(cvc_statement.value(), 0, encryptor));
   }
   return credit_card;
 }
@@ -402,7 +402,7 @@ std::unique_ptr<ServerCvc> ServerCvcFromStatement(
     const AutofillTableEncryptor& encryptor) {
   return std::make_unique<ServerCvc>(ServerCvc{
       .instrument_id = s.ColumnInt64(0),
-      .cvc = UnencryptValueFromColumn(s, 1, encryptor),
+      .cvc = DecryptU16StringFromColumn(s, 1, encryptor),
       .last_updated_timestamp = base::Time::FromTimeT(s.ColumnInt64(2))});
 }
 
@@ -416,7 +416,8 @@ std::unique_ptr<Iban> IbanFromStatement(
   iban->set_use_count(s.ColumnInt64(index++));
   iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
 
-  iban->SetRawInfo(IBAN_VALUE, UnencryptValueFromColumn(s, index++, encryptor));
+  iban->SetRawInfo(IBAN_VALUE,
+                   DecryptU16StringFromColumn(s, index++, encryptor));
   iban->set_nickname(s.ColumnString16(index++));
   return iban;
 }
@@ -1946,7 +1947,8 @@ bool PaymentsAutofillTable::MigrateToVersion115EncryptIbanValue() {
     UpdateBuilder(db_, s, kIbansTable, {kGuid, kValue}, "guid=?1");
     int index = 0;
     s.BindString(index++, guid);
-    BindEncryptedValueToColumn(&s, index++, value, *autofill_table_encryptor_);
+    BindEncryptedU16StringToColumn(&s, index++, value,
+                                   *autofill_table_encryptor_);
     if (!s.Run()) {
       return false;
     }
