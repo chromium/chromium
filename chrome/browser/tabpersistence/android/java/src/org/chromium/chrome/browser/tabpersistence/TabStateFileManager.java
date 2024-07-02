@@ -530,8 +530,7 @@ public class TabStateFileManager {
             }
 
             if (encrypted) dataOutputStream.writeLong(KEY_CHECKER);
-            boolean isFlatBuffer = file.getName().contains(FLATBUFFER_PREFIX);
-            if (isFlatBuffer) {
+            if (file.getName().contains(FLATBUFFER_PREFIX)) {
                 try {
                     FlatBufferTabStateSerializer serializer =
                             new FlatBufferTabStateSerializer(encrypted);
@@ -541,6 +540,9 @@ public class TabStateFileManager {
                     }
                     WritableByteChannel channel = Channels.newChannel(dataOutputStream);
                     channel.write(data);
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.TabState.SaveTime.FlatBuffer",
+                            SystemClock.elapsedRealtime() - startTime);
                 } catch (Throwable e) {
                     // Catch all in case of an issue saving the FlatBuffer file. Avoid crashing
                     // the app and simply log what went wrong.
@@ -573,11 +575,7 @@ public class TabStateFileManager {
             dataOutputStream.writeLong(tokenLow);
             long saveTime = SystemClock.elapsedRealtime() - startTime;
             RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime", saveTime);
-            if (isFlatBuffer) {
-                RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.FlatBuffer", saveTime);
-            } else {
-                RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);
-            }
+            RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);
         } catch (FileNotFoundException e) {
             Log.w(TAG, "FileNotFoundException while attempting to save TabState.");
         } catch (IOException e) {
