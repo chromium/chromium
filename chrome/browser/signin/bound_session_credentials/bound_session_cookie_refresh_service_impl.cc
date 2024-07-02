@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
@@ -353,6 +354,16 @@ void BoundSessionCookieRefreshServiceImpl::AddObserver(
 void BoundSessionCookieRefreshServiceImpl::RemoveObserver(
     BoundSessionCookieRefreshService::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+std::vector<BoundSessionDebugInfo>
+BoundSessionCookieRefreshServiceImpl::GetBoundSessionDebugInfo() const {
+  std::vector<BoundSessionDebugInfo> bound_session_debug_info;
+  for (const auto& [key, controller] : cookie_controllers_) {
+    bound_session_debug_info.push_back(
+        BoundSessionDebugInfo::Create(*controller));
+  }
+  return bound_session_debug_info;
 }
 
 BoundSessionCookieController*

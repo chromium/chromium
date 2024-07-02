@@ -50,6 +50,7 @@ class FakeBoundSessionCookieRefreshService
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  std::vector<BoundSessionDebugInfo> GetBoundSessionDebugInfo() const override;
 
  private:
   HandleRequestBlockedOnCookieCallback resume_blocked_request_;

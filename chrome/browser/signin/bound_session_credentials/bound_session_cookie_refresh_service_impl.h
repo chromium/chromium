@@ -81,6 +81,7 @@ class BoundSessionCookieRefreshServiceImpl
       BoundSessionCookieRefreshService::Observer* observer) override;
   void RemoveObserver(
       BoundSessionCookieRefreshService::Observer* observer) override;
+  std::vector<BoundSessionDebugInfo> GetBoundSessionDebugInfo() const override;
 
   // chrome::mojom::BoundSessionRequestThrottledHandler:
   void HandleRequestBlockedOnCookie(

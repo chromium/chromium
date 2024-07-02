@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
 
+#include <base/strings/cstring_view.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/hash/hash.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -26,6 +29,7 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -48,31 +52,43 @@ void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+std::string GetBoundSessionExpirationString(base::Time expiration_time) {
+  static constexpr base::cstring_view kExpired = "Expired at %s";
+  static constexpr base::cstring_view kExpiresIn = "Expires at %s";
+
+  return base::StringPrintf(expiration_time > base::Time::Now()
+                                ? kExpiresIn.c_str()
+                                : kExpired.c_str(),
+                            base::TimeFormatAsIso8601(expiration_time).c_str());
+}
+
 void AppendBoundSessionInfo(
     base::Value::Dict& signin_status,
     BoundSessionCookieRefreshService* bound_session_service) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
-  // TODO(b/299884315): expose extra info that is not available in
-  // BoundSessionThrottlerParams, like session ID or a bound cookie names.
   base::Value::List bound_sessions_list;
   if (!bound_session_service) {
     bound_sessions_list.Append(base::Value::Dict().Set(
         "domain", "Bound session service is disabled."));
-  } else if (std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
-                 bound_session_throttler_params =
-                     bound_session_service->GetBoundSessionThrottlerParams();
-             bound_session_throttler_params.empty()) {
+  } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
+                 bound_session_service->GetBoundSessionDebugInfo();
+             bound_session_info.empty()) {
     bound_sessions_list.Append(
         base::Value::Dict().Set("domain", "No active bound sessions."));
   } else {
-    for (const auto& params : bound_session_throttler_params) {
+    for (const auto& info : bound_session_info) {
       bound_sessions_list.Append(
           base::Value::Dict()
-              .Set("domain", params->domain)
-              .Set("path", params->path)
+              .Set("sessionID", info.session_id)
+              .Set("domain", info.domain)
+              .Set("path", info.path)
               .Set("expirationTime",
-                   base::TimeFormatAsIso8601(params->cookie_expiry_date)));
+                   GetBoundSessionExpirationString(info.expiration_time))
+              .Set("throttlingPaused", info.throttling_paused)
+              .Set("boundCookieNames", info.bound_cookie_names)
+              .Set("refreshUrl", info.refresh_url.spec()));
     }
   }
   signin_status.Set("boundSessionInfo", std::move(bound_sessions_list));
@@ -103,8 +119,9 @@ void SignInInternalsHandler::OnJavascriptAllowed() {
   if (profile) {
     AboutSigninInternals* about_signin_internals =
         AboutSigninInternalsFactory::GetForProfile(profile);
-    if (about_signin_internals)
+    if (about_signin_internals) {
       about_signin_internals_observeration_.Observe(about_signin_internals);
+    }
   }
 }
 

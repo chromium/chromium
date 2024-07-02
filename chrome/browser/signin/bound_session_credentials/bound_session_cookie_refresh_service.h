@@ -18,6 +18,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+struct BoundSessionDebugInfo;
+
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
 // - Tracks bound sessions
@@ -75,6 +77,9 @@ class BoundSessionCookieRefreshService
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  virtual std::vector<BoundSessionDebugInfo> GetBoundSessionDebugInfo()
+      const = 0;
 
  private:
   friend class RendererUpdater;

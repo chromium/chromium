@@ -105,14 +105,22 @@
     <div>
       <table class="signin-details">
         <tr class="header">
+          <td>Session ID</td>
           <td>Domain</td>
           <td>Path</td>
           <td>Expiration time</td>
+          <td>Throttling Paused</td>
+          <td>Bound Cookie Names</td>
+          <td>Refresh URL</td>
         </tr>
         <tr jsselect="boundSessionInfo">
+          <td jscontent="sessionID"></td>
           <td jscontent="domain"></td>
           <td jscontent="path"></td>
           <td jscontent="expirationTime"></td>
+          <td jscontent="throttlingPaused"></td>
+          <td jscontent="boundCookieNames"></td>
+          <td jscontent="refreshUrl"></td>
         </tr>
       </table>
     </div>

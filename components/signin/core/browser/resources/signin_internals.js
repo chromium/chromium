@@ -63,7 +63,9 @@ function refreshSigninInfo(signinInfo) {
   jstProcess(new JsEvalContext(signinInfo), $('account-info'));
   jstProcess(new JsEvalContext(signinInfo), $('refresh-token-events'));
   jstProcess(new JsEvalContext(signinInfo), $('bound-session-info'));
-  document.querySelectorAll('td[jsvalues=".textContent: status"]')
+  document
+      .querySelectorAll(
+          'td[jsvalues=".textContent: status"], td[jscontent="expirationTime"]')
       .forEach(td => {
         if (td.textContent.includes('Expired at')) {
           td.style = 'color: #ffffff; background-color: #ff0000';

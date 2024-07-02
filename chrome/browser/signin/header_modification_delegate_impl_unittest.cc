@@ -23,6 +23,7 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_debug_info.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace {
@@ -76,6 +77,10 @@ class MockBoundSessionCookieRefreshService
               (override));
   MOCK_METHOD(void, AddObserver, (Observer* observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer* observer), (override));
+  MOCK_METHOD((std::vector<BoundSessionDebugInfo>),
+              GetBoundSessionDebugInfo,
+              (),
+              (const, override));
 };
 
 class TestResponseAdapter : public signin::ResponseAdapter {
