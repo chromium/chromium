@@ -3,11 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//components/nacl/features.gni")
 
 assert(is_chromeos_ash)
 
-source_set("release_notes") {
+static_library("release_notes") {
   sources = [
     "release_notes_notification.cc",
     "release_notes_notification.h",
@@ -38,14 +37,12 @@ source_set("release_notes") {
     "//components/user_manager",
     "//components/version_info",
     "//components/version_info:channel",
+    "//content/public/common",
     "//google_apis",
     "//ui/base",
     "//ui/chromeos",
     "//ui/message_center/public/cpp",
   ]
-  if (enable_nacl) {
-    deps += [ "//components/nacl/common:minimal_content_dummy" ]
-  }
 }
 
 source_set("unit_tests") {
