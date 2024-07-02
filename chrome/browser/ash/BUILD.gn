@@ -5984,6 +5984,7 @@ group("browser_tests") {
     "//chrome/browser/ash/customization:browser_tests",
     "//chrome/browser/ash/display:browser_tests",
     "//chrome/browser/ash/eche_app:browser_tests",
+    "//chrome/browser/ash/first_party_sets:browser_tests",
     "//chrome/browser/ash/geolocation:browser_tests",
     "//chrome/browser/ash/kcer:browser_tests",
     "//chrome/browser/ash/kerberos:browser_tests",

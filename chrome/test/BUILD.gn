@@ -4602,7 +4602,6 @@ if (!is_android) {
         "../browser/ash/file_manager/open_with_browser_browsertest.cc",
         "../browser/ash/file_suggest/file_suggest_keyed_service_browsertest.cc",
         "../browser/ash/file_system_provider/cloud_file_system_browsertest.cc",
-        "../browser/ash/first_party_sets/first_party_sets_policy_initialization_browsertest.cc",
         "../browser/ash/floating_sso/floating_sso_browsertest.cc",
         "../browser/ash/guest_os/guest_os_registry_service_icon_browsertest.cc",
         "../browser/ash/input_method/input_method_engine_browsertests.cc",
