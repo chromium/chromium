@@ -144,7 +144,6 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -666,6 +665,10 @@ Browser::Browser(const CreateParams& params)
         ->ListenToFullScreenChanges();
   }
 
+  // Initialize the browser features that rely on the browser window now that it
+  // is initialized.
+  features_->InitPostWindowConstruction(this);
+
   BrowserList::AddBrowser(this);
 }
 
@@ -1110,6 +1113,10 @@ void Browser::OpenURL(const GURL& gurl, WindowOpenDisposition disposition) {
 
 const SessionID& Browser::GetSessionID() {
   return session_id_;
+}
+
+bool Browser::IsTabStripVisible() {
+  return window_->IsToolbarShowing();
 }
 
 tabs::TabInterface* Browser::GetActiveTabInterface() {

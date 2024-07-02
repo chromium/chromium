@@ -43,6 +43,11 @@ class BrowserWindowInterface {
   // Returns a session-unique ID.
   virtual const SessionID& GetSessionID() = 0;
 
+  // Returns true if the tab strip is currently visible for this browser window.
+  // Will return false on browser initialization before the tab strip is
+  // initialized.
+  virtual bool IsTabStripVisible() = 0;
+
   // Returns the foreground tab. This can be nullptr very early during
   // BrowserWindow initialization, and very late during BrowserWindow teardown.
   virtual tabs::TabInterface* GetActiveTabInterface() = 0;

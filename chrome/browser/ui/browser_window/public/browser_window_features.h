@@ -16,6 +16,10 @@ namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
 
+namespace lens {
+class LensOverlayEntryPointController;
+}  // namespace lens
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -37,6 +41,10 @@ class BrowserWindowFeatures {
   // instantiating BrowserView, to allow the view hierarchy to depend on state
   // in this class.
   void Init(Browser* browser);
+
+  // Called exactly once to initialize features that depend on the window object
+  // being created.
+  void InitPostWindowConstruction(Browser* browser);
 
   // Called exactly once to initialize features that depend on the view
   // hierarchy in BrowserView.
@@ -76,6 +84,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
       product_specifications_entry_point_controller_;
+
+  std::unique_ptr<lens::LensOverlayEntryPointController>
+      lens_overlay_entry_point_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 };

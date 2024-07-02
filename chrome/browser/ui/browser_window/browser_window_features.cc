@@ -10,8 +10,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/lens/lens_features.h"
 
 namespace {
 
@@ -58,6 +60,23 @@ void BrowserWindowFeatures::Init(Browser* browser) {
     product_specifications_entry_point_controller_ =
         std::make_unique<commerce::ProductSpecificationsEntryPointController>(
             browser);
+  }
+}
+
+void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+  // Features that are only enabled for normal browser windows (e.g. a window
+  // with an omnibox and a tab strip). By default most features should be
+  // instantiated in this block.
+  if (browser->is_type_normal()) {
+    // TODO(b/350508658): Ideally, we don't pass in a reference to browser as
+    // per the guidance in the comment above. However, currently, we need
+    // browser to properly determine if the lens overlay is enabled.
+    // Cannot be in Init since needs to listen to the fullscreen controller
+    // which is initialized after Init.
+    if (lens::features::IsLensOverlayEnabled()) {
+      lens_overlay_entry_point_controller_ =
+          std::make_unique<lens::LensOverlayEntryPointController>(browser);
+    }
   }
 }
 

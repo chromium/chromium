@@ -2879,7 +2879,7 @@ bool BrowserView::IsToolbarVisible() const {
 }
 
 bool BrowserView::IsToolbarShowing() const {
-  return IsToolbarVisible();
+  return GetTabStripVisible();
 }
 
 bool BrowserView::IsLocationBarVisible() const {

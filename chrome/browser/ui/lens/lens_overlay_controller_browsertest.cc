@@ -25,6 +25,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -452,19 +454,11 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::BindRepeating(
         &LensOverlayControllerBrowserTest::CreateTabFeatures,
         base::Unretained(this)));
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
-        {
-            {"search-bubble", "true"},
-            {"results-search-url", kResultsSearchBaseUrl},
-            {"use-dynamic-theme", "true"},
-            {"use-dynamic-theme-min-population-pct", "0.002"},
-            {"use-dynamic-theme-min-chroma", "3.0"},
-        });
   }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    SetupFeatureList();
     InProcessBrowserTest::SetUp();
   }
 
@@ -488,6 +482,18 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   ~LensOverlayControllerBrowserTest() override {
     tabs::TabFeatures::ReplaceTabFeaturesForTesting(base::NullCallback());
+  }
+
+  virtual void SetupFeatureList() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay,
+        {
+            {"search-bubble", "true"},
+            {"results-search-url", kResultsSearchBaseUrl},
+            {"use-dynamic-theme", "true"},
+            {"use-dynamic-theme-min-population-pct", "0.002"},
+            {"use-dynamic-theme-min-chroma", "3.0"},
+        });
   }
 
   std::unique_ptr<tabs::TabFeatures> CreateTabFeatures() {
@@ -622,7 +628,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
         [&]() { return controller->state() == State::kOff; }));
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -842,36 +848,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CreateAndLoadWebUI) {
   GURL webui_url(chrome::kChromeUILensUntrustedURL);
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
   ASSERT_EQ(GetOverlayWebContents()->GetLastCommittedURL(), webui_url);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       FullscreenClosesOverlay) {
-  WaitForPaint();
-  // State should start in off.
-  auto* controller = browser()
-                         ->tab_strip_model()
-                         ->GetActiveTab()
-                         ->tab_features()
-                         ->lens_overlay_controller();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Enter into fullscreen mode.
-  FullscreenController* fullscreen_controller =
-      browser()->exclusive_access_manager()->fullscreen_controller();
-  content::WebContents* tab_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  fullscreen_controller->EnterFullscreenModeForTab(
-      tab_web_contents->GetPrimaryMainFrame());
-
-  // Verify the overlay turns off.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ShowSidePanel) {
@@ -2817,6 +2793,88 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify that TriggerCopyText was sent.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return fake_controller->fake_overlay_page_.did_trigger_copy; }));
+}
+
+class LensOverlayControllerBrowserFullscreenDisabled
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {
+                                          {"enable-in-fullscreen", "false"},
+                                      });
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
+                       FullscreenClosesOverlay) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Enter into fullscreen mode.
+  FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  fullscreen_controller->EnterFullscreenModeForTab(
+      tab_web_contents->GetPrimaryMainFrame());
+
+  // Verify the overlay turns off.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOff; }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
+                       ToolbarEntryPointState) {
+  WaitForPaint();
+
+  // Assert entry points are enabled.
+  actions::ActionItem* toolbar_entry_point =
+      actions::ActionManager::Get().FindAction(
+          kActionSidePanelShowLensOverlayResults,
+          browser()->browser_actions()->root_action_item());
+  EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(
+      IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+
+  // Enter into fullscreen mode.
+  FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  fullscreen_controller->EnterFullscreenModeForTab(
+      tab_web_contents->GetPrimaryMainFrame());
+
+  // Assert entry points become disabled.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !toolbar_entry_point->GetEnabled(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !browser()->command_controller()->IsCommandEnabled(
+        IDC_CONTENT_CONTEXT_LENS_OVERLAY);
+  }));
+
+  // Exit fullscreen.
+  fullscreen_controller->ExitFullscreenModeForTab(tab_web_contents);
+
+  // Verify the entry points become re-enabled.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toolbar_entry_point->GetEnabled(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()->command_controller()->IsCommandEnabled(
+        IDC_CONTENT_CONTEXT_LENS_OVERLAY);
+  }));
 }
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab

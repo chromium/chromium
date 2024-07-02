@@ -196,6 +196,9 @@ constexpr base::FeatureParam<bool> kLensOverlayEnableErrorPage{
 constexpr base::FeatureParam<std::string> kLensOverlayGscQueryParamValue{
     &kLensOverlay, "gsc-query-param-value", "2"};
 
+const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
+    &kLensOverlay, "enable-in-fullscreen", true};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -546,6 +549,10 @@ bool GetLensOverlayEnableErrorPage() {
 
 std::string GetLensOverlayGscQueryParamValue() {
   return kLensOverlayGscQueryParamValue.Get();
+}
+
+bool GetLensOverlayEnableInFullscreen() {
+  return kLensOverlayEnableInFullscreen.Get();
 }
 
 }  // namespace lens::features
