@@ -49,9 +49,6 @@
     "**/out*/**": true,
     "**/third_party/**": true
   },
-  // Wider author column for annotator extension.
-  // https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator
-  "annotator.annotationColumnWidth": "24em",
   // C++ clang format settings. |workspaceFolder| is assumed to be Chromium's
   // src/ directory.
   "C_Cpp.clang_format_path": "${workspaceFolder}/third_party/depot_tools/clang-format",
@@ -69,6 +66,9 @@
   "task.autoDetect": "off",
   // Used by tasks.json for integration with Chrome tests and builds.
   "chrome.outputDir": "${workspaceFolder}/out/current_link"
+  // Optional: Wider author column for annotator extension.
+  // https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator
+  // "annotator.annotationColumnWidth": "24em",
   // Optional: Highlight current line at the left of the editor.
   // "editor.renderLineHighlight": "gutter",
   // Optional: Don't automatically add closing brackets. It gets in the way.

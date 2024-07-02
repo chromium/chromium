@@ -153,9 +153,11 @@ The following extensions are not included in
 useful for you as well:
 
 ```bash
-$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
+$ echo "ryu1kn.annotator wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
 ```
 
+*   [**Annotator**](https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator) -
+    Display git blame info along with your code. Can open the diff of a particular commit from there.
 *   [**change-case**](https://marketplace.visualstudio.com/items?itemName=wmaurer.change-case) -
     Quickly change the case of the current selection or current word.
 *   [**Markdown Preview Enhanced**](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced) -
