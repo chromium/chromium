@@ -2,6 +2,8 @@
 
 This is a list of changes to [First Contentful Paint](https://web.dev/fcp).
 
+* Chrome 126
+  * Launch feature: [Enable NewPresentationFeedbackTimeStamps on Mac to improve the accuracy of the frame display time](2024_06_inp_lcp_fcp.md)
 * Chrome 111
   * Implementation optimizations: [Changes related to LCP, FCP and Paint Holding](2023_03_lcp_fcp.md)
 * Chrome 102

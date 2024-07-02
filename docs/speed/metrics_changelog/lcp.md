@@ -2,6 +2,8 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 126
+  * Launch feature: [Enable NewPresentationFeedbackTimeStamps on Mac to improve the accuracy of the frame display time](2024_06_inp_lcp_fcp.md)
 * Chrome 118
   * Implementation optimizations: [Image loading prioritizations](2023_10_image_loading_optimizations.md)
 * Chrome 117
