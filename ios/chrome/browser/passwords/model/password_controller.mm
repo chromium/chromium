@@ -530,6 +530,18 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   }
 }
 
+- (void)attachListenersForPasswordGenerationBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                                             forFrameId:
+                                                 (const std::string&)frameId {
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->AttachPasswordGenerationListeners(rendererIds,
+                                                            frameId);
+  }
+}
+
 - (void)detachListenersForBottomSheet:(const std::string&)frameId {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);

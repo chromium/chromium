@@ -36,6 +36,10 @@ class GURL;
 - (void)formEligibleForGenerationFound:
     (const autofill::PasswordFormGenerationData&)form;
 
+- (void)attachListenersForPasswordGenerationFields:
+            (const autofill::PasswordFormGenerationData&)form
+                                        forFrameId:(const std::string&)frameId;
+
 @end
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_DRIVER_BRIDGE_H_

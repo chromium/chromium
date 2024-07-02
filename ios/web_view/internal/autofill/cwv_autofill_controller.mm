@@ -725,6 +725,13 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   // No op.
 }
 
+- (void)attachListenersForPasswordGenerationBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                                             forFrameId:
+                                                 (const std::string&)frameId {
+  // No op.
+}
+
 - (void)detachListenersForBottomSheet:(const std::string&)frameId {
   // No op.
 }

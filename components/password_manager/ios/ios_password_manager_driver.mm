@@ -65,6 +65,8 @@ void IOSPasswordManagerDriver::FormEligibleForGenerationFound(
       GetPasswordGenerationHelper()->IsGenerationEnabled(
           /*log_debug_data*/ true)) {
     [bridge_ formEligibleForGenerationFound:form];
+    [bridge_ attachListenersForPasswordGenerationFields:form
+                                             forFrameId:frame_id_];
   }
 }
 

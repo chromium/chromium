@@ -105,6 +105,12 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       const std::string& frame_id);
 
+  // Prepare proactive password generation bottom sheet using data from the
+  // password form prediction.
+  void AttachPasswordGenerationListeners(
+      const std::vector<autofill::FieldRendererId>& renderer_ids,
+      const std::string& frame_id);
+
   // Detach the password listeners, which will deactivate the password bottom
   // sheet on the provided frame.
   void DetachPasswordListeners(const std::string& frame_id, bool refocus);
@@ -112,6 +118,10 @@ class AutofillBottomSheetTabHelper
   // Detach the password listeners, which will deactivate the password bottom
   // sheet on all frames.
   void DetachPasswordListenersForAllFrames();
+
+  // Detach the password generation listeners, which will deactivate the
+  // proactive password generation bottom sheet on all frames.
+  void DetachPasswordGenerationListenersForAllFrames();
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on the provided frame.
@@ -214,6 +224,12 @@ class AutofillBottomSheetTabHelper
   // TODO(crbug.com/40266699): Migrate to FieldGlobalIds.
   std::map<std::string, std::set<autofill::FieldRendererId>>
       registered_payments_renderer_ids_;
+
+  // Set of proactive password generation bottom sheet related renderer ids,
+  // mapped to their frame id.
+  // TODO(crbug.com/40266699): Migrate to FieldGlobalIds.
+  std::map<std::string, std::set<autofill::FieldRendererId>>
+      registered_password_generation_renderer_ids_;
 
   base::ObserverList<autofill::AutofillBottomSheetObserver>::Unchecked
       observers_;

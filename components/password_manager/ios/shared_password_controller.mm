@@ -713,6 +713,15 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   _formGenerationData[form.form_renderer_id] = form;
 }
 
+- (void)attachListenersForPasswordGenerationFields:
+            (const PasswordFormGenerationData&)form
+                                        forFrameId:(const std::string&)frameId {
+  const std::vector<autofill::FieldRendererId> rendererIds = {
+      form.new_password_renderer_id};
+  [self.delegate attachListenersForPasswordGenerationBottomSheet:rendererIds
+                                                      forFrameId:frameId];
+}
+
 #pragma mark - PasswordFormHelperDelegate
 
 - (void)formHelper:(PasswordFormHelper*)formHelper

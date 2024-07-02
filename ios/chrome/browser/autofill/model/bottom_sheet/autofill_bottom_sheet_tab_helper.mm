@@ -16,6 +16,7 @@
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -183,6 +184,23 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
                   frame_id, allow_autofocus);
 }
 
+void AutofillBottomSheetTabHelper::AttachPasswordGenerationListeners(
+    const std::vector<autofill::FieldRendererId>& renderer_ids,
+    const std::string& frame_id) {
+  // Verify that the proactive password generation bottom sheet feature is
+  // enabled and that it hasn't been dismissed too many times.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet) ||
+      HasReachedPasswordGenerationDismissLimit()) {
+    return;
+  }
+
+  AttachListeners(renderer_ids,
+                  registered_password_generation_renderer_ids_[frame_id],
+                  frame_id, /*allow_autofocus=*/true);
+}
+
 void AutofillBottomSheetTabHelper::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     std::set<autofill::FieldRendererId>& registered_renderer_ids,
@@ -239,6 +257,22 @@ void AutofillBottomSheetTabHelper::DetachPasswordListeners(
 
 void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames() {
   for (auto& registered_renderer_ids : registered_password_renderer_ids_) {
+    DetachListenersForFrame(registered_renderer_ids.first,
+                            registered_renderer_ids.second, /*refocus=*/true);
+  }
+}
+
+void AutofillBottomSheetTabHelper::
+    DetachPasswordGenerationListenersForAllFrames() {
+  // Verify that the password generation bottom sheet feature is enabled.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSProactivePasswordGenerationBottomSheet)) {
+    return;
+  }
+
+  for (auto& registered_renderer_ids :
+       registered_password_generation_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
                             registered_renderer_ids.second, /*refocus=*/true);
   }

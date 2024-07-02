@@ -57,6 +57,15 @@ class PasswordManagerClient;
             (const std::vector<autofill::FieldRendererId>&)rendererIds
                            forFrameId:(const std::string&)frameId;
 
+// Adds event listeners to the field that is associated with a proactive
+// password generation bottom sheet. When the focus event occurs on this
+// field, a bottom sheet will be shown instead of the keyboard, allowing the
+// user to fill the fields by tapping on the "Use Suggested Password" button.
+- (void)attachListenersForPasswordGenerationBottomSheet:
+            (const std::vector<autofill::FieldRendererId>&)rendererIds
+                                             forFrameId:
+                                                 (const std::string&)frameId;
+
 // Detach listeners to fields which are associated with a bottom sheet.
 // When there are no more credentials, we want to show the user the keyboard
 // instead of the bottom sheet.

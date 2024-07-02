@@ -160,6 +160,9 @@ TEST_F(IOSPasswordManagerDriverTest, FormEligibleForGenerationFound) {
       .andCall(url_getter, @selector(lastCommittedURL));
 
   OCMExpect([password_controller_ formEligibleForGenerationFound:form]);
+  OCMExpect([[password_controller_ ignoringNonObjectArgs]
+      attachListenersForPasswordGenerationFields:form
+                                      forFrameId:""]);
   driver_->FormEligibleForGenerationFound(form);
   [password_controller_ verify];
 }
