@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Check scroll-state(snapped) not matching when container-type is removed
+  assert_equals: container-type re-added expected "yes" but got "no"
+Harness: the test ran to completion.
+
