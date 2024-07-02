@@ -16,4 +16,16 @@
   _installDriveButtonVisible = visible;
 }
 
+- (void)setMultipleDestinationsAvailable:(BOOL)multipleDestinationsAvailable {
+}
+
+- (void)setDownloadFileDestination:(DownloadFileDestination)destination {
+}
+
+- (void)setSaveToDriveUserEmail:(NSString*)userEmail {
+}
+
+- (void)setCanOpenFile:(BOOL)canOpenFile {
+}
+
 @end
