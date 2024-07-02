@@ -165,13 +165,6 @@ void RecordDrag(OverviewDragAction action) {
   base::UmaHistogramEnumeration("Ash.Overview.WindowDrag.Workflow", action);
 }
 
-// Returns true if the `item` can to be snapped in overview, an
-// `OverviewGroupItem` with two `OverviewItem`s is not allowed to snap in
-// overview.
-bool IsEligibleForDragToSnap(OverviewItemBase* item) {
-  return (item->GetWindows().size() == 1u) && ShouldAllowSplitView();
-}
-
 // Restores the new desk button state back to the
 // `DeskIconButton::State::kExpanded` on drag ended on all `OverviewGrid`s.
 void MaybeRestoreNewDeskButtonState() {
@@ -260,7 +253,8 @@ OverviewWindowDragController::OverviewWindowDragController(
       event_source_item_(event_source_item),
       display_count_(Shell::GetAllRootWindows().size()),
       is_touch_dragging_(is_touch_dragging),
-      is_eligible_for_drag_to_snap_(IsEligibleForDragToSnap(item)),
+      is_eligible_for_drag_to_snap_(
+          IsEligibleForDraggingToSnapInOverview(item)),
       virtual_desks_bar_enabled_(GetVirtualDesksBarEnabled(item)) {
   CHECK(!OverviewController::Get()->IsInStartAnimation());
   CHECK(!SplitViewController::Get(item_->root_window())->IsDividerAnimating());
@@ -396,10 +390,10 @@ void OverviewWindowDragController::StartNormalDragMode(
   }
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
+  aura::Window* dragged_window = item_->GetWindow();
 
   if (is_eligible_for_drag_to_snap_) {
-    overview_session_->SetSplitViewDragIndicatorsDraggedWindow(
-        item_->GetWindow());
+    overview_session_->SetSplitViewDragIndicatorsDraggedWindow(dragged_window);
     overview_session_->UpdateSplitViewDragIndicatorsWindowDraggingStates(
         GetRootWindowBeingDraggedIn(),
         SplitViewDragIndicators::ComputeWindowDraggingState(
@@ -409,10 +403,10 @@ void OverviewWindowDragController::StartNormalDragMode(
     item_->HideCannotSnapWarning(/*animate=*/true);
 
     // Update the split view divider bar status if necessary. If splitview is
-    // active when dragging the overview window, the split divider bar should be
-    // placed below the dragged window during dragging.
+    // active when dragging the `dragged_window`, the split divider bar should
+    // be placed below the dragged window during dragging.
     SplitViewController::Get(item_->root_window())
-        ->OnWindowDragStarted(item_->GetWindow());
+        ->OnWindowDragStarted(dragged_window);
   }
 
   if (virtual_desks_bar_enabled_) {
@@ -454,8 +448,7 @@ void OverviewWindowDragController::StartNormalDragMode(
     }
   }
 
-  overview_session_->float_container_stacker()->OnDragStarted(
-      item_->GetWindow());
+  overview_session_->float_container_stacker()->OnDragStarted(dragged_window);
 }
 
 OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(

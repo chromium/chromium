@@ -404,9 +404,9 @@ void OverviewItemBase::HandleReleaseEvent(
 
 void OverviewItemBase::HandleLongPressEvent(
     const gfx::PointF& location_in_screen) {
-  if (IsDragItem() &&
-      (ShouldAllowSplitView() || (desks_util::ShouldDesksBarBeCreated() &&
-                                  overview_grid_->IsDesksBarViewActive()))) {
+  if (IsDragItem() && (IsEligibleForDraggingToSnapInOverview(this) ||
+                       (desks_util::ShouldDesksBarBeCreated() &&
+                        overview_grid_->IsDesksBarViewActive()))) {
     overview_session_->StartNormalDragMode(location_in_screen);
   }
 }

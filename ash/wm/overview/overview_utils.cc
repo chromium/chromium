@@ -382,6 +382,10 @@ void MoveFocusToView(OverviewFocusableView* target_view) {
   }
 }
 
+bool IsEligibleForDraggingToSnapInOverview(OverviewItemBase* item) {
+  return (item->GetWindows().size() == 1u) && ShouldAllowSplitView();
+}
+
 void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
                                          bool visible,
                                          bool animate) {

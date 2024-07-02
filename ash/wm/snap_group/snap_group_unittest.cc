@@ -297,6 +297,14 @@ void ResizeDividerTo(ui::test::EventGenerator* event_generator,
   event_generator->ReleaseLeftButton();
 }
 
+void LongTapAt(ui::test::EventGenerator* event_generator,
+               const gfx::Point& point) {
+  ui::GestureEvent long_press(
+      point.x(), point.y(), 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator->Dispatch(&long_press);
+}
+
 class SnapGroupTestBase : public OverviewTestBase {
  public:
   template <typename... TaskEnvironmentTraits>
@@ -7616,6 +7624,58 @@ TEST_F(SnapGroupMultipleSnapGroupsTest,
   UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+}
+
+TEST_F(SnapGroupMultipleSnapGroupsTest,
+       NoCrashWhenLongTappingOnGroupItemInPartialOverview) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  // Create `w3` to partially occlude primary snapped `w1`.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 200, 200, 200)));
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+
+  //                                |
+  //                                |-------+
+  //     +----+    +------+------+  |       |
+  //     | w3 |    |  w1  |  w2  |  |   w4  |
+  //     |    |    |      |      |  |       |
+  //     +----+    +------+------+  |       |
+  //                                |-------+
+  //                                |
+
+  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  OverviewSession* overview_session =
+      OverviewController::Get()->overview_session();
+  CHECK(overview_session);
+  VerifySplitViewOverviewSession(w4.get());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+
+  OverviewItemBase* group_item = GetOverviewItemForWindow(w1.get());
+  gfx::Point location =
+      gfx::ToRoundedPoint(group_item->target_bounds().CenterPoint());
+  // Offset the location from the center a bit since the event is not be handled
+  // in the center gap of the `OverviewGroupItem` yet.
+  location.Offset(/*delta_x=*/10, /*delta_y=*/0);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(location);
+
+  overview_session->InitiateDrag(group_item, gfx::PointF(location),
+                                 /*is_touch_dragging=*/true, group_item);
+  LongTapAt(event_generator, location);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 // -----------------------------------------------------------------------------

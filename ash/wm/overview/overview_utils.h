@@ -105,6 +105,10 @@ ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
 void MoveFocusToView(OverviewFocusableView* target_view);
 
+// Determines if an `item` is eligible for snapping in Overview. Snapping is
+// disallowed for `OverviewGroupItem`s holding two `OverviewItem`s.
+bool IsEligibleForDraggingToSnapInOverview(OverviewItemBase* item);
+
 // For all `windows`, change their visibility by changing the window opacity,
 // animating where necessary.
 void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
