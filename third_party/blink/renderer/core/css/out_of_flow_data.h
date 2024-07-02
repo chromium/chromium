@@ -26,10 +26,12 @@ class CORE_EXPORT OutOfFlowData final
   // update the last successful one.
   bool SetPendingSuccessfulPositionOption(const PositionTryOptions* options,
                                           const CSSPropertyValueSet* try_set,
-                                          const TryTacticList& try_tactics);
+                                          const TryTacticList& try_tactics,
+                                          std::optional<size_t> index);
 
   bool ClearPendingSuccessfulPositionOption() {
-    return SetPendingSuccessfulPositionOption(nullptr, nullptr, kNoTryTactics);
+    return SetPendingSuccessfulPositionOption(nullptr, nullptr, kNoTryTactics,
+                                              std::nullopt);
   }
 
   // At resize observer timing, update the last successful try option.
@@ -51,6 +53,13 @@ class CORE_EXPORT OutOfFlowData final
 
   const TryTacticList& GetLastSuccessfulTryTactics() const {
     return last_successful_position_option_.try_tactics_;
+  }
+
+  std::optional<size_t> GetNewSuccessfulPositionOptionIndex() const {
+    if (new_successful_position_option_.index_ != std::nullopt) {
+      return new_successful_position_option_.index_;
+    }
+    return last_successful_position_option_.index_;
   }
 
   void Trace(Visitor*) const override;

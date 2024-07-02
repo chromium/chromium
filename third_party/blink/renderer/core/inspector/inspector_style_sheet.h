@@ -225,7 +225,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
   std::unique_ptr<protocol::CSS::CSSPositionTryRule>
-  BuildObjectForPositionTryRule(CSSPositionTryRule*);
+  BuildObjectForPositionTryRule(CSSPositionTryRule*, bool active);
   std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>
   BuildObjectForFontPaletteValuesRule(CSSFontPaletteValuesRule*);
   std::unique_ptr<protocol::CSS::CSSPropertyRule> BuildObjectForPropertyRule(

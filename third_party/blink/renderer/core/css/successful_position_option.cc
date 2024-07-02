@@ -13,13 +13,15 @@ bool SuccessfulPositionOption::operator==(
     const SuccessfulPositionOption& other) const {
   return base::ValuesEquivalent(position_try_options_,
                                 other.position_try_options_) &&
-         try_set_ == other.try_set_ && try_tactics_ == other.try_tactics_;
+         try_set_ == other.try_set_ && try_tactics_ == other.try_tactics_ &&
+         index_ == other.index_;
 }
 
 void SuccessfulPositionOption::Clear() {
   position_try_options_.Clear();
   try_set_.Clear();
   try_tactics_ = kNoTryTactics;
+  index_ = std::nullopt;
 }
 
 void SuccessfulPositionOption::Trace(Visitor* visitor) const {
