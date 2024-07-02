@@ -386,8 +386,6 @@ class StreamingSearchPrefetchURLLoader
   // The status returned from |network_url_loader_|.
   std::optional<network::URLLoaderCompletionStatus> status_;
 
-  // Total amount of bytes to transfer.
-  size_t bytes_of_raw_data_to_transfer_ = 0;
   // Bytes sent to |producer_handle_| already.
   size_t write_position_ = 0;
   // The request body.

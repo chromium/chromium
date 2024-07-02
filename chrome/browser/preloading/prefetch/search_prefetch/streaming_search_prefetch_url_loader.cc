@@ -631,7 +631,6 @@ void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
 void StreamingSearchPrefetchURLLoader::OnDataAvailable(
     base::span<const uint8_t> data) {
   body_content_.append(base::as_string_view(data));
-  bytes_of_raw_data_to_transfer_ += data.size();
 
   if (forwarding_client_) {
     PushData();
@@ -646,8 +645,7 @@ void StreamingSearchPrefetchURLLoader::OnDataComplete() {
   drain_complete_ = true;
 
   // Disconnect if all content is served.
-  if (bytes_of_raw_data_to_transfer_ - write_position_ == 0 &&
-      forwarding_client_) {
+  if (write_position_ == body_content_.size() && forwarding_client_) {
     Finish();
   }
   if (response_reader_for_prerender_) {
@@ -705,12 +703,10 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
 
 std::string_view StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
     size_t writing_position) const {
-  DCHECK_GE(bytes_of_raw_data_to_transfer_, writing_position);
-  if (drain_complete_ && writing_position == bytes_of_raw_data_to_transfer_) {
+  if (drain_complete_ && writing_position == body_content_.size()) {
     return std::string_view();
   }
-  return std::string_view(body_content_.data() + writing_position,
-                          bytes_of_raw_data_to_transfer_ - writing_position);
+  return std::string_view(body_content_).substr(writing_position);
 }
 
 void StreamingSearchPrefetchURLLoader::PushData() {
@@ -720,7 +716,6 @@ void StreamingSearchPrefetchURLLoader::PushData() {
   DCHECK(forwarding_client_);
   DCHECK(!streaming_prefetch_request_);
   while (true) {
-    DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
     std::string_view response_data = GetMoreDataFromCache(write_position_);
 
     if (response_data.empty()) {
