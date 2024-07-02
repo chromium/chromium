@@ -563,16 +563,6 @@ public class StripLayoutTab extends StripLayoutView {
         mLoadingSpinnerRotationDegrees = (mLoadingSpinnerRotationDegrees + rotation) % 1080;
     }
 
-    /** Called when this tab has started loading. */
-    public void pageLoadingStarted() {
-        mLoadTracker.pageLoadingStarted();
-    }
-
-    /** Called when this tab has finished loading. */
-    public void pageLoadingFinished() {
-        mLoadTracker.pageLoadingFinished();
-    }
-
     /** Called when this tab has started loading resources. */
     public void loadingStarted() {
         mLoadTracker.loadingStarted();

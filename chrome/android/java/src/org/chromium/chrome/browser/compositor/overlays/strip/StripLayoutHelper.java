@@ -1717,25 +1717,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
-     * Called when a tab has started loading.
-     * @param id The id of the Tab.
-     */
-    public void tabPageLoadStarted(int id) {
-        StripLayoutTab tab = findTabById(id);
-        if (tab != null) tab.pageLoadingStarted();
-    }
-
-    /**
-     * Called when a tab has finished loading.
-     * @param id The id of the Tab.
-     */
-    public void tabPageLoadFinished(int id) {
-        StripLayoutTab tab = findTabById(id);
-        if (tab != null) tab.pageLoadingFinished();
-    }
-
-    /**
      * Called when a tab has started loading resources.
+     *
      * @param id The id of the Tab.
      */
     public void tabLoadStarted(int id) {

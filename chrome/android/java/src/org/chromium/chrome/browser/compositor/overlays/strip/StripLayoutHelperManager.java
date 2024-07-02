@@ -1276,23 +1276,8 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onPageLoadStarted(Tab tab, GURL url) {
-                        getStripLayoutHelper(tab.isIncognito()).tabPageLoadStarted(tab.getId());
-                    }
-
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        getStripLayoutHelper(tab.isIncognito()).tabPageLoadFinished(tab.getId());
-                    }
-
-                    @Override
-                    public void onPageLoadFailed(Tab tab, int errorCode) {
-                        getStripLayoutHelper(tab.isIncognito()).tabPageLoadFinished(tab.getId());
-                    }
-
-                    @Override
                     public void onCrash(Tab tab) {
-                        getStripLayoutHelper(tab.isIncognito()).tabPageLoadFinished(tab.getId());
+                        getStripLayoutHelper(tab.isIncognito()).tabLoadFinished(tab.getId());
                     }
 
                     @Override
