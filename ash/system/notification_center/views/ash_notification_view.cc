@@ -808,58 +808,11 @@ void AshNotificationView::AnimateSingleToGroup(
   ash::message_center_utils::InitLayerForAnimations(image_container_view());
   ash::message_center_utils::InitLayerForAnimations(action_buttons_row());
 
-  auto on_animation_ended = base::BindOnce(
-      [](base::WeakPtr<ash::AshNotificationView> parent,
-         views::View* left_content, views::View* right_content,
-         views::View* message_label_in_expanded_state,
-         views::View* image_container_view, views::View* action_buttons_row,
-         AshNotificationExpandButton* expand_button,
-         const std::string& notification_id, std::string parent_id) {
-        if (!parent) {
-          return;
-        }
-
-        auto* parent_notification =
-            message_center::MessageCenter::Get()->FindNotificationById(
-                parent_id);
-        auto* child_notification =
-            message_center::MessageCenter::Get()->FindNotificationById(
-                notification_id);
-        // The child and parent notifications are not guaranteed to exist. If
-        // they were deleted avoid the animation cleanup.
-        if (!parent_notification || !child_notification) {
-          return;
-        }
-
-        auto* grouping_controller =
-            message_center_utils::GetGroupingControllerForNotificationView(
-                parent.get());
-        if (grouping_controller) {
-          grouping_controller
-              ->ConvertFromSingleToGroupNotificationAfterAnimation(
-                  notification_id, parent_id, parent_notification);
-        }
-
-        left_content->layer()->SetOpacity(1.0f);
-        right_content->layer()->SetOpacity(1.0f);
-        message_label_in_expanded_state->layer()->SetOpacity(1.0f);
-        image_container_view->layer()->SetOpacity(1.0f);
-        action_buttons_row->layer()->SetOpacity(1.0f);
-
-        // After fade out single notification and set up a group one, perform
-        // a fade in.
-        parent->AnimateSingleToGroupFadeIn();
-
-        expand_button->set_previous_bounds(expand_button->GetContentsBounds());
-        parent->DeprecatedLayoutImmediately();
-        expand_button->AnimateSingleToGroupNotification();
-      },
-      weak_factory_.GetWeakPtr(), left_content_, right_content(),
-      message_label_in_expanded_state_, image_container_view(),
-      action_buttons_row(), expand_button_, notification_id, parent_id);
-
   std::pair<base::OnceClosure, base::OnceClosure> split =
-      base::SplitOnceCallback(std::move(on_animation_ended));
+      base::SplitOnceCallback(OnGroupedAnimationEndedClosure(
+          left_content_, right_content(), message_label_in_expanded_state_,
+          image_container_view(), action_buttons_row(), expand_button_,
+          notification_id, parent_id));
 
   ui::AnimationThroughputReporter reporter(
       left_content()->layer()->GetAnimator(),
@@ -2065,11 +2018,14 @@ void AshNotificationView::AttachBinaryImageAsDropData(
 }
 
 void AshNotificationView::OnFadeOutAnimationEnded(views::View* view) {
-  view->layer()->SetOpacity(1.0f);
+  auto* layer = view->layer();
+  if (layer) {
+    layer->SetOpacity(1.0f);
+  }
   view->SetVisible(false);
 
-  if (view == image_container_view()) {
-    view->layer()->SetTransform(gfx::Transform());
+  if (view == image_container_view() && layer) {
+    layer->SetTransform(gfx::Transform());
   }
 }
 
@@ -2077,6 +2033,64 @@ base::OnceClosure AshNotificationView::OnFadeOutAnimationEndedClosure(
     views::View* view) {
   return base::BindOnce(&AshNotificationView::OnFadeOutAnimationEnded,
                         weak_factory_.GetWeakPtr(), view);
+}
+
+void AshNotificationView::OnGroupedAnimationEnded(
+    views::View* left_content,
+    views::View* right_content,
+    views::View* message_label_in_expanded_state,
+    views::View* image_container_view,
+    views::View* action_buttons_row,
+    AshNotificationExpandButton* expand_button,
+    std::string notification_id,
+    std::string parent_id) {
+  auto* parent_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(parent_id);
+  auto* child_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  // The child and parent notifications are not guaranteed to exist. If
+  // they were deleted avoid the animation cleanup.
+  if (!parent_notification || !child_notification) {
+    return;
+  }
+
+  auto* grouping_controller =
+      message_center_utils::GetGroupingControllerForNotificationView(this);
+  if (grouping_controller) {
+    grouping_controller->ConvertFromSingleToGroupNotificationAfterAnimation(
+        notification_id, parent_id, parent_notification);
+  }
+
+  left_content->layer()->SetOpacity(1.0f);
+  right_content->layer()->SetOpacity(1.0f);
+  message_label_in_expanded_state->layer()->SetOpacity(1.0f);
+  image_container_view->layer()->SetOpacity(1.0f);
+  action_buttons_row->layer()->SetOpacity(1.0f);
+
+  // After fade out single notification and set up a group one, perform
+  // a fade in.
+  AnimateSingleToGroupFadeIn();
+
+  expand_button->set_previous_bounds(expand_button->GetContentsBounds());
+  DeprecatedLayoutImmediately();
+  expand_button->AnimateSingleToGroupNotification();
+}
+
+base::OnceClosure AshNotificationView::OnGroupedAnimationEndedClosure(
+    views::View* left_content,
+    views::View* right_content,
+    views::View* message_label_in_expanded_state,
+    views::View* image_container_view,
+    views::View* action_buttons_row,
+    AshNotificationExpandButton* expand_button,
+    const std::string& notification_id,
+    std::string parent_id) {
+  return base::BindOnce(&AshNotificationView::OnGroupedAnimationEnded,
+                        weak_factory_.GetWeakPtr(), left_content, right_content,
+                        message_label_in_expanded_state, image_container_view,
+                        action_buttons_row, expand_button, notification_id,
+                        parent_id);
 }
 
 BEGIN_METADATA(AshNotificationView)
