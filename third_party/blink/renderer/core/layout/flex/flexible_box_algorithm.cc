@@ -135,14 +135,14 @@ LayoutUnit FlexItem::FlowAwareMarginEnd() const {
 }
 
 LayoutUnit FlexItem::FlowAwareMarginBefore() const {
-  switch (algorithm_->GetTransformedWritingMode()) {
-    case TransformedWritingMode::kTopToBottomWritingMode:
+  switch (algorithm_->GetPhysicalDirection()) {
+    case PhysicalDirection::kDown:
       return physical_margins_.top;
-    case TransformedWritingMode::kBottomToTopWritingMode:
+    case PhysicalDirection::kUp:
       return physical_margins_.bottom;
-    case TransformedWritingMode::kLeftToRightWritingMode:
+    case PhysicalDirection::kRight:
       return physical_margins_.left;
-    case TransformedWritingMode::kRightToLeftWritingMode:
+    case PhysicalDirection::kLeft:
       return physical_margins_.right;
   }
   NOTREACHED_IN_MIGRATION();
@@ -150,14 +150,14 @@ LayoutUnit FlexItem::FlowAwareMarginBefore() const {
 }
 
 LayoutUnit FlexItem::FlowAwareMarginAfter() const {
-  switch (algorithm_->GetTransformedWritingMode()) {
-    case TransformedWritingMode::kTopToBottomWritingMode:
+  switch (algorithm_->GetPhysicalDirection()) {
+    case PhysicalDirection::kDown:
       return physical_margins_.bottom;
-    case TransformedWritingMode::kBottomToTopWritingMode:
+    case PhysicalDirection::kUp:
       return physical_margins_.top;
-    case TransformedWritingMode::kLeftToRightWritingMode:
+    case PhysicalDirection::kRight:
       return physical_margins_.right;
-    case TransformedWritingMode::kRightToLeftWritingMode:
+    case PhysicalDirection::kLeft:
       return physical_margins_.left;
   }
   NOTREACHED_IN_MIGRATION();
@@ -927,47 +927,18 @@ void FlexibleBoxAlgorithm::FlipForWrapReverse(
   }
 }
 
-TransformedWritingMode FlexibleBoxAlgorithm::GetTransformedWritingMode() const {
-  return GetTransformedWritingMode(*style_);
+PhysicalDirection FlexibleBoxAlgorithm::GetPhysicalDirection() const {
+  return GetPhysicalDirection(*style_);
 }
 
 // static
-TransformedWritingMode FlexibleBoxAlgorithm::GetTransformedWritingMode(
+PhysicalDirection FlexibleBoxAlgorithm::GetPhysicalDirection(
     const ComputedStyle& style) {
-  WritingMode mode = style.GetWritingMode();
+  WritingDirectionMode mode = style.GetWritingDirection();
   if (!style.ResolvedIsColumnFlexDirection()) {
-    switch (mode) {
-      case WritingMode::kHorizontalTb:
-        return TransformedWritingMode::kTopToBottomWritingMode;
-      case WritingMode::kVerticalLr:
-      case WritingMode::kSidewaysLr:
-        return TransformedWritingMode::kLeftToRightWritingMode;
-      case WritingMode::kVerticalRl:
-      case WritingMode::kSidewaysRl:
-        return TransformedWritingMode::kRightToLeftWritingMode;
-    }
-    NOTREACHED_IN_MIGRATION();
-    return TransformedWritingMode::kTopToBottomWritingMode;
+    return mode.BlockEnd();
   }
-
-  switch (mode) {
-    case WritingMode::kHorizontalTb:
-      return style.IsLeftToRightDirection()
-                 ? TransformedWritingMode::kLeftToRightWritingMode
-                 : TransformedWritingMode::kRightToLeftWritingMode;
-    case WritingMode::kVerticalLr:
-    case WritingMode::kVerticalRl:
-    case WritingMode::kSidewaysRl:
-      return style.IsLeftToRightDirection()
-                 ? TransformedWritingMode::kTopToBottomWritingMode
-                 : TransformedWritingMode::kBottomToTopWritingMode;
-    case WritingMode::kSidewaysLr:
-      return style.IsLeftToRightDirection()
-                 ? TransformedWritingMode::kBottomToTopWritingMode
-                 : TransformedWritingMode::kTopToBottomWritingMode;
-  }
-  NOTREACHED_IN_MIGRATION();
-  return TransformedWritingMode::kTopToBottomWritingMode;
+  return mode.InlineEnd();
 }
 
 // static

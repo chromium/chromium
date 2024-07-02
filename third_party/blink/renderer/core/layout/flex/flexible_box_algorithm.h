@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -54,13 +55,6 @@ struct NGFlexLine;
 enum FlexSign {
   kPositiveFlexibility,
   kNegativeFlexibility,
-};
-
-enum class TransformedWritingMode {
-  kTopToBottomWritingMode,
-  kRightToLeftWritingMode,
-  kLeftToRightWritingMode,
-  kBottomToTopWritingMode
 };
 
 typedef HeapVector<FlexItem, 8> FlexItemVector;
@@ -360,7 +354,7 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   static bool IsHorizontalFlow(const ComputedStyle&);
   static bool IsColumnFlow(const ComputedStyle&);
   bool IsLeftToRightFlow() const;
-  TransformedWritingMode GetTransformedWritingMode() const;
+  PhysicalDirection GetPhysicalDirection() const;
 
   bool ShouldApplyMinSizeAutoForChild(const LayoutBox& child) const;
 
@@ -387,7 +381,7 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
                           LayoutUnit cross_axis_content_size,
                           HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
 
-  static TransformedWritingMode GetTransformedWritingMode(const ComputedStyle&);
+  static PhysicalDirection GetPhysicalDirection(const ComputedStyle&);
 
   static const StyleContentAlignmentData& ContentAlignmentNormalBehavior();
   static StyleContentAlignmentData ResolvedJustifyContent(const ComputedStyle&);

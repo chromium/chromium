@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_DIRECTION_MODE_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -59,6 +60,12 @@ class PLATFORM_EXPORT WritingDirectionMode {
   // Functions for both inline and block directions.
   //
   bool IsHorizontalLtr() const { return IsHorizontal() && IsLtr(); }
+
+  // Returns a physical direction corresponding to a logical direction.
+  PhysicalDirection InlineStart() const;
+  PhysicalDirection InlineEnd() const;
+  PhysicalDirection BlockStart() const;
+  PhysicalDirection BlockEnd() const;
 
   bool operator==(const WritingDirectionMode& other) const {
     return writing_mode_ == other.writing_mode_ &&

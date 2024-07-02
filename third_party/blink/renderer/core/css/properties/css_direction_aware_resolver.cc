@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace {
@@ -17,7 +19,6 @@ template <size_t size>
 using PhysicalMapping = CSSDirectionAwareResolver::PhysicalMapping<size>;
 
 enum PhysicalAxis { kPhysicalAxisX, kPhysicalAxisY };
-enum PhysicalBoxSide { kTopSide, kRightSide, kBottomSide, kLeftSide };
 enum PhysicalBoxCorner {
   kTopLeftCorner,
   kTopRightCorner,
@@ -27,17 +28,8 @@ enum PhysicalBoxCorner {
 
 constexpr size_t kWritingModeSize =
     static_cast<size_t>(WritingMode::kMaxWritingMode) + 1;
-// Following eight arrays contain values for horizontal-tb, vertical-rl,
+// Following four arrays contain values for horizontal-tb, vertical-rl,
 // vertical-lr, sideways-rl, and sideways-lr in this order.
-constexpr uint8_t kInlineStartMap[kWritingModeSize] = {
-    kLeftSide, kTopSide, kTopSide, kTopSide, kBottomSide};
-constexpr uint8_t kInlineEndMap[kWritingModeSize] = {
-    kRightSide, kBottomSide, kBottomSide, kBottomSide, kTopSide};
-constexpr uint8_t kBlockStartMap[kWritingModeSize] = {
-    kTopSide, kRightSide, kLeftSide, kRightSide, kLeftSide};
-constexpr uint8_t kBlockEndMap[kWritingModeSize] = {
-    kBottomSide, kLeftSide, kRightSide, kLeftSide, kRightSide};
-
 constexpr uint8_t kStartStartMap[kWritingModeSize] = {
     kTopLeftCorner, kTopRightCorner, kTopLeftCorner, kTopRightCorner,
     kBottomLeftCorner};
@@ -50,6 +42,12 @@ constexpr uint8_t kEndStartMap[kWritingModeSize] = {
 constexpr uint8_t kEndEndMap[kWritingModeSize] = {
     kBottomRightCorner, kBottomLeftCorner, kBottomRightCorner,
     kBottomLeftCorner, kTopRightCorner};
+
+// Prerequisites for Physical*Mapping().
+STATIC_ASSERT_ENUM(PhysicalDirection::kUp, 0);
+STATIC_ASSERT_ENUM(PhysicalDirection::kRight, 1);
+STATIC_ASSERT_ENUM(PhysicalDirection::kDown, 2);
+STATIC_ASSERT_ENUM(PhysicalDirection::kLeft, 3);
 
 }  // namespace
 
@@ -327,34 +325,32 @@ const CSSProperty& CSSDirectionAwareResolver::ResolveInlineStart(
     TextDirection direction,
     WritingMode writing_mode,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
-    return group.GetProperty(kInlineStartMap[static_cast<int>(writing_mode)]);
-  }
-  return group.GetProperty(kInlineEndMap[static_cast<int>(writing_mode)]);
+  return group.GetProperty(static_cast<size_t>(
+      WritingDirectionMode(writing_mode, direction).InlineStart()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveInlineEnd(
     TextDirection direction,
     WritingMode writing_mode,
     const PhysicalMapping<4>& group) {
-  if (direction == TextDirection::kLtr) {
-    return group.GetProperty(kInlineEndMap[static_cast<int>(writing_mode)]);
-  }
-  return group.GetProperty(kInlineStartMap[static_cast<int>(writing_mode)]);
+  return group.GetProperty(static_cast<size_t>(
+      WritingDirectionMode(writing_mode, direction).InlineEnd()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveBlockStart(
     TextDirection direction,
     WritingMode writing_mode,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(kBlockStartMap[static_cast<int>(writing_mode)]);
+  return group.GetProperty(static_cast<size_t>(
+      WritingDirectionMode(writing_mode, direction).BlockStart()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveBlockEnd(
     TextDirection direction,
     WritingMode writing_mode,
     const PhysicalMapping<4>& group) {
-  return group.GetProperty(kBlockEndMap[static_cast<int>(writing_mode)]);
+  return group.GetProperty(static_cast<size_t>(
+      WritingDirectionMode(writing_mode, direction).BlockEnd()));
 }
 
 const CSSProperty& CSSDirectionAwareResolver::ResolveInline(
