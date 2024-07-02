@@ -217,8 +217,8 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
     InitState(const InitState& other);
     InitState& operator=(const InitState& other);
 
-    std::string extensions = "GL_EXT_framebuffer_object";
-    std::string gl_version = "2.1";
+    std::string extensions;
+    std::string gl_version = "OpenGL ES 3.0";
     bool has_alpha = false;
     bool has_depth = false;
     bool has_stencil = false;

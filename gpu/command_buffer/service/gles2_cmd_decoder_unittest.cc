@@ -53,6 +53,7 @@ namespace gles2 {
 
 void GLES2DecoderRGBBackbufferTest::SetUp() {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   SetupDefaultProgram();

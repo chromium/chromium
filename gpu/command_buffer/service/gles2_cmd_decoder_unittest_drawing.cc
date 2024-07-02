@@ -54,10 +54,6 @@ class GLES2DecoderGeometryInstancingTest : public GLES2DecoderWithShaderTest {
   void SetUp() override {
     InitState init;
     init.extensions = "GL_ANGLE_instanced_arrays";
-    // Most of the tests in this file assume they're running on
-    // desktop OpenGL, and large portions of the tests will become
-    // no-ops if they aren't.
-    init.gl_version = "2.1";
     init.has_alpha = true;
     init.has_depth = true;
     init.request_alpha = true;

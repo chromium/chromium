@@ -3349,71 +3349,6 @@ TEST_P(GLES2DecoderManualInitTest, TexSubImage2DFloatDoesClearOnGLES3) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES2DecoderManualInitTest, TexImage2DFloatConvertsFormatDesktop) {
-  InitState init;
-  init.extensions = "GL_ARB_texture_float";
-  InitDecoder(init);
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
-  DoTexImage2D(
-      GL_TEXTURE_2D, 0, GL_RGBA32F, 16, 17, 0, GL_RGBA, GL_FLOAT, 0, 0);
-  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 16, 17, 0, GL_RGB, GL_FLOAT, 0, 0);
-  DoTexImage2DConvertInternalFormat(GL_TEXTURE_2D,
-                                    0,
-                                    GL_RGBA,
-                                    16,
-                                    17,
-                                    0,
-                                    GL_RGBA,
-                                    GL_FLOAT,
-                                    0,
-                                    0,
-                                    GL_RGBA32F_ARB);
-  DoTexImage2DConvertInternalFormat(GL_TEXTURE_2D,
-                                    0,
-                                    GL_RGB,
-                                    16,
-                                    17,
-                                    0,
-                                    GL_RGB,
-                                    GL_FLOAT,
-                                    0,
-                                    0,
-                                    GL_RGB32F_ARB);
-  DoTexImage2DConvertInternalFormat(GL_TEXTURE_2D,
-                                    0,
-                                    GL_LUMINANCE,
-                                    16,
-                                    17,
-                                    0,
-                                    GL_LUMINANCE,
-                                    GL_FLOAT,
-                                    0,
-                                    0,
-                                    GL_LUMINANCE32F_ARB);
-  DoTexImage2DConvertInternalFormat(GL_TEXTURE_2D,
-                                    0,
-                                    GL_ALPHA,
-                                    16,
-                                    17,
-                                    0,
-                                    GL_ALPHA,
-                                    GL_FLOAT,
-                                    0,
-                                    0,
-                                    GL_ALPHA32F_ARB);
-  DoTexImage2DConvertInternalFormat(GL_TEXTURE_2D,
-                                    0,
-                                    GL_LUMINANCE_ALPHA,
-                                    16,
-                                    17,
-                                    0,
-                                    GL_LUMINANCE_ALPHA,
-                                    GL_FLOAT,
-                                    0,
-                                    0,
-                                    GL_LUMINANCE_ALPHA32F_ARB);
-}
-
 TEST_P(GLES2DecoderManualInitTest, TexImage2Dnorm16OnGLES3) {
   InitState init;
   init.extensions = "GL_EXT_texture_norm16";
@@ -3445,6 +3380,9 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
   }
 
   void CheckFormats(const char* extension, const GLenum* formats, int count) {
+    // ES3 has 10 built-in compressed texture formats.
+    const int kES3FormatCount = 10;
+
     InitState init;
     init.extensions = extension;
     init.bind_generates_resource = true;
@@ -3468,7 +3406,9 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(1, result->GetNumResults());
     GLint num_formats = result->GetData()[0];
-    EXPECT_EQ(count, num_formats);
+    // Since we don't emulate ES3 compressed formats on top of Desktop GL,
+    // so totally supported formats may or may not include the 10 ES3 formats.
+    EXPECT_TRUE(count == num_formats || count + kES3FormatCount == num_formats);
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
     result->size = 0;
@@ -3566,6 +3506,9 @@ TEST_P(GLES2DecoderCompressedFormatsTest, GetCompressedTextureFormatsRGTC) {
 }
 
 TEST_P(GLES2DecoderManualInitTest, GetNoCompressedTextureFormats) {
+  // ES3 has 10 built-in compressed texture formats.
+  const int kES3FormatCount = 10;
+
   InitState init;
   init.bind_generates_resource = true;
   InitDecoder(init);
@@ -3588,7 +3531,9 @@ TEST_P(GLES2DecoderManualInitTest, GetNoCompressedTextureFormats) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(1, result->GetNumResults());
   GLint num_formats = result->GetData()[0];
-  EXPECT_EQ(0, num_formats);
+  // Since we don't emulate ES3 compressed formats on top of Desktop GL,
+  // so totally supported formats may or may not include the 10 ES3 formats.
+  EXPECT_TRUE(0 == num_formats || kES3FormatCount == num_formats);
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
   result->size = 0;
@@ -3600,24 +3545,8 @@ TEST_P(GLES2DecoderManualInitTest, GetNoCompressedTextureFormats) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES2DecoderManualInitTest, TexStorageInvalidLevels) {
-  InitState init;
-  init.gl_version = "OpenGL 4.2";
-  init.extensions = "GL_ARB_texture_rectangle GL_ARB_texture_storage";
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-  DoBindTexture(GL_TEXTURE_RECTANGLE_ARB, client_texture_id_,
-                kServiceTextureId);
-  cmds::TexStorage2DEXT cmd;
-  cmd.Init(GL_TEXTURE_RECTANGLE_ARB, 2, GL_RGBA8, 4, 4);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
-}
-
 TEST_P(GLES2DecoderManualInitTest, TexStorageInvalidSize) {
   InitState init;
-  init.gl_version = "OpenGL 4.2";
-  init.extensions = "GL_ARB_texture_storage";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);

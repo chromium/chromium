@@ -136,6 +136,7 @@ void GLES2DecoderRestoreStateTest::AddExpectationsForBindSampler(GLuint unit,
 
 TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   SetupTexture();
@@ -164,6 +165,7 @@ TEST_P(GLES2DecoderRestoreStateTest, NullPreviousStateBGR) {
 
 TEST_P(GLES2DecoderRestoreStateTest, NullPreviousState) {
   InitState init;
+  init.gl_version = "OpenGL ES 2.0";
   InitDecoder(init);
   SetupTexture();
 
