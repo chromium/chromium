@@ -7145,6 +7145,10 @@ static_library("ui") {
       "webui/certificate_manager/certificate_manager_handler.h",
       "webui/certificate_manager/certificate_manager_ui.cc",
       "webui/certificate_manager/certificate_manager_ui.h",
+      "webui/certificate_manager/certificate_manager_utils.cc",
+      "webui/certificate_manager/certificate_manager_utils.h",
+      "webui/certificate_manager/enterprise_cert_sources.cc",
+      "webui/certificate_manager/enterprise_cert_sources.h",
     ]
 
     public_deps +=
