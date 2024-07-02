@@ -2557,7 +2557,7 @@ AtkObject* AXPlatformNodeAuraLinux::CreateAtkObject() {
 void AXPlatformNodeAuraLinux::DestroyAtkObjects() {
   if (atk_hyperlink_) {
     ax_platform_atk_hyperlink_set_object(
-        AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink_.get()), nullptr);
+        AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink_), nullptr);
     g_object_unref(atk_hyperlink_);
     atk_hyperlink_ = nullptr;
   }
@@ -2567,7 +2567,7 @@ void AXPlatformNodeAuraLinux::DestroyAtkObjects() {
     // reference to atk_object_ somewhere.
     if (atk_object_ == g_current_focused)
       SetWeakGPtrToAtkObject(&g_current_focused, nullptr);
-    atk_object::Detach(AX_PLATFORM_NODE_AURALINUX(atk_object_.get()));
+    atk_object::Detach(AX_PLATFORM_NODE_AURALINUX(atk_object_));
 
     g_object_unref(atk_object_);
     atk_object_ = nullptr;
@@ -3680,9 +3680,8 @@ void AXPlatformNodeAuraLinux::OnSelectedChildrenChanged() {
 
 bool AXPlatformNodeAuraLinux::EmitsAtkTextEvents() const {
   // Objects which do not implement AtkText cannot emit AtkText events.
-  if (!atk_object_ || !ATK_IS_TEXT(atk_object_.get())) {
+  if (!atk_object_ || !ATK_IS_TEXT(atk_object_))
     return false;
-  }
 
   // Objects which do implement AtkText, but are ignored or invisible should not
   // emit AtkText events.
@@ -3977,7 +3976,7 @@ void AXPlatformNodeAuraLinux::OnParentChanged() {
   property_values.new_value = G_VALUE_INIT;
   g_value_init(&property_values.new_value, G_TYPE_OBJECT);
   g_value_set_object(&property_values.new_value, GetParent());
-  g_signal_emit_by_name(G_OBJECT(atk_object_.get()),
+  g_signal_emit_by_name(G_OBJECT(atk_object_),
                         "property-change::accessible-parent", &property_values,
                         nullptr);
   g_value_unset(&property_values.new_value);
@@ -4575,7 +4574,7 @@ AtkHyperlink* AXPlatformNodeAuraLinux::GetAtkHyperlink() {
   atk_hyperlink_ =
       ATK_HYPERLINK(g_object_new(AX_PLATFORM_ATK_HYPERLINK_TYPE, 0));
   ax_platform_atk_hyperlink_set_object(
-      AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink_.get()), this);
+      AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink_), this);
   return atk_hyperlink_;
 }
 

@@ -8,6 +8,9 @@
 # There is no need to specify template arguments:
 #     my_namespace::my_subnamespace::MyTemplate::my_field_
 
+# Populated manually, because of in-out-arg usage.
+ui::AXPlatformNodeAuraLinux::atk_object_
+
 # Populated manually - problems related to passing to a templated && parameter,
 # which is later forwarded to something that doesn't vibe with raw_ptr<T>. The
 # rewriter has no visibility into where the parameter is forwarded to.
