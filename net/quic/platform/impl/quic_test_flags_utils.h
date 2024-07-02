@@ -13,9 +13,10 @@ class QuicFlagSaverImpl {
   ~QuicFlagSaverImpl();
 
  private:
-#define QUIC_FLAG(flag, value) bool saved_##flag##_;
-#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
-#undef QUIC_FLAG
+#define QUICHE_FLAG(type, flag, internal_value, external_value, doc) \
+  type saved_##flag##_;
+#include "net/third_party/quiche/src/quiche/common/quiche_feature_flags_list.h"
+#undef QUICHE_FLAG
 #define QUICHE_PROTOCOL_FLAG(type, flag, ...) type saved_##flag##_;
 #include "net/third_party/quiche/src/quiche/common/quiche_protocol_flags_list.h"
 #undef QUICHE_PROTOCOL_FLAG

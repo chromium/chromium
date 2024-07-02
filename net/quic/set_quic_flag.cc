@@ -61,13 +61,13 @@ void SetQuicFlagByName_int64_t(int64_t* flag, const std::string& value) {
 }  // namespace
 
 void SetQuicFlagByName(const std::string& flag_name, const std::string& value) {
-#define QUIC_FLAG(flag, default_value)            \
-  if (flag_name == "FLAGS_" #flag) {              \
-    SetQuicFlagByName_bool(&FLAGS_##flag, value); \
-    return;                                       \
+#define QUICHE_FLAG(type, flag, internal_value, external_value, doc) \
+  if (flag_name == "FLAGS_" #flag) {                                 \
+    SetQuicFlagByName_##type(&FLAGS_##flag, value);                  \
+    return;                                                          \
   }
-#include "net/third_party/quiche/src/quiche/quic/core/quic_flags_list.h"
-#undef QUIC_FLAG
+#include "net/third_party/quiche/src/quiche/common/quiche_feature_flags_list.h"
+#undef QUICHE_FLAG
 
 #define QUICHE_PROTOCOL_FLAG(type, flag, ...)       \
   if (flag_name == "FLAGS_" #flag) {                \
