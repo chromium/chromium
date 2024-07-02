@@ -43,7 +43,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -94,7 +93,7 @@ public class RequestDesktopUtils {
         RecordHistogram.recordBooleanHistogram(
                 "Android.RequestDesktopSite.UserSwitchToDesktop", isDesktop);
 
-        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+        if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
         new UkmRecorder.Bridge()
                 .recordEventWithIntegerMetric(
@@ -108,11 +107,12 @@ public class RequestDesktopUtils {
 
     /**
      * Records the ukms associated with changing screen orientation.
+     *
      * @param isLandscape True if the orientation is landscape.
      * @param tab The current activity {@link Tab}.
      */
     public static void recordScreenOrientationChangedUkm(boolean isLandscape, @Nullable Tab tab) {
-        if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
+        if (tab == null || tab.isOffTheRecord() || tab.getWebContents() == null) return;
 
         new UkmRecorder.Bridge()
                 .recordEventWithIntegerMetric(
@@ -125,14 +125,14 @@ public class RequestDesktopUtils {
     /**
      * Set or remove a domain level exception with URL for {@link
      * ContentSettingsType.REQUEST_DESKTOP_SITE}. Clear the subdomain level exception if any.
+     *
      * @param profile Target profile whose content settings needs to be updated.
-     * @param url  {@link GURL} for the site that changes in desktop user agent.
+     * @param url {@link GURL} for the site that changes in desktop user agent.
      * @param useDesktopUserAgent True if the input |url| needs to use desktop user agent.
      */
     public static void setRequestDesktopSiteContentSettingsForUrl(
             Profile profile, GURL url, boolean useDesktopUserAgent) {
-        boolean isIncognito =
-                Profile.getBrowserProfileTypeFromProfile(profile) == BrowserProfileType.INCOGNITO;
+        boolean isOffTheRecord = profile.isOffTheRecord();
         String domainWildcardPattern =
                 WebsitePreferenceBridge.toDomainWildcardPattern(url.getSpec());
         // Clear subdomain level exception if any.
@@ -156,7 +156,7 @@ public class RequestDesktopUtils {
         // For normal profile, remove domain level setting if it matches the global setting.
         // For incognito profile, keep the domain level setting to override the settings from normal
         // profile.
-        if (!isIncognito && useDesktopUserAgent == rdsGlobalSetting) {
+        if (!isOffTheRecord && useDesktopUserAgent == rdsGlobalSetting) {
             // Keep the domain settings when the window setting preference is ON.
             PrefService prefService = UserPrefs.get(profile);
             if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
