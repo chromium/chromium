@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/device_event_log/device_event_log.h"
+#include "third_party/cros_system_api/constants/lorgnette_dlc.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -25,7 +26,6 @@ namespace ash {
 namespace {
 const char kNotifierId[] = "scanning.dlc";
 const char kNotificationId[] = "scanning_dlc_notification";
-const char kDlcId[] = "sane-backends-pfu";
 
 std::unique_ptr<message_center::Notification> NewNotification(
     int title,
@@ -50,16 +50,23 @@ std::unique_ptr<message_center::Notification> NewNotification(
 
 LorgnetteNotificationController::LorgnetteNotificationController(
     Profile* profile)
-    : dlc_observer_(this), current_state_(DlcState::kIdle), profile_(profile) {
+    : dlc_observer_(this),
+      supported_dlc_ids_(
+          std::set<std::string>({lorgnette::kSaneBackendsPfuDlcId})),
+      profile_(profile) {
   DCHECK(profile);
   dlc_observer_.Observe(DlcserviceClient::Get());
+
+  for (const auto& id : supported_dlc_ids_) {
+    current_state_per_dlc_[id] = DlcState::kIdle;
+  }
 }
 
 LorgnetteNotificationController::~LorgnetteNotificationController() = default;
 
 void LorgnetteNotificationController::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
-  if (dlc_state.id() != kDlcId) {
+  if (supported_dlc_ids_.find(dlc_state.id()) == supported_dlc_ids_.end()) {
     return;
   }
 
@@ -68,20 +75,21 @@ void LorgnetteNotificationController::OnDlcStateChanged(
       // Only set state to kInstalledSuccessfully if previous start was
       // kInstalling to send a notification only if the DLC is downloading and
       // not just mounting.
-      if (current_state_ == DlcState::kInstalling) {
-        current_state_ = DlcState::kInstalledSuccessfully;
+      if (current_state_per_dlc_[dlc_state.id()] == DlcState::kInstalling) {
+        current_state_per_dlc_[dlc_state.id()] =
+            DlcState::kInstalledSuccessfully;
       } else {
-        current_state_ = DlcState::kIdle;
+        current_state_per_dlc_[dlc_state.id()] = DlcState::kIdle;
       }
-      PRINTER_LOG(EVENT) << "Scanning DLC ID: " << kDlcId
+      PRINTER_LOG(EVENT) << "Scanning DLC ID: " << dlc_state.id()
                          << " installed successfully";
       break;
     case dlcservice::DlcState::INSTALLING:
-      current_state_ = DlcState::kInstalling;
+      current_state_per_dlc_[dlc_state.id()] = DlcState::kInstalling;
       break;
     case dlcservice::DlcState::NOT_INSTALLED:
-      current_state_ = DlcState::kInstallError;
-      PRINTER_LOG(ERROR) << "Scanning DLC ID: " << kDlcId
+      current_state_per_dlc_[dlc_state.id()] = DlcState::kInstallError;
+      PRINTER_LOG(ERROR) << "Scanning DLC ID: " << dlc_state.id()
                          << " exited with error: "
                          << dlc_state.last_error_code();
       break;
@@ -90,13 +98,13 @@ void LorgnetteNotificationController::OnDlcStateChanged(
       break;
   }
   std::unique_ptr<message_center::Notification> notification =
-      CreateNotification();
-  DisplayNotification(std::move(notification));
+      CreateNotification(dlc_state.id());
+  DisplayNotification(std::move(notification), dlc_state.id());
 }
 
 std::unique_ptr<message_center::Notification>
-LorgnetteNotificationController::CreateNotification() {
-  switch (current_state_) {
+LorgnetteNotificationController::CreateNotification(const std::string& dlc_id) {
+  switch (current_state_per_dlc_[dlc_id]) {
     case DlcState::kInstalledSuccessfully:
       return NewNotification(IDS_SCANNING_DLC_NOTIFICATION_INSTALLED_TITLE,
                              IDS_EMPTY_STRING, cros_tokens::kCrosSysPrimary,
@@ -117,10 +125,11 @@ LorgnetteNotificationController::CreateNotification() {
 }
 
 void LorgnetteNotificationController::DisplayNotification(
-    std::unique_ptr<message_center::Notification> notification) {
+    std::unique_ptr<message_center::Notification> notification,
+    const std::string& dlc_id) {
   NotificationDisplayService* display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (current_state_ == DlcState::kIdle) {
+  if (current_state_per_dlc_[dlc_id] == DlcState::kIdle) {
     display_service->Close(NotificationHandler::Type::TRANSIENT,
                            kNotificationId);
   } else {
@@ -130,9 +139,15 @@ void LorgnetteNotificationController::DisplayNotification(
   }
 }
 
-LorgnetteNotificationController::DlcState
-LorgnetteNotificationController::current_state_for_testing() {
-  return current_state_;
+std::optional<LorgnetteNotificationController::DlcState>
+LorgnetteNotificationController::current_state_for_testing(
+    const std::string& dlc_id) {
+  auto itr = current_state_per_dlc_.find(dlc_id);
+  if (itr == current_state_per_dlc_.end()) {
+    return std::nullopt;
+  }
+
+  return itr->second;
 }
 
 }  // namespace ash

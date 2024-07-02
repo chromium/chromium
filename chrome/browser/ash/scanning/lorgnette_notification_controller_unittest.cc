@@ -17,6 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/constants/lorgnette_dlc.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -50,7 +51,7 @@ class LorgnetteNotificationControllerTest : public ::testing::Test {
   dlcservice::DlcState CreateDlcState(dlcservice::DlcState_State state) {
     DlcState output;
     output.set_state(state);
-    output.set_id("sane-backends-pfu");
+    output.set_id(lorgnette::kSaneBackendsPfuDlcId);
     return output;
   }
 
@@ -89,7 +90,12 @@ class LorgnetteNotificationControllerTest : public ::testing::Test {
 TEST_F(LorgnetteNotificationControllerTest, TestDlcSuccessfullyInstalled) {
   InstallDlcWithState(CreateInstalledState());
 
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kIdle);
   EXPECT_FALSE(Notification().has_value());
 }
@@ -97,7 +103,12 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcSuccessfullyInstalled) {
 TEST_F(LorgnetteNotificationControllerTest, TestDlcInstalling) {
   InstallDlcWithState(CreateInstallingState());
 
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kInstalling);
   ASSERT_TRUE(Notification().has_value());
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
@@ -109,7 +120,12 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstalling) {
 TEST_F(LorgnetteNotificationControllerTest, TestDlcInstallFailed) {
   InstallDlcWithState(CreateInstallErrorState());
 
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kInstallError);
   ASSERT_TRUE(Notification().has_value());
   EXPECT_EQ(u"Can't install scanner software", Notification()->title());
@@ -123,14 +139,24 @@ TEST_F(LorgnetteNotificationControllerTest, TestDlcInstallFailed) {
 TEST_F(LorgnetteNotificationControllerTest, TestWrongIdIntalled) {
   InstallDlcWithState(CreateInstalledStateWrongId());
 
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kIdle);
   EXPECT_FALSE(Notification().has_value());
 }
 
 TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
   InstallDlcWithState(CreateInstallingState());
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kInstalling);
   ASSERT_TRUE(Notification().has_value());
   EXPECT_EQ(u"Installing scanner software", Notification()->title());
@@ -139,7 +165,12 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
   EXPECT_EQ(&kNotificationPrintingIcon, &Notification()->vector_small_image());
 
   InstallDlcWithState(CreateInstalledState());
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kInstalledSuccessfully);
   ASSERT_TRUE(Notification().has_value());
   EXPECT_EQ(u"Scanner software installed", Notification()->title());
@@ -149,7 +180,12 @@ TEST_F(LorgnetteNotificationControllerTest, TestRealDlcFlow) {
 
   // If Install Called again, change back to Idle state and remove notification
   InstallDlcWithState(CreateInstalledState());
-  EXPECT_EQ(notification_controller_->current_state_for_testing(),
+  ASSERT_TRUE(notification_controller_
+                  ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                  .has_value());
+  EXPECT_EQ(notification_controller_
+                ->current_state_for_testing(lorgnette::kSaneBackendsPfuDlcId)
+                .value(),
             LorgnetteNotificationController::DlcState::kIdle);
   EXPECT_FALSE(Notification().has_value());
 }

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_SCANNING_LORGNETTE_NOTIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_SCANNING_LORGNETTE_NOTIFICATION_CONTROLLER_H_
 
+#include <map>
 #include <memory>
+#include <optional>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -21,7 +24,7 @@ namespace ash {
 
 class LorgnetteNotificationController : public DlcserviceClient::Observer {
  public:
-  // Current State of the DLC installation
+  // Current state of a DLC installation
   enum class DlcState {
     kInstalledSuccessfully,
     kInstalling,
@@ -40,16 +43,23 @@ class LorgnetteNotificationController : public DlcserviceClient::Observer {
   // DlcserviceClient::Observer
   void OnDlcStateChanged(const dlcservice::DlcState& dlc_state) override;
 
-  DlcState current_state_for_testing();
+  std::optional<DlcState> current_state_for_testing(const std::string& dlc_id);
 
  private:
-  std::unique_ptr<message_center::Notification> CreateNotification();
+  // Assumes `dlc_id` is supported.
+  std::unique_ptr<message_center::Notification> CreateNotification(
+      const std::string& dlc_id);
+  // Assumes `dlc_id` is supported.
   void DisplayNotification(
-      std::unique_ptr<message_center::Notification> notification);
+      std::unique_ptr<message_center::Notification> notification,
+      const std::string& dlc_id);
 
   base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer>
       dlc_observer_{this};
-  DlcState current_state_;
+  // Contains the current state of each DLC.
+  std::map<std::string, DlcState> current_state_per_dlc_;
+  // Set of all DLC IDs supported by LorgnetteNotificationController.
+  std::set<std::string> supported_dlc_ids_;
 
   raw_ptr<Profile> profile_;  // Not owned.
 };
