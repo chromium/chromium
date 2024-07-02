@@ -5,6 +5,47 @@ API. It is separated in the three namespaces **telemetry**, **diagnostics**, **e
 
 [TOC]
 
+# Dictionary-based union types
+
+There are functions with similar signatures. It's useful to simplify the
+interfaces by merging these functions into one. For example,
+`postFooData(arg: FooType)` and `postBarData(arg: BarType)` could be merged into
+`postData(arg: ExampleUnionType)`. We use a *dictionary-based union type* for
+this purpose. Such a union object represents exactly one of the `N` candidate
+types, in the form of a dictionary with `N` optional fields, each corresponding
+to one candidate type.
+
+Let's see an example. The following table describes a union type
+`ExampleUnionType` that is either a `FooType` or a `BarType`.
+
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| foo | FooType | Information about foo |
+| bar | BarType | Information about bar |
+
+To invoke a function `os.exampleFunction()` that accepts an `ExampleUnionType`
+* with an object of `FooType`
+    ```
+    os.exampleFunction(
+      arg: {
+         foo: aFooObject
+      }
+    )
+    ```
+* with an object of `BarType`
+    ```
+    os.exampleFunction(
+      arg: {
+         bar: aBarObject
+      }
+    )
+    ```
+
+Notice that exactly one field should be set. That is, the object is invalid
+when either
+* more than one field is set, or
+* no field is set.
+
 # Diagnostics
 
 The diagnostics namespace got a rework since the M119 release and added a new
@@ -273,14 +314,14 @@ as the argument of `replyToRoutineInquiry`.
 ------------ | ------- | ----------- |
 
 ### RoutineInquiryUnion
-This is a union type. Exactly one field is set.
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | checkLedLitUpState | CheckLedLitUpStateInquiry | See `CheckLedLitUpStateInquiry`. |
 
 ### RoutineInteractionUnion
-This is a union type. Exactly one field is set.
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
@@ -310,6 +351,8 @@ This is a union type. Exactly one field is set.
 | debugMessage | string | A human readable message for debugging. Don't rely on the content because it could change anytime |
 
 ### RoutineFinishedDetailUnion
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
+
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
 | memory | MemoryRoutineFinishedDetail | Extra detail for a finished memory routine  |
@@ -452,7 +495,7 @@ The routine proceeds with the following steps:
 | color | LedColor | The color to be lit up |
 
 ### CreateRoutineArgumentsUnion
-This is a union type. Exactly one field is set.
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
 | Property Name | Type | Released in Chrome version | Description | Additional permission needed to access |
 ------------ | ------- | ----------- | ----------- | ----------- |
@@ -489,7 +532,7 @@ This is a union type. Exactly one field is set.
 | state | LedLitUpState | State of the target LED |
 
 ### RoutineInquiryReplyUnion
-This is a union type. Exactly one field is set.
+This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
