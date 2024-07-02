@@ -799,139 +799,6 @@ TEST_F(PickerSearchRequestTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.DriveProvider.QueryTime", 0);
 }
 
-TEST_F(PickerSearchRequestTest, DoesNotSendQueryToGifSearchImmediately) {
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-  EXPECT_CALL(client(), FetchGifSearch(Eq("cat"), _)).Times(0);
-
-  PickerSearchRequest request(
-      u"cat", std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)),
-      base::DoNothing(), &client(), kAllCategories);
-}
-
-TEST_F(PickerSearchRequestTest, SendsQueryToGifSearchAfterDelay) {
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-  EXPECT_CALL(client(), FetchGifSearch(Eq("cat"), _)).Times(1);
-
-  PickerSearchRequest request(
-      u"cat", std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)),
-      base::DoNothing(), &client(), kAllCategories);
-  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
-}
-
-TEST_F(PickerSearchRequestTest, ShowsResultsFromGifSearch) {
-  MockSearchResultsCallback search_results_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kTenor,
-           Contains(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::GifData>(AllOf(
-                   Field("full_url", &PickerSearchResult::GifData::full_url,
-                         Property("spec", &GURL::spec,
-                                  "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                  "plink-cat-plink.gif")),
-                   Field("content_description",
-                         &PickerSearchResult::GifData::content_description,
-                         u"cat blink"))))),
-           /*has_more_results=*/true))
-      .Times(AtLeast(1));
-
-  PickerSearchRequest request(
-      u"cat", std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)),
-      base::DoNothing(), &client(), kAllCategories);
-  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
-
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
-}
-
-TEST_F(PickerSearchRequestTest, StopsOldGifSearches) {
-  MockSearchResultsCallback search_results_callback;
-  PickerClient::FetchGifsCallback old_gif_callback;
-  EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(PickerSearchSource::kTenor,
-           Contains(Property(
-               "data", &PickerSearchResult::data,
-               VariantWith<PickerSearchResult::GifData>(AllOf(
-                   Field("full_url", &PickerSearchResult::GifData::full_url,
-                         Property("spec", &GURL::spec,
-                                  "https://media.tenor.com/GOabrbLMl4AAAAAC/"
-                                  "plink-cat-plink.gif")),
-                   Field("content_description",
-                         &PickerSearchResult::GifData::content_description,
-                         u"cat blink"))))),
-           /*has_more_results=*/_))
-      .Times(0);
-  ON_CALL(client(), StopGifSearch)
-      .WillByDefault(
-          Invoke(&old_gif_callback, &PickerClient::FetchGifsCallback::Reset));
-
-  {
-    PickerSearchRequest request(
-        u"cat", std::nullopt,
-        base::BindRepeating(&MockSearchResultsCallback::Call,
-                            base::Unretained(&search_results_callback)),
-        base::DoNothing(), &client(), kAllCategories);
-    task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
-    old_gif_callback = std::move(client().gif_search_callback());
-    EXPECT_FALSE(old_gif_callback.is_null());
-  }
-
-  EXPECT_TRUE(old_gif_callback.is_null());
-}
-
-TEST_F(PickerSearchRequestTest, RecordsGifMetrics) {
-  base::HistogramTester histogram;
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-
-  PickerSearchRequest request(
-      u"cat", std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)),
-      base::DoNothing(), &client(), kAllCategories);
-  task_environment().FastForwardBy(kMetricMetricTime);
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
-
-  histogram.ExpectUniqueTimeSample(
-      "Ash.Picker.Search.GifProvider.QueryTime",
-      kMetricMetricTime - PickerSearchRequest::kGifDebouncingDelay, 1);
-}
-
-TEST_F(PickerSearchRequestTest, DoesNotRecordGifMetricsIfNoResponse) {
-  base::HistogramTester histogram;
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-
-  {
-    PickerSearchRequest request(
-        u"cat", std::nullopt,
-        base::BindRepeating(&MockSearchResultsCallback::Call,
-                            base::Unretained(&search_results_callback)),
-        base::DoNothing(), &client(), kAllCategories);
-  }
-
-  histogram.ExpectTotalCount("Ash.Picker.Search.GifProvider.QueryTime", 0);
-}
-
 TEST_F(PickerSearchRequestTest, PublishesDateResultsOnlyOnce) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
@@ -1050,7 +917,6 @@ TEST_F(PickerSearchRequestTest, OnlyStartCrosSearchForCertainCategories) {
   EXPECT_CALL(client(),
               StartCrosSearch(Eq(u"cat"), Eq(PickerCategory::kLocalFiles), _))
       .Times(1);
-  EXPECT_CALL(client(), FetchGifSearch(_, _)).Times(0);
 
   {
     PickerSearchRequest request(u"ant", PickerCategory::kLinks,
@@ -1334,30 +1200,6 @@ TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterClipboardAndOmnibox) {
                 .Build()});
   EXPECT_FALSE(done_callback.IsReady());
   client().cros_search_callback().Run(AppListSearchResultType::kOmnibox, {});
-
-  bool interrupted = done_callback.Get();
-  EXPECT_FALSE(interrupted);
-}
-
-TEST_F(PickerSearchRequestTest, DoneClosureCalledAfterGif) {
-  NiceMock<MockSearchResultsCallback> search_results_callback;
-  base::test::TestFuture<bool> done_callback;
-
-  PickerSearchRequest request(
-      u"cat", std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&search_results_callback)),
-      done_callback.GetCallback(), &client(), {{PickerCategory::kExpressions}});
-  EXPECT_FALSE(done_callback.IsReady());
-  task_environment().FastForwardBy(PickerSearchRequest::kGifDebouncingDelay);
-  EXPECT_FALSE(done_callback.IsReady());
-  std::move(client().gif_search_callback())
-      .Run({ash::PickerSearchResult::Gif(
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
-          gfx::Size(360, 360),
-          GURL("https://media.tenor.com/GOabrbLMl4AAAAAC/plink-cat-plink.gif"),
-          gfx::Size(480, 480), u"cat blink")});
 
   bool interrupted = done_callback.Get();
   EXPECT_FALSE(interrupted);

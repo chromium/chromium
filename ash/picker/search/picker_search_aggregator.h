@@ -62,8 +62,6 @@ class ASH_EXPORT PickerSearchAggregator {
 
   void PublishBurnInResults();
 
-  void SetDriveSearchFinished();
-
   void HandleSearchSourceResultsImpl(PickerSearchSource source,
                                      std::vector<PickerSearchResult> results,
                                      bool has_more_results);
@@ -73,15 +71,6 @@ class ASH_EXPORT PickerSearchAggregator {
   PickerViewDelegate::SearchResultsCallback current_callback_;
 
   base::flat_map<PickerSectionType, PickerSearchResults> results_;
-
-  // Whether the drive search has finished (either successfully or with an
-  // error).
-  bool drive_search_finished_ = false;
-
-  // This holds the results of the GIF search in the case where GIF search
-  // finishes before Drive search. GIF results must appear later than Drive
-  // results, so they are kept here until Drive search finishes.
-  std::optional<std::vector<PickerSearchResult>> pending_gif_results_;
 
   base::WeakPtrFactory<PickerSearchAggregator> weak_ptr_factory_{this};
 };

@@ -45,8 +45,6 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
   switch (source) {
     case PickerSearchSource::kOmnibox:
       return "Ash.Picker.Search.OmniboxProvider.QueryTime";
-    case PickerSearchSource::kTenor:
-      return "Ash.Picker.Search.GifProvider.QueryTime";
     case PickerSearchSource::kEmoji:
       // Unused.
       return "Ash.Picker.Search.EmojiProvider.QueryTime";
@@ -81,8 +79,7 @@ PickerSearchRequest::PickerSearchRequest(
     : is_category_specific_search_(category.has_value()),
       client_(CHECK_DEREF(client)),
       current_callback_(std::move(callback)),
-      done_callback_(std::move(done_callback)),
-      gif_search_debouncer_(kGifDebouncingDelay) {
+      done_callback_(std::move(done_callback)) {
   CHECK(!current_callback_.is_null());
   CHECK(!done_callback_.is_null());
   std::string utf8_query = base::UTF16ToUTF8(query);
@@ -140,13 +137,6 @@ PickerSearchRequest::PickerSearchRequest(
 
   // These searches do not have category-specific search.
   if (!category.has_value()) {
-    if (base::Contains(available_categories, PickerCategory::kExpressions)) {
-      // TODO: b/348067874 - Add "pending start" to `search_starts_` state.
-      gif_search_debouncer_.RequestSearch(
-          base::BindOnce(&PickerSearchRequest::StartGifSearch,
-                         weak_ptr_factory_.GetWeakPtr(), utf8_query));
-    }
-
     MarkSearchStarted(PickerSearchSource::kCategory);
     // Category results are currently synchronous.
     HandleCategorySearchResults(
@@ -184,14 +174,6 @@ PickerSearchRequest::~PickerSearchRequest() {
     current_callback_.Reset();
   }
   client_->StopCrosQuery();
-  client_->StopGifSearch();
-}
-
-void PickerSearchRequest::StartGifSearch(const std::string& query) {
-  MarkSearchStarted(PickerSearchSource::kTenor);
-  client_->FetchGifSearch(
-      query, base::BindOnce(&PickerSearchRequest::HandleGifSearchResults,
-                            weak_ptr_factory_.GetWeakPtr(), query));
 }
 
 void PickerSearchRequest::HandleSearchSourceResults(
@@ -260,14 +242,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
   }
 }
 
-void PickerSearchRequest::HandleGifSearchResults(
-    std::string query,
-    std::vector<PickerSearchResult> results) {
-  // There are always more GIF results.
-  HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results),
-                            /*has_more_results=*/true);
-}
-
 void PickerSearchRequest::HandleDateSearchResults(
     std::vector<PickerSearchResult> results) {
   // Date results are never truncated.
@@ -331,9 +305,6 @@ std::optional<base::TimeTicks> PickerSearchRequest::SwapSearchStart(
 
 void PickerSearchRequest::MaybeCallDoneClosure() {
   if (!can_call_done_closure_) {
-    return;
-  }
-  if (gif_search_debouncer_.IsSearchPending()) {
     return;
   }
   if (base::ranges::any_of(search_starts_,

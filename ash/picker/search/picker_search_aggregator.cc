@@ -29,8 +29,6 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
   switch (source) {
     case PickerSearchSource::kOmnibox:
       return PickerSectionType::kLinks;
-    case PickerSearchSource::kTenor:
-      return PickerSectionType::kGifs;
     case PickerSearchSource::kEmoji:
       return PickerSectionType::kExpressions;
     case PickerSearchSource::kDate:
@@ -89,38 +87,13 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     bool has_more_results) {
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
-  // GIF results must appear later than Drive results. In the case where GIF
-  // search finishes before Drive search, store the GIF results for when Drive
-  // search finishes.
-  if (source == PickerSearchSource::kTenor && !drive_search_finished_) {
-    pending_gif_results_ = std::move(results);
-    return;
-  }
-
+  // TODO: b/349891147 - Inline this.
   HandleSearchSourceResultsImpl(source, std::move(results), has_more_results);
-
-  if (source == PickerSearchSource::kDrive) {
-    SetDriveSearchFinished();
-  }
-}
-
-void PickerSearchAggregator::SetDriveSearchFinished() {
-  if (drive_search_finished_) {
-    return;
-  }
-  drive_search_finished_ = true;
-  if (pending_gif_results_.has_value()) {
-    HandleSearchSourceResultsImpl(PickerSearchSource::kTenor,
-                                  std::move(*pending_gif_results_),
-                                  /*has_more_results=*/true);
-    pending_gif_results_ = std::nullopt;
-  }
 }
 
 void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
   // Only call the callback if it wasn't interrupted.
   if (!interrupted) {
-    SetDriveSearchFinished();
     // We could get a "no more results" signal before burn-in finishes.
     // Publish those results immediately if that is the case.
     if (burn_in_timer_.IsRunning()) {

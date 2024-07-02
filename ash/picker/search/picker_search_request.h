@@ -53,12 +53,7 @@ class ASH_EXPORT PickerSearchRequest {
   PickerSearchRequest& operator=(const PickerSearchRequest&) = delete;
   ~PickerSearchRequest();
 
-  static constexpr base::TimeDelta kGifDebouncingDelay =
-      base::Milliseconds(200);
-
  private:
-  void StartGifSearch(const std::string& query);
-
   void HandleSearchSourceResults(PickerSearchSource source,
                                  std::vector<PickerSearchResult> results,
                                  bool has_more_results);
@@ -66,8 +61,6 @@ class ASH_EXPORT PickerSearchRequest {
   void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,
                                std::vector<PickerSearchResult> results);
-  void HandleGifSearchResults(std::string query,
-                              std::vector<PickerSearchResult> results);
   void HandleDateSearchResults(std::vector<PickerSearchResult> results);
   void HandleMathSearchResults(std::optional<PickerSearchResult> result);
   void HandleClipboardSearchResults(std::vector<PickerSearchResult> results);
@@ -103,8 +96,6 @@ class ASH_EXPORT PickerSearchRequest {
   static constexpr size_t kNumSources =
       base::to_underlying(PickerSearchSource::kMaxValue) + 1;
   std::array<std::optional<base::TimeTicks>, kNumSources> search_starts_;
-
-  PickerSearchDebouncer gif_search_debouncer_;
 
   base::WeakPtrFactory<PickerSearchRequest> weak_ptr_factory_{this};
 };

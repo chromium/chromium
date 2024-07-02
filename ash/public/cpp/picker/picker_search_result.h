@@ -109,6 +109,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const ClipboardData&) const;
   };
 
+  // TODO: b/349891147 - Remove GIFs.
   struct GifData {
     GifData(const GURL& preview_url,
             const GURL& preview_image_url,
