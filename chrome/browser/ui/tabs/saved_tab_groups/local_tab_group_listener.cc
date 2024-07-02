@@ -87,10 +87,12 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
     return;
   }
 
-  if (*(visual_change->old_visuals) != *(visual_change->new_visuals)) {
-    service_->UpdateAttributions(local_id_);
-    service_->model()->UpdateVisualData(local_id_, visual_change->new_visuals);
+  if (*(visual_change->old_visuals) == *(visual_change->new_visuals)) {
+    return;
   }
+  service_->UpdateAttributions(local_id_);
+  service_->model()->UpdateVisualData(local_id_, visual_change->new_visuals);
+  service_->OnTabGroupVisualsChanged(saved_group()->saved_guid());
 }
 
 void LocalTabGroupListener::OnReplaceWebContents(
@@ -139,6 +141,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   tab.SetCreatorCacheGuid(service_->GetLocalCacheGuid());
   service_->UpdateAttributions(local_id_);
   service_->model()->AddTabToGroupLocally(saved_guid_, std::move(tab));
+  service_->OnTabAddedToGroupLocally(saved_guid_);
 
   // Link `web_contents` to `token`.
   web_contents_to_tab_id_map_.try_emplace(web_contents, web_contents, token,
@@ -192,6 +195,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   service_->UpdateAttributions(local_id_, web_contents_listener.token());
   service_->model()->MoveTabInGroupTo(saved_guid_, saved_tab_guid,
                                       index_in_group);
+  service_->OnTabsReorderedLocally(saved_guid_);
 }
 
 LocalTabGroupListener::Liveness
@@ -212,6 +216,8 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   CHECK(saved_group()->local_group_id().has_value());
   service_->UpdateAttributions(saved_group()->local_group_id().value());
   web_contents_to_tab_id_map_.erase(web_contents);
+
+  service_->OnTabRemovedFromGroupLocally(saved_guid_, tab_guid);
   service_->model()->RemoveTabFromGroupLocally(saved_guid_, tab_guid);
 
   return service_->model()->Contains(saved_guid_) ? Liveness::kGroupExists

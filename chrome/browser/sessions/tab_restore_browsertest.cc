@@ -48,6 +48,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/sessions/core/tab_restore_types.h"
@@ -2469,7 +2470,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   browser()->tab_strip_model()->CloseAllTabsInGroup(group);
 
   // Reopen the group.
-  service->OpenSavedTabGroupInBrowser(browser(), saved_group_id);
+  service->OpenSavedTabGroupInBrowser(
+      browser(), saved_group_id,
+      tab_groups::OpeningSource::kOpenedFromTabRestore);
 
   // Focus a tab not in the group.
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -2526,7 +2529,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabInUnsavedGroup) {
 
   // Closing all tabs individually should unsave the group but do it manually in
   // case that behavior changes in the future.
-  service->UnsaveGroup(group);
+  service->UnsaveGroup(group, tab_groups::ClosingSource::kDeletedByUser);
 
   // Close both tabs individually and restore them. Verify both tabs added to
   // the group.
@@ -2879,7 +2882,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
   // Open the saved group in the second browser.
   Browser* second_browser = GetBrowser(0);
-  service->OpenSavedTabGroupInBrowser(second_browser, saved_group_id);
+  service->OpenSavedTabGroupInBrowser(
+      second_browser, saved_group_id,
+      tab_groups::OpeningSource::kOpenedFromTabRestore);
 
   // Use the second browser to restore the closed window.
   chrome::RestoreTab(second_browser);

@@ -693,7 +693,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateSavedTabGroupTab) {
   }
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -759,7 +759,7 @@ TEST_F(TabsApiUnitTest,
   EXPECT_EQ(kChromiumOrg, raw_contents->GetLastCommittedURL());
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -981,7 +981,7 @@ TEST_F(TabsApiUnitTest, TabsMoveSavedTabGroupTabNotAllowed) {
             web_contentses[1]);
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -1050,7 +1050,7 @@ TEST_F(TabsApiUnitTest,
             web_contentses[1]);
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1356,7 +1356,7 @@ TEST_F(TabsApiUnitTest, TabsGroupForSavedTabGroupTabNotAllowed) {
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -1426,7 +1426,7 @@ TEST_F(TabsApiUnitTest,
   EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contentses[3]);
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1541,7 +1541,7 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroupForSavedTabGroupNotAllowed) {
   EXPECT_TRUE(tab_strip_model->group_model()->ContainsTabGroup(group));
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -1806,7 +1806,7 @@ TEST_F(TabsApiUnitTest, TabsGoForwardAndBackSavedTabGroupTabNotAllowed) {
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -1890,7 +1890,7 @@ TEST_F(
   EXPECT_EQ(urls[1], web_contents->GetVisibleURL());
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -2200,7 +2200,7 @@ TEST_F(TabsApiUnitTest, TabsDiscardSavedTabGroupTabNotAllowed) {
   EXPECT_FALSE(new_contents_at_index->WasDiscarded());
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 
@@ -2262,7 +2262,7 @@ TEST_F(TabsApiUnitTest,
   EXPECT_TRUE(new_contents_at_index->WasDiscarded());
 
   // Clean up.
-  saved_service->UnsaveGroup(group);
+  saved_service->UnsaveGroup(group, tab_groups::ClosingSource::kUnknown);
   browser()->tab_strip_model()->CloseAllTabs();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -243,8 +243,9 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     // NOTE: This action could cause `this` to be deleted. Make sure lines
     // following this have either copied data by value or hold pointers to the
     // objects it needs.
-    service->OpenSavedTabGroupInBrowser(browser_with_local_group_id,
-                                        saved_group_guid);
+    service->OpenSavedTabGroupInBrowser(
+        browser_with_local_group_id, saved_group_guid,
+        tab_groups::OpeningSource::kOpenedFromRevisitUi);
   }
 
   // Move the open group to a new browser window.

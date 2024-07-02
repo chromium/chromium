@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/types.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -343,7 +344,8 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
             "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
         auto* const keyed_service =
             SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
-        keyed_service->OpenSavedTabGroupInBrowser(browser_, uuid);
+        keyed_service->OpenSavedTabGroupInBrowser(
+            browser_, uuid, OpeningSource::kOpenedFromRevisitUi);
         break;
       }
       case Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
@@ -368,7 +370,8 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
     const auto group_id = GetTabGroupIdFromCommandId(command_id);
     auto* const keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
-    keyed_service->OpenSavedTabGroupInBrowser(browser_, group_id);
+    keyed_service->OpenSavedTabGroupInBrowser(
+        browser_, group_id, OpeningSource::kOpenedFromRevisitUi);
   }
 }
 

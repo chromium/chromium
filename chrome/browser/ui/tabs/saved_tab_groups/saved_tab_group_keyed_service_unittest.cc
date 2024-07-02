@@ -18,6 +18,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/types.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -69,8 +71,9 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
  private:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    service_ = SavedTabGroupServiceFactory::GetInstance()->GetForProfile(
-        profile_.get());
+    device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
+    service_ = std::make_unique<SavedTabGroupKeyedService>(
+        profile_.get(), device_info_tracker_.get());
   }
   void TearDown() override {
     for (auto& browser : browsers_) {
@@ -81,7 +84,8 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<SavedTabGroupKeyedService> service_;
+  std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
+  std::unique_ptr<SavedTabGroupKeyedService> service_;
 
   std::vector<std::unique_ptr<Browser>> browsers_;
 };
@@ -287,7 +291,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
   EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
 
   std::optional<tab_groups::TabGroupId> opened_group_id =
-      service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+      service()->OpenSavedTabGroupInBrowser(
+          browser_1, guid_1, tab_groups::OpeningSource::kUnknown);
   EXPECT_TRUE(opened_group_id.has_value());
   EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 
@@ -336,7 +341,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(1, browser_1->tab_strip_model()->active_index());
 
   std::optional<tab_groups::TabGroupId> opened_group_id =
-      service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+      service()->OpenSavedTabGroupInBrowser(
+          browser_1, guid_1, tab_groups::OpeningSource::kUnknown);
   EXPECT_TRUE(opened_group_id.has_value());
   EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 
@@ -347,7 +353,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   browser_1->tab_strip_model()->ActivateTabAt(2);
   EXPECT_EQ(2, browser_1->tab_strip_model()->active_index());
 
-  opened_group_id = service()->OpenSavedTabGroupInBrowser(browser_1, guid_1);
+  opened_group_id = service()->OpenSavedTabGroupInBrowser(
+      browser_1, guid_1, tab_groups::OpeningSource::kUnknown);
   EXPECT_TRUE(opened_group_id.has_value());
   EXPECT_EQ(tab_group_id_1, opened_group_id.value());
 

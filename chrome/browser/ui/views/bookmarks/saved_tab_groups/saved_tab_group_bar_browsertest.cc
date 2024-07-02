@@ -19,6 +19,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
         /*position=*/std::nullopt, guid));
-    saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
+    saved_tab_group_service->OpenSavedTabGroupInBrowser(
+        browser(), guid, OpeningSource::kOpenedFromRevisitUi);
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
     EXPECT_TRUE(saved_tab_group->local_group_id().has_value());
@@ -59,7 +61,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   {  // The STG is already opened in the saved tab group
     const int original_model_count = model->GetTabCount();
 
-    saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
+    saved_tab_group_service->OpenSavedTabGroupInBrowser(
+        browser(), guid, OpeningSource::kOpenedFromRevisitUi);
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
     EXPECT_TRUE(saved_tab_group->local_group_id().has_value());
@@ -86,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
         /*position=*/std::nullopt, guid));
-    saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
+    saved_tab_group_service->OpenSavedTabGroupInBrowser(
+        browser(), guid, OpeningSource::kOpenedFromRevisitUi);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
 
@@ -95,12 +99,14 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     EXPECT_TRUE(model->group_model()->ContainsTabGroup(
         saved_tab_group->local_group_id().value()));
     saved_tab_group_service->UnsaveGroup(
-        saved_tab_group->local_group_id().value());
+        saved_tab_group->local_group_id().value(),
+        ClosingSource::kDeletedByUser);
   }
 
   {  // Attempt to reopen the STG, it should not open.
     const int original_tab_count = model->count();
-    saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
+    saved_tab_group_service->OpenSavedTabGroupInBrowser(
+        browser(), guid, OpeningSource::kOpenedFromRevisitUi);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_EQ(saved_tab_group, nullptr);
