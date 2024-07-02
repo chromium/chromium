@@ -38,9 +38,6 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
-#include "media/gpu/h264_rate_controller.h"
-#include "media/gpu/h264_ratectrl_rtc.h"
-#include "media/gpu/windows/h264_video_rate_control_wrapper.h"
 #include "media/gpu/windows/vp9_video_rate_control_wrapper.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
@@ -64,7 +61,7 @@ constexpr size_t kNumInputBuffers = 3;
 // Media Foundation uses 100 nanosecond units for time, see
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms697282(v=vs.85).aspx.
 constexpr size_t kOneMicrosecondInMFSampleTimeUnits = 10;
-constexpr int kH26xMaxQp = 51;
+constexpr uint64_t kH264MaxQp = 51;
 constexpr uint64_t kVP9MaxQIndex = 255;
 constexpr uint64_t kAV1MaxQIndex = 255;
 
@@ -80,10 +77,6 @@ constexpr uint8_t kAV1MinQuantizer = 10;
 constexpr uint8_t kAV1MaxQuantizer = 56;
 constexpr gfx::Size kMaxResolution(1920, 1088);
 constexpr gfx::Size kMinResolution(32, 32);
-// For H.265, reuse Min/MaxQp for H.264 from
-// media/gpu/vaapi/h264_vaapi_video_encoder_delegate.cc
-constexpr uint8_t kH265MinQuantizer = 24;
-constexpr uint8_t kH265MaxQuantizer = 42;
 
 constexpr CLSID kIntelAV1HybridEncoderCLSID = {
     0x62c053ce,
@@ -104,12 +97,6 @@ BASE_FEATURE(kMediaFoundationVP9L1T3Support,
              "MediaFoundationVP9L1T3Support",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !defined(ARCH_CPU_X86)
-
-// For H.265 encoding at L1T1/L1T2 we may use SW bitrate controller when
-// constant bitrate encoding is requested.
-BASE_FEATURE(kMediaFoundationUseSWBRCForH265,
-             "MediaFoundationUseSWBRCForH265",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 eAVEncH264VProfile GetH264VProfile(VideoCodecProfile profile,
                                    bool is_constrained_h264) {
@@ -167,10 +154,7 @@ uint8_t AVEncQPtoQindex(VideoCodec codec, uint8_t avenc_qp) {
 bool IsValidQp(VideoCodec codec, uint64_t qp) {
   switch (codec) {
     case VideoCodec::kH264:
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case VideoCodec::kHEVC:
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      return qp <= kH26xMaxQp;
+      return qp <= kH264MaxQp;
     case VideoCodec::kVP9:
       return qp <= kVP9MaxQIndex;
     case VideoCodec::kAV1:
@@ -433,11 +417,9 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
     gfx::Size size,
     uint32_t frame_rate,
     int num_temporal_layers,
-    VideoCodec codec,
-    VideoEncodeAccelerator::Config::ContentType content_type) {
+    VideoCodec codec) {
   // Fill rate control config variables.
   VideoRateControlWrapper::RateControlConfig config;
-  config.content_type = content_type;
   config.width = size.width();
   config.height = size.height();
   config.target_bandwidth = bitrate_allocation.GetSumBps() / 1000;
@@ -455,13 +437,6 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
       config.min_quantizer = kAV1MinQuantizer;
       break;
     }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case VideoCodec::kHEVC: {
-      config.max_quantizer = kH265MaxQuantizer;
-      config.min_quantizer = kH265MinQuantizer;
-      break;
-    }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
     default:
       NOTREACHED_IN_MIGRATION();
       break;
@@ -730,21 +705,14 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       vendor_ != DriverVendor::kQualcomm &&  // SW BRC and QCOM AV1 HMFT not ok
       num_temporal_layers_ <= 3;
 
-  if (use_sw_brc &&
-      (codec_ == VideoCodec::kVP9
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-       || (codec_ == VideoCodec::kHEVC &&
-           base::FeatureList::IsEnabled(kMediaFoundationUseSWBRCForH265) &&
-           num_temporal_layers_ <= 2)
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  if (use_sw_brc && (codec_ == VideoCodec::kVP9
 #if BUILDFLAG(ENABLE_LIBAOM)
-       || codec_ == VideoCodec::kAV1
+                     || codec_ == VideoCodec::kAV1
 #endif
-       )) {
+                     )) {
     VideoRateControlWrapper::RateControlConfig rate_config =
         CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
-                                   frame_rate_, num_temporal_layers_, codec_,
-                                   content_type_);
+                                   frame_rate_, num_temporal_layers_, codec_);
     if (codec_ == VideoCodec::kVP9) {
       rate_ctrl_ = VP9RateControl::Create(rate_config);
     } else if (codec_ == VideoCodec::kAV1) {
@@ -753,12 +721,6 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
       rate_ctrl_ = AV1RateControl::Create(rate_config);
 #endif
     }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    else if (codec_ == VideoCodec::kHEVC) {
-      // Reuse the H.264 rate controller for HEVC.
-      rate_ctrl_ = H264RateControl::Create(rate_config);
-    }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
   }
 
   if (!SetEncoderModes()) {
@@ -1049,7 +1011,7 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   if (rate_ctrl_) {
     rate_ctrl_->UpdateRateControl(CreateRateControllerConfig(
         bitrate_allocation_, size.value_or(input_visible_size_), frame_rate_,
-        num_temporal_layers_, codec_, content_type_));
+        num_temporal_layers_, codec_));
   } else {
     VARIANT var;
     var.vt = VT_UI4;
@@ -1694,16 +1656,13 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     int temporal_id = 0;
     if (input.options.quantizer.has_value()) {
       DCHECK_EQ(codec_, VideoCodec::kH264);
-      quantizer = std::clamp(static_cast<int>(input.options.quantizer.value()),
-                             1, kH26xMaxQp);
+      quantizer = std::clamp(input.options.quantizer.value(), 1, 51);
     } else if (rate_ctrl_ && !input.discard_output) {
       VideoRateControlWrapper::FrameParams frame_params{};
       frame_params.frame_type =
           input.options.key_frame
               ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
               : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
-      // H.265 SW BRC needs timestamp information.
-      frame_params.timestamp = input.frame->timestamp().InMilliseconds();
       temporal_id =
           svc_parser_->AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
       frame_params.temporal_layer_id = temporal_id;
@@ -1712,17 +1671,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       // If there exists a rate_ctrl_, the qp computed by rate_ctrl_ should be
       // set on sample metadata and carried over from input to output.
       metadata_qp = rate_ctrl_->ComputeQP(frame_params);
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      if (codec_ == VideoCodec::kHEVC) {
-        // For HEVC, the qp value should be in the range of 1-51.
-        metadata_qp = std::clamp(metadata_qp.value(), 1, kH26xMaxQp);
-        quantizer = metadata_qp;
-      } else {
-        quantizer = QindextoAVEncQP(metadata_qp.value());
-      }
-#else
       quantizer = QindextoAVEncQP(metadata_qp.value());
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
     } else if (input.discard_output) {
       // Set up encoder for maximum speed if we're anyway going to discard the
       // output.

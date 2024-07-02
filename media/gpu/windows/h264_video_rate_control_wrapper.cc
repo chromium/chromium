@@ -30,6 +30,7 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
   constexpr base::TimeDelta kHRDBufferDelayCamera = base::Milliseconds(1000);
   constexpr base::TimeDelta kHRDBufferDelayDisplay = base::Milliseconds(3000);
   H264RateControlConfigRTC rc_config;
+  size_t prev_buffer_size = 0;
 
   // Coded width and heght.
   rc_config.frame_size.SetSize(config.width, config.height);
@@ -66,11 +67,13 @@ H264RateControlConfigRTC H264RateControl::ConvertControlConfig(
     rc_config.layer_settings[tid].frame_rate = static_cast<float>(
         config.framerate / (1 << (config.ts_number_layers - tid - 1)));
 
+    DCHECK_LT(buffer_size, prev_buffer_size);
     if (tid > 0) {
       DCHECK_GT(rc_config.layer_settings[tid].avg_bitrate,
                 rc_config.layer_settings[tid - 1].avg_bitrate);
     }
 
+    prev_buffer_size = buffer_size;
   }
   return rc_config;
 }
