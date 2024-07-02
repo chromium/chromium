@@ -25350,6 +25350,14 @@ should be able to be added at any place in this file.
   <description>User tapped on IdentityDisc button on toolbar.</description>
 </action>
 
+<action name="MobileToolbarModelSelected">
+  <owner>clank-large-form-factors@google.com</owner>
+  <owner>skavuluru@chromium.org</owner>
+  <description>
+    User clicked model selector button in tablet tab strip. Android only.
+  </description>
+</action>
+
 <action name="MobileToolbarNewTab">
   <owner>clank-app-team@google.com</owner>
   <owner>twellington@chromium.org</owner>
