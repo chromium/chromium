@@ -77,14 +77,6 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_HidesLoadingScreen) {
-  ASSERT_TRUE(RunTest("update_content_hides_loading_screen.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_ClearContainer) {
-  ASSERT_TRUE(RunTest("update_content_clear_container.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_Selection_Backwards) {
   ASSERT_TRUE(RunTest("update_content_selection_backwards.js"));
 }
@@ -110,16 +102,4 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
                        UpdateContent_Selection_WithInlineText) {
   ASSERT_TRUE(RunTest("update_content_selection_with_inline_text.js"));
-}
-
-// TODO(crbug.com/41494444): Test is flaky on macOS 12
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_UpdateContent_SetSelectedText \
-  DISABLED_UpdateContent_SetSelectedText
-#else
-#define MAYBE_UpdateContent_SetSelectedText UpdateContent_SetSelectedText
-#endif
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       MAYBE_UpdateContent_SetSelectedText) {
-  ASSERT_TRUE(RunTest("update_content_set_selected_text.js"));
 }

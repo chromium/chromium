@@ -150,6 +150,24 @@ suite('UpdateContentSelectionWithHighlights', () => {
           };
     });
 
+    test('with no highlight', async () => {
+      const expectedAnchorOffset = 7;
+      const expectedFocusOffset = 12;
+      const expectedAnchorId = textNodeIds[1]!;
+      const expectedFocusId = textNodeIds[3]!;
+
+      // Select from the middle (offset 7) of the first paragraph to the middle
+      // (offset 12) of the third paragraph.
+      await selectNodes(
+          afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
+          texts[3]!);
+
+      assertEquals(expectedAnchorId, actualAnchorId);
+      assertEquals(expectedFocusId, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
+    });
+
     test('one node selected before single node highlight', async () => {
       highlightNode(textNodeIds[1]!);
 

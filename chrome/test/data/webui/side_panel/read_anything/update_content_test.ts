@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -14,6 +14,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 
 suite('UpdateContent', () => {
   let app: ReadAnythingElement;
+  let readingMode: FakeReadingMode;
 
   const textNodeIds = [3, 5, 7, 9];
   const texts = [
@@ -27,7 +28,7 @@ suite('UpdateContent', () => {
     suppressInnocuousErrors();
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const readingMode = new FakeReadingMode();
+    readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
     app = document.createElement('read-anything-app');
@@ -63,5 +64,37 @@ suite('UpdateContent', () => {
       app.updateContent();
       assertFalse(app.isReadAloudPlayable());
     });
+  });
+
+  test('hides loading page', () => {
+    app.updateContent();
+
+    const emptyState = app.querySelector<HTMLElement>('#empty-state-container');
+    assertTrue(!!emptyState);
+    assertTrue(emptyState.hidden);
+  });
+
+  test('container clears old content when it receives new content', () => {
+    const expected1 = 'Gotta keep one jump ahead of the breadline.';
+    new FakeTreeBuilder()
+        .root(1)
+        .addText(2, /* parentId= */ 1, expected1)
+        .build(readingMode);
+
+    app.updateContent();
+
+    assertEquals(expected1, app.$.container.textContent);
+
+    const expected2 = 'One swing ahead of the sword.';
+    new FakeTreeBuilder()
+        .root(1)
+        .addText(2, /* parentId= */ 1, expected2)
+        .build(readingMode);
+
+    app.updateContent();
+
+    // There should be nothing from the first content here, we should only have
+    // the new content.
+    assertEquals(expected2, app.$.container.textContent);
   });
 });
