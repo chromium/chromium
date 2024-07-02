@@ -14,8 +14,11 @@
 #  limitations under the License.
 
 import base64
+import ssl
 from datetime import datetime
+from pathlib import Path
 from threading import Event
+from typing import Literal
 
 from pytest_httpserver import HTTPServer
 from werkzeug.wrappers import Request, Response
@@ -37,13 +40,38 @@ class LocalHttpServer:
     __path_hang_forever = "/hang_forever"
     __path_cacheable = "/cacheable"
 
-    default_200_page_content: str = 'default 200 page'
+    __protocol: Literal['http', 'https']
 
-    def __init__(self, http_server: HTTPServer) -> None:
+    content_200: str = 'default 200 page'
+
+    def clear(self):
+        self.__http_server.clear()
+
+    def is_running(self):
+        return self.__http_server.is_running()
+
+    def stop(self):
+        self.hang_forever_stop()
+        self.__http_server.stop()
+
+    def __init__(self, protocol: Literal['http', 'https'] = 'http') -> None:
         super().__init__()
-        self.__http_server = http_server
 
-        http_server.clear()
+        self.__protocol = protocol
+
+        ssl_context = None
+        if protocol == 'https':
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            cert_file_name = Path(__file__).parent / "cert.pem"
+            key_file_name = Path(__file__).parent / "key.pem"
+            ssl_context.load_cert_chain(cert_file_name, key_file_name)
+        elif protocol != 'http':
+            raise ValueError(f"Unsupported protocol: {protocol}")
+
+        self.__http_server = HTTPServer(ssl_context=ssl_context)
+
+        self.__http_server.start()
+        self.__http_server.clear()
 
         self.__start_time = datetime.now()
 
@@ -66,7 +94,7 @@ class LocalHttpServer:
         self.__http_server \
             .expect_request(self.__path_200) \
             .respond_with_data(
-                html_doc(self.default_200_page_content),
+                html_doc(self.content_200),
                 headers={"Content-Type": "text/html"})
 
         # Set up permanent redirect.
@@ -107,7 +135,7 @@ class LocalHttpServer:
             .respond_with_handler(hang_forever)
 
         def cache(request: Request):
-            content = html_doc(self.default_200_page_content)
+            content = html_doc(self.content_200)
             if_modified_since = request.headers.get("If-Modified-Since")
 
             if if_modified_since is not None:
@@ -141,18 +169,13 @@ class LocalHttpServer:
         :param host: the host to use in the url. Default is ``localhost``.
         :return: the full url which refers to the server
         """
-        if self.__http_server.ssl_context is None:
-            protocol = "http"
-        else:
-            protocol = "https"
-
         if not suffix.startswith("/"):
             suffix = "/" + suffix
 
         host = self.__http_server.format_host(host)
 
-        return "{}://{}:{}{}".format(protocol, host, self.__http_server.port,
-                                     suffix)
+        return "{}://{}:{}{}".format(self.__protocol, host,
+                                     self.__http_server.port, suffix)
 
     def url_base(self, host='localhost') -> str:
         """Returns the url for the base page to navigate and prevent CORS.

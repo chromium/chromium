@@ -263,9 +263,9 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
 
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, iframe_id, html, iframe, example_url, another_example_url):
-    page_with_nested_iframe = html(iframe(example_url))
-    another_page_with_nested_iframe = html(iframe(another_example_url))
+        websocket, iframe_id, html, iframe, url_example, url_another_example):
+    page_with_nested_iframe = html(iframe(url_example))
+    another_page_with_nested_iframe = html(iframe(url_another_example))
 
     await goto_url(websocket, iframe_id, page_with_nested_iframe, "complete")
     await goto_url(websocket, iframe_id, another_page_with_nested_iframe,
@@ -277,7 +277,7 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
             "context": iframe_id,
             "children": [{
                 "context": ANY_STR,
-                "url": another_example_url,
+                "url": url_another_example,
                 "children": [],
                 "userContext": "default",
                 "originalOpener": None
@@ -326,8 +326,8 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
 
 @pytest.mark.asyncio
 async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
-        websocket, context_id, url_cross_origin, html, iframe):
-    page_with_nested_iframe = html(iframe(url_cross_origin))
+        websocket, context_id, url_all_origins, html, iframe):
+    page_with_nested_iframe = html(iframe(url_all_origins))
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
 
     result = await get_tree(websocket)
@@ -337,7 +337,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                "url": url_cross_origin,
+                "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
                 "originalOpener": None

@@ -194,7 +194,7 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.parametrize("ignore_cache", [True, False])
 async def test_browsingContext_reload_ignoreCache(websocket, context_id,
-                                                  ignore_cache, cacheable_url):
+                                                  ignore_cache, url_cacheable):
     if ignore_cache is False:
         pytest.xfail(
             reason=  # noqa: E251. The line is too long.
@@ -205,7 +205,7 @@ async def test_browsingContext_reload_ignoreCache(websocket, context_id,
         "network.responseCompleted",
     ])
 
-    await goto_url(websocket, context_id, cacheable_url)
+    await goto_url(websocket, context_id, url_cacheable)
 
     await send_JSON_command(
         websocket, {

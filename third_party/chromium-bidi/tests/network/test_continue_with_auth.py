@@ -41,10 +41,10 @@ async def test_continue_with_auth_non_existent_request(websocket):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("phase", ["beforeRequestSent", "responseStarted"])
 async def test_continue_with_auth_invalid_phase(websocket, context_id,
-                                                example_url, phase):
+                                                url_example, phase):
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=example_url,
+                                              url=url_example,
                                               phase=phase)
 
     with pytest.raises(
@@ -65,7 +65,7 @@ async def test_continue_with_auth_invalid_phase(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_with_auth_non_blocked_request(
-        websocket, context_id, assert_no_events_in_queue, hang_url):
+        websocket, context_id, assert_no_events_in_queue, url_hang_forever):
     await subscribe(websocket, [
         "network.beforeRequestSent", "network.responseCompleted",
         "network.fetchError"
@@ -75,7 +75,7 @@ async def test_continue_with_auth_non_blocked_request(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": hang_url,
+                "url": url_hang_forever,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -118,15 +118,15 @@ async def test_continue_with_auth_non_blocked_request(
 async def test_continue_with_auth_invalid_credentials(
     websocket,
     context_id,
-    auth_required_url,
+    url_auth_required,
     credentials,
-    base_url,
+    url_base,
 ):
-    await goto_url(websocket, context_id, base_url)
+    await goto_url(websocket, context_id, url_base)
 
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              auth_required_url,
+                                              url_auth_required,
                                               phase='authRequired')
 
     with pytest.raises(Exception,
@@ -147,7 +147,7 @@ async def test_continue_with_auth_invalid_credentials(
 
 @pytest.mark.asyncio
 async def test_continue_with_auth_completes(websocket, context_id,
-                                            auth_required_url):
+                                            url_auth_required):
     await subscribe(websocket,
                     ["network.authRequired", "network.responseCompleted"],
                     [context_id])
@@ -159,7 +159,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
                 "phases": ["authRequired"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": auth_required_url,
+                    "pattern": url_auth_required,
                 }, ],
             },
         })
@@ -168,7 +168,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -185,7 +185,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -228,7 +228,7 @@ async def test_continue_with_auth_completes(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_with_auth_twice(websocket, context_id,
-                                        auth_required_url):
+                                        url_auth_required):
     await subscribe(websocket,
                     ["network.authRequired", "network.responseCompleted"],
                     [context_id])
@@ -240,7 +240,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
                 "phases": ["authRequired"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": auth_required_url,
+                    "pattern": url_auth_required,
                 }, ],
             },
         })
@@ -249,7 +249,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -266,7 +266,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -312,7 +312,7 @@ async def test_continue_with_auth_twice(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_with_auth_remove_intercept_inflight_request(
-        websocket, context_id, example_url, auth_required_url):
+        websocket, context_id, url_example, url_auth_required):
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.responseCompleted"],
                     [context_id])
@@ -324,7 +324,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
                 "phases": ["authRequired"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -336,7 +336,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
                 "phases": ["authRequired"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": auth_required_url,
+                    "pattern": url_auth_required,
                 }, ],
             },
         })
@@ -350,7 +350,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -371,7 +371,7 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": auth_required_url,
+                "url": url_auth_required,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],

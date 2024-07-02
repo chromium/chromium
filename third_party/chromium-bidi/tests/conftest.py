@@ -15,15 +15,12 @@
 
 import asyncio
 import os
-import ssl
-from collections.abc import Callable
-from pathlib import Path
+from collections.abc import Callable, Generator
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 import websockets
-from pytest_httpserver import HTTPServer
 from test_helpers import (execute_command, get_tree, goto_url,
                           read_JSON_message, wait_for_event, wait_for_events)
 
@@ -31,12 +28,28 @@ from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
 
 
-@pytest_asyncio.fixture
-def local_server(httpserver) -> LocalHttpServer:
-    """ Returns an instance of a LocalHttpServer. It can be used for testing
-    HTTP requests locally.
-    """
-    return LocalHttpServer(httpserver)
+@pytest_asyncio.fixture(scope='session')
+def local_server_http() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer without SSL. """
+    server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_bad_ssl() -> Generator[LocalHttpServer, None, None]:
+    """ Returns an instance of a LocalHttpServer with bad SSL certificate. """
+    server = LocalHttpServer(protocol='https')
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
 
 
 @pytest_asyncio.fixture
@@ -201,96 +214,61 @@ def url_same_origin():
     return 'about:blank'
 
 
-# TODO: make offline.
-@pytest.fixture(params=[
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
-])
-def url_cross_origin(request):
-    """Return a cross-origin URL."""
-    return request.param
-
-
-# TODO: make offline.
-@pytest.fixture(params=[
-    'about:blank',  # Same-origin
-    'https://example.com/',  # Another domain: Cross-origin
-    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
-])
-def url_all_origins(request):
-    """Return a URL exhaustively, including same-origin and cross-origin."""
-    return request.param
+@pytest.fixture(
+    params=['url_example', 'url_another_example', 'html', 'about:blank'])
+def url_all_origins(request, url_example, url_another_example, html):
+    if request.param == 'url_example':
+        return url_example
+    if request.param == 'url_another_example':
+        return url_another_example
+    if request.param == 'html':
+        return html('data:text/html,<h2>some page</h2>')
+    if request.param == 'about:blank':
+        return 'about:blank'
+    raise ValueError(f"Unknown parameter: {request.param}")
 
 
 @pytest.fixture
-def base_url(local_server: LocalHttpServer):
+def url_base(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_base()
+    return local_server_http.url_base()
 
 
 @pytest.fixture
-def example_url(local_server: LocalHttpServer):
+def url_example(local_server_http):
     """Return a generic example URL with status code 200."""
-    return local_server.url_200()
+    return local_server_http.url_200()
 
 
 @pytest.fixture
-def another_example_url(local_server: LocalHttpServer):
+def url_another_example(local_server_http):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server.url_200('127.0.0.1')
+    return local_server_http.url_200('127.0.0.1')
 
 
 @pytest.fixture
-def auth_required_url(local_server: LocalHttpServer):
+def url_auth_required(local_server_http):
     """Return a URL that requires authentication (status code 401).
     Alternatively, any of the following URLs could also be used:
         - "https://authenticationtest.com/HTTPAuth/"
         - "http://the-internet.herokuapp.com/basic_auth"
         - "http://httpstat.us/401"
     """
-    return local_server.url_basic_auth()
+    return local_server_http.url_basic_auth()
 
 
 @pytest.fixture
-def hang_url(local_server: LocalHttpServer):
+def url_hang_forever(local_server_http):
     """Return a URL that hangs forever."""
     try:
-        yield local_server.url_hang_forever()
+        yield local_server_http.url_hang_forever()
     finally:
-        local_server.hang_forever_stop()
+        local_server_http.hang_forever_stop()
 
 
 @pytest.fixture(scope="session")
-def ssl_context_err_cert_authority_invalid():
-    """Return a SSL context with an invalid certificate authority."""
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-
-    cert_file_name = Path(__file__).parent / "tools" / "cert.pem"
-    key_file_name = Path(__file__).parent / "tools" / "key.pem"
-
-    context.load_cert_chain(cert_file_name, key_file_name)
-
-    return context
-
-
-@pytest.fixture(scope="session")
-def https_server_err_cert_authority_invalid(
-        ssl_context_err_cert_authority_invalid):
-    """Return a HTTPServer instance with SSL enabled.
-    See https://pytest-httpserver.readthedocs.io/en/latest/fixtures.html#make-httpserver"""
-    server = HTTPServer(ssl_context=ssl_context_err_cert_authority_invalid)
-    server.start()
-
-    yield server
-
-    server.clear()
-    if server.is_running():
-        server.stop()
-
-
-@pytest.fixture(scope="session")
-def bad_ssl_url(https_server_err_cert_authority_invalid):
+def url_bad_ssl(local_server_bad_ssl):
     """
     Return a URL with an invalid certificate authority from a SSL certificate.
     In Chromium, this generates the following error:
@@ -298,13 +276,13 @@ def bad_ssl_url(https_server_err_cert_authority_invalid):
     > Your connection is not private
     > NET::ERR_CERT_AUTHORITY_INVALID
     """
-    return https_server_err_cert_authority_invalid.url_for("/")
+    return local_server_bad_ssl.url_200()
 
 
 @pytest.fixture
-def cacheable_url(local_server: LocalHttpServer):
+def url_cacheable(local_server_http):
     """Return a generic example URL that can be cached."""
-    return local_server.url_cacheable()
+    return local_server_http.url_cacheable()
 
 
 @pytest.fixture

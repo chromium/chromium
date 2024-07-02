@@ -667,9 +667,9 @@ async def test_preloadScript_add_sandbox_existing_context(
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_withUserGesture_blankTargetLink(
-        websocket, context_id, html, read_sorted_messages):
+        websocket, context_id, html, read_sorted_messages, url_example):
     LINK_WITH_BLANK_TARGET = html(
-        '<a href="https://example.com" target="_blank">new tab</a>')
+        f'<a href="{url_example}" target="_blank">new tab</a>')
 
     await execute_command(
         websocket, {
@@ -714,7 +714,7 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
                 "value": "my preload script"
             }, {
                 'type': 'string',
-                'value': 'https://example.com/',
+                'value': url_example,
             }]
         }
     })

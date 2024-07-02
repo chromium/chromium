@@ -41,7 +41,7 @@ async def test_fail_request_non_existent_request(websocket):
 @pytest.mark.asyncio
 async def test_fail_request_non_blocked_request(websocket, context_id,
                                                 assert_no_events_in_queue,
-                                                hang_url):
+                                                url_hang_forever):
     await subscribe(websocket, [
         "network.beforeRequestSent", "network.responseCompleted",
         "network.fetchError"
@@ -51,7 +51,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": hang_url,
+                "url": url_hang_forever,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -83,7 +83,7 @@ async def test_fail_request_non_blocked_request(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_fail_request_twice(websocket, context_id, example_url):
+async def test_fail_request_twice(websocket, context_id, url_example):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
@@ -93,7 +93,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -106,7 +106,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -127,7 +127,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -165,13 +165,13 @@ async def test_fail_request_twice(websocket, context_id, example_url):
 
 @pytest.mark.asyncio
 async def test_fail_request_with_auth_required_phase(websocket, context_id,
-                                                     auth_required_url,
-                                                     base_url):
+                                                     url_auth_required,
+                                                     url_base):
 
-    await goto_url(websocket, context_id, base_url)
+    await goto_url(websocket, context_id, url_base)
 
     network_id = await create_blocked_request(websocket, context_id,
-                                              auth_required_url,
+                                              url_auth_required,
                                               "authRequired")
 
     with pytest.raises(
@@ -189,7 +189,7 @@ async def test_fail_request_with_auth_required_phase(websocket, context_id,
 
 
 @pytest.mark.asyncio
-async def test_fail_request_completes(websocket, context_id, example_url):
+async def test_fail_request_completes(websocket, context_id, url_example):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     result = await execute_command(
@@ -199,7 +199,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -212,7 +212,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -233,7 +233,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -273,7 +273,7 @@ async def test_fail_request_completes(websocket, context_id, example_url):
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id,
-                    "url": example_url,
+                    "url": url_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },
@@ -283,9 +283,9 @@ async def test_fail_request_completes(websocket, context_id, example_url):
 
 @pytest.mark.asyncio
 async def test_fail_request_completes_new_request_still_blocks(
-        websocket, context_id, example_url, base_url):
+        websocket, context_id, url_example, url_base):
 
-    await goto_url(websocket, context_id, base_url)
+    await goto_url(websocket, context_id, url_base)
 
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.fetchError"],
@@ -293,7 +293,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
     network_id_1 = await create_blocked_request(websocket,
                                                 context_id,
-                                                url=example_url,
+                                                url=url_example,
                                                 phase="beforeRequestSent")
 
     result = await execute_command(websocket, {
@@ -320,14 +320,14 @@ async def test_fail_request_completes_new_request_still_blocks(
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id_1,
-                    "url": example_url,
+                    "url": url_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },
         "type": "event",
     }
 
-    await create_request_via_fetch(websocket, context_id, example_url)
+    await create_request_via_fetch(websocket, context_id, url_example)
 
     event_response2 = await wait_for_event(websocket,
                                            "network.beforeRequestSent")
@@ -345,7 +345,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -365,7 +365,7 @@ async def test_fail_request_completes_new_request_still_blocks(
 
 @pytest.mark.asyncio
 async def test_fail_request_multiple_contexts(websocket, context_id,
-                                              another_context_id, example_url):
+                                              another_context_id, url_example):
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
@@ -375,7 +375,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -389,7 +389,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -410,7 +410,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -429,7 +429,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": another_context_id,
                 "wait": "complete",
             }
@@ -450,7 +450,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -493,7 +493,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id_1,
-                    "url": example_url,
+                    "url": url_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },
@@ -525,7 +525,7 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id_2,
-                    "url": example_url,
+                    "url": url_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },
@@ -536,9 +536,9 @@ async def test_fail_request_multiple_contexts(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.skip(reason='TODO: #1890')
 async def test_fail_request_remove_intercept_inflight_request(
-        websocket, context_id, example_url):
+        websocket, context_id, url_example):
 
-    await goto_url(websocket, context_id, example_url)
+    await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
@@ -549,7 +549,7 @@ async def test_fail_request_remove_intercept_inflight_request(
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -559,7 +559,7 @@ async def test_fail_request_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await create_request_via_fetch(websocket, context_id, example_url)
+    await create_request_via_fetch(websocket, context_id, url_example)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -576,7 +576,7 @@ async def test_fail_request_remove_intercept_inflight_request(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -625,7 +625,7 @@ async def test_fail_request_remove_intercept_inflight_request(
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id,
-                    "url": example_url,
+                    "url": url_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },

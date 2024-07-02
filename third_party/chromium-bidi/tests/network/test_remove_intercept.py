@@ -219,8 +219,8 @@ async def test_remove_intercept_unblocks(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_remove_intercept_does_not_affect_another_intercept(
-        websocket, context_id, another_context_id, example_url,
-        another_example_url):
+        websocket, context_id, another_context_id, url_example,
+        url_another_example):
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
@@ -230,7 +230,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ]
             },
         })
@@ -246,7 +246,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": another_example_url,
+                    "pattern": url_another_example,
                 }, ]
             },
         })
@@ -256,7 +256,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -276,7 +276,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -293,7 +293,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": another_example_url,
+                "url": url_another_example,
                 "context": another_context_id,
                 "wait": "complete",
             }
@@ -313,7 +313,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": another_example_url,
+                "url": url_another_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -362,7 +362,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id_2,
-                    "url": another_example_url,
+                    "url": url_another_example,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },

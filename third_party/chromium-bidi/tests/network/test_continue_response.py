@@ -42,12 +42,12 @@ async def test_continue_response_non_existent_request(websocket):
 
 @pytest.mark.asyncio
 async def test_continue_response_invalid_phase(websocket, context_id,
-                                               example_url):
+                                               url_example):
     await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "wait": "complete",
                 "context": context_id
             }
@@ -55,7 +55,7 @@ async def test_continue_response_invalid_phase(websocket, context_id,
 
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=f"{example_url}?query=test",
+                                              url=f"{url_example}?query=test",
                                               phase="beforeRequestSent")
 
     with pytest.raises(
@@ -75,10 +75,10 @@ async def test_continue_response_invalid_phase(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_response_invalid_status_code(websocket, context_id,
-                                                     example_url):
+                                                     url_example):
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=example_url,
+                                              url=url_example,
                                               phase="responseStarted")
 
     with pytest.raises(
@@ -100,10 +100,10 @@ async def test_continue_response_invalid_status_code(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_response_invalid_reason_phrase(websocket, context_id,
-                                                       example_url):
+                                                       url_example):
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=example_url,
+                                              url=url_example,
                                               phase="responseStarted")
 
     with pytest.raises(
@@ -124,10 +124,10 @@ async def test_continue_response_invalid_reason_phrase(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_continue_response_invalid_headers(websocket, context_id,
-                                                 example_url):
+                                                 url_example):
     network_id = await create_blocked_request(websocket,
                                               context_id,
-                                              url=example_url,
+                                              url=url_example,
                                               phase="responseStarted")
 
     with pytest.raises(
@@ -149,7 +149,7 @@ async def test_continue_response_invalid_headers(websocket, context_id,
 @pytest.mark.asyncio
 async def test_continue_response_non_blocked_request(websocket, context_id,
                                                      assert_no_events_in_queue,
-                                                     hang_url):
+                                                     url_hang_forever):
     await subscribe(websocket, [
         "network.beforeRequestSent", "network.responseCompleted",
         "network.fetchError"
@@ -159,7 +159,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": hang_url,
+                "url": url_hang_forever,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -208,7 +208,7 @@ async def test_continue_response_non_blocked_request(websocket, context_id,
                          ids=["headers-only", "statusCode-only"])
 @pytest.mark.asyncio
 async def test_continue_response_must_specify_both_status_and_headers(
-        websocket, context_id, example_url, continueResponseParams):
+        websocket, context_id, url_example, continueResponseParams):
     await subscribe(websocket,
                     ["network.responseStarted", "network.responseCompleted"],
                     [context_id])
@@ -220,7 +220,7 @@ async def test_continue_response_must_specify_both_status_and_headers(
                 "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -229,7 +229,7 @@ async def test_continue_response_must_specify_both_status_and_headers(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -257,7 +257,7 @@ async def test_continue_response_must_specify_both_status_and_headers(
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="CDP does not update the response correctly")
-async def test_continue_response_completes(websocket, context_id, example_url):
+async def test_continue_response_completes(websocket, context_id, url_example):
     await subscribe(websocket, [
         "network.beforeRequestSent", "network.responseStarted",
         "network.responseCompleted"
@@ -270,7 +270,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
                 "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -279,7 +279,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -296,7 +296,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -346,7 +346,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
                         "value": "value1",
                     },
                 }, ],
-                "url": example_url,
+                "url": url_example,
                 "status": 501,
                 "statusText": "Remember to drink water",
             }),
@@ -357,7 +357,7 @@ async def test_continue_response_completes(websocket, context_id, example_url):
 
 
 @pytest.mark.asyncio
-async def test_continue_response_twice(websocket, context_id, example_url):
+async def test_continue_response_twice(websocket, context_id, url_example):
     await subscribe(websocket,
                     ["network.responseStarted", "network.responseCompleted"],
                     [context_id])
@@ -369,7 +369,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
                 "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -378,7 +378,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": example_url,
+                "url": url_example,
                 "context": context_id,
                 "wait": "complete",
             }
@@ -395,7 +395,7 @@ async def test_continue_response_twice(websocket, context_id, example_url):
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -439,9 +439,9 @@ async def test_continue_response_twice(websocket, context_id, example_url):
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: #1890")
 async def test_continue_response_remove_intercept_inflight_request(
-        websocket, context_id, example_url):
+        websocket, context_id, url_example):
 
-    await goto_url(websocket, context_id, example_url)
+    await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket,
                     ["network.beforeRequestSent", "network.responseCompleted"],
@@ -454,7 +454,7 @@ async def test_continue_response_remove_intercept_inflight_request(
                 "phases": ["responseStarted"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": example_url,
+                    "pattern": url_example,
                 }, ],
             },
         })
@@ -464,7 +464,7 @@ async def test_continue_response_remove_intercept_inflight_request(
     }
     intercept_id = result["intercept"]
 
-    await create_request_via_fetch(websocket, context_id, example_url)
+    await create_request_via_fetch(websocket, context_id, url_example)
 
     event_response = await wait_for_event(websocket,
                                           "network.beforeRequestSent")
@@ -480,7 +480,7 @@ async def test_continue_response_remove_intercept_inflight_request(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": example_url,
+                "url": url_example,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],

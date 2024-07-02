@@ -329,9 +329,9 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaScript(
-        websocket, context_id, base_url):
+        websocket, context_id, url_base):
 
-    serialized_url = {"type": "string", "value": base_url}
+    serialized_url = {"type": "string", "value": url_base}
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     await send_JSON_command(
@@ -396,13 +396,13 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavigationEnded_navigationFailed(
-        websocket, context_id, read_sorted_messages, hang_url):
+        websocket, context_id, read_sorted_messages, url_hang_forever):
     navigate_command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
                 "context": context_id,
-                "url": hang_url,
+                "url": url_hang_forever,
                 "wait": "complete",
             }
         })
@@ -433,7 +433,7 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStarted_sameDocumentNavigation(
-        websocket, context_id, base_url):
+        websocket, context_id, url_base):
     await subscribe(
         websocket,
         ["browsingContext.navigationStarted", "browsingContext.load"])
@@ -443,7 +443,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": base_url,
+                "url": url_base,
                 "context": context_id,
                 "wait": "none"
             }
@@ -457,7 +457,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
             "context": context_id,
             "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
-            "url": base_url,
+            "url": url_base,
         }
     }
     navigation_id = response["params"]["navigation"]
@@ -469,7 +469,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
         'id': command_id,
         'result': {
             'navigation': navigation_id,
-            'url': base_url
+            'url': url_base
         }
     })
 
@@ -505,7 +505,7 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
             "context": context_id,
             "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
-            "url": base_url + "#test",
+            "url": url_base + "#test",
         }
     })
 
@@ -514,26 +514,26 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
+@pytest.mark.parametrize('capabilities', [{}, {
     'acceptInsecureCerts': True
 }, {
     'acceptInsecureCerts': False
 }],
                          indirect=True)
 async def test_browsingContext_acceptInsecureCertsCapability_respected(
-        websocket, context_id, bad_ssl_url, capabilities):
+        websocket, context_id, url_bad_ssl, capabilities):
     async def navigate():
         await execute_command(
             websocket, {
                 'method': "browsingContext.navigate",
                 'params': {
-                    'url': bad_ssl_url,
+                    'url': url_bad_ssl,
                     'wait': 'complete',
                     'context': context_id
                 }
             })
 
-    if capabilities['acceptInsecureCerts']:
+    if capabilities.get('acceptInsecureCerts'):
         await navigate()
     else:
         with pytest.raises(Exception,
