@@ -141,3 +141,6 @@ if (use_system_xcode) {
   # TODO(thakis): Do this at the uses of this variable instead.
   mac_bin_path = rebase_path(mac_bin_path, root_build_dir)
 }
+
+_sdk_root = rebase_path(mac_sdk_path, root_build_dir)
+mac_sdk_logs = [ "mac_sdk_path=${_sdk_root}" ]
