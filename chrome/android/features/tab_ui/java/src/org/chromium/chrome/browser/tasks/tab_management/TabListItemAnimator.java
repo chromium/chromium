@@ -13,6 +13,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.util.Pair;
 import android.view.View;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -141,9 +142,11 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private AnimatorHolder mRemovals = new AnimatorHolder("Removal");
 
     private final boolean mSkipRemovalDelay;
+    private final boolean mRearrangeUseStandardEasing;
 
-    TabListItemAnimator(boolean skipRemovalDelay) {
+    TabListItemAnimator(boolean skipRemovalDelay, boolean rearrangeUseStandardEasing) {
         mSkipRemovalDelay = skipRemovalDelay;
+        mRearrangeUseStandardEasing = rearrangeUseStandardEasing;
     }
 
     @Override
@@ -303,8 +306,10 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         AnimatorSet oldAnimator = new AnimatorSet();
         ObjectAnimator oldTranslationX =
                 ObjectAnimator.ofFloat(oldView, View.TRANSLATION_X, toX - fromX);
+        oldTranslationX.setInterpolator(getRearrangeInterpolator());
         ObjectAnimator oldTranslationY =
                 ObjectAnimator.ofFloat(oldView, View.TRANSLATION_Y, toY - fromY);
+        oldTranslationY.setInterpolator(getRearrangeInterpolator());
         ObjectAnimator oldAlpha = ObjectAnimator.ofFloat(oldView, View.ALPHA, 0f);
         oldAnimator.play(oldTranslationX).with(oldTranslationY).with(oldAlpha);
         oldAnimator.setDuration(getChangeDuration());
@@ -338,7 +343,9 @@ public class TabListItemAnimator extends SimpleItemAnimator {
 
             newAnimator = new AnimatorSet();
             ObjectAnimator newTranslationX = ObjectAnimator.ofFloat(newView, View.TRANSLATION_X, 0);
+            newTranslationX.setInterpolator(getRearrangeInterpolator());
             ObjectAnimator newTranslationY = ObjectAnimator.ofFloat(newView, View.TRANSLATION_Y, 0);
+            newTranslationY.setInterpolator(getRearrangeInterpolator());
             ObjectAnimator newAlpha = ObjectAnimator.ofFloat(newView, View.ALPHA, 1f);
             newAnimator.play(newTranslationX).with(newTranslationY).with(newAlpha);
             newAnimator.setDuration(getChangeDuration());
@@ -393,7 +400,7 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         ObjectAnimator translateY = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, 0);
         animator.play(translateX).with(translateY);
         animator.setDuration(getMoveDuration());
-        animator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        animator.setInterpolator(getRearrangeInterpolator());
         animator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override
@@ -517,5 +524,11 @@ public class TabListItemAnimator extends SimpleItemAnimator {
         if (!isRunning()) {
             dispatchAnimationsFinished();
         }
+    }
+
+    private Interpolator getRearrangeInterpolator() {
+        return mRearrangeUseStandardEasing
+                ? Interpolators.STANDARD_INTERPOLATOR
+                : Interpolators.LINEAR_INTERPOLATOR;
     }
 }

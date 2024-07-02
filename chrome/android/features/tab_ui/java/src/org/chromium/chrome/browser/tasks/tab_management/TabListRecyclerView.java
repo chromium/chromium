@@ -140,9 +140,12 @@ class TabListRecyclerView extends RecyclerView
         if (!ChromeFeatureList.sGtsCloseTabAnimation.isEnabled()) return;
 
         if (mTabListItemAnimator == null) {
+            boolean skipRemovalDelay =
+                    ChromeFeatureList.sGtsCloseTabAnimationSkipRemovalDelay.getValue();
+            boolean rearrangeUseStandardEasing =
+                    ChromeFeatureList.sGtsCloseTabAnimationRearrangeStandardEasing.getValue();
             mTabListItemAnimator =
-                    new TabListItemAnimator(
-                            ChromeFeatureList.sGtsCloseTabAnimationSkipRemovalDelay.getValue());
+                    new TabListItemAnimator(skipRemovalDelay, rearrangeUseStandardEasing);
             setItemAnimator(mTabListItemAnimator);
         }
     }
