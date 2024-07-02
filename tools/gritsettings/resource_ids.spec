@@ -531,6 +531,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [4460],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/skyvault/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [4470],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/commerce/core/internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4480],

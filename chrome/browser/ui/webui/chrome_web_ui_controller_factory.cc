@@ -1037,6 +1037,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIBorealisCreditsURL),
     GURL(chrome::kChromeUIBorealisInstallerUrl),
     GURL(chrome::kChromeUICloudUploadURL),
+    GURL(chrome::kChromeUILocalFilesMigrationURL),
     GURL(chrome::kChromeUIConnectivityDiagnosticsAppURL),
     GURL(chrome::kChromeUICrashesUrl),
     GURL(chrome::kChromeUICrostiniCreditsURL),

@@ -313,6 +313,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/seal_resources.pak",
         "$root_gen_dir/chrome/sensor_info_resources.pak",
         "$root_gen_dir/chrome/set_time_dialog_resources.pak",
+        "$root_gen_dir/chrome/skyvault_resources.pak",
         "$root_gen_dir/chrome/supervision_resources.pak",
         "$root_gen_dir/chrome/vc_tray_tester_resources.pak",
         "$root_gen_dir/chromeos/ash/ash_resources.pak",

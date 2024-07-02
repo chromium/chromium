@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "url/gurl.h"
 
@@ -340,6 +341,8 @@ void RegisterAshChromeWebUIConfigs() {
       std::make_unique<smb_dialog::SmbCredentialsDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<smb_dialog::SmbShareDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<SysInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<
+                     policy::local_user_files::LocalFilesMigrationUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<VcTrayTesterUIConfig>());

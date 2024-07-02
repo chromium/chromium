@@ -316,6 +316,8 @@ extern const char kChromeUIBorealisInstallerHost[];
 extern const char kChromeUIBorealisInstallerUrl[];
 extern const char kChromeUICloudUploadHost[];
 extern const char kChromeUICloudUploadURL[];
+extern const char kChromeUILocalFilesMigrationHost[];
+extern const char kChromeUILocalFilesMigrationURL[];
 extern const char kChromeUIConfirmPasswordChangeHost[];
 extern const char kChromeUIConfirmPasswordChangeUrl[];
 extern const char kChromeUIConnectivityDiagnosticsAppURL[];

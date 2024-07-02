@@ -34343,6 +34343,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="chrome://history-clusters-side-panel.top-chrome/"/>
   <int value="-1634933990" label="chrome://web-footer-experiment/"/>
   <int value="-1631133219" label="chrome://help-app/"/>
+  <int value="-1620492168" label="chrome://local-files-migration/"/>
   <int value="-1618666743" label="chrome://office-fallback/"/>
   <int value="-1591890659" label="chrome://syncfs-internals/"/>
   <int value="-1564946100" label="chrome://tab-strip.top-chrome/"/>

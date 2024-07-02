@@ -3354,6 +3354,10 @@ static_library("ui") {
       "webui/ash/login/remote_activity_notification_screen_handler.h",
       "webui/ash/os_feedback_dialog.cc",
       "webui/ash/os_feedback_dialog.h",
+      "webui/ash/skyvault/local_files_migration_dialog.cc",
+      "webui/ash/skyvault/local_files_migration_dialog.h",
+      "webui/ash/skyvault/local_files_migration_ui.cc",
+      "webui/ash/skyvault/local_files_migration_ui.h",
 
       # Template used by the `tools/oobe/generate_screen_template.py` script.
       "webui/ash/login/placeholder_screen_handler.cc",

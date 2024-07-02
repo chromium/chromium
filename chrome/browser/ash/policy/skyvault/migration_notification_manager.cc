@@ -14,6 +14,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -57,7 +58,8 @@ MigrationNotificationManager::~MigrationNotificationManager() = default;
 void MigrationNotificationManager::ShowMigrationInfoDialog(
     base::TimeDelta migration_delay,
     base::OnceClosure migration_callback) {
-  // TODO(aidazolic): Create a dialog.
+  LocalFilesMigrationDialog::Show(migration_delay,
+                                  std::move(migration_callback));
 }
 
 void MigrationNotificationManager::ShowMigrationProgressNotification() {

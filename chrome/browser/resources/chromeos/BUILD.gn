@@ -46,6 +46,7 @@ group("resources") {
     "seal:resources",
     "sensor_info:resources",
     "set_time_dialog:resources",
+    "skyvault:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
   ]

@@ -354,6 +354,9 @@ const char kChromeUIBorealisInstallerHost[] = "borealis-installer";
 const char kChromeUIBorealisInstallerUrl[] = "chrome://borealis-installer";
 const char kChromeUICloudUploadHost[] = "cloud-upload";
 const char kChromeUICloudUploadURL[] = "chrome://cloud-upload/";
+const char kChromeUILocalFilesMigrationHost[] = "local-files-migration";
+const char kChromeUILocalFilesMigrationURL[] =
+    "chrome://local-files-migration/";
 const char kChromeUIConfirmPasswordChangeHost[] = "confirm-password-change";
 const char kChromeUIConfirmPasswordChangeUrl[] =
     "chrome://confirm-password-change";
