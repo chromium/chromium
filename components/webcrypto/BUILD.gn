@@ -174,6 +174,10 @@ test("webcrypto_testing_fuzzer") {
     "WebCryptoFuzzer.ImportKeyFuzzer",
     "WebCryptoFuzzer.EncryptFuzzer",
     "WebCryptoFuzzer.DecryptFuzzer",
+    "WebCryptoFuzzer.DigestFuzzer",
+    "WebCryptoFuzzer.SignFuzzer",
+    "WebCryptoFuzzer.VerifyFuzzer",
+    "WebCryptoFuzzer.DeriveBitsFuzzer",
   ]
   sources = [ "webcrypto_fuzzer.cc" ]
   deps = [
