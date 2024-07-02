@@ -248,11 +248,6 @@ constexpr const char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
 // A boolean that indicates if a ruleset should be ignored.
 constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
 
-// A preference that indicates the amount of rules allocated to an extension
-// from the global pool.
-constexpr const char kDNRExtensionRulesAllocated[] =
-    "dnr_extension_rules_allocated";
-
 // A boolean that indicates if an extension should have its unused rule
 // allocation kept during its next load.
 constexpr const char kPrefDNRKeepExcessAllocation[] =
@@ -2044,42 +2039,6 @@ void ExtensionPrefs::SetNeedsSync(const ExtensionId& extension_id,
     value = base::Value(true);
   }
   UpdateExtensionPref(extension_id, kPrefNeedsSync, std::move(value));
-}
-
-bool ExtensionPrefs::ShouldIgnoreDNRRuleset(
-    const ExtensionId& extension_id,
-    declarative_net_request::RulesetID ruleset_id) const {
-  std::string pref = JoinPrefs({kDNRStaticRulesetPref,
-                                base::NumberToString(ruleset_id.value()),
-                                kDNRIgnoreRulesetKey});
-  return ReadPrefAsBooleanAndReturn(extension_id, pref);
-}
-
-bool ExtensionPrefs::GetDNRAllocatedGlobalRuleCount(
-    const ExtensionId& extension_id,
-    int* rule_count) const {
-  if (!ReadPrefAsInteger(extension_id, kDNRExtensionRulesAllocated,
-                         rule_count)) {
-    return false;
-  }
-
-  DCHECK_GT(*rule_count, 0);
-
-  return true;
-}
-
-void ExtensionPrefs::SetDNRAllocatedGlobalRuleCount(
-    const ExtensionId& extension_id,
-    int rule_count) {
-  DCHECK_LE(rule_count, declarative_net_request::GetGlobalStaticRuleLimit());
-
-  // Clear the pref entry if the extension has a global allocation of 0.
-  std::optional<base::Value> pref_value;
-  if (rule_count > 0) {
-    pref_value = base::Value(rule_count);
-  }
-  UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
-                      std::move(pref_value));
 }
 
 bool ExtensionPrefs::GetDNRKeepExcessAllocation(

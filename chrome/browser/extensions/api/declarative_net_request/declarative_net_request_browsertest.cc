@@ -6265,9 +6265,9 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
       std::optional<int> expected_rules_count) {
     int actual_rules_count = 0;
 
-    const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-    bool has_allocated_rules_count = prefs->GetDNRAllocatedGlobalRuleCount(
-        extension_id, &actual_rules_count);
+    PrefsHelper helper(*ExtensionPrefs::Get(profile()));
+    bool has_allocated_rules_count =
+        helper.GetAllocatedGlobalRuleCount(extension_id, actual_rules_count);
 
     EXPECT_EQ(expected_rules_count.has_value(), has_allocated_rules_count);
     if (expected_rules_count.has_value())
@@ -6352,15 +6352,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   // |rule_limit_override| + |global_limit_override| rules.
   ASSERT_EQ(3, GetMaximumRulesPerRuleset());
 
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  PrefsHelper helper(*ExtensionPrefs::Get(profile()));
   std::map<std::string, size_t> allocated_rule_counts;
   std::map<std::string, const Extension*> extensions_by_name;
   for (const auto& extension : extension_registry()->enabled_extensions()) {
     extensions_by_name[extension->name()] = extension.get();
 
     int allocated_rule_count = 0;
-    if (prefs->GetDNRAllocatedGlobalRuleCount(extension->id(),
-                                              &allocated_rule_count)) {
+    if (helper.GetAllocatedGlobalRuleCount(extension->id(),
+                                           allocated_rule_count)) {
       DCHECK_GE(allocated_rule_count, 0);
       allocated_rule_counts[extension->name()] = allocated_rule_count;
     }

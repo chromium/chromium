@@ -393,8 +393,9 @@ bool AreAllIndexedStaticRulesetsValid(
   PrefsHelper helper(*prefs);
 
   for (const auto& source : sources) {
-    if (prefs->ShouldIgnoreDNRRuleset(extension.id(), source.id()))
+    if (helper.ShouldIgnoreRuleset(extension.id(), source.id())) {
       continue;
+    }
 
     int expected_checksum = -1;
     if (!helper.GetStaticRulesetChecksum(extension.id(), source.id(),

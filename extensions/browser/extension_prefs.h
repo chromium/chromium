@@ -697,19 +697,6 @@ class ExtensionPrefs : public KeyedService {
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
 
-  // Whether the ruleset for the given |extension_id| and |ruleset_id| should be
-  // ignored while loading the extension.
-  bool ShouldIgnoreDNRRuleset(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id) const;
-
-  // Returns the global rule allocation for the given |extension_id|. If no
-  // rules are allocated to the extension, false is returned.
-  bool GetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      int* rule_count) const;
-  void SetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      int rule_count);
-
   // Whether the extension with the given |extension_id| should have its excess
   // global rules allocation kept during its next load.
   bool GetDNRKeepExcessAllocation(const ExtensionId& extension_id) const;

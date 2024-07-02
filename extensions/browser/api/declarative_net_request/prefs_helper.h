@@ -94,7 +94,7 @@ class PrefsHelper {
                                 int checksum);
 
   // Returns false if there is no dynamic ruleset corresponding to
-  // |extension_id|. On success, returns true and populates the checksum.
+  // `extension_id`. On success, returns true and populates the checksum.
   bool GetDynamicRulesetChecksum(const ExtensionId& extension_id,
                                  int& checksum) const;
   void SetDynamicRulesetChecksum(const ExtensionId& extension_id, int checksum);
@@ -114,6 +114,18 @@ class PrefsHelper {
   bool GetUseActionCountAsBadgeText(const ExtensionId& extension_id) const;
   void SetUseActionCountAsBadgeText(const ExtensionId& extension_id,
                                     bool use_action_count_as_badge_text);
+
+  // Whether the ruleset for the given `extension_id` and `ruleset_id` should be
+  // ignored while loading the extension.
+  bool ShouldIgnoreRuleset(const ExtensionId& extension_id,
+                           RulesetID ruleset_id) const;
+
+  // Returns the global rule allocation for the given `extension_id`. If no
+  // rules are allocated to the extension, false is returned.
+  bool GetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                   int& rule_count) const;
+  void SetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                   int rule_count);
 
  private:
   const base::Value::Dict* GetDisabledRuleIdsDict(const ExtensionId&) const;

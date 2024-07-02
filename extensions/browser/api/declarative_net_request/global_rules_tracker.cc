@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/global_rules_tracker.h"
 
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -19,18 +20,19 @@ namespace dnr_api = api::declarative_net_request;
 // Returns the total allocated global rule count, as maintained in extension
 // prefs from the set of installed extensions in the registry.
 size_t CalculateAllocatedGlobalRuleCount(
-    const ExtensionPrefs* extension_prefs,
+    ExtensionPrefs* extension_prefs,
     const ExtensionRegistry* extension_registry) {
   const ExtensionSet installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
+  const PrefsHelper helper(*extension_prefs);
 
   // For each extension, fetch its allocated rules count and add it to
   // |allocated_global_rule_count_|.
   size_t allocated_global_rule_count = 0;
   for (const auto& extension : installed_extensions) {
     int allocated_rule_count = 0;
-    if (extension_prefs->GetDNRAllocatedGlobalRuleCount(
-            extension->id(), &allocated_rule_count)) {
+    if (helper.GetAllocatedGlobalRuleCount(extension->id(),
+                                           allocated_rule_count)) {
       allocated_global_rule_count += allocated_rule_count;
     }
   }
@@ -43,9 +45,10 @@ size_t CalculateAllocatedGlobalRuleCount(
 // only if the extension registry has not been populated yet (e.g. when a
 // browser session has just started).
 size_t CalculateInitialAllocatedGlobalRuleCount(
-    const ExtensionPrefs* extension_prefs) {
+    ExtensionPrefs* extension_prefs) {
   const ExtensionPrefs::ExtensionsInfo extensions_info =
       extension_prefs->GetInstalledExtensionsInfo();
+  const PrefsHelper helper(*extension_prefs);
 
   // For each extension, fetch its allocated rules count and add it to
   // |allocated_global_rule_count_|.
@@ -58,8 +61,8 @@ size_t CalculateInitialAllocatedGlobalRuleCount(
     }
 
     int allocated_rule_count = 0;
-    if (extension_prefs->GetDNRAllocatedGlobalRuleCount(
-            info.extension_id, &allocated_rule_count)) {
+    if (helper.GetAllocatedGlobalRuleCount(info.extension_id,
+                                           allocated_rule_count)) {
       allocated_global_rule_count += allocated_rule_count;
     }
   }
@@ -135,9 +138,9 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
     extension_prefs_->SetDNRKeepExcessAllocation(extension_id, false);
   }
 
+  PrefsHelper helper(*extension_prefs_);
   allocated_global_rule_count_ = new_global_rule_count;
-  extension_prefs_->SetDNRAllocatedGlobalRuleCount(extension_id,
-                                                   new_allocated_rule_count);
+  helper.SetAllocatedGlobalRuleCount(extension_id, new_allocated_rule_count);
 
   return true;
 }
@@ -154,8 +157,8 @@ size_t GlobalRulesTracker::GetAvailableAllocation(
 void GlobalRulesTracker::ClearExtensionAllocation(
     const ExtensionId& extension_id) {
   int allocated_rule_count = 0;
-  if (!extension_prefs_->GetDNRAllocatedGlobalRuleCount(
-          extension_id, &allocated_rule_count)) {
+  PrefsHelper helper(*extension_prefs_);
+  if (!helper.GetAllocatedGlobalRuleCount(extension_id, allocated_rule_count)) {
     return;
   }
 
@@ -163,16 +166,15 @@ void GlobalRulesTracker::ClearExtensionAllocation(
             static_cast<size_t>(allocated_rule_count));
 
   allocated_global_rule_count_ -= allocated_rule_count;
-  extension_prefs_->SetDNRAllocatedGlobalRuleCount(extension_id,
-                                                   /*rule_count=*/0);
+  helper.SetAllocatedGlobalRuleCount(extension_id,
+                                     /*rule_count=*/0);
 }
 
 size_t GlobalRulesTracker::GetAllocationInPrefs(
     const ExtensionId& extension_id) const {
+  const PrefsHelper helper(*extension_prefs_);
   int allocated_rule_count = 0;
-  extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
-                                                   &allocated_rule_count);
-  DCHECK_GE(allocated_rule_count, 0);
+  helper.GetAllocatedGlobalRuleCount(extension_id, allocated_rule_count);
   return allocated_rule_count;
 }
 

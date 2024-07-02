@@ -31,6 +31,14 @@ constexpr char kDNRDisabledStaticRuleIds[] = "dnr_disabled_static_rule_ids";
 // Used for the Declarative Net Request API.
 constexpr char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
 
+// A preference that indicates the amount of rules allocated to an extension
+// from the global pool.
+constexpr const char kDNRExtensionRulesAllocated[] =
+    "dnr_extension_rules_allocated";
+
+// A boolean that indicates if a ruleset should be ignored.
+constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
+
 // A boolean preference that indicates whether the extension's icon should be
 // automatically badged to the matched action count for a tab. False by default.
 constexpr char kPrefDNRUseActionCountAsBadgeText[] =
@@ -45,10 +53,6 @@ constexpr char kPrefDNRUseActionCountAsBadgeText[] =
 // stay unchanged. Also, this helps provide flexibility to have the dynamic
 // ruleset preference schema diverge from the static one.
 constexpr char kDNRDynamicRulesetPref[] = "dnr_dynamic_ruleset";
-
-// Stores preferences corresponding to static indexed rulesets for the
-// Declarative Net Request API.
-constexpr char kDNRStaticRulesetPref[] = "dnr_static_ruleset";
 
 base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
     const base::Value::Dict* disabled_rule_ids_dict,
@@ -232,8 +236,8 @@ bool PrefsHelper::GetStaticRulesetChecksum(
     declarative_net_request::RulesetID ruleset_id,
     int& checksum) const {
   std::string pref = ExtensionPrefs::JoinPrefs(
-      {kDNRStaticRulesetPref, base::NumberToString(ruleset_id.value()),
-       kDNRChecksumKey});
+      {ExtensionPrefs::kDNRStaticRulesetPref,
+       base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
   return prefs_->ReadPrefAsInteger(extension_id, pref, &checksum);
 }
 
@@ -242,8 +246,8 @@ void PrefsHelper::SetStaticRulesetChecksum(
     declarative_net_request::RulesetID ruleset_id,
     int checksum) {
   std::string pref = ExtensionPrefs::JoinPrefs(
-      {kDNRStaticRulesetPref, base::NumberToString(ruleset_id.value()),
-       kDNRChecksumKey});
+      {ExtensionPrefs::kDNRStaticRulesetPref,
+       base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
   prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
 }
 
@@ -308,6 +312,48 @@ void PrefsHelper::SetUseActionCountAsBadgeText(
     bool use_action_count_as_badge_text) {
   prefs_->UpdateExtensionPref(extension_id, kPrefDNRUseActionCountAsBadgeText,
                               base::Value(use_action_count_as_badge_text));
+}
+
+// Whether the ruleset for the given `extension_id` and `ruleset_id` should be
+// ignored while loading the extension.
+bool PrefsHelper::ShouldIgnoreRuleset(const ExtensionId& extension_id,
+                                      RulesetID ruleset_id) const {
+  std::string pref = ExtensionPrefs::JoinPrefs(
+      {ExtensionPrefs::kDNRStaticRulesetPref,
+       base::NumberToString(ruleset_id.value()), kDNRIgnoreRulesetKey});
+  bool value = false;
+  if (prefs_->ReadPrefAsBoolean(extension_id, pref, &value)) {
+    return value;
+  }
+
+  return false;
+}
+
+// Returns the global rule allocation for the given |extension_id|. If no
+// rules are allocated to the extension, false is returned.
+bool PrefsHelper::GetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                              int& rule_count) const {
+  if (!prefs_->ReadPrefAsInteger(extension_id, kDNRExtensionRulesAllocated,
+                                 &rule_count)) {
+    return false;
+  }
+
+  DCHECK_GT(rule_count, 0);
+
+  return true;
+}
+
+void PrefsHelper::SetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
+                                              int rule_count) {
+  DCHECK_LE(rule_count, GetGlobalStaticRuleLimit());
+
+  // Clear the pref entry if the extension has a global allocation of 0.
+  std::optional<base::Value> pref_value;
+  if (rule_count > 0) {
+    pref_value = base::Value(rule_count);
+  }
+  prefs_->UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
+                              std::move(pref_value));
 }
 
 }  // namespace extensions::declarative_net_request

@@ -495,8 +495,7 @@ void RulesMonitorService::OnExtensionLoaded(
                          ? base::Contains(*prefs_enabled_rulesets, source.id())
                          : source.enabled_by_default();
 
-      bool ignored =
-          prefs_->ShouldIgnoreDNRRuleset(extension->id(), source.id());
+      bool ignored = helper.ShouldIgnoreRuleset(extension->id(), source.id());
 
       if (!enabled || ignored)
         continue;

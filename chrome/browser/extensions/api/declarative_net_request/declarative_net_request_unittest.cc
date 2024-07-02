@@ -532,9 +532,9 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
       std::optional<int> expected_rules_count) {
     int actual_rules_count = 0;
 
+    const PrefsHelper helper(*extension_prefs_);
     bool has_allocated_rules_count =
-        extension_prefs_->GetDNRAllocatedGlobalRuleCount(extension_id,
-                                                         &actual_rules_count);
+        helper.GetAllocatedGlobalRuleCount(extension_id, actual_rules_count);
 
     EXPECT_EQ(expected_rules_count.has_value(), has_allocated_rules_count);
     if (expected_rules_count.has_value())
@@ -558,7 +558,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
               static_cast<size_t>(result->GetInt()));
   }
 
-  const ExtensionPrefs* extension_prefs() { return extension_prefs_; }
+  ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
   ChromeTestExtensionLoader* extension_loader() { return loader_.get(); }
 
@@ -1390,9 +1390,10 @@ TEST_P(SingleRulesetTest, RuleCountLimitMatched) {
   ASSERT_EQ(1u, static_sources.size());
   EXPECT_TRUE(base::PathExists(static_sources[0].indexed_path()));
 
+  const PrefsHelper helper(*extension_prefs());
   // The ruleset's ID should not be marked as ignored in prefs.
-  EXPECT_FALSE(extension_prefs()->ShouldIgnoreDNRRuleset(
-      extension()->id(), static_sources[0].id()));
+  EXPECT_FALSE(
+      helper.ShouldIgnoreRuleset(extension()->id(), static_sources[0].id()));
 }
 
 // Ensure that an extension's allocation will be kept when it is disabled.
@@ -1476,9 +1477,11 @@ TEST_P(SingleRulesetTest, RuleCountLimitExceeded) {
     EXPECT_EQ(expected_warning, install_warnings[0]);
   }
 
+  const PrefsHelper helper(*extension_prefs());
+
   // The ruleset's ID should be persisted in the ignored rulesets pref.
-  EXPECT_TRUE(extension_prefs()->ShouldIgnoreDNRRuleset(
-      extension()->id(), static_sources[0].id()));
+  EXPECT_TRUE(
+      helper.ShouldIgnoreRuleset(extension()->id(), static_sources[0].id()));
 
   // Since the ruleset was not indexed, no rules should contribute to the extra
   // static rule count.
@@ -2273,13 +2276,15 @@ TEST_P(MultipleRulesetsTest, StaticRuleCountExceeded) {
   // The second ruleset was indexed and it should be persisted.
   EXPECT_TRUE(base::PathExists(static_sources[1].indexed_path()));
 
+  const PrefsHelper helper(*extension_prefs());
+
   // The first ruleset's ID should be persisted in the ignored rulesets pref.
-  EXPECT_TRUE(extension_prefs()->ShouldIgnoreDNRRuleset(
-      extension()->id(), static_sources[0].id()));
+  EXPECT_TRUE(
+      helper.ShouldIgnoreRuleset(extension()->id(), static_sources[0].id()));
 
   // The second ruleset's ID should not be marked as ignored in prefs.
-  EXPECT_FALSE(extension_prefs()->ShouldIgnoreDNRRuleset(
-      extension()->id(), static_sources[1].id()));
+  EXPECT_FALSE(
+      helper.ShouldIgnoreRuleset(extension()->id(), static_sources[1].id()));
 }
 
 // Ensure that a ruleset which causes the extension to go over the global rule
