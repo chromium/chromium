@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCREEN_TIME_SCREEN_TIME_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SCREEN_TIME_SCREEN_TIME_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SCREEN_TIME_UI_BUNDLED_SCREEN_TIME_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SCREEN_TIME_UI_BUNDLED_SCREEN_TIME_VIEW_CONTROLLER_H_
 
 #import <ScreenTime/ScreenTime.h>
 
-#import "ios/chrome/browser/ui/screen_time/screen_time_consumer.h"
+#import "ios/chrome/browser/screen_time/ui_bundled/screen_time_consumer.h"
 
 // The view controller which is used to integrate ScreenTime support. This
 // object is used to report web usage and block restricted webpages. To properly
@@ -21,4 +21,4 @@
 + (instancetype)sharedOTRInstance;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCREEN_TIME_SCREEN_TIME_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SCREEN_TIME_UI_BUNDLED_SCREEN_TIME_VIEW_CONTROLLER_H_

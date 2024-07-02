@@ -44,7 +44,7 @@ source_set("browser_container") {
   if (ios_enable_screen_time) {
     deps += [
       "//ios/chrome/browser/screen_time/model:feature_flags",
-      "//ios/chrome/browser/ui/screen_time",
+      "//ios/chrome/browser/screen_time/ui_bundled",
     ]
   }
 }

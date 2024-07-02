@@ -34,7 +34,7 @@
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
 #import "ios/chrome/browser/screen_time/model/features.h"
-#import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
+#import "ios/chrome/browser/screen_time/ui_bundled/screen_time_coordinator.h"
 #endif
 
 @interface BrowserContainerCoordinator () <EditMenuAlertDelegate>

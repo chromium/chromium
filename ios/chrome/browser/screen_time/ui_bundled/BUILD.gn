@@ -6,9 +6,9 @@ import("//ios/build/chrome_build.gni")
 
 assert(
     ios_enable_screen_time,
-    "ios_enable_screen_time must be true to depend on //ios/chrome/browser/ui/screen_time")
+    "ios_enable_screen_time must be true to depend on //ios/chrome/browser/screen_time/ui_bundled")
 
-source_set("screen_time") {
+source_set("ui_bundled") {
   sources = [
     "screen_time_consumer.h",
     "screen_time_coordinator.h",
