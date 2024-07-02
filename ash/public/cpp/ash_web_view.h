@@ -115,6 +115,9 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
   // Sets the specified `corner_radii` to the native view that hosts the webview.
   virtual void SetCornerRadii(const gfx::RoundedCornersF& corner_radii) = 0;
 
+  // Get a request id if there is a media session.
+  virtual const base::UnguessableToken& GetMediaSessionRequestId() = 0;
+
  protected:
   AshWebView();
 };

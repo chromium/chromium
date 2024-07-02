@@ -74,6 +74,10 @@ void TestAshWebView::SetCornerRadii(const gfx::RoundedCornersF& corner_radii) {
   // Not yet implemented for unittests.
 }
 
+const base::UnguessableToken& TestAshWebView::GetMediaSessionRequestId() {
+  return base::UnguessableToken::Null();
+}
+
 BEGIN_METADATA(TestAshWebView)
 END_METADATA
 

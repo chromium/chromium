@@ -52,6 +52,7 @@ class AshWebViewImpl : public ash::AshWebView,
   void AddedToWidget() override;
   views::View* GetInitiallyFocusedView() override;
   void SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
+  const base::UnguessableToken& GetMediaSessionRequestId() override;
 
   // content::WebContentsDelegate:
   bool IsWebContentsCreationOverridden(
