@@ -82,9 +82,7 @@ template <unsigned charactersCount>
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
     const char (&characters)[charactersCount]) {
   unsigned length = charactersCount - 1;
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
-      reinterpret_cast<const LChar*>(characters), length);
-  return base::AdoptRef(StringImpl::CreateStatic(characters, length, hash));
+  return base::AdoptRef(StringImpl::CreateStatic(characters, length));
 }
 
 void NewlineThenWhitespaceStringsTable::Init() {
@@ -94,10 +92,8 @@ void NewlineThenWhitespaceStringsTable::Init() {
 
   // Keep g_table_[0] uninitialized.
   for (size_t length = 1; length < kTableSize; ++length) {
-    const unsigned hash =
-        StringHasher::ComputeHashAndMaskTop8Bits(whitespace_buffer, length);
     auto* string_impl = StringImpl::CreateStatic(
-        reinterpret_cast<const char*>(whitespace_buffer), length, hash);
+        reinterpret_cast<const char*>(whitespace_buffer), length);
     new (NotNullTag::kNotNull, (void*)(&g_table_[length]))
         String(AtomicString(string_impl).GetString());
   }

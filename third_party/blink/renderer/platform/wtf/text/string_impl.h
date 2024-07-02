@@ -137,9 +137,7 @@ class WTF_EXPORT StringImpl {
 
   static void InitStatics();
 
-  static StringImpl* CreateStatic(const char* string,
-                                  wtf_size_t length,
-                                  wtf_size_t hash);
+  static StringImpl* CreateStatic(const char* string, wtf_size_t length);
   static void ReserveStaticStringsCapacityForSize(wtf_size_t size);
   static void FreezeStaticStrings();
   static const StaticStringsTable& AllStaticStrings();
@@ -965,14 +963,14 @@ struct HashTraits<scoped_refptr<StringImpl>>;
 
 }  // namespace WTF
 
-using WTF::StringImpl;
-using WTF::kTextCaseASCIIInsensitive;
-using WTF::kTextCaseUnicodeInsensitive;
-using WTF::kTextCaseSensitive;
-using WTF::TextCaseSensitivity;
 using WTF::Equal;
 using WTF::EqualNonNull;
+using WTF::kTextCaseASCIIInsensitive;
+using WTF::kTextCaseSensitive;
+using WTF::kTextCaseUnicodeInsensitive;
 using WTF::LengthOfNullTerminatedString;
 using WTF::ReverseFind;
+using WTF::StringImpl;
+using WTF::TextCaseSensitivity;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

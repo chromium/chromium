@@ -212,14 +212,15 @@ void StringImpl::InitStatics() {
                            "string created by StringImpl::empty16Bit");
 }
 
-StringImpl* StringImpl::CreateStatic(const char* string,
-                                     wtf_size_t length,
-                                     wtf_size_t hash) {
+StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
 #if DCHECK_IS_ON()
   DCHECK(g_allow_creation_of_static_strings);
 #endif
   DCHECK(string);
   DCHECK(length);
+
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
+      reinterpret_cast<const LChar*>(string), length);
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {

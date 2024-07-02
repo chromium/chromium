@@ -165,25 +165,6 @@ class StringHasher {
     return ComputeHash<T, DefaultConverter>(data, length);
   }
 
-  // This version can be used from a constant-expression context, e.g. as part
-  // of static data. (The others are seemingly too complex to make constexpr,
-  // due to issues with template matching around the Converter type.)
-  template <typename T>
-  static constexpr unsigned ComputeHashStatically(const T* data,
-                                                  unsigned length) {
-    StringHasher hasher;
-    for (unsigned i = 0; i < length; ++i) {
-      hasher.AddCharacter(data[i]);
-    }
-    return hasher.GetHash();
-  }
-
-  // A helper for the previous function, useful for string literals.
-  template <unsigned length>
-  static constexpr unsigned ComputeHashStatically(const char (&data)[length]) {
-    return ComputeHashStatically(data, length - 1);
-  }
-
   static unsigned HashMemory(const void* data, unsigned length) {
     // FIXME: Why does this function use the version of the hash that drops the
     // top 8 bits?  We want that for all string hashing so we can use those
