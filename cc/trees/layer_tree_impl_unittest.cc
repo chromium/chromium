@@ -61,9 +61,9 @@ class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
                                float top_depth,
                                float left_child_depth,
                                float right_child_depth) {
-    top_ = AddLayer<LayerImpl>();
-    left_child_ = AddLayer<LayerImpl>();
-    right_child_ = AddLayer<LayerImpl>();
+    top_ = AddLayerInActiveTree<LayerImpl>();
+    left_child_ = AddLayerInActiveTree<LayerImpl>();
+    right_child_ = AddLayerInActiveTree<LayerImpl>();
 
     gfx::Size bounds(100, 100);
     {
@@ -195,7 +195,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleLayerAndHud) {
   root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
   // Create hud and add it as a child of root.
-  auto* hud = AddLayer<HeadsUpDisplayLayerImpl>(std::string());
+  auto* hud = AddLayerInActiveTree<HeadsUpDisplayLayerImpl>(std::string());
   hud->SetBounds(gfx::Size(200, 200));
   hud->SetDrawsContent(true);
   hud->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -245,7 +245,7 @@ TEST_F(LayerTreeImplTest, HitTestingForUninvertibleTransform) {
 
   LayerImpl* root = root_layer();
 
-  LayerImpl* layer = AddLayer<LayerImpl>();
+  LayerImpl* layer = AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
   layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -301,7 +301,7 @@ TEST_F(LayerTreeImplTest, HitTestingForUninvertibleTransform) {
 TEST_F(LayerTreeImplTest, HitTestingForSinglePositionedLayer) {
   // This layer is positioned, and hit testing should correctly know where the
   // layer is located.
-  LayerImpl* test_layer = AddLayer<LayerImpl>();
+  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
   test_layer->SetBounds(gfx::Size(100, 100));
   test_layer->SetDrawsContent(true);
   test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -351,7 +351,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSingleRotatedLayer) {
   rotation45_degrees_about_center.RotateAboutZAxis(45.0);
   rotation45_degrees_about_center.Translate(-50.0, -50.0);
 
-  LayerImpl* layer = AddLayer<LayerImpl>();
+  LayerImpl* layer = AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
   layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -407,7 +407,7 @@ TEST_F(LayerTreeImplTest, HitTestingClipNodeDifferentTransformAndTargetIds) {
 
   gfx::Transform translation;
   translation.Translate(100, 100);
-  LayerImpl* render_surface = AddLayer<LayerImpl>();
+  LayerImpl* render_surface = AddLayerInActiveTree<LayerImpl>();
   render_surface->SetBounds(gfx::Size(100, 100));
   CopyProperties(root, render_surface);
   CreateTransformNode(render_surface).local = translation;
@@ -416,17 +416,17 @@ TEST_F(LayerTreeImplTest, HitTestingClipNodeDifferentTransformAndTargetIds) {
 
   gfx::Transform scale_matrix;
   scale_matrix.Scale(2, 2);
-  LayerImpl* scale = AddLayer<LayerImpl>();
+  LayerImpl* scale = AddLayerInActiveTree<LayerImpl>();
   scale->SetBounds(gfx::Size(50, 50));
   CopyProperties(render_surface, scale);
   CreateTransformNode(scale).local = scale_matrix;
 
-  LayerImpl* clip = AddLayer<LayerImpl>();
+  LayerImpl* clip = AddLayerInActiveTree<LayerImpl>();
   clip->SetBounds(gfx::Size(25, 25));
   CopyProperties(scale, clip);
   CreateClipNode(clip);
 
-  LayerImpl* test = AddLayer<LayerImpl>();
+  LayerImpl* test = AddLayerInActiveTree<LayerImpl>();
   test->SetBounds(gfx::Size(100, 100));
   test->SetDrawsContent(true);
   test->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -452,14 +452,14 @@ TEST_F(LayerTreeImplTest, HitTestingSiblings) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* child1 = AddLayer<LayerImpl>();
+  LayerImpl* child1 = AddLayerInActiveTree<LayerImpl>();
   child1->SetBounds(gfx::Size(25, 25));
   child1->SetDrawsContent(true);
   child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, child1);
   CreateClipNode(child1);
 
-  LayerImpl* child2 = AddLayer<LayerImpl>();
+  LayerImpl* child2 = AddLayerInActiveTree<LayerImpl>();
   child2->SetBounds(gfx::Size(75, 75));
   child2->SetDrawsContent(true);
   child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -489,7 +489,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSinglePerspectiveLayer) {
   gfx::Transform translation_by_z;
   translation_by_z.Translate3d(0.0, 0.0, -1.0);
 
-  LayerImpl* layer = AddLayer<LayerImpl>();
+  LayerImpl* layer = AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
   layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -537,7 +537,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSimpleClippedLayer) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* clipping_layer = AddLayer<LayerImpl>();
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
   // this layer is positioned, and hit testing should correctly know where the
   // layer is located.
   clipping_layer->SetBounds(gfx::Size(50, 50));
@@ -545,7 +545,7 @@ TEST_F(LayerTreeImplTest, HitTestingForSimpleClippedLayer) {
   clipping_layer->SetOffsetToTransformParent(gfx::Vector2dF(25.f, 25.f));
   CreateClipNode(clipping_layer);
 
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -606,9 +606,9 @@ TEST_F(LayerTreeImplTest, HitTestingForMultiClippedRotatedLayer) {
   // Visible rects computed by combinig clips in target space and root space
   // don't match because of rotation transforms. So, we skip
   // verify_visible_rect_calculations.
-  LayerImpl* child = AddLayer<LayerImpl>();
-  LayerImpl* grand_child = AddLayer<LayerImpl>();
-  LayerImpl* rotated_leaf = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
+  LayerImpl* grand_child = AddLayerInActiveTree<LayerImpl>();
+  LayerImpl* rotated_leaf = AddLayerInActiveTree<LayerImpl>();
 
   child->SetBounds(gfx::Size(80, 80));
   CopyProperties(root, child);
@@ -694,7 +694,7 @@ TEST_F(LayerTreeImplTest, HitTestingForNonClippingIntermediateLayer) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* intermediate_layer = AddLayer<LayerImpl>();
+  LayerImpl* intermediate_layer = AddLayerInActiveTree<LayerImpl>();
   intermediate_layer->SetBounds(gfx::Size(50, 50));
   CopyProperties(root, intermediate_layer);
   // this layer is positioned, and hit testing should correctly know where the
@@ -704,7 +704,7 @@ TEST_F(LayerTreeImplTest, HitTestingForNonClippingIntermediateLayer) {
   // The child of the intermediate_layer is translated so that it does not
   // overlap intermediate_layer at all.  If child is incorrectly clipped, we
   // would not be able to hit it successfully.
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(20, 20));
   child->SetDrawsContent(true);
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -754,7 +754,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   // grand_child, (third) child1, and (back) the root layer behind all other
   // layers.
 
-  LayerImpl* child1 = AddLayer<LayerImpl>();
+  LayerImpl* child1 = AddLayerInActiveTree<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
   child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -764,7 +764,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   // Remember that grand_child is positioned with respect to its parent (i.e.
   // child1).  In screen space, the intended position is (10, 50), with size
   // 100 x 50.
-  LayerImpl* grand_child1 = AddLayer<LayerImpl>();
+  LayerImpl* grand_child1 = AddLayerInActiveTree<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
   grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -772,7 +772,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayers) {
   grand_child1->SetOffsetToTransformParent(
       gfx::Vector2dF(0.f, 40.f) + child1->offset_to_transform_parent());
 
-  LayerImpl* child2 = AddLayer<LayerImpl>();
+  LayerImpl* child2 = AddLayerInActiveTree<LayerImpl>();
   child2->SetBounds(gfx::Size(50, 50));
   child2->SetDrawsContent(true);
   child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -882,7 +882,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   // grand_child, (third) child1, and (back) the root layer behind all other
   // layers.
 
-  LayerImpl* child1 = AddLayer<LayerImpl>();
+  LayerImpl* child1 = AddLayerInActiveTree<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
   child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -895,7 +895,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   // Remember that grand_child is positioned with respect to its parent (i.e.
   // child1).  In screen space, the intended position is (10, 50), with size
   // 100 x 50.
-  LayerImpl* grand_child1 = AddLayer<LayerImpl>();
+  LayerImpl* grand_child1 = AddLayerInActiveTree<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
   grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -904,7 +904,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayersAtVaryingDepths) {
   grand_child1_transform_node.post_translation = gfx::Vector2dF(0.f, 40.f);
   grand_child1_transform_node.flattens_inherited_transform = false;
 
-  LayerImpl* child2 = AddLayer<LayerImpl>();
+  LayerImpl* child2 = AddLayerInActiveTree<LayerImpl>();
   child2->SetBounds(gfx::Size(50, 50));
   gfx::Transform translate_z;
   translate_z.Translate3d(0, 0, 10.f);
@@ -975,7 +975,7 @@ TEST_F(LayerTreeImplTest, HitTestingRespectsClipParents) {
   root->SetDrawsContent(true);
   root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(1, 1));
   child->SetDrawsContent(true);
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -983,14 +983,14 @@ TEST_F(LayerTreeImplTest, HitTestingRespectsClipParents) {
   child->SetOffsetToTransformParent(gfx::Vector2dF(10.f, 10.f));
   CreateClipNode(child);
 
-  LayerImpl* scroll_child = AddLayer<LayerImpl>();
+  LayerImpl* scroll_child = AddLayerInActiveTree<LayerImpl>();
   scroll_child->SetBounds(gfx::Size(200, 200));
   scroll_child->SetDrawsContent(true);
   scroll_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root, scroll_child);
   scroll_child->SetClipTreeIndex(child->clip_tree_index());
 
-  LayerImpl* grand_child = AddLayer<LayerImpl>();
+  LayerImpl* grand_child = AddLayerInActiveTree<LayerImpl>();
   grand_child->SetBounds(gfx::Size(200, 200));
   grand_child->SetDrawsContent(true);
   grand_child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1025,7 +1025,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   // grand_child, (third) child1, and (back) the root layer behind all other
   // layers.
 
-  LayerImpl* child1 = AddLayer<LayerImpl>();
+  LayerImpl* child1 = AddLayerInActiveTree<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
   child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1036,7 +1036,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   // Remember that grand_child is positioned with respect to its parent (i.e.
   // child1).  In screen space, the intended position is (10, 50), with size
   // 100 x 50.
-  LayerImpl* grand_child1 = AddLayer<LayerImpl>();
+  LayerImpl* grand_child1 = AddLayerInActiveTree<LayerImpl>();
   grand_child1->SetBounds(gfx::Size(100, 50));
   grand_child1->SetDrawsContent(true);
   grand_child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1046,7 +1046,7 @@ TEST_F(LayerTreeImplTest, HitTestingForMultipleLayerLists) {
   CreateEffectNode(grand_child1).render_surface_reason =
       RenderSurfaceReason::kTest;
 
-  LayerImpl* child2 = AddLayer<LayerImpl>();
+  LayerImpl* child2 = AddLayerInActiveTree<LayerImpl>();
   child2->SetBounds(gfx::Size(50, 50));
   child2->SetDrawsContent(true);
   child2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1200,7 +1200,7 @@ TEST_F(LayerTreeImplTest,
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(10, 10, 50, 50));
 
-  LayerImpl* layer = AddLayer<LayerImpl>();
+  LayerImpl* layer = AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
   layer->SetDrawsContent(true);
   layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1270,7 +1270,7 @@ TEST_F(LayerTreeImplTest,
 
   // This layer is positioned, and hit testing should correctly know where the
   // layer is located.
-  LayerImpl* test_layer = AddLayer<LayerImpl>();
+  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
   test_layer->SetBounds(gfx::Size(100, 100));
   test_layer->SetDrawsContent(true);
   test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1334,13 +1334,13 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* page_scale_layer = AddLayer<LayerImpl>();
+  LayerImpl* page_scale_layer = AddLayerInActiveTree<LayerImpl>();
   CopyProperties(root, page_scale_layer);
   CreateTransformNode(page_scale_layer);
 
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(10, 10, 30, 30));
-  LayerImpl* test_layer = AddLayer<LayerImpl>();
+  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
   test_layer->SetBounds(gfx::Size(50, 50));
   test_layer->SetDrawsContent(true);
   test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1469,7 +1469,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerRegionsForSimpleClippedLayer) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* clipping_layer = AddLayer<LayerImpl>();
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
   // this layer is positioned, and hit testing should correctly know where
   // the layer is located.
   clipping_layer->SetBounds(gfx::Size(50, 50));
@@ -1480,7 +1480,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerRegionsForSimpleClippedLayer) {
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(10, 10, 50, 50));
 
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1546,12 +1546,12 @@ TEST_F(LayerTreeImplTest,
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* surface = AddLayer<LayerImpl>();
+  LayerImpl* surface = AddLayerInActiveTree<LayerImpl>();
   surface->SetBounds(gfx::Size(100, 100));
   CopyProperties(root, surface);
   CreateEffectNode(surface).render_surface_reason = RenderSurfaceReason::kTest;
 
-  LayerImpl* clipping_layer = AddLayer<LayerImpl>();
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
   // This layer is positioned, and hit testing should correctly know where
   // the layer is located.
   clipping_layer->SetBounds(gfx::Size(50, 50));
@@ -1562,7 +1562,7 @@ TEST_F(LayerTreeImplTest,
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(0, 0, 300, 300));
 
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(300, 300));
   child->SetDrawsContent(true);
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1615,7 +1615,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerOverlappingRegions) {
   LayerImpl* root = root_layer();
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* touch_layer = AddLayer<LayerImpl>();
+  LayerImpl* touch_layer = AddLayerInActiveTree<LayerImpl>();
   // this layer is positioned, and hit testing should correctly know where
   // the layer is located.
   touch_layer->SetBounds(gfx::Size(50, 50));
@@ -1626,7 +1626,7 @@ TEST_F(LayerTreeImplTest, HitCheckingTouchHandlerOverlappingRegions) {
   touch_layer->SetTouchActionRegion(touch_action_region);
   CopyProperties(root, touch_layer);
 
-  LayerImpl* notouch_layer = AddLayer<LayerImpl>();
+  LayerImpl* notouch_layer = AddLayerInActiveTree<LayerImpl>();
   // this layer is positioned, and hit testing should correctly know where
   // the layer is located.
   notouch_layer->SetBounds(gfx::Size(50, 50));
@@ -1685,7 +1685,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
 
   TouchActionRegion touch_action_region;
   touch_action_region.Union(TouchAction::kNone, gfx::Rect(10, 10, 30, 30));
-  LayerImpl* test_layer = AddLayer<LayerImpl>();
+  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
   test_layer->SetBounds(gfx::Size(50, 50));
   test_layer->SetDrawsContent(false);
   test_layer->SetHitTestOpaqueness(HitTestOpaqueness::kTransparent);
@@ -1848,14 +1848,14 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForPartialOccludedLayers) {
 
   gfx::Vector2dF clipping_offset(10, 10);
 
-  LayerImpl* clipping_layer = AddLayer<LayerImpl>();
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
   // The clipping layer should occlude the right selection bound.
   clipping_layer->SetBounds(gfx::Size(50, 50));
   CopyProperties(root, clipping_layer);
   clipping_layer->SetOffsetToTransformParent(clipping_offset);
   CreateClipNode(clipping_layer);
 
-  LayerImpl* clipped_layer = AddLayer<LayerImpl>();
+  LayerImpl* clipped_layer = AddLayerInActiveTree<LayerImpl>();
   clipped_layer->SetBounds(gfx::Size(100, 100));
   clipped_layer->SetDrawsContent(true);
   CopyProperties(clipping_layer, clipped_layer);
@@ -1991,13 +1991,13 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForScaledLayers) {
   root->SetDrawsContent(true);
   root->SetBounds(gfx::Size(100, 100));
 
-  LayerImpl* page_scale_layer = AddLayer<LayerImpl>();
+  LayerImpl* page_scale_layer = AddLayerInActiveTree<LayerImpl>();
   page_scale_layer->SetBounds(gfx::Size(50, 50));
   CopyProperties(root, page_scale_layer);
   CreateTransformNode(page_scale_layer);
 
   gfx::Vector2dF sub_layer_offset(10, 0);
-  LayerImpl* sub_layer = AddLayer<LayerImpl>();
+  LayerImpl* sub_layer = AddLayerInActiveTree<LayerImpl>();
   sub_layer->SetBounds(gfx::Size(50, 50));
   sub_layer->SetDrawsContent(true);
   CopyProperties(page_scale_layer, sub_layer);
@@ -2075,7 +2075,7 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForDSFEnabled) {
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
 
   gfx::Vector2dF sub_layer_offset(10, 0);
-  LayerImpl* sub_layer = AddLayer<LayerImpl>();
+  LayerImpl* sub_layer = AddLayerInActiveTree<LayerImpl>();
   sub_layer->SetBounds(gfx::Size(50, 50));
   sub_layer->SetDrawsContent(true);
   CopyProperties(root, sub_layer);
@@ -2141,12 +2141,12 @@ TEST_F(LayerTreeImplTest, SelectionBoundsWithLargeTransforms) {
   gfx::Transform large_transform = gfx::Transform::MakeScale(1e37);
   large_transform.RotateAboutYAxis(30);
 
-  LayerImpl* child = AddLayer<LayerImpl>();
+  LayerImpl* child = AddLayerInActiveTree<LayerImpl>();
   child->SetBounds(gfx::Size(100, 100));
   CopyProperties(root, child);
   CreateTransformNode(child).local = large_transform;
 
-  LayerImpl* grand_child = AddLayer<LayerImpl>();
+  LayerImpl* grand_child = AddLayerInActiveTree<LayerImpl>();
   grand_child->SetBounds(gfx::Size(100, 100));
   grand_child->SetDrawsContent(true);
   CopyProperties(child, grand_child);
@@ -2193,7 +2193,7 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForCaretLayer) {
   host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
 
   gfx::Vector2dF caret_layer_offset(10, 20);
-  LayerImpl* caret_layer = AddLayer<LayerImpl>();
+  LayerImpl* caret_layer = AddLayerInActiveTree<LayerImpl>();
   caret_layer->SetBounds(gfx::Size(1, 16));
   caret_layer->SetDrawsContent(true);
   CopyProperties(root, caret_layer);
@@ -2225,15 +2225,15 @@ TEST_F(LayerTreeImplTest, NumLayersTestOne) {
   EXPECT_EQ(1u, host_impl().active_tree()->NumLayers());
   EXPECT_TRUE(root_layer());
   // Create another layer, should increment.
-  AddLayer<LayerImpl>();
+  AddLayerInActiveTree<LayerImpl>();
   EXPECT_EQ(2u, host_impl().active_tree()->NumLayers());
 }
 
 TEST_F(LayerTreeImplTest, NumLayersSmallTree) {
   EXPECT_EQ(1u, host_impl().active_tree()->NumLayers());
-  AddLayer<LayerImpl>();
-  AddLayer<LayerImpl>();
-  AddLayer<LayerImpl>();
+  AddLayerInActiveTree<LayerImpl>();
+  AddLayerInActiveTree<LayerImpl>();
+  AddLayerInActiveTree<LayerImpl>();
   EXPECT_EQ(4u, host_impl().active_tree()->NumLayers());
 }
 
@@ -2261,9 +2261,9 @@ TEST_F(LayerTreeImplTest, HitTestingCorrectLayerWheelListener) {
       EventListenerClass::kMouseWheel, EventListenerProperties::kBlocking);
 
   LayerImpl* root = root_layer();
-  LayerImpl* top = AddLayer<LayerImpl>();
-  LayerImpl* left_child = AddLayer<LayerImpl>();
-  LayerImpl* right_child = AddLayer<LayerImpl>();
+  LayerImpl* top = AddLayerInActiveTree<LayerImpl>();
+  LayerImpl* left_child = AddLayerInActiveTree<LayerImpl>();
+  LayerImpl* right_child = AddLayerInActiveTree<LayerImpl>();
 
   {
     gfx::Transform translate_z;
@@ -2631,7 +2631,7 @@ TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
   root->SetDrawsContent(true);
   root->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
 
-  LayerImpl* child1 = AddLayer<LayerImpl>();
+  LayerImpl* child1 = AddLayerInActiveTree<LayerImpl>();
   child1->SetBounds(gfx::Size(50, 50));
   child1->SetDrawsContent(true);
   child1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -2682,7 +2682,7 @@ TEST_F(LayerTreeImplOcclusionTest, Occlusion) {
   root->SetBounds(gfx::Size(100, 100));
 
   // Create a 50x50 layer in the center of our root bounds.
-  LayerImpl* bottom_layer = AddLayer<LayerImpl>();
+  LayerImpl* bottom_layer = AddLayerInActiveTree<LayerImpl>();
   bottom_layer->SetBounds(gfx::Size(50, 50));
   bottom_layer->SetDrawsContent(true);
   bottom_layer->SetContentsOpaque(true);
@@ -2690,7 +2690,7 @@ TEST_F(LayerTreeImplOcclusionTest, Occlusion) {
   bottom_layer->SetOffsetToTransformParent(gfx::Vector2dF(25, 25));
 
   // Create a full-bounds 100x100 layer which occludes the 50x50 layer.
-  LayerImpl* occluding_layer = AddLayer<LayerImpl>();
+  LayerImpl* occluding_layer = AddLayerInActiveTree<LayerImpl>();
   occluding_layer->SetBounds(gfx::Size(100, 100));
   occluding_layer->SetDrawsContent(true);
   occluding_layer->SetContentsOpaque(true);

@@ -878,7 +878,7 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
 
   LayerTreeImplTestBase impl;
 
-  LayerImpl* scroll_layer = impl.AddLayer<LayerImpl>();
+  LayerImpl* scroll_layer = impl.AddLayerInActiveTree<LayerImpl>();
   scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
 
   const int kTrackStart = 0;
@@ -886,7 +886,7 @@ TEST_F(ScrollbarLayerTest, SubPixelCanScrollOrientation) {
   const bool kIsLeftSideVerticalScrollbar = false;
 
   SolidColorScrollbarLayerImpl* scrollbar_layer =
-      impl.AddLayer<SolidColorScrollbarLayerImpl>(
+      impl.AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
           ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
           kIsLeftSideVerticalScrollbar);
 
@@ -927,7 +927,7 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
   const int kThumbThickness = 10;
   const bool kIsLeftSideVerticalScrollbar = false;
   SolidColorScrollbarLayerImpl* scrollbar_layer =
-      impl.AddLayer<SolidColorScrollbarLayerImpl>(
+      impl.AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
           ScrollbarOrientation::kHorizontal, kThumbThickness, kTrackStart,
           kIsLeftSideVerticalScrollbar);
   scrollbar_layer->SetScrollElementId(scroll_layer->element_id());
@@ -979,7 +979,7 @@ TEST_F(ScrollbarLayerTest, LayerChangesAffectingScrollbarGeometries) {
 TEST_F(ScrollbarLayerTest, UpdateScrollbarGeometriesScrollNodeOnContainer) {
   LayerTreeImplTestBase impl;
 
-  LayerImpl* scroll_layer = impl.AddLayer<LayerImpl>();
+  LayerImpl* scroll_layer = impl.AddLayerInActiveTree<LayerImpl>();
   scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
   scroll_layer->SetBounds(gfx::Size(100, 100));
 

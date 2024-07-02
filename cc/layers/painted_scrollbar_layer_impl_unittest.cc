@@ -41,7 +41,8 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
-      impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
+      impl.AddLayerInActiveTree<PaintedScrollbarLayerImpl>(orientation, false,
+                                                           false);
   scrollbar_layer_impl->SetBounds(layer_size);
   scrollbar_layer_impl->SetContentsOpaque(true);
   scrollbar_layer_impl->set_internal_contents_scale_and_bounds(
@@ -136,7 +137,8 @@ TEST(PaintedScrollbarLayerImplTest, PaintedOpacityChangesInvalidate) {
   LayerTreeImplTestBase impl;
   ScrollbarOrientation orientation = ScrollbarOrientation::kVertical;
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
-      impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
+      impl.AddLayerInActiveTree<PaintedScrollbarLayerImpl>(orientation, false,
+                                                           false);
   EXPECT_FALSE(
       scrollbar_layer_impl->LayerPropertyChangedNotFromPropertyTrees());
   scrollbar_layer_impl->SetScrollbarPaintedOpacity(0.3f);
@@ -159,7 +161,7 @@ class PaintedScrollbarLayerImplFluentTest : public ::testing::Test {
       int thumb_length,
       bool is_overlay = false) {
     PaintedScrollbarLayerImpl* scrollbar_layer_impl =
-        impl_->AddLayer<PaintedScrollbarLayerImpl>(
+        impl_->AddLayerInActiveTree<PaintedScrollbarLayerImpl>(
             orientation, is_left_side_vertical_scrollbar, is_overlay);
     scrollbar_layer_impl->SetTrackRect(track_rect);
     scrollbar_layer_impl->SetThumbThickness(thumb_thickness);

@@ -63,7 +63,7 @@ class SingleScrollbarAnimationControllerThinningTest
 
   void SetUp() override {
     root_layer()->SetBounds(gfx::Size(100, 100));
-    auto* scroll_layer = AddLayer<LayerImpl>();
+    auto* scroll_layer = AddLayerInActiveTree<LayerImpl>();
     scroll_layer->SetBounds(gfx::Size(200, 200));
     scroll_layer->SetElementId(
         LayerIdToElementIdForTesting(scroll_layer->id()));
@@ -72,7 +72,7 @@ class SingleScrollbarAnimationControllerThinningTest
     const int kTrackLength = 100;
     const bool kIsLeftSideVerticalScrollbar = false;
 
-    scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
+    scrollbar_layer_ = AddLayerInActiveTree<SolidColorScrollbarLayerImpl>(
         ScrollbarOrientation::kVertical, kThumbThickness, kTrackStart,
         kIsLeftSideVerticalScrollbar);
 

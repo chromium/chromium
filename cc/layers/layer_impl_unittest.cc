@@ -147,9 +147,9 @@ TEST_F(LayerImplTest, VerifyPendingLayerChangesAreTrackedProperly) {
 
 TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
   LayerImpl* root = root_layer();
-  LayerImpl* layer = AddLayer<LayerImpl>();
+  LayerImpl* layer = AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(100, 100));
-  LayerImpl* layer2 = AddLayer<LayerImpl>();
+  LayerImpl* layer2 = AddLayerInActiveTree<LayerImpl>();
   SetElementIdsForTesting();
 
   CopyProperties(root, layer);
@@ -307,7 +307,7 @@ class LayerImplScrollTest : public LayerImplTest {
     LayerImpl* root = root_layer();
     root->SetBounds(gfx::Size(1, 1));
 
-    layer_ = AddLayer<LayerImpl>();
+    layer_ = AddLayerInActiveTree<LayerImpl>();
     SetElementIdsForTesting();
     // Set the max scroll offset by noting that the root layer has bounds (1,1),
     // thus whatever bounds are set for the layer will be the max scroll

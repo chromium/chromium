@@ -473,7 +473,7 @@ class LayerTreeHostImplTest : public testing::Test,
     return result;
   }
 
-  LayerImpl* AddLayer() {
+  LayerImpl* AddLayerInActiveTree() {
     return AddLayer<LayerImpl>(host_impl_->active_tree());
   }
 
@@ -514,7 +514,7 @@ class LayerTreeHostImplTest : public testing::Test,
   LayerImpl* AddContentLayer() {
     LayerImpl* scroll_layer = OuterViewportScrollLayer();
     DCHECK(scroll_layer);
-    LayerImpl* layer = AddLayer();
+    LayerImpl* layer = AddLayerInActiveTree();
     layer->SetBounds(scroll_layer->bounds());
     layer->SetDrawsContent(true);
     CopyProperties(scroll_layer, layer);
@@ -726,7 +726,7 @@ class LayerTreeHostImplTest : public testing::Test,
         page_scale_factor, min_page_scale_factor, max_page_scale_factor);
     host_impl_->active_tree()->SetDeviceScaleFactor(device_scale_factor);
 
-    LayerImpl* child = AddLayer();
+    LayerImpl* child = AddLayerInActiveTree();
     child->SetDrawsContent(true);
     child->SetBounds(gfx::Size(25, 25));
     CopyProperties(InnerViewportScrollLayer(), child);
@@ -1150,15 +1150,15 @@ TEST_F(LayerTreeHostImplTest, ScrollDeltaNoLayers) {
 TEST_F(LayerTreeHostImplTest, ScrollDeltaTreeButNoChanges) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(10, 10));
   {
-    LayerImpl* child1 = AddLayer();
+    LayerImpl* child1 = AddLayerInActiveTree();
     CopyProperties(root, child1);
-    LayerImpl* child2 = AddLayer();
+    LayerImpl* child2 = AddLayerInActiveTree();
     CopyProperties(root, child2);
-    LayerImpl* grand_child1 = AddLayer();
+    LayerImpl* grand_child1 = AddLayerInActiveTree();
     CopyProperties(child2, grand_child1);
-    LayerImpl* grand_child2 = AddLayer();
+    LayerImpl* grand_child2 = AddLayerInActiveTree();
     CopyProperties(child2, grand_child2);
-    LayerImpl* great_grand_child = AddLayer();
+    LayerImpl* great_grand_child = AddLayerInActiveTree();
     CopyProperties(grand_child1, great_grand_child);
   }
 
@@ -1691,7 +1691,7 @@ TEST_F(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
 
   LayerImpl* root = root_layer();
   LayerImpl* scroll = InnerViewportScrollLayer();
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
   child->SetDrawsContent(true);
   child->SetBounds(gfx::Size(50, 50));
   CopyProperties(scroll, child);
@@ -1801,7 +1801,7 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
 
   // squash1 has mixed hit test opaqueness and the same scroll tree index as
   // the scroller.
-  LayerImpl* squash1 = AddLayer();
+  LayerImpl* squash1 = AddLayerInActiveTree();
   squash1->SetBounds(gfx::Size(140, 200));
   squash1->SetDrawsContent(true);
   squash1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -1810,7 +1810,7 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
 
   // squash2 has mixed hit test opaqueness and escapes the scroll state of the
   // scroller.
-  LayerImpl* squash2 = AddLayer();
+  LayerImpl* squash2 = AddLayerInActiveTree();
   squash2->SetBounds(gfx::Size(140, 200));
   squash2->SetDrawsContent(true);
   squash2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -2050,7 +2050,7 @@ TEST_F(LayerTreeHostImplTest, NonFastScrollableRegionBasic) {
 TEST_F(LayerTreeHostImplTest, NonFastScrollRegionInNonScrollingRoot) {
   LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(50, 50));
   auto AddNewLayer = [&]() {
-    LayerImpl* layer = AddLayer();
+    LayerImpl* layer = AddLayerInActiveTree();
     layer->SetBounds(gfx::Size(50, 50));
     layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
     CopyProperties(root_layer, layer);
@@ -3568,7 +3568,7 @@ TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
   EXPECT_FALSE(host_impl_->CommitToActiveTree());
 
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
   child->SetBounds(gfx::Size(10, 10));
   child->SetDrawsContent(true);
 
@@ -3626,7 +3626,7 @@ TEST_F(LayerTreeHostImplTest, AnimationSchedulingCommitToActiveTree) {
 
   auto* root = SetupDefaultRootLayer(gfx::Size(50, 50));
 
-  auto* child = AddLayer();
+  auto* child = AddLayerInActiveTree();
   child->SetBounds(gfx::Size(10, 10));
   child->SetDrawsContent(true);
 
@@ -3661,7 +3661,7 @@ TEST_F(LayerTreeHostImplTest, AnimationSchedulingCommitToActiveTree) {
 TEST_F(LayerTreeHostImplTest, AnimationSchedulingOnLayerDestruction) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(50, 50));
 
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
   child->SetBounds(gfx::Size(10, 10));
   child->SetDrawsContent(true);
 
@@ -4265,7 +4265,7 @@ TEST_F(LayerTreeHostImplTest, ScrollDoesntBubble) {
   LayerImpl* scroll_parent =
       AddScrollableLayer(viewport_scroll, gfx::Size(5, 5), gfx::Size(10, 10));
 
-  LayerImpl* scroll_child_clip = AddLayer();
+  LayerImpl* scroll_child_clip = AddLayerInActiveTree();
   // scroll_child_clip scrolls in scroll_parent, but under viewport_scroll's
   // effect.
   CopyProperties(scroll_parent, scroll_child_clip);
@@ -6010,7 +6010,7 @@ TEST_F(LayerTreeHostImplTest, ScrollbarInnerLargerThanOuter) {
   auto* horiz_scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
       host_impl_->active_tree(), ScrollbarOrientation::kHorizontal, true, true);
   SetupScrollbarLayer(root_scroll, horiz_scrollbar);
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
   child->SetBounds(content_size);
   child->SetBounds(inner_viewport_size);
 
@@ -7145,11 +7145,11 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   PropertyTrees* property_trees = active_tree->property_trees();
   LayerImpl* original_outer_scroll = OuterViewportScrollLayer();
 
-  LayerImpl* parent_clip_layer = AddLayer();
+  LayerImpl* parent_clip_layer = AddLayerInActiveTree();
   CopyProperties(original_outer_scroll, parent_clip_layer);
   parent_clip_layer->SetBounds(gfx::Size(160, 160));
   CreateClipNode(parent_clip_layer);
-  LayerImpl* clip_layer = AddLayer();
+  LayerImpl* clip_layer = AddLayerInActiveTree();
   clip_layer->SetBounds(gfx::Size(150, 150));
   CopyProperties(parent_clip_layer, clip_layer);
   CreateClipNode(clip_layer);
@@ -7311,7 +7311,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   LayerTreeImpl* active_tree = host_impl_->active_tree();
 
   // Create a content layer beneath the outer viewport scroll layer.
-  LayerImpl* content = AddLayer();
+  LayerImpl* content = AddLayerInActiveTree();
   content->SetBounds(gfx::Size(100, 100));
   CopyProperties(OuterViewportScrollLayer(), content);
   active_tree->PushPageScaleFromMainThread(0.5f, 0.5f, 4);
@@ -7659,7 +7659,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   EXPECT_EQ(1, host_impl_->active_tree()->CurrentTopControlsShownRatio());
 
   LayerImpl* outer_viewport_scroll_layer = OuterViewportScrollLayer();
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
 
   child->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   child->SetElementId(LayerIdToElementIdForTesting(child->id()));
@@ -8278,7 +8278,7 @@ TEST_F(LayerTreeHostImplTest, ScrollNonCompositedRoot) {
   LayerImpl* scroll_layer =
       AddScrollableLayer(scroll_container_layer, surface_size, contents_size);
 
-  LayerImpl* content_layer = AddLayer();
+  LayerImpl* content_layer = AddLayerInActiveTree();
   content_layer->SetDrawsContent(true);
   content_layer->SetBounds(contents_size);
   CopyProperties(scroll_layer, content_layer);
@@ -8526,7 +8526,7 @@ TEST_F(LayerTreeHostImplTest, PageScaleDeltaAppliedToRootScrollLayerOnly) {
   auto* outer_scroll = OuterViewportScrollLayer();
 
   // Create a normal scrollable root layer and another scrollable child layer.
-  LayerImpl* scrollable_child_clip = AddLayer();
+  LayerImpl* scrollable_child_clip = AddLayerInActiveTree();
   CopyProperties(inner_scroll, scrollable_child_clip);
   AddScrollableLayer(scrollable_child_clip, viewport_size, surface_size);
   UpdateDrawProperties(host_impl_->active_tree());
@@ -8922,7 +8922,7 @@ TEST_F(LayerTreeHostImplTest, ChildrenOfInnerScrollNodeCanScrollOnThread) {
 
   // Simulate adding a "fixed" layer to the tree.
   {
-    LayerImpl* fixed_layer = AddLayer();
+    LayerImpl* fixed_layer = AddLayerInActiveTree();
     fixed_layer->SetBounds(viewport_size);
     fixed_layer->SetDrawsContent(true);
     CopyProperties(InnerViewportScrollLayer(), fixed_layer);
@@ -9091,7 +9091,7 @@ TEST_F(LayerTreeHostImplTest, ScrollNonAxisAlignedRotatedLayer) {
   gfx::Size content_size = scroll_layer->bounds();
   gfx::Size scroll_container_bounds(content_size.width(),
                                     content_size.height() / 2);
-  LayerImpl* clip_layer = AddLayer();
+  LayerImpl* clip_layer = AddLayerInActiveTree();
   clip_layer->SetBounds(scroll_container_bounds);
   CopyProperties(scroll_layer, clip_layer);
   gfx::Transform rotate_transform;
@@ -9194,7 +9194,7 @@ TEST_F(LayerTreeHostImplTest, ScrollPerspectiveTransformedLayer) {
   auto* scroll_layer = InnerViewportScrollLayer();
 
   // Create a child layer that is rotated on its x axis, with perspective.
-  LayerImpl* clip_layer = AddLayer();
+  LayerImpl* clip_layer = AddLayerInActiveTree();
   clip_layer->SetBounds(gfx::Size(50, 50));
   CopyProperties(scroll_layer, clip_layer);
   gfx::Transform perspective_transform;
@@ -11414,7 +11414,7 @@ TEST_F(LayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
 
 TEST_F(LayerTreeHostImplTest, RootLayerDoesntCreateExtraSurface) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(10, 10));
-  LayerImpl* child = AddLayer();
+  LayerImpl* child = AddLayerInActiveTree();
   child->SetBounds(gfx::Size(10, 10));
   child->SetDrawsContent(true);
   root->SetBounds(gfx::Size(10, 10));
@@ -12005,7 +12005,7 @@ TEST_F(LayerTreeHostImplTest, ScrollHitTestIsNotReliable) {
   gfx::Size content_size(100, 100);
   SetupViewportLayersOuterScrolls(viewport_size, content_size);
 
-  LayerImpl* occluder_layer = AddLayer();
+  LayerImpl* occluder_layer = AddLayerInActiveTree();
   occluder_layer->SetDrawsContent(true);
   occluder_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   occluder_layer->SetBounds(content_size);
@@ -12039,14 +12039,14 @@ TEST_F(LayerTreeHostImplTest, ScrollHitTestAncestorMismatch) {
 
   LayerImpl* scroll_layer = OuterViewportScrollLayer();
 
-  LayerImpl* child_scroll_clip = AddLayer();
+  LayerImpl* child_scroll_clip = AddLayerInActiveTree();
   CopyProperties(scroll_layer, child_scroll_clip);
 
   LayerImpl* child_scroll =
       AddScrollableLayer(child_scroll_clip, viewport_size, content_size);
   child_scroll->SetOffsetToTransformParent(gfx::Vector2dF(10, 10));
 
-  LayerImpl* occluder_layer = AddLayer();
+  LayerImpl* occluder_layer = AddLayerInActiveTree();
   occluder_layer->SetDrawsContent(true);
   occluder_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   occluder_layer->SetBounds(content_size);
@@ -12856,7 +12856,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
   // Initialization: Add a child scrolling layer to the outer scroll layer and
   // set its scroll layer as the outer viewport. This simulates setting a
   // scrolling element as the root scroller on the page.
-  LayerImpl* clip_layer = AddLayer();
+  LayerImpl* clip_layer = AddLayerInActiveTree();
   clip_layer->SetBounds(root_layer_size);
   CopyProperties(outer_scroll, clip_layer);
   CreateClipNode(clip_layer);
@@ -16232,7 +16232,7 @@ TEST_F(LayerTreeHostImplTest, SubLayerScaleForNodeInSubtreeOfPageScaleLayer) {
   // page scale layer is updated without a property tree rebuild.
   host_impl_->active_tree()->PushPageScaleFromMainThread(1, 1, 3);
   SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
-  LayerImpl* in_subtree_of_page_scale_layer = AddLayer();
+  LayerImpl* in_subtree_of_page_scale_layer = AddLayerInActiveTree();
   CopyProperties(root_layer(), in_subtree_of_page_scale_layer);
   in_subtree_of_page_scale_layer->SetTransformTreeIndex(
       host_impl_->active_tree()->PageScaleTransformNode()->id);
@@ -17227,10 +17227,10 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, BuildHitTestData) {
   // +---surface_child2 (450, 300), 100x100
   // +---overlapping_layer (500, 350), 200x200
   auto* root = SetupDefaultRootLayer(gfx::Size(1024, 768));
-  auto* intermediate_layer = AddLayer();
+  auto* intermediate_layer = AddLayerInActiveTree();
   auto* surface_child1 = AddLayer<SurfaceLayerImpl>(host_impl_->active_tree());
   auto* surface_child2 = AddLayer<SurfaceLayerImpl>(host_impl_->active_tree());
-  auto* overlapping_layer = AddLayer();
+  auto* overlapping_layer = AddLayerInActiveTree();
 
   intermediate_layer->SetBounds(gfx::Size(200, 200));
 
@@ -17415,7 +17415,7 @@ TEST_F(HitTestRegionListGeneratingLayerTreeHostImplTest, ComplexPage) {
 
   // Create 101 non overlapping layers.
   for (size_t i = 0; i <= 100; ++i) {
-    LayerImpl* layer = AddLayer();
+    LayerImpl* layer = AddLayerInActiveTree();
     layer->SetBounds(gfx::Size(1, 1));
     layer->SetDrawsContent(true);
     layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -17950,7 +17950,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
 
   void CreateLayerCoveringWholeViewport(const LayerImpl* parent_scroller,
                                         HitTestOpaqueness opaqueness) {
-    LayerImpl* layer = AddLayer();
+    LayerImpl* layer = AddLayerInActiveTree();
     layer->SetBounds(gfx::Size(100, 100));
     layer->SetDrawsContent(true);
     layer->SetHitTestOpaqueness(opaqueness);
@@ -18567,7 +18567,7 @@ TEST_F(OccludedSurfaceThrottlingLayerTreeHostImplTest,
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestSimple) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetDrawsContent(true);
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
@@ -18583,7 +18583,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestSimple) {
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
@@ -18592,7 +18592,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
 
   // Create a child layer with no associated frame, but with the above frame
   // layer as a parent.
-  LayerImpl* child_layer = AddLayer();
+  LayerImpl* child_layer = AddLayerInActiveTree();
   child_layer->SetBounds(gfx::Size(50, 50));
   child_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), child_layer);
@@ -18616,13 +18616,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlap) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
-  LayerImpl* occluding_frame_layer = AddLayer();
+  LayerImpl* occluding_frame_layer = AddLayerInActiveTree();
   occluding_frame_layer->SetBounds(gfx::Size(50, 50));
   occluding_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), occluding_frame_layer);
@@ -18645,13 +18645,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlap) {
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSimpleClip) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
-  LayerImpl* clipped_frame_layer = AddLayer();
+  LayerImpl* clipped_frame_layer = AddLayerInActiveTree();
   clipped_frame_layer->SetBounds(gfx::Size(50, 50));
   clipped_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), clipped_frame_layer);
@@ -18673,13 +18673,13 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSimpleClip) {
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer).visible_frame_element_id = ElementId(0x10);
 
-  LayerImpl* rounded_frame_layer = AddLayer();
+  LayerImpl* rounded_frame_layer = AddLayerInActiveTree();
   rounded_frame_layer->SetBounds(gfx::Size(50, 50));
   rounded_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), rounded_frame_layer);
@@ -18703,14 +18703,14 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
   SetupDefaultRootLayer();
 
-  LayerImpl* frame_layer = AddLayer();
+  LayerImpl* frame_layer = AddLayerInActiveTree();
   frame_layer->SetBounds(gfx::Size(50, 50));
   frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), frame_layer);
   CreateTransformNode(frame_layer, root_layer()->transform_tree_index())
       .visible_frame_element_id = ElementId(0x20);
 
-  LayerImpl* sibling_frame_layer = AddLayer();
+  LayerImpl* sibling_frame_layer = AddLayerInActiveTree();
   sibling_frame_layer->SetBounds(gfx::Size(50, 50));
   sibling_frame_layer->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
   CopyProperties(root_layer(), sibling_frame_layer);
@@ -18784,7 +18784,7 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
   root_layer->SetCaptureBounds(kRootBounds);
 
   // Set up a child layer, with a scaling transform.
-  LayerImpl* child_layer = AddLayer();
+  LayerImpl* child_layer = AddLayerInActiveTree();
   CopyProperties(root_layer, child_layer);
   child_layer->SetCaptureBounds(kChildBounds);
   gfx::Transform child_layer_transform;
@@ -18793,7 +18793,7 @@ TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
       std::move(child_layer_transform);
 
   // Set up another child layer, with a rotation transform.
-  LayerImpl* second_child_layer = AddLayer();
+  LayerImpl* second_child_layer = AddLayerInActiveTree();
   CopyProperties(root_layer, second_child_layer);
   second_child_layer->SetCaptureBounds(kSecondChildBounds);
   gfx::Transform second_layer_transform;

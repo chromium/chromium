@@ -111,13 +111,13 @@ TEST_F(EffectTreeLayerListIteratorTest, TreeWithNoDrawnLayers) {
 
 TEST_F(EffectTreeLayerListIteratorTest, SimpleTree) {
   auto* root = static_cast<TestLayerImpl*>(root_layer());
-  auto* first = AddLayer<TestLayerImpl>();
+  auto* first = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, first);
-  auto* second = AddLayer<TestLayerImpl>();
+  auto* second = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, second);
-  auto* third = AddLayer<TestLayerImpl>();
+  auto* third = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, third);
-  auto* fourth = AddLayer<TestLayerImpl>();
+  auto* fourth = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, fourth);
 
   UpdateActiveTreeDrawProperties();
@@ -132,30 +132,30 @@ TEST_F(EffectTreeLayerListIteratorTest, SimpleTree) {
 
 TEST_F(EffectTreeLayerListIteratorTest, ComplexTreeMultiSurface) {
   auto* root = static_cast<TestLayerImpl*>(root_layer());
-  auto* root1 = AddLayer<TestLayerImpl>();
+  auto* root1 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, root1);
 
-  auto* root2 = AddLayer<TestLayerImpl>();
+  auto* root2 = AddLayerInActiveTree<TestLayerImpl>();
   root2->SetDrawsContent(false);
   CopyProperties(root, root2);
   CreateEffectNode(root2).render_surface_reason = RenderSurfaceReason::kTest;
 
-  auto* root21 = AddLayer<TestLayerImpl>();
+  auto* root21 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root2, root21);
 
-  auto* root22 = AddLayer<TestLayerImpl>();
+  auto* root22 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root2, root22);
   CreateEffectNode(root22).render_surface_reason = RenderSurfaceReason::kTest;
-  auto* root221 = AddLayer<TestLayerImpl>();
+  auto* root221 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root22, root221);
 
-  auto* root23 = AddLayer<TestLayerImpl>();
+  auto* root23 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root2, root23);
   CreateEffectNode(root23).render_surface_reason = RenderSurfaceReason::kTest;
-  auto* root231 = AddLayer<TestLayerImpl>();
+  auto* root231 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root23, root231);
 
-  auto* root3 = AddLayer<TestLayerImpl>();
+  auto* root3 = AddLayerInActiveTree<TestLayerImpl>();
   CopyProperties(root, root3);
 
   UpdateActiveTreeDrawProperties();

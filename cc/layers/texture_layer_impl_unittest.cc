@@ -34,7 +34,7 @@ TEST(TextureLayerImplTest, VisibleOpaqueRegion) {
       layer_bounds, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
 
-  TextureLayerImpl* layer = impl.AddLayer<TextureLayerImpl>();
+  TextureLayerImpl* layer = impl.AddLayerInActiveTree<TextureLayerImpl>();
   layer->SetBounds(layer_bounds);
   layer->draw_properties().visible_layer_rect = layer_rect;
   layer->SetBlendBackgroundColor(true);
@@ -68,7 +68,8 @@ TEST(TextureLayerImplTest, Occlusion) {
       layer_size, viz::SinglePlaneFormat::kRGBA_8888,
       false /* is_overlay_candidate */);
 
-  TextureLayerImpl* texture_layer_impl = impl.AddLayer<TextureLayerImpl>();
+  TextureLayerImpl* texture_layer_impl =
+      impl.AddLayerInActiveTree<TextureLayerImpl>();
   texture_layer_impl->SetBounds(layer_size);
   texture_layer_impl->SetDrawsContent(true);
   texture_layer_impl->SetTransferableResource(resource,

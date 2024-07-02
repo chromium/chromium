@@ -360,7 +360,7 @@ TEST(NinePatchLayerImplTest, Occlusion) {
   impl.host_impl()->CreateUIResource(uid, bitmap);
 
   NinePatchLayerImpl* nine_patch_layer_impl =
-      impl.AddLayer<NinePatchLayerImpl>();
+      impl.AddLayerInActiveTree<NinePatchLayerImpl>();
   nine_patch_layer_impl->SetBounds(layer_size);
   nine_patch_layer_impl->SetDrawsContent(true);
   nine_patch_layer_impl->SetUIResourceId(uid);
@@ -432,7 +432,7 @@ TEST(NinePatchLayerImplTest, OpaqueRect) {
   impl.host_impl()->CreateUIResource(uid_alpha, bitmap_alpha);
 
   NinePatchLayerImpl* nine_patch_layer_impl =
-      impl.AddLayer<NinePatchLayerImpl>();
+      impl.AddLayerInActiveTree<NinePatchLayerImpl>();
   nine_patch_layer_impl->SetBounds(layer_size);
   nine_patch_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), nine_patch_layer_impl);

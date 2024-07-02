@@ -47,8 +47,8 @@ TEST(VideoLayerImplTest, Occlusion) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
@@ -111,8 +111,8 @@ TEST(VideoLayerImplTest, OccludesOtherLayers) {
   const auto& draw_properties = root->draw_properties();
 
   FakeVideoFrameProvider provider;
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->SetContentsOpaque(true);
@@ -139,8 +139,8 @@ TEST(VideoLayerImplTest, DidBecomeActiveShouldSetActiveVideoLayer) {
   DebugSetImplThreadAndMainThreadBlocked(impl.task_runner_provider());
 
   FakeVideoFrameProvider provider;
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   CopyProperties(impl.root_layer(), video_layer_impl);
 
   VideoFrameProviderClientImpl* client =
@@ -165,8 +165,8 @@ TEST(VideoLayerImplTest, Rotated0) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), video_layer_impl);
@@ -202,8 +202,8 @@ TEST(VideoLayerImplTest, Rotated90) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_90);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_90);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), video_layer_impl);
@@ -239,8 +239,8 @@ TEST(VideoLayerImplTest, Rotated180) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_180);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_180);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), video_layer_impl);
@@ -278,8 +278,8 @@ TEST(VideoLayerImplTest, Rotated270) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_270);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_270);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), video_layer_impl);
@@ -320,8 +320,8 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
@@ -367,8 +367,8 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
@@ -418,8 +418,8 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));
@@ -458,8 +458,8 @@ TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {
   FakeVideoFrameProvider provider;
   provider.set_frame(video_frame);
 
-  VideoLayerImpl* video_layer_impl =
-      impl.AddLayer<VideoLayerImpl>(&provider, media::VIDEO_ROTATION_0);
+  VideoLayerImpl* video_layer_impl = impl.AddLayerInActiveTree<VideoLayerImpl>(
+      &provider, media::VIDEO_ROTATION_0);
   video_layer_impl->SetBounds(layer_size);
   video_layer_impl->SetDrawsContent(true);
   video_layer_impl->set_visible_layer_rect(gfx::Rect(layer_size));

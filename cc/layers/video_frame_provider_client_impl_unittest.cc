@@ -80,8 +80,8 @@ class VideoFrameProviderClientImplTest : public testing::Test,
 
   void CreateActiveVideoLayer() {
     gfx::Size layer_size(100, 100);
-    video_layer_impl_ =
-        impl_.AddLayer<VideoLayerImpl>(&provider_, media::VIDEO_ROTATION_0);
+    video_layer_impl_ = impl_.AddLayerInActiveTree<VideoLayerImpl>(
+        &provider_, media::VIDEO_ROTATION_0);
     video_layer_impl_->SetBounds(layer_size);
     video_layer_impl_->SetDrawsContent(true);
     client_impl_->SetActiveVideoLayer(video_layer_impl_);

@@ -90,7 +90,7 @@ TEST(RenderSurfaceTest, VerifySurfaceChangesAreTrackedProperly) {
   LayerImpl* root = impl.root_layer();
   LayerTreeImpl* active_tree = impl.host_impl()->active_tree();
 
-  LayerImpl* layer = impl.AddLayer<LayerImpl>();
+  LayerImpl* layer = impl.AddLayerInActiveTree<LayerImpl>();
   CopyProperties(root, layer);
   CreateEffectNode(layer).render_surface_reason = RenderSurfaceReason::kTest;
 
@@ -137,7 +137,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   LayerTreeImplTestBase impl;
   LayerImpl* root = impl.root_layer();
 
-  LayerImpl* layer = impl.AddLayer<LayerImpl>();
+  LayerImpl* layer = impl.AddLayerInActiveTree<LayerImpl>();
   CopyProperties(root, layer);
   auto& effect_node = CreateEffectNode(layer);
   effect_node.render_surface_reason = RenderSurfaceReason::kBlendMode;
@@ -180,7 +180,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
 TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
   LayerTreeImplTestBase impl;
   LayerImpl* root = impl.root_layer();
-  LayerImpl* layer = impl.AddLayer<LayerImpl>();
+  LayerImpl* layer = impl.AddLayerInActiveTree<LayerImpl>();
   impl.SetElementIdsForTesting();
 
   CopyProperties(root, layer);
@@ -213,13 +213,14 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceIgnoreMaskLayerOcclusion) {
   // Set a big enough viewport to show the entire render pass.
   impl.host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(1000, 1000));
 
-  auto* layer = impl.AddLayer<LayerImpl>();
+  auto* layer = impl.AddLayerInActiveTree<LayerImpl>();
   layer->SetBounds(gfx::Size(200, 100));
   layer->SetDrawsContent(true);
   CopyProperties(root, layer);
   CreateEffectNode(layer);
 
-  auto* mask_layer = impl.AddLayer<FakePictureLayerImplForRenderSurfaceTest>();
+  auto* mask_layer =
+      impl.AddLayerInActiveTree<FakePictureLayerImplForRenderSurfaceTest>();
   scoped_refptr<FakeRasterSource> raster_source(
       FakeRasterSource::CreateFilled(mask_layer->bounds()));
   mask_layer->SetRasterSource(raster_source, Region());

@@ -39,7 +39,7 @@ class LayerTreeImplTestBase {
   ~LayerTreeImplTestBase();
 
   template <typename T, typename... Args>
-  T* AddLayer(Args&&... args) {
+  T* AddLayerInActiveTree(Args&&... args) {
     return AddLayerInternal<T>(host_impl()->active_tree(),
                                std::forward<Args>(args)...);
   }
