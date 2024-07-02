@@ -8,6 +8,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_connection_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 namespace net {
 
@@ -25,6 +26,8 @@ struct NET_EXPORT NetErrorDetails {
   bool quic_broken;
   // QUIC granular error info.
   quic::QuicErrorCode quic_connection_error;
+  // Source of the connection close.
+  quic::ConnectionCloseSource source = quic::ConnectionCloseSource::FROM_SELF;
   // Early prediction of the connection type that this request attempts to use.
   // Will be discarded by upper layers if the connection type can be fetched
   // from response header from the server.

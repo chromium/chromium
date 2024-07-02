@@ -62,6 +62,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -414,6 +415,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
     quic::ParsedQuicVersion quic_version,
     int net_error,
     quic::QuicErrorCode quic_error,
+    quic::ConnectionCloseSource source,
     bool port_migration_detected,
     bool quic_connection_migration_attempted,
     bool quic_connection_migration_successful,
@@ -425,6 +427,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   quic_connection_migration_successful_ = quic_connection_migration_successful;
   net_error_ = net_error;
   quic_error_ = quic_error;
+  source_ = source;
   quic_version_ = quic_version;
   connect_timing_ = connect_timing;
   was_ever_used_ = was_ever_used;
@@ -454,6 +457,7 @@ void QuicChromiumClientSession::Handle::PopulateNetErrorDetails(
   } else {
     details->quic_port_migration_detected = port_migration_detected_;
     details->quic_connection_error = quic_error_;
+    details->source = source_;
     details->quic_connection_migration_attempted =
         quic_connection_migration_attempted_;
     details->quic_connection_migration_successful =
@@ -1179,7 +1183,7 @@ void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
 void QuicChromiumClientSession::AddHandle(Handle* handle) {
   if (going_away_) {
     handle->OnSessionClosed(connection()->version(), ERR_UNEXPECTED, error(),
-                            port_migration_detected_,
+                            source_, port_migration_detected_,
                             quic_connection_migration_attempted_,
                             quic_connection_migration_successful_,
                             GetConnectTiming(), WasConnectionEverUsed());
@@ -1771,6 +1775,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
     quic::ConnectionCloseSource source) {
   DCHECK(!connection()->connected());
   logger_->OnConnectionClosed(frame, source);
+  source_ = source;
 
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
                             connection()->GetStats().num_path_degrading);
@@ -2938,7 +2943,7 @@ void QuicChromiumClientSession::CloseAllHandles(int net_error) {
     Handle* handle = *handles_.begin();
     handles_.erase(handle);
     handle->OnSessionClosed(connection()->version(), net_error, error(),
-                            port_migration_detected_,
+                            source_, port_migration_detected_,
                             quic_connection_migration_attempted_,
                             quic_connection_migration_successful_,
                             GetConnectTiming(), WasConnectionEverUsed());
@@ -3911,6 +3916,7 @@ void QuicChromiumClientSession::PopulateNetErrorDetails(
     NetErrorDetails* details) const {
   details->quic_port_migration_detected = port_migration_detected_;
   details->quic_connection_error = error();
+  details->source = source_;
   details->quic_connection_migration_attempted =
       quic_connection_migration_attempted_;
   details->quic_connection_migration_successful =
