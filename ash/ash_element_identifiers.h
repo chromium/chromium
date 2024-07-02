@@ -49,6 +49,15 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 // Uniquely identifies the home (launcher) button.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
 
+// Uniquely identifies the toggle of the hotspot detailed view.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kHotspotDetailedViewToggleElementId);
+
+// Uniquely identifies the drill in button in the hotspot tile.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kHotspotFeatureTileDrillInArrowElementId);
+
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kNetworkFeatureTileDrillInArrowElementId);

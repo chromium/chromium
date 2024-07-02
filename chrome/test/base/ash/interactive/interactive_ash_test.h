@@ -91,6 +91,11 @@ class InteractiveAshTest
   // Navigates to the bluetooth page within Quick Settings. This function
   // expects the Quick Settings to already be open and on the root page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateQuickSettingsToHotspotPage();
+
+  // Navigates to the bluetooth page within Quick Settings. This function
+  // expects the Quick Settings to already be open and on the root page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateQuickSettingsToBluetoothPage();
 
   // Returns the active user profile.

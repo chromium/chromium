@@ -207,6 +207,12 @@ InteractiveAshTest::NavigateQuickSettingsToBluetoothPage() {
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateQuickSettingsToHotspotPage() {
+  return NavigateQuickSettingsToPage(
+      ash::kHotspotFeatureTileDrillInArrowElementId);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::NavigateToInternetDetailsPage(
     const ui::ElementIdentifier& element_id,
     const ash::NetworkTypePattern network_pattern,

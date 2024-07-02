@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/ash_element_identifiers.h"
+#include "ash/style/switch.h"
 #include "chrome/test/base/ash/interactive/hotspot/hotspot_state_observer.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
@@ -120,13 +122,19 @@ IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
-                       EnableHotspotFromSettings) {
+                       EnableHotspotFromSettingsAndQuickSettings) {
   SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
   AddCellularService();
   ShillManagerClient::Get()
       ->GetTestInterface()
       ->SetSimulateTetheringEnableResult(FakeShillSimulatedResult::kSuccess,
                                          shill::kTetheringEnableResultSuccess);
+
+  RunTestSequence(
+      Log("Open quick settings and make sure hotspot does not show"),
+
+      OpenQuickSettings(),
+      WaitForHide(ash::kHotspotFeatureTileDrillInArrowElementId));
 
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
@@ -176,7 +184,38 @@ IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
       WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
                          false),
 
-      Log("Test complete"));
+      Log("Turn on and off hotspot in OS Settings complete"));
+
+  RunTestSequence(
+      Log("Open quick settings and navigate to hotspot page"),
+
+      OpenQuickSettings(), NavigateQuickSettingsToHotspotPage(),
+      CheckViewProperty(ash::kHotspotDetailedViewToggleElementId,
+                        &views::ToggleButton::GetIsOn, false),
+
+      Log("Click on the toggle to turn on hotspot from Quick Settings"),
+
+      MoveMouseTo(ash::kHotspotDetailedViewToggleElementId), ClickMouse(),
+
+      Log("Hotspot is turned on from Quick Settings"),
+
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kEnabled),
+      CheckViewProperty(ash::kHotspotDetailedViewToggleElementId,
+                        &views::ToggleButton::GetIsOn, true),
+
+      Log("Click on the toggle to turn off hotspot from Quick Settings"),
+
+      MoveMouseTo(ash::kHotspotDetailedViewToggleElementId), ClickMouse(),
+
+      Log("Hotspot is turned off from Quick Settings"),
+
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      CheckViewProperty(ash::kHotspotDetailedViewToggleElementId,
+                        &views::ToggleButton::GetIsOn, false),
+
+      Log("Turn on and off hotspot from Quick Settings complete"));
 }
 
 }  // namespace

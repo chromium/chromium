@@ -4,6 +4,7 @@
 
 #include "ash/system/hotspot/hotspot_feature_pod_controller.h"
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -15,6 +16,8 @@
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -51,6 +54,8 @@ std::unique_ptr<FeatureTile> HotspotFeaturePodController::CreateTile(
                           weak_ptr_factory_.GetWeakPtr()));
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_HOTSPOT));
   tile_->CreateDecorativeDrillInArrow();
+  tile_->drill_in_arrow()->SetProperty(
+      views::kElementIdentifierKey, kHotspotFeatureTileDrillInArrowElementId);
 
   // Default the visibility to false and update it in `UpdateTileState()` since
   // it should only be shown if user has used the Hotspot from Settings before.

@@ -522,7 +522,8 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
         if (enabled) {
           tethering_state.Set(shill::kTetheringStatusStateProperty,
                               shill::kTetheringStateActive);
-          tethering_state.Set(shill::kTetheringStatusClientsProperty, 0);
+          tethering_state.Set(shill::kTetheringStatusClientsProperty,
+                              base::Value::List());
         } else {
           tethering_state.Set(shill::kTetheringStatusStateProperty,
                               shill::kTetheringStateIdle);
