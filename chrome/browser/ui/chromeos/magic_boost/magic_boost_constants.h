@@ -11,6 +11,8 @@ namespace chromeos::magic_boost {
 enum ViewId {
   OptInCardSecondaryButton = 1,
   OptInCardPrimaryButton,
+  OptInCardTitleLabel,
+  OptInCardBodyLabel,
 };
 
 // The features that trigger the magic boost opt in card showing. `kTotal` means

@@ -150,6 +150,7 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
                                        /*adjust_height_for_width=*/true))
           .AddChildren(views::Builder<views::Label>()
                            .CopyAddressTo(&title_label_)
+                           .SetID(magic_boost::ViewId::OptInCardTitleLabel)
                            .SetText(l10n_util::GetStringUTF16(
                                IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE))
                            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -161,6 +162,7 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
                            .SetMaxLines(kTitleLabelMaxLines),
                        views::Builder<views::Label>()
                            .CopyAddressTo(&body_label_)
+                           .SetID(magic_boost::ViewId::OptInCardBodyLabel)
                            .SetText(l10n_util::GetStringUTF16(
                                IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY))
                            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
