@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
@@ -27,6 +28,16 @@ namespace gl::init {
 // EGL_KHR_fence_sync extension. It's used to provide Skia ways of
 // synchronization on platforms that does not have GL fences but support EGL
 namespace {
+
+// If enabled, adds a delay to GL program link whose value is given by the
+// feature param. Used for an ablation study.
+BASE_FEATURE(kAddDelayToGLProgramLink,
+             "AddDelayToGLProgramLink",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kGLProgramLinkDelayMicroseconds{
+    &kAddDelayToGLProgramLink, /*name=*/"GLProgramLinkDelayMicroseconds",
+    /*default_value=*/1000};
+
 struct EGLFenceData {
   EGLSync sync;
   EGLDisplay display;
@@ -200,6 +211,11 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)> bind_timed_link_function(
                                                    Args... args) -> R {
     gl::ScopedProgressReporter scoped_reporter(progress_reporter);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrLinkProgramUs");
+
+    if (base::FeatureList::IsEnabled(kAddDelayToGLProgramLink)) {
+      base::PlatformThread::Sleep(
+          base::Microseconds(kGLProgramLinkDelayMicroseconds.Get()));
+    }
 
     func(program, args...);
 
