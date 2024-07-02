@@ -327,6 +327,8 @@ using base::UserMetricsAction;
   if ([self shouldShowNotificationsPromo]) {
     self.consumer.visiblePromoViewType = PromoViewTypeNotifications;
     [self.consumer showPromo];
+    [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                    kDisplayed];
     return;
   }
 }
