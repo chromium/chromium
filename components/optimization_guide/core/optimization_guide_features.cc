@@ -175,6 +175,11 @@ BASE_FEATURE(kOnDeviceModelValidation,
              "OnDeviceModelValidation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether the on-device model enables support_multiple_sessions
+BASE_FEATURE(kOnDeviceModelSupportMultipleSessions,
+             "OnDeviceModelSupportMultipleSessions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -626,6 +631,10 @@ base::TimeDelta GetOnDeviceModelIdleTimeout() {
                                        "on_device_model_service_idle_timeout",
                                        base::Minutes(1)};
   return kOnDeviceModelServiceIdleTimeout.Get();
+}
+
+bool GetOnDeviceModelSupportMultipleSessions() {
+  return base::FeatureList::IsEnabled(kOnDeviceModelSupportMultipleSessions);
 }
 
 base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay() {
