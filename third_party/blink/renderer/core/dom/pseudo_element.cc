@@ -335,8 +335,6 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
     case kPseudoIdBefore:
     case kPseudoIdAfter:
-    case kPseudoIdScrollMarkerGroupBefore:
-    case kPseudoIdScrollMarkerGroupAfter:
     case kPseudoIdScrollMarker:
       break;
     default: {
@@ -345,8 +343,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
 
-  DCHECK(!style.ContentBehavesAsNormal() ||
-         GetPseudoIdForStyling() == kPseudoIdScrollMarkerGroup);
+  DCHECK(!style.ContentBehavesAsNormal());
   DCHECK(!style.ContentPreventsBoxGeneration());
   for (const ContentData* content = style.GetContentData(); content;
        content = content->Next()) {

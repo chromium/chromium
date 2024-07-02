@@ -1673,14 +1673,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
-    AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdBefore, context);
   }
 
   void AttachSucceedingPseudoElements(AttachContext& context) {
     AttachPseudoElement(kPseudoIdAfter, context);
-    AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
     AttachPseudoElement(kPseudoIdBackdrop, context);
     UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
     AttachPseudoElement(kPseudoIdFirstLetter, context);

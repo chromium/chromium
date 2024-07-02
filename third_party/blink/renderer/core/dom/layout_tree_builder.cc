@@ -77,6 +77,18 @@ LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
   if (style_->IsRenderedInTopLayer(*node_)) {
     return node_->GetDocument().GetLayoutView();
   }
+#if DCHECK_IS_ON()
+  // Box of ::scroll-marker-group is previous/next sibling of
+  // its originating element, so the parent should be originating element's
+  // parent.
+  if (node_->IsScrollMarkerGroupPseudoElement()) {
+    Element* originating_element =
+        To<PseudoElement>(node_)->OriginatingElement();
+    ContainerNode* parent_element =
+        LayoutTreeBuilderTraversal::LayoutParent(*originating_element);
+    DCHECK_EQ(parent_element->GetLayoutObject(), context_.parent);
+  }
+#endif  // DCHECK_IS_ON()
   return context_.parent;
 }
 
@@ -109,12 +121,6 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
 
   if (!parent_layout_object->IsChildAllowed(new_layout_object, *style_)) {
     new_layout_object->Destroy();
-    return;
-  }
-  // ::scroll-marker-group should only be created if the originating element
-  // is a scroll container.
-  if (node_->IsScrollMarkerGroupPseudoElement() &&
-      !parent_layout_object->IsScrollContainer()) {
     return;
   }
 

@@ -58,6 +58,8 @@ ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {
 }
 
 ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
+  // TODO(crbug.com/332396355): consider to check for ::scroll-marker-group
+  // from all call sites of this function, or move the check here.
   ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(node);
 
   while (parent && HasDisplayContentsStyle(*parent))
@@ -73,7 +75,14 @@ LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
     // view-transition to the LayoutView.
     return node.GetDocument().GetLayoutView();
   }
-  ContainerNode* parent = LayoutTreeBuilderTraversal::LayoutParent(node);
+  const Node* search_start_node = &node;
+  // Parent of ::scroll-marker-group should be layout parent of its
+  // originating element.
+  if (node.IsScrollMarkerGroupPseudoElement()) {
+    search_start_node = To<PseudoElement>(node).OriginatingElement();
+  }
+  ContainerNode* parent =
+      LayoutTreeBuilderTraversal::LayoutParent(*search_start_node);
   return parent ? parent->GetLayoutObject() : nullptr;
 }
 
@@ -302,9 +311,96 @@ Node* LayoutTreeBuilderTraversal::Next(const Node& node,
   return NextSkippingChildren(node, stay_within);
 }
 
+// Checks if current or (next/prev) sibling is either ::scroll-marker-group
+// or element with scroll-marker-group property set.
+static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
+  if (current.IsScrollMarkerGroupPseudoElement()) {
+    return false;
+  }
+  const ComputedStyle* style = current.GetComputedStyle();
+  if (style && !style->ScrollMarkersNone()) {
+    return false;
+  }
+  if (!sibling) {
+    return true;
+  }
+  if (sibling->IsScrollMarkerGroupPseudoElement()) {
+    return false;
+  }
+  const ComputedStyle* sibling_style = sibling->GetComputedStyle();
+  if (sibling_style && !sibling_style->ScrollMarkersNone()) {
+    return false;
+  }
+  return true;
+}
+
+// This function correctly performs one move from `node` to next
+// layout sibling. We can't just use NextSibling, as ::scroll-marker-group
+// layout object is either previous or next sibling of its originating element,
+// but still a node child of it, as a pseudo element.
+// Layout tree:
+//        (PS) (SMGB) (OE) (SMGA) (NS)
+//                  (B)  (A)
+// OE - originating element
+// PS - previous sibling of OE
+// NS - next sibling of OE
+// SMGB - ::scroll-marker-group of OE with scroll-markers: before
+// SMGA - ::scroll-marker-group of OE with scroll-markers: after
+// B - ::before of OE
+// A - ::after of OE
+// Node tree:
+//        (PS) (OE) (NS)
+//    (SMGB) (B)  (A) (SMGA)
+// Node tree is input (`node`), return output based on layout tree.
+static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
+  Node* next = LayoutTreeBuilderTraversal::NextSibling(node);
+  if (AreBoxTreeOrderSiblings(node, next)) {
+    return next;
+  }
+  // From PS to OE with SMGB, return SMGB.
+  if (next && next->GetComputedStyle() &&
+      next->GetComputedStyle()->HasScrollMarkersBefore()) {
+    if (Element* pseudo = To<Element>(next)->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupBefore)) {
+      return pseudo;
+    }
+  }
+  // From some pseudo to any SMG, just skip SMG.
+  if (next && next->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::NextSibling(*next);
+  }
+  // From OE with SMGA to NS, return SMGA.
+  if (node.GetComputedStyle() &&
+      node.GetComputedStyle()->HasScrollMarkersAfter()) {
+    if (Element* pseudo = To<Element>(node).GetPseudoElement(
+            kPseudoIdScrollMarkerGroupAfter)) {
+      return pseudo;
+    }
+  }
+  // From SMGB, return OE.
+  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
+    return To<PseudoElement>(node).OriginatingElement();
+  }
+  // From SMGA, return NS, but check if NS has SMGB, then return NS's SMGB.
+  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
+    Node* originating_next = LayoutTreeBuilderTraversal::NextSibling(
+        *To<PseudoElement>(node).OriginatingElement());
+    if (originating_next && originating_next->GetComputedStyle() &&
+        originating_next->GetComputedStyle()->HasScrollMarkersBefore()) {
+      if (Element* pseudo =
+              To<Element>(originating_next)
+                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+        return pseudo;
+      }
+    }
+    return originating_next;
+  }
+  return next;
+}
+
 static Node* NextLayoutSiblingInternal(Node* node, int32_t& limit) {
   for (Node* sibling = node; sibling && limit-- != 0;
-       sibling = LayoutTreeBuilderTraversal::NextSibling(*sibling)) {
+       sibling = NextLayoutSiblingInBoxTreeOrder(*sibling)) {
     if (!HasDisplayContentsStyle(*sibling))
       return sibling;
 
@@ -322,14 +418,15 @@ static Node* NextLayoutSiblingInternal(Node* node, int32_t& limit) {
 Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node,
                                                     int32_t& limit) {
   DCHECK_NE(limit, -1);
-  if (Node* sibling = NextLayoutSiblingInternal(NextSibling(node), limit)) {
+  if (Node* sibling = NextLayoutSiblingInternal(
+          NextLayoutSiblingInBoxTreeOrder(node), limit)) {
     return sibling;
   }
 
   Node* parent = LayoutTreeBuilderTraversal::Parent(node);
   while (limit != -1 && parent && HasDisplayContentsStyle(*parent)) {
-    if (Node* sibling =
-            NextLayoutSiblingInternal(NextSibling(*parent), limit)) {
+    if (Node* sibling = NextLayoutSiblingInternal(
+            NextLayoutSiblingInBoxTreeOrder(*parent), limit)) {
       return sibling;
     }
     parent = LayoutTreeBuilderTraversal::Parent(*parent);
@@ -338,9 +435,51 @@ Node* LayoutTreeBuilderTraversal::NextLayoutSibling(const Node& node,
   return nullptr;
 }
 
+// See comments in NextLayoutSiblingInBoxTreeOrder.
+static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
+  Node* previous = LayoutTreeBuilderTraversal::PreviousSibling(node);
+  if (AreBoxTreeOrderSiblings(node, previous)) {
+    return previous;
+  }
+  if (previous && previous->GetComputedStyle() &&
+      previous->GetComputedStyle()->HasScrollMarkersAfter()) {
+    if (Element* pseudo = To<Element>(previous)->GetPseudoElement(
+            kPseudoIdScrollMarkerGroupAfter)) {
+      return pseudo;
+    }
+  }
+  if (previous && previous->IsScrollMarkerGroupPseudoElement()) {
+    return LayoutTreeBuilderTraversal::PreviousSibling(*previous);
+  }
+  if (node.GetComputedStyle() &&
+      node.GetComputedStyle()->HasScrollMarkersBefore()) {
+    if (Element* pseudo = To<Element>(node).GetPseudoElement(
+            kPseudoIdScrollMarkerGroupBefore)) {
+      return pseudo;
+    }
+  }
+  if (node.IsScrollMarkerGroupAfterPseudoElement()) {
+    return To<PseudoElement>(node).OriginatingElement();
+  }
+  if (node.IsScrollMarkerGroupBeforePseudoElement()) {
+    Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(
+        *To<PseudoElement>(node).OriginatingElement());
+    if (originating_prev && originating_prev->GetComputedStyle() &&
+        originating_prev->GetComputedStyle()->HasScrollMarkersAfter()) {
+      if (Element* pseudo =
+              To<Element>(originating_prev)
+                  ->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+        return pseudo;
+      }
+    }
+    return originating_prev;
+  }
+  return previous;
+}
+
 static Node* PreviousLayoutSiblingInternal(Node* node, int32_t& limit) {
   for (Node* sibling = node; sibling && limit-- != 0;
-       sibling = LayoutTreeBuilderTraversal::PreviousSibling(*sibling)) {
+       sibling = PreviousLayoutSiblingInBoxTreeOrder(*sibling)) {
     if (!HasDisplayContentsStyle(*sibling))
       return sibling;
 
@@ -358,15 +497,15 @@ static Node* PreviousLayoutSiblingInternal(Node* node, int32_t& limit) {
 Node* LayoutTreeBuilderTraversal::PreviousLayoutSibling(const Node& node,
                                                         int32_t& limit) {
   DCHECK_NE(limit, -1);
-  if (Node* sibling =
-          PreviousLayoutSiblingInternal(PreviousSibling(node), limit)) {
+  if (Node* sibling = PreviousLayoutSiblingInternal(
+          PreviousLayoutSiblingInBoxTreeOrder(node), limit)) {
     return sibling;
   }
 
   Node* parent = LayoutTreeBuilderTraversal::Parent(node);
   while (limit != -1 && parent && HasDisplayContentsStyle(*parent)) {
-    if (Node* sibling =
-            PreviousLayoutSiblingInternal(PreviousSibling(*parent), limit)) {
+    if (Node* sibling = PreviousLayoutSiblingInternal(
+            PreviousLayoutSiblingInBoxTreeOrder(*parent), limit)) {
       return sibling;
     }
     parent = LayoutTreeBuilderTraversal::Parent(*parent);

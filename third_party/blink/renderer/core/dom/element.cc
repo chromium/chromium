@@ -3220,6 +3220,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
     }
   }
 
+  AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
+
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
   if (being_rendered) {
@@ -3247,6 +3249,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
     children_context.parent = nullptr;
   }
   children_context.use_previous_in_flow = true;
+
+  AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
 
   if (skipped_container_descendants &&
       (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
@@ -4289,6 +4293,8 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     // layout tree siblings.
     WhitespaceAttacher local_attacher;
     WhitespaceAttacher* child_attacher;
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupAfter,
+                                   local_attacher);
     LayoutObject* layout_object = GetLayoutObject();
     if (layout_object || !HasDisplayContentsStyle()) {
       whitespace_attacher.DidVisitElement(this);
@@ -4300,8 +4306,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       child_attacher = &whitespace_attacher;
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupAfter,
-                                   *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     if (GetShadowRoot()) {
       RebuildShadowRootLayoutTree(*child_attacher);
@@ -4311,7 +4315,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildMarkerLayoutTree(*child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
-                                   *child_attacher);
+                                   local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
     RebuildFirstLetterLayoutTree();
     ClearChildNeedsReattachLayoutTree();
