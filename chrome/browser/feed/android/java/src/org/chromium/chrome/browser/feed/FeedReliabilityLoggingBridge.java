@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
@@ -195,6 +196,14 @@ public class FeedReliabilityLoggingBridge {
         if (mUserInteractionLogger != null) {
             mUserInteractionLogger.onPaginationEnded(
                     success ? PaginationResult.SUCCESS_WITH_MORE_FEED : PaginationResult.FAILURE);
+        }
+    }
+
+    @CalledByNative
+    public void reportExperiments(@JniType("std::vector<int32_t>") int[] experimentIds) {
+        mLaunchLogger.reportExperiments(experimentIds);
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.reportExperiments(experimentIds);
         }
     }
 

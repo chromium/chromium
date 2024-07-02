@@ -87,14 +87,14 @@ extern const char kHasSeenWebFeed[];
 // The pref name for when the user last saw badge animation for web feed.
 extern const char kLastBadgeAnimationTime[];
 // The pref name for storing the server experiments the client is in.
-extern const char kExperimentsV2[];
+extern const char kExperimentsV3[];
 // Contains a dictionary of tracking states for all info cards in the feed.
 extern const char kInfoCardTrackingStateDict[];
 
 // Deprecated prefs
 
 // The pref name for storing the server experiments the client is in.
-extern const char kExperimentsDeprecated[];
+extern const char kExperimentsV2Deprecated[];
 
 }  // namespace prefs
 

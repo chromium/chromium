@@ -14,6 +14,7 @@ namespace feed {
 using ::feed::Experiments;
 
 namespace prefs {
+
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
 bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
 
@@ -34,6 +35,9 @@ int GetNoticeCardViewsCount(const PrefService& pref_service);
 // Set/get experiments into prefs.
 void SetExperiments(const Experiments& experiments, PrefService& pref_service);
 Experiments GetExperiments(PrefService& pref_service);
+
+void MigrateObsoleteFeedExperimentPref_Jun_2024(PrefService* prefs);
+
 }  // namespace prefs
 }  // namespace feed
 

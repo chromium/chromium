@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
+#include "components/feed/core/v2/ios_shared_experiments_translator.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -63,6 +64,9 @@ class ReliabilityLoggingBridge {
       int64_t server_send_timestamp_ns) = 0;
   virtual void LogLoadMoreRequestFinished(int canonical_status) = 0;
   virtual void LogLoadMoreEnded(bool success) = 0;
+
+  virtual void ReportExperiments(
+      const std::vector<int32_t>& experiment_ids) = 0;
 
   virtual ~ReliabilityLoggingBridge() = default;
 };

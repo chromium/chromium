@@ -475,6 +475,19 @@ void FeedStream::PrefetchImage(const GURL& url) {
 void FeedStream::UpdateExperiments(Experiments experiments) {
   delegate_->RegisterExperiments(experiments);
   prefs::SetExperiments(experiments, *profile_prefs_);
+
+  std::vector<int32_t> experiment_ids;
+  for (const auto& e : experiments) {
+    for (const auto& g : e.second) {
+      experiment_ids.push_back(g.experiment_id);
+    }
+  }
+  for (auto& item : streams_) {
+    if (!item.second.surfaces.empty()) {
+      item.second.surface_updater->launch_reliability_logger()
+          .ReportExperiments(experiment_ids);
+    }
+  }
 }
 
 SurfaceId FeedStream::CreateSurface(const StreamType& type,

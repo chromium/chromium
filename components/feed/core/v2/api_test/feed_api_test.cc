@@ -511,6 +511,9 @@ void TestReliabilityLoggingBridge::LogLoadMoreEnded(bool success) {
       base::StrCat({"LogLoadMoreEnded success=", success ? "true" : "false"}));
 }
 
+void TestReliabilityLoggingBridge::ReportExperiments(
+    const std::vector<int32_t>& experiment_ids) {}
+
 TestImageFetcher::TestImageFetcher(
     scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory)
     : ImageFetcher(url_loader_factory) {}

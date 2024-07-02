@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
+
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/public/types.h"
 #include "net/base/net_errors.h"
@@ -12,6 +14,8 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"
+
+using base::android::ScopedJavaLocalRef;
 
 namespace feed {
 namespace android {
@@ -246,6 +250,13 @@ void FeedReliabilityLoggingBridge::LogLoadMoreRequestFinished(
 void FeedReliabilityLoggingBridge::LogLoadMoreEnded(bool success) {
   Java_FeedReliabilityLoggingBridge_logLoadMoreEnded(
       base::android::AttachCurrentThread(), java_ref_, success);
+}
+
+void FeedReliabilityLoggingBridge::ReportExperiments(
+    const std::vector<int32_t>& experiment_ids) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FeedReliabilityLoggingBridge_reportExperiments(env, java_ref_,
+                                                      experiment_ids);
 }
 
 void FeedReliabilityLoggingBridge::Destroy(JNIEnv* env) {

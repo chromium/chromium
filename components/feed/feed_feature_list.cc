@@ -106,10 +106,6 @@ BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedExperimentIDTagging,
-             "FeedExperimentIDTagging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedShowSignInCommand,
              "FeedShowSignInCommand",
              base::FEATURE_ENABLED_BY_DEFAULT);

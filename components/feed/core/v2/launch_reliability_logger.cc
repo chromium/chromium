@@ -183,4 +183,12 @@ void LaunchReliabilityLogger::OnStreamUpdate(StreamUpdateType type,
   }
 }
 
+void LaunchReliabilityLogger::ReportExperiments(
+    const std::vector<int32_t>& experiment_ids) {
+  for (const StreamSurfaceSet::Entry& entry : surfaces_->surfaces()) {
+    entry.renderer->GetReliabilityLoggingBridge().ReportExperiments(
+        experiment_ids);
+  }
+}
+
 }  // namespace feed

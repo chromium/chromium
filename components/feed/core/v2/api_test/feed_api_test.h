@@ -122,6 +122,7 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
                                    int64_t server_send_timestamp_ns) override;
   void LogLoadMoreRequestFinished(int canonical_status) override;
   void LogLoadMoreEnded(bool success) override;
+  void ReportExperiments(const std::vector<int32_t>& experiment_ids) override;
 
  private:
   std::vector<std::string> events_;

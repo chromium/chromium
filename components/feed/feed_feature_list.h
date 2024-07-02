@@ -88,9 +88,6 @@ extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
 // When enabled, no view cache is used.
 BASE_DECLARE_FEATURE(kFeedNoViewCache);
 
-// When enabled, allow tagging experiments with only an experiment ID.
-BASE_DECLARE_FEATURE(kFeedExperimentIDTagging);
-
 // When enabled, allow show sign in command to request a user signs in / syncs.
 BASE_DECLARE_FEATURE(kFeedShowSignInCommand);
 

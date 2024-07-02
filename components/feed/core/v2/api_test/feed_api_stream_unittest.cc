@@ -2657,8 +2657,8 @@ TEST_F(FeedApiTest, UnloadOnlyOneOfMultipleModels) {
 
 TEST_F(FeedApiTest, ExperimentsAreClearedOnClearAll) {
   Experiments e;
-  std::vector<std::string> group_list1{"Group1"};
-  std::vector<std::string> group_list2{"Group2"};
+  std::vector<ExperimentGroup> group_list1{{"Group1", 123}};
+  std::vector<ExperimentGroup> group_list2{{"Group2", 9999}};
   e["Trial1"] = group_list1;
   e["Trial2"] = group_list2;
   prefs::SetExperiments(e, profile_prefs_);

@@ -48,19 +48,19 @@ const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
 const char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
 const char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
-const char kExperimentsV2[] = "feedv2.experiments_v2";
+const char kExperimentsV3[] = "feedv2.experiments_v3";
 const char kInfoCardTrackingStateDict[] = "info-card-tracking-state-dict";
 
-// Deprecated October 2022
-const char kExperimentsDeprecated[] = "feedv2.experiments";
+// Deprecated June 2024
+const char kExperimentsV2Deprecated[] = "feedv2.experiments_v2";
 
 }  // namespace prefs
 
 // Deprecated prefs:
 namespace {
 
-void RegisterObsoletePrefsOct_2022(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kExperimentsDeprecated);
+void RegisterObsoletePrefsJun_2024(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kExperimentsV2Deprecated);
 }
 
 }  // namespace
@@ -95,7 +95,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(feed::prefs::kHasSeenWebFeed, false);
   registry->RegisterTimePref(feed::prefs::kLastBadgeAnimationTime,
                              base::Time());
-  registry->RegisterDictionaryPref(feed::prefs::kExperimentsV2);
+  registry->RegisterDictionaryPref(feed::prefs::kExperimentsV3);
   registry->RegisterDictionaryPref(feed::prefs::kInfoCardTrackingStateDict);
 
 #if BUILDFLAG(IS_IOS)
@@ -103,23 +103,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
 #endif  // BUILDFLAG(IS_IOS)
 
-  RegisterObsoletePrefsOct_2022(registry);
-}
-
-void MigrateObsoleteProfilePrefsOct_2022(PrefService* prefs) {
-  const base::Value* val =
-      prefs->GetUserPrefValue(prefs::kExperimentsDeprecated);
-  const base::Value::Dict* old = val ? val->GetIfDict() : nullptr;
-  if (old) {
-    base::Value::Dict dict;
-    for (const auto kv : *old) {
-      base::Value::List list;
-      list.Append(kv.second.GetString());
-      dict.Set(kv.first, std::move(list));
-    }
-    prefs->SetDict(feed::prefs::kExperimentsV2, std::move(dict));
-  }
-  prefs->ClearPref(prefs::kExperimentsDeprecated);
+  RegisterObsoletePrefsJun_2024(registry);
 }
 
 }  // namespace feed
