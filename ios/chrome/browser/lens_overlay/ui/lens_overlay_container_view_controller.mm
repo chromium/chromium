@@ -31,8 +31,6 @@ const CGFloat closeButtonTrailingPadding = 16.0;
 
   if (self) {
     _overlayCommandsHandler = handler;
-    self.view.accessibilityIdentifier =
-        kLenscontainerViewAccessibilityIdentifier;
   }
   return self;
 }
@@ -41,6 +39,7 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+  self.view.accessibilityIdentifier = kLenscontainerViewAccessibilityIdentifier;
 
   self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
 
