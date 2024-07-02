@@ -849,7 +849,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   Idempotency GetIdempotency() const { return idempotency_; }
 
   // Set a SharedDictionaryGetter which will be used to get a shared dictionary
-  // for this request. This must not be called after
+  // for this request. This must not be called after Start() is called.
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
