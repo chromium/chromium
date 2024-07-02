@@ -552,6 +552,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if ([self isOmniboxFirstResponder]) {
     return nil;
   }
+  if (!self.webState->GetVisibleURL().is_valid()) {
+    return nil;
+  }
   return [[URLInfo alloc]
       initWithURL:self.webState->GetVisibleURL()
             title:base::SysUTF16ToNSString(self.webState->GetTitle())];
