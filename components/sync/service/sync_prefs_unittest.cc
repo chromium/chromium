@@ -996,7 +996,7 @@ TEST_F(SyncPrefsMigrationTest,
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
 
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   EXPECT_TRUE(
       SyncPrefs(&pref_service_)
@@ -1017,7 +1017,7 @@ TEST_F(SyncPrefsMigrationTest,
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
 
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   EXPECT_TRUE(
       SyncPrefs(&pref_service_)
@@ -1037,7 +1037,7 @@ TEST_F(SyncPrefsMigrationTest,
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
 
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   EXPECT_TRUE(
       SyncPrefs(&pref_service_)
@@ -1058,7 +1058,7 @@ TEST_F(SyncPrefsMigrationTest,
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
 
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   EXPECT_TRUE(
       SyncPrefs(&pref_service_)
@@ -1077,7 +1077,7 @@ TEST_F(SyncPrefsMigrationTest, MigratePasswordsToPerAccountPrefRunsOnce) {
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
 
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   EXPECT_FALSE(
       SyncPrefs(&pref_service_)
@@ -1088,13 +1088,32 @@ TEST_F(SyncPrefsMigrationTest, MigratePasswordsToPerAccountPrefRunsOnce) {
   SyncPrefs(&pref_service_)
       .SetSelectedTypeForAccount(UserSelectableType::kPasswords, true,
                                  signin::GaiaIdHash::FromGaiaId(kGaiaId));
-  SyncPrefs::MaybeMigratePasswordsToPerAccountPref(&pref_service_);
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
 
   // This time the migration didn't run, because it was one-off.
   EXPECT_TRUE(
       SyncPrefs(&pref_service_)
           .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
           .Has(UserSelectableType::kPasswords));
+}
+
+TEST_F(SyncPrefsMigrationTest, MigrateAddressesToPerAccountPref) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kExplicitBrowserSigninUIOnDesktop);
+  pref_service_.SetString(::prefs::kGoogleServicesLastSyncingGaiaId, kGaiaId);
+  pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
+  ASSERT_FALSE(pref_service_.GetBoolean(kGlobalAutofillPref));
+  ASSERT_TRUE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
+          .Has(UserSelectableType::kAutofill));
+
+  SyncPrefs::MaybeMigrateAutofillToPerAccountPref(&pref_service_);
+
+  EXPECT_FALSE(
+      SyncPrefs(&pref_service_)
+          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId(kGaiaId))
+          .Has(UserSelectableType::kAutofill));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

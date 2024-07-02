@@ -60,9 +60,9 @@ constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
     "sync.encryption_bootstrap_token_per_account_migration_done";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Pref to record if the one-off MaybeMigratePasswordsToPerAccountPref()
+// Pref to record if the one-off MaybeMigrateAutofillToPerAccountPref()
 // migration ran.
-constexpr char kPasswordsPerAccountPrefMigrationDone[] =
+constexpr char kAutofillPerAccountPrefMigrationDone[] =
     "sync.passwords_per_account_pref_migration_done";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -208,7 +208,7 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  registry->RegisterBooleanPref(kPasswordsPerAccountPrefMigrationDone, false);
+  registry->RegisterBooleanPref(kAutofillPerAccountPrefMigrationDone, false);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(registry);
@@ -1064,20 +1064,20 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // static
-void SyncPrefs::MaybeMigratePasswordsToPerAccountPref(
+void SyncPrefs::MaybeMigrateAutofillToPerAccountPref(
     PrefService* pref_service) {
   if (!base::FeatureList::IsEnabled(
           switches::kExplicitBrowserSigninUIOnDesktop)) {
     // Ensures the migration happens again if the experiment gets rolled back
     // then rolled out a second time.
-    pref_service->ClearPref(kPasswordsPerAccountPrefMigrationDone);
+    pref_service->ClearPref(kAutofillPerAccountPrefMigrationDone);
     return;
   }
 
-  if (pref_service->GetBoolean(kPasswordsPerAccountPrefMigrationDone)) {
+  if (pref_service->GetBoolean(kAutofillPerAccountPrefMigrationDone)) {
     return;
   }
-  pref_service->SetBoolean(kPasswordsPerAccountPrefMigrationDone, true);
+  pref_service->SetBoolean(kAutofillPerAccountPrefMigrationDone, true);
 
   std::string last_syncing_gaia_id =
       pref_service->GetString(::prefs::kGoogleServicesLastSyncingGaiaId);
@@ -1085,18 +1085,23 @@ void SyncPrefs::MaybeMigratePasswordsToPerAccountPref(
     return;
   }
 
-  bool global_password_setting_enabled =
-      pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced) ||
-      pref_service->GetBoolean(
-          GetPrefNameForType(UserSelectableType::kPasswords));
-  if (global_password_setting_enabled) {
+  if (pref_service->GetBoolean(prefs::internal::kSyncKeepEverythingSynced)) {
     return;
   }
 
-  SetAccountKeyedPrefDictEntry(
-      pref_service, prefs::internal::kSelectedTypesPerAccount,
-      signin::GaiaIdHash::FromGaiaId(last_syncing_gaia_id),
-      GetPrefNameForType(UserSelectableType::kPasswords), base::Value(false));
+  for (auto user_selectable_type :
+       {UserSelectableType::kPasswords, UserSelectableType::kAutofill}) {
+    const char* const pref_name_for_type =
+        GetPrefNameForType(user_selectable_type);
+    if (pref_service->GetBoolean(pref_name_for_type)) {
+      continue;
+    }
+
+    SetAccountKeyedPrefDictEntry(
+        pref_service, prefs::internal::kSelectedTypesPerAccount,
+        signin::GaiaIdHash::FromGaiaId(last_syncing_gaia_id),
+        pref_name_for_type, base::Value(false));
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
