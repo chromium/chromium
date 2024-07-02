@@ -2343,9 +2343,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
   WebDocument document = render_frame()
                              ? render_frame()->GetWebFrame()->GetDocument()
                              : WebDocument();
-  const auto extract_options = {ExtractOption::kValue};
   if (std::optional<FormData> form_data = form_util::ExtractFormData(
-          document, cleared_form, field_data_manager(), extract_options)) {
+          document, cleared_form, field_data_manager())) {
     GetPasswordManagerDriver().PasswordFormCleared(*form_data);
   }
 }

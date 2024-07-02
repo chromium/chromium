@@ -2040,26 +2040,17 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
 
   WebFormControlElement element = GetFormControlElementById("element");
 
-  FormFieldData result1;
+  FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             /*extract_options=*/{}, &result1);
+                                             /*extract_options=*/{}, &result);
 
   FormFieldData expected;
   expected.set_form_control_type(FormControlType::kInputText);
   expected.set_max_length(FormFieldData::kDefaultMaxLength);
-
   expected.set_id_attribute(u"element");
   expected.set_name(expected.id_attribute());
-
-  expected.set_value({});
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
-
-  FormFieldData result2;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result2);
-
   expected.set_value(u"value");
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
+  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
 // We should be able to extract a text field with autocomplete="off".
@@ -2072,7 +2063,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2094,7 +2085,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMaxLength) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2116,7 +2107,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutofilled) {
   element.SetAutofillState(WebAutofillState::kAutofilled);
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2141,7 +2132,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
   element.SetAutofillState(WebAutofillState::kAutofilled);
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"checkbox");
@@ -2156,7 +2147,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToClickableFormField) {
   element = GetInputElementById("radio");
   element.SetAutofillState(WebAutofillState::kAutofilled);
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   expected.set_id_attribute(u"radio");
   expected.set_name(expected.id_attribute());
   expected.set_value(u"male");
@@ -2178,9 +2169,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormFieldData result1;
+  FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result1);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2189,21 +2180,14 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   expected.set_form_control_type(FormControlType::kSelectOne);
 
   expected.set_value(u"CA");
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
-  EXPECT_THAT(result1.selected_option().CopyAsOptional(),
+  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
+  EXPECT_THAT(result.selected_option().CopyAsOptional(),
               Optional(Field(&SelectOption::text, u"California")));
-
-  FormFieldData result2;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {}, &result2);
-  expected.set_value({});
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
-
-  ASSERT_EQ(2U, result2.options().size());
-  EXPECT_EQ(u"CA", result2.options()[0].value);
-  EXPECT_EQ(u"California", result2.options()[0].text);
-  EXPECT_EQ(u"TX", result2.options()[1].value);
-  EXPECT_EQ(u"Texas", result2.options()[1].text);
+  ASSERT_EQ(2U, result.options().size());
+  EXPECT_EQ(u"CA", result.options()[0].value);
+  EXPECT_EQ(u"California", result.options()[0].text);
+  EXPECT_EQ(u"TX", result.options()[1].value);
+  EXPECT_EQ(u"Texas", result.options()[1].text);
 }
 
 // We copy extra attributes for the select field.
@@ -2222,7 +2206,7 @@ TEST_F(FormAutofillTest,
 
   FormFieldData result1;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue}, &result1);
+                                             {}, &result1);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2314,26 +2298,19 @@ spans multiple lines.</textarea>)");
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
-  FormFieldData result_sans_value;
+  FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             /*extract_options=*/{},
-                                             &result_sans_value);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
   expected.set_name(expected.id_attribute());
   expected.set_max_length(FormFieldData::kDefaultMaxLength);
   expected.set_form_control_type(FormControlType::kTextArea);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
-
-  FormFieldData result_with_value;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue},
-                                             &result_with_value);
   expected.set_value(
       u"This element's value\n"
       u"spans multiple lines.");
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
+  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
 // We should be able to extract an <input type=month> field.
@@ -2345,23 +2322,17 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldMonthInput) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result_sans_value;
+  FormFieldData result;
   WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             /*extract_options=*/{},
-                                             &result_sans_value);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
   expected.set_name(expected.id_attribute());
   expected.set_max_length(0);
   expected.set_form_control_type(FormControlType::kInputMonth);
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_sans_value);
-
-  FormFieldData result_with_value;
-  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
-                                             {ExtractOption::kValue},
-                                             &result_with_value);
   expected.set_value(u"2011-12");
-  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result_with_value);
+  EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
 }
 
 // We should be able to extract password fields.
@@ -2376,7 +2347,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToPasswordFormField) {
   WebFormControlElement element = GetFormControlElementById("password");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
 
   FormFieldData expected;
   expected.set_max_length(FormFieldData::kDefaultMaxLength);
@@ -2415,30 +2386,32 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     const std::string element_id;
     FormControlType form_control_type;
     const std::string autocomplete_attribute;
+    const std::string value;
   };
   TestCase test_cases[] = {
       // An absent attribute is equivalent to an empty one.
-      {"absent", FormControlType::kInputText, ""},
+      {"absent", FormControlType::kInputText, "", ""},
       // Make sure there are no issues parsing an empty attribute.
-      {"empty", FormControlType::kInputText, ""},
+      {"empty", FormControlType::kInputText, "", ""},
       // Make sure there are no issues parsing an attribute value that isn't a
       // type hint.
-      {"off", FormControlType::kInputText, "off"},
+      {"off", FormControlType::kInputText, "off", ""},
       // Common case: exactly one type specified.
-      {"regular", FormControlType::kInputText, "email"},
+      {"regular", FormControlType::kInputText, "email", ""},
       // Verify that we correctly extract multiple tokens as well.
-      {"multi-valued", FormControlType::kInputText, "billing email"},
+      {"multi-valued", FormControlType::kInputText, "billing email", ""},
       // Verify that <input type=month> fields are supported.
-      {"month", FormControlType::kInputMonth, "cc-exp"},
+      {"month", FormControlType::kInputMonth, "cc-exp", ""},
       // We previously extracted this data from the experimental
       // 'x-autocompletetype' attribute.  Now that the field type hints are part
       // of the spec under the autocomplete attribute, we no longer support the
       // experimental version.
-      {"experimental", FormControlType::kInputText, ""},
+      {"experimental", FormControlType::kInputText, "", ""},
       // <select> elements should behave no differently from text fields here.
-      {"select", FormControlType::kSelectOne, "state"},
+      {"select", FormControlType::kSelectOne, "state", "CA"},
       // <textarea> elements should also behave no differently from text fields.
-      {"textarea", FormControlType::kTextArea, "street-address"},
+      {"textarea", FormControlType::kTextArea, "street-address",
+       "           Some multi-\n           lined value\n         "},
       // Very long attribute values should be replaced by a default string, to
       // prevent malicious websites from DOSing the browser process.
       {"malicious", FormControlType::kInputText, "x-max-data-length-exceeded"},
@@ -2465,6 +2438,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     expected.set_autocomplete_attribute(test_case.autocomplete_attribute);
     expected.set_parsed_autocomplete(
         ParseAutocompleteAttribute(test_case.autocomplete_attribute));
+    expected.set_value(ASCIIToUTF16(test_case.value));
 
     SCOPED_TRACE(test_case.element_id);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
@@ -2483,7 +2457,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectStyle) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 }
 
@@ -2498,7 +2472,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromDirectDIRAttribute) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 }
 
@@ -2514,7 +2488,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentStyle) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 }
 
@@ -2529,7 +2503,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionFromParentDIRAttribute) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 }
 
@@ -2545,7 +2519,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenStyleAndDIRAttributeMixed) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction());
 }
 
@@ -2562,7 +2536,7 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 
   // text-align: left
@@ -2576,7 +2550,7 @@ TEST_F(FormAutofillTest, TextAlignOverridesDirection) {
 
   element = GetFormControlElementById("element");
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction());
 }
 
@@ -2593,7 +2567,7 @@ TEST_F(FormAutofillTest,
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT, result.text_direction());
 }
 
@@ -2610,7 +2584,7 @@ TEST_F(FormAutofillTest, DetectTextDirectionWhenAncestorHasInlineStyle) {
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
   WebFormControlElementToFormFieldForTesting(element.Form(), element, nullptr,
-                                             {ExtractOption::kValue}, &result);
+                                             {}, &result);
   EXPECT_EQ(base::i18n::RIGHT_TO_LEFT, result.text_direction());
 }
 
@@ -2647,8 +2621,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData) {
   WebInputElement input_element = GetInputElementById("firstname");
 
   FormData form =
-      FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(),
-               {ExtractOption::kValue});
+      FindForm(input_element, *base::MakeRefCounted<FieldDataManager>(), {});
 
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GetFormRendererId(forms[0]), form.renderer_id());
@@ -2760,8 +2733,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_TooManyFields) {
                                       .DynamicTo<WebInputElement>();
   EXPECT_THAT(
       FindFormAndFieldForFormControlElement(
-          input_element, *base::MakeRefCounted<FieldDataManager>(),
-          {ExtractOption::kValue}),
+          input_element, *base::MakeRefCounted<FieldDataManager>(), {}),
       Optional(Pair(
           Property(&FormData::fields,
                    ElementsAre(Property(&FormFieldData::renderer_id,
@@ -4470,8 +4442,7 @@ TEST_F(FormAutofillTest, ThreePartPhone) {
   ASSERT_EQ(1U, forms.size());
 
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   {ExtractOption::kValue});
+                                   *base::MakeRefCounted<FieldDataManager>());
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -4533,8 +4504,7 @@ TEST_F(FormAutofillTest, MaxLengthFields) {
   ASSERT_EQ(1U, forms.size());
 
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   {ExtractOption::kValue});
+                                   *base::MakeRefCounted<FieldDataManager>());
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -4769,8 +4739,7 @@ TEST_F(FormAutofillTest, UndoAutofill) {
   EXPECT_EQ(1U, forms.size());
 
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   {ExtractOption::kValue});
+                                   *base::MakeRefCounted<FieldDataManager>());
 
   EXPECT_EQ(form.fields().size(), 6u);
   std::vector<FormFieldData> undo_fields;
@@ -4965,8 +4934,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   ASSERT_EQ(1U, forms.size());
 
   FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
-                                   *base::MakeRefCounted<FieldDataManager>(),
-                                   {ExtractOption::kValue});
+                                   *base::MakeRefCounted<FieldDataManager>());
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
@@ -5155,8 +5123,7 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription) {
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_TRUE(control_element);
   FormData form =
-      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
-               {ExtractOption::kValue});
+      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(), {});
 
   const std::vector<FormFieldData>& fields = form.fields();
   ASSERT_EQ(3U, fields.size());
@@ -5195,8 +5162,7 @@ TEST_F(FormAutofillTest, AriaLabelAndDescription2) {
       frame->GetDocument().GetElementById("field0").To<WebFormControlElement>();
   ASSERT_TRUE(control_element);
   FormData form =
-      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(),
-               {ExtractOption::kValue});
+      FindForm(control_element, *base::MakeRefCounted<FieldDataManager>(), {});
 
   const std::vector<FormFieldData>& fields = form.fields();
   ASSERT_EQ(3U, fields.size());

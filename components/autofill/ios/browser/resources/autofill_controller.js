@@ -314,15 +314,15 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   const reportFormFill = function(_form, _delay) {
     window.setTimeout(() => {
       let formData = new __gCrWeb['common'].JSONSafeObject();
-      const extractMask = fill_constants.EXTRACT_MASK_VALUE;
       if (_form) {
         if (!__gCrWeb.fill.webFormElementToFormData(
-                window, _form, null, extractMask, formData, null /* field */)) {
+                window, _form, null, /*extractMask=*/0, formData,
+                /*field=*/null)) {
           formData = null;
         }
       } else {
         formData = extractUnownedFields(
-            extractMask,
+            /*extractMask=*/0,
             /*restrictUnownedFieldsToFormlessCheckout=*/ false);
       }
       if (formData) {
@@ -465,7 +465,6 @@ __gCrWeb.autofill.extractNewForms = function(
   /** @type {HTMLCollection} */
   const webForms = document.forms;
 
-  const extractMask = fill_constants.EXTRACT_MASK_VALUE;
   let numFieldsSeen = 0;
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */
@@ -484,7 +483,8 @@ __gCrWeb.autofill.extractNewForms = function(
 
     const form = new __gCrWeb['common'].JSONSafeObject();
     if (!__gCrWeb.fill.webFormElementToFormData(
-            window, formElement, null, extractMask, form, null /* field */)) {
+            window, formElement, null, /*extractMask=*/0, form,
+            /*field=*/null)) {
       continue;
     }
 
@@ -500,7 +500,7 @@ __gCrWeb.autofill.extractNewForms = function(
 
   // Look for more extractable fields outside of forms.
   const unownedForm = extractUnownedFields(
-      extractMask, restrictUnownedFieldsToFormlessCheckout);
+      /*extractMask=*/0, restrictUnownedFieldsToFormlessCheckout);
 
   if (unownedForm) {
     numFieldsSeen += unownedForm['fields'].length;

@@ -127,9 +127,8 @@ std::unique_ptr<FormData> CreateFormDataFromWebForm(
   if (!web_form) {
     return nullptr;
   }
-  std::optional<FormData> form =
-      form_util::ExtractFormData(web_form.GetDocument(), web_form,
-                                 field_data_manager, {ExtractOption::kValue});
+  std::optional<FormData> form = form_util::ExtractFormData(
+      web_form.GetDocument(), web_form, field_data_manager);
   if (!form) {
     return nullptr;
   }
@@ -162,9 +161,8 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
   if (control_elements.empty()) {
     return nullptr;
   }
-  std::optional<FormData> form =
-      form_util::ExtractFormData(frame.GetDocument(), WebFormElement(),
-                                 field_data_manager, {ExtractOption::kValue});
+  std::optional<FormData> form = form_util::ExtractFormData(
+      frame.GetDocument(), WebFormElement(), field_data_manager);
   if (!form) {
     return nullptr;
   }

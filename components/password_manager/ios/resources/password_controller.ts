@@ -379,7 +379,6 @@ function getPasswordFormDataList(formDataList: AutofillFormData[]) {
  * @return Object of data from formElement.
  */
 function getPasswordFormDataFromUnownedElements(): object|void {
-  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   const fieldsets: fillConstants.FormControlElement[] = [];
   const unownedControlElements =
       gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -390,7 +389,7 @@ function getPasswordFormDataFromUnownedElements(): object|void {
   const unownedForm = new gCrWeb['common'].JSONSafeObject();
   const hasUnownedForm = gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
       window, fieldsets, unownedControlElements, /* iframeElements= */[],
-      extractMask, false, unownedForm);
+      /*extractMask=*/0, false, unownedForm);
   return hasUnownedForm ? unownedForm : null;
 }
 
@@ -401,11 +400,10 @@ function getPasswordFormDataFromUnownedElements(): object|void {
  */
 function getPasswordFormData(
     formElement: HTMLFormElement): AutofillFormData|null {
-  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   const formData = {} as AutofillFormData;
   const ok = gCrWeb.fill.webFormElementToFormData(
-      window, formElement, /* formControlElement=*/null, extractMask, formData,
-      /* field=*/null);
+      window, formElement, /*formControlElement=*/null, /*extractMask=*/0,
+      formData, /*field=*/null);
   return ok ? formData : null;
 }
 

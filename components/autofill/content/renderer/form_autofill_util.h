@@ -68,13 +68,12 @@ using ButtonTitlesCache = base::flat_map<FormRendererId, ButtonTitleList>;
 // A bit field mask to extract data from WebFormControlElement.
 // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
 enum class ExtractOption {
-  kValue,       // Extract value from WebFormControlElement.
-  kBounds,      // Extract bounds from WebFormControlElement, could
-                // trigger layout if needed.
-  kDatalist,    // Extract datalist from WebFormControlElement, the total
-                // number of options is up to kMaxListSize and each option
-                // has as far as kMaxDataLength.
-  kMinValue = kValue,
+  kBounds,    // Extract bounds from WebFormControlElement, could
+              // trigger layout if needed.
+  kDatalist,  // Extract datalist from WebFormControlElement, the total
+              // number of options is up to kMaxListSize and each option
+              // has as far as kMaxDataLength.
+  kMinValue = kBounds,
   kMaxValue = kDatalist,
 };
 
@@ -84,7 +83,7 @@ std::optional<FormData> ExtractFormData(
     const blink::WebDocument& document,
     const blink::WebFormElement& form_element,
     const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options = {ExtractOption::kValue});
+    DenseSet<ExtractOption> extract_options = {});
 
 // Helper function to assist in getting the canonical form of the action and
 // origin. The action will properly take into account <BASE>, and both will
@@ -169,7 +168,6 @@ blink::WebFormElement GetOwningForm(
 // cannot be extracted (e.g., because it is too large), falls back to a
 // single-field form that contains `element`. If however `element` is not
 // autofillable, returns nullopt.
-// The `extract_options` are implicitly augmented by {kValue}.
 std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
 FindFormAndFieldForFormControlElement(
     const blink::WebFormControlElement& element,

@@ -1905,10 +1905,6 @@ void WebFormControlElementToFormField(
     }
   }
 
-  if (!extract_options.contains(ExtractOption::kValue)) {
-    return;
-  }
-
   field->set_value(element.Value().Utf16().substr(0, kMaxStringLength));
   field->set_selected_text(
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
@@ -2382,7 +2378,6 @@ FindFormAndFieldForFormControlElement(
     return std::nullopt;
   }
 
-  extract_options.insert_all({ExtractOption::kValue});
   WebDocument document = element.GetDocument();
   WebFormElement form_element = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(

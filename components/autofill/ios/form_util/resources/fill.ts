@@ -458,12 +458,13 @@ gCrWeb.fill.webFormElementToFormData = function(
  *
  * @param element The element to be processed.
  * @param extractMask A bit field mask to extract data from |element|.
- *     See the documentation on variable EXTRACT_MASK_VALUE.
+ *     TODO: crbug.com/40100455 - Implement extract options for extracting
+ *     the field bounds and/or datalist options. Or remove the unused parameter.
  * @param field Field to fill in the element
  *     information.
  */
 gCrWeb.fill.webFormControlElementToFormField = function(
-    element: fillConstants.FormControlElement, extractMask: number,
+    element: fillConstants.FormControlElement, _extractMask: number,
     field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
     return;
@@ -540,10 +541,6 @@ gCrWeb.fill.webFormControlElementToFormField = function(
     gCrWeb.fill.getOptionStringsFromElement(element, field);
   }
 
-  if (!(extractMask & fillConstants.EXTRACT_MASK_VALUE)) {
-    return;
-  }
-
   let value = gCrWeb.fill.value(element);
 
   // There is a constraint on the maximum data length in method
@@ -569,9 +566,8 @@ gCrWeb.fill.webFormControlElementToFormField = function(
  */
 gCrWeb.fill.autofillSubmissionData = function(form: HTMLFormElement): string {
   const formData = new gCrWeb['common'].JSONSafeObject();
-  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   gCrWeb['fill'].webFormElementToFormData(
-      window, form, null, extractMask, formData, null);
+      window, form, null, /*extractMask=*/0, formData, null);
   return gCrWeb.stringify([formData]);
 };
 

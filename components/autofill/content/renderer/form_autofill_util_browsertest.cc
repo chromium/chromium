@@ -853,8 +853,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_IsActionEmptyFalse) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form1");
 
-  FormData form_data = *ExtractFormData(doc, web_form, field_data_manager(),
-                                        {ExtractOption::kValue});
+  FormData form_data = *ExtractFormData(doc, web_form, field_data_manager());
 
   EXPECT_FALSE(form_data.is_action_empty());
 }
@@ -864,8 +863,7 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_IsActionEmptyTrue) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form1");
 
-  FormData form_data = *ExtractFormData(doc, web_form, field_data_manager(),
-                                        {ExtractOption::kValue});
+  FormData form_data = *ExtractFormData(doc, web_form, field_data_manager());
 
   EXPECT_TRUE(form_data.is_action_empty());
 }

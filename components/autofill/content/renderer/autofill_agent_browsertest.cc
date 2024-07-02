@@ -675,8 +675,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   ASSERT_EQ(1U, forms.size());
   FormData form =
       *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
-                                  *base::MakeRefCounted<FieldDataManager>(),
-                                  {form_util::ExtractOption::kValue});
+                                  *base::MakeRefCounted<FieldDataManager>());
   ASSERT_EQ(form.fields().size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
@@ -834,7 +833,7 @@ TEST_P(AutofillAgentSubmissionTest,
   FormFieldData form_field;
   form_util::WebFormControlElementToFormFieldForTesting(
       blink::WebFormElement(), field, &autofill_agent().field_data_manager(),
-      {form_util::ExtractOption::kValue}, &form_field);
+      {}, &form_field);
 
   form_field.set_value(u"autofilled");
   form_field.set_is_autofilled(true);
@@ -874,8 +873,7 @@ TEST_P(AutofillAgentSubmissionTest,
 
   FormData form =
       *form_util::ExtractFormData(form_element.GetDocument(), form_element,
-                                  *base::MakeRefCounted<FieldDataManager>(),
-                                  {form_util::ExtractOption::kValue});
+                                  *base::MakeRefCounted<FieldDataManager>());
 
   ASSERT_EQ(1u, form.fields().size());
   test_api(form).field(0).set_value(u"autofilled");
@@ -1096,8 +1094,7 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_TRUE(form_element);
   std::optional<FormData> form =
       form_util::ExtractFormData(GetMainFrame()->GetDocument(), form_element,
-                                 autofill_agent().field_data_manager(),
-                                 {form_util::ExtractOption::kValue});
+                                 autofill_agent().field_data_manager());
   ASSERT_TRUE(form.has_value());
 
   blink::WebVector<blink::WebFormControlElement> field_elements =

@@ -168,8 +168,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return true;
   };
 
-  constexpr DenseSet<ExtractOption> extract_options = {ExtractOption::kValue};
-
   WebDocument document = frame_->GetDocument();
   if (!document) {
     return r;
@@ -179,8 +177,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
            blink::features::kAutofillIncludeFormElementsInShadowDom)
            ? document.GetTopLevelForms()
            : document.Forms()) {
-    if (std::optional<FormData> form = ExtractFormData(
-            document, form_element, field_data_manager, extract_options)) {
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            document, form_element, field_data_manager)) {
       if (!ProcessForm(std::move(*form))) {
         return r;
       }
@@ -189,8 +187,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   // Look for more extractable fields outside of forms. Create a synthetic form
   // from them.
-  std::optional<FormData> synthetic_form = ExtractFormData(
-      document, WebFormElement(), field_data_manager, extract_options);
+  std::optional<FormData> synthetic_form = form_util::ExtractFormData(
+      document, WebFormElement(), field_data_manager);
   if (synthetic_form) {
     ProcessForm(std::move(*synthetic_form));
   }
