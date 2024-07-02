@@ -1458,6 +1458,52 @@ void FakeUserDataAuthClient::UpdateAuthFactorMetadata(
   return;
 }
 
+void FakeUserDataAuthClient::ReplaceAuthFactor(
+    const ::user_data_auth::ReplaceAuthFactorRequest& request,
+    ReplaceAuthFactorCallback callback) {
+  ::user_data_auth::ReplaceAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kReplaceAuthFactor>(request);
+
+  if (auto error = TakeOperationError(Operation::kReplaceAuthFactor);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    return;
+  }
+
+  auto error = cryptohome::ErrorWrapper::success();
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  SetErrorWrapperToReply(reply, error);
+  if (session == nullptr) {
+    return;
+  }
+
+  auto user_it = users_.find(session->account);
+  DCHECK(user_it != std::end(users_));
+  UserCryptohomeState& user_state = user_it->second;
+
+  const std::string& old_label = request.auth_factor_label();
+  DCHECK(!old_label.empty());
+  CHECK(user_state.auth_factors.contains(old_label))
+      << "Key does not exist: " << old_label;
+
+  auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
+      request.auth_factor(), request.auth_input(), enable_auth_check_);
+  CHECK(!user_state.auth_factors.contains(new_label))
+      << "Key already exists: " << new_label;
+
+  // Remove the fake old auth factor and replace with the new one.
+  bool erased = user_state.auth_factors.erase(old_label) > 0;
+  if (erased) {
+    user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
+  } else {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+  }
+}
+
 void FakeUserDataAuthClient::RemoveAuthFactor(
     const ::user_data_auth::RemoveAuthFactorRequest& request,
     RemoveAuthFactorCallback callback) {

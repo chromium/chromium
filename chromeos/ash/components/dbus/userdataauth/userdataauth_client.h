@@ -94,6 +94,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
   using UpdateAuthFactorMetadataCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::UpdateAuthFactorMetadataReply>;
+  using ReplaceAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::ReplaceAuthFactorReply>;
   using RemoveAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
   using ListAuthFactorsCallback =
@@ -292,6 +294,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void UpdateAuthFactorMetadata(
       const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
       UpdateAuthFactorMetadataCallback callback) = 0;
+
+  // This call will be used in the case of a user wanting to remove an existing
+  // Authfactor and add a new one to replace it. (E.g. Changing to local
+  // password from Gaia password).
+  virtual void ReplaceAuthFactor(
+      const ::user_data_auth::ReplaceAuthFactorRequest& request,
+      ReplaceAuthFactorCallback callback) = 0;
 
   // This is called when a user wants to remove an
   // AuthFactor.

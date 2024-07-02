@@ -461,6 +461,21 @@ void AuthFactorEditor::UpdatePasswordFactor(
       std::move(callback)));
 }
 
+void AuthFactorEditor::ReplacePasswordFactor(
+    std::unique_ptr<UserContext> context,
+    const cryptohome::KeyLabel& old_label,
+    cryptohome::RawPassword new_password,
+    const cryptohome::KeyLabel& new_label,
+    AuthOperationCallback callback) {
+  LOGIN_LOG(EVENT) << "Replacing password with label " << old_label << " to "
+                   << new_label;
+
+  SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+      &AuthFactorEditor::ReplacePasswordFactorImpl, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(old_label), std::move(new_password),
+      std::move(new_label), std::move(callback)));
+}
+
 void AuthFactorEditor::SetPasswordFactorImpl(
     std::unique_ptr<UserContext> context,
     cryptohome::RawPassword new_password,
@@ -527,6 +542,48 @@ void AuthFactorEditor::UpdatePasswordFactorImpl(
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
   client_->UpdateAuthFactor(
       request, base::BindOnce(&AuthFactorEditor::OnUpdateAuthFactor,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
+void AuthFactorEditor::ReplacePasswordFactorImpl(
+    std::unique_ptr<UserContext> context,
+    const cryptohome::KeyLabel& old_label,
+    cryptohome::RawPassword new_password,
+    const cryptohome::KeyLabel& new_label,
+    AuthOperationCallback callback,
+    const std::string& system_salt) {
+  CHECK(new_label != old_label);
+
+  Key key{std::move(new_password).value()};
+  key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
+
+  user_data_auth::ReplaceAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  cryptohome::AuthFactorRef old_ref{cryptohome::AuthFactorType::kPassword,
+                                    old_label};
+
+  request.set_auth_factor_label(old_ref.label().value());
+
+  cryptohome::AuthFactorCommonMetadata metadata;
+  cryptohome::PasswordMetadata password_metadata =
+      new_label == cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel}
+          ? cryptohome::PasswordMetadata::CreateForLocalPassword(
+                cryptohome::SystemSalt(system_salt))
+          : cryptohome::PasswordMetadata::CreateForOnlinePassword(
+                cryptohome::SystemSalt(system_salt));
+  cryptohome::AuthFactorRef new_ref{cryptohome::AuthFactorType::kPassword,
+                                    new_label};
+  cryptohome::AuthFactor factor(new_ref, std::move(metadata),
+                                std::move(password_metadata));
+
+  cryptohome::AuthFactorInput input(
+      cryptohome::AuthFactorInput::Password{std::move(key.GetSecret())});
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(new_ref, input, request.mutable_auth_input());
+  client_->ReplaceAuthFactor(
+      request, base::BindOnce(&AuthFactorEditor::OnReplaceAuthFactor,
                               weak_factory_.GetWeakPtr(), std::move(context),
                               std::move(callback)));
 }
@@ -695,6 +752,22 @@ void AuthFactorEditor::OnUpdateAuthFactor(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully updated auth factor";
+  context->ClearAuthFactorsConfiguration();
+  std::move(callback).Run(std::move(context), std::nullopt);
+}
+
+void AuthFactorEditor::OnReplaceAuthFactor(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    std::optional<user_data_auth::ReplaceAuthFactorReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (cryptohome::HasError(error)) {
+    LOGIN_LOG(ERROR) << "ReplaceAuthFactor failed with error " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  LOGIN_LOG(EVENT) << "Successfully replaced auth factor";
   context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), std::nullopt);
 }
