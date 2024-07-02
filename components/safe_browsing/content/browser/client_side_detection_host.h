@@ -282,8 +282,7 @@ class ClientSideDetectionHost
   scoped_refptr<BaseUIManager> ui_manager_;
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
-  // TODO(andysjlim): Make this a std::unique_ptr, for clearer lifetimes.
-  scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
+  std::unique_ptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
   // The current outermost main frame's id.

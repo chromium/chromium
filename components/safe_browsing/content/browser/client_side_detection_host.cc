@@ -173,13 +173,11 @@ typedef base::OnceCallback<void(bool, bool, std::optional<bool>)>
 // This class is instantiated each time a new toplevel URL loads, and
 // asynchronously checks whether the phishing classifier should run
 // for this URL.  If so, it notifies the host class by calling the provided
-// callback form the UI thread.  Objects of this class are ref-counted and will
-// be destroyed once nobody uses it anymore.  If |web_contents|, |csd_service|
-// or |host| go away you need to call Cancel().  We keep the |database_manager|
-// alive in a ref pointer for as long as it takes.
-class ClientSideDetectionHost::ShouldClassifyUrlRequest
-    : public base::RefCountedThreadSafe<
-          ClientSideDetectionHost::ShouldClassifyUrlRequest> {
+// callback from the UI thread.  Objects of this class  will be destroyed once
+// nobody uses it anymore.  If |web_contents|, |csd_service| or |host| go away
+// you need to call Cancel().  We keep the |database_manager| alive in a ref
+// pointer for as long as it takes.
+class ClientSideDetectionHost::ShouldClassifyUrlRequest {
  public:
   ShouldClassifyUrlRequest(
       const GURL& url,
@@ -213,6 +211,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
   ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
   ShouldClassifyUrlRequest& operator=(const ShouldClassifyUrlRequest&) = delete;
+
+  // The destructor can be called either from the UI or the IO thread.
+  ~ShouldClassifyUrlRequest() = default;
 
   void Start() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -300,9 +301,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     kMaxValue = kCsdAndHighConfidenceMatch
   };
 
-  // The destructor can be called either from the UI or the IO thread.
-  ~ShouldClassifyUrlRequest() = default;
-
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return !start_phishing_classification_cb_.is_null();
@@ -370,7 +368,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     base::OnceCallback<void(bool)> result_callback =
         base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
                            OnAllowlistCheckDone,
-                       this, url, phishing_reason);
+                       weak_factory_.GetWeakPtr(), url, phishing_reason);
     AllowlistCheckerClient::StartCheckCsdAllowlist(database_manager_, url,
                                                    std::move(result_callback));
   }
@@ -392,7 +390,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     database_manager_->CheckUrlForHighConfidenceAllowlist(
         url, base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
                                 OnHighConfidenceAllowlistCheckDone,
-                            this, phishing_reason, base::TimeTicks::Now()));
+                            weak_factory_.GetWeakPtr(), phishing_reason,
+                            base::TimeTicks::Now()));
   }
 
   void OnHighConfidenceAllowlistCheckDone(
@@ -519,8 +518,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   ClientSideDetectionType phishing_detection_request_type_;
   base::WeakPtr<ClientSideDetectionHost> host_;
-
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
+
+  base::WeakPtrFactory<ShouldClassifyUrlRequest> weak_factory_{this};
 };
 
 // static
@@ -622,7 +622,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   current_url_ = rfh->GetLastCommittedURL();
   current_outermost_main_frame_id_ = rfh->GetGlobalId();
   // Check whether we can cassify the current URL for phishing.
-  classification_request_ = new ShouldClassifyUrlRequest(
+  classification_request_ = std::make_unique<ShouldClassifyUrlRequest>(
       rfh->GetLastCommittedURL(), rfh->GetLastResponseHead(),
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
                      weak_factory_.GetWeakPtr(), request_type),
