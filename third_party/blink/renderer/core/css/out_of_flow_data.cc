@@ -18,12 +18,10 @@ void OutOfFlowData::Trace(Visitor* visitor) const {
 bool OutOfFlowData::SetPendingSuccessfulPositionOption(
     const PositionTryOptions* options,
     const CSSPropertyValueSet* try_set,
-    const TryTacticList& try_tactics,
-    std::optional<size_t> index) {
+    const TryTacticList& try_tactics) {
   new_successful_position_option_.position_try_options_ = options;
   new_successful_position_option_.try_set_ = try_set;
   new_successful_position_option_.try_tactics_ = try_tactics;
-  new_successful_position_option_.index_ = index;
   return last_successful_position_option_ != new_successful_position_option_;
 }
 

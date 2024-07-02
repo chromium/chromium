@@ -2031,7 +2031,6 @@ experimental domain CSS
       StyleSheetOrigin origin
       # Associated style declaration.
       CSSStyle style
-      boolean active
 
   # CSS keyframes rule representation.
   type CSSKeyframesRule extends object

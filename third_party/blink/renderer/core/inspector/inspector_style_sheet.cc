@@ -2449,8 +2449,7 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
 
 std::unique_ptr<protocol::CSS::CSSPositionTryRule>
 InspectorStyleSheet::BuildObjectForPositionTryRule(
-    CSSPositionTryRule* position_try_rule,
-    bool active) {
+    CSSPositionTryRule* position_try_rule) {
   std::unique_ptr<protocol::CSS::Value> name =
       protocol::CSS::Value::create().setText(position_try_rule->name()).build();
   if (CSSRuleSourceData* source_data = SourceDataForRule(position_try_rule)) {
@@ -2461,7 +2460,6 @@ InspectorStyleSheet::BuildObjectForPositionTryRule(
           .setName(std::move(name))
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(position_try_rule->style(), nullptr))
-          .setActive(active)
           .build();
   if (CanBind(origin_) && !Id().empty()) {
     result->setStyleSheetId(Id());

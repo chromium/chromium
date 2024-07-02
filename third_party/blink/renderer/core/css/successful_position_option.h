@@ -13,7 +13,7 @@ namespace blink {
 
 class CSSPropertyValueSet;
 
-// When an anchored element is positioned using one of the position-try-options
+// When an anchored element is position using one of the position-try-options
 // without overflowing, we need to keep track of it as the last successful
 // option because if the same set of options in later layout cannot fit any of
 // the options, we should fall back to the last successful one.
@@ -36,8 +36,6 @@ class SuccessfulPositionOption {
   Member<const CSSPropertyValueSet> try_set_;
   // The try tactics used for the successful option
   TryTacticList try_tactics_ = kNoTryTactics;
-  // The index of the successful option in the given position_try_options_.
-  std::optional<size_t> index_;
 };
 
 }  // namespace blink

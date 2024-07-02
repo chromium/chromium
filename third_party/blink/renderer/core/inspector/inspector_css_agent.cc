@@ -63,7 +63,6 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -1307,20 +1306,10 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
     return nullptr;
   }
 
-  // Get the active position try rule index.
-  std::optional<size_t> active_position_try_index;
-  if (OutOfFlowData* out_of_flow_data = element->GetOutOfFlowData()) {
-    active_position_try_index =
-        out_of_flow_data->GetNewSuccessfulPositionOptionIndex();
-  }
-
   auto css_position_try_rules =
       std::make_unique<protocol::Array<protocol::CSS::CSSPositionTryRule>>();
   StyleResolver& style_resolver = document.GetStyleResolver();
-  const HeapVector<PositionTryOption>& options =
-      position_try_options->GetOptions();
-  for (wtf_size_t i = 0; i < options.size(); ++i) {
-    const PositionTryOption& option = options[i];
+  for (const PositionTryOption& option : position_try_options->GetOptions()) {
     if (const ScopedCSSName* scoped_name = option.GetPositionTryName()) {
       const TreeScope* tree_scope = scoped_name->GetTreeScope();
       if (!tree_scope) {
@@ -1339,8 +1328,6 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
           document_to_css_style_sheets_.end()) {
         continue;
       }
-      bool is_active = active_position_try_index.has_value() &&
-                       active_position_try_index.value() == i;
       for (CSSStyleSheet* style_sheet :
            *css_style_sheets_for_document_it->value) {
         if (CSSPositionTryRule* css_position_try_rule =
@@ -1349,7 +1336,7 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
               BindStyleSheet(css_position_try_rule->parentStyleSheet());
           css_position_try_rules->emplace_back(
               inspector_style_sheet->BuildObjectForPositionTryRule(
-                  css_position_try_rule, is_active));
+                  css_position_try_rule));
           break;
         }
       }

@@ -227,13 +227,13 @@ class OOFCandidateStyleIterator {
       if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
         may_invalidate_last_successful =
             element_->EnsureOutOfFlowData().SetPendingSuccessfulPositionOption(
-                position_try_options_, try_set, try_tactics, index);
+                position_try_options_, try_set, try_tactics);
       }
     } else if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
       may_invalidate_last_successful =
           out_of_flow_data->SetPendingSuccessfulPositionOption(
               position_try_options_,
-              /* try_set */ nullptr, kNoTryTactics, /* index */ std::nullopt);
+              /* try_set */ nullptr, kNoTryTactics);
     }
     if (may_invalidate_last_successful) {
       element_->GetDocument()

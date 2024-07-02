@@ -1,56 +1,11 @@
 Test that position-try rules are reported.
 Dumping CSS position-try rules: 
-@position-try --top (active) {
-    width: 100px; @[19:2-19:15]
-    height: 100px; @[20:2-20:16]
-    top: anchor(--anchor top); @[21:2-21:28]
-    width: 100px; @[undefined-undefined]
-    height: 100px; @[undefined-undefined]
+@position-try --top {
+    top: anchor(--anchor top); @[13:2-13:28]
     top: anchor(--anchor top); @[undefined-undefined]
 }
-@position-try --bottom (inactive) {
-    width: 50px; @[25:2-25:14]
-    height: 50px; @[26:2-26:15]
-    top: anchor(--anchor bottom); @[27:2-27:31]
-    width: 50px; @[undefined-undefined]
-    height: 50px; @[undefined-undefined]
+@position-try --bottom {
+    top: anchor(--anchor bottom); @[17:2-17:31]
     top: anchor(--anchor bottom); @[undefined-undefined]
 }
-w: 100, h: 100
-Dumping CSS position-try rules: 
-@position-try --top (inactive) {
-    width: 100px; @[19:2-19:15]
-    height: 100px; @[20:2-20:16]
-    top: anchor(--anchor top); @[21:2-21:28]
-    width: 100px; @[undefined-undefined]
-    height: 100px; @[undefined-undefined]
-    top: anchor(--anchor top); @[undefined-undefined]
-}
-@position-try --bottom (active) {
-    width: 50px; @[25:2-25:14]
-    height: 50px; @[26:2-26:15]
-    top: anchor(--anchor bottom); @[27:2-27:31]
-    width: 50px; @[undefined-undefined]
-    height: 50px; @[undefined-undefined]
-    top: anchor(--anchor bottom); @[undefined-undefined]
-}
-w: 50, h: 50
-Dumping CSS position-try rules: 
-@position-try --top (inactive) {
-    width: 100px; @[19:2-19:15]
-    height: 100px; @[20:2-20:16]
-    top: anchor(--anchor top); @[21:2-21:28]
-    width: 100px; @[undefined-undefined]
-    height: 100px; @[undefined-undefined]
-    top: anchor(--anchor top); @[undefined-undefined]
-}
-@position-try --bottom (inactive) {
-    width: 50px; @[25:2-25:14]
-    height: 50px; @[26:2-26:15]
-    top: anchor(--anchor bottom); @[27:2-27:31]
-    width: 50px; @[undefined-undefined]
-    height: 50px; @[undefined-undefined]
-    top: anchor(--anchor bottom); @[undefined-undefined]
-}
-w: 300, h: 300
 

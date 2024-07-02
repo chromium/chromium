@@ -207,8 +207,8 @@
         await this._dp.CSS.getMatchedStylesForNode({'nodeId': nodeId});
     this._testRunner.log('Dumping CSS position-try rules: ');
     for (const cssPositionTryRule of result.cssPositionTryRules) {
-      const status = Boolean(cssPositionTryRule.active) ? 'active' : 'inactive';
-      this._testRunner.log(`@position-try ${cssPositionTryRule.name.text} (${status}) {`);
+      this._testRunner.log(
+          '@position-try ' + cssPositionTryRule.name.text + ' {');
       this.dumpStyle(cssPositionTryRule.style, 0);
       this._testRunner.log('}');
     }
