@@ -128,9 +128,9 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
     : TemplateURLServiceTestUtil(TestingProfile::TestingFactories()) {}
 
 TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
-    const TestingProfile::TestingFactories& testing_factories) {
+    TestingProfile::TestingFactories testing_factories) {
   TestingProfile::Builder profile_builder;
-  profile_builder.AddTestingFactories(testing_factories);
+  profile_builder.AddTestingFactories(std::move(testing_factories));
   profile_ = profile_builder.Build();
 
   scoped_refptr<WebDatabaseService> web_database_service =

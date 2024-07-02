@@ -27,9 +27,9 @@ std::unique_ptr<TestingProfile> IdentityTestEnvironmentProfileAdaptor::
 // static
 std::unique_ptr<TestingProfile>
 IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
-    const TestingProfile::TestingFactories& input_factories) {
+    TestingProfile::TestingFactories input_factories) {
   TestingProfile::Builder builder;
-  builder.AddTestingFactories(input_factories);
+  builder.AddTestingFactories(std::move(input_factories));
   return CreateProfileForIdentityTestEnvironment(builder);
 }
 
@@ -47,7 +47,9 @@ void IdentityTestEnvironmentProfileAdaptor::
         content::BrowserContext* context) {
   for (auto& f : GetIdentityTestEnvironmentFactories()) {
     absl::visit(
-        [context](auto& p) { p.first->SetTestingFactory(context, p.second); },
+        [context](auto& p) {
+          p.first->SetTestingFactory(context, std::move(p.second));
+        },
         f.service_factory_and_testing_factory);
   }
 }

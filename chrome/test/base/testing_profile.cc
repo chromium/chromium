@@ -159,12 +159,22 @@ TestingProfile::TestingFactory::TestingFactory(
     : service_factory_and_testing_factory(
           std::pair(service_factory, std::move(testing_factory))) {}
 
-TestingProfile::TestingFactory::TestingFactory(const TestingFactory&) = default;
+TestingProfile::TestingFactory::TestingFactory(TestingFactory&&) = default;
 
 TestingProfile::TestingFactory& TestingProfile::TestingFactory::operator=(
-    const TestingFactory&) = default;
+    TestingFactory&&) = default;
 
 TestingProfile::TestingFactory::~TestingFactory() = default;
+
+TestingProfile::TestingFactories::TestingFactories() = default;
+
+TestingProfile::TestingFactories::TestingFactories(TestingFactories&&) =
+    default;
+
+TestingProfile::TestingFactories& TestingProfile::TestingFactories::operator=(
+    TestingFactories&&) = default;
+
+TestingProfile::TestingFactories::~TestingFactories() = default;
 
 // static
 const char TestingProfile::kDefaultProfileUserName[] = "testing_profile@test";
@@ -272,10 +282,11 @@ TestingProfile::TestingProfile(
   // Set any testing factories prior to initializing the services.
   for (const auto& f : testing_factories) {
     absl::visit(
-        [this](const auto& p) { p.first->SetTestingFactory(this, p.second); },
+        [this](auto& p) {
+          p.first->SetTestingFactory(this, std::move(p.second));
+        },
         f.service_factory_and_testing_factory);
   }
-  testing_factories.clear();
 
   Init(is_supervised_profile);
 
@@ -1135,9 +1146,10 @@ TestingProfile::Builder& TestingProfile::Builder::AddTestingFactory(
 }
 
 TestingProfile::Builder& TestingProfile::Builder::AddTestingFactories(
-    const TestingFactories& testing_factories) {
-  testing_factories_.insert(testing_factories_.end(), testing_factories.begin(),
-                            testing_factories.end());
+    TestingFactories testing_factories) {
+  for (auto& item : testing_factories) {
+    testing_factories_.push_back(std::move(item));
+  }
   return *this;
 }
 

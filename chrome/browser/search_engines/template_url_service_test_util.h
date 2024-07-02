@@ -59,7 +59,7 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
   TemplateURLServiceTestUtil();
   explicit TemplateURLServiceTestUtil(
-      const TestingProfile::TestingFactories& testing_factories);
+      TestingProfile::TestingFactories testing_factories);
 
   TemplateURLServiceTestUtil(const TemplateURLServiceTestUtil&) = delete;
   TemplateURLServiceTestUtil& operator=(const TemplateURLServiceTestUtil&) =

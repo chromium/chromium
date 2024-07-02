@@ -28,7 +28,7 @@ class IdentityTestEnvironmentProfileAdaptor {
   // |input_factories|.
   static std::unique_ptr<TestingProfile>
   CreateProfileForIdentityTestEnvironment(
-      const TestingProfile::TestingFactories& input_factories);
+      TestingProfile::TestingFactories input_factories);
 
   // Creates and returns a TestingProfile that has been configured with the
   // given |builder| and the set of testing factories that

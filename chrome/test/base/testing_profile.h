@@ -96,8 +96,8 @@ class TestingProfile : public Profile {
     TestingFactory(RefcountedBrowserContextKeyedServiceFactory* service_factory,
                    RefcountedBrowserContextKeyedServiceFactory::TestingFactory
                        testing_factory);
-    TestingFactory(const TestingFactory&);
-    TestingFactory& operator=(const TestingFactory&);
+    TestingFactory(TestingFactory&&);
+    TestingFactory& operator=(TestingFactory&&);
     ~TestingFactory();
 
     absl::variant<
@@ -107,7 +107,41 @@ class TestingProfile : public Profile {
                   RefcountedBrowserContextKeyedServiceFactory::TestingFactory>>
         service_factory_and_testing_factory;
   };
-  using TestingFactories = std::vector<TestingFactory>;
+
+  // Wrapper around std::vector that supports construction with aggregate
+  // style without relying on std::initializer_list (as it does not work
+  // with move-only types).
+  class TestingFactories {
+   public:
+    TestingFactories();
+
+    template <typename... Ts>
+      requires(... && std::same_as<Ts, TestingFactory>)
+    TestingFactories(Ts&&... ts) {
+      (..., factories_.push_back(std::move(ts)));
+    }
+
+    TestingFactories(TestingFactories&&);
+    TestingFactories& operator=(TestingFactories&&);
+
+    ~TestingFactories();
+
+    void push_back(TestingFactory testing_factory) {
+      factories_.push_back(std::move(testing_factory));
+    }
+
+    template <typename... Args>
+    void emplace_back(Args&&... args) {
+      factories_.emplace_back(std::forward<Args>(args)...);
+    }
+
+    using iterator = std::vector<TestingFactory>::iterator;
+    iterator begin() { return factories_.begin(); }
+    iterator end() { return factories_.end(); }
+
+   private:
+    std::vector<TestingFactory> factories_;
+  };
 
   // Helper class for building an instance of TestingProfile (allows injecting
   // mocks for various services prior to profile initialization).
@@ -142,9 +176,11 @@ class TestingProfile : public Profile {
     // Example use:
     //
     // AddTestingFactories(
-    //     {{RegularServiceFactory::GetInstance(), test_factory1},
-    //      {RefcountedServiceFactory::GetInstance(), test_factory2}});
-    Builder& AddTestingFactories(const TestingFactories& testing_factories);
+    //     {TestingProfile::TestingFactory{
+    //          RegularServiceFactory::GetInstance(), test_factory1},
+    //      TestingProfile::TestingFactory{
+    //          RefcountedServiceFactory::GetInstance(), test_factory2}});
+    Builder& AddTestingFactories(TestingFactories testing_factories);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Sets the ExtensionSpecialStoragePolicy to be returned by
