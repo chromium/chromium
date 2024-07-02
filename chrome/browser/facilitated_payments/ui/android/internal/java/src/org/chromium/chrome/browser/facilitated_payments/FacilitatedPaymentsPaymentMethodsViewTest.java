@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
@@ -48,6 +49,7 @@ import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -110,6 +112,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             new PropertyModel.Builder(
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE_STATE, HIDDEN)
+                                    .with(DISMISS_HANDLER, (Integer unused) -> {})
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
@@ -124,7 +127,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    public void testVisibilityChangedByModel() {
+    public void testViewCanBeShownUsingTheModel() {
+        // Confirm that the bottom sheet is not open.
+        assertThat(mBottomSheetController.isSheetOpen(), is(false));
+
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, FOP_SELECTOR);
@@ -133,10 +139,46 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                             .add(
                                     new ListItem(
                                             BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    runOnUiThreadBlocking(() -> mModel.set(VISIBLE_STATE, SHOWN));
                 });
-        runOnUiThreadBlocking(() -> mModel.set(VISIBLE_STATE, SHOWN));
+
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Verify that the bottom sheet is opened, and shows the view.
+        assertThat(mBottomSheetController.isSheetOpen(), is(true));
         assertThat(mView.getContentView().isShown(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testViewCanBeHiddenUsingTheModel() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BANK_ACCOUNT, createBankAccountModel(BANK_ACCOUNT_1)));
+                    runOnUiThreadBlocking(() -> mModel.set(VISIBLE_STATE, SHOWN));
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // Confirm that the bottom sheet is opened, and shows the view.
+        assertThat(mBottomSheetController.isSheetOpen(), is(true));
+        assertThat(mView.getContentView().isShown(), is(true));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE_STATE, HIDDEN);
+                });
+
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        // Verify that the view is hidden, and the bottom sheet is closed.
+        assertThat(mView.getContentView().isShown(), is(false));
+        assertThat(mBottomSheetController.isSheetOpen(), is(false));
     }
 
     @Test

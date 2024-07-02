@@ -108,6 +108,7 @@ android_library("javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:callback_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_public_base_module_java_for_test",
     "//chrome/browser/flags:java",
