@@ -1,0 +1,18 @@
+<style include="wallpaper common sea-pen">
+  #grid {
+    overflow-y: auto;
+  }
+</style>
+<h2 class="wallpaper-collections-heading">Sample Prompts</h2>
+<iron-list id="grid"
+    items="[[samples]]"
+    as="sample"
+    grid
+    role="listbox">
+  <template>
+    <wallpaper-grid-item
+        primary-text="[[sample.prompt]]"
+        src="[[sample.preview]]">
+    </wallpaper-grid-item>
+  </template>
+</iron-list>

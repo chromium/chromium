@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import './sea_pen_images_element.js';
 import './sea_pen_input_query_element.js';
 import './sea_pen_recent_wallpapers_element.js';
+import './sea_pen_samples_element.js';
 import './sea_pen_template_query_element.js';
 import './sea_pen_templates_element.js';
 import './sea_pen_introduction_dialog_element.js';

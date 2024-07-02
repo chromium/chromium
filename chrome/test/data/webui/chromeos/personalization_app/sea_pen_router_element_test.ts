@@ -4,7 +4,7 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenIntroductionDialogElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, SeaPenInputQueryElement, SeaPenIntroductionDialogElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenSamplesElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -78,7 +78,7 @@ suite('SeaPenRouterElementTest', function() {
   });
 
   test(
-      'shows freeform page with input query, recent images and images elements',
+      'shows freeform page with input query, sample prompts, recent images and images elements',
       async () => {
         loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
         routerElement = initElement(SeaPenRouterElement, {
@@ -90,7 +90,11 @@ suite('SeaPenRouterElementTest', function() {
         assertTrue(
             !!routerElement.shadowRoot!.querySelector(
                 SeaPenInputQueryElement.is),
-            'input query element shown on root');
+            'input query element shown on freeform page');
+
+        assertTrue(
+            !!routerElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
+            'sample prompts element shown on freeform page');
 
         assertTrue(
             !!routerElement.shadowRoot!.querySelector(
@@ -101,6 +105,24 @@ suite('SeaPenRouterElementTest', function() {
             !!routerElement.shadowRoot!.querySelector(SeaPenImagesElement.is),
             'sea-pen-images shown on freeform page');
       });
+
+  test('shows 6 sample prompts in freeform freeform page', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    routerElement = initElement(SeaPenRouterElement, {
+      basePath: '/base',
+    });
+    routerElement.goToRoute(SeaPenPaths.FREEFORM);
+    await waitAfterNextRender(routerElement);
+
+    const samplesElement =
+        routerElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+    assertTrue(
+        !!samplesElement, 'sample prompts element shown on freeform page');
+    const samples =
+        samplesElement.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            `${WallpaperGridItemElement.is}:not([hidden])`);
+    assertEquals(6, samples.length, 'there are 6 sample prompts');
+  });
 
   test(
       'shows zero state svg when a template is selected from root',

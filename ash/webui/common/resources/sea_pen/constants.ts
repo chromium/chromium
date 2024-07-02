@@ -14,6 +14,11 @@ export const QUERY: Query = 'Query';
 // thumbnail, this is `SeaPenThumbnail.id`.
 export type SeaPenImageId = number;
 
+export interface SeaPenSamplePrompt {
+  prompt: string;
+  preview: Url;
+}
+
 export interface SeaPenOption {
   // `value` is the actual option value to be sent to the server side.
   value: SeaPenTemplateOption;
@@ -70,4 +75,49 @@ export const SEA_PEN_SUGGESTIONS: string[] = [
   'olive',
   'cerulean',
   'beige',
+];
+
+export const SEA_PEN_SAMPLES: SeaPenSamplePrompt[] = [
+  {
+    prompt: 'A fluffy golden retreiver puppy with floppy ears',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_glowscapes.jpg',
+    },
+  },
+  {
+    prompt: 'A time lapse photo of a bioluminescent beach',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_dreamscapes.jpg',
+    },
+  },
+  {
+    prompt: 'Sand dunes with abstract shadows at dawn',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_terrain.jpg',
+    },
+  },
+  {
+    prompt: 'A misty green forest of flowering cactus',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_surreal.jpg',
+    },
+  },
+  {
+    prompt: 'A beige feathergrass stem on a pink background',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_art.jpg',
+    },
+  },
+  {
+    prompt: 'A cat riding a unicorn off into the sunset',
+    preview: {
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_characters.jpg',
+    },
+  },
 ];
