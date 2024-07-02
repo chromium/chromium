@@ -838,7 +838,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1607139524282324606">Hapus entri</translation>
 <translation id="1607499585984539560">Pengguna tidak berafiliasi dengan domain</translation>
 <translation id="1608668830839595724">Tindakan lainnya untuk item terpilih</translation>
-<translation id="1608698493373028805">Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat</translation>
 <translation id="1610272688494140697">Setelan Aplikasi</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611432201750675208">Perangkat Anda terkunci</translation>
@@ -1919,6 +1918,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2376056713414548745">Bacakan lisan</translation>
 <translation id="2377667304966270281">Hard Fault</translation>
 <translation id="237828693408258535">Terjemahkan halaman ini?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}other{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}}</translation>
 <translation id="2378982052244864789">Pilih direktori ekstensi.</translation>
 <translation id="2379281330731083556">Cetak menggunakan dialog sistem... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Hal ini dapat menyebabkan jaringan seluler Anda terputus selama beberapa menit</translation>
@@ -4208,6 +4208,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="406213378265872299">Perilaku khusus</translation>
 <translation id="4062561150282203854">Sinkronkan aplikasi, setelan, dan lainnya di <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Jaringan yang digunakan (<ph name="NETWORK_ID" />) mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
+<translation id="4065931125325392744">Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat</translation>
 <translation id="4066207411788646768">Periksa koneksi untuk melihat printer yang tersedia dalam jaringan Anda</translation>
 <translation id="4067839975993712852">Tandai tab saat ini sebagai telah dibaca</translation>
 <translation id="4068776064906523561">Sidik jari yang disimpan</translation>
@@ -10205,7 +10206,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8636500887554457830">Jangan izinkan situs mengirim pop-up atau menggunakan pengalihan</translation>
 <translation id="8636514272606969031">Panel samping disematkan</translation>
 <translation id="8637688295594795546">Pembaruan sistem tersedia. Bersiap mendownload...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}other{Ekstensi ini mungkin tidak akan didukung lagi dalam waktu dekat}}</translation>
 <translation id="8638719155236856752">Kesehatan Jaringan ChromeOS</translation>
 <translation id="8639635302972078117">Kirimkan data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda dan akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini mungkin akan disimpan ke Akun Google miliknya.</translation>
 <translation id="8640575194957831802">Terakhir dibuka</translation>

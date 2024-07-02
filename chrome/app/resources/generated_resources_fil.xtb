@@ -839,7 +839,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1607139524282324606">I-clear ang entry</translation>
 <translation id="1607499585984539560">Hindi affiliated ang user sa domain</translation>
 <translation id="1608668830839595724">Higit pang pagkilos para sa mga napiling item</translation>
-<translation id="1608698493373028805">Posibleng hindi na suportahan ang extension na ito sa hinaharap</translation>
 <translation id="1610272688494140697">Mga Setting ng App</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Naka-lock ang iyong device</translation>
@@ -1920,6 +1919,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2376056713414548745">Basahin nang malakas</translation>
 <translation id="2377667304966270281">Mga Hard Fault</translation>
 <translation id="237828693408258535">I-translate ang page na ito?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Posibleng hindi na suportahan ang extension na ito sa hinaharap}one{Posibleng hindi na suportahan ang mga extension na ito sa hinaharap}other{Posibleng hindi na suportahan ang mga extension na ito sa hinaharap}}</translation>
 <translation id="2378982052244864789">Piliin ang direktoryo ng extension.</translation>
 <translation id="2379281330731083556">I-print gamit ang dialog ng system... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Posibleng madiskonekta ang iyong mobile network nang ilang minuto dahil dito</translation>
@@ -4209,6 +4209,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="406213378265872299">Mga naka-customize na gawi</translation>
 <translation id="4062561150282203854">I-sync ang iyong mga app, setting, at higit pa sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Maaaring hilingin sa iyo ng network na ginagamit mo (<ph name="NETWORK_ID" />) na bisitahin ang page sa pag-log in nito.</translation>
+<translation id="4065931125325392744">Posibleng hindi na suportahan ang extension na ito sa hinaharap</translation>
 <translation id="4066207411788646768">Pakisuri ang iyong koneksyon para makita ang mga available na printer sa network mo</translation>
 <translation id="4067839975993712852">Markahan ang kasalukuyang tab bilang nabasa na</translation>
 <translation id="4068776064906523561">Mga naka-save na fingerprint</translation>
@@ -10210,7 +10211,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8636500887554457830">Huwag payagan ang mga site na magpadala ng mga pop-up o gumamit ng mga pag-redirect</translation>
 <translation id="8636514272606969031">Na-pin ang panel sa gilid</translation>
 <translation id="8637688295594795546">Available ang update sa system. Hinahandang i-download…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Posibleng hindi na suportahan ang extension na ito sa hinaharap}one{Posibleng hindi na suportahan ang mga extension na ito sa hinaharap}other{Posibleng hindi na suportahan ang mga extension na ito sa hinaharap}}</translation>
 <translation id="8638719155236856752">Katayuan ng Network ng ChromeOS</translation>
 <translation id="8639635302972078117">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
 <translation id="8640575194957831802">huling binuksan noong</translation>

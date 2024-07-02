@@ -490,7 +490,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> के.बि. उपलब्ध छ</translation>
 <translation id="3549657413697417275">आफ्नो ब्राउजिङको इतिहासमा खोज्नुहोस्।</translation>
-<translation id="3557336313807607643">सम्पर्क ठेगानामा थप्नुहोस्</translation>
+<translation id="3557336313807607643">कन्ट्याक्टमा हाल्नुहोस्</translation>
 <translation id="3563767357928833671">क्लिपबोर्डमा भएका सामग्री देखाइए</translation>
 <translation id="3566639033325271639">सेटिङ अपडेट गर्नुहोस्</translation>
 <translation id="357465026686164600">फोनलाई सुरक्षा साँचोका रूपमा प्रयोग गर्ने सुविधा</translation>
@@ -565,7 +565,7 @@
 <translation id="3976396876660209797">यो सर्टकट हटाउनुहोस्‌ र यसलाई पुन: सिर्जना गर्नुहोस्‌</translation>
 <translation id="3985022125189960801">तपाईं कुनै साइटलाई तपाईंलाई मन पर्ने कुराहरू अनुमान लगाउन सक्ने साइटहरूको समूहमा समावेश गर्न चाहनुहुन्छ भने उक्त साइट पुनः हाल्नुहोस्</translation>
 <translation id="3985215325736559418">तपाईं फेरि <ph name="FILE_NAME" /> डाउनलोड गर्न चाहनुहुन्छ?</translation>
-<translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="3987993985790029246">लिंक कपी गर्नुहोस्</translation>
 <translation id="3991055816270226534">तेस्रो पक्षीय कुकी तथा ट्र्याकिङसम्बन्धी सुरक्षाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
@@ -781,7 +781,7 @@
 <translation id="499724277181351974">नेभिगेट गर्नुहोस्: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">यहाँ क्लिक गरी यो साइट फलो गर्नुहोस्</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
-<translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
+<translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
 <translation id="5010886807652684893">भिजुअल भ्यू</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
@@ -1113,7 +1113,7 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउजर ट्याब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
-<translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
+<translation id="6671495933530132209">छविको कपी गर्नुहोस्</translation>
 <translation id="6672697278890207089">आफ्नो पासफ्रेज हाल्नुहोस्</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> हाल्नुहोस्</translation>
 <translation id="6674571176963658787">सिंक गर्ने कार्य सुरु गर्न आफ्नो पासफ्रेज हाल्नुहोस्</translation>
@@ -1163,7 +1163,7 @@
 <translation id="688398477366397178">वेबसाइटहरूलाई तपाईंले बोल्ने भाषाहरूका बारेमा जानकारी दिनुहोस्। ती वेबसाइटहरूले सम्भव भएसम्म त्यस्ता भाषाहरूमा सामग्री देखाउने छन्।</translation>
 <translation id="688738109438487280">विद्यमान डेटा <ph name="TO_ACCOUNT" /> मा थप्नुहोस्।</translation>
 <translation id="6891726759199484455">आफ्नो पासवर्ड कपी गर्न अनलक गर्नुहोस्</translation>
-<translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
+<translation id="6896758677409633944">कपी गर्नुहोस्</translation>
 <translation id="6898797562238201317">आफ्नो Google खातामा भएका Chrome का सबै डेटा इन्क्रिप्ट गर्न आफ्नै पासफ्रेज प्रयोग गर्नुहोस्</translation>
 <translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6903907808598579934">सिंकलाई अन गर्नुहोस्</translation>

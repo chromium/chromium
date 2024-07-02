@@ -838,7 +838,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1607139524282324606">Clear entry</translation>
 <translation id="1607499585984539560">User is not affiliated with domain</translation>
 <translation id="1608668830839595724">More actions for selected items</translation>
-<translation id="1608698493373028805">This extension may soon no longer be supported</translation>
 <translation id="1610272688494140697">App settings</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Your device is locked</translation>
@@ -1919,6 +1918,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2376056713414548745">Read aloud</translation>
 <translation id="2377667304966270281">Hard Faults</translation>
 <translation id="237828693408258535">Translate this page?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{This extension may soon no longer be supported}other{These extensions may soon no longer be supported}}</translation>
 <translation id="2378982052244864789">Select the extension directory.</translation>
 <translation id="2379281330731083556">Print using system dialogue... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">This may cause your mobile network to disconnect for a few minutes</translation>
@@ -4208,6 +4208,7 @@ This can include information about installed software, files, your browser and t
 <translation id="406213378265872299">Customised behaviours</translation>
 <translation id="4062561150282203854">Sync your <ph name="DEVICE_TYPE" /> apps, settings and more</translation>
 <translation id="4065876735068446555">The network you are using (<ph name="NETWORK_ID" />) may require you to visit its login page.</translation>
+<translation id="4065931125325392744">This extension may soon no longer be supported</translation>
 <translation id="4066207411788646768">Please check your connection to see available printers in your network</translation>
 <translation id="4067839975993712852">Mark current tab as read</translation>
 <translation id="4068776064906523561">Saved fingerprints</translation>
@@ -10206,7 +10207,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8636500887554457830">Don't allow sites to send pop-ups or use redirects</translation>
 <translation id="8636514272606969031">Side panel pinned</translation>
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{This extension may soon no longer be supported}other{These extensions may soon no longer be supported}}</translation>
 <translation id="8638719155236856752">ChromeOS Network Health</translation>
 <translation id="8639635302972078117">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="8640575194957831802">Last opened</translation>

@@ -838,7 +838,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1607139524282324606">Kosongkan masukan</translation>
 <translation id="1607499585984539560">Pengguna tiada kena-mengena dengan domain</translation>
 <translation id="1608668830839595724">Lagi tindakan untuk item yang dipilih</translation>
-<translation id="1608698493373028805">Sambungan ini tidak akan disokong lagi dalam masa terdekat</translation>
 <translation id="1610272688494140697">Tetapan Apl</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611432201750675208">Peranti anda dikunci</translation>
@@ -1919,6 +1918,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2376056713414548745">Baca dengan lantang</translation>
 <translation id="2377667304966270281">Kesalahan Keras</translation>
 <translation id="237828693408258535">Terjemah halaman ini?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Sokongan untuk sambungan ini akan dihentikan tidak lama lagi}other{Sokongan untuk sambungan ini akan dihentikan tidak lama lagi}}</translation>
 <translation id="2378982052244864789">Pilih direktori sambungan.</translation>
 <translation id="2379281330731083556">Cetak menggunakan dialog sistem... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Tindakan ini boleh menyebabkan rangkaian mudah alih anda terputus sambungan selama beberapa minit</translation>
@@ -4208,6 +4208,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="406213378265872299">Gelagat tersuai</translation>
 <translation id="4062561150282203854">Segerakkan apl, tetapan dan pelbagai lagi data <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4065876735068446555">Rangkaian yang anda gunakan (<ph name="NETWORK_ID" />) mungkin memerlukan anda untuk melawati halaman log masuknya.</translation>
+<translation id="4065931125325392744">Sokongan untuk sambungan ini akan dihentikan tidak lama lagi</translation>
 <translation id="4066207411788646768">Sila periksa sambungan anda untuk melihat pencetak yang tersedia dalam rangkaian anda</translation>
 <translation id="4067839975993712852">Tandai tab semasa sebagai dibaca</translation>
 <translation id="4068776064906523561">Cap jari disimpan</translation>
@@ -10207,7 +10208,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8636500887554457830">Jangan benarkan laman menghantar kandungan timbul atau menggunakan ubah hala</translation>
 <translation id="8636514272606969031">Panel sisi disematkan</translation>
 <translation id="8637688295594795546">Kemas kini sistem tersedia. Bersedia untuk  muat turun…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak akan disokong lagi tidak lama lagi}other{Sambungan ini tidak akan disokong lagi tidak lama lagi}}</translation>
 <translation id="8638719155236856752">Kesihatan Rangkaian ChromeOS</translation>
 <translation id="8639635302972078117">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya.</translation>
 <translation id="8640575194957831802">Terakhir dibuka</translation>

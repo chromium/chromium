@@ -837,7 +837,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1607139524282324606">Sula ukungena</translation>
 <translation id="1607499585984539560">Umsebenzisi akalona inxusa lesizinda</translation>
 <translation id="1608668830839595724">Izenzo eziningi zezinto ezikhethiwe</translation>
-<translation id="1608698493373028805">Lesi sandiso kungenzeka siyeke ukusekelwa maduze</translation>
 <translation id="1610272688494140697">Amasethingi we-App</translation>
 <translation id="161042844686301425">I-Cyan</translation>
 <translation id="1611432201750675208">Idivayisi yakho ikhiyiwe</translation>
@@ -1920,6 +1919,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2376056713414548745">Fundela phezulu</translation>
 <translation id="2377667304966270281">Amaphutha aqinile</translation>
 <translation id="237828693408258535">Humusha leli khasi?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Lesi sandiso kungenzeka siyeke ukusekelwa maduze}one{Lezi zandiso kungenzeka ziyeke ukusekelwa maduze}other{Lezi zandiso kungenzeka ziyeke ukusekelwa maduze}}</translation>
 <translation id="2378982052244864789">Khetha umkhombandlela wesandiso.</translation>
 <translation id="2379281330731083556">Phrinta usebenzisa ingxoxo yesistimu... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Lokhu kungabangela ukuthi inethiwekhi yakho yeselula inqamuke imizuzu embalwa</translation>
@@ -4208,6 +4208,7 @@ Lokhu kungafaka ulwazi mayelana nesofthiwe efakiwe, amafayela, ibhrawuza yakho, 
 <translation id="406213378265872299">Ukuziphatha okwenziwe ngendlela oyifisayo</translation>
 <translation id="4062561150282203854">Vumelanisa ama-app wakho, amasethingi, nokuningi kwe-<ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Inethiwekhi oyisebenzisayo (<ph name="NETWORK_ID" />) ingadinga ukuthi uvakashele ikhasi layo lokungena ngemvume.</translation>
+<translation id="4065931125325392744">Lesi sandiso kungenzeka siyeke ukusekelwa maduze</translation>
 <translation id="4066207411788646768">Sicela uhlole ukuxhumeka kwakho ukuze ubone amaphrinta atholakalayo kunethiwekhi yakho</translation>
 <translation id="4067839975993712852">Maka ithebhu yamanje njengefundiwe</translation>
 <translation id="4068776064906523561">Izigxivizo zeminwe ezilondoloziwe</translation>
@@ -10206,7 +10207,6 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8636500887554457830">Ungavumeli amasayithi athumele okwesikhashana noma asebenzise ukuqondisa kabusha</translation>
 <translation id="8636514272606969031">Iphaneli eseceleni iphiniwe</translation>
 <translation id="8637688295594795546">Ukubuyekezwa kwesistimu kuyatholakala. Ilungiselela ukulanda…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Lesi sandiso kungenzeka siyeke ukusekelwa maduze}one{Lezi zandiso kungenzeka ziyeke ukusekelwa maduze}other{Lezi zandiso kungenzeka ziyeke ukusekelwa maduze}}</translation>
 <translation id="8638719155236856752">Inethiwekhi Yezempilo ye-ChromeOS</translation>
 <translation id="8639635302972078117">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa wakho we-Android ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa ku-app kuGoogle. Lokhu kuzosiza ukuzinza kwesistimu ne-app nokunye ukuthuthukiswa. Enye idatha izophinda isize ama-app eGoogle nozakwethu, abafana nonjiniyela be-Android. Uma isethingi yakho esingeziwe somsebenzi wewebhu ne-appp ivuliwe, le datha ingalondolozwa ku-akhawunti yakho yeGoogle.</translation>
 <translation id="8640575194957831802">Kugcine ukuvulwa</translation>

@@ -835,7 +835,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1607139524282324606">Cancella voce</translation>
 <translation id="1607499585984539560">L'utente non è affiliato al dominio</translation>
 <translation id="1608668830839595724">Altre azioni per gli elementi selezionati</translation>
-<translation id="1608698493373028805">A breve questa estensione potrebbe non essere più supportata</translation>
 <translation id="1610272688494140697">Impostazioni app</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">Il tuo dispositivo è bloccato</translation>
@@ -1904,6 +1903,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2376056713414548745">Leggi ad alta voce</translation>
 <translation id="2377667304966270281">Errori hardware</translation>
 <translation id="237828693408258535">Vuoi tradurre questa pagina?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{A breve questa estensione potrebbe non essere più supportata}other{A breve queste estensioni potrebbero non essere più supportate}}</translation>
 <translation id="2378982052244864789">Seleziona la directory dell'estensione.</translation>
 <translation id="2379281330731083556">Stampa utilizzando la finestra di dialogo di sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Questa operazione potrebbe causare la disconnessione della rete mobile per alcuni minuti</translation>
@@ -4192,6 +4192,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="406213378265872299">Comportamenti personalizzati</translation>
 <translation id="4062561150282203854">Sincronizza le app, le impostazioni e altri dati del tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">La rete in uso (<ph name="NETWORK_ID" />) potrebbe richiedere la visita della relativa pagina di accesso.</translation>
+<translation id="4065931125325392744">A breve questa estensione potrebbe non essere più supportata</translation>
 <translation id="4066207411788646768">Controlla la connessione per rilevare le stampanti disponibili nella tua rete</translation>
 <translation id="4067839975993712852">Contrassegna la scheda corrente come già letta</translation>
 <translation id="4068776064906523561">Impronte digitali salvate</translation>
@@ -10186,7 +10187,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8636500887554457830">Non consentire ai siti di inviare popup o utilizzare reindirizzamenti</translation>
 <translation id="8636514272606969031">Riquadro laterale bloccato</translation>
 <translation id="8637688295594795546">Aggiornamento del sistema disponibile. Preparazione per il download in corso…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{A breve questa estensione potrebbe non essere più supportata}other{A breve queste estensioni potrebbero non essere più supportate}}</translation>
 <translation id="8638719155236856752">Integrità della rete ChromeOS</translation>
 <translation id="8639635302972078117">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google.</translation>
 <translation id="8640575194957831802">Ultimi aperti</translation>

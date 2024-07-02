@@ -838,7 +838,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1607139524282324606">Bejegyzés törlése</translation>
 <translation id="1607499585984539560">A felhasználó nem tartozik domainhez</translation>
 <translation id="1608668830839595724">További műveletek a kiválasztott elemeknél</translation>
-<translation id="1608698493373028805">Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik</translation>
 <translation id="1610272688494140697">Alkalmazásbeállítások</translation>
 <translation id="161042844686301425">Cián</translation>
 <translation id="1611432201750675208">Eszköze zárolva van</translation>
@@ -1918,6 +1917,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2376056713414548745">Hangos felolvasás</translation>
 <translation id="2377667304966270281">Súlyos laphiba</translation>
 <translation id="237828693408258535">Szeretné kérni az oldal lefordítását?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik}other{Előfordulhat, hogy ezeknek a bővítményeknek a támogatása hamarosan megszűnik}}</translation>
 <translation id="2378982052244864789">A bővítmény könyvtárának kiválasztása.</translation>
 <translation id="2379281330731083556">Nyomtatás a rendszer párbeszédablakán keresztül... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
@@ -4206,6 +4206,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="406213378265872299">Személyre szabott viselkedések</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" />-alkalmazások, -beállítások és egyebek szinkronizálása</translation>
 <translation id="4065876735068446555">Előfordulhat, hogy az Ön által használt hálózat (<ph name="NETWORK_ID" />) előírja a bejelentkezési oldal felkeresését.</translation>
+<translation id="4065931125325392744">Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik</translation>
 <translation id="4066207411788646768">A hálózatán hozzáférhető nyomtatók megtekintéséhez ellenőrizze az internetkapcsolatot</translation>
 <translation id="4067839975993712852">Aktuális lap megjelölése olvasottként</translation>
 <translation id="4068776064906523561">Mentett ujjlenyomatok</translation>
@@ -10204,7 +10205,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8636500887554457830">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
 <translation id="8636514272606969031">Oldalsó panel rögzítve</translation>
 <translation id="8637688295594795546">Megjelent egy rendszerfrissítés. Felkészülés a letöltésre...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Előfordulhat, hogy ennek a bővítménynek a támogatása hamarosan megszűnik}other{Előfordulhat, hogy ezeknek a bővítményeknek a támogatása hamarosan megszűnik}}</translation>
 <translation id="8638719155236856752">A ChromeOS-hálózat állapota</translation>
 <translation id="8639635302972078117">Használati és diagnosztikai adatok küldése. Ez az eszköz jelenleg automatikusan küld diagnosztikai, eszköz- és alkalmazáshasználati adatokat a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek, nem használjuk fel őket az Ön gyermekének azonosítására. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába.</translation>
 <translation id="8640575194957831802">Legutóbb megnyitva</translation>

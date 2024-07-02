@@ -838,7 +838,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1607139524282324606">Kustuta sisestus</translation>
 <translation id="1607499585984539560">Kasutaja ei ole domeeniga seotud</translation>
 <translation id="1608668830839595724">Rohkem toiminguid valitud üksuste jaoks</translation>
-<translation id="1608698493373028805">Selle laienduse tugi võidakse varsti katkestada</translation>
 <translation id="1610272688494140697">Rakenduse seaded</translation>
 <translation id="161042844686301425">Tsüaan</translation>
 <translation id="1611432201750675208">Teie seade on lukustatud</translation>
@@ -1910,6 +1909,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2376056713414548745">Ettelugemine</translation>
 <translation id="2377667304966270281">Tõsised vead</translation>
 <translation id="237828693408258535">Kas tõlkida see leht?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Selle laienduse tugi võidakse varsti katkestada}other{Nende laienduste tugi võidakse varsti katkestada}}</translation>
 <translation id="2378982052244864789">Laiendi kataloogi valimine.</translation>
 <translation id="2379281330731083556">Prindi süsteemidialoogi abil ... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Selle tõttu võib teie mobiilsidevõrgu ühendus mõneks minutiks katkeda</translation>
@@ -4199,6 +4199,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="406213378265872299">Kohandatud käitumised</translation>
 <translation id="4062561150282203854">Sünkroonige oma seadme <ph name="DEVICE_TYPE" /> rakendused, seaded ja muud</translation>
 <translation id="4065876735068446555">Teie kasutatav võrk (<ph name="NETWORK_ID" />) võib nõuda sisselogimislehe külastamist.</translation>
+<translation id="4065931125325392744">Selle laienduse tugi võidakse varsti katkestada</translation>
 <translation id="4066207411788646768">Kontrollige oma ühendust, et näha teie võrgus saadaolevaid printereid</translation>
 <translation id="4067839975993712852">Märgi praegune vaheleht loetuks</translation>
 <translation id="4068776064906523561">Salvestatud sõrmejäljed</translation>
@@ -10196,7 +10197,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8636500887554457830">Ära luba saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
 <translation id="8636514272606969031">Külgpaneel on kinnitatud</translation>
 <translation id="8637688295594795546">Süsteemiuuendus on saadaval. Allalaadimiseks valmistumine …</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Selle laienduse tugi võidakse varsti katkestada}other{Nende laienduste tugi võidakse varsti katkestada}}</translation>
 <translation id="8638719155236856752">ChromeOS-i võrgu seisukord</translation>
 <translation id="8639635302972078117">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. Neid andmeid ei kasutata teie lapse isiku tuvastamiseks ning need aitavad parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole.</translation>
 <translation id="8640575194957831802">Viimati avatud</translation>

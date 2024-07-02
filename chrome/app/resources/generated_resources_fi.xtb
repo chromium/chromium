@@ -838,7 +838,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1607139524282324606">Tyhjennä merkintä</translation>
 <translation id="1607499585984539560">Käyttäjä ei liity verkkotunnukseen</translation>
 <translation id="1608668830839595724">Lisää toimintoja valituille kohteille</translation>
-<translation id="1608698493373028805">Tätä laajennusta ei ehkä pian enää tueta</translation>
 <translation id="1610272688494140697">Sovellusasetukset</translation>
 <translation id="161042844686301425">Turkoosi</translation>
 <translation id="1611432201750675208">Laitteesi on lukittu</translation>
@@ -1918,6 +1917,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2376056713414548745">Lue ääneen</translation>
 <translation id="2377667304966270281">Levyn sivuvirheet</translation>
 <translation id="237828693408258535">Käännetäänkö tämä sivu?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei ehkä pian enää tueta}other{Näitä laajennuksia ei ehkä pian enää tueta}}</translation>
 <translation id="2378982052244864789">Valitse laajennuksen hakemisto.</translation>
 <translation id="2379281330731083556">Tulosta järjestelmän tulostusikkunalla... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Tämä voi katkaista mobiiliverkkoyhteyden muutamaksi minuutiksi</translation>
@@ -4204,6 +4204,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="406213378265872299">Muokattu käytäntö</translation>
 <translation id="4062561150282203854">Synkronoi <ph name="DEVICE_TYPE" />-sovellukset ja ‑asetukset</translation>
 <translation id="4065876735068446555">Käyttämäsi verkko (<ph name="NETWORK_ID" />) saattaa edellyttää kirjautumista.</translation>
+<translation id="4065931125325392744">Tätä laajennusta ei ehkä pian enää tueta</translation>
 <translation id="4066207411788646768">Tarkista yhteys, jotta näet verkossasi saatavilla olevat tulostimet</translation>
 <translation id="4067839975993712852">Merkitse nykyinen välilehti luetuksi</translation>
 <translation id="4068776064906523561">Tallennetut sormenjäljet</translation>
@@ -10201,7 +10202,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8636500887554457830">Älä salli sivustojen lähettää ponnahdusikkunoita tai käyttää uudelleenohjauksia</translation>
 <translation id="8636514272606969031">Sivupaneeli kiinnitetty</translation>
 <translation id="8637688295594795546">Järjestelmäpäivitys saatavilla. Valmistellaan latausta...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei ehkä pian enää tueta}other{Näitä laajennuksia ei ehkä pian enää tueta}}</translation>
 <translation id="8638719155236856752">ChromeOS:n verkon tila</translation>
 <translation id="8639635302972078117">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella päällä, tätä dataa voidaan tallentaa hänen Google-tililleen.</translation>
 <translation id="8640575194957831802">Avattu viimeksi</translation>

@@ -835,7 +835,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1607139524282324606">Limpar entrada</translation>
 <translation id="1607499585984539560">O utilizador não está afiliado ao domínio</translation>
 <translation id="1608668830839595724">Mais ações para os itens selecionados</translation>
-<translation id="1608698493373028805">Esta extensão pode deixar de ser suportada em breve</translation>
 <translation id="1610272688494140697">Definições da app</translation>
 <translation id="161042844686301425">Turquesa</translation>
 <translation id="1611432201750675208">O seu dispositivo está bloqueado</translation>
@@ -1904,6 +1903,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2376056713414548745">Ler em voz alta</translation>
 <translation id="2377667304966270281">Falhas de hardware</translation>
 <translation id="237828693408258535">Quer traduzir esta página?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Esta extensão pode deixar de ser suportada em breve}other{Estas extensões podem deixar de ser suportadas em breve}}</translation>
 <translation id="2378982052244864789">Selecione o diretório da extensão.</translation>
 <translation id="2379281330731083556">Imprimir utilizando a caixa de diálogo do sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Isto pode fazer com que a sua rede móvel se desligue por alguns minutos</translation>
@@ -4194,6 +4194,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="406213378265872299">Comportamentos personalizados</translation>
 <translation id="4062561150282203854">Sincronize as apps, as definições e muito mais do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">A rede que está a utilizar (<ph name="NETWORK_ID" />) pode exigir que visite a respetiva página de início de sessão.</translation>
+<translation id="4065931125325392744">Esta extensão pode deixar de ser suportada em breve</translation>
 <translation id="4066207411788646768">Verifique a ligação para ver as impressões disponíveis na sua rede.</translation>
 <translation id="4067839975993712852">Marcar o separador atual como lido</translation>
 <translation id="4068776064906523561">Impressões digitais guardadas</translation>
@@ -10192,7 +10193,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8636500887554457830">Não permitir que os sites enviem pop-ups ou usem redirecionamentos</translation>
 <translation id="8636514272606969031">Painel lateral afixado</translation>
 <translation id="8637688295594795546">Actualização do sistema disponível. A preparar a transferência...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Esta extensão pode deixar de ser suportada em breve}other{Estas extensões podem deixar de ser suportadas em breve}}</translation>
 <translation id="8638719155236856752">Estado da rede do ChromeOS</translation>
 <translation id="8639635302972078117">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Estes dados não serão utilizados para identificar a criança e ajudarão a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google.</translation>
 <translation id="8640575194957831802">Último acesso</translation>

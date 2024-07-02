@@ -835,7 +835,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1607139524282324606">Garbitu sarrera</translation>
 <translation id="1607499585984539560">Erabiltzailea ez dago kidetuta domeinuarekin</translation>
 <translation id="1608668830839595724">Ekintza gehiago hautatutako elementuetarako</translation>
-<translation id="1608698493373028805">Laster, baliteke luzapen hau ez onartzea</translation>
 <translation id="1610272688494140697">Aplikazioen ezarpenak</translation>
 <translation id="161042844686301425">Ziana</translation>
 <translation id="1611432201750675208">Gailua blokeatuta dago</translation>
@@ -1904,6 +1903,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2376056713414548745">Irakurri ozen</translation>
 <translation id="2377667304966270281">Hutsegite larriak</translation>
 <translation id="237828693408258535">Orria itzuli nahi duzu?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Laster, baliteke luzapen hau ez onartzea}other{Laster, baliteke luzapen hauek ez onartzea}}</translation>
 <translation id="2378982052244864789">Hautatu luzapenen direktorioa.</translation>
 <translation id="2379281330731083556">Inprimatu sistemaren leihoaren bidez… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Ondorioz, baliteke sare mugikorra zenbait minutuz deskonektatzea</translation>
@@ -4193,6 +4193,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="406213378265872299">Portaera pertsonalizatuak</translation>
 <translation id="4062561150282203854">Sinkronizatu <ph name="DEVICE_TYPE" /> gailuko aplikazioak, ezarpenak eta abar</translation>
 <translation id="4065876735068446555">Baliteke darabilzun sarearen (<ph name="NETWORK_ID" />) saio-hasierako orrira joan behar izatea.</translation>
+<translation id="4065931125325392744">Laster, baliteke luzapen hau ez onartzea</translation>
 <translation id="4066207411788646768">Egiaztatu konektatuta zaudela sarean eskuragarri dauden inprimagailuak ikusteko</translation>
 <translation id="4067839975993712852">Markatu oraingo fitxa irakurritako gisa</translation>
 <translation id="4068776064906523561">Gordetako hatz-markak</translation>
@@ -10184,7 +10185,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8636500887554457830">Ez eman leiho gainerakorrak bidaltzeko edo birbideratzeak erabiltzeko baimena webguneei</translation>
 <translation id="8636514272606969031">Ainguratu da alboko panela</translation>
 <translation id="8637688295594795546">Sistemaren eguneratzea erabilgarri duzu. Deskargatzeko prestatzen…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Laster, baliteke luzapen hau ez onartzea}other{Laster, baliteke luzapen hauek ez onartzea}}</translation>
 <translation id="8638719155236856752">ChromeOS-eko gailuaren sarearen egoera</translation>
 <translation id="8639635302972078117">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilera-datuak. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea.</translation>
 <translation id="8640575194957831802">Azken irekitze-data</translation>

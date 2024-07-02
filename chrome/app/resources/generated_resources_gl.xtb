@@ -834,7 +834,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">O usuario non está vinculado ao dominio</translation>
 <translation id="1608668830839595724">Máis accións para os elementos seleccionados</translation>
-<translation id="1608698493373028805">Pode que esta extensión deixe de estar dispoñible dentro de pouco</translation>
 <translation id="1610272688494140697">Configuración da aplicación</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">O dispositivo está bloqueado</translation>
@@ -1903,6 +1902,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2376056713414548745">Ler en voz alta</translation>
 <translation id="2377667304966270281">Errores graves</translation>
 <translation id="237828693408258535">Queres traducir esta páxina?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Pode que esta extensión deixe de estar dispoñible dentro de pouco}other{Pode que estas extensións deixen de estar dispoñibles dentro de pouco}}</translation>
 <translation id="2378982052244864789">Selecciona o directorio da extensión.</translation>
 <translation id="2379281330731083556">Imprimir usando a caixa de diálogo do sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Este proceso pode provocar que a rede de telefonía móbil se desconecte durante uns minutos</translation>
@@ -4195,6 +4195,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="406213378265872299">Comportamentos personalizados</translation>
 <translation id="4062561150282203854">Sincroniza as aplicacións, a configuración e máis datos do teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="4065876735068446555">É posible que a rede que utilizas (<ph name="NETWORK_ID" />) solicite o acceso á súa páxina de inicio de sesión.</translation>
+<translation id="4065931125325392744">Pode que esta extensión deixe de estar dispoñible dentro de pouco</translation>
 <translation id="4066207411788646768">Comproba a conexión para ver as impresoras dispoñibles na túa rede.</translation>
 <translation id="4067839975993712852">Marcar pestana actual como lida</translation>
 <translation id="4068776064906523561">Impresións dixitais gardadas</translation>
@@ -10187,7 +10188,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8636500887554457830">Non permitir que os sitios mostren ventás emerxentes nin usen redireccións</translation>
 <translation id="8636514272606969031">Fixouse o panel lateral</translation>
 <translation id="8637688295594795546">Actualización do sistema dispoñible. Preparando para descargar...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Pode que esta extensión deixe de estar dispoñible dentro de pouco}other{Pode que estas extensións deixen de estar dispoñibles dentro de pouco}}</translation>
 <translation id="8638719155236856752">Estado da rede de ChromeOS</translation>
 <translation id="8639635302972078117">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google</translation>
 <translation id="8640575194957831802">Última apertura</translation>

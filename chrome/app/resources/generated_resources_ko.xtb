@@ -838,7 +838,6 @@
 <translation id="1607139524282324606">항목 삭제</translation>
 <translation id="1607499585984539560">사용자가 도메인과 연결되어 있지 않습니다.</translation>
 <translation id="1608668830839595724">선택한 항목과 관련된 작업 더보기</translation>
-<translation id="1608698493373028805">이 확장 프로그램은 곧 지원 중단될 수 있습니다</translation>
 <translation id="1610272688494140697">앱 설정</translation>
 <translation id="161042844686301425">청록색</translation>
 <translation id="1611432201750675208">기기가 잠겼습니다</translation>
@@ -1921,6 +1920,7 @@
 <translation id="2376056713414548745">소리내어 읽기</translation>
 <translation id="2377667304966270281">하드 결함</translation>
 <translation id="237828693408258535">이 페이지를 번역하시겠습니까?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 곧 지원 중단될 수 있습니다}other{이 확장 프로그램은 곧 지원 중단될 수 있습니다}}</translation>
 <translation id="2378982052244864789">확장 프로그램 디렉터리를 선택합니다.</translation>
 <translation id="2379281330731083556">시스템 대화상자를 사용하여 인쇄... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
@@ -3222,7 +3222,7 @@
 <translation id="3359256513598016054">인증서 정책 제약조건</translation>
 <translation id="3360297538363969800">인쇄에 실패했습니다. 프린터를 확인한 후 다시 시도해 주세요.</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" />을(를) 공유 중입니다.}}</translation>
-<translation id="3361954577771524115">앱에서 가져온 콘텐츠</translation>
+<translation id="3361954577771524115">앱에서 가져온 설명</translation>
 <translation id="3363202073972776113">이 새 프로필은 조직에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+마우스 오버</translation>
 <translation id="3364986687961713424">관리자의 메시지: <ph name="ADMIN_MESSAGE" /></translation>
@@ -4198,7 +4198,7 @@
 <translation id="4052120076834320548">작게</translation>
 <translation id="4052913941260326985">QR 코드 만들기(&amp;Q)</translation>
 <translation id="405365679581583349">Google Play 서비스 업데이트</translation>
-<translation id="4053833479432165765">&amp;다음 앱으로 페이지 설치(&amp;I)...</translation>
+<translation id="4053833479432165765">&amp;페이지를 앱으로 설치(&amp;I)...</translation>
 <translation id="4054070260844648638">모두에게 공개</translation>
 <translation id="4056908315660577142">부모님이 설정한 <ph name="APP_NAME" /> Chrome 앱 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
@@ -4210,6 +4210,7 @@
 <translation id="406213378265872299">맞춤설정된 동작</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> 앱, 설정 등을 동기화</translation>
 <translation id="4065876735068446555">사용 중인 네트워크(<ph name="NETWORK_ID" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
+<translation id="4065931125325392744">이 확장 프로그램은 곧 지원 중단될 수 있습니다</translation>
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="4067839975993712852">현재 탭을 읽음으로 표시</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
@@ -5648,7 +5649,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5185500136143151980">인터넷 연결 없음</translation>
 <translation id="5186381005592669696">지원되는 앱의 표시 언어 맞춤설정</translation>
 <translation id="5186788525428341874">이 패스키를 사용하여 모든 기기에서 더 빠르게 로그인할 수 있습니다. 비밀번호가 <ph name="ACCOUNT_NAME" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
-<translation id="5187641678926990264">&amp;다음 앱으로 페이지 설치(&amp;I)...</translation>
+<translation id="5187641678926990264">&amp;페이지를 앱으로 설치(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />(<ph name="DEVICE" />)</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> 사용 중</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
@@ -10206,7 +10207,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8636500887554457830">사이트에서 팝업을 전송하거나 리디렉션을 사용할 수 없음</translation>
 <translation id="8636514272606969031">측면 패널 고정됨</translation>
 <translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 곧 지원 중단될 수 있습니다}other{이 확장 프로그램은 곧 지원 중단될 수 있습니다}}</translation>
 <translation id="8638719155236856752">ChromeOS 네트워크 상태</translation>
 <translation id="8639635302972078117">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="8640575194957831802">마지막으로 열어본 날짜</translation>

@@ -835,7 +835,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1607139524282324606">Esborra l'entrada</translation>
 <translation id="1607499585984539560">L'usuari no està afiliat al domini</translation>
 <translation id="1608668830839595724">Més accions per als elements seleccionats</translation>
-<translation id="1608698493373028805">És possible que aquesta extensió aviat no s'admeti</translation>
 <translation id="1610272688494140697">Configuració de l'aplicació</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">El dispositiu està bloquejat</translation>
@@ -1904,6 +1903,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2376056713414548745">Llegeix en veu alta</translation>
 <translation id="2377667304966270281">Errors greus</translation>
 <translation id="237828693408258535">Vols traduir aquesta pàgina?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{És possible que aquesta extensió es deixi d'admetre aviat}other{És possible que aquestes extensions es deixin d'admetre aviat}}</translation>
 <translation id="2378982052244864789">Seleccioneu el directori de l'extensió.</translation>
 <translation id="2379281330731083556">Imprimeix des de la finestra de diàleg del sistema… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Això pot fer que la xarxa mòbil es desconnecti durant uns quants minuts</translation>
@@ -4192,6 +4192,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="406213378265872299">Comportaments personalitzats</translation>
 <translation id="4062561150282203854">Sincronitza les aplicacions, la configuració i altres elements del teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">És possible que la xarxa que esteu fent servir (<ph name="NETWORK_ID" />) sol·liciti que en visiteu la pàgina d'inici de sessió.</translation>
+<translation id="4065931125325392744">És possible que aquesta extensió es deixi d'admetre aviat</translation>
 <translation id="4066207411788646768">Comprova la connexió per veure les impressores disponibles a la xarxa</translation>
 <translation id="4067839975993712852">Marca la pestanya actual com a llegida</translation>
 <translation id="4068776064906523561">Empremtes digitals desades</translation>
@@ -10189,7 +10190,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8636500887554457830">No permetis que els llocs web enviïn finestres emergents ni utilitzin redireccions</translation>
 <translation id="8636514272606969031">S'ha fixat el tauler lateral</translation>
 <translation id="8637688295594795546">Actualització del sistema disponible. S'està preparant la baixada…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{És possible que aquesta extensió aviat no s'admeti}other{És possible que aquestes extensions aviat no s'admetin}}</translation>
 <translation id="8638719155236856752">Estat de la xarxa de ChromeOS</translation>
 <translation id="8639635302972078117">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades no es faran servir per identificar el teu fill i ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google.</translation>
 <translation id="8640575194957831802">Oberta per darrera vegada</translation>

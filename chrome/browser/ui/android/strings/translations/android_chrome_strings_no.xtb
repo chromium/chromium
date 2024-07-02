@@ -20,7 +20,7 @@
 <translation id="1095761715416917775">Sørg for at du alltid har tilgang til de synkroniserte dataene dine</translation>
 <translation id="1100066534610197918">Åpne i en ny fane i en gruppe</translation>
 <translation id="1103142993930332957">Vil du bidra til å gjøre Chrome bedre?</translation>
-<translation id="1105960400813249514">Skjermdump</translation>
+<translation id="1105960400813249514">Skjermbilde</translation>
 <translation id="1108938384783527433">Loggsynkronisering</translation>
 <translation id="1111673857033749125">Bokmerker som er lagret på de andre enhetene dine, vises her.</translation>
 <translation id="1113597929977215864">Vis forenklet visning</translation>
@@ -763,7 +763,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="492284538114688557">Oppdaget et avslag</translation>
-<translation id="4925120120285606924">Skjermdump <ph name="CURRENT_DATE_ISO" /></translation>
+<translation id="4925120120285606924">Skjermbilde <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Passordene dine blir eksportert og lastet ned som en tekstfil. De blir synlige for alle personer og apper som har tilgang til målmappen.</translation>
 <translation id="4926901776383726965">Du kan lagre bilder og filer for å se dem uten nett eller dele dem i andre apper</translation>
 <translation id="4932247056774066048">Fordi du logger av en konto som administreres av <ph name="DOMAIN_NAME" />, slettes Chrome-dataene dine fra denne enheten. De blir værende i Google-kontoen din.</translation>

@@ -835,7 +835,6 @@
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608668830839595724">更多可對所選項目執行的動作</translation>
-<translation id="1608698493373028805">系統可能會在近期內停止支援這項擴充功能</translation>
 <translation id="1610272688494140697">應用程式設定</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">你的裝置已遭到鎖定</translation>
@@ -1904,6 +1903,7 @@
 <translation id="2376056713414548745">朗讀內容</translation>
 <translation id="2377667304966270281">硬性錯誤數</translation>
 <translation id="237828693408258535">要翻譯這個網頁嗎？</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{系統可能會在近期內停止支援這項擴充功能}other{系統可能會在近期內停止支援這些擴充功能}}</translation>
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379281330731083556">使用系統對話方塊進行列印... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">這可能會導致你的行動網路中斷幾分鐘</translation>
@@ -4192,6 +4192,7 @@
 <translation id="406213378265872299">自訂設定</translation>
 <translation id="4062561150282203854">同步處理 <ph name="DEVICE_TYPE" /> 的應用程式和設定等資料</translation>
 <translation id="4065876735068446555">目前使用的網路 (<ph name="NETWORK_ID" />) 可能會要求您造訪登入網頁。</translation>
+<translation id="4065931125325392744">系統可能會在近期內停止支援這項擴充功能</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀取</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
@@ -10185,7 +10186,6 @@
 <translation id="8636500887554457830">禁止網站傳送彈出式視窗或使用重新導向</translation>
 <translation id="8636514272606969031">已固定側邊面板</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{系統可能會在近期內停止支援這項擴充功能}other{系統可能會在近期內停止支援這些擴充功能}}</translation>
 <translation id="8638719155236856752">ChromeOS 網路健康狀態</translation>
 <translation id="8639635302972078117">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8640575194957831802">上次開啟時間</translation>

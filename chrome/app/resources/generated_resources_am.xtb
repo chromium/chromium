@@ -836,7 +836,6 @@
 <translation id="1607139524282324606">ግቤትን አጽዳ</translation>
 <translation id="1607499585984539560">ተጠቃሚው ከጎራ ጋር አጋር አልሆነም</translation>
 <translation id="1608668830839595724">ለተመረጡ ንጥሎች ተጨማሪ እርምጃዎች</translation>
-<translation id="1608698493373028805">ይህ ቅጥያ በቅርቡ የማይደገፍ ሊሆን ይችላል</translation>
 <translation id="1610272688494140697">የመተግበሪያ ቅንብሮች</translation>
 <translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1611432201750675208">የእርስዎ መሣሪያ ተቆልፏል</translation>
@@ -1913,6 +1912,7 @@
 <translation id="2376056713414548745">ጮክ ብለህ አንብብ</translation>
 <translation id="2377667304966270281">ከባድ ስህተቶች</translation>
 <translation id="237828693408258535">ይህ ገፅ ይተርጎም?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{በቅርቡ ይህ ቅጥያ ከእንግዲህ የማይደገፍ ሊሆን ይችላል}one{በቅርቡ ይህ ቅጥያ ከእንግዲህ የማይደገፍ ሊሆን ይችላል}other{እነዚህ ቅጥያዎች የማይደገፉ ሊሆኑ ይችላሉ}}</translation>
 <translation id="2378982052244864789">የቅጥያውን ማውጫ ይምረጡ።</translation>
 <translation id="2379281330731083556">የስርዓት መገናኛ ተጠቅመው ያትሙ... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለጥቂት ደቂቃዎች ግንኙነቱ እንዲቋረጥ ሊያደርግ ይችላል</translation>
@@ -4201,6 +4201,7 @@
 <translation id="406213378265872299">ብጁ ባህሪዎች</translation>
 <translation id="4062561150282203854">የእርስዎን <ph name="DEVICE_TYPE" /> መተግበሪያዎች፣ ቅንብሮች እና ተጨማሪ ያስምሩ</translation>
 <translation id="4065876735068446555">እየተጠቀሙ ያሉት (<ph name="NETWORK_ID" />) አውታረ መረብ በመለያ መግቢያ ገጹን እንዲጎበኙ ይጠይቅዎ ይሆናል።</translation>
+<translation id="4065931125325392744">በቅርቡ ይህ ቅጥያ ከእንግዲህ የማይደገፍ ሊሆን ይችላል</translation>
 <translation id="4066207411788646768">ሊገኙ የሚችል አታሚዎችን በእርስዎ አውታረ መረብ ውስጥ ለመመልከት እባክዎ የእርስዎን ግንኙነት ይፈትሹ</translation>
 <translation id="4067839975993712852">የአሁኑን ትር እንደ የተነበበ ምልክት አድርግበት</translation>
 <translation id="4068776064906523561">የተቀመጡ የጣት አሻራዎች</translation>
@@ -10203,7 +10204,6 @@ nil</translation>
 <translation id="8636500887554457830">ጣቢያዎች ብቅ-ባዮችን እንዲልኩ ወይም አቅጣጫዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="8636514272606969031">የጎን ፓነል ፒን ተደርጓል</translation>
 <translation id="8637688295594795546">የስርዓት ዝማኔ አለ። ለማውረድ በመዘጋጀት ላይ…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ በቅርቡ የማይደገፍ ሊሆን ይችላል}one{ይህ ቅጥያ በቅርቡ የማይደገፍ ሊሆን ይችላል}other{እነዚህ ቅጥያዎች የማይደገፉ ሊሆኑ ይችላሉ}}</translation>
 <translation id="8638719155236856752">የChromeOS አውታረ መረብ ጤና</translation>
 <translation id="8639635302972078117">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ ልጅዎን ለመለየት ሥራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል።</translation>
 <translation id="8640575194957831802">መጨረሻ የተከፈተው</translation>

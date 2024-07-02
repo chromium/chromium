@@ -833,7 +833,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1607139524282324606">Tozalash</translation>
 <translation id="1607499585984539560">Bu domendan tashqari foydalanuvchi</translation>
 <translation id="1608668830839595724">Tanlangan elementlar uchun yana boshqa amallar</translation>
-<translation id="1608698493373028805">Bu kengaytma tez orada ishlamay qoladi</translation>
 <translation id="1610272688494140697">Ilova sozlamalari</translation>
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611432201750675208">Qurilmangiz qulflangan</translation>
@@ -1906,6 +1905,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2376056713414548745">Ovozli oʻqish</translation>
 <translation id="2377667304966270281">Xotirada sahifa yo‘qligi xatolari</translation>
 <translation id="237828693408258535">Bu sahifa tarjima qilinsinmi?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Bu kengaytma tez orada ishlamay qoladi}other{Bu kengaytmalar tez orada ishlamay qoladi}}</translation>
 <translation id="2378982052244864789">Kengaytma katalogini tanlang.</translation>
 <translation id="2379281330731083556">Tizim muloqot oynasi yordamida chop etish... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Bunda mobil internetingiz vaqtincha uzilib qolishi mumkin</translation>
@@ -4195,6 +4195,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="406213378265872299">Moslangan harakatlar</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> qurilmangizdagi ilovalar, sozlamalar va boshqa maʼlumotlaringizni sinxronlang</translation>
 <translation id="4065876735068446555">Siz ulangan (<ph name="NETWORK_ID" />) tarmog‘i hisob sahifasida tasdiq tekshiruvidan o‘tishingizni talab qilishi mumkin.</translation>
+<translation id="4065931125325392744">Bu kengaytma tez orada ishlamay qoladi</translation>
 <translation id="4066207411788646768">Tarmoqdagi printerlar roʻyxatini chiqarish uchun aloqani tekshiring</translation>
 <translation id="4067839975993712852">Joriy varaqni oʻqilgan deb belgilash</translation>
 <translation id="4068776064906523561">Saqlangan barmoq izlari</translation>
@@ -10190,7 +10191,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8636500887554457830">Saytlarga qalqib chiquvchi oynalar ochish yoki tashrifni yoʻnaltirishni taqiqlash</translation>
 <translation id="8636514272606969031">Yon panel mahkamlandi</translation>
 <translation id="8637688295594795546">Tizim yangilanishi mavjud. Yuklab olish uchun tayyorlanmoqda...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Bu kengaytma tez orada ishlamay qoladi}other{Bu kengaytmalar tez orada ishlamay qoladi}}</translation>
 <translation id="8638719155236856752">ChromeOS tarmoq yaroqliligi</translation>
 <translation id="8639635302972078117">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi.</translation>
 <translation id="8640575194957831802">Oxirgi marta ochilgan</translation>

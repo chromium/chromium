@@ -836,7 +836,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">Utilisateur non affilié au domaine</translation>
 <translation id="1608668830839595724">Autres actions pour les éléments sélectionnés</translation>
-<translation id="1608698493373028805">Cette extension ne sera peut-être bientôt plus disponible</translation>
 <translation id="1610272688494140697">Paramètres des applications</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Votre appareil est verrouillé</translation>
@@ -1905,6 +1904,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2376056713414548745">Lire à voix haute</translation>
 <translation id="2377667304966270281">Défauts matériels</translation>
 <translation id="237828693408258535">Traduire cette page ?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Cette extension ne sera peut-être bientôt plus prise en charge}one{Cette extension ne sera peut-être bientôt plus prise en charge}other{Ces extensions ne seront peut-être bientôt plus prises en charge}}</translation>
 <translation id="2378982052244864789">Sélectionner le répertoire de l'extension</translation>
 <translation id="2379281330731083556">Imprimer via la boîte de dialogue du système... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Votre réseau mobile risque de se déconnecter pendant quelques minutes</translation>
@@ -4194,6 +4194,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="406213378265872299">Comportements personnalisés</translation>
 <translation id="4062561150282203854">Synchroniser vos applis, vos paramètres <ph name="DEVICE_TYPE" /> et bien plus</translation>
 <translation id="4065876735068446555">Pour utiliser ce réseau (<ph name="NETWORK_ID" />), il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
+<translation id="4065931125325392744">Cette extension ne sera peut-être bientôt plus prise en charge</translation>
 <translation id="4066207411788646768">Veuillez vérifier votre connexion pour afficher les imprimantes disponibles sur le réseau</translation>
 <translation id="4067839975993712852">Marquer l'onglet actif comme lu</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
@@ -10194,7 +10195,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8636500887554457830">Ne pas autoriser les sites à envoyer des pop-ups ni à utiliser des redirections</translation>
 <translation id="8636514272606969031">Panneau latéral épinglé</translation>
 <translation id="8637688295594795546">Mise à jour du système disponible. Préparation du téléchargement…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Cette extension ne sera peut-être bientôt plus disponible}one{Cette extension ne sera peut-être bientôt plus disponible}other{Ces extensions ne seront peut-être bientôt plus disponibles}}</translation>
 <translation id="8638719155236856752">État du réseau ChromeOS</translation>
 <translation id="8639635302972078117">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
 <translation id="8640575194957831802">Dernier ouvert</translation>

@@ -836,7 +836,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1607139524282324606">Șterge intrarea</translation>
 <translation id="1607499585984539560">Utilizatorul nu este asociat cu domeniul</translation>
 <translation id="1608668830839595724">Mai multe acțiuni pentru elementele selectate</translation>
-<translation id="1608698493373028805">În curând, este posibil ca această extensie să nu mai fie acceptată</translation>
 <translation id="1610272688494140697">Setările aplicației</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Dispozitivul este blocat</translation>
@@ -1905,6 +1904,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2376056713414548745">Citește cu voce tare</translation>
 <translation id="2377667304966270281">Erori de hardware</translation>
 <translation id="237828693408258535">Traduci această pagină?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Este posibil ca, în curând, această extensie să nu mai fie acceptată.}few{Este posibil ca, în curând, aceste extensii să nu mai fie acceptate.}other{Este posibil ca, în curând, aceste extensii să nu mai fie acceptate.}}</translation>
 <translation id="2378982052244864789">Selectează directorul extensiei.</translation>
 <translation id="2379281330731083556">Printați utilizând caseta de dialog a sistemului... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Din acest motiv, rețeaua mobilă se poate deconecta timp de câteva minute</translation>
@@ -4194,6 +4194,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="406213378265872299">Comportamente personalizate</translation>
 <translation id="4062561150282203854">Sincronizează aplicațiile, setările și altele de pe dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Rețeaua pe care o folosești (<ph name="NETWORK_ID" />) poate solicita accesarea paginii de conectare.</translation>
+<translation id="4065931125325392744">Este posibil ca, în curând, această extensie să nu mai fie acceptată.</translation>
 <translation id="4066207411788646768">Verifică-ți conexiunea pentru a vedea imprimantele disponibile din rețea</translation>
 <translation id="4067839975993712852">Marchează fila actuală ca citită</translation>
 <translation id="4068776064906523561">Amprentele salvate</translation>
@@ -10193,7 +10194,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8636500887554457830">Nu permite site-urilor să afișeze ferestre pop-up sau să folosească redirecționări</translation>
 <translation id="8636514272606969031">Panoul lateral a fost fixat</translation>
 <translation id="8637688295594795546">Este disponibilă o actualizare de sistem. Se pregătește descărcarea...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{În curând, această extensie poate să nu mai fie acceptată}few{În curând, aceste extensii pot să nu mai fie acceptate.}other{În curând, aceste extensii pot să nu mai fie acceptate.}}</translation>
 <translation id="8638719155236856752">Starea rețelei ChromeOS</translation>
 <translation id="8639635302972078117">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
 <translation id="8640575194957831802">Data ultimei deschideri</translation>

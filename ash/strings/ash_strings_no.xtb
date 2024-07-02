@@ -469,7 +469,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2885950158625301909">Finn ut mer</translation>
 <translation id="2891209721153296020">«Fjern merking»</translation>
 <translation id="2894949423239620203">Kabelen kan påvirke ytelsen</translation>
-<translation id="2914580577416829331">Skjermdumper</translation>
+<translation id="2914580577416829331">Skjermbilder</translation>
 <translation id="2924416280450782352">Kan ikke vise elementene. Prøv å åpne dette panelet på nytt.</translation>
 <translation id="2931572158271115754">Det er ingenting på denne huskelisten.</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
@@ -575,7 +575,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
 <translation id="3333674550998107387">Vis varselet <ph name="NOTIFICATION_TITLE" /></translation>
-<translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermbilder og skjermopptak</translation>
+<translation id="3339826665088060472">Skjermbilde, verktøy for å ta skjermbilder og skjermopptak</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta et skjermbilde</translation>
@@ -704,7 +704,7 @@ Koble enheten til strøm.</translation>
 <translation id="3727231512028252576">Kunne ikke laste inn elementene. Prøv på nytt når du er på nett.</translation>
 <translation id="3735740477244556633">Sorter etter</translation>
 <translation id="3738664582935948253">Nå kan du vise klikk og hurtigtaster i skjermopptak</translation>
-<translation id="3742055079367172538">Skjermdump tatt</translation>
+<translation id="3742055079367172538">Skjermbilde tatt</translation>
 <translation id="3756485814916578707">Caster skjermen</translation>
 <translation id="3765841382945324995"><ph name="SIX_PACK_KEY_NAME" />-hurtigtasten er endret til <ph name="NEW_SHORTCUT" /> fra <ph name="OLD_SHORTCUT" /></translation>
 <translation id="3765841986579723851">Redigert i dag</translation>
@@ -830,7 +830,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4240486403425279990">Oversiktsmodus</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
 <translation id="4247123849143712100">Oppdater og slå av</translation>
-<translation id="4250229828105606438">Skjermdump</translation>
+<translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="425364040945105958">Uten SIM-kort</translation>
 <translation id="4261870227682513959">Vis innstillinger for varsler. Varsler er av</translation>
 <translation id="4264977415328155183">, skjules</translation>
@@ -1202,7 +1202,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Vi har flyttet deg til et bedre nettverk</translation>
-<translation id="5619862035903135339">Skjermdumper er deaktivert på grunn av en administratorregel</translation>
+<translation id="5619862035903135339">Skjermbilder er deaktivert på grunn av en administratorregel</translation>
 <translation id="5620856676199877916">Se alt kursarbeid på Google Classroom-nettstedet</translation>
 <translation id="5620979661744857819">Dette gir tilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1696,7 +1696,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7569886975397378678">Lukk konfigurering av visning av varsler og apper fra telefonen din</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> igjen</translation>
 <translation id="7573585051776738856">Det aktive vinduet er festet på høyre side.</translation>
-<translation id="7579778809502851308">Skjermdump</translation>
+<translation id="7579778809502851308">Skjermbilde</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
 <translation id="7598054670902114203">Øyeblikksbilde av prosessorbruken: <ph name="CPU_USEAGE" /> %. Temperatur: <ph name="TEMPERATURE" /> grader celsius. Gjeldende hastighet: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="7600875258240007829">Se alle varslene</translation>
@@ -1991,7 +1991,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8714138378966541668">Låst av leverandøren</translation>
 <translation id="8717459106217102612">Velg forrige ord eller bokstav</translation>
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>
-<translation id="8724318433625452070">Skjermdump av hele skjermen</translation>
+<translation id="8724318433625452070">Skjermbilde av hele skjermen</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8725214031272624704">Vis liste over tilgjengelige inndatametoder</translation>
 <translation id="8730621377337864115">Ferdig</translation>

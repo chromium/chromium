@@ -837,7 +837,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1607139524282324606">Vymazat položku</translation>
 <translation id="1607499585984539560">Uživatel není přidružen k doméně</translation>
 <translation id="1608668830839595724">Další akce s vybranými položkami</translation>
-<translation id="1608698493373028805">Toto rozšíření pravděpodobně již brzy nebude podporováno</translation>
 <translation id="1610272688494140697">Nastavení aplikací</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1611432201750675208">Zařízení je zamknuté</translation>
@@ -1906,6 +1905,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2376056713414548745">Čtení nahlas</translation>
 <translation id="2377667304966270281">Chyby stránkování na disk</translation>
 <translation id="237828693408258535">Přeložit tuto stránku?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Toto rozšíření pravděpodobně již brzy nebude podporováno}few{Tato rozšíření pravděpodobně již brzy nebudou podporována}many{Tato rozšíření pravděpodobně již brzy nebudou podporována}other{Tato rozšíření pravděpodobně již brzy nebudou podporována}}</translation>
 <translation id="2378982052244864789">Vyberte adresář rozšíření.</translation>
 <translation id="2379281330731083556">Tisk pomocí dialogového okna systému... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">V důsledku této akce můžete být na několik minut odpojeni od mobilní sítě</translation>
@@ -4194,6 +4194,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="406213378265872299">Přizpůsobená chování</translation>
 <translation id="4062561150282203854">Synchronizujte svoje aplikace, nastavení a další položky v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Síť, kterou používáte (<ph name="NETWORK_ID" />), může vyžadovat, abyste navštívili její přihlašovací stránku.</translation>
+<translation id="4065931125325392744">Toto rozšíření pravděpodobně již brzy nebude podporováno</translation>
 <translation id="4066207411788646768">Chcete-li zobrazit dostupné tiskárny v síti, zkontrolujte připojení</translation>
 <translation id="4067839975993712852">Označit aktuální kartu jako přečtenou</translation>
 <translation id="4068776064906523561">Uložené otisky prstu</translation>
@@ -10191,7 +10192,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8636500887554457830">Nepovolovat webům zobrazovat vyskakovací okna ani používat přesměrování</translation>
 <translation id="8636514272606969031">Boční panel připnut</translation>
 <translation id="8637688295594795546">K dispozici je aktualizace systému. Příprava stahování...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Toto rozšíření pravděpodobně již brzy nebude podporováno}few{Tato rozšíření pravděpodobně již brzy nebudou podporována}many{Tato rozšíření pravděpodobně již brzy nebudou podporována}other{Tato rozšíření pravděpodobně již brzy nebudou podporována}}</translation>
 <translation id="8638719155236856752">Stav sítě ChromeOS</translation>
 <translation id="8639635302972078117">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
 <translation id="8640575194957831802">Naposledy otevřeno</translation>

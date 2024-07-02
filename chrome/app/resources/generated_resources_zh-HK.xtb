@@ -838,7 +838,6 @@
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608668830839595724">更多可對所選項目執行的動作</translation>
-<translation id="1608698493373028805">系統可能會在近期內停止支援此擴充程式</translation>
 <translation id="1610272688494140697">應用程式設定</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的裝置已鎖定</translation>
@@ -1919,6 +1918,7 @@
 <translation id="2376056713414548745">朗讀</translation>
 <translation id="2377667304966270281">嚴重錯誤</translation>
 <translation id="237828693408258535">要翻譯此網頁嗎？</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{系統可能即將停止支援此擴充程式}other{系統可能即將停止支援這些擴充程式}}</translation>
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379281330731083556">使用系統對話方塊列印…<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">這可能導致流動網絡中斷連線幾分鐘</translation>
@@ -4204,6 +4204,7 @@
 <translation id="406213378265872299">自訂行為</translation>
 <translation id="4062561150282203854">同步處理 <ph name="DEVICE_TYPE" /> 的應用程式和設定等資料</translation>
 <translation id="4065876735068446555">目前使用的網絡 (<ph name="NETWORK_ID" />) 可能要求您前往其登入頁面。</translation>
+<translation id="4065931125325392744">系統可能即將停止支援此擴充程式</translation>
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
 <translation id="4067839975993712852">將目前的分頁標示為已讀</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
@@ -10199,7 +10200,6 @@
 <translation id="8636500887554457830">不允許網站傳送彈出式視窗或使用重新導向</translation>
 <translation id="8636514272606969031">固定咗側面板</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{系統可能會在近期內停止支援此擴充程式}other{系統可能會在近期內停止支援這些擴充程式}}</translation>
 <translation id="8638719155236856752">ChromeOS 網絡健康狀態</translation>
 <translation id="8639635302972078117">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8640575194957831802">上次開啟日期</translation>

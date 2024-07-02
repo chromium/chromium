@@ -832,7 +832,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1607139524282324606">Pastro regjistrimin</translation>
 <translation id="1607499585984539560">Përdoruesi nuk ka lidhje me domenin</translation>
 <translation id="1608668830839595724">Veprime të tjera për artikujt e zgjedhur</translation>
-<translation id="1608698493373028805">Kjo shtesë mund të mos mbështetet së shpejti</translation>
 <translation id="1610272688494140697">Cilësimet e aplikacionit</translation>
 <translation id="161042844686301425">E bruztë</translation>
 <translation id="1611432201750675208">Pajisja jote është e kyçur</translation>
@@ -1902,6 +1901,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2376056713414548745">Lexo me zë të lartë</translation>
 <translation id="2377667304966270281">Defekte të harduerit</translation>
 <translation id="237828693408258535">Të përkthehet kjo faqe?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Kjo shtesë mund të mos mbështetet së shpejti}other{Këto shtesa mund të mos mbështeten së shpejti}}</translation>
 <translation id="2378982052244864789">Zgjidh direktorinë e shtesës.</translation>
 <translation id="2379281330731083556">Printo me dialogun e sistemit... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Kjo mund të bëjë që rrjeti yt celular të shkëputet për disa minuta</translation>
@@ -4191,6 +4191,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="406213378265872299">Sjelljet e personalizuara</translation>
 <translation id="4062561150282203854">Sinkronizo aplikacionet, cilësimet etj. të tua të <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Rrjeti që po përdor (<ph name="NETWORK_ID" />) mund të kërkojë që të vizitosh faqen e tij të lidhjes.</translation>
+<translation id="4065931125325392744">Kjo shtesë mund të mos mbështetet së shpejti</translation>
 <translation id="4066207411788646768">Kontrollo lidhjen për të parë printerët e disponueshëm në rrjetin tënd</translation>
 <translation id="4067839975993712852">Shënoje skedën aktuale si të lexuar</translation>
 <translation id="4068776064906523561">Gjurmët e ruajtura të gishtave</translation>
@@ -10185,7 +10186,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8636500887554457830">Mos lejo që sajtet të dërgojnë dritare kërcyese ose të përdorin ridrejtimet</translation>
 <translation id="8636514272606969031">Paneli anësor u gozhdua</translation>
 <translation id="8637688295594795546">Ofrohet një përditësim i sistemit. Po bëhet gati për të shkarkuar...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Kjo shtesë mund të mos mbështetet së shpejti}other{Këto shtesa mund të mos mbështeten së shpejti}}</translation>
 <translation id="8638719155236856752">Integriteti i rrjetit të ChromeOS</translation>
 <translation id="8639635302972078117">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës.</translation>
 <translation id="8640575194957831802">E fundit e hapur</translation>

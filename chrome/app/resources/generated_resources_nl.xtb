@@ -835,7 +835,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1607139524282324606">Item wissen</translation>
 <translation id="1607499585984539560">Gebruiker is niet aangesloten bij het domein</translation>
 <translation id="1608668830839595724">Meer acties voor geselecteerde items</translation>
-<translation id="1608698493373028805">Deze extensie wordt binnenkort misschien niet meer ondersteund</translation>
 <translation id="1610272688494140697">App-instellingen</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1611432201750675208">Je apparaat is vergrendeld</translation>
@@ -1904,6 +1903,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2376056713414548745">Voorlezen</translation>
 <translation id="2377667304966270281">Harde fouten</translation>
 <translation id="237828693408258535">Deze pagina vertalen?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Deze extensie wordt binnenkort misschien niet meer ondersteund}other{Deze extensies worden binnenkort misschien niet meer ondersteund}}</translation>
 <translation id="2378982052244864789">Selecteer de directory van de extensie.</translation>
 <translation id="2379281330731083556">Afdrukken via systeemdialoogvenster... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Hierdoor kan de verbinding met je mobiele netwerk een paar minuten worden verbroken.</translation>
@@ -4193,6 +4193,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="406213378265872299">Aangepast gedrag</translation>
 <translation id="4062561150282203854">De apps, instellingen en meer van je <ph name="DEVICE_TYPE" /> synchroniseren</translation>
 <translation id="4065876735068446555">Het is mogelijk dat je de inlogpagina moet bezoeken van het netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
+<translation id="4065931125325392744">Deze extensie wordt binnenkort misschien niet meer ondersteund</translation>
 <translation id="4066207411788646768">Controleer je verbinding om beschikbare printers in je netwerk te bekijken</translation>
 <translation id="4067839975993712852">Huidig tabblad markeren als gelezen</translation>
 <translation id="4068776064906523561">Opgeslagen vingerafdrukken</translation>
@@ -10180,7 +10181,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8636500887554457830">Niet toestaan dat sites pop-ups sturen of omleidingen gebruiken</translation>
 <translation id="8636514272606969031">Zijvenster vastgezet</translation>
 <translation id="8637688295594795546">Systeemupdate beschikbaar. Download voorbereiden...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Deze extensie wordt binnenkort misschien niet meer ondersteund}other{Deze extensies worden binnenkort misschien niet meer ondersteund}}</translation>
 <translation id="8638719155236856752">ChromeOS-netwerkstatus</translation>
 <translation id="8639635302972078117">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="8640575194957831802">Laatst geopend</translation>

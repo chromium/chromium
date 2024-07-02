@@ -840,7 +840,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1607139524282324606">Brisanje unosa</translation>
 <translation id="1607499585984539560">Korisnik nije povezan s domenom</translation>
 <translation id="1608668830839595724">Više radnji za odabrane stavke</translation>
-<translation id="1608698493373028805">Ova ekstenzija uskoro možda više neće biti podržana</translation>
 <translation id="1610272688494140697">Postavke aplikacije</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611432201750675208">Vaš uređaj je zaključan</translation>
@@ -1918,6 +1917,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2376056713414548745">Čitanje naglas</translation>
 <translation id="2377667304966270281">Greške tvrdog diska</translation>
 <translation id="237828693408258535">Prevesti ovu stranicu?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija uskoro možda više neće biti podržana}one{Ove ekstenzije uskoro možda više neće biti podržane}few{Ove ekstenzije uskoro možda više neće biti podržane}other{Ove ekstenzije uskoro možda više neće biti podržane}}</translation>
 <translation id="2378982052244864789">Odabir direktorija ekstenzije.</translation>
 <translation id="2379281330731083556">Štampaj pomoću sistemskog dijaloškog okvira... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Zbog toga možete izgubiti vezu s mobilnom mrežom na nekoliko minuta</translation>
@@ -4207,6 +4207,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="406213378265872299">Prilagođena ponašanja</translation>
 <translation id="4062561150282203854">Sinhronizirajte aplikacije, postavke i ostali sadržaj uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Mreža koju koristite (<ph name="NETWORK_ID" />) može zahtijevati da posjetite stranicu za prijavu.</translation>
+<translation id="4065931125325392744">Ova ekstenzija uskoro možda više neće biti podržana</translation>
 <translation id="4066207411788646768">Provjerite vezu da vidite dostupne štampače na svojoj mreži</translation>
 <translation id="4067839975993712852">Označi trenutnu karticu kao pročitanu</translation>
 <translation id="4068776064906523561">Sačuvani otisci prstiju</translation>
@@ -10209,7 +10210,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8636500887554457830">Nemoj dozvoliti web lokacijama slanje skočnog sadržaja ili korištenje preusmjeravanja</translation>
 <translation id="8636514272606969031">Bočna ploča je zakačena</translation>
 <translation id="8637688295594795546">Dostupno je ažuriranje sistema. Priprema za preuzimanje…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija uskoro možda više neće biti podržana}one{Ove ekstenzije uskoro možda više neće biti podržane}few{Ove ekstenzije uskoro možda više neće biti podržane}other{Ove ekstenzije uskoro možda više neće biti podržane}}</translation>
 <translation id="8638719155236856752">Stanje mreže ChromeOS-a</translation>
 <translation id="8639635302972078117">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. Ovo se neće koristiti za identifikaciju vašeg djeteta i pomoći će stabilnosti sistema i aplikacije, kao i drugim unapređenjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ako je za vaše dijete uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci mogu biti sačuvani na Google računu djeteta.</translation>
 <translation id="8640575194957831802">Posljednji put otvoreno</translation>

@@ -68,7 +68,7 @@
 <translation id="104419033123549300">किम्यापको शैली</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{यो डिभाइसमा भएको <ph name="BRAND" /> मा एउटा पासवर्ड इम्पोर्ट गरिएको छ}other{यो डिभाइसमा भएको <ph name="BRAND" /> मा {NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छन्}}</translation>
 <translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
-<translation id="1047431265488717055">लिंक पाठ प्रतिलिपि गर्नुहोस्</translation>
+<translation id="1047431265488717055">लिंक पाठ कपी गर्नुहोस्</translation>
 <translation id="1048286738600630630">प्रदर्शनहरू</translation>
 <translation id="1048986595386481879">गतिशील रूपमा छुट्याइएको</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}}</translation>
@@ -832,7 +832,6 @@
 <translation id="1607139524282324606">प्रविष्टि खाली गर्नुहोस्</translation>
 <translation id="1607499585984539560">यी प्रयोगकर्ता यो डोमेनमा आबद्ध हुनुहुन्न</translation>
 <translation id="1608668830839595724">चयन गरिएका वस्तुमा गर्न सकिने थप कारबाहीहरू</translation>
-<translation id="1608698493373028805">यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ</translation>
 <translation id="1610272688494140697">एपसम्बन्धी सेटिङ</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1611432201750675208">तपाईंको यन्त्र लक गरिएको छ।</translation>
@@ -950,7 +949,7 @@
 <translation id="1688935057616748272">कुनै अक्षर टाइप गर्नुहोस्</translation>
 <translation id="1689333818294560261">उपनाम</translation>
 <translation id="168991973552362966">कुनै नजिकैको प्रिन्टर थप्नुहोस्</translation>
-<translation id="1689945336726856614">URL प्रतिलिपि गर्नुहोस्</translation>
+<translation id="1689945336726856614">URL कपी गर्नुहोस्</translation>
 <translation id="1690068335127678634">स्प्लिट स्क्रिन सेटअप गर्नुहोस्</translation>
 <translation id="1692115862433274081">अर्को खाता प्रयोग गर्नुहोस्</translation>
 <translation id="1692118695553449118">सिंक खुला छ</translation>
@@ -1901,6 +1900,7 @@
 <translation id="2376056713414548745">ठुलो स्वरमा पढ्नुहोस्</translation>
 <translation id="2377667304966270281">हार्ड फल्ट्स</translation>
 <translation id="237828693408258535">यो पृष्ठ अनुवाद गर्ने हो?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ}other{यी एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छन्}}</translation>
 <translation id="2378982052244864789">एक्सटेन्सन डाइरेक्टरी चयन गर्नुहोस्।</translation>
 <translation id="2379281330731083556">प्रणाली संवाद प्रयोग गर्दै प्रिन्ट गर्नुहोस्... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">यसो गर्दा तपाईंको मोबाइल नेटवर्क केही मिनेट डिस्कनेक्ट हुन सक्छ</translation>
@@ -4089,7 +4089,7 @@
 <translation id="3985022125189960801">तपाईं कुनै साइटलाई तपाईंलाई मन पर्ने कुराहरू अनुमान लगाउन सक्ने साइटहरूको समूहमा समावेश गर्न चाहनुहुन्छ भने उक्त साइट पुनः हाल्नुहोस्</translation>
 <translation id="3986813315215454677">ChromeOS ब्लुटुथ</translation>
 <translation id="3987544746655539083">यो साइटलाई आफ्नो स्थानसम्बन्धी जानकारी प्रयोग गर्न नपाउने गरी ब्लक गरिराख्नुहोस्</translation>
-<translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="3987993985790029246">लिंक कपी गर्नुहोस्</translation>
 <translation id="3988124842897276887">यो ट्याब कुनै USB डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="3988996860813292272">प्रामाणिक समय चयन गर्नुहोस्</translation>
 <translation id="3991055816270226534">तेस्रो पक्षीय कुकी तथा ट्र्याकिङसम्बन्धी सुरक्षाहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -4190,6 +4190,7 @@
 <translation id="406213378265872299"> कस्टम पारिएका व्यवहारहरू</translation>
 <translation id="4062561150282203854">आफ्नो <ph name="DEVICE_TYPE" /> मा भएका एप, सेटिङ र अन्य कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="4065876735068446555">तपाईँले प्रयोग गरिरहनु भएको सञ्जाल (<ph name="NETWORK_ID" />) लाई तपाईँले यसको लगइन पृष्ठ भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
+<translation id="4065931125325392744">यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ</translation>
 <translation id="4066207411788646768">आफ्नो नेटवर्कमा उपलब्ध प्रिन्टरहरू हेर्न आफ्नो इन्टरनेटको जाँच गर्नुहोस्</translation>
 <translation id="4067839975993712852">हालको ट्याबलाई "पढिसकिएको" भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="4068776064906523561">सुरक्षित गरिएका फिंगरप्रिन्टहरू</translation>
@@ -5387,7 +5388,7 @@
 <translation id="4999804342505941663">'बाधा नपुऱ्याउनुहोस्' मोड अन गर्नुहोस्</translation>
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
 <translation id="5003993274120026347">अर्को वाक्य</translation>
-<translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
+<translation id="5005498671520578047">पासवर्ड कपी गर्नुहोस्</translation>
 <translation id="5006118752738286774">२ वर्षअघि</translation>
 <translation id="5006218871145547804">Crostini मा Android एपको ADB</translation>
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
@@ -6956,7 +6957,7 @@
 <translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - माइक्रोफोनले रेकर्ड गरिरहेको छ</translation>
 <translation id="6206199626856438589">तपाईंलाई देखाइएका साइटहरूबाट साइन आउट गरिने छ। साथै, हाल कुनै ट्याबमा यीमध्ये कुनै साइट खोलिएको छ भने सो ट्याबबाट पनि साइन आउट गरिने छ</translation>
-<translation id="6206311232642889873">छविको प्रतिलिपि गर्नुहोस्</translation>
+<translation id="6206311232642889873">छविको कपी गर्नुहोस्</translation>
 <translation id="6207200176136643843">डिफल्ट जुम स्तरमा रिसेट गर्नुहोस्</translation>
 <translation id="6207298079289376837">ट्याबहरू व्यवस्थित गर्न सकिन्छ कि सकिँदैन भन्ने कुरा जाँच्नुहोस्</translation>
 <translation id="6207937957461833379">देश / क्षेत्र</translation>
@@ -7853,7 +7854,7 @@
 <translation id="689007770043972343">अन्य खुला ट्याबहरू ड्र्याग गरी आफ्नो समूहमा लैजाने प्रयास गर्नुहोस्</translation>
 <translation id="6892812721183419409"><ph name="USER" /> को रूपमा लिंक खोल्नुहोस्</translation>
 <translation id="6893164346922798247">eSpeak</translation>
-<translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
+<translation id="6896758677409633944">कपी गर्नुहोस्</translation>
 <translation id="6897363604023044284">हटाउनु पर्ने साइटहरू छनौट गर्नुहोस्</translation>
 <translation id="6897688156970667447">उज्यालो कम भएका बेलामा उपयोगी हुन्छ र यसले ब्याट्री पनि बचत गर्छ</translation>
 <translation id="6897972855231767338">अतिथिका रूपमा ब्राउज गर्ने तरिकाका बारेमा थप जान्नुहोस्</translation>
@@ -10184,7 +10185,6 @@
 <translation id="8636500887554457830">साइटहरूलाई पप-अप देखाउने वा रिडिरेक्ट गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="8636514272606969031">साइड प्यानल पिन गरिएको छ</translation>
 <translation id="8637688295594795546">सिस्टम अपडेट उपलब्ध छ। डाउनलोड गर्ने तयारी गर्दै...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ}other{यी एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छन्}}</translation>
 <translation id="8638719155236856752">ChromeOS डिभाइसको नेटवर्कको अवस्थासम्बन्धी जानकारी</translation>
 <translation id="8639635302972078117">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाइरहेको छ। यस्तो डेटा तपाईंका बच्चाको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले सिस्टम तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंका बच्चाका खातामा वेब तथा एपसम्बन्धी अतिरिक्त गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सेभ गरिन सक्छ।</translation>
 <translation id="8640575194957831802">पछिल्लो पटक खोलिएको</translation>
@@ -10307,7 +10307,7 @@
 <translation id="871515167518607670">कुनै डिभाइस छनौट गर्नुहोस्। त्यसपछि पेज हेर्न उक्त डिभाइसमा Chrome खोल्नुहोस्।</translation>
 <translation id="8715480913140015283">पृष्ठभूमि ट्याबले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> बाट आफ्नो Linux फाइलका फोल्डरहरूमा रहेका सबै Linux एप र डेटा मेट्ने हो?</translation>
-<translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="8717864919010420084">लिंक कपी गर्नुहोस्</translation>
 <translation id="8718994464069323380">टचस्क्रिन भेटियो</translation>
 <translation id="8719472795285728850">विस्तारसम्बन्धी क्रियाकलापका लागि स्ट्रिम सुन्दै...</translation>
 <translation id="8720200012906404956">मोबाइल नेटवर्कको खोजी गर्दै। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -10452,7 +10452,7 @@
 <translation id="8821268776955756404"><ph name="APP_NAME" /> प्रयोगका लागि तयार छ।</translation>
 <translation id="8821647731831124007">कुनै पनि हटस्पट उपलब्ध छैन</translation>
 <translation id="882204272221080310">थप सुरक्षाका खातिर फर्मवेयर अपडेट गर्नुहोस्।</translation>
-<translation id="8823514049557262177">लिंक टे&amp;क्स्ट प्रतिलिपि गर्नुहोस्</translation>
+<translation id="8823514049557262177">लिंक टे&amp;क्स्ट कपी गर्नुहोस्</translation>
 <translation id="8823704566850948458">पासवर्ड सिफारिस गर्नुहोस्...</translation>
 <translation id="8823963789776061136">अथवा प्रिन्टर PPD चयन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">पृ&amp;ष्ठ थप्नुहोस्...</translation>

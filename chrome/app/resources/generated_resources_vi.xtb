@@ -838,7 +838,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1607139524282324606">Xóa mục nhập</translation>
 <translation id="1607499585984539560">Người dùng không được liên kết với miền</translation>
 <translation id="1608668830839595724">Thao tác khác cho những mục đã chọn</translation>
-<translation id="1608698493373028805">Có thể tiện ích này sắp không được hỗ trợ nữa</translation>
 <translation id="1610272688494140697">Cài đặt ứng dụng</translation>
 <translation id="161042844686301425">Lục lam</translation>
 <translation id="1611432201750675208">Thiết bị của bạn đã bị khóa</translation>
@@ -1919,6 +1918,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2376056713414548745">Đọc to</translation>
 <translation id="2377667304966270281">Lỗi phần cứng</translation>
 <translation id="237828693408258535">Bạn muốn dịch trang này?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Có thể tiện ích này sắp không được hỗ trợ nữa}other{Có thể các tiện ích này sắp không được hỗ trợ nữa}}</translation>
 <translation id="2378982052244864789">Chọn thư mục tiện ích.</translation>
 <translation id="2379281330731083556">In bằng hộp thoại hệ thống... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Thao tác này có thể khiến mạng di động của bạn bị ngắt kết nối trong vài phút</translation>
@@ -3432,7 +3432,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3515983984924808886">Chạm lại vào khóa bảo mật để xác nhận đặt lại. Thao tác này sẽ xóa toàn bộ thông tin lưu trữ trên khóa bảo mật, bao gồm cả mã PIN của khóa.</translation>
 <translation id="3518866566087677312">Đánh dấu các trang bạn muốn quay lại xem sau</translation>
 <translation id="3519564332031442870">Dịch vụ phụ trợ in</translation>
-<translation id="3519938335881974273">Lưu trang thành...</translation>
+<translation id="3519938335881974273">Lưu trang dưới dạng...</translation>
 <translation id="3520824492621090923">Xác nhận đăng ký thiết bị kiosk và bảng hiệu?</translation>
 <translation id="3521388823983121502">Không thể tiếp tục với <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3521405806571557477">Xoá dữ liệu đã lưu cho <ph name="SITE_NAME" /></translation>
@@ -4208,6 +4208,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="406213378265872299">Chế độ tùy chỉnh</translation>
 <translation id="4062561150282203854">Đồng bộ hóa ứng dụng, chế độ cài đặt, v.v. trên <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="4065876735068446555">Mạng bạn đang sử dụng (<ph name="NETWORK_ID" />) có thể yêu cầu bạn truy cập vào trang đăng nhập của mạng đó.</translation>
+<translation id="4065931125325392744">Có thể tiện ích này sắp không được hỗ trợ nữa</translation>
 <translation id="4066207411788646768">Vui lòng kiểm tra kết nối của bạn để xem các máy in hiện có trong mạng</translation>
 <translation id="4067839975993712852">Đánh dấu thẻ hiện tại là đã đọc</translation>
 <translation id="4068776064906523561">Vân tay đã lưu</translation>
@@ -5116,7 +5117,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4779136857077979611">Cơm nắm Onigiri</translation>
 <translation id="4779766576531456629">Đổi tên mạng di động của eSIM</translation>
-<translation id="4780321648949301421">Lưu trang làm...</translation>
+<translation id="4780321648949301421">Lưu trang dưới dạng...</translation>
 <translation id="4780558987886269159">Để làm việc</translation>
 <translation id="4785719467058219317">Bạn đang sử dụng một khóa bảo mật chưa đăng ký với trang web này</translation>
 <translation id="4785914069240823137">Huỷ cắt</translation>
@@ -10208,7 +10209,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8636500887554457830">Không cho phép các trang web gửi cửa sổ bật lên hoặc dùng lệnh chuyển hướng</translation>
 <translation id="8636514272606969031">Đã ghim bảng điều khiển bên</translation>
 <translation id="8637688295594795546">Có sẵn bản cập nhật hệ thống. Đang chuẩn bị tải xuống…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Tiện ích này sắp không được hỗ trợ nữa}other{Các tiện ích này sắp không được hỗ trợ nữa}}</translation>
 <translation id="8638719155236856752">Tình trạng mạng của ChromeOS</translation>
 <translation id="8639635302972078117">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ không dùng để nhận dạng con bạn mà giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Nếu bạn bật tùy chọn cài đặt Hoạt động bổ sung trên web và ứng dụng cho con mình, thì dữ liệu này có thể được lưu vào Tài khoản Google của con.</translation>
 <translation id="8640575194957831802">Mở gần đây nhất</translation>
