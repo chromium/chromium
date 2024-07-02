@@ -13,8 +13,6 @@
 #include "ui/actions/action_id.h"
 
 // Note: this order matches that of the combobox options in the side panel.
-// If adding a new Id here, you must also update id_to_histogram_name_map
-// in side_panel_util.cc and SidePanelEntry in browser/histograms.xml.
 // Once provided the histogram name should not be changed since it
 // is persisted to logs. When adding a new Id please add actions to
 // tools/metrics/actions/actions.xml for "SidePanel.[new id name].Shown"
