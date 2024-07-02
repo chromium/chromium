@@ -25,41 +25,15 @@ class SettingsFunction : public ExtensionFunction {
   // ExtensionFunction:
   bool ShouldSkipQuotaLimiting() const override;
   bool PreRunValidation(std::string* error) override;
-  ResponseAction Run() override;
-
-  // Extension settings function implementations should do their work here.
-  // The StorageFrontend makes sure this is posted to the appropriate thread.
-  virtual ResponseValue RunWithStorage(value_store::ValueStore* storage);
-
-  // Extension settings function implementations in `session` namespace should
-  // do their work here.
-  virtual ResponseValue RunInSession();
-
-  // Convert the |result| of a read function to the appropriate response value.
-  // - If the |result| succeeded this will return a response object argument.
-  // - If the |result| failed will return an error object.
-  ResponseValue UseReadResult(value_store::ValueStore::ReadResult result);
-
-  // Handles the |result| of a write function.
-  // - If the |result| succeeded this will send out change notification(s), if
-  //   appropriate, and return no arguments.
-  // - If the |result| failed will return an error object.
-  ResponseValue UseWriteResult(value_store::ValueStore::WriteResult result);
-
-  // Notifies the given `changes`, if non empty, to the observer.
-  void OnSessionSettingsChanged(
-      std::vector<SessionStorageManager::ValueChange> changes);
 
   // Returns whether the caller's context has access to the storage or not.
   bool IsAccessToStorageAllowed();
 
   StorageAreaNamespace storage_area() const { return storage_area_; }
 
- private:
-  // Called via PostTask from Run. Calls RunWithStorage and then
-  // SendResponse with its success value.
-  void AsyncRunWithStorage(value_store::ValueStore* storage);
+  void OnWriteOperationFinished(StorageFrontend::ResultStatus status);
 
+ private:
   // The Storage Area the call was for. For example: kLocal if the API call was
   // chrome.storage.local, kSync if the API call was chrome.storage.sync, etc.
   StorageAreaNamespace storage_area_ = StorageAreaNamespace::kInvalid;
@@ -68,9 +42,6 @@ class SettingsFunction : public ExtensionFunction {
   // StorageAreaNamespace's that use ValueStore.
   settings_namespace::Namespace settings_namespace_ =
       settings_namespace::INVALID;
-
-  // Observers, cached so that it's only grabbed from the UI thread.
-  SequenceBoundSettingsChangedCallback observer_;
 };
 
 class StorageStorageAreaGetFunction : public SettingsFunction {
@@ -102,9 +73,6 @@ class StorageStorageAreaSetFunction : public SettingsFunction {
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
-
-  // Called after setting data in storage.
-  void OnSetOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaRemoveFunction : public SettingsFunction {
@@ -119,9 +87,6 @@ class StorageStorageAreaRemoveFunction : public SettingsFunction {
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
-
-  // Called after removing data from storage.
-  void OnRemoveOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaClearFunction : public SettingsFunction {
@@ -136,9 +101,6 @@ class StorageStorageAreaClearFunction : public SettingsFunction {
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
-
-  // Called after clearing storage.
-  void OnClearOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
@@ -170,8 +132,7 @@ class StorageStorageAreaSetAccessLevelFunction : public SettingsFunction {
   ~StorageStorageAreaSetAccessLevelFunction() override = default;
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
-  ResponseValue RunInSession() override;
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

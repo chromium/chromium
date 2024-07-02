@@ -150,88 +150,6 @@ bool SettingsFunction::PreRunValidation(std::string* error) {
   return true;
 }
 
-ExtensionFunction::ResponseAction SettingsFunction::Run() {
-  if (storage_area_ == StorageAreaNamespace::kSession) {
-    return RespondNow(RunInSession());
-  }
-
-  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
-
-  observer_ = GetSequenceBoundSettingsChangedCallback(
-      base::SequencedTaskRunner::GetCurrentDefault(), frontend->GetObserver());
-
-  frontend->RunWithStorage(
-      extension(), settings_namespace_,
-      base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
-  return RespondLater();
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::RunWithStorage(
-    ValueStore* storage) {
-  // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
-  // from all functions.
-  NOTREACHED_IN_MIGRATION();
-  return BadMessage();
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::RunInSession() {
-  // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
-  // from all functions.
-  NOTREACHED_IN_MIGRATION();
-  return BadMessage();
-}
-
-void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
-  ResponseValue response = RunWithStorage(storage);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SettingsFunction::Respond, this, std::move(response)));
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
-    ValueStore::ReadResult result) {
-  TRACE_EVENT2("browser", "SettingsFunction::UseReadResult", "extension_id",
-               extension_id(), "namespace", storage_area_);
-  if (!result.status().ok())
-    return Error(result.status().message);
-
-  return WithArguments(result.PassSettings());
-}
-
-ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
-    ValueStore::WriteResult result) {
-  TRACE_EVENT2("browser", "SettingsFunction::UseWriteResult", "extension_id",
-               extension_id(), "namespace", storage_area_);
-  if (!result.status().ok())
-    return Error(result.status().message);
-
-  if (!result.changes().empty()) {
-    observer_->Run(
-        extension_id(), storage_area_, /*session_access_level=*/std::nullopt,
-        value_store::ValueStoreChange::ToValue(result.PassChanges()));
-  }
-
-  return NoArguments();
-}
-
-void SettingsFunction::OnSessionSettingsChanged(
-    std::vector<SessionStorageManager::ValueChange> changes) {
-  if (!changes.empty()) {
-    SettingsChangedCallback observer =
-        StorageFrontend::Get(browser_context())->GetObserver();
-    api::storage::AccessLevel access_level =
-        storage_utils::GetSessionAccessLevel(extension()->id(),
-                                             *browser_context());
-    // This used to dispatch asynchronously as a result of a
-    // ObserverListThreadSafe. Ideally, we'd just run this synchronously, but it
-    // appears at least some tests rely on the asynchronous behavior.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(observer, extension_id(), storage_area_, access_level,
-                       storage_utils::ValueChangeToValue(std::move(changes))));
-  }
-}
-
 bool SettingsFunction::IsAccessToStorageAllowed() {
   api::storage::AccessLevel access_level = storage_utils::GetSessionAccessLevel(
       extension()->id(), *browser_context());
@@ -245,6 +163,23 @@ bool SettingsFunction::IsAccessToStorageAllowed() {
   DCHECK_EQ(api::storage::AccessLevel::kTrustedAndUntrustedContexts,
             access_level);
   return true;
+}
+
+void SettingsFunction::OnWriteOperationFinished(
+    StorageFrontend::ResultStatus status) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
+  }
+
+  if (!status.success) {
+    CHECK(status.error.has_value());
+    Respond(Error(*status.error));
+    return;
+  }
+
+  Respond(NoArguments());
 }
 
 ExtensionFunction::ResponseAction StorageStorageAreaGetFunction::Run() {
@@ -384,27 +319,10 @@ ExtensionFunction::ResponseAction StorageStorageAreaSetFunction::Run() {
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());
   frontend->Set(
       extension(), storage_area(), std::move(input).TakeDict(),
-      base::BindOnce(&StorageStorageAreaSetFunction::OnSetOperationFinished,
+      base::BindOnce(&StorageStorageAreaSetFunction::OnWriteOperationFinished,
                      this));
 
   return RespondLater();
-}
-
-void StorageStorageAreaSetFunction::OnSetOperationFinished(
-    StorageFrontend::ResultStatus status) {
-  // Since the storage access happens asynchronously, the browser context can
-  // be torn down in the interim. If this happens, early-out.
-  if (!browser_context()) {
-    return;
-  }
-
-  if (!status.success) {
-    CHECK(status.error.has_value());
-    Respond(Error(*status.error));
-    return;
-  }
-
-  Respond(NoArguments());
 }
 
 void StorageStorageAreaSetFunction::GetQuotaLimitHeuristics(
@@ -437,26 +355,9 @@ ExtensionFunction::ResponseAction StorageStorageAreaRemoveFunction::Run() {
   frontend->Remove(
       extension(), storage_area(), keys,
       base::BindOnce(
-          &StorageStorageAreaRemoveFunction::OnRemoveOperationFinished, this));
+          &StorageStorageAreaRemoveFunction::OnWriteOperationFinished, this));
 
   return RespondLater();
-}
-
-void StorageStorageAreaRemoveFunction::OnRemoveOperationFinished(
-    StorageFrontend::ResultStatus status) {
-  // Since the storage access happens asynchronously, the browser context can
-  // be torn down in the interim. If this happens, early-out.
-  if (!browser_context()) {
-    return;
-  }
-
-  if (!status.success) {
-    CHECK(status.error.has_value());
-    Respond(Error(*status.error));
-    return;
-  }
-
-  Respond(NoArguments());
 }
 
 void StorageStorageAreaRemoveFunction::GetQuotaLimitHeuristics(
@@ -468,27 +369,10 @@ ExtensionFunction::ResponseAction StorageStorageAreaClearFunction::Run() {
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());
   frontend->Clear(
       extension(), storage_area(),
-      base::BindOnce(&StorageStorageAreaClearFunction::OnClearOperationFinished,
+      base::BindOnce(&StorageStorageAreaClearFunction::OnWriteOperationFinished,
                      this));
 
   return RespondLater();
-}
-
-void StorageStorageAreaClearFunction::OnClearOperationFinished(
-    StorageFrontend::ResultStatus status) {
-  // Since the storage access happens asynchronously, the browser context can
-  // be torn down in the interim. If this happens, early-out.
-  if (!browser_context()) {
-    return;
-  }
-
-  if (!status.success) {
-    CHECK(status.error.has_value());
-    Respond(Error(*status.error));
-    return;
-  }
-
-  Respond(NoArguments());
 }
 
 void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
@@ -496,24 +380,24 @@ void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
   GetModificationQuotaLimitHeuristics(heuristics);
 }
 
-ExtensionFunction::ResponseValue
-StorageStorageAreaSetAccessLevelFunction::RunWithStorage(ValueStore* storage) {
-  // TODO(crbug.com/40949182). Support these storage areas. For now, we return
-  // an error.
-  return Error("This StorageArea is not available for setting access level");
-}
+ExtensionFunction::ResponseAction
+StorageStorageAreaSetAccessLevelFunction::Run() {
+  if (storage_area() != StorageAreaNamespace::kSession) {
+    // TODO(crbug.com/40949182). Support storage areas other than kSession. For
+    // now, we return an error.
+    return RespondNow(
+        Error("This StorageArea is not available for setting access level"));
+  }
 
-ExtensionFunction::ResponseValue
-StorageStorageAreaSetAccessLevelFunction::RunInSession() {
   if (source_context_type() != mojom::ContextType::kPrivilegedExtension) {
-    return Error("Context cannot set the storage access level");
+    return RespondNow(Error("Context cannot set the storage access level"));
   }
 
   std::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
       api::storage::StorageArea::SetAccessLevel::Params::Create(args());
 
   if (!params)
-    return BadMessage();
+    return RespondNow(BadMessage());
 
   // The parsing code ensures `access_level` is sane.
   DCHECK(params->access_options.access_level ==
@@ -524,7 +408,7 @@ StorageStorageAreaSetAccessLevelFunction::RunInSession() {
   storage_utils::SetSessionAccessLevel(extension_id(), *browser_context(),
                                        params->access_options.access_level);
 
-  return NoArguments();
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
