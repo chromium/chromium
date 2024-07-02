@@ -140,6 +140,8 @@ void UpdateManifestFetcher::OnUpdateManifestParsed(
           [](UpdateManifest::JsonFormatError error) -> Error {
             switch (error) {
               case UpdateManifest::JsonFormatError::kRootNotADictionary:
+              case UpdateManifest::JsonFormatError::kChannelsNotADictionary:
+              case UpdateManifest::JsonFormatError::kChannelNotADictionary:
               case UpdateManifest::JsonFormatError::kVersionsNotAnArray:
               case UpdateManifest::JsonFormatError::kVersionEntryNotADictionary:
                 return Error::kInvalidManifest;

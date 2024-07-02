@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
@@ -24,6 +25,8 @@
 namespace web_app {
 
 inline constexpr std::string_view kUpdateManifestAllVersionsKey = "versions";
+inline constexpr std::string_view kUpdateManifestAllChannelsKey = "channels";
+inline constexpr std::string_view kUpdateManifestChannelNameKey = "name";
 inline constexpr std::string_view kUpdateManifestVersionKey = "version";
 inline constexpr std::string_view kUpdateManifestSrcKey = "src";
 inline constexpr std::string_view kUpdateManifestChannelsKey = "channels";
@@ -60,35 +63,42 @@ class UpdateManifest {
  public:
   enum class JsonFormatError {
     kRootNotADictionary,
+    kChannelsNotADictionary,
+    kChannelNotADictionary,
     kVersionsNotAnArray,
     kVersionEntryNotADictionary,
   };
 
-  // Attempts to convert the provided JSON data into an instance of
-  // `UpdateManifest`.
-  //
-  // Note that at least one version entry is required; otherwise the Update
-  // Manifest is treated as invalid.
-  //
-  // `update_manifest_url` is used to resolve relative `src` URLs in `versions`.
-  static base::expected<UpdateManifest, JsonFormatError> CreateFromJson(
-      const base::Value& json,
-      const GURL& update_manifest_url);
+  class ChannelMetadata {
+   public:
+    static base::expected<ChannelMetadata, absl::monostate> ParseFromJson(
+        const base::Value::Dict& channel_metadata_dict);
 
-  UpdateManifest(const UpdateManifest& other);
-  UpdateManifest& operator=(const UpdateManifest& other);
+    ChannelMetadata(UpdateChannelId id, std::optional<std::string> name);
 
-  ~UpdateManifest();
+    ChannelMetadata(const ChannelMetadata& other);
+    ChannelMetadata& operator=(const ChannelMetadata& other);
 
-  class VersionEntry;
+    ~ChannelMetadata();
 
-  const std::vector<VersionEntry>& versions() const { return version_entries_; }
+    bool operator==(const ChannelMetadata& other) const;
 
-  // Returns the most up to date version contained in the `UpdateManifest` for a
-  // given `channel_id`. May return `absl::nullopt` if no applicable version is
-  // found.
-  std::optional<VersionEntry> GetLatestVersion(
-      const UpdateChannelId& channel_id) const;
+    // For gtest
+    friend void PrintTo(const ChannelMetadata& channel_metadata,
+                        std::ostream* os);
+
+    // Returns the channel's name if available, or the channel ID otherwise.
+    std::string GetDisplayName() const {
+      return name_.value_or(id_.ToString());
+    }
+
+    const UpdateChannelId& id() const { return id_; }
+    const std::optional<std::string>& name() const { return name_; }
+
+   private:
+    UpdateChannelId id_;
+    std::optional<std::string> name_;
+  };
 
   class VersionEntry {
    public:
@@ -138,10 +148,42 @@ class UpdateManifest {
     base::flat_set<UpdateChannelId> channel_ids_;
   };
 
+  // Attempts to convert the provided JSON data into an instance of
+  // `UpdateManifest`.
+  //
+  // Note that at least one version entry is required; otherwise the Update
+  // Manifest is treated as invalid.
+  //
+  // `update_manifest_url` is used to resolve relative `src` URLs in `versions`.
+  static base::expected<UpdateManifest, JsonFormatError> CreateFromJson(
+      const base::Value& json,
+      const GURL& update_manifest_url);
+
+  UpdateManifest(const UpdateManifest& other);
+  UpdateManifest& operator=(const UpdateManifest& other);
+
+  ~UpdateManifest();
+
+  const std::vector<VersionEntry>& versions() const { return version_entries_; }
+
+  // Returns the most up to date version contained in the `UpdateManifest` for a
+  // given `channel_id`. May return `absl::nullopt` if no applicable version is
+  // found.
+  std::optional<VersionEntry> GetLatestVersion(
+      const UpdateChannelId& channel_id) const;
+
+  // Returns channel metadata for a provided update channel ID. If no metadata
+  // for the provided channel ID is present in the Update Manifest, then this
+  // will still return an empty `ChannelMetadata` instance for that channel ID.
+  ChannelMetadata GetChannelMetadata(const UpdateChannelId& channel_id) const;
+
  private:
-  explicit UpdateManifest(std::vector<VersionEntry> version_entries);
+  explicit UpdateManifest(
+      std::vector<VersionEntry> version_entries,
+      base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata);
 
   std::vector<VersionEntry> version_entries_;
+  base::flat_map<UpdateChannelId, ChannelMetadata> channels_metadata_;
 };
 
 bool operator==(const UpdateManifest::VersionEntry& lhs,

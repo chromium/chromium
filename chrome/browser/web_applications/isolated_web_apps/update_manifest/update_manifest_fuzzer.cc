@@ -21,6 +21,10 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   "versions": []
                 })"),
                 *base::JSONReader::Read(R"({
+                  "channels": {},
+                  "versions": []
+                })"),
+                *base::JSONReader::Read(R"({
                   "versions": [
                     {
                       "version": "1.0.0",
@@ -46,6 +50,24 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                   ]
                 })"),
                 *base::JSONReader::Read(R"({
+                  "versions": [
+                    {
+                      "version": "1.0.0",
+                      "url": "https://example.com/bundle.swbn",
+                      "channels": ["test", "stable", "test"]
+                    }
+                  ]
+                })"),
+                *base::JSONReader::Read(R"({
+                  "channels" {
+                    "test": {
+                      "name": "Test Title",
+                    },
+                    "stable": {
+                      "another property": 123,
+                    },
+                    "another channel": {}
+                  },
                   "versions": [
                     {
                       "version": "1.0.0",

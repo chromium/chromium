@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -618,6 +619,161 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
   EXPECT_THAT(update_manifest.GetLatestVersion(
                   *UpdateChannelId::Create("non-existing")),
               Eq(std::nullopt));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "versions": []
+  })"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*id=*/UpdateChannelId::default_id(),
+                  /*name=*/std::nullopt)));
+
+  ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
+  EXPECT_THAT(update_manifest.GetChannelMetadata(id),
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*id=*/id,
+                  /*name=*/std::nullopt)));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": {},
+    "versions": []
+  })"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*id=*/UpdateChannelId::default_id(),
+                  /*name=*/std::nullopt)));
+
+  ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
+  EXPECT_THAT(update_manifest.GetChannelMetadata(id),
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*id=*/id,
+                  /*name=*/std::nullopt)));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": [],
+    "versions": []
+  })"));
+  EXPECT_THAT(
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
+      ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelsNotADictionary)));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, ChannelNotADict) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": {
+      "default": []
+    },
+    "versions": []
+  })"));
+  EXPECT_THAT(
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
+      ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelNotADictionary)));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": {
+      "default": {}
+    },
+    "versions": []
+  })"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
+
+  auto channel_metadata =
+      update_manifest.GetChannelMetadata(UpdateChannelId::default_id());
+  EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
+                                    /*id=*/UpdateChannelId::default_id(),
+                                    /*name=*/std::nullopt)));
+  EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("default"));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest,
+     ChannelMetadataWithAdditionalField) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": {
+      "default": {
+        "flubber": "blubber"
+      }
+    },
+    "versions": []
+  })"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
+
+  EXPECT_THAT(update_manifest.GetChannelMetadata(UpdateChannelId::default_id()),
+              Eq(UpdateManifest::ChannelMetadata(
+                  /*id=*/UpdateChannelId::default_id(),
+                  /*name=*/std::nullopt)));
+}
+
+TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
+  ASSERT_OK_AND_ASSIGN(base::Value json,
+                       base::JSONReader::ReadAndReturnValueWithError(R"({
+    "channels": {
+      "default": {
+        "name": "default channel"
+      },
+      "some_id": {
+        "name": "some channel"
+      },
+      "another_id": {
+      }
+    },
+    "versions" : []
+  })"));
+  ASSERT_OK_AND_ASSIGN(
+      auto update_manifest,
+      UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
+
+  {
+    auto channel_metadata =
+        update_manifest.GetChannelMetadata(UpdateChannelId::default_id());
+    EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
+                                      /*id=*/UpdateChannelId::default_id(),
+                                      /*name=*/"default channel")));
+    EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("default channel"));
+  }
+
+  {
+    ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("some_id"));
+    auto channel_metadata = update_manifest.GetChannelMetadata(id);
+    EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
+                                      /*id=*/id,
+                                      /*name=*/"some channel")));
+    EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("some channel"));
+  }
+
+  {
+    ASSERT_OK_AND_ASSIGN(auto id, UpdateChannelId::Create("another_id"));
+    auto channel_metadata = update_manifest.GetChannelMetadata(id);
+    EXPECT_THAT(channel_metadata, Eq(UpdateManifest::ChannelMetadata(
+                                      /*id=*/id,
+                                      /*name=*/std::nullopt)));
+    EXPECT_THAT(channel_metadata.GetDisplayName(), Eq("another_id"));
+  }
 }
 
 }  // namespace
