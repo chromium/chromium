@@ -5854,11 +5854,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "messages-for-android-stacking-animation",
-    "owners": [ "lazzzis@chromium.org", "aishwaryarj@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "metal",
     "owners": [ "ccameron@chromium.org", "jvanverth@chromium.org" ],
     "expiry_milestone": 83

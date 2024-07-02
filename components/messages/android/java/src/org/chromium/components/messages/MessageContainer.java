@@ -81,17 +81,12 @@ public class MessageContainer extends FrameLayout {
             throw new IllegalStateException("Should not contain the target view when adding.");
         }
         int index = 0;
-        if (MessageFeatureList.isStackAnimationEnabled()) {
-            if (getChildCount() > 1) {
-                throw new IllegalStateException(
-                        "Should not contain more than 2 views when adding a new message.");
-            } else if (getChildCount() == 1) {
-                View cur = getChildAt(0);
-                index = cur.getElevation() > view.getElevation() ? 1 : 0;
-            }
-        } else if (getChildCount() == 1) {
+        if (getChildCount() > 1) {
             throw new IllegalStateException(
-                    "Should not contain any view when adding a new message.");
+                    "Should not contain more than 2 views when adding a new message.");
+        } else if (getChildCount() == 1) {
+            View cur = getChildAt(0);
+            index = cur.getElevation() > view.getElevation() ? 1 : 0;
         }
         super.addView(view, index);
         onChildCountChanged();

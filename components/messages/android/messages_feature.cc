@@ -17,7 +17,6 @@ namespace messages {
 namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
-    &kMessagesForAndroidStackingAnimation,
     &kMessagesForAndroidFullyVisibleCallback,
     &kMessagesAndroidExtraHistograms,
 };
@@ -39,10 +38,6 @@ BASE_FEATURE(kMessagesForAndroidSaveCard,
              "MessagesForAndroidSaveCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidStackingAnimation,
-             "MessagesForAndroidStackingAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -58,10 +53,6 @@ bool IsAdsBlockedMessagesUiEnabled() {
 
 bool IsSaveCardMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
-}
-
-bool IsStackingAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidStackingAnimation);
 }
 
 bool ISdFullyVisibleCallbackEnabled() {

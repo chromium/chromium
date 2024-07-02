@@ -31,9 +31,8 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
@@ -45,7 +44,9 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
 public class MessageQueueManagerTest {
+
     private MessageQueueDelegate mEmptyDelegate =
             new MessageQueueDelegate() {
                 boolean mIsReadyForShowing;
@@ -154,12 +155,6 @@ public class MessageQueueManagerTest {
 
     @Before
     public void setUp() {
-        var testValues = new TestValues();
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
-        FeatureList.setTestValues(testValues);
         MessageContainer container = Mockito.mock(MessageContainer.class);
         doAnswer(
                         invocation -> {
@@ -224,45 +219,11 @@ public class MessageQueueManagerTest {
 
     /**
      * Tests lifecycle of a single message: - enqueueMessage() calls show() - dismissMessage() calls
-     * hide() and dismiss()
-     */
-    @Test
-    @SmallTest
-    public void testEnqueueMessage_withStacking() {
-        var testValues = new TestValues();
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true);
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
-        FeatureList.setTestValues(testValues);
-        testEnqueueMessage();
-    }
-
-    /**
-     * Tests lifecycle of a single message: - enqueueMessage() calls show() - dismissMessage() calls
      * hide() and dismiss() when a queue is enqueued with multiple messages
      */
     @Test
     @SmallTest
     public void testEnqueueMultipleMessages() {
-        testEnqueueMultipleMessagesInternal(false);
-    }
-
-    @Test
-    @SmallTest
-    public void testEnqueueMultipleMessages_withStacking() {
-        testEnqueueMultipleMessagesInternal(true);
-    }
-
-    // TODO(crbug.com/41490749): replace with ParameterizedRunner or remove non-stacking animation
-    // test case
-    private void testEnqueueMultipleMessagesInternal(boolean isStackingEnabled) {
-        var testValues = new TestValues();
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, isStackingEnabled);
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
-        FeatureList.setTestValues(testValues);
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 =
@@ -300,11 +261,7 @@ public class MessageQueueManagerTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Messages.Dismissed.SyncError", DismissReason.TIMER);
         enqueued.assertExpected();
-        if (isStackingEnabled) {
-            verify(m2).show(eq(Position.BACK), eq(Position.FRONT));
-        } else {
-            verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
-        }
+        verify(m2).show(eq(Position.BACK), eq(Position.FRONT));
         queueManager.dismissMessage(m2, DismissReason.TIMER);
         dismissed.assertExpected();
         verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
@@ -447,29 +404,6 @@ public class MessageQueueManagerTest {
         Assert.assertTrue(
                 "#dismissAllMessages should clear the message queue.",
                 queueManager.getMessagesForTesting().isEmpty());
-    }
-
-    /** Tests that, with multiple enqueued messages, only one message is shown at a time. */
-    @Test
-    @SmallTest
-    public void testOneMessageShownAtATime() {
-        MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
-
-        queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-
-        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
-        verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
-        verify(m2, never()).show(eq(Position.INVISIBLE), eq(Position.FRONT));
-
-        queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
-        verify(m1).dismiss(DismissReason.TIMER);
-        verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
     }
 
     /**
@@ -662,12 +596,8 @@ public class MessageQueueManagerTest {
                                                 + " active"))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
-        verify(
-                        m2,
-                        never().description(
-                                        "The message should not be visible when its scope is"
-                                                + " inactive"))
-                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m2, description("The message should show in the background"))
+                .show(eq(Position.FRONT), eq(Position.BACK));
 
         queueManager.onScopeChange(
                 new MessageScopeChange(
@@ -680,7 +610,7 @@ public class MessageQueueManagerTest {
                 .dismiss(anyInt());
 
         verify(m2, description("A message should be shown when the associated scope is active"))
-                .show(eq(Position.INVISIBLE), eq(Position.FRONT));
+                .show(eq(Position.BACK), eq(Position.FRONT));
 
         queueManager.onScopeChange(
                 new MessageScopeChange(
@@ -772,6 +702,7 @@ public class MessageQueueManagerTest {
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(delegate, times(2)).onRequestShowing(runnableCaptor.capture());
+        doReturn(true).when(delegate).isReadyForShowing();
         runnableCaptor.getValue().run();
         verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
@@ -822,6 +753,7 @@ public class MessageQueueManagerTest {
     public void testScopeChangeControllerInvoked() {
         ScopeChangeController controller = Mockito.mock(ScopeChangeController.class);
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
+        queueManager.setDelegate(mEmptyDelegate);
         queueManager.setScopeChangeControllerForTesting(controller);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
@@ -900,12 +832,12 @@ public class MessageQueueManagerTest {
         verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, true);
-        verify(m1).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
+        verify(m1).show(eq(Position.FRONT), eq(Position.BACK));
         verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
         queueManager.dismissMessage(m2, DismissReason.TIMER);
         verify(m2).hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
         verify(m2).dismiss(DismissReason.TIMER);
-        verify(m1, times(2)).show(eq(Position.INVISIBLE), eq(Position.FRONT));
+        verify(m1).show(eq(Position.BACK), eq(Position.FRONT));
     }
 
     /** Test that {@link MessageQueueManager#getNextMessages()} returns correct list. */

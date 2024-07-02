@@ -31,7 +31,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
 @Features.EnableFeatures({
-    MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION,
     MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK,
     MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS
 })

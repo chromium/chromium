@@ -4427,11 +4427,6 @@ const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
 
-const char kMessagesForAndroidStackingAnimationName[] =
-    "Stacking Animation of Messages UI";
-const char kMessagesForAndroidStackingAnimationDescription[] =
-    "When enabled, Messages UI will use the new stacking animation.";
-
 const char kMouseAndTrackpadDropdownMenuName[] =
     "Android Mouse & Trackpad Drop-down Text Selection Menu";
 const char kMouseAndTrackpadDropdownMenuDescription[] =

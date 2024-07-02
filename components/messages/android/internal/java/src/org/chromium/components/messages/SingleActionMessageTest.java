@@ -48,7 +48,6 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @Features.EnableFeatures({
     MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS,
     MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK,
-    MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION
 })
 public class SingleActionMessageTest {
     @ClassRule
@@ -234,15 +233,15 @@ public class SingleActionMessageTest {
                 message.getAutoDismissDuration());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     @MediumTest
-    @Features.DisableFeatures(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION)
     public void testAddMultipleSingleActionMessage() {
         MessageContainer container = new MessageContainer(sActivity, null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
         final MessageBannerView view1 = createMessageBannerView(container);
         final MessageBannerView view2 = createMessageBannerView(container);
+        // expect no crash
         createAndShowSingleActionMessage(container, m1, view1);
         createAndShowSingleActionMessage(container, m2, view2);
     }

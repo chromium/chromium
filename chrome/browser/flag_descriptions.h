@@ -2615,9 +2615,6 @@ extern const char kMessagesForAndroidAdsBlockedDescription[];
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 
-extern const char kMessagesForAndroidStackingAnimationName[];
-extern const char kMessagesForAndroidStackingAnimationDescription[];
-
 extern const char kMobilePWAInstallPromptMlName[];
 extern const char kMobilePWAInstallPromptMlDescription[];
 
