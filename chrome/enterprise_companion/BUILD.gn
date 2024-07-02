@@ -26,7 +26,9 @@ process_version("branding_header") {
     "-e",
     "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
     "-e",
-    "MAC_BUNDLE_IDENTIFIER=\"$mac_enterprise_companion_bundle_identifier\"",
+    "ENTERPRISE_COMPANION_EVENT_LOGGING_URL=\"$enterprise_companion_event_logging_url\"",
+    "-e",
+    "MAC_BUNDLE_IDENTIFIER_STRING=\"$mac_enterprise_companion_bundle_identifier\"",
     "-e",
     "PRODUCT_FULLNAME=\"$enterprise_companion_product_full_name\"",
   ]
@@ -47,6 +49,8 @@ source_set("base") {
     "enterprise_companion_service_stub.h",
     "enterprise_companion_status.cc",
     "enterprise_companion_status.h",
+    "event_logger.cc",
+    "event_logger.h",
     "ipc_support.cc",
     "ipc_support.h",
     "lock.cc",
@@ -70,6 +74,7 @@ source_set("base") {
     "//net",
     "//services/network:network_service",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -81,6 +86,7 @@ test("enterprise_companion_tests") {
     "enterprise_companion_service_stub_unittest.cc",
     "enterprise_companion_service_unittest.cc",
     "enterprise_companion_status_unittest.cc",
+    "event_logger_unittest.cc",
     "test/run_all_unittests.cc",
   ]
   deps = [
@@ -91,10 +97,12 @@ test("enterprise_companion_tests") {
     "//base/test:test_support",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/device_management_storage:unit_tests",
+    "//chrome/enterprise_companion/proto",
     "//chrome/updater:constants_test",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

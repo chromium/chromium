@@ -12,6 +12,7 @@
 
 #include "base/functional/overloaded.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
+#include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
@@ -62,6 +63,13 @@ class EnterpriseCompanionStatus {
 
   mojom::StatusPtr ToMojomStatus() const {
     return mojom::Status::New(space(), code(), description());
+  }
+
+  proto::Status ToProtoStatus() const {
+    proto::Status status;
+    status.set_space(space());
+    status.set_code(code());
+    return status;
   }
 
   auto operator<=>(const EnterpriseCompanionStatus& other) const = default;

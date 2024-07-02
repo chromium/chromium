@@ -23,3 +23,4 @@ device_management_realtime_reporting_url =
     "https://chromereporting-pa.googleapis.com/v1/events"
 device_management_encrypted_reporting_url =
     "https://chromereporting-pa.googleapis.com/v1/record"
+enterprise_companion_event_logging_url = "https://play.googleapis.com/log"

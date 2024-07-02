@@ -5,6 +5,7 @@ include_rules = [
     "+components/policy",
     "+mojo",
     "+net",
-    "+services/network/public/cpp",
+    "+services/network/public",
+    "+services/network/test",
     "+services/network/transitional_url_loader_factory_owner.h",
 ]
