@@ -1577,6 +1577,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
   NavigateTo(kMainPageUrl);
 
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
+  std::string server_port;
+  if (prerender_gurl.has_port()) {
+    server_port = prerender_gurl.port();
+  }
 
   // Inject the speculation rule and wait for prerender to complete.
   prerender_helper()->AddPrerender(prerender_gurl);
@@ -1614,8 +1618,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
       url_formatter::FormatUrl(embedded_test_server()->GetURL(kPrerenderURL));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab(base::UTF16ToUTF8(tab_title))));
-  ASSERT_NO_FATAL_FAILURE(
-      WaitForTaskManagerRows(1, MatchBFCache("http://127.0.0.1/")));
+  if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() &&
+      !server_port.empty()) {
+    // When kOriginKeyedProcessesByDefault is enabled, we need to include the
+    // port number as the SiteInstance's site_url will include it.
+    ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(
+        1, MatchBFCache("http://127.0.0.1:" + server_port + "/")));
+  } else {
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForTaskManagerRows(1, MatchBFCache("http://127.0.0.1/")));
+  }
 }
 
 // TODO(crbug.com/40232771): Flaky on Windows7.
