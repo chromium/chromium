@@ -189,18 +189,18 @@
             },
             "content_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 103,
-                    "estimated_bot_hour_delta": -1.26,
-                    "prev_avg_pending_time_sec": 53.3,
-                    "prev_p50_pending_time_sec": 2.0,
-                    "prev_p90_pending_time_sec": 174.0,
-                    "prev_percentile_duration_minutes": 12.93,
-                    "prev_shard_count": 7,
-                    "simulated_max_shard_duration": 14.96,
-                    "test_overhead_min": 0.7333333333333333,
+                    "avg_num_builds_per_peak_hour": 79,
+                    "estimated_bot_hour_delta": 0.92,
+                    "prev_avg_pending_time_sec": 17.4,
+                    "prev_p50_pending_time_sec": 0.0,
+                    "prev_p90_pending_time_sec": 66.0,
+                    "prev_percentile_duration_minutes": 16.01,
+                    "prev_shard_count": 6,
+                    "simulated_max_shard_duration": 13.82,
+                    "test_overhead_min": 0.7,
                     "try_builder": "linux-chromeos-rel"
                 },
-                "shards": 6
+                "shards": 7
             },
             "unit_tests": {
                 "debug": {
@@ -716,18 +716,18 @@
         "Win10 Tests x64": {
             "content_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 98,
-                    "estimated_bot_hour_delta": 7.43,
-                    "prev_avg_pending_time_sec": 68.2,
-                    "prev_p50_pending_time_sec": 2.0,
-                    "prev_p90_pending_time_sec": 188.0,
-                    "prev_percentile_duration_minutes": 18.87,
-                    "prev_shard_count": 8,
-                    "simulated_max_shard_duration": 14.14,
-                    "test_overhead_min": 1.5166666666666666,
+                    "avg_num_builds_per_peak_hour": 81,
+                    "estimated_bot_hour_delta": -2.18,
+                    "prev_avg_pending_time_sec": 30.2,
+                    "prev_p50_pending_time_sec": 1.0,
+                    "prev_p90_pending_time_sec": 117.0,
+                    "prev_percentile_duration_minutes": 13.72,
+                    "prev_shard_count": 11,
+                    "simulated_max_shard_duration": 14.93,
+                    "test_overhead_min": 1.6166666666666667,
                     "try_builder": "win-rel"
                 },
-                "shards": 11
+                "shards": 10
             },
             "pixel_browser_tests": {
                 "debug": {
