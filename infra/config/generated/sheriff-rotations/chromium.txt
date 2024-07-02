@@ -129,5 +129,6 @@ ci/win-arm64-rel
 ci/win-asan
 ci/win-official
 ci/win-presubmit
+ci/win11-arm64-rel-tests
 ci/win32-archive-rel
 ci/win32-official

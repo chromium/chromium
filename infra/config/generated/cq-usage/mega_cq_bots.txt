@@ -154,6 +154,7 @@ chromium/try/mac_chromium_compile_dbg_ng
 chromium/try/mac_chromium_compile_rel_ng
 chromium/try/network_service_linux
 chromium/try/win-arm64-compile-dbg
+chromium/try/win-arm64-rel
 chromium/try/win-asan
 chromium/try/win-asan-media-rel
 chromium/try/win-asan-rel
