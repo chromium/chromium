@@ -6689,6 +6689,8 @@ static_library("browser") {
       "enterprise/connectors/reporting/extension_install_event_router.h",
       "enterprise/connectors/reporting/extension_telemetry_event_router.cc",
       "enterprise/connectors/reporting/extension_telemetry_event_router.h",
+      "enterprise/connectors/reporting/extension_telemetry_event_router_factory.cc",
+      "enterprise/connectors/reporting/extension_telemetry_event_router_factory.h",
       "enterprise/connectors/reporting/metrics_utils.cc",
       "enterprise/connectors/reporting/metrics_utils.h",
       "enterprise/connectors/reporting/realtime_reporting_client.cc",

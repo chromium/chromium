@@ -10,8 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -48,12 +46,9 @@ class ConnectorsManager {
   using ReportingConnectorsSettings =
       std::map<ReportingConnector, std::vector<ReportingServiceSettings>>;
 
-  ConnectorsManager(
-      std::unique_ptr<ExtensionTelemetryEventRouter>
-          extension_telemetry_event_router,
-      PrefService* pref_service,
-      const ServiceProviderConfig* config,
-      bool observe_prefs = true);
+  ConnectorsManager(PrefService* pref_service,
+                    const ServiceProviderConfig* config,
+                    bool observe_prefs = true);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   ~ConnectorsManager() override;
 #else
@@ -186,10 +181,6 @@ class ConnectorsManager {
 
   // Used to report changes of reporting connector policy.
   base::RepeatingCallback<void(bool)> telemetry_observer_callback_;
-
-  // A router to report extension telemetry events via the reporting pipeline.
-  std::unique_ptr<ExtensionTelemetryEventRouter>
-      extension_telemetry_event_router_;
 };
 
 }  // namespace enterprise_connectors

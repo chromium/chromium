@@ -35,11 +35,6 @@ std::optional<GURL> GetUrlOverride() {
 
 }  // namespace
 
-// Feature flag for individual event types.
-BASE_FEATURE(kExtensionTelemetryEventsEnabled,
-             "ExtensionTelemetryEventsEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 ReportingServiceSettings::ReportingServiceSettings(
     const base::Value& settings_value,
     const ServiceProviderConfig& service_provider_config) {

@@ -19,8 +19,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -197,9 +195,7 @@ TEST_P(ConnectorsManagerLocalAnalysisPolicyTest, Test) {
                          kNormalLocalAnalysisSettingsPref)
                    : nullptr;
 
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   EXPECT_EQ(set_policy(), manager.IsConnectorEnabled(connector()));
 }
 
@@ -270,9 +266,7 @@ class ConnectorsManagerConnectorPoliciesTest
 };
 
 TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
   ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
   SetUpExpectedAnalysisSettings(pref_value());
@@ -302,9 +296,7 @@ TEST_P(ConnectorsManagerConnectorPoliciesTest, NormalPref) {
 }
 
 TEST_P(ConnectorsManagerConnectorPoliciesTest, EmptyPref) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // If the connector's settings list is empty, no analysis settings are ever
   // returned.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
@@ -610,9 +602,7 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
 };
 
 TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, NormalPref) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
   ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
   SetUpExpectedAnalysisSettings(pref_value());
@@ -643,9 +633,7 @@ TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, NormalPref) {
 }
 
 TEST_P(ConnectorsManagerConnectorPoliciesSourceDestinationTest, EmptyPref) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // If the connector's settings list is empty, no analysis settings are ever
   // returned.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
@@ -690,9 +678,7 @@ class ConnectorsManagerAnalysisConnectorsTest
 };
 
 TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 
@@ -732,9 +718,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
 }
 
 TEST_P(ConnectorsManagerAnalysisConnectorsTest, NamesAndConfigs) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ScopedConnectorPref scoped_pref(pref_service(), pref(), pref_value());
 
   auto names = manager.GetAnalysisServiceProviderNames(connector());
@@ -804,9 +788,7 @@ class ConnectorsManagerAnalysisConnectorsSourceDestinationTest
 
 TEST_P(ConnectorsManagerAnalysisConnectorsSourceDestinationTest,
        DynamicPolicies) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 
@@ -866,9 +848,7 @@ class ConnectorsManagerReportingTest
 };
 
 TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
 
@@ -909,9 +889,7 @@ class ConnectorsManagerLocalAnalysisConnectorTest
 };
 
 TEST_P(ConnectorsManagerLocalAnalysisConnectorTest, DynamicPolicies) {
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   FakeContentAnalysisSdkManager content_analysis_sdk_manager;
 
   // The cache is initially empty.
@@ -1012,9 +990,7 @@ class ConnectorsManagerDataRegionTest
 TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
   pref_service()->SetInteger(prefs::kChromeDataRegionSetting,
                              static_cast<int>(data_region()));
-  ConnectorsManager manager(
-      std::make_unique<ExtensionTelemetryEventRouter>(profile_), pref_service(),
-      GetServiceProviderConfig());
+  ConnectorsManager manager(pref_service(), GetServiceProviderConfig());
   ScopedConnectorPref scoped_pref(pref_service(), pref(),
                                   kNormalCloudAnalysisSettingsPref);
 

@@ -16,9 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
-#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
@@ -663,7 +660,6 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
 
   return new ConnectorsService(
       context, std::make_unique<ConnectorsManager>(
-                   std::make_unique<ExtensionTelemetryEventRouter>(context),
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));
 }

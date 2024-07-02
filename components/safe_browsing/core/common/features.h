@@ -116,6 +116,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal);
 // specified in the --load-extension commandline switch in telemetry reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 
+// Enables the telemetry service to collect signals and generate reports to send
+// for enterprise.
+BASE_DECLARE_FEATURE(kExtensionTelemetryForEnteprise);
+
 // Enables collection of telemetry signal whenever an extension invokes the
 // chrome.tabs API methods.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignal);

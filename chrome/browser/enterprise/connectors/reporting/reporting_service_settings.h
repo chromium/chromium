@@ -18,8 +18,6 @@
 
 namespace enterprise_connectors {
 
-BASE_DECLARE_FEATURE(kExtensionTelemetryEventsEnabled);
-
 // The settings for a report service obtained from a connector policy.
 class ReportingServiceSettings {
  public:

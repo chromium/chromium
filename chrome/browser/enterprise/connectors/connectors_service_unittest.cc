@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
-#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
@@ -282,8 +281,8 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
 
   base::test::TestFuture<bool> future;
   connectors_service->ObserveTelemetryReporting(future.GetRepeatingCallback());
-  ASSERT_TRUE(
-      !connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
+  ASSERT_FALSE(
+      connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
 
   // Cache initially empty
   ASSERT_TRUE(
@@ -481,7 +480,6 @@ class ConnectorsServiceProfileTypeBrowserTest : public testing::Test {
 
   std::unique_ptr<ConnectorsService> CreateService(Profile* profile) {
     auto manager = std::make_unique<ConnectorsManager>(
-        std::make_unique<ExtensionTelemetryEventRouter>(profile),
         profile->GetPrefs(), GetServiceProviderConfig(), false);
 
     return std::make_unique<ConnectorsService>(profile, std::move(manager));

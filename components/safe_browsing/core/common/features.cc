@@ -121,6 +121,10 @@ BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTelemetryForEnteprise,
+             "SafeBrowsingExtensionTelemetryForEnteprise",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -372,6 +376,7 @@ base::Value::List GetFeatureStatusList() {
       &kEnhancedSafeBrowsingPromo,
       &kExtensionTelemetryDeclarativeNetRequestActionSignal,
       &kExtensionTelemetryDisableOffstoreExtensions,
+      &kExtensionTelemetryForEnteprise,
       &kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
       &kExtensionTelemetryPotentialPasswordTheft,
       &kExtensionTelemetryReportContactedHosts,

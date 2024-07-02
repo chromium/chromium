@@ -453,6 +453,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -813,6 +814,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
+  enterprise_connectors::ExtensionTelemetryEventRouterFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   enterprise_connectors::LocalBinaryUploadServiceFactory::GetInstance();
