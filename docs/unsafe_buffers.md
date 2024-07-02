@@ -168,7 +168,7 @@ should be used along with the `auto` keyword:
 
 A common idiom in older code is to write into a byte array by casting
 the array into a pointer to a larger type (such as `uint32_t` or `float`)
-and then writing through that pointer. This an result in Undefined Behaviour
+and then writing through that pointer. This can result in Undefined Behaviour
 and violates the rules of the C++ abstract machine.
 
 Instead, keep the byte array as a `base::span<uint8_t>`, and write to it
