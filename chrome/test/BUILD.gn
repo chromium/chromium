@@ -3000,7 +3000,6 @@ if (!is_android) {
       "../browser/ui/webui/settings/settings_secure_dns_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_ui_browsertest.cc",
       "../browser/ui/webui/side_panel/customize_chrome/customize_chrome_browsertest.cc",
-      "../browser/ui/webui/side_panel/read_anything/read_anything_app_browsertest.cc",
       "../browser/ui/webui/side_panel/read_anything/read_anything_app_e2e_browsertest.cc",
       "../browser/ui/webui/support_tool/support_tool_ui_browsertest.cc",
       "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",

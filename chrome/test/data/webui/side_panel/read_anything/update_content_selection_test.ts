@@ -22,6 +22,10 @@ suite('UpdateContentSelection', () => {
   // ++paragraph htmlTag='p' id=6
   // ++++staticText name='Friend' id=7
   // ++++staticText name='!' id=8
+  // ++++link htmlTag='a' id=9
+  // +++++staticText name='You've Got a Friend in Me' id=10
+  const inlineId = 10;
+  const inlineText = 'You\'ve Got a Friend in Me';
   const axTree = {
     rootId: 1,
     nodes: [
@@ -57,7 +61,7 @@ suite('UpdateContentSelection', () => {
         id: 6,
         role: 'paragraph',
         htmlTag: 'p',
-        childIds: [7, 8],
+        childIds: [7, 8, 9],
       },
       {
         id: 7,
@@ -69,15 +73,25 @@ suite('UpdateContentSelection', () => {
         role: 'staticText',
         name: '!',
       },
+      {
+        id: 9,
+        role: 'link',
+        htmlTag: 'a',
+        display: 'inline',
+        childIds: [inlineId],
+      },
+      {
+        id: inlineId,
+        role: 'staticText',
+        name: inlineText,
+      },
     ],
-    selection: {
-      anchor_object_id: 5,
-      focus_object_id: 7,
-      anchor_offset: 1,
-      focus_offset: 2,
-      is_backward: false,
-    },
   };
+
+  function setSelection(selection: Object, contentNodes: number[]) {
+    const selectedTree = Object.assign({selection: selection}, axTree);
+    chrome.readingMode.setContentForTesting(selectedTree, contentNodes);
+  }
 
   setup(() => {
     suppressInnocuousErrors();
@@ -91,22 +105,128 @@ suite('UpdateContentSelection', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    chrome.readingMode.setContentForTesting(axTree, []);
   });
 
-  suite('WithSelection', () => {
-    test('InnerHtmlCorrect', () => {
-      const expected = '<div><p>World</p><p>Friend!</p></div>';
-      const innerHTML = app.$.container.innerHTML;
-      assertEquals(expected, innerHTML);
-    });
+  test('forward selection', () => {
+    const expected = '<div><p>World</p><p>Friend!' +
+        '<a>You\'ve Got a Friend in Me</a></p></div>';
+    setSelection(
+        {
+          anchor_object_id: 5,
+          focus_object_id: 7,
+          anchor_offset: 1,
+          focus_offset: 2,
+          is_backward: false,
+        },
+        [2, 4, 6]);
 
-    test('CorrectContentSelected', () => {
-      const selection = app.getSelection();
-      assertEquals('World', selection.anchorNode.textContent);
-      assertEquals('Friend', selection.focusNode.textContent);
-      assertEquals(1, selection.anchorOffset);
-      assertEquals(2, selection.focusOffset);
-    });
+    const selection = app.getSelection();
+
+    assertEquals(expected, app.$.container.innerHTML);
+    assertEquals('World', selection.anchorNode.textContent);
+    assertEquals('Friend', selection.focusNode.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
+
+  test('selection completely outside distilled content', () => {
+    const expected = '<div><p>World</p><p>Friend!' +
+        '<a>You\'ve Got a Friend in Me</a></p></div>';
+    setSelection(
+        {
+          anchor_object_id: 5,
+          focus_object_id: 7,
+          anchor_offset: 1,
+          focus_offset: 2,
+          is_backward: false,
+        },
+        /* contentNodes= */[]);
+
+    const selection = app.getSelection();
+
+    assertEquals(expected, app.$.container.innerHTML);
+    assertEquals('World', selection.anchorNode.textContent);
+    assertEquals('Friend', selection.focusNode.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
+
+  test('selection partially outside distilled content', () => {
+    const expected = '<div><p>Hello</p><p>World</p><p>Friend!' +
+        '<a>You\'ve Got a Friend in Me</a></p></div>';
+    setSelection(
+        {
+          anchor_object_id: 3,
+          focus_object_id: 7,
+          anchor_offset: 1,
+          focus_offset: 2,
+          is_backward: false,
+        },
+        [2, 4]);
+
+    const selection = app.getSelection();
+
+    assertEquals(expected, app.$.container.innerHTML);
+    assertEquals('Hello', selection.anchorNode.textContent);
+    assertEquals('Friend', selection.focusNode.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
+
+  test('backward selection', () => {
+    setSelection(
+        {
+          anchor_object_id: 7,
+          focus_object_id: 3,
+          anchor_offset: 2,
+          focus_offset: 1,
+          is_backward: true,
+        },
+        [2, 4, 6]);
+
+    const selection = app.getSelection();
+
+    assertEquals('Hello', selection.anchorNode.textContent);
+    assertEquals('Friend', selection.focusNode.textContent);
+    assertEquals(1, selection.anchorOffset);
+    assertEquals(2, selection.focusOffset);
+  });
+
+  test('forward selection with inline text', () => {
+    setSelection(
+        {
+          anchor_object_id: inlineId,
+          focus_object_id: inlineId,
+          anchor_offset: 3,
+          focus_offset: 10,
+          is_backward: false,
+        },
+        [2, 4, 6]);
+
+    const selection = app.getSelection();
+
+    assertEquals(inlineText, selection.anchorNode.textContent);
+    assertEquals(inlineText, selection.focusNode.textContent);
+    assertEquals(3, selection.anchorOffset);
+    assertEquals(10, selection.focusOffset);
+  });
+
+  test('backward selection with inline text', () => {
+    setSelection(
+        {
+          anchor_object_id: inlineId,
+          focus_object_id: inlineId,
+          anchor_offset: 10,
+          focus_offset: 3,
+          is_backward: true,
+        },
+        [2, 4, 6]);
+
+    const selection = app.getSelection();
+
+    assertEquals(inlineText, selection.anchorNode.textContent);
+    assertEquals(inlineText, selection.focusNode.textContent);
+    assertEquals(3, selection.anchorOffset);
+    assertEquals(10, selection.focusOffset);
   });
 });
