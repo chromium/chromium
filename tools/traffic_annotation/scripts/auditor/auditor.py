@@ -1077,6 +1077,9 @@ class Exporter:
           archived.os_list.append(self._current_platform)
         # content_hash_code includes the proto, so this detects most changes.
         archived.content_hash_code = annotation.get_content_hash_code()
+        if annotation.type != Annotation.Type.COMPLETE:
+          archived.semantics_fields = annotation.get_semantics_field_numbers()
+          archived.policy_fields = annotation.get_policy_field_numbers()
       else:
         # If annotation is new, add it and assume it is on all platforms. Tests
         # running on other platforms will request updating this if required.
