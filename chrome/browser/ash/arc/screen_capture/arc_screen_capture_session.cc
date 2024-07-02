@@ -313,14 +313,15 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   }
   // Get the source texture - RGBA format is guaranteed to have 1 valid texture
   // if the CopyOutputRequest succeeded:
-  const auto& texture_result = *result->GetTextureResult();
+  gpu::Mailbox result_mailbox = result->GetTextureResult()->mailbox;
+  CHECK(!result_mailbox.IsZero());
 
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   CHECK_EQ(1u, release_callbacks.size());
 
   std::unique_ptr<DesktopTexture> desktop_texture =
-      std::make_unique<DesktopTexture>(texture_result.mailbox,
+      std::make_unique<DesktopTexture>(result_mailbox,
                                        std::move(release_callbacks[0]));
   if (buffer_queue_.empty()) {
     // We don't have a GPU buffer to render to, so put this in a queue to use
