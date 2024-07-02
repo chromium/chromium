@@ -429,6 +429,39 @@ WebPrintPageDescription GetPageDescriptionFromLayout(const Document& document,
                                     border_box->Size() * scale);
 
   PhysicalBoxStrut insets(page_container.Size(), page_border_box_rect);
+
+  // Go through all page margin boxes, and see which page edges they intersect
+  // with. Set margins to zero for those edges, to suppress browser-generated
+  // headers and footers, so that they don't overlap with the page margin boxes.
+  PhysicalRect top_edge_rect(LayoutUnit(), LayoutUnit(),
+                             page_container.Size().width, insets.top);
+  PhysicalRect right_edge_rect(insets.left + page_border_box_rect.Width(),
+                               LayoutUnit(), insets.right,
+                               page_container.Size().height);
+  PhysicalRect bottom_edge_rect(LayoutUnit(),
+                                insets.top + page_border_box_rect.Height(),
+                                page_container.Size().width, insets.bottom);
+  PhysicalRect left_edge_rect(LayoutUnit(), LayoutUnit(), insets.left,
+                              page_container.Size().height);
+  for (const PhysicalFragmentLink& child_link : page_container.Children()) {
+    if (child_link->GetBoxType() != PhysicalFragment::kPageMargin) {
+      continue;
+    }
+    PhysicalRect box_rect(child_link.offset, child_link->Size());
+    if (box_rect.Intersects(top_edge_rect)) {
+      insets.top = LayoutUnit();
+    }
+    if (box_rect.Intersects(right_edge_rect)) {
+      insets.right = LayoutUnit();
+    }
+    if (box_rect.Intersects(bottom_edge_rect)) {
+      insets.bottom = LayoutUnit();
+    }
+    if (box_rect.Intersects(left_edge_rect)) {
+      insets.left = LayoutUnit();
+    }
+  }
+
   WebPrintPageDescription description(gfx::SizeF(page_container.Size()));
   description.margin_top = insets.top.ToFloat();
   description.margin_right = insets.right.ToFloat();

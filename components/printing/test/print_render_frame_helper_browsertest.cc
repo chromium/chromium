@@ -1293,6 +1293,116 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, FooterPartiallyOutsidePage) {
   EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
 }
 
+TEST_F(MAYBE_PrintRenderFrameHelperTest, HeaderObscuredByPageMarginBox) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+
+        @top-right {
+          width: 9pt;
+          height: 9pt;
+          background: #0f0;
+          content: "";
+        }
+      }
+    </style>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #f00;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the green square in the header area, from the @page margin
+  // box. The UA-inserted header will not be painted, since there's a @page
+  // margin box in the header area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0x00ff00U, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the yellow square in the footer area.
+  pixel_count = CheckPixels(image, 0xffff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, FooterObscuredByPageMarginBox) {
+  const float kPageWidth = 150;
+  const float kPageHeight = 150;
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 150pt;
+        margin: 24pt 0;
+
+        @bottom-right {
+          width: 9pt;
+          height: 9pt;
+          background: #0f0;
+          content: "";
+        }
+      }
+    </style>
+  )HTML");
+
+  mojom::PrintParams& params = printer()->Params();
+  printer()->set_should_generate_page_images(true);
+  params.display_header_footer = true;
+  params.should_print_backgrounds = true;
+
+  // Use a border to draw the squares, since backgrounds are omitted for headers
+  // and footers.
+  params.header_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #ff0;'></div>";
+  params.footer_template =
+      u"<div class='text' "
+      "style='width:7in; height:9pt; border-left:9pt solid #f00;'></div>";
+
+  OnPrintPages();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const Image& image = page->image();
+  ASSERT_EQ(image.size(), gfx::Size(kPageWidth, kPageHeight));
+
+  // Look for the yellow square in the header area.
+  PixelCount pixel_count =
+      CheckPixels(image, 0xffff00U, gfx::Rect(0, 0, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+
+  // Look for the green square in the footer area, from the @page margin
+  // box. The UA-inserted header will not be painted, since there's a @page
+  // margin box in the header area.
+  pixel_count = CheckPixels(image, 0x00ff00U,
+                            gfx::Rect(0, kPageHeight - 24, kPageWidth, 24));
+  EXPECT_EQ(pixel_count.with_target_color, 81u);
+  EXPECT_EQ(pixel_count.unknown_nonwhite, 0u);
+}
+
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {
