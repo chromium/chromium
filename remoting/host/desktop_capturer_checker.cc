@@ -33,6 +33,16 @@ void DesktopCapturerChecker::TriggerSingleCapture() {
 
   webrtc::DesktopCaptureOptions options =
       webrtc::DesktopCaptureOptions::CreateDefault();
+
+#if BUILDFLAG(IS_MAC)
+  // Use the new capture APIs (on macOS 13.0+) instead of the deprecated ones
+  // which may stop working in later versions of macOS. The same permissions
+  // work for both APIs.
+  // TODO: crbug.com/327458809 - Remove this when WebRTC defaults to using
+  // SCK.
+  options.set_allow_sck_capturer(true);
+#endif
+
   capturer_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
   DCHECK(capturer_)
       << "Failed to initialize screen capturer for DesktopCapturerChecker.";
