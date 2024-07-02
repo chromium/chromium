@@ -8,6 +8,8 @@ assert(enterprise_content_analysis)
 
 source_set("connectors") {
   sources = [
+    "analysis/analysis_settings.cc",
+    "analysis/analysis_settings.h",
     "connectors_prefs.cc",
     "connectors_prefs.h",
     "device_trust/prefs.cc",
@@ -21,6 +23,7 @@ source_set("connectors") {
   deps = [
     "//base",
     "//components/enterprise/buildflags:buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

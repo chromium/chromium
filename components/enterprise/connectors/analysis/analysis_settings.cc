@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
+#include "components/enterprise/connectors/analysis/analysis_settings.h"
 
 namespace enterprise_connectors {
 

@@ -14,11 +14,11 @@
 #include "base/syslog_logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/signals/system_signals_service_host_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
+#include "components/enterprise/connectors/analysis/analysis_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
 
