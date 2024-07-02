@@ -70,7 +70,8 @@ void COMPONENT_EXPORT(WEBNN_SERVICE)
                               size_t buffer_size);
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
-                            const std::string& error_message);
+                            const std::string& error_message,
+                            std::string_view label = "");
 
 // Create a resource with `size` bytes in
 // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the

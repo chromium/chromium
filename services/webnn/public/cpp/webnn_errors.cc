@@ -80,4 +80,11 @@ std::string NotSupportedInputTypeError(std::string_view input_name,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string GetLabelErrorSuffix(std::string_view label) {
+  if (label.empty()) {
+    return "";
+  }
+  return base::StrCat({"[", label, "] "});
+}
+
 }  // namespace webnn

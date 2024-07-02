@@ -4,7 +4,7 @@
 
 // https://www.w3.org/TR/webnn/
 
-typedef record<DOMString, MLOperand> MLNamedOperands;
+typedef record<USVString, MLOperand> MLNamedOperands;
 
 enum MLInputOperandLayout { "nchw", "nhwc" };
 
@@ -17,6 +17,10 @@ enum MLRecurrentNetworkDirection { "forward", "backward", "both" };
 enum MLLstmWeightLayout { "iofg", "ifgo" };
 
 enum MLGruWeightLayout { "zrn", "rzn" };
+
+dictionary MLOperatorOptions {
+  USVString label;
+};
 
 dictionary MLArgMinMaxOptions {
   sequence<[EnforceRange] unsigned long> axes;
@@ -179,7 +183,7 @@ dictionary MLReduceOptions {
 
 enum MLInterpolationMode {"nearest-neighbor", "linear" };
 
-dictionary MLResample2dOptions {
+dictionary MLResample2dOptions : MLOperatorOptions{
   MLInterpolationMode mode = "nearest-neighbor";
   sequence<float> scales;
   sequence<[EnforceRange] unsigned long> sizes;
@@ -205,7 +209,7 @@ dictionary MLTriangularOptions {
 ] interface MLGraphBuilder {
   constructor(MLContext context);
 
-  [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
+  [RaisesException] MLOperand input(USVString name, MLOperandDescriptor desc);
 
   [RaisesException] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
 
@@ -309,7 +313,7 @@ dictionary MLTriangularOptions {
   [RaisesException] MLOperand l2Pool2d(MLOperand input, optional MLPool2dOptions options = {});
   [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
 
-  [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope);
+  [RaisesException] MLOperand prelu(MLOperand x, MLOperand slope, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand reduceL1(MLOperand input, optional MLReduceOptions options = {});
   [RaisesException] MLOperand reduceL2(MLOperand input, optional MLReduceOptions options = {});

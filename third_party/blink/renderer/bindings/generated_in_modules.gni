@@ -776,6 +776,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.cc",

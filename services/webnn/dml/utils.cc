@@ -11,9 +11,11 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/buffer_impl_dml.h"
 #include "services/webnn/dml/error.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn::dml {
 
@@ -230,8 +232,14 @@ void ReadbackBufferWithBarrier(
 }
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
-                            const std::string& error_message) {
+                            const std::string& error_message,
+                            std::string_view label) {
   LOG(ERROR) << "[WebNN] CreateError: " << error_message;
+  if (!label.empty()) {
+    return mojom::Error::New(
+        error_code, base::StrCat({kBackendName, GetLabelErrorSuffix(label),
+                                  error_message}));
+  }
   return mojom::Error::New(error_code, kBackendName + error_message);
 }
 

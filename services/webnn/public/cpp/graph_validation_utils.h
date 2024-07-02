@@ -453,7 +453,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
         const OperandDescriptor& input,
         const absl::variant<base::span<const float>,
                             base::span<const uint32_t>>& scales_or_sizes,
-        base::span<const uint32_t> axes);
+        base::span<const uint32_t> axes,
+        std::string_view label);
 
 // Validate and infer output information of gather operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
@@ -547,7 +548,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     WEBNN_PUBLIC_CPP)
     ValidatePreluAndInferOutput(const OperandDescriptor& input,
-                                const OperandDescriptor& slope);
+                                const OperandDescriptor& slope,
+                                std::string_view label);
 
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose

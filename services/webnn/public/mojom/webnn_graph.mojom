@@ -795,6 +795,8 @@ struct Prelu {
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
   uint64 output_operand_id;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Corresponds to `MLOperand relu(MLOperand x)` that compute the rectified
@@ -951,6 +953,8 @@ struct Resample2d {
   // Specifies the two consecutive dimensions of the input tensor to which
   // the interpolation algorithm applies.
   array<uint32, 2> axes;
+  // User defined label from MLOperatorOptions.
+  string label;
 };
 
 // Select the values from the true value or the false value tensor depending

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
@@ -1222,7 +1223,13 @@ OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
   prelu_mojo->slope_operand_id =
       GetOperatorInputId(prelu, operand_to_id_map, 1);
   prelu_mojo->output_operand_id = GetOperatorOutputId(prelu, operand_to_id_map);
-
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(prelu->Options());
+  if (options->hasLabel()) {
+    prelu_mojo->label = options->label();
+  } else {
+    prelu_mojo->label = "";
+  }
   return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
 }
 
@@ -1282,6 +1289,11 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
   auto axes = options->getAxesOr({2, 3});
   CHECK_EQ(axes.size(), 2u);
   resample2d_mojo->axes = {axes[0], axes[1]};
+  if (options->hasLabel()) {
+    resample2d_mojo->label = options->label();
+  } else {
+    resample2d_mojo->label = "";
+  }
 
   return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
 }

@@ -2148,12 +2148,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
       .SlopeTensor = &slope_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
 
+  const auto label = prelu->label;
   std::array<const NodeOutput*, 2> inputs = {input, slope};
   const OperatorNode* prelu_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU, &prelu_desc, inputs);
+      DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU, &prelu_desc, inputs, label);
   if (!prelu_node) {
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create prelu operator."));
+                                        "Failed to create prelu operator.",
+                                        label));
   }
 
   const NodeOutput* node_output =
@@ -2515,13 +2517,14 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
       .ScaleCount = static_cast<uint32_t>(full_scales.size()),
       .Scales = full_scales.data()};
 
+  const auto label = resample2d->label;
   std::array<const NodeOutput*, 1> inputs = {input};
   const OperatorNode* resample2d_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_RESAMPLE, &resample2d_operator_desc, inputs);
+      DML_OPERATOR_RESAMPLE, &resample2d_operator_desc, inputs, label);
   if (!resample2d_node) {
-    return base::unexpected(
-        CreateError(mojom::Error::Code::kUnknownError,
-                    "Failed to create resample2d operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create resample2d operator.",
+                                        label));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(

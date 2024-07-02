@@ -124,6 +124,10 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputTypeError(std::string_view input_name,
                                OperandDataType type,
                                SupportedDataTypes supported_types);
+
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    GetLabelErrorSuffix(std::string_view label);
+
 }  // namespace webnn
 
 #endif  // SERVICES_WEBNN_PUBLIC_CPP_WEBNN_ERRORS_H_

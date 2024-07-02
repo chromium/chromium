@@ -1566,8 +1566,8 @@ bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto validated_output =
-      ValidatePreluAndInferOutput(input->descriptor, slope->descriptor);
+  auto validated_output = ValidatePreluAndInferOutput(
+      input->descriptor, slope->descriptor, prelu.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1613,7 +1613,7 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
   }
 
   auto validated_output = ValidateResample2dAndInferOutput(
-      input->descriptor, scales_or_sizes, axes);
+      input->descriptor, scales_or_sizes, axes, resample2d.label);
   if (!validated_output.has_value()) {
     return false;
   }

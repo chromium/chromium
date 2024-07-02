@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
@@ -1785,18 +1786,21 @@ MLOperand* MLGraphBuilder::maxPool2d(const MLOperand* input,
 
 MLOperand* MLGraphBuilder::prelu(const MLOperand* input,
                                  const MLOperand* slope,
+                                 const MLOperatorOptions* options,
                                  ExceptionState& exception_state) {
   HeapVector<Member<const MLOperand>> inputs = {input, slope};
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
+  std::string label = options->hasLabel() ? options->label().Utf8() : "";
+
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidatePreluAndInferOutput(input->Descriptor(),
-                                         slope->Descriptor()));
+                                         slope->Descriptor(), label));
 
   auto* prelu = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kPrelu,
-      /*sub_kind=*/absl::monostate{});
+      /*sub_kind=*/absl::monostate{}, options);
   MLOperand* output =
       MLOperand::CreateOutput(this, std::move(output_descriptor), prelu);
 
@@ -1877,6 +1881,8 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
                                       ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  std::string label = options->hasLabel() ? options->label().Utf8() : "";
+
   absl::variant<base::span<const float>, base::span<const uint32_t>>
       scales_or_sizes;
   Vector<float> default_scales = {1.0, 1.0};
@@ -1884,8 +1890,10 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
     if (options->hasScales()) {
       LogConsoleWarning(
           script_state,
-          "When sizes and scales are both specified, scales argument is "
-          "ignored.");
+          String::Format("%s: When sizes and scales are both "
+                         "specified, scales argument is "
+                         "ignored.",
+                         webnn::GetLabelErrorSuffix(label).c_str()));
     }
     scales_or_sizes = options->sizes();
   } else {
@@ -1895,7 +1903,8 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
       webnn::ValidateResample2dAndInferOutput(
-          input->Descriptor(), scales_or_sizes, options->getAxesOr({2, 3})));
+          input->Descriptor(), scales_or_sizes, options->getAxesOr({2, 3}),
+          label));
 
   // Create resample2d operator and its output operand. Connect the resample2d
   // operator to its input and output operands.

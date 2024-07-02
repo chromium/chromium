@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/error.h"
 
@@ -102,11 +103,17 @@ const InputNode* GraphBuilderDml::CreateInputNode() {
 const OperatorNode* GraphBuilderDml::CreateOperatorNode(
     DML_OPERATOR_TYPE type,
     const void* operator_desc,
-    base::span<const NodeOutput*> inputs) {
+    base::span<const NodeOutput*> inputs,
+    std::string_view label) {
   DML_OPERATOR_DESC op_desc{.Type = type, .Desc = operator_desc};
   Microsoft::WRL::ComPtr<IDMLOperator> dml_operator;
   RETURN_NULL_IF_FAILED(
       dml_device_->CreateOperator(&op_desc, IID_PPV_ARGS(&dml_operator)));
+
+  // Set the name of the operator node to the label if it is provided.
+  if (!label.empty()) {
+    dml_operator->SetName(base::SysUTF8ToWide(label).c_str());
+  }
 
   uint32_t operator_node_index =
       base::checked_cast<uint32_t>(operator_nodes_.size());

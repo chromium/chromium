@@ -15,6 +15,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
@@ -286,6 +287,11 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
         operand_name));
   }
   return base::ok();
+}
+
+std::string ErrorWithLabel(std::string_view error_message,
+                           std::string_view label) {
+  return base::StrCat({GetLabelErrorSuffix(label), error_message});
 }
 
 }  // namespace
@@ -969,7 +975,8 @@ base::expected<OperandDescriptor, std::string> ValidatePool2dAndInferOutput(
 // https://github.com/webmachinelearning/webnn/issues/360.
 base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
     const uint32_t input_size,
-    const float scale) {
+    const float scale,
+    std::string_view label) {
   // Calculate the output size in double precision floating point number that
   // ensures values of type uint32_t can be exactly represented.
   // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
@@ -977,12 +984,12 @@ base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
 
   // Check if the value is valid for rounding to uint32_t type.
   if (!checked_output_size.IsValid<uint32_t>()) {
-    return base::unexpected("The scale is too large.");
+    return base::unexpected(ErrorWithLabel(label, "The scale is too large."));
   }
   const uint32_t output_size =
       base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
   if (output_size == 0) {
-    return base::unexpected("The scale is too small.");
+    return base::unexpected(ErrorWithLabel(label, "The scale is too small."));
   }
   return output_size;
 }
@@ -991,15 +998,18 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
     const OperandDescriptor& input,
     const absl::variant<base::span<const float>, base::span<const uint32_t>>&
         scales_or_sizes,
-    base::span<const uint32_t> axes) {
+    base::span<const uint32_t> axes,
+    std::string_view label) {
   // Validate the input.
   if (!IsFloatingPointType(input.data_type())) {
-    return base::unexpected(
-        "The data type of the input must be one of the floating point types.");
+    return base::unexpected(ErrorWithLabel(label,
+                                           "The data type of the input must be "
+                                           "one of the floating point types."));
   }
 
   if (input.Rank() != 4) {
-    return base::unexpected("The input must be a 4-D tensor.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The input must be a 4-D tensor."));
   }
 
   // Validate axes.
@@ -1007,11 +1017,13 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
   // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
   if (axes.size() != 2) {
-    return base::unexpected("The length of axes should be 2.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The length of axes should be 2."));
   }
   if (!((axes[0] == 0 && axes[1] == 1) || (axes[0] == 1 && axes[1] == 2) ||
         (axes[0] == 2 && axes[1] == 3))) {
-    return base::unexpected("The values of axes are invalid.");
+    return base::unexpected(
+        ErrorWithLabel(label, "The values of axes are invalid."));
   }
 
   // Validate scales or sizes and infer the output.
@@ -1019,35 +1031,41 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
   if (absl::holds_alternative<base::span<const float>>(scales_or_sizes)) {
     const auto& scales = absl::get<base::span<const float>>(scales_or_sizes);
     if (scales.size() != 2) {
-      return base::unexpected("The length of scales should be 2.");
+      return base::unexpected(
+          ErrorWithLabel(label, "The length of scales should be 2."));
     }
     if (scales[0] <= 0 || scales[1] <= 0) {
-      return base::unexpected("All scales should be greater than 0.");
+      return base::unexpected(
+          ErrorWithLabel(label, "All scales should be greater than 0."));
     }
 
     auto output_height =
-        CalculateResample2dOutputSize(input.shape()[axes[0]], scales[0]);
+        CalculateResample2dOutputSize(input.shape()[axes[0]], scales[0], label);
     if (!output_height.has_value()) {
-      return base::unexpected("Failed to calculate the output height: " +
-                              output_height.error());
+      return base::unexpected(ErrorWithLabel(
+          label,
+          "Failed to calculate the output height: " + output_height.error()));
     }
     output_shape[axes[0]] = output_height.value();
 
     auto output_width =
-        CalculateResample2dOutputSize(input.shape()[axes[1]], scales[1]);
+        CalculateResample2dOutputSize(input.shape()[axes[1]], scales[1], label);
     if (!output_width.has_value()) {
-      return base::unexpected("Failed to calculate the output width: " +
-                              output_width.error());
+      return base::unexpected(ErrorWithLabel(
+          label,
+          "Failed to calculate the output width: " + output_width.error()));
     }
     output_shape[axes[1]] = output_width.value();
   } else if (absl::holds_alternative<base::span<const uint32_t>>(
                  scales_or_sizes)) {
     const auto& sizes = absl::get<base::span<const uint32_t>>(scales_or_sizes);
     if (sizes.size() != 2) {
-      return base::unexpected("The length of sizes should be 2.");
+      return base::unexpected(
+          ErrorWithLabel(label, "The length of sizes should be 2."));
     }
     if (sizes[0] == 0 || sizes[1] == 0) {
-      return base::unexpected("All sizes should be greater than 0.");
+      return base::unexpected(
+          ErrorWithLabel(label, "All sizes should be greater than 0."));
     }
 
     output_shape[axes[0]] = sizes[0];
@@ -1792,23 +1810,26 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
 
 base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     const OperandDescriptor& input,
-    const OperandDescriptor& slope) {
+    const OperandDescriptor& slope,
+    std::string_view label) {
   if (!IsFloatingPointType(input.data_type()) &&
       input.data_type() != OperandDataType::kInt8 &&
       input.data_type() != OperandDataType::kInt32) {
-    return base::unexpected(
+    return base::unexpected(ErrorWithLabel(
+        label,
         "The data type of input and slope must be one of {float32, float16, "
-        "int32, int8}.");
+        "int32, int8}."));
   }
   if (input.data_type() != slope.data_type()) {
-    return base::unexpected(
-        "The data type of slope doesn't match the data type of input.");
+    return base::unexpected(ErrorWithLabel(
+        label, "The data type of slope doesn't match the data type of input."));
   }
   // BroadcastShape unidirectionally broadcasts slope.dimensions to
   // input.dimensions.
   if (!BroadcastShapes(slope.shape(), input.shape(), /*bidirectional=*/false)) {
-    return base::unexpected(
-        "The shape of slope is not broadcastable to the shape of input.");
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "The shape of slope is not broadcastable to the shape of input."));
   }
 
   return input;

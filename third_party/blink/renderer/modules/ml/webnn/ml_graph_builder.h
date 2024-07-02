@@ -43,6 +43,7 @@ class MLLeakyReluOptions;
 class MLLinearOptions;
 class MLLstmOptions;
 class MLLstmCellOptions;
+class MLOperatorOptions;
 class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
@@ -289,6 +290,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
 
   MLOperand* prelu(const MLOperand* input,
                    const MLOperand* slope,
+                   const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
   // Reduction operations
