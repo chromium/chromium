@@ -1689,8 +1689,8 @@ chromium-metrics-reviews@google.com.
     Recorded when the calendar view is shown from the {ViewShowSource}.
   </summary>
   <token key="ViewShowSource">
-    <variant name="Accelerator" summary="accelerator"/>
     <variant name="DateView" summary="date view in quick settings"/>
+    <variant name="Keyboard" summary="accelerator (search + c)"/>
     <variant name="TimeView" summary="time view in the status area"/>
   </token>
 </histogram>
