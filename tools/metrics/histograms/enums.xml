@@ -1297,6 +1297,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="58230" label="MediaWebContentsObserver::OnMediaPlaying"/>
 </enum>
 
+<enum name="BackgroundColorChangeOrigin">
+  <int value="0" label="Web content background changed"/>
+  <int value="1" label="Custom view set"/>
+  <int value="2" label="Native page shown"/>
+  <int value="3" label="Web background color update after hiding native page"/>
+</enum>
+
 <enum name="BackgroundSyncFiredEvents">
   <int value="0" label="No events fired"/>
   <int value="1" label="Some events fired"/>
