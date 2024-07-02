@@ -280,6 +280,7 @@ function renderHeader(this: TableColumn, table: FileTable): Element {
   const icon = document.createElement('cr-icon-button');
   const iconName = sortOrder === 'desc' ? 'up' : 'down';
   icon.setAttribute('iron-icon', `files16:arrow_${iconName}_small`);
+  icon.role = 'button';
   // If we're the sorting column make the icon a tab target.
   if (isSorted) {
     icon.id = 'sort-direction-button';
@@ -1103,6 +1104,7 @@ export class FileTable extends Table {
     icon.dataset['tooltipLinkHref'] = str('DLP_HELP_URL');
     icon.dataset['tooltipLinkAriaLabel'] = str('DLP_MANAGED_ICON_TOOLTIP_DESC');
     icon.dataset['tooltipLinkText'] = str('DLP_MANAGED_ICON_TOOLTIP_LINK');
+    icon.role = 'link';
     icon.setAttribute('aria-label', str('DLP_MANAGED_ICON_TOOLTIP'));
     icon.toggleAttribute('show-card-tooltip');
     icon.classList.toggle('is-dlp-restricted', isDlpRestricted);
@@ -1118,6 +1120,7 @@ export class FileTable extends Table {
   private renderEncryptedIcon_(): HTMLDivElement {
     const icon = this.ownerDocument.createElement('div');
     icon.className = 'encrypted-icon';
+    icon.role = 'image';
     icon.setAttribute('aria-label', str('ENCRYPTED_ICON_TOOLTIP'));
     document.querySelector('files-tooltip')?.addTarget(icon);
     return icon;

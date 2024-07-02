@@ -45,7 +45,7 @@ suite('ExtensionCodeSectionTest', function() {
     assertFalse(testIsVisible('#no-code'));
 
     const codeSections =
-        codeSection.shadowRoot!.querySelectorAll('#source span span');
+        codeSection.shadowRoot!.querySelectorAll('#source > span > *');
 
     assertEquals(code.beforeHighlight, codeSections[0]!.textContent);
     assertEquals(code.highlight, codeSections[1]!.textContent);

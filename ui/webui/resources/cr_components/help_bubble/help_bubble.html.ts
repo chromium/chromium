@@ -14,7 +14,7 @@ export function getHtml(this: HelpBubbleElement) {
     @keydown="${this.onKeyDown_}" @click="${this.blockPropagation_}">
   <div id="topContainer">
     <div id="bodyIcon" ?hidden="${!this.shouldShowBodyIcon_()}"
-        aria-label="${this.bodyIconAltText}">
+        role="image" aria-label="${this.bodyIconAltText}">
       <cr-icon icon="iph:${this.bodyIconName}"></cr-icon>
     </div>
     <div id="progress" ?hidden="${!this.progress}" role="progressbar"

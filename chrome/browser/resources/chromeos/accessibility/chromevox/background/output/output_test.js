@@ -1195,18 +1195,24 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NestedList', async function() {
 
 AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
   const root = await this.runWithLoadedTree(`
-    <div title="title"></div>
-    <div aria-label="label" title="title"></div>
-    <div aria-describedby="desc" title="title"></div>
-    <div aria-label="label" aria-describedby="desc" title="title"></div>
-    <div aria-label=""></div>
+    <div role="group" title="title"></div>
+    <div role="group" aria-label="label" title="title"></div>
+    <div role="group" aria-describedby="desc" title="title"></div>
+    <div role="group" aria-label="label" aria-describedby="desc" title="title">
+    </div>
+    <div role="group" aria-label=""></div>
     <p id="desc">describedby</p>
   `);
   const title = root.children[0];
   let o =
       new Output().withSpeech(CursorRange.fromNode(title), null, 'navigate');
   assertEqualsJSON(
-      {string_: 'title', spans_: [{value: 'name', start: 0, end: 5}]},
+      {
+        string_: 'title',
+        spans_: [
+          {value: 'nameOrDescendants', start: 0, end: 5},
+        ],
+      },
       o.speechOutputForTest);
 
   const labelTitle = root.children[1];
@@ -1216,7 +1222,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
       {
         string_: 'label|title',
         spans_: [
-          {value: 'name', start: 0, end: 5},
+          {value: 'nameOrDescendants', start: 0, end: 5},
           {value: 'description', start: 6, end: 11},
         ],
       },
@@ -1229,7 +1235,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
       {
         string_: 'title|describedby',
         spans_: [
-          {value: 'name', start: 0, end: 5},
+          {value: 'nameOrDescendants', start: 0, end: 5},
           {value: 'description', start: 6, end: 17},
         ],
       },
@@ -1242,7 +1248,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'NoTooltipWithNameTitle', async function() {
       {
         string_: 'label|describedby',
         spans_: [
-          {value: 'name', start: 0, end: 5},
+          {value: 'nameOrDescendants', start: 0, end: 5},
           {value: 'description', start: 6, end: 17},
         ],
       },

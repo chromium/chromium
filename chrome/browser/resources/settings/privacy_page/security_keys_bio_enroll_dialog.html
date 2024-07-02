@@ -80,16 +80,16 @@
 
             <div id="container">
               <iron-list id="enrollmentList" items="[[enrollments_]]"
-                  class="cr-separators">
+                  class="cr-separators" role="list">
                 <template>
-                  <div class="list-item" first$="[[!index]]">
+                  <div class="list-item" first$="[[!index]]" role="listitem">
                     <iron-icon id="darkIcon"
                         icon="fingerprint-icon:fingerprint-scanned-dark">
                     </iron-icon>
                     <iron-icon id="lightIcon"
                         icon="fingerprint-icon:fingerprint-scanned-light">
                     </iron-icon>
-                    <div class="name" aria-label="[[item.name]]">
+                    <div class="name">
                       [[item.name]]
                     </div>
                     <cr-icon-button class="icon-clear"

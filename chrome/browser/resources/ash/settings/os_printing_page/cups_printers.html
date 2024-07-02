@@ -151,7 +151,8 @@
       using-slotted-label
       sub-label="$i18n{printJobsSublabel}"
       deep-link-focus-id$="[[Setting.kPrintJobs]]">
-    <div slot="label" class="section-title">$i18n{printJobsTitle}</div>
+    <div slot="label" class="section-title">$i18n{printJobsTitle}
+    </div>
   </cr-link-row>
   <div class="hr"></div>
 </template>
@@ -161,7 +162,8 @@
       class="layout horizontal padded">
     <iron-icon id="cloudOffIcon" icon="settings20:cloud-off"></iron-icon>
     <div id="connectionMessage" class="layout vertical">
-      <div class="section-title">$i18n{noInternetConnection}</div>
+      <div role="heading" aria-level="2"
+           class="section-title">$i18n{noInternetConnection}</div>
       <div class="secondary">$i18n{checkNetworkAndTryAgain}</div>
     </div>
   </div>
@@ -170,7 +172,8 @@
 <div id="savedPrintersContainer">
   <div id="savedPrintersDescription" class="settings-box first">
     <div class="start">
-      <span aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
+      <span role="heading" aria-level="2"
+            aria-label$="[[savedPrintersAriaLabel_]]" class="section-title">
         $i18n{savedPrintersTitle}
       </span>
       <div class="secondary" aria-hidden="true">
@@ -196,6 +199,7 @@
     <div id="nearbyPrintersDescription" aria-hidden="true">
       <div id="availablePrintersReadyTitle"
           aria-label$="[[nearbyPrintersAriaLabel_]]"
+          role="heading" aria-level="2"
           class="section-title">
         $i18n{availablePrintersReadyTitle}
       </div>

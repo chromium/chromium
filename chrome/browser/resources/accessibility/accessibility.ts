@@ -520,23 +520,28 @@ function createModeElement(
     element.classList.add('readOnlyMode');
   } else {
     element.setAttribute('is', 'action-link');
-    element.setAttribute('role', 'button');
   }
+
+  element.role = 'button';
 
   const stateText = ((currentMode & mode) !== 0) ? 'true' : 'false';
   const isEnabled =
       (data as unknown as {[k: string]: boolean})[globalStateName];
   const accessibilityModeName = getNameForAccessibilityMode(mode);
+
+  element.ariaLabel = `${accessibilityModeName} for ${data.name}`;
+  element.ariaPressed = stateText;
+
   if (isEnabled) {
     element.textContent = accessibilityModeName + ': ' + stateText;
   } else {
     element.textContent = accessibilityModeName + ': disabled';
     element.classList.add('disabled');
+    element.ariaDisabled = 'true';
   }
-  element.setAttribute(
-      'aria-label', `${accessibilityModeName} for ${data.name}: ${stateText}`);
-  if (!readOnly) {
-    element.setAttribute('aria-pressed', stateText);
+  if (readOnly) {
+    element.ariaDisabled = 'true';
+  } else {
     element.addEventListener(
         'click', toggleAccessibility.bind(null, data, mode, globalStateName));
   }

@@ -38,7 +38,8 @@ found in the LICENSE file.
     $i18n{selectAll}
 </cr-checkbox>
 
-<div class="data-collector-list" aria-labelledby="data-sources-title">
+<div class="data-collector-list" role="group"
+     aria-labelledby="data-sources-title">
   <template is="dom-repeat" items="[[dataCollectors_]]">
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
         on-change="onDataCollectorItemChange_" tabindex="0">

@@ -108,9 +108,8 @@
       </div>
       <span><!-- Whitespace is preserved in this span. Ignore new lines.
         --><span>[[before_]]</span><!--
-        --><mark aria-label$="[[highlighted_]]"
-            aria-describedby="highlight-description"><!--
-          --><span aria-hidden="true">[[highlighted_]]</span><!--
+        --><mark aria-description="[[highlightDescription_]]"><!--
+          -->[[highlighted_]]<!--
         --></mark><!--
         --><span>[[after_]]</span><!--
       --></span>
@@ -124,6 +123,3 @@
   </div>
 </div>
 <div id="no-code" hidden="[[!showNoCode_]]">[[couldNotDisplayCode]]</div>
-<div id="highlight-description" aria-hidden="true">
-  [[highlightDescription_]]
-</div>
