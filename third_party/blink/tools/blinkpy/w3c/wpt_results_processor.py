@@ -592,6 +592,10 @@ class WPTResultsProcessor:
                     run_info: Optional[RunInfo] = None,
                     tests: Optional[Dict[str, List[str]]] = None,
                     **_):
+        if run_info:
+            self.run_info.update(run_info)
+        if self._iteration > 0:
+            return
         # Register tests that will run so that they can be reported as
         # "unexpectedly skipped" if they have no results on shutdown.
         for group_key, group_tests in (tests or {}).items():
@@ -599,9 +603,6 @@ class WPTResultsProcessor:
             for test_url in group_tests:
                 test = self._get_chromium_test_name(test_url, subsuite)
                 self._results_by_name[test] = []
-
-        if run_info:
-            self.run_info.update(run_info)
 
     def suite_end(self, event: Event, **_):
         self._iteration += 1

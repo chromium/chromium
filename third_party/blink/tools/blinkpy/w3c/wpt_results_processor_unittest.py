@@ -1099,7 +1099,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                'diff_image',
                                return_value=(..., diff_stats, ...)):
             for _ in range(2):
-                self._event(action='suite_start')
+                self._event(action='suite_start',
+                            tests={'/': ['/reftest.html']})
                 self._event(action='test_start', test='/reftest.html')
                 self._event(action='process_output',
                             process='101',
