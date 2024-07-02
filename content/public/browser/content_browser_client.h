@@ -1213,12 +1213,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       BrowserContext* context);
 
-  // Gets the metrics appropriate hostname for a given WebUI URL for code cache
-  // metrics. Returns an empty string if no relevant mapping has been defined.
-  // Called from the GeneratedCodeCache thread.
-  virtual std::string GetWebUIHostnameForCodeCacheMetrics(
-      const GURL& webui_url) const;
-
   // Informs the embedder that a certificate error has occurred. If
   // |overridable| is true and if |strict_enforcement| is false, the user
   // can ignore the error and continue. The embedder can call the callback

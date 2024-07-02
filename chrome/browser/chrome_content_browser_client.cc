@@ -571,7 +571,6 @@
 #include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_loader_factory.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -3736,15 +3735,6 @@ ChromeContentBrowserClient::GetGeneratedCodeCacheSettings(
       cache_path = disk_cache_dir.Append(cache_path.BaseName());
   }
   return content::GeneratedCodeCacheSettings(true, size_in_bytes, cache_path);
-}
-
-std::string ChromeContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(
-    const GURL& webui_url) const {
-#if !BUILDFLAG(IS_ANDROID)
-  return webui::GetWebUIHostnameForCodeCacheMetrics(webui_url);
-#else
-  return ContentBrowserClient::GetWebUIHostnameForCodeCacheMetrics(webui_url);
-#endif
 }
 
 void ChromeContentBrowserClient::AllowCertificateError(
