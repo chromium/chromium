@@ -95,8 +95,6 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert(
       {"fr-BE", {"libsoda-model-fr-be-df24d1", LanguageCode::kFrBe}});
   available_languages.insert(
-      {"fr-FR", {"libsoda-model-fr-fr-df24d1", LanguageCode::kFrFr}});
-  available_languages.insert(
       {"fr-CH", {"libsoda-model-fr-ch-df24d1", LanguageCode::kFrCh}});
   available_languages.insert(
       {"en-IN", {"libsoda-model-en-in-df24d1", LanguageCode::kEnIn}});
@@ -112,23 +110,34 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
       {"es-US", {"libsoda-model-es-us-df24d1", LanguageCode::kEsUs}});
   available_languages.insert(
       {"es-ES", {"libsoda-model-es-us-df24d1", LanguageCode::kEsEs}});
+  available_languages.insert(
+      {"fr-CA", {"libsoda-model-fr-ca-df24d1", LanguageCode::kFrCa}});
+  available_languages.insert(
+      {"hi-IN", {"libsoda-model-hi-in-df24d1", LanguageCode::kHiIn}});
+  available_languages.insert(
+      {"id-ID", {"libsoda-model-id-id-df24d1", LanguageCode::kIdId}});
+  available_languages.insert(
+      {"ko-KR", {"libsoda-model-ko-kr-df24d1", LanguageCode::kKoKr}});
+  available_languages.insert(
+      {"pl-PL", {"libsoda-model-pl-pl-df24d1", LanguageCode::kPlPl}});
+  available_languages.insert(
+      {"th-TH", {"libsoda-model-th-th-df24d1", LanguageCode::kThTh}});
+  available_languages.insert(
+      {"tr-TR", {"libsoda-model-tr-tr-df24d1", LanguageCode::kTrTr}});
+  available_languages.insert(
+      {"cmn-Hant-TW", {"libsoda-model-zh-tw-df24d1", LanguageCode::kZhTw}});
+  available_languages.insert(
+      {"cmn-Hans-CN", {"libsoda-model-zh-cn-df24d1", LanguageCode::kZhCn}});
+  available_languages.insert(
+      {"pt-BR", {"libsoda-model-pt-br-df24d1", LanguageCode::kPtBr}});
+  available_languages.insert(
+      {"ru-RU", {"libsoda-model-ru-ru-df24d1", LanguageCode::kRuRu}});
+  available_languages.insert(
+      {"vi-VN", {"libsoda-model-vi-vn-df24d1", LanguageCode::kViVn}});
   available_languages.insert({"da-DK", {"", LanguageCode::kDaDk}});
-  available_languages.insert({"fr-CA", {"", LanguageCode::kFrCa}});
-  available_languages.insert({"hi-IN", {"", LanguageCode::kHiIn}});
-  available_languages.insert({"id-ID", {"", LanguageCode::kIdId}});
-  available_languages.insert({"ko-KR", {"", LanguageCode::kKoKr}});
-  available_languages.insert({"id-ID", {"", LanguageCode::kIdId}});
   available_languages.insert({"nb-NO", {"", LanguageCode::kNbNo}});
   available_languages.insert({"nl-NL", {"", LanguageCode::kNlNl}});
-  available_languages.insert({"pl-PL", {"", LanguageCode::kPlPl}});
   available_languages.insert({"sv-SE", {"", LanguageCode::kSvSe}});
-  available_languages.insert({"th-TH", {"", LanguageCode::kThTh}});
-  available_languages.insert({"tr-TR", {"", LanguageCode::kTrTr}});
-  available_languages.insert({"zh-TW", {"", LanguageCode::kZhTw}});
-  available_languages.insert({"zh-CN", {"", LanguageCode::kZhCn}});
-  available_languages.insert({"pt-BR", {"", LanguageCode::kPtBr}});
-  available_languages.insert({"ru-RU", {"", LanguageCode::kRuRu}});
-  available_languages.insert({"vi-VN", {"", LanguageCode::kViVn}});
 
   // Add in from feature flags. the value is of the format:
   // "en-AU:libsoda-modelname,fr-CA:,de-CH:libsoda-pizzaface,"
