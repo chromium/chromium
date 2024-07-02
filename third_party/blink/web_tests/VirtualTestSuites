@@ -2384,7 +2384,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"],
-    "expires": "June 30, 2024"
+    "expires": "Dec 30, 2024"
   },
   {
     "prefix": "saa-top-level-site-cors-exception",
