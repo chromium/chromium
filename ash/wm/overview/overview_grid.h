@@ -678,6 +678,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Shows the feedback page with preset information for overview.
   void ShowFeedbackPage();
 
+  // Whether the `desks_widget_` should be initialized.
+  bool ShouldInitDesksWidget() const;
+
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop
   // target is hidden when a snap preview area is shown. You can drop a window

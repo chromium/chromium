@@ -5990,6 +5990,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Overview.DelayedDeskBar.PresentationTime" units="ms"
+    expires_after="2024-12-31">
+  <owner>esum@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when the enter-overview animation has finished/the desk bar is opened
+    to when the next frame is shown to the user. Note this metric is only
+    recorded in cases where the desk bar is opened after the enter-overview
+    animation completes; it's not recorded in overview sessions where the desk
+    bar opens immediately at the beginning of the session. In the latter case,
+    the time to open the desk bar is incorporated into
+    Ash.Overview.Enter.PresentationTime.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Overview.EndAction" enum="OverviewEndAction"
     expires_after="2024-11-03">
   <owner>minch@chromium.org</owner>

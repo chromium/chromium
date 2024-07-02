@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -18,9 +19,14 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -319,6 +325,54 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   auto* item3 = GetOverviewItemForWindow(window3.get());
   EXPECT_TRUE(item2->should_animate_when_entering());
   EXPECT_FALSE(item3->should_animate_when_entering());
+}
+
+// TODO(b/350771229): Replace `OverviewGridTest` with `OverviewGridForestTest`
+// once `kForestFeature` is launched.
+TEST_F(OverviewGridTest, RecordsDelayedDeskBarPresentationMetric) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+
+  // Since the windows are not maximized, the desk bar should open after
+  // the overview animation is complete, causing
+  // `kOverviewDelayedDeskBarPresentationHistogram` to be recorded.
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+
+  ui::Compositor* const compositor = window1->GetHost()->compositor();
+  base::HistogramTester histogram_tester;
+  ToggleOverview();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  histogram_tester.ExpectTotalCount(
+      kOverviewDelayedDeskBarPresentationHistogram, 0);
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  histogram_tester.ExpectTotalCount(
+      kOverviewDelayedDeskBarPresentationHistogram, 1);
+}
+
+// TODO(b/350771229): Replace `OverviewGridTest` with `OverviewGridForestTest`
+// once `kForestFeature` is launched.
+TEST_F(OverviewGridTest, DoesNotRecordDelayedDeskBarPresentationMetric) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+
+  // Since the windows are maximized, the desk bar should open immediately when
+  // we enter overview and `kOverviewDelayedDeskBarPresentationHistogram` should
+  // not be recorded.
+  std::unique_ptr<aura::Window> window1(CreateTestWindow());
+  std::unique_ptr<aura::Window> window2(CreateTestWindow());
+  WindowState::Get(window1.get())->Maximize();
+  WindowState::Get(window2.get())->Maximize();
+
+  ui::Compositor* const compositor = window1->GetHost()->compositor();
+  base::HistogramTester histogram_tester;
+  ToggleOverview();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  histogram_tester.ExpectTotalCount(
+      kOverviewDelayedDeskBarPresentationHistogram, 0);
 }
 
 class OverviewGridForestTest : public OverviewTestBase {

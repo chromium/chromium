@@ -67,6 +67,8 @@ inline constexpr char kEnterOverviewPresentationHistogram[] =
     "Ash.Overview.Enter.PresentationTime";
 inline constexpr char kExitOverviewPresentationHistogram[] =
     "Ash.Overview.Exit.PresentationTime";
+inline constexpr char kOverviewDelayedDeskBarPresentationHistogram[] =
+    "Ash.Overview.DelayedDeskBar.PresentationTime";
 
 }  // namespace ash
 

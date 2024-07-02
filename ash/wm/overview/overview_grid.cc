@@ -38,6 +38,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
@@ -1359,7 +1360,14 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
   if (canceled)
     return;
 
-  MaybeInitDesksWidget();
+  if (ShouldInitDesksWidget()) {
+    auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+        root_window_->layer()->GetCompositor(),
+        kOverviewDelayedDeskBarPresentationHistogram, "",
+        kDeskBarEnterExitPresentationMaxLatency);
+    presentation_time_recorder->RequestNext();
+    MaybeInitDesksWidget();
+  }
 
   MaybeInitBirchBarWidget();
 
@@ -2795,8 +2803,9 @@ const SavedDeskLibraryView* OverviewGrid::GetSavedDeskLibraryView() const {
 
 void OverviewGrid::MaybeInitDesksWidget() {
   TRACE_EVENT0("ui", "OverviewGrid::MaybeInitDesksWidget");
-  if (!desks_util::ShouldDesksBarBeCreated() || desks_widget_)
+  if (!ShouldInitDesksWidget()) {
     return;
+  }
 
   desks_widget_ = DeskBarViewBase::CreateDeskWidget(
       root_window_, GetDesksWidgetBounds(), DeskBarViewBase::Type::kOverview);
@@ -3573,6 +3582,10 @@ void OverviewGrid::ShowFeedbackPage() {
       ShellDelegate::FeedbackSource::kOverview,
       /*description_template=*/std::string(),
       /*category_tag=*/"FromForest");
+}
+
+bool OverviewGrid::ShouldInitDesksWidget() const {
+  return desks_util::ShouldDesksBarBeCreated() && !desks_widget_;
 }
 
 }  // namespace ash
