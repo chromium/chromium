@@ -298,6 +298,11 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   void DoBindBuffer(GLenum target, GLuint client_id, GLuint service_id);
   void DoBindFramebuffer(GLenum target, GLuint client_id, GLuint service_id);
   void DoBindRenderbuffer(GLenum target, GLuint client_id, GLuint service_id);
+  void SetupExpectationsForInternalFormatSampleCountsHelper(
+      GLenum target,
+      GLenum internal_format,
+      GLint expected_num_sample_counts,
+      GLint expected_sample0);
   void DoRenderbufferStorageMultisampleCHROMIUM(GLenum target,
                                                 GLsizei samples,
                                                 GLenum internal_format,

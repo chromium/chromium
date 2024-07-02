@@ -1258,6 +1258,21 @@ void GLES2DecoderTestBase::DoBindRenderbuffer(
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
+void GLES2DecoderTestBase::SetupExpectationsForInternalFormatSampleCountsHelper(
+    GLenum target,
+    GLenum internal_format,
+    GLint expected_num_sample_counts,
+    GLint expected_sample0) {
+  EXPECT_CALL(*gl_, GetInternalformativ(target, internal_format,
+                                        GL_NUM_SAMPLE_COUNTS, 1, _))
+      .WillOnce(SetArgPointee<4>(expected_num_sample_counts))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetInternalformativ(target, internal_format, GL_SAMPLES,
+                                        expected_num_sample_counts, _))
+      .WillOnce(SetArgPointee<4>(expected_sample0))
+      .RetiresOnSaturation();
+}
+
 void GLES2DecoderTestBase::DoRenderbufferStorageMultisampleCHROMIUM(
     GLenum target,
     GLsizei samples,
@@ -1265,6 +1280,8 @@ void GLES2DecoderTestBase::DoRenderbufferStorageMultisampleCHROMIUM(
     GLsizei width,
     GLsizei height,
     bool expect_bind) {
+  SetupExpectationsForInternalFormatSampleCountsHelper(target, internal_format,
+                                                       1, samples);
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();

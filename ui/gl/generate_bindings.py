@@ -200,8 +200,7 @@ GL_FUNCTIONS = [
       'GLuint buf, GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, '
       'GLenum dstAlpha', },
 { 'return_type': 'void',
-  'versions' : [{'name': 'glBlitFramebuffer',
-                 'extensions': ['GL_ARB_framebuffer_object']},
+  'versions' : [{'name': 'glBlitFramebuffer'},
                 {'name': 'glBlitFramebufferNV',
                  'extensions': ['GL_NV_framebuffer_blit']},
                 {'name': 'glBlitFramebufferANGLE'},
@@ -941,8 +940,7 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum pname, GLsizei bufSize, GLsizei* length, GLint* data', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glGetInternalformativ',
-                'extensions': ['GL_ARB_internalformat_query']}],
+  'names': ['glGetInternalformativ'],
   'arguments': 'GLenum target, GLenum internalformat, GLenum pname, '
                'GLsizei bufSize, GLint* params', },
 { 'return_type': 'void',
@@ -1740,8 +1738,7 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum target, GLenum internalformat, GLsizei width, GLsizei height', },
 { 'return_type': 'void',
-  'versions': [{'name': 'glRenderbufferStorageMultisample',
-                'extensions': ['GL_ARB_framebuffer_object']},
+  'versions': [{'name': 'glRenderbufferStorageMultisample'},
                {'name': 'glRenderbufferStorageMultisampleANGLE'},
                {'name': 'glRenderbufferStorageMultisampleEXT',
                 'extensions': ['GL_EXT_framebuffer_multisample'],

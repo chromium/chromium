@@ -325,10 +325,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_APPLE_sync = gfx::HasExtension(extensions, "GL_APPLE_sync");
   ext.b_GL_APPLE_vertex_array_object =
       gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object");
-  ext.b_GL_ARB_framebuffer_object =
-      gfx::HasExtension(extensions, "GL_ARB_framebuffer_object");
-  ext.b_GL_ARB_internalformat_query =
-      gfx::HasExtension(extensions, "GL_ARB_internalformat_query");
   ext.b_GL_ARB_timer_query =
       gfx::HasExtension(extensions, "GL_ARB_timer_query");
   ext.b_GL_ARB_vertex_array_object =
@@ -617,8 +613,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glBlendFuncSeparateiOES"));
   }
 
-  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_framebuffer_object) {
+  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
         GetGLProcAddress("glBlitFramebuffer"));
   } else if (ext.b_GL_NV_framebuffer_blit) {
@@ -1452,8 +1447,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetIntegervRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_internalformat_query) {
+  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetInternalformativFn = reinterpret_cast<glGetInternalformativProc>(
         GetGLProcAddress("glGetInternalformativ"));
   }
@@ -2413,8 +2407,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glRenderbufferStorageEXT"));
   }
 
-  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_framebuffer_object) {
+  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glRenderbufferStorageMultisampleFn =
         reinterpret_cast<glRenderbufferStorageMultisampleProc>(
             GetGLProcAddress("glRenderbufferStorageMultisample"));

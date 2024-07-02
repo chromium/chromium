@@ -2053,7 +2053,7 @@ TEST_P(GLES3DecoderTest, ClearBufferfiValidArgs) {
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMGLError) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2063,6 +2063,8 @@ TEST_P(GLES2DecoderManualInitTest,
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_OUT_OF_MEMORY))
       .RetiresOnSaturation();
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_CALL(*gl_, RenderbufferStorageMultisample(GL_RENDERBUFFER, 1, GL_RGBA4,
                                                    100, 50))
       .Times(1)
@@ -2076,7 +2078,7 @@ TEST_P(GLES2DecoderManualInitTest,
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMBadArgs) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2090,27 +2092,35 @@ TEST_P(GLES2DecoderManualInitTest,
            GL_RGBA4,
            TestHelper::kMaxRenderbufferSize,
            1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+
   cmd.Init(GL_RENDERBUFFER,
            TestHelper::kMaxSamples,
            GL_RGBA4,
            TestHelper::kMaxRenderbufferSize + 1,
            1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+
   cmd.Init(GL_RENDERBUFFER,
            TestHelper::kMaxSamples,
            GL_RGBA4,
            1,
            TestHelper::kMaxRenderbufferSize + 1);
+  SetupExpectationsForInternalFormatSampleCountsHelper(
+      GL_RENDERBUFFER, GL_RGBA4, 1, TestHelper::kMaxSamples);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
 }
 
 TEST_P(GLES2DecoderManualInitTest, RenderbufferStorageMultisampleCHROMIUM) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2123,7 +2133,7 @@ TEST_P(GLES2DecoderManualInitTest, RenderbufferStorageMultisampleCHROMIUM) {
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleCHROMIUMRebindRenderbuffer) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   InitDecoder(init);
   DoBindRenderbuffer(
       GL_RENDERBUFFER, client_renderbuffer_id_, kServiceRenderbufferId);
@@ -2137,7 +2147,7 @@ TEST_P(GLES2DecoderManualInitTest,
 TEST_P(GLES2DecoderManualInitTest,
        RenderbufferStorageMultisampleEXTNotSupported) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindRenderbuffer(
@@ -2742,7 +2752,7 @@ TEST_P(GLES3DecoderTest, CopyTexImage2DInvalidInternalFormat_sRGB) {
 TEST_P(GLES2DecoderManualInitTest,
        UnClearedAttachmentsGetClearedOnReadPixelsAndDrawBufferGetsRestored) {
   InitState init;
-  init.extensions = "GL_ARB_framebuffer_object";
+  init.gl_version = "OpenGL ES 3.0";
   init.bind_generates_resource = true;
   InitDecoder(init);
   const GLuint kFBOClientTextureId = 4100;
