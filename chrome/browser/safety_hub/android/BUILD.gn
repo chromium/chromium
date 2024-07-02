@@ -7,6 +7,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
@@ -16,6 +18,8 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/MagicStackEntry.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
@@ -158,6 +162,8 @@ android_library("javatests") {
 
 source_set("android") {
   sources = [
+    "magic_stack_bridge.cc",
+    "magic_stack_bridge.h",
     "notification_permission_review_bridge.cc",
     "notification_permission_review_bridge.h",
     "prefs.cc",
