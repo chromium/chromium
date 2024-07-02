@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.ServerResponseCodes"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-10-27">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-29">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -3007,7 +3007,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
-    units="ms" expires_after="2024-10-27">
+    units="ms" expires_after="2024-12-29">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

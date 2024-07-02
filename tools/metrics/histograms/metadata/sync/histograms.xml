@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeCount4{SyncModelType}" units="entries"
-    expires_after="2024-10-27">
+    expires_after="2024-12-29">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeEntityChange3{SyncModelType}"
-    enum="SyncEntityChange" expires_after="2024-10-27">
+    enum="SyncEntityChange" expires_after="2024-12-29">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1154,7 +1154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncModelType}"
-    units="ms" expires_after="2024-10-27">
+    units="ms" expires_after="2024-12-29">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

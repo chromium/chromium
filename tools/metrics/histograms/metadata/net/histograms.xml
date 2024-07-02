@@ -791,7 +791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ContentEncodingType" enum="ContentEncodingType"
-    expires_after="2024-10-27">
+    expires_after="2024-12-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5752,7 +5752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ZstdFilter.Status" enum="ZstdFilterDecodingStatus"
-    expires_after="2024-10-27">
+    expires_after="2024-12-29">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
