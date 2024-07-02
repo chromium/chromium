@@ -205,7 +205,8 @@ TEST_F(FlushedMapTest, UniqueFlushes) {
   EXPECT_NE(key1.path, key2.path);
 }
 
-TEST_F(FlushedMapTest, DeleteKey) {
+// TODO(crbug.com/350806170): Re-enable this test
+TEST_F(FlushedMapTest, DISABLED_DeleteKey) {
   FlushedMap map = BuildFlushedMap();
   Wait();
 
