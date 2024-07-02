@@ -132,6 +132,9 @@ const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
 const base::FeatureParam<bool> kIsOmniboxEntryPointEnabled{
     &kLensOverlay, "omnibox-entry-point", true};
 
+constexpr base::FeatureParam<bool> kIsOmniboxEntrypointAlwaysVisible{
+    &kLensOverlay, "omnibox-entry-point-always-visible", false};
+
 const base::FeatureParam<bool> kUseBrowserDarkModeSettingForLensOverlay{
     &kLensOverlay, "use-browser-dark-mode-setting", true};
 
@@ -483,6 +486,10 @@ bool IsFindInPageEntryPointEnabled() {
 
 bool IsOmniboxEntryPointEnabled() {
   return kIsOmniboxEntryPointEnabled.Get();
+}
+
+bool IsOmniboxEntrypointAlwaysVisible() {
+  return kIsOmniboxEntrypointAlwaysVisible.Get();
 }
 
 bool UseBrowserDarkModeSettingForLensOverlay() {

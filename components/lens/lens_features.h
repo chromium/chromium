@@ -399,6 +399,11 @@ extern bool IsFindInPageEntryPointEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsOmniboxEntryPointEnabled();
 
+// True if the overlay entrypoint should suppress its label and be always
+// visible in the omnibox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsOmniboxEntrypointAlwaysVisible();
+
 // Returns whether or not to read the browser dark mode setting
 // for Lens Overlay. If false, it will fall back to light mode.
 COMPONENT_EXPORT(LENS_FEATURES)

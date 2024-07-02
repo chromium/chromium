@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -63,10 +64,16 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 
   SetProperty(views::kElementIdentifierKey,
               kLensOverlayPageActionIconElementId);
-  SetLabel(
-      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
-  SetUseTonalColorsWhenExpanded(true);
-  SetPaintLabelOverSolidBackground(true);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL),
+      ax::mojom::NameFrom::kAttribute);
+
+  if (!lens::features::IsOmniboxEntrypointAlwaysVisible()) {
+    SetLabel(
+        l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
+    SetUseTonalColorsWhenExpanded(true);
+    SetPaintLabelOverSolidBackground(true);
+  }
 }
 
 LensOverlayPageActionIconView::~LensOverlayPageActionIconView() = default;
@@ -93,7 +100,12 @@ void LensOverlayPageActionIconView::UpdateImpl() {
       web_Contents &&
       LensOverlayController::GetController(web_Contents) != nullptr &&
       !IsNewTabPage(web_Contents);
-  SetVisible(enabled && location_bar_has_focus && lens_overlay_available);
+
+  const bool should_show_lens_overlay =
+      enabled && lens_overlay_available &&
+      (lens::features::IsOmniboxEntrypointAlwaysVisible() ||
+       location_bar_has_focus);
+  SetVisible(should_show_lens_overlay);
   ResetSlideAnimation(true);
 
   // TODO(pbos): Investigate why this call seems to be required to pick up that
