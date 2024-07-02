@@ -2784,7 +2784,6 @@ void Animation::CancelAnimationOnCompositor() {
   // updated via setCompositorPending. If the animation is to be restarted on
   // compositor, paint has already been given the opportunity to make the
   // compositing decision.
-
   DestroyCompositorAnimation();
   compositor_state_.reset();
 }

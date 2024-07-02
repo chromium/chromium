@@ -118,8 +118,6 @@ class CORE_EXPORT ElementAnimations final
 
   void RecalcCompositedStatus(Element* element, const CSSProperty& property);
 
-  void InvalidatePaintForCompositedAnimationsIfNecessary(Element* element);
-
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of
   // fields for paint properties that can be composited.
   CompositedPaintStatus CompositedBackgroundColorStatus() {
@@ -127,17 +125,13 @@ class CORE_EXPORT ElementAnimations final
         composited_background_color_status_);
   }
 
-  void SetCompositedBackgroundColorStatus(CompositedPaintStatus status) {
-    composited_background_color_status_ = static_cast<unsigned>(status);
-  }
+  bool SetCompositedBackgroundColorStatus(CompositedPaintStatus status);
 
   CompositedPaintStatus CompositedClipPathStatus() {
     return static_cast<CompositedPaintStatus>(composited_clip_path_status_);
   }
 
-  void SetCompositedClipPathStatus(CompositedPaintStatus status) {
-    composited_clip_path_status_ = static_cast<unsigned>(status);
-  }
+  bool SetCompositedClipPathStatus(CompositedPaintStatus status);
 
   void Trace(Visitor*) const override;
 

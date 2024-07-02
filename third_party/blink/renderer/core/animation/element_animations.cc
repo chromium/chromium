@@ -94,10 +94,36 @@ void ElementAnimations::RecalcCompositedStatus(Element* element,
           : ElementAnimations::CompositedPaintStatus::kNoAnimation;
 
   if (property.PropertyID() == CSSPropertyID::kBackgroundColor) {
-    SetCompositedBackgroundColorStatus(status);
+    if (SetCompositedBackgroundColorStatus(status) &&
+        element->GetLayoutObject()) {
+      element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    }
   } else if (property.PropertyID() == CSSPropertyID::kClipPath) {
-    SetCompositedClipPathStatus(status);
+    if (SetCompositedClipPathStatus(status) && element->GetLayoutObject()) {
+      element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+      // For clip paths, we also need to update the paint properties to switch
+      // from path based to mask based clip.
+      element->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
+    }
   }
+}
+
+bool ElementAnimations::SetCompositedClipPathStatus(
+    CompositedPaintStatus status) {
+  if (static_cast<unsigned>(status) != composited_clip_path_status_) {
+    composited_clip_path_status_ = static_cast<unsigned>(status);
+    return true;
+  }
+  return false;
+}
+
+bool ElementAnimations::SetCompositedBackgroundColorStatus(
+    CompositedPaintStatus status) {
+  if (static_cast<unsigned>(status) != composited_background_color_status_) {
+    composited_background_color_status_ = static_cast<unsigned>(status);
+    return true;
+  }
+  return false;
 }
 
 bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
@@ -110,25 +136,6 @@ bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
     }
   }
   return false;
-}
-
-void ElementAnimations::InvalidatePaintForCompositedAnimationsIfNecessary(
-    Element* element) {
-  if (!element->GetLayoutObject()) {
-    return;
-  }
-
-  if (CompositedBackgroundColorStatus() ==
-      CompositedPaintStatus::kNeedsRepaint) {
-    element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-  }
-
-  if (CompositedClipPathStatus() == CompositedPaintStatus::kNeedsRepaint) {
-    element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
-    // For clip paths, we also need to update the paint properties to switch
-    // from path based to mask based clip.
-    element->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
-  }
 }
 
 }  // namespace blink
