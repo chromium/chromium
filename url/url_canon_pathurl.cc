@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Functions for canonicalizing "path" URLs. Not to be confused with the path
 // of a URL, these are URLs that have no authority section, only a path. For
 // example, "javascript:" and "data:".

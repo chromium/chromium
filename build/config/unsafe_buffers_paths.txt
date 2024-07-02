@@ -120,7 +120,7 @@
 -tools/
 -ui/
 +ui/views/
--url/
+-url/third_party
 -v8/
 -webkit/
 
