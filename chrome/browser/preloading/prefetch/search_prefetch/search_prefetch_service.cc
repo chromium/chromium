@@ -68,7 +68,8 @@ void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
               return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
                      ui::PageTransitionCoreTypeIs(
                          transition_type,
-                         ui::PageTransition::PAGE_TRANSITION_GENERATED);
+                         ui::PageTransition::PAGE_TRANSITION_GENERATED) &&
+                     ui::PageTransitionIsNewNavigation(transition_type);
             }));
   }
 }

@@ -52,8 +52,7 @@ void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
                    ui::PageTransitionCoreTypeIs(
                        transition_type,
                        ui::PageTransition::PAGE_TRANSITION_TYPED) &&
-                   ui::PageTransitionIsNewNavigation(
-                       navigation_handle->GetPageTransition());
+                   ui::PageTransitionIsNewNavigation(transition_type);
           }));
 }
 }  // namespace
