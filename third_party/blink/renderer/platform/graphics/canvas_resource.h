@@ -454,6 +454,14 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   }
 
   // Can be read on any thread.
+
+  // NOTE: This is guaranteed to be non-null for the lifetime of this instance:
+  // * CanvasResourceRasterSharedImage::Create() (which is the only public way
+  // to create an instance of this class) returns null if the ClientSI couldn't
+  // be created.
+  // * The pointer is not cleared until TearDown(), which is only called from
+  // OnDestroy(), which itself is only called from the destructor of this
+  // class.
   gpu::ClientSharedImage* client_shared_image() const {
     return owning_thread_data_.client_shared_image.get();
   }
@@ -479,9 +487,6 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const bool is_overlay_candidate_;
   const bool supports_display_compositing_;
   const bool use_oop_rasterization_;
-  // TODO(crbug.com/1494911): Remove this field once GetOrCreateGpuMailbox() is
-  // converted to return ClientSharedImage.
-  const gpu::Mailbox empty_mailbox_;
   OwningThreadData owning_thread_data_;
 };
 

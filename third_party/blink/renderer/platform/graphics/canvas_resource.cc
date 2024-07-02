@@ -748,16 +748,11 @@ const gpu::Mailbox& CanvasResourceRasterSharedImage::GetOrCreateGpuMailbox(
     owning_thread_data().mailbox_sync_mode = sync_mode;
   }
 
-  // NOTE: Return gpu::Mailbox() here does not build due to this function
-  // returning a reference.
-  // TODO(crbug.com/1494911): Remove `empty_mailbox_` entirely once
-  // GetOrCreateGpuMailbox() is converted to return ClientSharedImage.
-  return client_shared_image() ? client_shared_image()->mailbox()
-                               : empty_mailbox_;
+  return client_shared_image()->mailbox();
 }
 
 GLenum CanvasResourceRasterSharedImage::TextureTarget() const {
-  return client_shared_image() ? client_shared_image()->GetTextureTarget() : 0;
+  return client_shared_image()->GetTextureTarget();
 }
 
 const gpu::SyncToken CanvasResourceRasterSharedImage::GetSyncToken() {
