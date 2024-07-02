@@ -512,7 +512,7 @@ export class SettingsCreditCardEditDialogElement extends
     if (isBlur) {
       return (sanitizedCardNumber.length >= 12 &&
               sanitizedCardNumber.length <= 19 &&
-              !this.passesLuhnCheck_(sanitizedCardNumber)) ?
+              this.passesLuhnCheck_(sanitizedCardNumber)) ?
           CardNumberValidationState.VALID :
           CardNumberValidationState.INVALID_WITH_ERROR;
     }

@@ -70,6 +70,7 @@ suite('PaymentsSectionCardDialogs', function() {
    */
   async function simulateInput(
       inputElement: CrInputElement, input: string): Promise<void> {
+    inputElement.focus();
     inputElement.value = input;
     await inputElement.updateComplete;
     inputElement.dispatchEvent(new CustomEvent('input'));
@@ -286,6 +287,14 @@ suite('PaymentsSectionCardDialogs', function() {
       assertFalse(
           saveButton!.disabled,
           `Expected save button to be enabled for ${cardNumber}`);
+
+      // Blur the input; the card should continue to be considered valid.
+      numberInput.blur();
+      assertFalse(
+          numberInput.invalid, `Expected ${cardNumber} to be valid after blur`);
+      assertFalse(
+          saveButton!.disabled,
+          `Expected save button to be enabled for ${cardNumber} after blur`);
     }
   });
 
@@ -339,6 +348,17 @@ suite('PaymentsSectionCardDialogs', function() {
           assertTrue(
               saveButton!.disabled,
               `Expected save button to be disabled for ${cardNumber}`);
+
+          // Blur the input; this should do full verification and change the
+          // card to be invalid.
+          numberInput.blur();
+          assertTrue(
+              numberInput.invalid,
+              `Expected ${cardNumber} to be invalid after blur`);
+          assertTrue(
+              saveButton!.disabled,
+              `Expected save button to be disabled for ${
+                  cardNumber} after blur`);
         }
       });
 
@@ -389,44 +409,17 @@ suite('PaymentsSectionCardDialogs', function() {
       assertTrue(
           saveButton!.disabled,
           `Expected save button to be disabled for ${cardNumber}`);
+
+      // Blur the input; the card number should remain invalid.
+      numberInput.blur();
+      assertTrue(
+          numberInput.invalid,
+          `Expected ${cardNumber} to still be invalid after blur`);
+      assertTrue(
+          saveButton!.disabled,
+          `Expected save button to still be disabled for ${
+              cardNumber} after blur`);
     }
-  });
-
-  test('verifyOnlyValidCardNumbersAllowed_userChangesFocus', async function() {
-    loadTimeData.overrideValues({
-      requireValidLocalCards: true,
-    });
-
-    const creditCard = createCreditCardEntry();
-    const creditCardDialog = createCreditCardDialog(creditCard);
-
-    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-
-    const numberInput =
-        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
-            '#numberInput');
-    assertTrue(!!numberInput, 'Precondition failed: numberInput should exist.');
-
-    const saveButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
-            '#saveButton');
-    assertTrue(!!saveButton, 'Precondition failed: saveButton should exist.');
-
-    // This number is too short, but no error should be shown for that until the
-    // user focuses another element (i.e. blurs the numberInput).
-    const cardNumber = '3333';
-    await simulateInput(numberInput, cardNumber);
-    flush();
-    assertFalse(numberInput.invalid, `Expected ${cardNumber} to be valid`);
-    assertTrue(
-        saveButton!.disabled,
-        `Expected save button to be disabled for ${cardNumber}`);
-
-
-    // Now blur the input, which should cause an error to be shown.
-    numberInput.blur();
-    assertTrue(
-        numberInput.invalid, `Expected ${cardNumber} to be invalid after blur`);
   });
 
   test('verifyNotEditedEntryAfterCancel', async function() {
