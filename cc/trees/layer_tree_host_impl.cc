@@ -2010,8 +2010,8 @@ size_t LayerTreeHostImpl::GetFrameIndexForImage(const PaintImage& paint_image,
 }
 
 int LayerTreeHostImpl::GetMSAASampleCountForRaster(
-    const scoped_refptr<DisplayItemList>& display_list) {
-  if (display_list->num_slow_paths_up_to_min_for_MSAA() <
+    const DisplayItemList& display_list) const {
+  if (display_list.num_slow_paths_up_to_min_for_MSAA() <
       kMinNumberOfSlowPathsForMSAA) {
     return 0;
   }
@@ -2019,7 +2019,7 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
     return 0;
   }
 
-  if (display_list->has_non_aa_paint()) {
+  if (display_list.has_non_aa_paint()) {
     return 0;
   }
 

@@ -126,7 +126,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   void DidBeginTracing();
   void AsValueInto(base::trace_event::TracedValue* array) const;
 
-  const scoped_refptr<DisplayItemList>& GetDisplayItemList() const {
+  const scoped_refptr<const DisplayItemList>& GetDisplayItemList() const {
     return display_list_;
   }
 
@@ -176,7 +176,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   // These members are const as this raster source may be in use on another
   // thread and so should not be touched after construction.
-  const scoped_refptr<DisplayItemList> display_list_;
+  const scoped_refptr<const DisplayItemList> display_list_;
   const SkColor4f background_color_;
   const bool requires_clear_;
   const bool is_solid_color_;

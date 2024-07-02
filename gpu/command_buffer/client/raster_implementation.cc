@@ -1450,7 +1450,7 @@ void RasterImplementation::RasterCHROMIUM(
 
   gfx::Rect query_rect = gfx::ScaleToEnclosingRect(
       playback_rect, 1.f / post_scale.x(), 1.f / post_scale.y());
-  list->rtree_.Search(query_rect, &temp_raster_offsets_);
+  list->SearchOpsByRect(query_rect, &temp_raster_offsets_);
   // We can early out if we have nothing to draw and we don't need a clear. Note
   // that if there is nothing to draw, but a clear is required, then those
   // commands would be serialized in the preamble and it's important to play
@@ -1492,7 +1492,8 @@ void RasterImplementation::RasterCHROMIUM(
           raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
           capabilities().max_texture_size, raster_inducing_scroll_offsets));
-  serializer.Serialize(list->paint_op_buffer_, &temp_raster_offsets_, preamble);
+  serializer.Serialize(list->paint_op_buffer(), &temp_raster_offsets_,
+                       preamble);
   // TODO(piman): raise error if !serializer.valid()?
   op_serializer.SendSerializedData();
 }

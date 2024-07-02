@@ -37,12 +37,12 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               const gfx::Rect& content,
               float scale,
               ImageAnimationMap animation_map,
-              scoped_refptr<cc::DisplayItemList> display_items);
+              scoped_refptr<const cc::DisplayItemList> display_items);
 
   gfx::Rect content_rect;
   float contents_scale;
   ImageAnimationMap image_animation_map;
-  scoped_refptr<cc::DisplayItemList> display_item_list;
+  scoped_refptr<const cc::DisplayItemList> display_item_list;
 
   static const PictureDrawQuad* MaterialCast(const DrawQuad* quad);
 

@@ -759,8 +759,9 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
     if (current_display_item_list && new_display_item_list) {
       bool needs_full_invalidation =
           layer_tree_impl()->GetMSAASampleCountForRaster(
-              current_display_item_list) !=
-          layer_tree_impl()->GetMSAASampleCountForRaster(new_display_item_list);
+              *current_display_item_list) !=
+          layer_tree_impl()->GetMSAASampleCountForRaster(
+              *new_display_item_list);
       needs_full_invalidation |=
           layer_tree_impl()->GetTargetColorParams(
               current_display_item_list->content_color_usage()) !=

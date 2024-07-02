@@ -110,7 +110,7 @@ class CC_EXPORT TileManagerClient {
 
   // Returns the sample count to use if MSAA is enabled for a tile.
   virtual int GetMSAASampleCountForRaster(
-      const scoped_refptr<DisplayItemList>& display_list) = 0;
+      const DisplayItemList& display_list) const = 0;
 
   // True if there is a pending tree.
   virtual bool HasPendingTree() = 0;

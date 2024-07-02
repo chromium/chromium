@@ -164,8 +164,7 @@ class CC_EXPORT LayerTreeImpl {
   void UpdateImageDecodingHints(
       base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
           decoding_mode_map);
-  int GetMSAASampleCountForRaster(
-      const scoped_refptr<DisplayItemList>& display_list);
+  int GetMSAASampleCountForRaster(const DisplayItemList& display_list) const;
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const;
   bool IsReadyToActivate() const;

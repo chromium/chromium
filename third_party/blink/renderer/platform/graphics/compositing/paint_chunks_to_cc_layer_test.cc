@@ -1227,7 +1227,7 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
 
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_THAT(
-        cc_list->GetPaintOpBufferForTesting(),
+        cc_list->paint_op_buffer(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
                     PaintOpIs<cc::SaveOp>(),
                     PaintOpEq<cc::ClipRectOp>(
@@ -1243,15 +1243,14 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
             .visual_rect);
     const auto& scrolling_contents_op =
         static_cast<const cc::DrawScrollingContentsOp&>(
-            cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+            cc_list->paint_op_buffer().GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op.GetType());
-    EXPECT_THAT(
-        scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
-        ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+    EXPECT_THAT(scrolling_contents_op.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
   } else {
     EXPECT_THAT(
-        cc_list->GetPaintOpBufferForTesting(),
+        cc_list->paint_op_buffer(),
         ElementsAre(
             PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
             PaintOpIs<cc::SaveOp>(),
@@ -1297,7 +1296,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                     gfx::Vector2dF(), nullptr, *cc_list);
 
   EXPECT_THAT(
-      cc_list->GetPaintOpBufferForTesting(),
+      cc_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
                   PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ClipRectOp>(
@@ -1313,11 +1312,11 @@ TEST_P(PaintChunksToCcLayerTest,
           .visual_rect);
   const auto& scrolling_contents_op =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+          cc_list->paint_op_buffer().GetOpAtForTesting(3));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op.GetType());
   EXPECT_THAT(
-      scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
+      scrolling_contents_op.display_item_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ConcatOp>(
                       SkM44::Scale(2, 2)),  // <transform_under_scroll>
@@ -1381,7 +1380,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                     gfx::Vector2dF(), nullptr, *cc_list);
 
   EXPECT_THAT(
-      cc_list->GetPaintOpBufferForTesting(),
+      cc_list->paint_op_buffer(),
       ElementsAre(
           PaintOpIs<cc::DrawRecordOp>(),      // chunk 0
                                               // The effect is applied above the
@@ -1412,11 +1411,11 @@ TEST_P(PaintChunksToCcLayerTest,
           .visual_rect);
   const auto& scrolling_contents_op1 =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(4));
+          cc_list->paint_op_buffer().GetOpAtForTesting(4));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op1.GetType());
   EXPECT_THAT(
-      scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+      scrolling_contents_op1.display_item_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ConcatOp>(
                       SkM44::Scale(2, 2)),  // <transform_under_scroll>
@@ -1429,11 +1428,11 @@ TEST_P(PaintChunksToCcLayerTest,
 
   const auto& scrolling_contents_op2 =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(10));
+          cc_list->paint_op_buffer().GetOpAtForTesting(10));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op2.GetType());
   EXPECT_THAT(
-      scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
+      scrolling_contents_op2.display_item_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ConcatOp>(
                       SkM44::Scale(2, 2)),  // <transform_under_scroll>
@@ -1469,7 +1468,7 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
 
   if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_THAT(
-        cc_list->GetPaintOpBufferForTesting(),
+        cc_list->paint_op_buffer(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
                     PaintOpIs<cc::SaveOp>(),
                     PaintOpEq<cc::ClipRectOp>(
@@ -1490,11 +1489,11 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
                                            .visual_rect);
     const auto& scrolling_contents_op1 =
         static_cast<const cc::DrawScrollingContentsOp&>(
-            cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+            cc_list->paint_op_buffer().GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op1.GetType());
     EXPECT_THAT(
-        scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+        scrolling_contents_op1.display_item_list->paint_op_buffer(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 1
                     PaintOpIs<cc::SaveOp>(),
                     PaintOpEq<cc::ClipRectOp>(
@@ -1504,17 +1503,15 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
                     PaintOpIs<cc::RestoreOp>()));  // </overflow-clip2>
     const auto& scrolling_contents_op2 =
         static_cast<const cc::DrawScrollingContentsOp&>(
-            scrolling_contents_op1.display_item_list
-                ->GetPaintOpBufferForTesting()
+            scrolling_contents_op1.display_item_list->paint_op_buffer()
                 .GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op2.GetType());
-    EXPECT_THAT(
-        scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
-        ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+    EXPECT_THAT(scrolling_contents_op2.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
   } else {
     EXPECT_THAT(
-        cc_list->GetPaintOpBufferForTesting(),
+        cc_list->paint_op_buffer(),
         ElementsAre(
             PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
             PaintOpIs<cc::SaveOp>(),
@@ -1571,7 +1568,7 @@ TEST_P(PaintChunksToCcLayerTest,
                                     gfx::Vector2dF(), nullptr, *cc_list);
 
   EXPECT_THAT(
-      cc_list->GetPaintOpBufferForTesting(),
+      cc_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
                   PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ClipRectOp>(
@@ -1591,11 +1588,11 @@ TEST_P(PaintChunksToCcLayerTest,
           .visual_rect);
   const auto& scrolling_contents_op1 =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
+          cc_list->paint_op_buffer().GetOpAtForTesting(3));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op1.GetType());
   EXPECT_THAT(
-      scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
+      scrolling_contents_op1.display_item_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ClipRectOp>(
                       SkRect::MakeXYWH(10, 20, 30, 40), SkClipOp::kIntersect,
@@ -1605,12 +1602,12 @@ TEST_P(PaintChunksToCcLayerTest,
                   PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
   const auto& scrolling_contents_op2 =
       static_cast<const cc::DrawScrollingContentsOp&>(
-          scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting()
+          scrolling_contents_op1.display_item_list->paint_op_buffer()
               .GetOpAtForTesting(2));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op2.GetType());
   EXPECT_THAT(
-      scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
+      scrolling_contents_op2.display_item_list->paint_op_buffer(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
                   PaintOpEq<cc::ConcatOp>(
                       SkM44::Scale(2, 2)),  // <transform_under_scroll>

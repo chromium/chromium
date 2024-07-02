@@ -179,7 +179,7 @@ class DiscardableImageMap::Generator {
             draw_scrolling_contents_op.scroll_element_id);
         canvas_.translate(-scroll_offset.x(), -scroll_offset.y());
         GatherDiscardableImages(
-            draw_scrolling_contents_op.display_item_list->paint_op_buffer_,
+            draw_scrolling_contents_op.display_item_list->paint_op_buffer(),
             top_level_op_rect);
         canvas_.restore();
       }

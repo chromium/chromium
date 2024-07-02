@@ -277,7 +277,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
     std::vector<size_t> offsets =
         scrolling_contents_op.display_item_list->OffsetsOfOpsToRaster(canvas);
     SerializeBuffer(canvas,
-                    scrolling_contents_op.display_item_list->paint_op_buffer_,
+                    scrolling_contents_op.display_item_list->paint_op_buffer(),
                     &offsets);
     RestoreToCount(canvas, save_count, params);
     return true;

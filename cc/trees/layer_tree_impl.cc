@@ -2903,7 +2903,7 @@ void LayerTreeImpl::UpdateImageDecodingHints(
 }
 
 int LayerTreeImpl::GetMSAASampleCountForRaster(
-    const scoped_refptr<DisplayItemList>& display_list) {
+    const DisplayItemList& display_list) const {
   return host_impl_->GetMSAASampleCountForRaster(display_list);
 }
 

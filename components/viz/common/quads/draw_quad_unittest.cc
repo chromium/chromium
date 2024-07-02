@@ -458,7 +458,7 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   bool nearest_neighbor = true;
   gfx::Rect content_rect(30, 40, 20, 30);
   float contents_scale = 3.141592f;
-  scoped_refptr<cc::DisplayItemList> display_item_list =
+  auto display_item_list =
       cc::FakeRasterSource::CreateEmpty(gfx::Size(100, 100))
           ->GetDisplayItemList();
   CREATE_SHARED_STATE();

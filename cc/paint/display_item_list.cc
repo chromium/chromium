@@ -321,7 +321,7 @@ scoped_refptr<DiscardableImageMap> DisplayItemList::GenerateDiscardableImageMap(
 
 bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
                                             SkColor4f* color,
-                                            int max_ops_to_analyze) {
+                                            int max_ops_to_analyze) const {
 #if DCHECK_IS_ON()
   DCHECK(IsFinalized());
 #endif

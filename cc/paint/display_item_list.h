@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/directly_composited_image_info.h"
@@ -21,18 +20,12 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 class SkCanvas;
-
-namespace gpu::raster {
-class RasterImplementation;
-class RasterImplementationGLES;
-}  // namespace gpu::raster
 
 namespace base::trace_event {
 class TracedValue;
@@ -133,8 +126,13 @@ class CC_PAINT_EXPORT DisplayItemList
   // For testing only, to examine the painted result.
   PaintRecord FinalizeAndReleaseAsRecordForTesting();
 
-  const PaintOpBuffer& GetPaintOpBufferForTesting() const {
-    return paint_op_buffer_;
+  const PaintOpBuffer& paint_op_buffer() const { return paint_op_buffer_; }
+
+  // Returns the indices in paint_op_buffer of paint ops whose visual rects
+  // intersect `query`.
+  void SearchOpsByRect(const gfx::Rect& query,
+                       std::vector<size_t>* op_indices) const {
+    return rtree_.Search(query, op_indices);
   }
 
   // If this list represents an image that should be directly composited (i.e.
@@ -164,7 +162,7 @@ class CC_PAINT_EXPORT DisplayItemList
 
   void EmitTraceSnapshot() const;
 
-  gfx::Rect VisualRectForTesting(int index) {
+  gfx::Rect VisualRectForTesting(int index) const {
     return visual_rects_[static_cast<size_t>(index)];
   }
 
@@ -173,7 +171,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // rectangle is solid color.
   bool GetColorIfSolidInRect(const gfx::Rect& rect,
                              SkColor4f* color,
-                             int max_ops_to_analyze = 1);
+                             int max_ops_to_analyze = 1) const;
 
   std::string ToString() const;
 
@@ -224,11 +222,7 @@ class CC_PAINT_EXPORT DisplayItemList
   }
 
  private:
-  friend class DiscardableImageMap;
   friend class DisplayItemListTest;
-  friend class PaintOpBufferSerializer;
-  friend gpu::raster::RasterImplementation;
-  friend gpu::raster::RasterImplementationGLES;
 
   ~DisplayItemList();
 
