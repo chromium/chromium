@@ -142,20 +142,23 @@ if (bindings_flags & BINDINGS_POLICY_WEB_UI) {
 The factory creates a [`WebUIController`](#WebUIController) for a tab using
 the WebUIConfig.
 
-Here's an example:
+Here's an example using the DefaultWebUIConfig:
 
 ```c++
+class DonutsUI;
+
+// This would go in chrome/common/webui_url_constants.cc
+namespace chrome {
+const char kChromeUIDonutsHost[] = "donuts";
+}  // namespace chrome
+
 // Config for chrome://donuts
-DonutsUIConfig::DonutsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIDonutsHost) {}
-
-DonutsUIConfig::~DonutsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DonutsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                      const GURL& url) {
-  return std::make_unique<DonutsUI>(web_ui);
-}
+class DonutsUIConfig : public content::DefaultWebUIConfig<DonutsUI> {
+ public:
+  DonutsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIDonutsHost) {}
+};
 
 // Controller for chrome://donuts.
 class DonutsUI : public content::WebUIController {
@@ -610,13 +613,17 @@ class DonutsPageHandler : public donuts::mojom::PageHandler {
   ~DonutsPageHandler() override;
 
   // Triggered by some outside event
-  void DonutsPageHandler::OnBakingDonutsFinished(uint32_t num_donuts);
+  void OnBakingDonutsFinished(uint32_t num_donuts);
 
   // donuts::mojom::PageHandler:
   void StartPilotLight() override;
   void BakeDonuts(uint32_t num_donuts) override;
   void GetNumberOfDonuts(GetNumberOfDonutsCallback callback) override;
-}
+
+ private:
+  mojo::Receiver<donuts::mojom::PageHandler> receiver_;
+  mojo::Remote<donuts::mojom::Page> page_;
+};
 ```
 
 The message handler needs to implement all the methods on the PageHandler
@@ -646,7 +653,7 @@ void DonutsPageHandler::StartPilotLight() {
 }
 
 // Triggered by bakeDonuts() call in TS.
-void DonutsPageHandler::BakeDonuts(int32_t num_donuts) {
+void DonutsPageHandler::BakeDonuts(uint32_t num_donuts) {
   GetOven()->BakeDonuts();
 }
 
@@ -667,14 +674,22 @@ added to the build and served from the root (e.g.
 
 **chrome/browser/resources/donuts/BUILD.gn**
 ```
+import("//ui/webui/resources/tools/build_webui.gni")
+
 build_webui("build") {
-  # ... Other arguments go here
+  grd_prefix = "donuts"
+
+  # You will add these files in the next step:
+  non_web_component_files = [
+    "donuts.ts",
+    "browser_proxy.ts",
+  ]
+
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/donuts:mojo_bindings_ts__generator" ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/donuts/donuts.mojom-webui.ts",
   ]
-  # ... Other arguments can go here
 }
 ```
 
@@ -683,19 +698,23 @@ class:
 
 **chrome/browser/resources/donuts/browser_proxy.ts**
 ```js
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './donuts.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './donuts.mojom-webui.js';
+import type {PageHandlerInterface} from './donuts.mojom-webui.js';
 
-class BrowserProxy {
+// Exporting the interface helps when creating a TestBrowserProxy wrapper.
+export interface BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerInterface;
+}
+
+export class BrowserProxyImpl implements BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerInterface;
 
-  constructor() {
+  private constructor() {
     this.callbackRouter = new PageCallbackRouter();
-
     this.handler = new PageHandlerRemote();
-
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
+    PageHandlerFactory.getRemote().createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
   }
@@ -704,8 +723,8 @@ class BrowserProxy {
     return instance || (instance = new BrowserProxy());
   }
 
-  static setInstance(obj: BrowserProxy) {
-    instance = obj;
+  static setInstance(proxy: BrowserProxy) {
+    instance = proxy;
   }
 }
 
@@ -723,13 +742,13 @@ response from the browser.
 
 **chrome/browser/resources/donuts/donuts.ts**
 ```js
-import {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
 
 let numDonutsBaked: number = 0;
 
 window.onload = function() {
   // Other page initialization steps go here
-  const proxy = BrowserProxy.getInstance();
+  const proxy = BrowserProxyImpl.getInstance();
   // Tells the browser to start the pilot light.
   proxy.handler.startPilotLight();
   // Adds a listener for the asynchronous "donutsBaked" event.
@@ -742,7 +761,7 @@ window.onload = function() {
 function CheckNumberOfDonuts() {
   // Requests the number of donuts from the browser, and alerts with the
   // response.
-  BrowserProxy.getInstance().handler.getNumberOfDonuts().then(
+  BrowserProxyImpl.getInstance().handler.getNumberOfDonuts().then(
       (numDonuts: number) => {
         alert('Yay, there are ' + numDonuts + ' delicious donuts left!');
       });
@@ -750,7 +769,7 @@ function CheckNumberOfDonuts() {
 
 function BakeDonuts(numDonuts: number) {
   // Tells the browser to bake |numDonuts| donuts.
-  BrowserProxy.getInstance().handler.bakeDonuts(numDonuts);
+  BrowserProxyImpl.getInstance().handler.bakeDonuts(numDonuts);
 }
 ```
 
