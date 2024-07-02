@@ -72,9 +72,9 @@ export class KioskVisionInternalsAppElement extends PolymerElement {
       if (entries.length === 0 || entries[0].contentBoxSize.length === 0) {
         return;
       }
-      const boxSize = entries[0].contentBoxSize[0];
-      this.$.overlay.width = boxSize.inlineSize
-      this.$.overlay.height = boxSize.blockSize;
+      const { inlineSize, blockSize } = entries[0].contentBoxSize[0];
+      this.$.overlay.width = inlineSize;
+      this.$.overlay.height = blockSize;
       this.stateChanged_(this.state_);
     }
   }
