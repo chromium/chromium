@@ -15356,6 +15356,20 @@
        {}
       ]
      ],
+     "page-flow-direction-slr-005.xht": [
+      "30d045d1d1568c64cf21efeebc9f40f0b02d8309",
+      [
+       null,
+       {}
+      ]
+     ],
+     "page-flow-direction-srl-004.xht": [
+      "d1d1aa65b570e6160fa27fb935a01d178a7bb363",
+      [
+       null,
+       {}
+      ]
+     ],
      "text-combine-upright-all-001-manual.html": [
       "32d7d48598aedcd263daaae2e7dbcd7f0f9038d4",
       [
@@ -245734,6 +245748,318 @@
        {}
       ]
      ],
+     "block-flow-direction-slr-043.xht": [
+      "597e837058ea2a4304aba3ea9e6ba09784595c5e",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-043-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-047.xht": [
+      "9b7b031e606d375cb12db03e51c547f78e8a7592",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-048.xht": [
+      "46de57912ad88d6f4850687c26fb09667bf87650",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-050.xht": [
+      "71708f2bc5c8f2861334148360f1062c80bddab3",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-054.xht": [
+      "5932b5ce7d55cfd45c873f4857cd887bd25c098b",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-055.xht": [
+      "1dc72345ceca2f352785b8d3906055029e231d7e",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-056.xht": [
+      "fa5a3cc2570319bcc84ec2524dd321e8ac14eece",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-058.xht": [
+      "2f03e47b04adde627d8c0b72387f4d2a6f5456cd",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-060.xht": [
+      "5db6943097bc007850f9987f52e957e395b79114",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-062.xht": [
+      "b1bf73d13f8fa033211cf45896f0cf240c6f8aae",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-043-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-063.xht": [
+      "180b499e8228daf8defc0578a34797668476b726",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-043-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-slr-066.xht": [
+      "24a4dfef3ddde32a3bdae0eae0aadc79f8022af9",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-066-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-042.xht": [
+      "975c090772dee637a0f1dfd0cd9854ca7dbd7ff1",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-045.xht": [
+      "6e558f4f23c65c4b02c170afafef7a18ef74db7a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-046.xht": [
+      "4ec11644409254e17ca065b9086d1d663447a094",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-049.xht": [
+      "6ea429ae33f26b0bcbe7bab9971e4dbd54c1b592",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-051.xht": [
+      "2f5e3f48c0b75c0fdacb3309baf6400a876d800a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-052.xht": [
+      "9c5d74983177a3e1f5f469ebd3968305ab69956a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-053.xht": [
+      "ea32277ad584273eddd0b7b9651747b82b3c000d",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-057.xht": [
+      "e674b3b47715463120c74c47cfeba704fccc1b80",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-059.xht": [
+      "346009238390f3dcc0b967af7c4684f0412b781c",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-061.xht": [
+      "8e97775a10a2785ab90da2a461f72adfc8d50c44",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-064.xht": [
+      "fba7236f9b6a2892f9c3f230b573e829cfd46744",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "block-flow-direction-srl-065.xht": [
+      "40c0f83daa7977657776cc6088f04aab372134b1",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-025-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "block-flow-direction-vlr-003.xht": [
       "720c9808ea56688fca0e8fadf4bb3db84a9de314",
       [
@@ -249204,6 +249530,32 @@
        {}
       ]
      ],
+     "inline-block-alignment-slr-009.xht": [
+      "b21704b4c8ac587635a58583e526d7a8757bd5d3",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/inline-block-alignment-slr-009-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "inline-block-alignment-srl-008.xht": [
+      "909dc0e9a2d6e76a3d284996afdc6a08015e8c78",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/inline-block-alignment-006-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "inline-box-border-vlr-001.html": [
       "453a8a51c3bf17bbf035b16abfedb1d6c09349d4",
       [
@@ -249336,6 +249688,240 @@
      ],
      "line-box-direction-htb-001.xht": [
       "38b78ef03f0886482057dc59b8f0f948e421ef83",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-043.xht": [
+      "a6b60dd7d1ff7039ba1c5d783ea1ebca25b4754a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-047.xht": [
+      "13dfdf8faea46fc3e90d2d9937816c30ea9f9b43",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-048.xht": [
+      "9038fdd1b11bf0ccf61d441381d4ebf24ccef5e3",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-050.xht": [
+      "d2553cac4d65b4307e316372ecc721363917840c",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-053.xht": [
+      "24dac1725546a0ae46f538391393e67208e4f6e4",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-054.xht": [
+      "2b2183745339d6b9ff8221a56e43404b8b918fca",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-056.xht": [
+      "ab29a5c0f49ce685ec2ffbbedb1eec889a504c48",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-058.xht": [
+      "3b62e3c616ceebb93af1ef5b9b03e6dee8475a33",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-slr-060.xht": [
+      "8f27b854ab060284d90312c27497ae9ef968f69a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-042.xht": [
+      "8cb56054b35051cd521c1445c9a3b6253d54b166",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-045.xht": [
+      "c4bdf51117d6dd1ccba2f0b97edc5db254f84bf6",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-046.xht": [
+      "e2eea7ff61131e31e9afc874e638a3ec5321707b",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-049.xht": [
+      "6fcb5060d7c23ac344d2f40296556d1e9fc50f45",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-051.xht": [
+      "143500c1e1253c143ef67c963f6c0517f3423172",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-052.xht": [
+      "b5fc3fd53a23181ee83040e8c63b5c437e11caaf",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-055.xht": [
+      "6a9cdb43c847019c2c29610d74aa78df76d32e09",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-057.xht": [
+      "8d7ea7a9eec7511dbf0affbe85fd3c8a3842d205",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "line-box-direction-srl-059.xht": [
+      "70ed1a16966faa812200100efdb2a30a13eeedde",
       [
        null,
        [
@@ -250675,6 +251261,58 @@
        [
         [
          "/css/css-writing-modes/replaced-content-image-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "row-progression-slr-023.xht": [
+      "56cac4c2c95a84c773bb9d60044174ea900b1935",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "row-progression-slr-029.xht": [
+      "94051c917b7ab0816f3ac2fcdf6c4feac34305eb",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "row-progression-srl-022.xht": [
+      "32429ab87ffe8a6b00d72f489f248d0cba7f24c7",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "row-progression-srl-028.xht": [
+      "2fdbd46cc54fba897228fd08c2cef0b31e49c1a8",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
          "=="
         ]
        ],
@@ -252501,6 +253139,84 @@
        {}
       ]
      ],
+     "table-column-order-slr-007.xht": [
+      "d145dd66206220f6711eefebbc751583bc286bb5",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-column-order-srl-006.xht": [
+      "4c050e429155dd8c54eb30abeb673c3a60fd2f53",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/block-flow-direction-001-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-progression-slr-001.html": [
+      "25050b8e371530c6c4c055e053f3cf3799956597",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-slr-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-progression-slr-002.html": [
+      "1525e2423d538adeb42b01e8c30393b1ec75daca",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-progression-srl-001.html": [
+      "b74b2caee53262ae15dd98e63d4b21f9029ebb0a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-progression-srl-002.html": [
+      "7d5df32cc2629dc82a111904408b864d735f7558",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/table-progression-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "table-progression-vlr-001.html": [
       "6b9d3c1f443cdde8f2aa8650bb40782554ff7657",
       [
@@ -252872,6 +253588,32 @@
        [
         [
          "/css/css-writing-modes/direction-vrl-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-baseline-slr-009.xht": [
+      "1861d698916dd62ea76020e4e937deb76329ea5a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-baseline-slr-009-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-baseline-srl-008.xht": [
+      "979e06a92f3b89dc9000fd1ed80da883a78f09d9",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-baseline-vrl-006-ref.xht",
          "=="
         ]
        ],
@@ -253527,6 +254269,19 @@
        {}
       ]
      ],
+     "text-orientation-mixed-srl-016.xht": [
+      "4ce3ea58871c7e398829d82112d8ef4bc84b2a1e",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-orientation-mixed-srl-016-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-orientation-mixed-vlr-100.html": [
       "e2f2bedb1c3966a8c4cb7509a198bca5efa1ab89",
       [
@@ -253586,6 +254341,19 @@
        [
         [
          "/css/css-writing-modes/text-orientation-upright-directionality-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-orientation-upright-srl-018.xht": [
+      "b7ab7c205096d53f6b689a990c0862bb8a4e31d6",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/text-orientation-mixed-srl-016-ref.xht",
          "=="
         ]
        ],
@@ -253781,6 +254549,136 @@
        [
         [
          "/css/css-writing-modes/vertical-alignment-008-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-029.xht": [
+      "f14078f6c62eb1355a9b6ceba654a5420975fb3d",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-008-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-031.xht": [
+      "e578a7177e70c95b1533f65b2ef206a10672a08f",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-006-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-033.xht": [
+      "a832bb960e05ed4c2d9864a375e63c1a2411fc95",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-004-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-035.xht": [
+      "e6a7f2378a79f49e608719d186f5c28df2736520",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-041.xht": [
+      "6fada25e03d92f500ab64b93fb59b873c76c6b69",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-slr-049-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-028.xht": [
+      "7aa9130187e50aa0708bbd43eeb60f870b4e2569",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-002-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-030.xht": [
+      "4255e881447553d2611c6254811f609680c30a46",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-004-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-032.xht": [
+      "fc557904c34fd4a95cb86748cc647264fd6a4b68",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-006-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-034.xht": [
+      "80524735eec1dc86001e613087ac417a069152df",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-008-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-040.xht": [
+      "f0a207a736013db2476d3a8951afd2051723bf89",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/vertical-alignment-vrl-026-ref.xht",
          "=="
         ]
        ],
@@ -345825,6 +346723,10 @@
       "5766808360b42b93326a5228df72f5aae9a44c4c",
       []
      ],
+     "inline-block-alignment-slr-009-ref.xht": [
+      "1c98878f1815a3991ee4f9f9f6847fcda31d3bc5",
+      []
+     ],
      "inline-box-orthogonal-child-with-margins-ref.html": [
       "5bb6b9a95ce2d7a0e4d8ab4763a99d3034fac52d",
       []
@@ -347589,6 +348491,10 @@
       "37445460b878e7fe24290f6e80d7cac6a9cb31b4",
       []
      ],
+     "table-progression-slr-001-ref.html": [
+      "0f772a3e72cf351d6a13feb4bdcb7bff6db5959d",
+      []
+     ],
      "test-plan": {
       "img": {
        "figure-over_and_under-fail.svg": [
@@ -347663,6 +348569,10 @@
      ],
      "text-align-vrl-008-ref.xht": [
       "b4b0e9f20a177ea7d6f33d771de790aeb2ca3841",
+      []
+     ],
+     "text-baseline-slr-009-ref.xht": [
+      "6b4bb02de0d4476cad8fd07c4a20cde15b0a42d9",
       []
      ],
      "text-baseline-vrl-002-ref.xht": [
@@ -347765,6 +348675,10 @@
       "322dde323ea8604c37d435f4d205e997a44e962f",
       []
      ],
+     "text-orientation-mixed-srl-016-ref.xht": [
+      "bae223a995da64c6a70d9d4e6a068685d7d018c8",
+      []
+     ],
      "text-orientation-mixed-vlr-100-ref.html": [
       "d5f1d566278fa53b9650e0afbbfd85a41baa70de",
       []
@@ -347823,6 +348737,10 @@
      ],
      "vertical-alignment-008-ref.xht": [
       "0eab9b6df9191a08fec49e20ace29838aa0b8fb2",
+      []
+     ],
+     "vertical-alignment-slr-049-ref.xht": [
+      "20f6252df504e00d0d2278ccc7463a87c46865bb",
       []
      ],
      "vertical-alignment-vrl-022-ref.xht": [
@@ -479792,6 +480710,20 @@
      ],
      "writing-mode-parsing-001.html": [
       "02d4bc841855c736d6054058ace85a73e1ed18c7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "writing-mode-parsing-sideways-lr-001.html": [
+      "0997dae95ce33f6dabd14f5f617e96a7e12de032",
+      [
+       null,
+       {}
+      ]
+     ],
+     "writing-mode-parsing-sideways-rl-001.html": [
+      "dfd6f4b3cbad0d48140c53e021125c4bcc557d10",
       [
        null,
        {}
@@ -732544,6 +733476,20 @@
        {}
       ]
      ],
+     "outline-inline-slr-005.xht": [
+      "3b150914f69cf254634f62591442881e593a5254",
+      [
+       null,
+       {}
+      ]
+     ],
+     "outline-inline-srl-004.xht": [
+      "415ede3ac8228edceede3823bfca970603f9fd98",
+      [
+       null,
+       {}
+      ]
+     ],
      "outline-inline-vlr-003.xht": [
       "80c9abb090ce6aed5721a5a9bd9a535f72b204d6",
       [
@@ -732691,6 +733637,13 @@
        {}
       ]
      ],
+     "text-orientation-mixed-slr-015.xht": [
+      "c1d57ef12455b767294eaf9d943ba6530a68f494",
+      [
+       null,
+       {}
+      ]
+     ],
      "text-orientation-mixed-vrl-002.xht": [
       "506b9d7ff6cd5a3361e85cf0841c6cd3665da223",
       [
@@ -732700,6 +733653,20 @@
      ],
      "text-orientation-sideways-001.xht": [
       "377f8f9d3548312df5273b49b9b555dcd2230c08",
+      [
+       null,
+       {}
+      ]
+     ],
+     "text-orientation-sideways-slr-019.xht": [
+      "9751a850cef3886591f4da2e4eb7de9d72436b4c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "text-orientation-upright-slr-017.xht": [
+      "eb67dde8ed7a0087348aa5c6f5a0a18f45b8affc",
       [
        null,
        {}
@@ -732798,6 +733765,34 @@
      ],
      "underline-mixed-vrl-002.xht": [
       "6ec124ce43d0680b967e52d54a8b588f2216e977",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-037.xht": [
+      "150e78449a76385bfc0da1d6b9662abda45cb5fc",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-alignment-slr-039.xht": [
+      "e5d516bc93b29c8cc051bdd6343c87ae4fe03649",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-036.xht": [
+      "8072f2d98cd1e78e1ff4e1904490a9415c1a42e3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vertical-alignment-srl-038.xht": [
+      "5b8b8e46ce4ff83cd9385ddd7fa46699013910d1",
       [
        null,
        {}
