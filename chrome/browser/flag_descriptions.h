@@ -1344,9 +1344,6 @@ extern const char kUsernameFirstFlowWithIntermediateValuesVotingDescription[];
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 
-extern const char kEnableMachineLearningModelLoaderWebPlatformApiName[];
-extern const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[];
-
 extern const char kWebMachineLearningNeuralNetworkName[];
 extern const char kWebMachineLearningNeuralNetworkDescription[];
 

@@ -2319,11 +2319,6 @@ const char kCanvas2DLayersName[] =
 const char kCanvas2DLayersDescription[] =
     "Enables the canvas 2D methods BeginLayer and EndLayer.";
 
-const char kEnableMachineLearningModelLoaderWebPlatformApiName[] =
-    "Enables Machine Learning Model Loader Web Platform API";
-const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[] =
-    "Enables the Machine Learning Model Loader Web Platform API.";
-
 const char kWebMachineLearningNeuralNetworkName[] = "Enables WebNN API";
 const char kWebMachineLearningNeuralNetworkDescription[] =
     "Enables the Web Machine Learning Neural Network (WebNN) API. Spec at "

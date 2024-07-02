@@ -256,9 +256,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_CHROMEOS)
           {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
 #endif
-          {wf::EnableMachineLearningModelLoader,
-           raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
-           kSetOnlyIfOverridden},
           {wf::EnableMediaCastOverlayButton,
            raw_ref(media::kMediaCastOverlayButton)},
           {wf::EnableMediaEngagementBypassAutoplayPolicies,

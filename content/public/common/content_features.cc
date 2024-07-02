@@ -352,12 +352,6 @@ BASE_FEATURE(kEnableCanvas2DLayers,
              "EnableCanvas2DLayers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Machine Learning Model Loader Web Platform API. Explainer:
-// https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
-BASE_FEATURE(kEnableMachineLearningModelLoaderWebPlatformApi,
-             "EnableMachineLearningModelLoaderWebPlatformApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables service workers on chrome-untrusted:// urls.
 BASE_FEATURE(kEnableServiceWorkersForChromeUntrusted,
              "EnableServiceWorkersForChromeUntrusted",

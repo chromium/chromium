@@ -2422,17 +2422,6 @@
       status: "stable",
     },
     {
-      name: "MachineLearningCommon",
-      implied_by: ["MachineLearningModelLoader", "MachineLearningNeuralNetwork"],
-      status: "experimental",
-    },
-    {
-      name: "MachineLearningModelLoader",
-      public: true,
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "MachineLearningNeuralNetwork",
       public: true,
       status: {
