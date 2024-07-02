@@ -25459,6 +25459,21 @@
             ]
         }
     ],
+    "WinCameraMonitoringInVideoCaptureService": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinCameraMonitoringInVideoCaptureService"
+                    ]
+                }
+            ]
+        }
+    ],
     "WinPdfUseFontProxy": [
         {
             "platforms": [
