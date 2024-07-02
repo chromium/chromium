@@ -1020,7 +1020,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(
               122, "awado@chromium.org",
               "Triggered when user is using standard protection mode.")));
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // kIPHBackNavigationMenuFeature:
   registry.RegisterFeature(
@@ -1076,18 +1076,6 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered once per-app when a link is captured and "
                        "opened in a PWA.")));
 
-  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    // kIPHComposeMSBBSettingsFeature:
-    registry.RegisterFeature(
-        std::move(FeaturePromoSpecification::CreateForToastPromo(
-                      feature_engagement::kIPHComposeMSBBSettingsFeature,
-                      kAnonymizedUrlCollectionPersonalizationSettingId,
-                      IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT,
-                      IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER,
-                      FeaturePromoSpecification::AcceleratorInfo())
-                      .SetBubbleArrow(HelpBubbleArrow::kBottomRight)));
-  }
-
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHHistorySearchFeature,
@@ -1099,6 +1087,18 @@ void MaybeRegisterChromeFeaturePromos(
           .SetMetadata(127, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  // kIPHComposeMSBBSettingsFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
+                    feature_engagement::kIPHComposeMSBBSettingsFeature,
+                    kAnonymizedUrlCollectionPersonalizationSettingId,
+                    IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT,
+                    IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER,
+                    FeaturePromoSpecification::AcceleratorInfo())
+                    .SetBubbleArrow(HelpBubbleArrow::kBottomRight)));
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 }
 
 void MaybeRegisterChromeFeaturePromos(
