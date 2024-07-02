@@ -10042,6 +10042,7 @@ interface TextMetrics
     getter ideographicBaseline
     getter width
     method constructor
+    method getActualBoundingBox
     method getSelectionRects
 interface TextTrack : EventTarget
     attribute @@toStringTag

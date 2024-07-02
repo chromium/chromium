@@ -45,4 +45,6 @@ interface TextMetrics {
 
     // For selection
     [RuntimeEnabled=ExtendedTextMetrics, RaisesException] sequence<DOMRectReadOnly> getSelectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    // For bounding box
+    [RuntimeEnabled=ExtendedTextMetrics, RaisesException] DOMRectReadOnly getActualBoundingBox([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
 };

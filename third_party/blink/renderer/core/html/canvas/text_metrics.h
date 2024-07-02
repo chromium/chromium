@@ -71,6 +71,9 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
       uint32_t start,
       uint32_t end,
       ExceptionState& exception_state);
+  const DOMRectReadOnly* getActualBoundingBox(uint32_t start,
+                                              uint32_t end,
+                                              ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -110,9 +113,10 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   double actual_bounding_box_descent_ = 0.0;
   double em_height_ascent_ = 0.0;
   double em_height_descent_ = 0.0;
+  float baseline_y = 0.0;
   Member<Baselines> baselines_;
 
-  // Needed for selection rects.
+  // Needed for selection rects and bounding boxes.
   Font font_;
   uint32_t text_length_ = 0;
 

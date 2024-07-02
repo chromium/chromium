@@ -1893,6 +1893,7 @@ interface TextMetrics
     getter ideographicBaseline
     getter width
     method constructor
+    method getActualBoundingBox
     method getSelectionRects
 interface TimestampTrigger
     attribute @@toStringTag

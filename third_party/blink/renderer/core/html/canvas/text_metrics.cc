@@ -149,7 +149,7 @@ void TextMetrics::Update(const Font& font,
       kAlphabeticBaseline, FontMetrics::ApplyBaselineTable(true));
   const float descent = font_metrics.FloatDescent(
       kAlphabeticBaseline, FontMetrics::ApplyBaselineTable(true));
-  const float baseline_y = GetFontBaseline(baseline, *font_data);
+  baseline_y = GetFontBaseline(baseline, *font_data);
   font_bounding_box_ascent_ = ascent - baseline_y;
   font_bounding_box_descent_ = descent + baseline_y;
   actual_bounding_box_ascent_ = -glyph_bounds.y() - baseline_y;
@@ -289,6 +289,63 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   }
 
   return selection_rects;
+}
+
+const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState& exception_state) {
+  gfx::RectF bounding_box;
+
+  // Checks indexes that go over the maximum for the text. For indexes less than
+  // 0, an exception is thrown by [EnforceRange] in the idl binding.
+  if (start >= text_length_ || end > text_length_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        String::Format("The %s index is out of bounds.",
+                       start >= text_length_ ? "start" : "end"));
+    return DOMRectReadOnly::FromRectF(bounding_box);
+  }
+
+  ShapeTextIfNeeded();
+
+  for (const auto& run_with_offset : runs_with_offset_) {
+    const unsigned int run_start_index = run_with_offset.character_offset_;
+    const unsigned int run_end_index =
+        run_start_index + run_with_offset.num_characters_;
+
+    // Outside the required interval.
+    if (run_end_index <= start || run_start_index >= end) {
+      continue;
+    }
+
+    // Position of the left border for this run.
+    const double left_border = run_with_offset.x_position_;
+
+    // Calculate the required indexes for this specific run.
+    const unsigned int starting_index =
+        start > run_start_index ? start - run_start_index : 0;
+    const unsigned int ending_index = end < run_end_index
+                                          ? end - run_start_index
+                                          : run_with_offset.num_characters_;
+
+    const ShapeResultView* view = ShapeResultView::Create(
+        run_with_offset.shape_result_, 0, run_with_offset.num_characters_);
+    view->ForEachGlyph(
+        left_border, starting_index, ending_index, 0,
+        [](void* context, unsigned character_index, Glyph glyph,
+           gfx::Vector2dF glyph_offset, float total_advance, bool is_horizontal,
+           CanvasRotationInVertical rotation, const SimpleFontData* font_data) {
+          auto* bounding_box = static_cast<gfx::RectF*>(context);
+          gfx::RectF glyph_bounds = font_data->BoundsForGlyph(glyph);
+          glyph_bounds.Offset(total_advance, 0.0);
+          glyph_bounds.Offset(glyph_offset);
+          bounding_box->Union(glyph_bounds);
+        },
+        static_cast<void*>(&bounding_box));
+  }
+  bounding_box.Offset(-text_align_dx_, baseline_y);
+  return DOMRectReadOnly::FromRectF(bounding_box);
 }
 
 }  // namespace blink
