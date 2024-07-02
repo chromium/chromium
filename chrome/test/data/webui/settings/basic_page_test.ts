@@ -459,7 +459,7 @@ suite('Performance', () => {
     assertEquals(
         queryPerformanceSettingsSection()!.shadowRoot!.querySelector('h2')
             ?.innerText,
-        loadTimeData.getString('performancePageTitle'));
+        loadTimeData.getString('generalPageTitle'));
     assertEquals(
         queryMemorySettingsSection()!.shadowRoot!.querySelector('h2')
             ?.innerText,

@@ -787,8 +787,9 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   // UI no longer exists.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
-      {"memoryPageTitle", IDS_SETTINGS_MEMORY_PAGE_TITLE},
-      {"speedPageTitle", IDS_SETTINGS_SPEED_PAGE_TITLE},
+      {"generalPageTitle", IDS_SETTINGS_PERFORMANCE_GENERAL_PAGE_TITLE},
+      {"memoryPageTitle", IDS_SETTINGS_PERFORMANCE_MEMORY_PAGE_TITLE},
+      {"speedPageTitle", IDS_SETTINGS_PERFORMANCE_SPEED_PAGE_TITLE},
       {"memorySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING},
       {"memorySaverModeDescription",
@@ -815,7 +816,7 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_MEDIUM_DESCRIPTION},
       {"memorySaverModeAggressiveDescription",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_AGGRESSIVE_DESCRIPTION},
-      {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
+      {"batteryPageTitle", IDS_SETTINGS_PERFORMANCE_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
       {"batterySaverModeDescription",

@@ -1269,13 +1269,16 @@
   </message>
 
   <!-- Performance Page -->
-  <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Title of the performance settings page">
+  <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Name of the performance settings page.">
     Performance
   </message>
-  <message name="IDS_SETTINGS_MEMORY_PAGE_TITLE" desc="Title of the memory section on the performance settings page.">
+  <message name="IDS_SETTINGS_PERFORMANCE_GENERAL_PAGE_TITLE" desc="Title of the general section in the performance settings page.">
+    General
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_PAGE_TITLE" desc="Title of the memory section in the performance settings page.">
     Memory
   </message>
-  <message name="IDS_SETTINGS_SPEED_PAGE_TITLE" desc="Title of the speed section on the performance settings page.">
+  <message name="IDS_SETTINGS_PERFORMANCE_SPEED_PAGE_TITLE" desc="Title of the speed section in the performance settings page.">
     Speed
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
@@ -1344,7 +1347,7 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP" desc="Help text shown on the second tab of the tab discarding exception list add dialog. Explains how to use the filter format to add an exclusion rule to the list.">
     Sites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about keeping specific sites active<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the power section of the performance settings page">
+  <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_PAGE_TITLE" desc="Title of the power section in the performance settings page.">
     Power
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING" desc="Energy saver mode setting label. This mode allows the browser to conserve battery by reducing energy usage">
