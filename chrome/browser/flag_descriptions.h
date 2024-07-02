@@ -3366,6 +3366,9 @@ extern const char kArcExtendInputAnrTimeoutDescription[];
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 
+extern const char kArcFriendlierErrorDialogName[];
+extern const char kArcFriendlierErrorDialogDescription[];
+
 extern const char kArcIdleManagerName[];
 extern const char kArcIdleManagerDescription[];
 

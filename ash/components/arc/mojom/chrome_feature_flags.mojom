@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module arc.mojom;
 
@@ -45,6 +45,8 @@ struct FeatureFlags {
   [MinVersion=10] bool extend_input_anr_timeout;
   // `chromeos::features::IsNotificationWidthIncreaseEnabled()`
   [MinVersion=11] bool notification_width_increase;
+  // chrome://flags#arc-friendlier-error-dialog
+  [MinVersion=12] bool enable_friendlier_error_dialog;
 };
 
 // This interface provides methods to propagate the feature flag status to

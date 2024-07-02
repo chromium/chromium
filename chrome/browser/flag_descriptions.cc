@@ -5803,6 +5803,12 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using ChromeOS file picker in ARC.";
 
+const char kArcFriendlierErrorDialogName[] =
+    "Enable friendlier error dialog for ARC";
+const char kArcFriendlierErrorDialogDescription[] =
+    "Replaces disruptive error dialogs with Chrome notifications for some ANR "
+    "and crash events.";
+
 const char kArcIdleManagerName[] = "Enable ARC Idle Manager";
 const char kArcIdleManagerDescription[] =
     "ARC will turn on Android's doze mode when idle.";

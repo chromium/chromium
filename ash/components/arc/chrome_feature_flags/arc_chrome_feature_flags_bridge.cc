@@ -100,6 +100,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       base::FeatureList::IsEnabled(arc::kExtendInputAnrTimeout);
   flags->notification_width_increase =
       chromeos::features::IsNotificationWidthIncreaseEnabled();
+  flags->enable_friendlier_error_dialog =
+      base::FeatureList::IsEnabled(arc::kEnableFriendlierErrorDialog);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

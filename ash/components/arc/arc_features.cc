@@ -119,6 +119,12 @@ BASE_FEATURE(kEnableArcVmDataMigration,
              "ArcVmDataMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to enable friendlier error dialog (switching to notification
+// for certain types of ARC error dialogs).
+BASE_FEATURE(kEnableFriendlierErrorDialog,
+             "FriendlierErrorDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether WebView Zygote is lazily initialized in ARC.
 BASE_FEATURE(kEnableLazyWebViewInit,
              "LazyWebViewInit",
