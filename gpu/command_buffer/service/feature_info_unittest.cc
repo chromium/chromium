@@ -231,49 +231,18 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
       gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_trace_marker"));
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_unpack_subimage"));
 
-  bool expect_ext_srgb = false;
-  switch (GetParam()) {
-    case ES2_on_Version3_0:
-    case ES3_on_Version3_0:
-    case ES3_on_Version3_2Compatibility:
-      break;
-    case ES2_on_Version3_2Compatibility:
-      // sRGB features are available as core GL 3.2.
-      expect_ext_srgb = true;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
-  }
-  // Note that because GL_EXT_sRGB is a substring of GL_EXT_sRGB_write_control,
-  // which is not part of the ES3 core, we have to be careful to search for
-  // "GL_EXT_sRGB ", and append a space to the end of the extension string.
-  if (expect_ext_srgb) {
-    EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_sRGB"));
-    EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_SRGB_EXT));
-    EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_SRGB_ALPHA_EXT));
-    EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-        GL_SRGB_EXT));
-    EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-        GL_SRGB_ALPHA_EXT));
-    EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(
-        GL_SRGB8_ALPHA8_EXT));
-    EXPECT_TRUE(info_->validators()->framebuffer_attachment_parameter.IsValid(
-        GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT));
-  } else {
-    EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_EXT_sRGB"));
-    EXPECT_FALSE(info_->validators()->texture_format.IsValid(GL_SRGB_EXT));
-    EXPECT_FALSE(info_->validators()->texture_format.IsValid(
-        GL_SRGB_ALPHA_EXT));
-    EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
-        GL_SRGB_EXT));
-    EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
-        GL_SRGB_ALPHA_EXT));
-    EXPECT_FALSE(info_->validators()->render_buffer_format.IsValid(
-        GL_SRGB8_ALPHA8_EXT));
-    EXPECT_FALSE(info_->validators()->framebuffer_attachment_parameter.IsValid(
-        GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT));
-  }
+  EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_EXT_sRGB"));
+  EXPECT_FALSE(info_->validators()->texture_format.IsValid(GL_SRGB_EXT));
+  EXPECT_FALSE(info_->validators()->texture_format.IsValid(
+      GL_SRGB_ALPHA_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
+      GL_SRGB_EXT));
+  EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
+      GL_SRGB_ALPHA_EXT));
+  EXPECT_FALSE(info_->validators()->render_buffer_format.IsValid(
+      GL_SRGB8_ALPHA8_EXT));
+  EXPECT_FALSE(info_->validators()->framebuffer_attachment_parameter.IsValid(
+      GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT));
 
   // Check a couple of random extensions that should not be there.
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_OES_texture_npot"));

@@ -411,11 +411,6 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   EXPECT_CALL(*gl_, BindRenderbufferEXT(GL_RENDERBUFFER, 0))
       .Times(1)
       .RetiresOnSaturation();
-  if (feature_info->feature_flags().desktop_srgb_support) {
-    EXPECT_CALL(*gl_, Disable(GL_FRAMEBUFFER_SRGB))
-        .Times(1)
-        .RetiresOnSaturation();
-  }
 
   // TODO(boliu): Remove OS_ANDROID once crbug.com/259023 is fixed and the
   // workaround has been reverted.

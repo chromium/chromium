@@ -163,8 +163,6 @@ target(link_target_type, "gles2_sources") {
     "gles2_cmd_decoder_passthrough_doers.cc",
     "gles2_cmd_decoder_passthrough_handlers.cc",
     "gles2_cmd_decoder_passthrough_handlers_autogen.cc",
-    "gles2_cmd_srgb_converter.cc",
-    "gles2_cmd_srgb_converter.h",
     "gles2_cmd_validation.cc",
     "gles2_cmd_validation.h",
     "gles2_cmd_validation_autogen.h",

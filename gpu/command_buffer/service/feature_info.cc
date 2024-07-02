@@ -817,23 +817,15 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   bool has_srgb_framebuffer_support = false;
-  if (gl_version_info_->IsAtLeastGL(3, 2) ||
-      (gl_version_info_->IsAtLeastGL(2, 0) &&
-       (gfx::HasExtension(extensions, "GL_EXT_framebuffer_sRGB") ||
-        gfx::HasExtension(extensions, "GL_ARB_framebuffer_sRGB")))) {
-    feature_flags_.desktop_srgb_support = true;
-    has_srgb_framebuffer_support = true;
-  }
   // With EXT_sRGB, unsized SRGB_EXT and SRGB_ALPHA_EXT are accepted by the
   // <format> and <internalformat> parameter of TexImage2D. GLES3 adds support
   // for SRGB Textures but the accepted internal formats for TexImage2D are only
   // sized formats GL_SRGB8 and GL_SRGB8_ALPHA8. Also, SRGB_EXT isn't a valid
   // <format> in this case. So, even with GLES3 explicitly check for
   // GL_EXT_sRGB.
-  if ((((gl_version_info_->is_es3 ||
-         gfx::HasExtension(extensions, "GL_OES_rgb8_rgba8")) &&
-        gfx::HasExtension(extensions, "GL_EXT_sRGB")) ||
-       feature_flags_.desktop_srgb_support) &&
+  if ((gl_version_info_->is_es3 ||
+       gfx::HasExtension(extensions, "GL_OES_rgb8_rgba8")) &&
+      gfx::HasExtension(extensions, "GL_EXT_sRGB") &&
       IsWebGL1OrES2Context()) {
     feature_flags_.ext_srgb = true;
     AddExtensionString("GL_EXT_sRGB");
@@ -856,8 +848,7 @@ void FeatureInfo::InitializeFeatures() {
     // GL_EXT_sRGB_write_control (which is not part of the core, even in GLES3),
     // and the desktop extension GL_ARB_framebuffer_sRGB (part of the core in
     // 3.0).
-    if (feature_flags_.desktop_srgb_support ||
-        gfx::HasExtension(extensions, "GL_EXT_sRGB_write_control")) {
+    if (gfx::HasExtension(extensions, "GL_EXT_sRGB_write_control")) {
       feature_flags_.ext_srgb_write_control = true;
 
       // Do not expose this extension to WebGL.
@@ -1035,12 +1026,6 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_EXT_read_format_bgra");
     validators_.read_pixel_format.AddValue(GL_BGRA_EXT);
   }
-
-  // GL_ARB_ES3_compatibility adds support for some ES3 texture formats that are
-  // not supported in desktop GL
-  feature_flags_.arb_es3_compatibility =
-      gfx::HasExtension(extensions, "GL_ARB_ES3_compatibility") &&
-      !gl_version_info_->is_es;
 
   // glGetInteger64v for timestamps is implemented on the client side in a way
   // that it does not depend on a driver-level implementation of

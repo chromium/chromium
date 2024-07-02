@@ -62,7 +62,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
 #include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
-#include "gpu/command_buffer/service/gles2_cmd_srgb_converter.h"
 #include "gpu/command_buffer/service/gles2_cmd_validation.h"
 #include "gpu/command_buffer/service/gles2_external_framebuffer.h"
 #include "gpu/command_buffer/service/gles2_query_manager.h"
@@ -2366,7 +2365,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   bool InitializeCopyTexImageBlitter(const char* function_name);
   bool InitializeCopyTextureCHROMIUM(const char* function_name);
-  bool InitializeSRGBConverter(const char* function_name);
 
   void UnbindTexture(TextureRef* texture_ref,
                      bool supports_separate_framebuffer_binds);
@@ -2524,7 +2522,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   std::unique_ptr<CopyTexImageResourceManager> copy_tex_image_blit_;
   std::unique_ptr<CopyTextureCHROMIUMResourceManager> copy_texture_chromium_;
-  std::unique_ptr<SRGBConverter> srgb_converter_;
   std::unique_ptr<ClearFramebufferResourceManager> clear_framebuffer_blit_;
 
   // Cached values of the currently assigned viewport dimensions.
@@ -4201,16 +4198,6 @@ void GLES2DecoderImpl::UpdateFramebufferSRGB(Framebuffer* framebuffer) {
     needs_enable_disable_framebuffer_srgb = true;
     enable_framebuffer_srgb &= state_.GetEnabled(GL_FRAMEBUFFER_SRGB);
   }
-  // On desktop, enable FRAMEBUFFER_SRGB only if the framebuffer contains sRGB
-  // attachments. In theory, we can just leave FRAMEBUFFER_SRGB enabled,
-  // however,
-  // many drivers behave incorrectly when no attachments are sRGB. When at
-  // least one attachment is sRGB, then they behave correctly.
-  if (feature_info_->feature_flags().desktop_srgb_support) {
-    needs_enable_disable_framebuffer_srgb = true;
-    // Assume that the default fbo does not have an sRGB image.
-    enable_framebuffer_srgb &= framebuffer && framebuffer->HasSRGBAttachments();
-  }
   if (needs_enable_disable_framebuffer_srgb)
     state_.EnableDisableFramebufferSRGB(enable_framebuffer_srgb);
 }
@@ -4540,11 +4527,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
       copy_texture_chromium_.reset();
     }
 
-    if (srgb_converter_.get()) {
-      srgb_converter_->Destroy();
-      srgb_converter_.reset();
-    }
-
     if (clear_framebuffer_blit_.get()) {
       clear_framebuffer_blit_->Destroy();
       clear_framebuffer_blit_.reset();
@@ -4623,7 +4605,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
 
   copy_tex_image_blit_.reset();
   copy_texture_chromium_.reset();
-  srgb_converter_.reset();
   clear_framebuffer_blit_.reset();
 
   ReportProgress();
@@ -5984,17 +5965,6 @@ void GLES2DecoderImpl::DoGenerateMipmap(GLenum target) {
   }
 
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("glGenerateMipmap");
-  GLenum type = 0;
-  GLenum internal_format = 0;
-  bool enable_srgb = false;
-  if (target == GL_TEXTURE_2D) {
-    tex->GetLevelType(target, tex->base_level(), &type, &internal_format);
-    enable_srgb = GLES2Util::GetColorEncodingFromInternalFormat(
-                      internal_format) == GL_SRGB;
-  }
-  if (enable_srgb && feature_info_->feature_flags().desktop_srgb_support) {
-    state_.EnableDisableFramebufferSRGB(enable_srgb);
-  }
   if (workarounds().clamp_texture_base_level_and_max_level) {
     tex->ApplyClampedBaseLevelAndMaxLevelToDriver();
   }
@@ -8167,55 +8137,12 @@ void GLES2DecoderImpl::DoBlitFramebufferCHROMIUM(
   bool enable_srgb =
       (read_buffer_has_srgb || draw_buffers_has_srgb) &&
       ((mask & GL_COLOR_BUFFER_BIT) != 0);
-  bool encode_srgb_only =
-      (draw_buffers_has_srgb && !read_buffer_has_srgb) &&
-      ((mask & GL_COLOR_BUFFER_BIT) != 0);
-  if (!enable_srgb ||
-      read_buffer_samples > 0 ||
-      !feature_info_->feature_flags().desktop_srgb_support ||
-      gl_version_info().IsAtLeastGL(4, 4) ||
-      (gl_version_info().IsAtLeastGL(4, 2) && encode_srgb_only)) {
-    if (enable_srgb && feature_info_->feature_flags().ext_srgb_write_control) {
-      state_.EnableDisableFramebufferSRGB(enable_srgb);
-    }
-
-    api()->glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
-                               dstY1, mask, filter);
-    return;
+  if (enable_srgb && feature_info_->feature_flags().ext_srgb_write_control) {
+    state_.EnableDisableFramebufferSRGB(enable_srgb);
   }
 
-  // emulate srgb for desktop core profile when GL version < 4.4
-  // TODO(yunchao): Need to handle this situation:
-  // There are multiple draw buffers. Some of them are srgb images.
-  // The others are not.
-  state_.EnableDisableFramebufferSRGB(true);
-  if (!InitializeSRGBConverter(func_name)) {
-    return;
-  }
-  GLenum src_format =
-      TextureManager::ExtractFormatFromStorageFormat(src_internal_format);
-  srgb_converter_->Blit(this, srcX0, srcY0, srcX1, srcY1,
-                        dstX0, dstY0, dstX1, dstY1,
-                        mask, filter,
-                        GetBoundReadFramebufferSize(),
-                        GetBoundReadFramebufferServiceId(),
-                        src_internal_format, src_format, src_type,
-                        GetBoundDrawFramebufferServiceId(),
-                        read_buffer_has_srgb, draw_buffers_has_srgb,
-                        state_.enable_flags.scissor_test);
-}
-
-bool GLES2DecoderImpl::InitializeSRGBConverter(
-    const char* function_name) {
-  if (!srgb_converter_.get()) {
-    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(function_name);
-    srgb_converter_ = std::make_unique<SRGBConverter>(feature_info_.get());
-    srgb_converter_->InitializeSRGBConverter(this);
-    if (LOCAL_PEEK_GL_ERROR(function_name) != GL_NO_ERROR) {
-      return false;
-    }
-  }
-  return true;
+  api()->glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
+                             dstY1, mask, filter);
 }
 
 void GLES2DecoderImpl::UnbindTexture(TextureRef* texture_ref,
@@ -12736,8 +12663,7 @@ namespace {
 
 bool CheckETCFormatSupport(const FeatureInfo& feature_info) {
   const gl::GLVersionInfo& version_info = feature_info.gl_version_info();
-  return version_info.IsAtLeastGL(4, 3) || version_info.IsAtLeastGLES(3, 0) ||
-         feature_info.feature_flags().arb_es3_compatibility;
+  return version_info.IsAtLeastGL(4, 3) || version_info.IsAtLeastGLES(3, 0);
 }
 
 using CompressedFormatSupportCheck = bool (*)(const FeatureInfo&);
@@ -15999,15 +15925,6 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
     return;
   }
 
-  if (feature_info_->feature_flags().desktop_srgb_support) {
-    bool enable_framebuffer_srgb =
-        GLES2Util::GetColorEncodingFromInternalFormat(source_internal_format) ==
-            GL_SRGB ||
-        GLES2Util::GetColorEncodingFromInternalFormat(internal_format) ==
-            GL_SRGB;
-    state_.EnableDisableFramebufferSRGB(enable_framebuffer_srgb);
-  }
-
   int source_width = 0;
   int source_height = 0;
   if (!source_texture->GetLevelSize(source_target, source_level, &source_width,
@@ -16194,15 +16111,6 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
                        "Copy*TextureCHROMIUM from EXTERNAL_OES to integer "
                        "format requires OES_EGL_image_external_essl3");
     return;
-  }
-
-  if (feature_info_->feature_flags().desktop_srgb_support) {
-    bool enable_framebuffer_srgb =
-        GLES2Util::GetColorEncodingFromInternalFormat(source_internal_format) ==
-            GL_SRGB ||
-        GLES2Util::GetColorEncodingFromInternalFormat(dest_internal_format) ==
-            GL_SRGB;
-    state_.EnableDisableFramebufferSRGB(enable_framebuffer_srgb);
   }
 
   // Clear the source texture if necessary.

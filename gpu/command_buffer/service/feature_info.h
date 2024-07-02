@@ -105,8 +105,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_multisample_compatibility = false;
     bool ext_blend_func_extended = false;
     bool ext_read_format_bgra = false;
-    bool desktop_srgb_support = false;
-    bool arb_es3_compatibility = false;
     bool chromium_color_buffer_float_rgb = false;
     bool chromium_color_buffer_float_rgba = false;
     bool angle_robust_client_memory = false;
