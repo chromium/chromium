@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -216,7 +217,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
                     int rootId = movedTab.getRootId();
-                    updateGroupAccessibilityDescription(rootId);
+                    updateGroupTitleText(rootId);
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
@@ -244,7 +245,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    updateGroupAccessibilityDescription(mSourceRootId);
+                    updateGroupTitleText(mSourceRootId);
                     // Removing the tab at the end of a group through the GTS will result in the
                     // width of a group changing without a tab moving. This means a rebuild won't
                     // occur, and we'll need to manually update the bottom indicator here.
@@ -267,7 +268,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 @Override
                 public void didMoveWithinGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                    updateGroupAccessibilityDescription(movedTab.getRootId());
+                    updateGroupAccessibilityDescription(findGroupTitle(movedTab.getRootId()));
                 }
 
                 @Override
@@ -280,16 +281,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
-                    int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, newTitle);
-                    updateGroupTitle(groupTitle, newTitle, widthPx);
-                    updateGroupAccessibilityDescription(groupTitle);
-
-                    if (TextUtils.isEmpty(newTitle)) {
-                        mLayerTitleCache.removeGroupTitle(rootId);
-                    } else if (groupTitle.isVisible()) {
-                        mLayerTitleCache.getUpdatedGroupTitle(
-                                rootId, groupTitle.getTitle(), mIncognito);
-                    }
+                    updateGroupTitleText(groupTitle, newTitle);
                     mRenderHost.requestRender();
                 }
 
@@ -1047,8 +1039,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         for (int i = 0; i < mStripGroupTitles.length; ++i) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, groupTitle.getTitle());
-            updateGroupTitle(groupTitle, groupTitle.getTitle(), widthPx);
+            updateGroupTitleText(groupTitle, groupTitle.getTitle());
         }
     }
 
@@ -1225,9 +1216,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) {
-            updateGroupAccessibilityDescription(tab.getRootId());
-        }
+        if (tab != null) updateGroupTitleText(tab.getRootId());
     }
 
     /**
@@ -1299,7 +1288,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         boolean collapsed = false;
         if (tab != null) {
             int rootId = tab.getRootId();
-            updateGroupAccessibilityDescription(rootId);
+            updateGroupTitleText(rootId);
             if (mTabGroupModelFilter.getTabGroupCollapsed(rootId)) {
                 if (selected) {
                     mTabGroupModelFilter.deleteTabGroupCollapsed(rootId);
@@ -2565,6 +2554,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         String groupDescription = groupTitle.getTitle();
         if (TextUtils.isEmpty(groupDescription)) {
+            // TODO(crbug.com/349696415): Investigate if we can indeed remove this now that we
+            // default to showing "N tabs" for unnamed groups.
             // "Unnamed group"
             int titleRes = R.string.accessibility_tabstrip_group_identifier_unnamed;
             groupDescription = res.getString(titleRes);
@@ -2592,12 +2583,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
 
         return builder.toString();
-    }
-
-    @VisibleForTesting
-    void updateGroupAccessibilityDescription(int rootId) {
-        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-        updateGroupAccessibilityDescription(groupTitle);
     }
 
     private void updateGroupAccessibilityDescription(StripLayoutGroupTitle groupTitle) {
@@ -2771,15 +2756,65 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    private void updateGroupTitle(StripLayoutGroupTitle groupTitle, String title, int widthPx) {
+    /**
+     * @param rootId The root ID of the relevant tab group.
+     * @param titleText The tab group's title text, if any. Null otherwise.
+     * @return The provided title text if it isn't empty. Otherwise, returns the default title.
+     */
+    private String getDefaultGroupTitleTextIfEmpty(int rootId, @Nullable String titleText) {
+        if (TextUtils.isEmpty(titleText)) {
+            int numTabs = mTabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            titleText = TabGroupTitleEditor.getDefaultTitle(mContext, numTabs);
+        }
+        return titleText;
+    }
+
+    @VisibleForTesting
+    void updateGroupTitleText(int rootId) {
+        updateGroupTitleText(findGroupTitle(rootId));
+    }
+
+    private void updateGroupTitleText(StripLayoutGroupTitle groupTitle) {
+        if (groupTitle == null) return;
+        updateGroupTitleText(
+                groupTitle, mTabGroupModelFilter.getTabGroupTitle(groupTitle.getRootId()));
+    }
+
+    /**
+     * Sets a non-empty title text for the given group indicator. Also updates the title text
+     * bitmap, accessibility description, and tab/indicator sizes if necessary.
+     *
+     * @param groupTitle The {@link StripLayoutGroupTitle} that we're update the title text for.
+     * @param titleText The title text to apply. If empty, use a default title text.
+     */
+    private void updateGroupTitleText(StripLayoutGroupTitle groupTitle, String titleText) {
         assert groupTitle != null;
 
-        float oldWidth = groupTitle.getWidth();
+        // 1. Update indicator text and width.
+        titleText = getDefaultGroupTitleTextIfEmpty(groupTitle.getRootId(), titleText);
+        int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
-        groupTitle.updateTitle(title, widthDp);
+        float oldWidth = groupTitle.getWidth();
+        groupTitle.updateTitle(titleText, widthDp);
+        updateGroupAccessibilityDescription(groupTitle);
 
+        // 2. Update title text bitmap if needed.
+        if (groupTitle.isVisible()) {
+            mLayerTitleCache.getUpdatedGroupTitle(
+                    groupTitle.getRootId(), groupTitle.getTitle(), mIncognito);
+            mRenderHost.requestRender();
+        }
+
+        // 3. Handle indicator size change if needed.
         if (groupTitle.getWidth() != oldWidth) {
-            resizeTabStrip(false, false, false);
+            if (groupTitle.isVisible()) {
+                // If on-screen, this may result in the ideal tab width changing.
+                resizeTabStrip(false, false, false);
+            } else {
+                // If off-screen, request an update so we re-calculate tab initial positions and the
+                // minimum scroll offset.
+                mUpdateHost.requestUpdate();
+            }
         }
     }
 
@@ -2803,19 +2838,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         @ColorInt
         int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
 
-        String titleString = mTabGroupModelFilter.getTabGroupTitle(rootId);
-        float textWidth = 0;
-        if (mLayerTitleCache != null) {
-            textWidth =
-                    mLayerTitleCache.getGroupTitleWidth(mIncognito, titleString)
-                            / mContext.getResources().getDisplayMetrics().density;
-        }
-
         // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(this, mIncognito, rootId, titleString, textWidth, color);
-        updateGroupAccessibilityDescription(groupTitle);
+                new StripLayoutGroupTitle(/* delegate= */ this, mIncognito, rootId, color);
         pushPropertiesToGroupTitle(groupTitle);
+        // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
+        // been added to mStripViews yet.
+        updateGroupTitleText(groupTitle);
 
         return groupTitle;
     }

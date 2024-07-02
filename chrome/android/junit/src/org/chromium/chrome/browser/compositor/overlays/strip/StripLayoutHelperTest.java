@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -261,7 +262,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 1);
 
         // Verify.
-        String expectedDescription = "Unnamed group - Tab 1";
+        String expectedDescription = "1 tab - Tab 1";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
         assertEquals(
@@ -279,7 +280,7 @@ public class StripLayoutHelperTest {
         groupTabs(0, 3);
 
         // Verify.
-        String expectedDescription = "Unnamed group - Tab 1 and 2 other tabs";
+        String expectedDescription = "3 tabs - Tab 1 and 2 other tabs";
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue("First should be a group title.", views[0] instanceof StripLayoutGroupTitle);
         assertEquals(
@@ -3648,7 +3649,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
                 .thenReturn(relatedTabs);
 
-        mStripLayoutHelper.updateGroupAccessibilityDescription(groupRootId);
+        mStripLayoutHelper.updateGroupTitleText(groupRootId);
         mStripLayoutHelper.rebuildStripViews();
     }
 
@@ -4575,6 +4576,7 @@ public class StripLayoutHelperTest {
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
     public void testSetLayerTitleCache() {
         // Setup. Group 2nd and 3rd tab.
+        String expectedTitle = TabGroupTitleEditor.getDefaultTitle(mContext, 2);
         initializeTest(false, false, 0);
         groupTabs(1, 3);
 
@@ -4583,7 +4585,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setLayerTitleCache(newTitleCache);
 
         // Verify the observers have been updated as expected.
-        verify(newTitleCache).getGroupTitleWidth(eq(false), eq(null));
+        verify(newTitleCache).getGroupTitleWidth(eq(false), eq(expectedTitle));
     }
 
     @Test

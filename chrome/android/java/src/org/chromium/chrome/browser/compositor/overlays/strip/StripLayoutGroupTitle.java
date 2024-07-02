@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -98,16 +97,12 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param delegate The delegate for additional strip group title functionality.
      * @param incognito Whether or not this tab group is Incognito.
      * @param rootId The root ID for the tab group.
-     * @param title The title of the tab group, if it is set. Null otherwise.
-     * @param textWidth The width of the title text in px.
      * @param color The color of the tab group.
      */
     public StripLayoutGroupTitle(
             StripLayoutGroupTitleDelegate delegate,
             boolean incognito,
             int rootId,
-            @Nullable String title,
-            float textWidth,
             @ColorInt int color) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
@@ -115,7 +110,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mIncognito = incognito;
 
         updateRootId(rootId);
-        updateTitle(title, textWidth);
         updateTint(color);
     }
 
