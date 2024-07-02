@@ -39,6 +39,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager/model/features.h",
   "+ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
+  "+ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
   "+ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h",
   "+ios/chrome/browser/settings/model/sync/utils/sync_presenter.h",

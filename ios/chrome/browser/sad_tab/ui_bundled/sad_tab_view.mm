@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_view.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"

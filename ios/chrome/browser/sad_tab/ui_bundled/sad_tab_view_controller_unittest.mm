@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_view_controller.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
 #import "testing/gtest_mac.h"

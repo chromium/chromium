@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("sad_tab") {
+source_set("ui_bundled") {
   sources = [
     "sad_tab_view.h",
     "sad_tab_view.mm",
@@ -36,7 +36,7 @@ source_set("coordinator") {
     "sad_tab_coordinator.mm",
   ]
   deps = [
-    ":sad_tab",
+    ":ui_bundled",
     "//components/ui_metrics",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -67,8 +67,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/sad_tab",
-    "//ios/chrome/browser/ui/sad_tab:coordinator",
+    "//ios/chrome/browser/sad_tab/ui_bundled",
+    "//ios/chrome/browser/sad_tab/ui_bundled:coordinator",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/util",
     "//ios/web/public/test",

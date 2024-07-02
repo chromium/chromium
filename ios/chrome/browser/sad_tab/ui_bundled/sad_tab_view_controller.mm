@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_view_controller.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_view.h"
+#import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "url/gurl.h"
