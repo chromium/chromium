@@ -123,7 +123,7 @@ TEST_P(DataTransferTest, NodeImageExceedsViewportBounds) {
   )HTML");
   Element& node = *GetDocument().getElementById(AtomicString("node"));
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
-  EXPECT_EQ(gfx::Size(800, 600), image->Size());
+  EXPECT_EQ(gfx::Size(2000, 2000), image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
@@ -152,9 +152,7 @@ TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
   // the second div should be clipped by the viewport.
   Element& second = *GetDocument().getElementById(AtomicString("second"));
   const auto second_image = DataTransfer::NodeImage(GetFrame(), second);
-  const int viewport_height = 600;
-  EXPECT_EQ(gfx::Size(800, viewport_height - (first_height - scroll_amount)),
-            second_image->Size());
+  EXPECT_EQ(gfx::Size(800, 900), second_image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
@@ -204,7 +202,7 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   const int node_width = 800;
   const int node_height = 601;
   EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
-                      (node_height - 1) * page_scale_factor),
+                      node_height * page_scale_factor),
             image->Size());
 
   // Check that a scroll offset is scaled to device coordinates which includes
@@ -215,7 +213,7 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
       ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
   const auto image_with_offset = DataTransfer::NodeImage(GetFrame(), node);
   EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
-                      (node_height - scroll_amount) * page_scale_factor),
+                      node_height * page_scale_factor),
             image_with_offset->Size());
 }
 
@@ -439,6 +437,49 @@ TEST_P(DataTransferTest, CreateDragImageWithEmptyImageResource) {
   std::unique_ptr<DragImage> drag_image = data_transfer->CreateDragImage(
       drag_offset, /* device_scale_factor*/ 1, &GetFrame());
   // The test passes if the above call does not crash.
+}
+
+TEST_P(DataTransferTest, NodeImageTranslatedOutOfView) {
+  // Given a node larger than the viewport and which is translated out of the
+  // view, verify that the drag image is rendered without any clipping.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      * { margin: 0; }
+      #container {
+        background: #F00;
+      }
+      #drag {
+        width: calc(100vw + 20px);
+        height: calc(100vh + 20px);
+        position: absolute;
+        left: calc(-150vw);
+        background: #0F0;
+      }
+    </style>
+    <div id="container">
+      <div id="drag" draggable="true"></div>
+    </div>
+  )HTML");
+
+  const int viewport_width = 8;
+  const int viewport_height = 6;
+
+  GetDocument().View()->Resize(viewport_width, viewport_height);
+  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  const auto image = DataTransfer::NodeImage(GetFrame(), drag);
+
+  // The drag image size should be unchanged.
+  EXPECT_EQ(gfx::Size(viewport_width + 20, viewport_height + 20),
+            image->Size());
+
+  const SkBitmap& bitmap = image->Bitmap();
+
+  // Ensure all pixels are green.
+  for (int x = 0; x < viewport_width + 20; ++x) {
+    for (int y = 0; y < viewport_height + 20; ++y) {
+      EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(x, y));
+    }
+  }
 }
 
 }  // namespace blink
