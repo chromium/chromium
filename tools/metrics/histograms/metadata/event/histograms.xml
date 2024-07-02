@@ -144,28 +144,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.PredictionJitter"
-    units="pixels" expires_after="2024-03-13">
+    units="pixels" expires_after="2025-03-13">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    NOTE: this metric was expired from M97 to 2023-03-14. Euclidean distance in
-    pixels between two successive variations of touch scroll deltas which are
-    the difference between a predicted scroll position and its corresponding
-    interpolated real position that occurred at prediction time.
+    NOTE: this metric was expired from M97 to 2023-03-14 and from 2024-03-13 to
+    2024-06-28. Euclidean distance in pixels between two successive variations
+    of touch scroll deltas which are the difference between a predicted scroll
+    position and its corresponding interpolated real position that occurred at
+    prediction time.
 
     Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.VisualJitter" units="pixels"
-    expires_after="2024-03-13">
+    expires_after="2025-03-13">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    NOTE: this metric was expired from M97 to 2023-03-14. Euclidean distance in
-    pixels between two successive variations of touch scroll deltas which are
-    the difference between a predicted scroll position and the interpolated real
-    position that occurred at frame time.
+    NOTE: this metric was expired from M97 to 2023-03-14 and from 2024-03-13 to
+    2024-06-28. Euclidean distance in pixels between two successive variations
+    of touch scroll deltas which are the difference between a predicted scroll
+    position and the interpolated real position that occurred at frame time.
 
     Team: input-dev@chromium.org.
   </summary>
