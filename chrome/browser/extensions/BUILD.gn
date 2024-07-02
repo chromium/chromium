@@ -1241,6 +1241,7 @@ source_set("extensions") {
       "//ash/webui/resources:media_app_bundle_resources_grit",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
@@ -1324,6 +1325,7 @@ source_set("extensions") {
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_logs",
+      "//chrome/browser/ash/account_manager",
     ]
 
     if (is_cfm) {

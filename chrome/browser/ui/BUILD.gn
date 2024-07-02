@@ -4090,6 +4090,7 @@ static_library("ui") {
     public_deps += [
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/service",
+      "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/camera_mic",
       "//chrome/browser/ash/drive",
       "//chrome/browser/ash/quick_pair",
@@ -4101,6 +4102,7 @@ static_library("ui") {
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/accessibility/service",
