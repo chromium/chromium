@@ -550,7 +550,10 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
-                        toolbarManager.getTabStripHeightSupplier().get());
+                        toolbarManager.getTabStripHeightSupplier().get(),
+                        () ->
+                                !mTabStripObscured
+                                        && mStripVisibilityState == StripVisibilityState.VISIBLE);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -563,7 +566,10 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
-                        toolbarManager.getTabStripHeightSupplier().get());
+                        toolbarManager.getTabStripHeightSupplier().get(),
+                        () ->
+                                !mTabStripObscured
+                                        && mStripVisibilityState == StripVisibilityState.VISIBLE);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {

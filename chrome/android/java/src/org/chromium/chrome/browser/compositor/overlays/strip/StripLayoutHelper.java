@@ -42,6 +42,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -492,6 +493,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private float mTabStripHeight;
     private TabGroupSyncIphController mTabGroupSyncIphController;
     private int mLastSyncedGroupId = Tab.INVALID_TAB_ID;
+    private final Supplier<Boolean> mTabStripVisibleSupplier;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -507,6 +509,10 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      * @param toolbarContainerView The @{link View} passed to @{link TabDragSource} for drag and
      *     drop.
      * @param windowAndroid The @{@link WindowAndroid} instance to access Activity.
+     * @param tabStripHeight The height of current tab strip.
+     * @param tabStripVisibleSupplier Supplier of the boolean indicating whether the tab strip is
+     *     visible. The tab strip can be hidden due to the tab switcher being displayed or the
+     *     window width is less than 600dp.
      */
     public StripLayoutHelper(
             Context context,
@@ -519,7 +525,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
-            int tabStripHeight) {
+            int tabStripHeight,
+            Supplier<Boolean> tabStripVisibleSupplier) {
         mTabOverlapWidth = TAB_OVERLAP_WIDTH_LARGE_DP;
         mGroupTitleDrawXOffset = mTabOverlapWidth - StripLayoutTab.FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = StripLayoutTab.FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
@@ -530,6 +537,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         mWindowAndroid = windowAndroid;
         mActionConfirmationManager = actionConfirmationManager;
         mTabStripHeight = tabStripHeight;
+        mTabStripVisibleSupplier = tabStripVisibleSupplier;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1088,47 +1096,51 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         return doneAnimating;
     }
 
-    // TODO: Only trigger iph when tab strip is showing e.g. tab strip is not hidden and tab
-    //  switcher is not showing.
     private void showTabGroupSyncIph() {
-        if (mLastSyncedGroupId != Tab.INVALID_TAB_ID
-                && !mModel.isIncognito()
-                && mModel.getProfile() != null) {
+        // Return early if no tab group is being synced, or profile is invalid, or if in incognito
+        // mode.
+        if (mLastSyncedGroupId == Tab.INVALID_TAB_ID
+                || mModel.isIncognito()
+                || mModel.getProfile() == null) {
+            return;
+        }
+        // Return early if the tab strip is not visible on screen.
+        if (Boolean.FALSE.equals(mTabStripVisibleSupplier.get())) {
+            return;
+        }
+        // Skip initialization if testing value has been set.
+        if (mTabGroupSyncIphController == null) {
+            // TODO: Change Context to Activity in this class to avoid casting.
+            UserEducationHelper userEducationHelper =
+                    new UserEducationHelper(
+                            (Activity) mContext,
+                            mModel.getProfile(),
+                            new Handler(Looper.getMainLooper()));
+            Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
+            mTabGroupSyncIphController =
+                    new TabGroupSyncIphController(
+                            mContext.getResources(),
+                            userEducationHelper,
+                            R.string.newly_synced_tab_group_iph,
+                            tracker);
+        }
+        StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
 
-            // Skip initialization if testing value has been set.
-            if (mTabGroupSyncIphController == null) {
-                // TODO: Change Context to Activity in this class to avoid casting.
-                UserEducationHelper userEducationHelper =
-                        new UserEducationHelper(
-                                (Activity) mContext,
-                                mModel.getProfile(),
-                                new Handler(Looper.getMainLooper()));
-                Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
-                mTabGroupSyncIphController =
-                        new TabGroupSyncIphController(
-                                mContext.getResources(),
-                                userEducationHelper,
-                                R.string.newly_synced_tab_group_iph,
-                                tracker);
-            }
-            StripLayoutGroupTitle groupTitle = findGroupTitle(mLastSyncedGroupId);
-
-            // Display iph only when synced tab group title is fully visible.
-            if (groupTitle == null
-                    || !groupTitle.isVisible()
-                    || groupTitle.getPaddedX() + groupTitle.getPaddedWidth()
-                            >= mNewTabButton.getDrawX()) {
-                return;
-            }
-            float dpToPx = mContext.getResources().getDisplayMetrics().density;
-            if (groupTitle != null) {
-                mTabGroupSyncIphController.maybeShowIphOnTabStrip(
-                        mToolbarContainerView,
-                        groupTitle.getDrawX() * dpToPx,
-                        0.f,
-                        (mWidth - groupTitle.getDrawX() - groupTitle.getWidth()) * dpToPx,
-                        mToolbarContainerView.getHeight() - mTabStripHeight);
-            }
+        // Display iph only when synced tab group title is fully visible.
+        if (groupTitle == null
+                || !groupTitle.isVisible()
+                || groupTitle.getPaddedX() + groupTitle.getPaddedWidth()
+                        >= mNewTabButton.getDrawX()) {
+            return;
+        }
+        float dpToPx = mContext.getResources().getDisplayMetrics().density;
+        if (groupTitle != null) {
+            mTabGroupSyncIphController.maybeShowIphOnTabStrip(
+                    mToolbarContainerView,
+                    groupTitle.getDrawX() * dpToPx,
+                    0.f,
+                    (mWidth - groupTitle.getDrawX() - groupTitle.getWidth()) * dpToPx,
+                    mToolbarContainerView.getHeight() - mTabStripHeight);
         }
     }
 

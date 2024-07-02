@@ -3580,7 +3580,8 @@ public class StripLayoutHelperTest {
                         mToolbarContainerView,
                         mWindowAndroid,
                         mActionConfirmationManager,
-                        0);
+                        0,
+                        () -> true);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;
