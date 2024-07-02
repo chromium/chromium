@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 import type {Attachment, CalendarEvent} from 'chrome://new-tab-page/google_calendar.mojom-webui.js';
+import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+// Microseconds between windows and unix epoch.
+const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
+
+export function toTime(time: Date): Time {
+  return {
+    internalValue: BigInt(time.valueOf()) * 1000n + kWindowsToUnixEpochOffset,
+  };
+}
 
 export function createAttachments(num: number): Attachment[] {
   const attachments: Attachment[] = [];
@@ -22,6 +32,7 @@ export function createEvent(
       {
         title: `Test Event ${index}`,
         startTime: {internalValue: 1230000000000n * BigInt(index)},
+        endTime: {internalValue: 1230000000000n * BigInt(index)},
         url: {url: `https://foo.com/${index}`},
         location: `Location ${index}`,
         attachments: createAttachments(3),

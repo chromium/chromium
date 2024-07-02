@@ -11,7 +11,7 @@
     width: 100%;
   }
 
-  .row:first-child,
+  ntp-calendar-event:first-of-type,
   .row[expanded] + .row,
   .row[expanded] + dom-repeat + .row {
     border-top-left-radius: 12px;
@@ -70,7 +70,7 @@
 <template is="dom-repeat" items="[[events]]">
   <ntp-calendar-event
       class="row"
-      expanded="[[isExpanded_(index)]]"
+      expanded="[[isExpanded_(index, expandedEventIndex_)]]"
       event="[[item]]">
   </ntp-calendar-event>
 </template>

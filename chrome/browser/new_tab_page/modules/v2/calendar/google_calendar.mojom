@@ -23,6 +23,8 @@ struct CalendarEvent {
   string title;
   // Start time of event.
   mojo_base.mojom.Time start_time;
+  // End time of event.
+  mojo_base.mojom.Time end_time;
   // Url to event in the user's calendar.
   url.mojom.Url url;
   // Location of the event. Optional.

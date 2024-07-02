@@ -13,9 +13,8 @@ import type {Attachment, CalendarEvent} from '../../../google_calendar.mojom-web
 import {I18nMixin} from '../../../i18n_setup.js';
 
 import {getTemplate} from './calendar_event.html.js';
+import {toJsTimestamp} from './common.js';
 
-// Microseconds between windows and unix epoch.
-const kWindowsToUnixEpochOffset: bigint = 11644473600000000n;
 const kMillisecondsInMinute: number = 60000;
 const kMinutesInHour: number = 60;
 
@@ -66,10 +65,8 @@ export class CalendarEventElement extends I18nMixin
   private timeStatus_: string;
 
   private computeFormattedStartTime_(): string {
-    const offsetDate =
-        (this.event.startTime.internalValue - kWindowsToUnixEpochOffset) /
-        1000n;
-    const dateObj = new Date(Number(offsetDate));
+    const offsetDate = toJsTimestamp(this.event.startTime);
+    const dateObj = new Date(offsetDate);
     let timeStr =
         Intl.DateTimeFormat(undefined, {timeStyle: 'short'}).format(dateObj);
     // Remove extra spacing and make AM/PM lower case.
@@ -83,9 +80,7 @@ export class CalendarEventElement extends I18nMixin
     }
 
     // Start time of event in milliseconds since Windows epoch.
-    const startTime = Number(
-        (this.event.startTime.internalValue - kWindowsToUnixEpochOffset) /
-        1000n);
+    const startTime = toJsTimestamp(this.event.startTime);
     // Current time in milliseconds since Windows epoch.
     const now = Date.now().valueOf();
 

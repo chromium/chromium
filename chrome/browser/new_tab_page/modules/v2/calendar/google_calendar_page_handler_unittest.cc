@@ -54,10 +54,11 @@ base::Value::Dict CreateConferenceData() {
       "entryPoints", base::Value::List().Append(std::move(entryPoint)));
 }
 
-base::Value::Dict CreateEventTime(bool is_all_day_event) {
+base::Value::Dict CreateEventTime(bool is_all_day_event, bool is_end_time) {
   base::Value::Dict eventTime =
       base::Value::Dict()
-          .Set("dateTime", "2020-11-02T10:00:00-08:00")
+          .Set("dateTime", is_end_time ? "2020-11-02T10:30:00-08:00"
+                                       : "2020-11-02T10:00:00-08:00")
           .Set("timeZone", "America/Los_Angeles");
   if (is_all_day_event) {
     eventTime.Set("date", "2020-11-02");
@@ -74,8 +75,10 @@ base::Value::Dict CreateEvent(int index) {
       .Set("updated", "2021-03-17T10:42:53.637Z")
       .Set("summary", "Test Event " + base::NumberToString(index))
       // Make 2nd event an all day event.
-      .Set("start", CreateEventTime(/*is_all_day_event*/ index == 0))
-      .Set("end", CreateEventTime(/*is_all_day_event*/ index == 0))
+      .Set("start", CreateEventTime(/*is_all_day_event*/ index == 0,
+                                    /*is_end_time=*/false))
+      .Set("end", CreateEventTime(/*is_all_day_event*/ index == 0,
+                                  /*is_end_time*/ true))
       .Set("conferenceData", CreateConferenceData())
       .Set("attachments", CreateAttachments());
 }
@@ -272,6 +275,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
     EXPECT_EQ(response[i]->title, "Calendar Event " + base::NumberToString(i));
     EXPECT_EQ(response[i]->start_time,
               base::Time::Now() + base::Minutes(i * 30));
+    EXPECT_EQ(response[i]->end_time,
+              response[i]->start_time + base::Minutes(30));
     EXPECT_EQ(response[i]->url,
               GURL("https://foo.com/" + base::NumberToString(i)));
     EXPECT_EQ(response[i]->attachments.size(), 3u);
@@ -319,6 +324,10 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
         base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
     ASSERT_TRUE(success);
     EXPECT_EQ(response[i]->start_time, start_time);
+    base::Time end_time;
+    success = base::Time::FromString("2020-11-02T10:30:00-08:00", &end_time);
+    ASSERT_TRUE(success);
+    EXPECT_EQ(response[i]->end_time, end_time);
     EXPECT_EQ(response[i]->url.spec(),
               "https://foo.com/" + base::NumberToString(i + 1));
     ASSERT_TRUE(response[i]->conference_url);
