@@ -2777,7 +2777,9 @@ enum class ToolbarKind {
             (NSArray<CustomTextCheckingResult*>*)parcels
                                      forStep:(ParcelTrackingStep)step {
   web::WebState* activeWebState = self.activeWebState;
-  CHECK(activeWebState);
+  if(!activeWebState) {
+    return;
+  }
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (!commerce::ShoppingServiceFactory::GetForBrowserState(browserState)
            ->IsParcelTrackingEligible()) {
