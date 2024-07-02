@@ -57,14 +57,6 @@ BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// The variable was renamed to "MemorySaver" but the experiment name remains as
-// "HighEfficiency" because it is already running (crbug.com/1493843).
-BASE_FEATURE(kMemorySaverMultistateMode,
-             "HighEfficiencyMultistateMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge{
-    &kMemorySaverMultistateMode, "show_recommended_badge", false};
-
 BASE_FEATURE(kMemorySaverModeAggressiveness,
              "MemorySaverModeAggressiveness",
              base::FEATURE_DISABLED_BY_DEFAULT);

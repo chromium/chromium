@@ -221,13 +221,11 @@ void UserPerformanceTuningManager::Start() {
 void UserPerformanceTuningManager::UpdateMemorySaverModeState() {
   MemorySaverModeState state =
       prefs::GetCurrentMemorySaverModeState(pref_change_registrar_.prefs());
-  if (!base::FeatureList::IsEnabled(features::kMemorySaverMultistateMode)) {
-    if (state != MemorySaverModeState::kDisabled) {
-      // The user has enabled memory saver mode, but without the multistate
-      // UI they didn't choose a policy. The feature controls which policy to
-      // use.
-      state = MemorySaverModeState::kEnabled;
-    }
+  if (state != MemorySaverModeState::kDisabled) {
+    // The user has enabled memory saver mode, but without the multistate
+    // UI they didn't choose a policy. The feature controls which policy to
+    // use.
+    state = MemorySaverModeState::kEnabled;
   }
   memory_saver_mode_delegate_->ToggleMemorySaverMode(state);
 }

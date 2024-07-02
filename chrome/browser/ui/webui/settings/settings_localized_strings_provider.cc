@@ -861,10 +861,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
-  html_source->AddBoolean(
-      "memorySaverShowRecommendedBadge",
-      performance_manager::features::kMemorySaverShowRecommendedBadge.Get());
-
   html_source->AddString(
       "tabDiscardTimerFiveMinutes",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,

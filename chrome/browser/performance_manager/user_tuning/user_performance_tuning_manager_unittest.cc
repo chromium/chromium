@@ -6,16 +6,13 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/test_support/fake_memory_saver_mode_delegate.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,17 +67,6 @@ class UserPerformanceTuningManagerTest
     return UserPerformanceTuningManager::GetInstance();
   }
 
-  void InstallFeatures(bool is_multistate_enabled = false) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (is_multistate_enabled) {
-      enabled_features.push_back(features::kMemorySaverMultistateMode);
-    } else {
-      disabled_features.push_back(features::kMemorySaverMultistateMode);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   base::Value ValueForPrefState() const {
     return base::Value(static_cast<int>(GetParam().pref_state));
   }
@@ -94,8 +80,6 @@ class UserPerformanceTuningManagerTest
       memory_saver_mode_delegate_;
 
   std::unique_ptr<UserPerformanceTuningManager> manager_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class MockUserPerformanceTuningManagerObserver
@@ -118,7 +102,6 @@ INSTANTIATE_TEST_SUITE_P(
         }));
 
 TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {
-  InstallFeatures();
   RegisterDelegate();
   StartManager();
   local_state_.SetUserPref(prefs::kMemorySaverModeState, ValueForPrefState());
@@ -126,20 +109,7 @@ TEST_P(UserPerformanceTuningManagerTest, OnPrefChanged) {
               Optional(GetParam().expected_state));
 }
 
-TEST_P(UserPerformanceTuningManagerTest, OnPrefChangedMultistate) {
-  InstallFeatures(/*is_multistate_enabled=*/true);
-  RegisterDelegate();
-  StartManager();
-
-  // When the MemorySaverMultistateMode feature is enabled, all states should
-  // be passed to ToggleMemorySaverMode() unchanged.
-  local_state_.SetUserPref(prefs::kMemorySaverModeState, ValueForPrefState());
-  EXPECT_THAT(memory_saver_mode_delegate_->GetLastState(),
-              Optional(GetParam().pref_state));
-}
-
-TEST_F(UserPerformanceTuningManagerTest, MemorySaverChangeObserver) {
-  InstallFeatures();
+TEST_P(UserPerformanceTuningManagerTest, MemorySaverChangeObserver) {
   RegisterDelegate();
 
   std::unique_ptr<UserPerformanceTuningManager::Observer> observer =

@@ -61,14 +61,6 @@ BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
 extern const base::FeatureParam<base::TimeDelta>
     kPerformanceControlsBatterySurveyLookback;
 
-// Round 2 Performance Controls features
-
-// This enables the UI for the multi-state version of memory saver mode.
-BASE_DECLARE_FEATURE(kMemorySaverMultistateMode);
-// When true, a recommended badge will be shown next to the heuristic memory
-// saver option.
-extern const base::FeatureParam<bool> kMemorySaverShowRecommendedBadge;
-
 // Round 2.5 Performance Controls features
 
 // This enables the UI for adjusting the aggresiveness of memory saver mode.
