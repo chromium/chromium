@@ -101,6 +101,9 @@ export class PeerConnectionUpdateTable {
       if (candidateParts && candidateParts[7]) { // show candidate type.
         type += ', type: ' + candidateParts[7];
       }
+      if (parts[3]) { // relayProtocol, if present.
+        type += ', ' + parts[3];
+      }
       type += ')';
     } else if (
         update.type === 'createOfferOnSuccess' ||
