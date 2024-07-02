@@ -41,13 +41,13 @@ std::unique_ptr<FormFieldParser> TravelFieldParser::Parse(
 
   auto travel_field = std::make_unique<TravelFieldParser>();
   if (ParseField(context, scanner, passport_patterns, &travel_field->passport_,
-                 "kPassportRe") ||
+                 "PASSPORT") ||
       ParseField(context, scanner, travel_origin_patterns,
-                 &travel_field->origin_, "kTravelOriginRe") ||
+                 &travel_field->origin_, "TRAVEL_ORIGIN") ||
       ParseField(context, scanner, travel_destination_patterns,
-                 &travel_field->destination_, "kTravelDestinationRe") ||
+                 &travel_field->destination_, "TRAVEL_DESTINATION") ||
       ParseField(context, scanner, flight_patterns, &travel_field->flight_,
-                 "kFlightRe")) {
+                 "FLIGHT")) {
     // If any regex matches, then we found a travel field.
     return std::move(travel_field);
   }

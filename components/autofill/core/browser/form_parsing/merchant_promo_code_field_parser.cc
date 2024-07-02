@@ -19,12 +19,10 @@ std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
   base::span<const MatchPatternRef> merchant_promo_code_patterns =
       GetMatchPatterns("MERCHANT_PROMO_CODE", context.page_language,
                        context.pattern_source);
-
   if (ParseField(context, scanner, merchant_promo_code_patterns, &field,
-                 "kMerchantPromoCodeRe")) {
+                 "MERCHANT_PROMO_CODE")) {
     return std::make_unique<MerchantPromoCodeFieldParser>(field);
   }
-
   return nullptr;
 }
 

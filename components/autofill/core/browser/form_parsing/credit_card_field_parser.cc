@@ -84,16 +84,12 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
 
   base::span<const MatchPatternRef> card_number_patterns =
       GetMatchPatterns(CREDIT_CARD_NUMBER, context);
-
   base::span<const MatchPatternRef> name_on_card_patterns =
       GetMatchPatterns("NAME_ON_CARD", context);
-
   base::span<const MatchPatternRef> name_on_card_contextual_patterns =
       GetMatchPatterns("NAME_ON_CARD_CONTEXTUAL", context);
-
   base::span<const MatchPatternRef> last_name_patterns =
       GetMatchPatterns("LAST_NAME", context);
-
   base::span<const MatchPatternRef> cvc_patterns =
       GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context);
 
@@ -108,7 +104,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
 
     if (!credit_card_field->cardholder_) {
       if (ParseField(context, scanner, name_on_card_patterns,
-                     &credit_card_field->cardholder_, "kNameOnCardRe")) {
+                     &credit_card_field->cardholder_, "NAME_ON_CARD")) {
         continue;
       }
 
@@ -122,7 +118,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       if (fields > 0 && !credit_card_field->expiration_month_ &&
           ParseField(context, scanner, name_on_card_contextual_patterns,
                      &credit_card_field->cardholder_,
-                     "kNameOnCardContextualRe")) {
+                     "NAME_ON_CARD_CONTEXTUAL")) {
         cardholder_name_match_has_low_confidence = true;
         continue;
       }
@@ -133,7 +129,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
       // the end).
       if (!credit_card_field->expiration_month_ &&
           ParseField(context, scanner, last_name_patterns,
-                     &credit_card_field->cardholder_last_, "kLastNameRe")) {
+                     &credit_card_field->cardholder_last_, "LAST_NAME")) {
         continue;
       }
     }
@@ -155,7 +151,8 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
 
     if (!credit_card_field->verification_ &&
         ParseField(context, scanner, cvc_patterns,
-                   &credit_card_field->verification_, "kCardCvcRe")) {
+                   &credit_card_field->verification_,
+                   "CREDIT_CARD_VERIFICATION_CODE")) {
       // A couple of sites have multiple verification codes right after another.
       // Allow the classification of these codes one by one.
       AutofillField* const saved_cvv = credit_card_field->verification_;
@@ -169,7 +166,8 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
         scanner->RewindTo(scanner->SaveCursor() - 2);
 
         if (ParseField(context, scanner, cvc_patterns,
-                       &credit_card_field->verification_, "kCardCvcRe")) {
+                       &credit_card_field->verification_,
+                       "CREDIT_CARD_VERIFICATION_CODE")) {
           // Reset the current cvv (The verification parse overwrote it).
           credit_card_field->verification_ = saved_cvv;
           // Put the scanner back to the field right after the current cvv.
@@ -191,7 +189,7 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     // doesn't have bad side effects.
     raw_ptr<AutofillField> current_number_field;
     if (ParseField(context, scanner, card_number_patterns,
-                   &current_number_field, "kCardNumberRe")) {
+                   &current_number_field, "CREDIT_CARD_NUMBER")) {
       credit_card_field->numbers_.push_back(current_number_field.get());
       nb_unknown_fields = 0;
       continue;
@@ -332,7 +330,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   base::span<const MatchPatternRef> day_patterns =
       GetMatchPatterns("DAY", *context);
   if (FormFieldParser::ParseField(*context, scanner, day_patterns, nullptr,
-                                  "kDayRe")) {
+                                  "DAY")) {
     return false;
   }
 
@@ -419,26 +417,23 @@ bool CreditCardFieldParser::IsGiftCardField(ParsingContext& context,
 
   base::span<const MatchPatternRef> debit_cards_patterns =
       GetMatchPatterns("DEBIT_CARD", context);
-
   base::span<const MatchPatternRef> debit_gift_card_patterns =
       GetMatchPatterns("DEBIT_GIFT_CARD", context);
-
   base::span<const MatchPatternRef> gift_card_patterns =
       GetMatchPatterns("GIFT_CARD", context);
 
   if (ParseField(context, scanner, debit_cards_patterns, nullptr,
-                 "kDebitCardRe")) {
+                 "DEBIT_CARD")) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
   if (ParseField(context, scanner, debit_gift_card_patterns, nullptr,
-                 "kDebitGiftCardRe")) {
+                 "DEBIT_GIFT_CARD")) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
 
-  return ParseField(context, scanner, gift_card_patterns, nullptr,
-                    "kGiftCardRe");
+  return ParseField(context, scanner, gift_card_patterns, nullptr, "GIFT_CARD");
 }
 
 CreditCardFieldParser::CreditCardFieldParser()
@@ -543,13 +538,10 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   base::span<const MatchPatternRef> cc_exp_month_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_MONTH, context);
-
   base::span<const MatchPatternRef> cc_exp_year_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_YEAR", context);
-
   base::span<const MatchPatternRef> cc_exp_month_before_year_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_MONTH_BEFORE_YEAR", context);
-
   base::span<const MatchPatternRef> cc_exp_year_after_month_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_YEAR_AFTER_MONTH", context);
   base::span<const MatchPatternRef>
@@ -557,9 +549,9 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
           "CREDIT_CARD_EXP_YEAR_AFTER_MONTH_EXPERIMENTAL", context);
 
   if (ParseField(context, scanner, cc_exp_month_patterns, &expiration_month_,
-                 "kExpirationMonthRe") &&
+                 "CREDIT_CARD_EXP_MONTH") &&
       ParseField(context, scanner, cc_exp_year_patterns, &expiration_year_,
-                 "kExpirationYearRe")) {
+                 "CREDIT_CARD_EXP_YEAR")) {
     return true;
   }
 
@@ -600,7 +592,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   base::span<const MatchPatternRef> cc_exp_2digit_year_patterns =
       GetMatchPatterns(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, context);
   if (ParseField(context, scanner, cc_exp_2digit_year_patterns,
-                 &expiration_date_, "kExpirationDate2DigitYearRe")) {
+                 &expiration_date_, "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR")) {
     exp_year_type_ = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
     expiration_month_ = nullptr;
     return true;
@@ -612,7 +604,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   base::span<const MatchPatternRef> cc_exp_date_patterns =
       GetMatchPatterns("CREDIT_CARD_EXP_DATE", context);
   if (ParseField(context, scanner, cc_exp_date_patterns, &expiration_date_,
-                 "kExpirationDateRe")) {
+                 "CREDIT_CARD_EXP_DATE")) {
     // If such a field exists, but it cannot fit a 4-digit year expiration
     // date, then the likely possibility is that it is a 2-digit year expiration
     // date.
@@ -632,7 +624,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
   if (FieldCanFitDataForFieldType(current_field_max_length,
                                   CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) &&
       ParseField(context, scanner, cc_exp_date_4_digit_year_patterns,
-                 &expiration_date_, "kExpirationDate4DigitYearRe")) {
+                 &expiration_date_, "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR")) {
     expiration_month_ = nullptr;
     return true;
   }
