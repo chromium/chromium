@@ -167,12 +167,17 @@ void AttributionResolverDelegateImpl::ShuffleTriggerVerifications(
   }
 }
 
-double AttributionResolverDelegateImpl::GetRandomizedResponseRate(
+std::optional<double>
+AttributionResolverDelegateImpl::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return attribution_reporting::GetRandomizedResponseRate(
-      GetNumStates(trigger_specs), epsilon);
+  const auto num_states = GetNumStates(trigger_specs);
+  if (!num_states.has_value() ||
+      *num_states > config_.event_level_limit.max_trigger_state_cardinality) {
+    return std::nullopt;
+  }
+  return attribution_reporting::GetRandomizedResponseRate(*num_states, epsilon);
 }
 
 AttributionResolverDelegate::GetRandomizedResponseResult

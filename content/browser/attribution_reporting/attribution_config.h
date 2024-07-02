@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace content {
 
@@ -80,7 +79,7 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Controls the max number of report states allowed for a given source
     // registration.
-    absl::uint128 max_trigger_state_cardinality =
+    uint32_t max_trigger_state_cardinality =
         std::numeric_limits<uint32_t>::max();
 
     friend bool operator==(const EventLevelLimit&,

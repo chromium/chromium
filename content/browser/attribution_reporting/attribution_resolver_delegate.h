@@ -139,7 +139,7 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // source with the given trigger specs, as implemented by
   // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate for calls with identical inputs.
-  virtual double GetRandomizedResponseRate(
+  virtual std::optional<double> GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::EventLevelEpsilon) const = 0;
 

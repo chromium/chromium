@@ -16,7 +16,6 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace attribution_reporting {
@@ -80,7 +79,8 @@ TEST_P(PrivacyMathPerfTest, RandomizedResponse) {
   do {
     auto result = DoRandomizedResponse(
         specs,
-        /*epsilon=*/0, /*max_trigger_state_cardinality=*/absl::Uint128Max(),
+        /*epsilon=*/0,
+        /*max_trigger_state_cardinality=*/std::numeric_limits<uint32_t>::max(),
         /*max_channel_capacity=*/std::numeric_limits<double>::infinity());
 
     ::benchmark::DoNotOptimize(result);

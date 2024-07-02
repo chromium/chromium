@@ -3423,6 +3423,8 @@ Called by update_net_error_codes.py.-->
   <int value="28" label="Corresponding source - construction failed"/>
   <int value="29" label="Corresponding source - invalid trigger specs"/>
   <int value="30" label="Corresponding source - dedup key query failed"/>
+  <int value="31"
+      label="Corresponding source - invalid randomized response rate"/>
 </enum>
 
 <enum name="ConversionCreateAggregatableReportStatus">

@@ -540,9 +540,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.event_level_limit.max_event_info_gain = 0.2;
        }},
-      {R"json({"max_trigger_state_cardinality":"10"})json", false,
+      {R"json({"max_trigger_state_cardinality":"4294967295"})json", false,
        [](AttributionConfig& c) {
-         c.event_level_limit.max_trigger_state_cardinality = 10;
+         c.event_level_limit.max_trigger_state_cardinality = 4294967295;
        }},
       {R"json({"max_aggregatable_reports_per_destination":"10"})json", false,
        [](AttributionConfig& c) {

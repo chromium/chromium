@@ -116,7 +116,8 @@ class CONTENT_EXPORT AttributionStorageSql {
     kStoredSourceConstructionFailed = 28,
     kSourceInvalidTriggerSpecs = 29,
     kSourceDedupKeyQueryFailed = 30,
-    kMaxValue = kSourceDedupKeyQueryFailed,
+    kSourceInvalidRandomizedResponseRate = 31,
+    kMaxValue = kSourceInvalidRandomizedResponseRate,
   };
 
   struct DeletionCounts {

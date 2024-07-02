@@ -467,11 +467,17 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       read_only_source_data_msg->aggregatable_debug_key_piece().high_bits(),
       read_only_source_data_msg->aggregatable_debug_key_piece().low_bits());
 
-  double randomized_response_rate =
+  std::optional<double> randomized_response_rate =
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
           : delegate_->GetRandomizedResponseRate(*trigger_specs,
                                                  event_level_epsilon);
+  if (!randomized_response_rate.has_value()) {
+    return base::unexpected(ReportCorruptionStatusSetAndIds(
+        ReportCorruptionStatusSet{
+            ReportCorruptionStatus::kSourceInvalidRandomizedResponseRate},
+        source_id));
+  }
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(*std::move(source_origin), *std::move(reporting_origin),
@@ -480,7 +486,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       *std::move(trigger_specs), aggregatable_report_window_time, priority,
       *std::move(filter_data), debug_key, *std::move(aggregation_keys),
       *attribution_logic, *active_state, source_id,
-      remaining_aggregatable_attribution_budget, randomized_response_rate,
+      remaining_aggregatable_attribution_budget, *randomized_response_rate,
       trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
       remaining_aggregatable_debug_budget);
   if (!stored_source.has_value()) {
@@ -2482,9 +2488,10 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
       ReportCorruptionStatusSetAndIds corruption_case = report.error();
       for (ReportCorruptionStatus corruption_cause :
            corruption_case.status_set) {
-        static_assert(ReportCorruptionStatus::kMaxValue ==
-                          ReportCorruptionStatus::kSourceDedupKeyQueryFailed,
-                      "bump metric version");
+        static_assert(
+            ReportCorruptionStatus::kMaxValue ==
+                ReportCorruptionStatus::kSourceInvalidRandomizedResponseRate,
+            "bump metric version");
         base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase5",
                                       corruption_cause);
       }

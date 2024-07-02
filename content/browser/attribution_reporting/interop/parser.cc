@@ -21,6 +21,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -207,9 +208,9 @@ class AttributionInteropParser {
     ParseDouble(dict, "max_event_info_gain",
                 config.event_level_limit.max_event_info_gain, required);
 
-    ParseUInt128(dict, "max_trigger_state_cardinality",
-                 config.event_level_limit.max_trigger_state_cardinality,
-                 required);
+    ParseUInt32(dict, "max_trigger_state_cardinality",
+                config.event_level_limit.max_trigger_state_cardinality,
+                required);
 
     int rate_limit_time_window_in_days;
     if (ParseInt(dict, "rate_limit_time_window_in_days",
@@ -764,13 +765,22 @@ class AttributionInteropParser {
                         allow_zero);
   }
 
-  bool ParseUInt128(const base::Value::Dict& dict,
-                    std::string_view key,
-                    absl::uint128& result,
-                    bool required,
-                    bool allow_zero = false) {
-    return ParseInteger(dict, key, result, &base::StringToUint128, required,
-                        allow_zero);
+  bool ParseUInt32(const base::Value::Dict& dict,
+                   std::string_view key,
+                   uint32_t& result,
+                   bool required,
+                   bool allow_zero = false) {
+    int64_t result_64;
+    // This works because `ParseInteger()` only accepts positive values, and
+    // uint32 and [0, INT64_MAX] encompasses the same values.
+    if (ParseInteger(dict, key, result_64, &base::StringToInt64, required,
+                     allow_zero)) {
+      if (base::internal::IsValueInRangeForNumericType<uint32_t>(result_64)) {
+        result = static_cast<uint32_t>(result_64);
+        return true;
+      }
+    }
+    return false;
   }
 
   void ParseDouble(const base::Value::Dict& dict,

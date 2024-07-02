@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
 
@@ -76,11 +76,12 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING) bool GenerateWithRate(double r);
 
 // https://wicg.github.io/attribution-reporting-api/#obtain-a-randomized-source-response-pick-rate
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon);
+double GetRandomizedResponseRate(uint32_t num_states, double epsilon);
 
 // Returns the number of possible output states for the given API configuration.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::uint128 GetNumStates(const TriggerSpecs& specs);
+base::expected<uint32_t, RandomizedResponseError> GetNumStates(
+    const TriggerSpecs& specs);
 
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
@@ -89,10 +90,11 @@ absl::uint128 GetNumStates(const TriggerSpecs& specs);
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(const TriggerSpecs& specs,
-                     double epsilon,
-                     absl::uint128 max_trigger_state_cardinality,
-                     double max_channel_capacity);
+DoRandomizedResponse(
+    const TriggerSpecs& specs,
+    double epsilon,
+    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
+    double max_channel_capacity);
 
 // Exposed for testing purposes.
 namespace internal {
@@ -101,10 +103,10 @@ namespace internal {
 // https://en.wikipedia.org/wiki/Binomial_coefficient
 // Negative inputs are not supported.
 //
-// Note: large values of `n` and `k` may overflow. This function internally uses
-// checked_math to crash safely if this occurs.
+// Note: large values of `n` and `k` may overflow, which will cause the returned
+// `CheckedNumeric` to be invalid.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::uint128 BinomialCoefficient(int n, int k);
+base::CheckedNumeric<uint32_t> BinomialCoefficient(int n, int k);
 
 // Returns the k-combination associated with the number `combination_index`. In
 // other words, returns the combination of `k` integers uniquely indexed by
@@ -113,21 +115,25 @@ absl::uint128 BinomialCoefficient(int n, int k);
 //
 // The returned vector is guaranteed to have size `k`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetKCombinationAtIndex(absl::uint128 combination_index, int k);
+std::vector<int> GetKCombinationAtIndex(
+    base::StrictNumeric<uint32_t> combination_index,
+    int k);
 
 // Returns the number of possible sequences of "stars and bars" sequences
 // https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics),
 // which is equivalent to (num_stars + num_bars choose num_stars).
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::uint128 GetNumberOfStarsAndBarsSequences(int num_stars, int num_bars);
+base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(int num_stars,
+                                                                int num_bars);
 
 // Returns a vector of the indices of every star in the stars and bars sequence
 // indexed by `sequence_index`. The indexing technique uses the k-combination
 // utility documented above.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<int> GetStarIndices(int num_stars,
-                                int num_bars,
-                                absl::uint128 sequence_index);
+base::expected<std::vector<int>, absl::monostate> GetStarIndices(
+    int num_stars,
+    int num_bars,
+    base::StrictNumeric<uint32_t> sequence_index);
 
 // From a vector with the index of every star in a stars and bars sequence,
 // returns a vector which, for every star, counts the number of bars preceding
@@ -143,7 +149,7 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING) double BinaryEntropy(double p);
 // Computes the channel capacity of a qary-symmetric channel.
 // https://wicg.github.io/attribution-reporting-api/#computing-channel-capacity
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-double ComputeChannelCapacity(absl::uint128 num_states,
+double ComputeChannelCapacity(base::StrictNumeric<uint32_t> num_states_strict,
                               double randomized_response_rate);
 
 // Generates fake reports from the "stars and bars" sequence index of a
@@ -157,9 +163,10 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 //
 // `CHECK()`s `TriggerSpecs::SingleSharedSpec()`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
+base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
+GetFakeReportsForSequenceIndex(
     const TriggerSpecs&,
-    absl::uint128 random_stars_and_bars_sequence_index);
+    base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index);
 
 // Note: this method for sampling is not 1:1 with the above function for the
 // same sequence index, even for equivalent API configs.
@@ -167,22 +174,23 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 // Takes a `StateMap`, to optimize with the cache from previous calls that
 // pre-compute the number of states (`GetNumStatesRecursive()`).
 using ConfigForCache = uint32_t;
-using StateMap = std::map<ConfigForCache, absl::uint128>;
+using StateMap = std::map<ConfigForCache, base::CheckedNumeric<uint32_t>>;
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
-    const TriggerSpecs& specs,
-    absl::uint128 index,
-    StateMap& map);
+base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
+GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
+                               base::StrictNumeric<uint32_t> index,
+                               StateMap& map);
 
 // Exposed to speed up tests which perform randomized response many times in a
 // row.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponseWithCache(const TriggerSpecs& specs,
-                              double epsilon,
-                              StateMap& map,
-                              absl::uint128 max_trigger_state_cardinality,
-                              double max_channel_capacity);
+DoRandomizedResponseWithCache(
+    const TriggerSpecs& specs,
+    double epsilon,
+    StateMap& map,
+    base::StrictNumeric<uint32_t> max_trigger_state_cardinality,
+    double max_channel_capacity);
 
 }  // namespace internal
 

@@ -99,9 +99,7 @@
       },
       {
         // Max values for event_report_windows and max_event_level_reports,
-        // should register. Ensures `privacy_math.cc` doesn't kill the source
-        // registration when max values are provided.
-        // Value: 5.38066e-9 bits
+        // should not register as it exceeds the 2^32 trigger cardinality limit.
         "timestamp": "4000",
         "registration_request": {
           "context_origin": "https://source.test",
@@ -110,6 +108,7 @@
         "responses": [
           {
             "url": "https://reporter2.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination2.test",
@@ -118,7 +117,8 @@
                 "event_report_windows": {
                   "start_time": 0,
                   "end_times": [3600, 7200, 10800, 14400, 18000]
-                }
+                },
+                "debug_reporting": true
               }
             }
           }
@@ -271,6 +271,19 @@
       {
         "payload": [ {
            "body": {
+              "attribution_destination": "https://destination2.test",
+              "limit": "4294967295",
+              "source_event_id": "456",
+              "source_site": "https://source.test"
+           },
+           "type": "source-trigger-state-cardinality-limit"
+        } ],
+        "report_time": "4000",
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+           "body": {
               "attribution_destination": "https://destination3.test",
               "limit": 6.5,
               "source_event_id": "789",
@@ -292,18 +305,6 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "3602000"
-      },
-      {
-        "payload": {
-          "attribution_destination": "https://destination2.test",
-          "randomized_trigger_rate": 1,
-          "scheduled_report_time": "3604",
-          "source_event_id": "456",
-          "source_type": "navigation",
-          "trigger_data": "4"
-        },
-        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "3604000"
       },
       {
         "payload": {

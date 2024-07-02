@@ -37,7 +37,7 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   void ShuffleReports(std::vector<AttributionReport>&) override;
   void ShuffleTriggerVerifications(
       std::vector<network::TriggerVerification>&) override;
-  double GetRandomizedResponseRate(
+  std::optional<double> GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(

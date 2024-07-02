@@ -85,7 +85,7 @@ class CONTENT_EXPORT AttributionResolverDelegateImpl
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
   void ShuffleTriggerVerifications(
       std::vector<network::TriggerVerification>& verifications) override;
-  double GetRandomizedResponseRate(
+  std::optional<double> GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(

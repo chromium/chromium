@@ -13,7 +13,6 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace attribution_reporting {

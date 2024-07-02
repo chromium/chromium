@@ -120,7 +120,7 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
   }
 }
 
-double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+std::optional<double> ConfigurableStorageDelegate::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs&,
     attribution_reporting::EventLevelEpsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
