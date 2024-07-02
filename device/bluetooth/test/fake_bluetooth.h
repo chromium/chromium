@@ -33,7 +33,7 @@ class FakeBluetooth : public mojom::FakeBluetooth {
   void AllResponsesConsumed(AllResponsesConsumedCallback callback) override;
 
  private:
-  std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       global_factory_values_;
   scoped_refptr<FakeCentral> fake_central_;
 };

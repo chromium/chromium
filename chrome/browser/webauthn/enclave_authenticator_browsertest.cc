@@ -631,7 +631,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
     // Disabling Bluetooth significantly speeds up tests on Linux.
     bluetooth_values_for_testing_ =
-        device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     bluetooth_values_for_testing_->SetLESupported(false);
   }
 
@@ -872,7 +872,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   std::unique_ptr<ModelObserver> model_observer_;
   raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
-  std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;
   absl::variant<crypto::ScopedNullUserVerifyingKeyProvider,
                 crypto::ScopedFakeUserVerifyingKeyProvider,

@@ -221,7 +221,7 @@ class ChromeOSPasskeyBrowserTest : public SyncTest {
     // Disable Bluetooth to avoid requests handlers attempting to enumerate
     // BLE-based authenticators. This significantly speeds up the tests.
     bluetooth_values_for_testing_ =
-        device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     bluetooth_values_for_testing_->SetLESupported(false);
 
     SyncTest::SetUp();
@@ -365,7 +365,7 @@ class ChromeOSPasskeyBrowserTest : public SyncTest {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   device::FakeHidManager fake_hid_manager_;
 #endif
-  std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;
 };
 

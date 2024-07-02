@@ -103,7 +103,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
   FidoBleAdapterManagerTest() {
     BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     bluetooth_config_ =
-        BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+        BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     bluetooth_config_->SetLESupported(true);
     fido_discovery_factory_->ForgeNextCableDiscovery(
         test::FakeFidoDiscovery::StartMode::kAutomatic);
@@ -160,7 +160,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
       std::make_unique<test::FakeFidoDiscoveryFactory>();
 
   std::unique_ptr<FakeFidoRequestHandlerBase> fake_request_handler_;
-  std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_config_;
   FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };

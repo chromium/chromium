@@ -94,42 +94,42 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   static BleScanParserCallback GetBleScanParserCallback();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // ValuestForTesting holds the return values for BluetoothAdapterFactory's
-  // functions that have been set for testing.
-  class DEVICE_BLUETOOTH_EXPORT GlobalValuesForTesting {
+  // GlobalOverrideValues holds the return values for BluetoothAdapterFactory's
+  // functions that have been set for testing or for simulated devices.
+  class DEVICE_BLUETOOTH_EXPORT GlobalOverrideValues {
    public:
-    GlobalValuesForTesting();
+    GlobalOverrideValues();
 
-    GlobalValuesForTesting(const GlobalValuesForTesting&) = delete;
-    GlobalValuesForTesting& operator=(const GlobalValuesForTesting&) = delete;
+    GlobalOverrideValues(const GlobalOverrideValues&) = delete;
+    GlobalOverrideValues& operator=(const GlobalOverrideValues&) = delete;
 
-    ~GlobalValuesForTesting();
+    ~GlobalOverrideValues();
 
     void SetLESupported(bool supported) { le_supported_ = supported; }
 
     bool GetLESupported() { return le_supported_; }
 
-    base::WeakPtr<GlobalValuesForTesting> GetWeakPtr();
+    base::WeakPtr<GlobalOverrideValues> GetWeakPtr();
 
    private:
     bool le_supported_ = false;
 
-    base::WeakPtrFactory<GlobalValuesForTesting> weak_ptr_factory_{this};
+    base::WeakPtrFactory<GlobalOverrideValues> weak_ptr_factory_{this};
   };
 
   // Returns an object that clients can use to control the return values
   // of the Factory's functions. BluetoothAdapterFactory will keep a WeakPtr
   // to this object so clients can just destroy the returned
-  // GlobalValuesForTesting to reset BluetoothAdapterFactory's returned
+  // GlobalOverrideValues to reset BluetoothAdapterFactory's returned
   // values once they are done.
   //
   // Sometimes clients cannot guarantee that whey will reset all the values
   // before another clients starts interacting with BluetoothAdapterFactory.
-  // By passing ownership of GlobalValuesForTesting to the clients, we
+  // By passing ownership of GlobalOverrideValues to the clients, we
   // ensure that only the last client that called
-  // InitGlobalValuesForTesting() will modify BluetoothAdapterFactory's
+  // InitGlobalOverrideValues() will modify BluetoothAdapterFactory's
   // returned values.
-  std::unique_ptr<GlobalValuesForTesting> InitGlobalValuesForTesting();
+  std::unique_ptr<GlobalOverrideValues> InitGlobalOverrideValues();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -141,7 +141,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   void ClassicAdapterInitialized();
 #endif
 
-  base::WeakPtr<GlobalValuesForTesting> values_for_testing_;
+  base::WeakPtr<GlobalOverrideValues> override_values_;
 
   // While a new BluetoothAdapter is being initialized the factory retains a
   // reference to it. After initialization is complete |adapter_callbacks_|

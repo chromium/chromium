@@ -470,7 +470,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
 
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     global_values_ =
-        device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     global_values_->SetLESupported(true);
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     old_browser_client_ = content::SetBrowserClientForTesting(&browser_client_);
@@ -537,7 +537,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
                 testing::StartsWith(pattern));
   }
 
-  std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       global_values_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
