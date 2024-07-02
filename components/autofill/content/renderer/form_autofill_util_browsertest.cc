@@ -221,7 +221,7 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormData_IdAndNames) {
   FormData form_data = *ExtractFormData(
       GetMainFrame()->GetDocument(),
       GetFormElementById(GetMainFrame()->GetDocument(), "form-id"),
-      field_data_manager(), {ExtractOption::kOptions});
+      field_data_manager(), {});
   EXPECT_EQ(form_data.name(), u"form-name");
   EXPECT_EQ(form_data.id_attribute(), u"form-id");
   EXPECT_EQ(form_data.name_attribute(), u"form-name");
@@ -250,8 +250,8 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_form = GetFormElementById(doc, "form");
 
-  FormData form_data = *ExtractFormData(doc, web_form, field_data_manager(),
-                                        {ExtractOption::kOptions});
+  FormData form_data =
+      *ExtractFormData(doc, web_form, field_data_manager(), {});
 
   ASSERT_EQ(form_data.fields().size(), 1u);
   ASSERT_EQ(form_data.fields()[0].options().size(), 1u);

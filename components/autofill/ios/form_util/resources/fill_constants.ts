@@ -45,15 +45,6 @@ const MAX_EXTRACTABLE_FIELDS = 200;
 const EXTRACT_MASK_VALUE = 1 << 0;
 
 /**
- * A bit field mask to extract data from WebFormControlElement for
- * extracting options from WebFormControlElement.
- *
- * This variable is from enum ExtractMask in
- * chromium/src/components/autofill/content/renderer/form_autofill_util.h
- */
-const EXTRACT_MASK_OPTIONS = 1 << 2;
-
-/**
  * A value for the "presentation" role.
  *
  * This variable is from enum RoleAttribute in
@@ -77,7 +68,6 @@ export {
   MAX_STRING_LENGTH,
   MAX_EXTRACTABLE_FIELDS,
   EXTRACT_MASK_VALUE,
-  EXTRACT_MASK_OPTIONS,
   ROLE_ATTRIBUTE_PRESENTATION,
   RENDERER_ID_NOT_SET,
 };

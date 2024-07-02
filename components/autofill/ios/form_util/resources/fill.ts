@@ -458,8 +458,7 @@ gCrWeb.fill.webFormElementToFormData = function(
  *
  * @param element The element to be processed.
  * @param extractMask A bit field mask to extract data from |element|.
- *     See the documentation on variable EXTRACT_MASK_VALUE and
- *     EXTRACT_MASK_OPTIONS.
+ *     See the documentation on variable EXTRACT_MASK_VALUE.
  * @param field Field to fill in the element
  *     information.
  */
@@ -537,7 +536,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
     field.is_checkable = gCrWeb.fill.isCheckableElement(element);
   } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.
-  } else if (extractMask & fillConstants.EXTRACT_MASK_OPTIONS) {
+  } else {
     gCrWeb.fill.getOptionStringsFromElement(element, field);
   }
 
@@ -570,8 +569,7 @@ gCrWeb.fill.webFormControlElementToFormField = function(
  */
 gCrWeb.fill.autofillSubmissionData = function(form: HTMLFormElement): string {
   const formData = new gCrWeb['common'].JSONSafeObject();
-  const extractMask =
-      fillConstants.EXTRACT_MASK_VALUE | fillConstants.EXTRACT_MASK_OPTIONS;
+  const extractMask = fillConstants.EXTRACT_MASK_VALUE;
   gCrWeb['fill'].webFormElementToFormData(
       window, form, null, extractMask, formData, null);
   return gCrWeb.stringify([formData]);

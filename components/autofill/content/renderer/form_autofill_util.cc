@@ -1879,7 +1879,7 @@ void WebFormControlElementToFormField(
                    input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
-  } else if (extract_options.contains(ExtractOption::kOptions)) {
+  } else {
     // Set option strings on the field if available.
     DCHECK(IsSelectOrSelectListElement(element));
     WebVector<WebElement> element_list_items =
@@ -2382,7 +2382,7 @@ FindFormAndFieldForFormControlElement(
     return std::nullopt;
   }
 
-  extract_options.insert_all({ExtractOption::kValue, ExtractOption::kOptions});
+  extract_options.insert_all({ExtractOption::kValue});
   WebDocument document = element.GetDocument();
   WebFormElement form_element = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(

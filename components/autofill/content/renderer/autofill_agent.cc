@@ -1366,8 +1366,7 @@ void AutofillAgent::ExtractForm(
     return;
   }
   DenseSet<form_util::ExtractOption> extract_options = MaybeExtractDatalist(
-      {form_util::ExtractOption::kBounds, form_util::ExtractOption::kOptions,
-       form_util::ExtractOption::kValue});
+      {form_util::ExtractOption::kBounds, form_util::ExtractOption::kValue});
   WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
   if (!form_id) {
     if (std::optional<FormData> form =

@@ -168,8 +168,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return true;
   };
 
-  constexpr DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
-                                                       ExtractOption::kOptions};
+  constexpr DenseSet<ExtractOption> extract_options = {ExtractOption::kValue};
 
   WebDocument document = frame_->GetDocument();
   if (!document) {

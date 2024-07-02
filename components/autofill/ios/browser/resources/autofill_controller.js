@@ -314,8 +314,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
   const reportFormFill = function(_form, _delay) {
     window.setTimeout(() => {
       let formData = new __gCrWeb['common'].JSONSafeObject();
-      const extractMask = fill_constants.EXTRACT_MASK_VALUE |
-          fill_constants.EXTRACT_MASK_OPTIONS;
+      const extractMask = fill_constants.EXTRACT_MASK_VALUE;
       if (_form) {
         if (!__gCrWeb.fill.webFormElementToFormData(
                 window, _form, null, extractMask, formData, null /* field */)) {
@@ -466,8 +465,7 @@ __gCrWeb.autofill.extractNewForms = function(
   /** @type {HTMLCollection} */
   const webForms = document.forms;
 
-  const extractMask =
-      fill_constants.EXTRACT_MASK_VALUE | fill_constants.EXTRACT_MASK_OPTIONS;
+  const extractMask = fill_constants.EXTRACT_MASK_VALUE;
   let numFieldsSeen = 0;
   for (let formIndex = 0; formIndex < webForms.length; ++formIndex) {
     /** @type {HTMLFormElement} */

@@ -2179,9 +2179,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result1;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr,
-      {ExtractOption::kValue, ExtractOption::kOptions}, &result1);
+  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
+                                             {ExtractOption::kValue}, &result1);
 
   FormFieldData expected;
   expected.set_id_attribute(u"element");
@@ -2195,8 +2194,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
               Optional(Field(&SelectOption::text, u"California")));
 
   FormFieldData result2;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result2);
+  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
+                                             {}, &result2);
   expected.set_value({});
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
 
@@ -2260,8 +2259,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
 
   WebFormControlElement element = GetFormControlElementById("element");
   FormFieldData result;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result);
+  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
+                                             {}, &result);
 
   EXPECT_TRUE(result.options().empty());
 }
@@ -2279,8 +2278,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
   WebFormControlElement element = GetFormControlElementById("element");
 
   FormFieldData result;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result);
+  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
+                                             {}, &result);
   ASSERT_EQ(2u, result.options().size());
   EXPECT_EQ(u"usa", result.options()[0].text);
   EXPECT_EQ(u"uk", result.options()[1].text);
@@ -2300,8 +2299,8 @@ TEST_F(FormAutofillTest,
   WebFormControlElement element = GetFormControlElementById("element");
 
   FormFieldData result;
-  WebFormControlElementToFormFieldForTesting(
-      WebFormElement(), element, nullptr, {ExtractOption::kOptions}, &result);
+  WebFormControlElementToFormFieldForTesting(WebFormElement(), element, nullptr,
+                                             {}, &result);
   ASSERT_EQ(1u, result.options().size());
   EXPECT_EQ(u"+1 (Canada)", result.options()[0].text);
 }
@@ -4965,10 +4964,9 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
 
-  FormData form =
-      *ExtractFormData(forms[0].GetDocument(), forms[0],
-                       *base::MakeRefCounted<FieldDataManager>(),
-                       {ExtractOption::kValue, ExtractOption::kOptions});
+  FormData form = *ExtractFormData(forms[0].GetDocument(), forms[0],
+                                   *base::MakeRefCounted<FieldDataManager>(),
+                                   {ExtractOption::kValue});
   EXPECT_EQ(u"TestForm", form.name());
   EXPECT_EQ(GURL("http://cnn.com"), form.action());
 
