@@ -1,0 +1,43 @@
+/*
+ * Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+}
+
+body>* {
+  display:-webkit-box;
+}
+
+#items {
+  -webkit-box-flex:1;
+  -webkit-box-orient:vertical;
+  -webkit-box-align:stretch;
+  height: -webkit-fill-available;
+}
+
+iframe {
+  display:-webkit-box;
+  -webkit-box-flex:1;
+}
+
+.splitter {
+  padding: 2px 8px 2px 5px;
+  border-top: solid 1px #9CC2EF;
+  background: #EBEFF9;
+  font-size: 13px;
+  font-weight: bold;
+  display: block;
+}
+
+.feedUrlSpan {
+  float: right;
+}
+
+.feedUrl {
+  font-size: 8pt;
+}

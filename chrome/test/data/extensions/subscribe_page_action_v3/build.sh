@@ -1,10 +1,10 @@
 #!/bin/bash
-# Copyright 2020 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 closure_path=../../../../../third_party/google-closure-library
-compiler_jar=compiler/closure-compiler-v20200614.jar
+compiler_jar=compiler/closure-compiler-v20240317.jar
 
 echo
 echo '-------------------------------------------'
@@ -53,6 +53,8 @@ $closure_path/closure/bin/build/closurebuilder.py \
   --compiler_jar=$compiler_jar \
   > out/iframe.js
 
+
+echo
 echo 'The contents of out/ now contain the extension to be uploaded.'
 echo
 

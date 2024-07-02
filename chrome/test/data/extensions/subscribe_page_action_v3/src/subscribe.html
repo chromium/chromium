@@ -1,0 +1,64 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="subscribe.css" type="text/css" />
+  <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="subscribe.js"></script>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td width="80" rowspan="2">
+      <img src="feed-icon-64x64.png" alt="feed-icon" align="absmiddle" />
+    </td>
+    <td height="25" valign="bottom"><b><span id="title"></span></b></td>
+  </tr>
+  <tr>
+    <td>
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td align="right" valign="middle">
+            <div>
+              <span style="white-space: nowrap"
+                    id="rss_subscription_subscribe_using"></span>
+            </div>
+          </td>
+          <td valign="top">
+            <div style="margin-left:2px">
+              <select id="readerDropdown"></select>
+              <button id="rss_subscription_subscribe_button"></button><br />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td valign="top" colspan="2">
+            <span id="alwaysUseSpan" style="display:none"><input
+                type="checkbox" id="alwaysUse" value="AlwaysUse"
+                ><span id="rss_subscription_always_use"></span></span>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  </table>
+
+  <div>&nbsp;</div>
+  <div class="splitter">
+    <span class="feedUrlSpan" id="feedUrlSpan">
+      <span class="feedUrl"
+        >[ <a id="feedUrl" class="feedUrl"
+              title="Copy feed url to clipboard."
+           ></a> ]</span></span>
+    <span><b id="rss_subscription_feed_preview"></b></span>
+  </div>
+  <div id="items"></div>
+</body>
+</html>
