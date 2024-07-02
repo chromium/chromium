@@ -29,19 +29,27 @@ PredictionOptions PredictionOptionsAndroid::ToNativePredictionOptions(
 void PredictionOptionsAndroid::FromJavaParams(
     JNIEnv* env,
     const jlong target,
-    const jboolean on_demand_execution) {
+    const jboolean on_demand_execution,
+    const jboolean can_update_cache_for_future_requests,
+    const jboolean fallback_allowed) {
   PredictionOptions* prediction_options =
       reinterpret_cast<PredictionOptions*>(target);
 
   prediction_options->on_demand_execution = on_demand_execution;
+  prediction_options->can_update_cache_for_future_requests =
+      can_update_cache_for_future_requests;
+  prediction_options->fallback_allowed = fallback_allowed;
 }
 
 static void JNI_PredictionOptions_FillNative(
     JNIEnv* env,
     const jlong prediction_options_ptr,
-    const jboolean on_demand_execution) {
+    const jboolean on_demand_execution,
+    const jboolean can_update_cache_for_future_requests,
+    const jboolean fallback_allowed) {
   segmentation_platform::PredictionOptionsAndroid::FromJavaParams(
-      env, prediction_options_ptr, on_demand_execution);
+      env, prediction_options_ptr, on_demand_execution,
+      can_update_cache_for_future_requests, fallback_allowed);
 }
 
 }  // namespace segmentation_platform

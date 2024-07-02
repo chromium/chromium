@@ -11,18 +11,54 @@ import org.jni_zero.NativeMethods;
 @JNINamespace("segmentation_platform")
 public class PredictionOptions {
     private final boolean mOnDemandExecution;
+    private final boolean mCanUpdateCacheForFutureRequests;
+    private final boolean mFallbackAllowed;
 
     public PredictionOptions(boolean onDemandExecution) {
         mOnDemandExecution = onDemandExecution;
+        mCanUpdateCacheForFutureRequests = false;
+        mFallbackAllowed = false;
+    }
+
+    public PredictionOptions(
+            boolean onDemandExecution,
+            boolean canUpdateCacheForFutureRequests,
+            boolean fallbackAllowed) {
+        mOnDemandExecution = onDemandExecution;
+        mCanUpdateCacheForFutureRequests = canUpdateCacheForFutureRequests;
+        mFallbackAllowed = fallbackAllowed;
+    }
+
+    public static PredictionOptions forOndemand(boolean canFallbackToCache) {
+        return new PredictionOptions(
+                /* onDemandExecution= */ true,
+                /* canUpdateCacheForFutureRequests= */ false,
+                canFallbackToCache);
+    }
+
+    public static PredictionOptions forCached(boolean canFallbackToExecution) {
+        return new PredictionOptions(
+                /* onDemandExecution= */ false,
+                /* canUpdateCacheForFutureRequests= */ true,
+                canFallbackToExecution);
     }
 
     @CalledByNative
     void fillNativePredictionOptions(long target) {
-        PredictionOptionsJni.get().fillNative(target, mOnDemandExecution);
+        PredictionOptionsJni.get()
+                .fillNative(
+                        target,
+                        mOnDemandExecution,
+                        mCanUpdateCacheForFutureRequests,
+                        mFallbackAllowed);
     }
 
     @NativeMethods
     interface Natives {
-        void fillNative(long target, boolean onDemandExecution);
+        void fillNative(
+                long target,
+                boolean onDemandExecution,
+                boolean canUpdateCacheForFutureRequests,
+                boolean fallbackAllowed);
     }
 }

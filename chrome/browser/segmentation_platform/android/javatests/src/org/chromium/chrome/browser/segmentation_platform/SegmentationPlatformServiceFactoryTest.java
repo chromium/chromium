@@ -97,7 +97,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                 SegmentationPlatformServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile());
 
-                        PredictionOptions options = new PredictionOptions(true);
+                        PredictionOptions options = PredictionOptions.forOndemand(false);
                         InputContext inputContext = new InputContext();
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,

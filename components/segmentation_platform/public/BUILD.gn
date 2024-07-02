@@ -133,7 +133,10 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptionsTest.java",
+    ]
 
     deps = [
       ":public_java",
