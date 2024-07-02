@@ -1317,8 +1317,7 @@ if (is_win) {
       outputs =
           [ "$root_out_dir/{{source_file_part}}-$chrome_version_full.breakpad" ]
 
-      dump_syms =
-          "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
+      dump_syms = "//third_party/breakpad:dump_syms($host_toolchain)"
       args = rebase_path(outputs, root_build_dir) + [
                rebase_path(get_label_info(dump_syms, "root_out_dir") + "/" +
                                get_label_info(dump_syms, "name"),
