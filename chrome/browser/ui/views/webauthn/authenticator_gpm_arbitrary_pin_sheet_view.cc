@@ -7,15 +7,15 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 
 AuthenticatorGPMArbitraryPinSheetView::AuthenticatorGPMArbitraryPinSheetView(
-    std::unique_ptr<AuthenticatorGPMArbitraryPinSheetModel> sheet_model)
+    std::unique_ptr<AuthenticatorGpmArbitraryPinSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
 
 AuthenticatorGPMArbitraryPinSheetView::
     ~AuthenticatorGPMArbitraryPinSheetView() = default;
 
-AuthenticatorGPMArbitraryPinSheetModel*
+AuthenticatorGpmArbitraryPinSheetModel*
 AuthenticatorGPMArbitraryPinSheetView::gpm_arbitrary_pin_sheet_model() {
-  return static_cast<AuthenticatorGPMArbitraryPinSheetModel*>(model());
+  return static_cast<AuthenticatorGpmArbitraryPinSheetModel*>(model());
 }
 
 std::pair<std::unique_ptr<views::View>,

@@ -15,7 +15,7 @@ class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
                                      public AuthenticatorGPMPinView::Delegate {
  public:
   explicit AuthenticatorGpmPinSheetView(
-      std::unique_ptr<AuthenticatorGPMPinSheetModel> sheet_model);
+      std::unique_ptr<AuthenticatorGpmPinSheetModel> sheet_model);
 
   AuthenticatorGpmPinSheetView(const AuthenticatorGpmPinSheetView&) = delete;
   AuthenticatorGpmPinSheetView& operator=(const AuthenticatorGpmPinSheetView&) =
@@ -24,7 +24,7 @@ class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
   ~AuthenticatorGpmPinSheetView() override;
 
  private:
-  AuthenticatorGPMPinSheetModel* gpm_pin_sheet_model();
+  AuthenticatorGpmPinSheetModel* gpm_pin_sheet_model();
 
   // AuthenticatorRequestSheetView:
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()

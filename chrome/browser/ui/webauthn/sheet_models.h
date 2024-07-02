@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -707,83 +708,80 @@ class AuthenticatorPriorityMechanismSheetModel
   void OnAccept() override;
 };
 
-// The sheet shown when the user is entering a digit-only GPM pin.
-class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
+class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
  public:
   // Indicates whether the view should accommodate changing an existing pin,
   // creating a new one or entering an existing one.
   enum class Mode { kPinChange, kPinCreate, kPinEntry };
 
-  explicit AuthenticatorGPMPinSheetModel(
+  explicit AuthenticatorGpmPinSheetModelBase(
+      AuthenticatorRequestDialogModel* dialog_model,
+      Mode mode);
+  ~AuthenticatorGpmPinSheetModelBase() override;
+
+  std::u16string pin() const { return pin_; }
+  Mode mode() const { return mode_; }
+  bool ui_disabled() const;
+
+  // Sets currently typed pin in the sheet.
+  virtual void SetPin(std::u16string pin) = 0;
+
+ protected:
+  std::u16string pin_;
+  const Mode mode_;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  std::u16string GetError() const override;
+  bool IsForgotGPMPinButtonVisible() const override;
+  bool IsGPMPinOptionsButtonVisible() const override;
+  void OnAccept() override;
+  void OnForgotGPMPin() const override;
+  void OnGPMPinOptionChosen(bool is_arbitrary) const override;
+};
+
+// The sheet shown when the user is entering a digit-only GPM pin.
+class AuthenticatorGpmPinSheetModel : public AuthenticatorGpmPinSheetModelBase {
+ public:
+  explicit AuthenticatorGpmPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       int pin_digits_count,
       Mode mode);
-  ~AuthenticatorGPMPinSheetModel() override;
+  ~AuthenticatorGpmPinSheetModel() override;
 
   int pin_digits_count() const;
-  bool ui_disabled() const;
-  std::u16string pin() { return pin_; }
 
-  // Sets currently typed pin in the sheet.
-  void SetPin(std::u16string pin);
+  void SetPin(std::u16string pin) override;
 
  private:
   bool FullPinTyped() const;
 
   // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-  std::u16string GetError() const override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsForgotGPMPinButtonVisible() const override;
-  bool IsGPMPinOptionsButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
-  void OnAccept() override;
-  void OnGPMPinOptionChosen(bool is_arbitrary) const override;
-  void OnForgotGPMPin() const override;
 
-  std::u16string pin_;
   const int pin_digits_count_;
-  const Mode mode_;
 };
 
 // The sheet shown when the user is entering an arbitrary (alphanumeric) pin.
-class AuthenticatorGPMArbitraryPinSheetModel
-    : public AuthenticatorSheetModelBase {
+class AuthenticatorGpmArbitraryPinSheetModel
+    : public AuthenticatorGpmPinSheetModelBase {
  public:
-  // Indicates whether the view should accommodate changing an existing pin,
-  // creating a new one or entering an existing one.
-  enum class Mode { kPinChange, kPinCreate, kPinEntry };
-
-  explicit AuthenticatorGPMArbitraryPinSheetModel(
+  explicit AuthenticatorGpmArbitraryPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       Mode mode);
-  ~AuthenticatorGPMArbitraryPinSheetModel() override;
+  ~AuthenticatorGpmArbitraryPinSheetModel() override;
 
-  // Sets currently typed pin in the sheet.
-  void SetPin(std::u16string pin);
-
-  std::u16string pin() { return pin_; }
-  Mode mode() { return mode_; }
-  bool ui_disabled() const;
+  void SetPin(std::u16string pin) override;
 
  private:
   // AuthenticatorSheetModelBase:
-  std::u16string GetStepTitle() const override;
-  std::u16string GetStepDescription() const override;
-  std::u16string GetError() const override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsForgotGPMPinButtonVisible() const override;
-  bool IsGPMPinOptionsButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
-  void OnAccept() override;
-  void OnGPMPinOptionChosen(bool is_arbitrary) const override;
-  void OnForgotGPMPin() const override;
-
-  std::u16string pin_;
-  const Mode mode_;
 };
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during
