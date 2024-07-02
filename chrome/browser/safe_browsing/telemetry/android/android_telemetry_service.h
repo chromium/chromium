@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -81,6 +82,9 @@ class AndroidTelemetryService
  private:
   friend class AndroidTelemetryServiceTest;
 
+  using OnGetReportDoneCallback = base::OnceCallback<void(
+      std::unique_ptr<ClientSafeBrowsingReportRequest>)>;
+
   enum class ApkDownloadTelemetryIncompleteReason {
     // |web_contents| was nullptr. This happens sometimes when downloads are
     // resumed but it's not clear exactly when.
@@ -112,9 +116,20 @@ class AndroidTelemetryService
   void FillReferrerChain(download::DownloadItem* item);
 
   // Sets the relevant fields in an instance of
-  // |ClientSafeBrowsingReportRequest| proto and returns that proto.
-  std::unique_ptr<ClientSafeBrowsingReportRequest> GetReport(
-      download::DownloadItem* item);
+  // |ClientSafeBrowsingReportRequest| proto and returns that proto
+  // asynchronously.
+  void GetReport(download::DownloadItem* item,
+                 OnGetReportDoneCallback callback);
+
+  // Callback when we know if app verification is enabled.
+  void IsVerifyAppsEnabled(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      OnGetReportDoneCallback callback,
+      VerifyAppsEnabledResult result);
+
+  // Callback when report generation is complete.
+  void OnGetReportDone(download::DownloadItem* item,
+                       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Sends |report| proto to the Safe Browsing backend. The report may not be
   // sent if the proto fails to serialize.
@@ -133,6 +148,9 @@ class AndroidTelemetryService
   // metrics only for downloads that send a ping, we persist the
   // outcome of referrer chain computation.
   std::map<download::DownloadItem*, ReferrerChainResult> referrer_chain_result_;
+
+  // The collection of `DownloadItem`s we're currently collecting reports for.
+  std::set<download::DownloadItem*> reports_in_progress_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
 };

@@ -1686,6 +1686,8 @@ message ClientSafeBrowsingReportRequest {
     // the user may see the page before they see a warning. See
     // go/async-sb-check-telemetry for details.
     optional bool is_async_check = 7;
+    // Whether Google Play Protect is verifying apps.
+    optional bool app_verification_enabled = 8;
   }
   optional SafeBrowsingClientProperties client_properties = 17;
 

@@ -9944,8 +9944,11 @@ test("unit_tests") {
       "../browser/safe_browsing/telemetry/android/android_telemetry_service_unittest.cc",
     ]
 
-    deps +=
-        [ "//components/safe_browsing/android:real_time_url_checks_allowlist" ]
+    deps += [
+      "//components/safe_browsing/android:real_time_url_checks_allowlist",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
   }
 
   if (enterprise_cloud_content_analysis) {

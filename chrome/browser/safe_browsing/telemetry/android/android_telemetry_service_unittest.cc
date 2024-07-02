@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -17,6 +18,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -86,7 +89,10 @@ class AndroidTelemetryServiceTest : public testing::Test {
 
   std::unique_ptr<ClientSafeBrowsingReportRequest> GetReport(
       download::DownloadItem* item) {
-    return telemetry_service_->GetReport(item);
+    base::test::TestFuture<std::unique_ptr<ClientSafeBrowsingReportRequest>>
+        report_future;
+    telemetry_service_->GetReport(item, report_future.GetCallback());
+    return report_future.Take();
   }
 
   void SetOffTheRecordProfile() {
@@ -95,6 +101,11 @@ class AndroidTelemetryServiceTest : public testing::Test {
   }
 
   void ResetProfile() { telemetry_service_->profile_ = profile(); }
+
+  void SetVerifyAppsResult(VerifyAppsEnabledResult result) {
+    SafeBrowsingApiHandlerBridge::GetInstance()
+        .SetVerifyAppsEnableResultForTesting(result);
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -296,6 +307,38 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
   EXPECT_EQ(kItemReceivedBytes, report->download_item_info().length());
   ASSERT_TRUE(report->download_item_info().has_file_basename());
   EXPECT_EQ(kItemTargetFilePath, report->download_item_info().file_basename());
+}
+
+TEST_F(AndroidTelemetryServiceTest, AppVerification) {
+  ON_CALL(*download_item_, IsDone()).WillByDefault(testing::Return(true));
+  ON_CALL(*download_item_, GetOriginalUrl())
+      .WillByDefault(testing::ReturnRefOfCopy(GURL(kOriginalURL)));
+  ON_CALL(*download_item_, GetTabUrl())
+      .WillByDefault(testing::ReturnRefOfCopy(GURL(kTabURL)));
+  ON_CALL(*download_item_, GetURL())
+      .WillByDefault(testing::ReturnRefOfCopy(GURL(kItemURL)));
+  ON_CALL(*download_item_, GetHash())
+      .WillByDefault(testing::ReturnRefOfCopy(std::string(kItemHash)));
+  ON_CALL(*download_item_, GetReceivedBytes())
+      .WillByDefault(testing::Return(kItemReceivedBytes));
+  ON_CALL(*download_item_, GetTargetFilePath())
+      .WillByDefault(testing::ReturnRefOfCopy(
+          base::FilePath(FILE_PATH_LITERAL(kItemTargetFilePath))));
+
+  SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_ENABLED);
+  EXPECT_TRUE(GetReport(download_item_.get())
+                  ->client_properties()
+                  .app_verification_enabled());
+
+  SetVerifyAppsResult(VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED);
+  EXPECT_FALSE(GetReport(download_item_.get())
+                   ->client_properties()
+                   .app_verification_enabled());
+
+  SetVerifyAppsResult(VerifyAppsEnabledResult::FAILED);
+  EXPECT_FALSE(GetReport(download_item_.get())
+                   ->client_properties()
+                   .has_app_verification_enabled());
 }
 
 // Regression test for https://crbug.com/1173145#c17.

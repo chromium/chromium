@@ -163,6 +163,9 @@ BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection);
 // Prompt users to re-enable Android app verification on APK download.
 BASE_DECLARE_FEATURE(kGooglePlayProtectPrompt);
 
+// Whether to provide Google Play Protect status in APK telemetry pings
+BASE_DECLARE_FEATURE(kGooglePlayProtectInApkTelemetry);
+
 // Sends hash-prefix real-time lookup requests on navigations for Standard Safe
 // Browsing users instead of hash-prefix database lookups.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);

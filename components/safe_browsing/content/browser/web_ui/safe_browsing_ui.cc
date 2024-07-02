@@ -1452,6 +1452,10 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
   client_properties_dict.Set("url_api_type", url_api_type);
   client_properties_dict.Set("is_async_check",
                              client_properties.is_async_check());
+  if (client_properties.has_app_verification_enabled()) {
+    client_properties_dict.Set("app_verification_enabled",
+                               client_properties.app_verification_enabled());
+  }
   return client_properties_dict;
 }
 

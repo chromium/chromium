@@ -72,6 +72,10 @@ class SafeBrowsingApiHandlerBridge {
     is_safe_browsing_api_available_ = true;
   }
 
+  void SetVerifyAppsEnableResultForTesting(VerifyAppsEnabledResult result) {
+    verify_apps_enabled_for_testing_ = result;
+  }
+
  private:
   // Makes Native-to-Java call to check the URL through GMSCore SafetyNet API.
   void StartUrlCheckBySafetyNet(std::unique_ptr<ResponseCallback> callback,
@@ -104,6 +108,9 @@ class SafeBrowsingApiHandlerBridge {
   bool is_safe_browsing_api_available_ = true;
 
   raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
+
+  std::optional<VerifyAppsEnabledResult> verify_apps_enabled_for_testing_ =
+      std::nullopt;
 };
 
 // Interface allowing simplified interception of calls to

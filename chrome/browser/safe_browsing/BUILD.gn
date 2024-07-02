@@ -73,7 +73,11 @@ static_library("safe_browsing") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/browser/password_manager/android:utils" ]
+    deps += [
+      "//chrome/browser/password_manager/android:utils",
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
   }
 
   if (safe_browsing_mode != 0) {

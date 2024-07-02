@@ -67,6 +67,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.AndroidTelemetry.AppVerificationResult"
+    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-06-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of checking whether app verification is enabled. This is
+    logged for each APK download by a used opted in to Enhanced Safe Browsing.
+  </summary>
+</histogram>
+
 <histogram
     name="SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialView{PartialViewSetting}"
     enum="BooleanShown" expires_after="2024-12-24">

@@ -778,6 +778,12 @@ bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
 void SafeBrowsingApiHandlerBridge::StartIsVerifyAppsEnabled(
     VerifyAppsResponseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (verify_apps_enabled_for_testing_.has_value()) {
+    std::move(callback).Run(verify_apps_enabled_for_testing_.value());
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
     std::move(callback).Run(VerifyAppsEnabledResult::FAILED);
