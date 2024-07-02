@@ -881,9 +881,12 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
     return web_header.has_value() || os_header.has_value();
   }
 
+  // `is_source` is true for source registrations, and false for trigger
+  // registrations.
   void LogIssues(const Registrations& registrations,
                  const GURL& reporting_url,
-                 attribution_reporting::IssueTypes issues) const {
+                 attribution_reporting::IssueTypes issues,
+                 bool is_source) const {
     const GlobalRenderFrameHostId render_frame_id =
         registrations.render_frame_id();
     const std::optional<std::string>& devtools_request_id =
@@ -899,37 +902,35 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
         case IssueType::kWebAndOsHeaders:
           log_audit_issue(AttributionReportingIssueType::kWebAndOsHeaders);
           break;
-        case IssueType::kSourceIgnored:
-          MaybeLogWebSourceIgnored(render_frame_id, reporting_url,
-                                   devtools_request_id, web_header);
+        case IssueType::kWebIgnored:
+          if (is_source) {
+            MaybeLogWebSourceIgnored(render_frame_id, reporting_url,
+                                     devtools_request_id, web_header);
+          } else {
+            MaybeLogWebTriggerIgnored(render_frame_id, reporting_url,
+                                      devtools_request_id, web_header);
+          }
           break;
-        case IssueType::kTriggerIgnored:
-          MaybeLogWebTriggerIgnored(render_frame_id, reporting_url,
-                                    devtools_request_id, web_header);
+        case IssueType::kOsIgnored:
+          if (is_source) {
+            MaybeLogOsSourceIgnored(render_frame_id, reporting_url,
+                                    devtools_request_id, os_header);
+          } else {
+            MaybeLogOsTriggerIgnored(render_frame_id, reporting_url,
+                                     devtools_request_id, os_header);
+          }
           break;
-        case IssueType::kOsSourceIgnored:
-          MaybeLogOsSourceIgnored(render_frame_id, reporting_url,
-                                  devtools_request_id, os_header);
-          break;
-        case IssueType::kOsTriggerIgnored:
-          MaybeLogOsTriggerIgnored(render_frame_id, reporting_url,
-                                   devtools_request_id, os_header);
-          break;
-        case IssueType::kNoRegisterSourceHeader:
+        case IssueType::kNoWebHeader:
           log_audit_issue(
-              AttributionReportingIssueType::kNoRegisterSourceHeader);
+              is_source
+                  ? AttributionReportingIssueType::kNoRegisterSourceHeader
+                  : AttributionReportingIssueType::kNoRegisterTriggerHeader);
           break;
-        case IssueType::kNoRegisterTriggerHeader:
+        case IssueType::kNoOsHeader:
           log_audit_issue(
-              AttributionReportingIssueType::kNoRegisterTriggerHeader);
-          break;
-        case IssueType::kNoRegisterOsSourceHeader:
-          log_audit_issue(
-              AttributionReportingIssueType::kNoRegisterOsSourceHeader);
-          break;
-        case IssueType::kNoRegisterOsTriggerHeader:
-          log_audit_issue(
-              AttributionReportingIssueType::kNoRegisterOsTriggerHeader);
+              is_source
+                  ? AttributionReportingIssueType::kNoRegisterOsSourceHeader
+                  : AttributionReportingIssueType::kNoRegisterOsTriggerHeader);
           break;
       }
     }
@@ -1290,7 +1291,8 @@ void AttributionDataHostManagerImpl::HandleRegistrationInfo(
       AttributionManager::GetAttributionSupport(client_os_disabled));
 
   pending_registration_data.headers.LogIssues(
-      *it, pending_registration_data.reporting_url, registrar_info.issues);
+      *it, pending_registration_data.reporting_url, registrar_info.issues,
+      is_source);
 
   if (!registrar_info.registrar.has_value()) {
     return;

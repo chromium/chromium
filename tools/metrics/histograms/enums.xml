@@ -3477,6 +3477,18 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/attribution_reporting/registration_info.h:RegistrationInfoError) -->
 
+<!-- LINT.IfChange(ConversionRegistrationRegistrarIssue) -->
+
+<enum name="ConversionRegistrationRegistrarIssue">
+  <int value="0" label="Both web and OS headers"/>
+  <int value="1" label="Web header ignored due to no web support"/>
+  <int value="2" label="OS header ignored due to no OS support"/>
+  <int value="3" label="Missing preferred web header"/>
+  <int value="4" label="Missing preferred OS header"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
+
 <enum name="ConversionReportSendOutcome">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed due to error"/>

@@ -269,8 +269,11 @@ struct AttributionSrcLoader::AttributionHeaders {
     }
   }
 
+  // `is_source` is true for source registrations, and false for trigger
+  // registrations.
   void LogIssues(ExecutionContext* execution_context,
-                 attribution_reporting::IssueTypes issues) const {
+                 attribution_reporting::IssueTypes issues,
+                 bool is_source) const {
     for (IssueType issue_type : issues) {
       switch (issue_type) {
         case IssueType::kWebAndOsHeaders:
@@ -279,41 +282,35 @@ struct AttributionSrcLoader::AttributionHeaders {
                         /*element=*/nullptr, request_id,
                         /*invalid_parameter=*/String());
           break;
-        case IssueType::kSourceIgnored:
-          LogSourceIgnored(execution_context);
+        case IssueType::kWebIgnored:
+          if (is_source) {
+            LogSourceIgnored(execution_context);
+          } else {
+            LogTriggerIgnored(execution_context);
+          }
           break;
-        case IssueType::kTriggerIgnored:
-          LogTriggerIgnored(execution_context);
+        case IssueType::kOsIgnored:
+          if (is_source) {
+            LogOsSourceIgnored(execution_context);
+          } else {
+            LogOsTriggerIgnored(execution_context);
+          }
           break;
-        case IssueType::kOsSourceIgnored:
-          LogOsSourceIgnored(execution_context);
-          break;
-        case IssueType::kOsTriggerIgnored:
-          LogOsTriggerIgnored(execution_context);
-          break;
-        case IssueType::kNoRegisterSourceHeader:
-          LogAuditIssue(execution_context,
-                        AttributionReportingIssueType::kNoRegisterSourceHeader,
-                        /*element=*/nullptr, request_id,
-                        /*invalid_parameter=*/String());
-          break;
-        case IssueType::kNoRegisterTriggerHeader:
-          LogAuditIssue(execution_context,
-                        AttributionReportingIssueType::kNoRegisterTriggerHeader,
-                        /*element=*/nullptr, request_id,
-                        /*invalid_parameter=*/String());
-          break;
-        case IssueType::kNoRegisterOsSourceHeader:
+        case IssueType::kNoWebHeader:
           LogAuditIssue(
               execution_context,
-              AttributionReportingIssueType::kNoRegisterOsSourceHeader,
+              is_source
+                  ? AttributionReportingIssueType::kNoRegisterSourceHeader
+                  : AttributionReportingIssueType::kNoRegisterTriggerHeader,
               /*element=*/nullptr, request_id,
               /*invalid_parameter=*/String());
           break;
-        case IssueType::kNoRegisterOsTriggerHeader:
+        case IssueType::kNoOsHeader:
           LogAuditIssue(
               execution_context,
-              AttributionReportingIssueType::kNoRegisterOsTriggerHeader,
+              is_source
+                  ? AttributionReportingIssueType::kNoRegisterOsSourceHeader
+                  : AttributionReportingIssueType::kNoRegisterOsTriggerHeader,
               /*element=*/nullptr, request_id,
               /*invalid_parameter=*/String());
           break;
@@ -993,11 +990,14 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
   headers.MaybeLogAllTriggerHeadersIgnored(loader_->local_frame_->DomWindow());
 
-  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
-      !headers.web_source.IsNull(), !headers.os_source.IsNull(),
-      /*is_source=*/true, registration_info.preferred_platform, support_);
+  const bool is_source = true;
 
-  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
+  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
+      !headers.web_source.IsNull(), !headers.os_source.IsNull(), is_source,
+      registration_info.preferred_platform, support_);
+
+  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues,
+                    is_source);
 
   if (!registrar_info.registrar.has_value()) {
     return;
@@ -1063,11 +1063,14 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
 
   headers.MaybeLogAllSourceHeadersIgnored(loader_->local_frame_->DomWindow());
 
-  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
-      !headers.web_trigger.IsNull(), !headers.os_trigger.IsNull(),
-      /*is_source=*/false, registration_info.preferred_platform, support_);
+  const bool is_source = false;
 
-  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues);
+  auto registrar_info = attribution_reporting::RegistrarInfo::Get(
+      !headers.web_trigger.IsNull(), !headers.os_trigger.IsNull(), is_source,
+      registration_info.preferred_platform, support_);
+
+  headers.LogIssues(loader_->local_frame_->DomWindow(), registrar_info.issues,
+                    is_source);
 
   if (!registrar_info.registrar.has_value()) {
     return;

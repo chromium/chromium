@@ -17,20 +17,21 @@ namespace attribution_reporting {
 
 enum class Registrar;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(IssueType)
 enum class IssueType {
-  kWebAndOsHeaders,
-  kSourceIgnored,
-  kTriggerIgnored,
-  kOsSourceIgnored,
-  kOsTriggerIgnored,
-  kNoRegisterSourceHeader,
-  kNoRegisterTriggerHeader,
-  kNoRegisterOsSourceHeader,
-  kNoRegisterOsTriggerHeader,
+  kWebAndOsHeaders = 0,
+  kWebIgnored = 1,
+  kOsIgnored = 2,
+  kNoWebHeader = 3,
+  kNoOsHeader = 4,
 
   kMinValue = kWebAndOsHeaders,
-  kMaxValue = kNoRegisterOsTriggerHeader,
+  kMaxValue = kNoOsHeader,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRegistrationRegistrarIssue)
 
 using IssueTypes =
     base::EnumSet<IssueType, IssueType::kMinValue, IssueType::kMaxValue>;
@@ -50,6 +51,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrarInfo {
 
   RegistrarInfo(RegistrarInfo&&);
   RegistrarInfo& operator=(RegistrarInfo&&);
+
+  friend bool operator==(const RegistrarInfo&, const RegistrarInfo&) = default;
 
   std::optional<Registrar> registrar;
   IssueTypes issues;

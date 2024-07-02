@@ -8,6 +8,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/attribution_reporting/registrar.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/mojom/attribution.mojom-shared.h"
@@ -23,14 +24,13 @@ void SetRegistrarOrIssue(
     bool is_source,
     network::mojom::AttributionSupport support,
     Registrar registrar,
-    IssueType source_issue,
-    IssueType trigger_issue,
+    IssueType issue,
     base::FunctionRef<bool(network::mojom::AttributionSupport)> check_func,
     RegistrarInfo& info) {
   if (check_func(support)) {
     info.registrar = registrar;
   } else {
-    info.issues.Put(is_source ? source_issue : trigger_issue);
+    info.issues.Put(issue);
   }
 }
 
@@ -38,29 +38,27 @@ void SetWebRegistrarOrIssue(bool is_source,
                             network::mojom::AttributionSupport support,
                             RegistrarInfo& info) {
   SetRegistrarOrIssue(is_source, support, Registrar::kWeb,
-                      IssueType::kSourceIgnored, IssueType::kTriggerIgnored,
+                      IssueType::kWebIgnored,
                       &network::HasAttributionWebSupport, info);
 }
 
 void SetOsRegistrarOrIssue(bool is_source,
                            network::mojom::AttributionSupport support,
                            RegistrarInfo& info) {
-  SetRegistrarOrIssue(is_source, support, Registrar::kOs,
-                      IssueType::kOsSourceIgnored, IssueType::kOsTriggerIgnored,
+  SetRegistrarOrIssue(is_source, support, Registrar::kOs, IssueType::kOsIgnored,
                       &network::HasAttributionOsSupport, info);
 }
 
 void HandlePreferredPlatform(bool is_source,
                              network::mojom::AttributionSupport support,
-                             IssueType source_issue,
-                             IssueType trigger_issue,
+                             IssueType issue,
                              bool has_preferred_header,
                              SetRegistrarOrIssueFunc preferred_func,
                              bool has_secondary_header,
                              SetRegistrarOrIssueFunc secondary_func,
                              RegistrarInfo& info) {
   if (!has_preferred_header) {
-    info.issues.Put(is_source ? source_issue : trigger_issue);
+    info.issues.Put(issue);
     return;
   }
 
@@ -98,7 +96,20 @@ RegistrarInfo RegistrarInfo::Get(
 
   RegistrarInfo info;
 
-  if (!preferred_platform.has_value()) {
+  if (preferred_platform.has_value()) {
+    switch (preferred_platform.value()) {
+      case attribution_reporting::Registrar::kWeb:
+        HandlePreferredPlatform(is_source, support, IssueType::kNoWebHeader,
+                                has_web_header, &SetWebRegistrarOrIssue,
+                                has_os_header, &SetOsRegistrarOrIssue, info);
+        break;
+      case attribution_reporting::Registrar::kOs:
+        HandlePreferredPlatform(is_source, support, IssueType::kNoOsHeader,
+                                has_os_header, &SetOsRegistrarOrIssue,
+                                has_web_header, &SetWebRegistrarOrIssue, info);
+        break;
+    }
+  } else {
     if (has_web_header && has_os_header) {
       info.issues.Put(IssueType::kWebAndOsHeaders);
     } else if (has_web_header) {
@@ -106,23 +117,14 @@ RegistrarInfo RegistrarInfo::Get(
     } else if (has_os_header) {
       SetOsRegistrarOrIssue(is_source, support, info);
     }
-    return info;
   }
 
-  switch (preferred_platform.value()) {
-    case attribution_reporting::Registrar::kWeb:
-      HandlePreferredPlatform(
-          is_source, support, IssueType::kNoRegisterSourceHeader,
-          IssueType::kNoRegisterTriggerHeader, has_web_header,
-          &SetWebRegistrarOrIssue, has_os_header, &SetOsRegistrarOrIssue, info);
-      break;
-    case attribution_reporting::Registrar::kOs:
-      HandlePreferredPlatform(is_source, support,
-                              IssueType::kNoRegisterOsSourceHeader,
-                              IssueType::kNoRegisterOsTriggerHeader,
-                              has_os_header, &SetOsRegistrarOrIssue,
-                              has_web_header, &SetWebRegistrarOrIssue, info);
-      break;
+  const char* metric = is_source
+                           ? "Conversions.SourceRegistrationRegistrarIssue"
+                           : "Conversions.TriggerRegistrationRegistrarIssue";
+
+  for (IssueType issue : info.issues) {
+    base::UmaHistogramEnumeration(metric, issue);
   }
 
   return info;

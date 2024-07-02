@@ -1431,6 +1431,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Conversions.{Type}RegistrationRegistrarIssue"
+    enum="ConversionRegistrationRegistrarIssue" expires_after="2024-12-27">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often an attribution {Type} registration encounters an error
+    related to registrars. Recorded only when issue occured. Multiple samples
+    may be recorded per attribution {Type} registration.
+  </summary>
+  <token key="Type">
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
