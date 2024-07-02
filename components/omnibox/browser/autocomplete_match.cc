@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -61,6 +62,19 @@ constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 constexpr bool kIsAndroid = BUILDFLAG(IS_ANDROID);
 
 namespace {
+
+bool IsMatchTypeUrlScoringEligible(const AutocompleteMatch* match) {
+  const std::vector<AutocompleteMatchType::Type> ml_scoring_ineligible_types{
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      AutocompleteMatchType::NAVSUGGEST,
+      AutocompleteMatchType::NAVSUGGEST_PERSONALIZED,
+      AutocompleteMatchType::TILE_NAVSUGGEST};
+
+  return std::find(ml_scoring_ineligible_types.begin(),
+                   ml_scoring_ineligible_types.end(),
+                   match->type) == ml_scoring_ineligible_types.end() &&
+         !AutocompleteMatch::IsSearchType(match->type);
+}
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
@@ -1446,9 +1460,8 @@ int AutocompleteMatch::GetSortingOrder() const {
 }
 
 bool AutocompleteMatch::IsUrlScoringEligible() const {
-  return scoring_signals.has_value() &&
-         type != AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
-         !force_skip_ml_scoring && !AutocompleteMatch::IsSearchType(type);
+  return scoring_signals.has_value() && IsMatchTypeUrlScoringEligible(this) &&
+         !force_skip_ml_scoring;
 }
 
 bool AutocompleteMatch::IsTrendSuggestion() const {
