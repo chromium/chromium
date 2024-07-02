@@ -125,7 +125,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
             blink::mojom::FindOptionsPtr options) {
     delegate()->UpdateLastRequest(++last_request_id_);
     contents()->Find(last_request_id_, base::UTF8ToUTF16(search_text),
-                     std::move(options));
+                     std::move(options), /*skip_delay=*/false);
   }
 
   WebContentsImpl* contents() const {

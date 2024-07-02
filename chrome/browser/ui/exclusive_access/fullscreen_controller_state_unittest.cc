@@ -526,9 +526,9 @@ TEST_F(FullscreenControllerStateUnitTest, OneCapturedFullscreenedTab) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   const gfx::Size kCaptureSize(1280, 720);
-  auto capture_handle =
-      first_tab->IncrementCapturerCount(kCaptureSize, /*stay_hidden=*/false,
-                                        /*stay_awake=*/true);
+  auto capture_handle = first_tab->IncrementCapturerCount(
+      kCaptureSize, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   ASSERT_FALSE(first_tab->IsFullscreen());
   ASSERT_FALSE(second_tab->IsFullscreen());
@@ -592,9 +592,9 @@ TEST_F(FullscreenControllerStateUnitTest, TwoFullscreenedTabsOneCaptured) {
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   const gfx::Size kCaptureSize(1280, 720);
-  auto capture_handle =
-      first_tab->IncrementCapturerCount(kCaptureSize, /*stay_hidden=*/false,
-                                        /*stay_awake=*/true);
+  auto capture_handle = first_tab->IncrementCapturerCount(
+      kCaptureSize, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_TRUE(InvokeEvent(ENTER_TAB_FULLSCREEN));
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(first_tab->IsFullscreen());
@@ -654,9 +654,9 @@ TEST_F(FullscreenControllerStateUnitTest,
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   const gfx::Size kCaptureSize(1280, 720);
-  auto capture_handle =
-      first_tab->IncrementCapturerCount(kCaptureSize, /*stay_hidden=*/false,
-                                        /*stay_awake=*/true);
+  auto capture_handle = first_tab->IncrementCapturerCount(
+      kCaptureSize, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_TRUE(InvokeEvent(ENTER_TAB_FULLSCREEN));
   EXPECT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(first_tab->IsFullscreen());
@@ -710,7 +710,7 @@ TEST_F(FullscreenControllerStateUnitTest,
   const gfx::Size kCaptureSize(1280, 720);
   auto capture_handle =
       tab->IncrementCapturerCount(kCaptureSize, /*stay_hidden=*/false,
-                                  /*stay_awake=*/true);
+                                  /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_TRUE(InvokeEvent(ENTER_TAB_FULLSCREEN));
   EXPECT_TRUE(tab->IsFullscreen());
   EXPECT_FALSE(GetFullscreenController()->IsWindowFullscreenForTabOrPending());
@@ -757,7 +757,7 @@ TEST_F(FullscreenControllerStateUnitTest, HiddenlyCapturedTabFullscreened) {
              TabStripUserGestureDetails::GestureType::kOther));
   auto capture_handle =
       tab->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                  /*stay_awake=*/true);
+                                  /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_TRUE(InvokeEvent(ENTER_TAB_FULLSCREEN));
   EXPECT_TRUE(tab->IsFullscreen());
   EXPECT_TRUE(GetFullscreenController()->IsWindowFullscreenForTabOrPending());
@@ -839,7 +839,7 @@ TEST_F(FullscreenControllerStateUnitTest,
   const gfx::Size kCaptureSize(1280, 720);
   auto capture_handle =
       tab->IncrementCapturerCount(kCaptureSize, /*stay_hidden=*/false,
-                                  /*stay_awake=*/true);
+                                  /*stay_awake=*/true, /*is_activity=*/true);
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   ASSERT_FALSE(tab->IsFullscreen());
   ASSERT_FALSE(GetFullscreenController()->IsWindowFullscreenForTabOrPending());

@@ -47,7 +47,8 @@ void PermissionPromptBubble::ShowBubble() {
       prompt_bubble->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
 
   disallowed_custom_cursors_scope_ =
-      delegate()->GetAssociatedWebContents()->CreateDisallowCustomCursorScope();
+      delegate()->GetAssociatedWebContents()->CreateDisallowCustomCursorScope(
+          /*max_dimension_dips=*/0);
 }
 
 void PermissionPromptBubble::CleanUpPromptBubble() {

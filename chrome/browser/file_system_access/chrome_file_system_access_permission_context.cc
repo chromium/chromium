@@ -722,7 +722,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
 
     // Drop fullscreen mode so that the user sees the URL bar.
     base::ScopedClosureRunner fullscreen_block =
-        web_contents->ForSecurityDropFullscreen();
+        web_contents->ForSecurityDropFullscreen(
+            /*display_id=*/display::kInvalidDisplayId);
 
     if (context_->IsEligibleToUpgradePermissionRequestToRestorePrompt(
             origin_, path_, handle_type_, user_action_, type_)) {

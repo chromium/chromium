@@ -1698,24 +1698,24 @@ TEST_F(WebContentsImplTest, CaptureHoldsWakeLock) {
   };
 
   // Add capturer which doesn't care to stay awake.
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/false);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/false, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   ASSERT_FALSE(contents()->capture_wake_lock_);
 
   // Add capturer and ensure wake lock is held.
-  auto handle2 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   ASSERT_TRUE(contents()->capture_wake_lock_);
   expect_wake_lock(true);
 
   // Add another capturer and ensure the wake lock is still held.
-  auto handle3 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                         /*stay_awake=*/true);
+  auto handle3 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   expect_wake_lock(true);
 
@@ -1745,18 +1745,18 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
 
   // Increment capturer count, but without specifying a capture size.  Expect
   // a "not set" preferred size.
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(gfx::Size(), contents()->GetPreferredSize());
 
   // Increment capturer count again, but with an overriding capture size.
   // Expect preferred size to now be overridden to the capture size.
   const gfx::Size capture_size(1280, 720);
-  auto handle2 =
-      contents()->IncrementCapturerCount(capture_size, /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      capture_size, /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
@@ -1765,7 +1765,8 @@ TEST_F(WebContentsImplTest, CapturerOverridesPreferredSize) {
   const gfx::Size another_capture_size(720, 480);
   auto handle3 = contents()->IncrementCapturerCount(another_capture_size,
                                                     /*stay_hidden=*/false,
-                                                    /*stay_awake=*/true);
+                                                    /*stay_awake=*/true,
+                                                    /*is_activity=*/true);
   EXPECT_TRUE(contents()->IsBeingCaptured());
   EXPECT_EQ(capture_size, contents()->GetPreferredSize());
 
@@ -1915,9 +1916,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 
   // Add a capturer when the contents is visible and then hide the contents.
   // |view| should remain visible.
-  auto handle1 =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                       /*stay_awake=*/true);
+  auto handle1 = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   contents->UpdateWebContentsVisibility(hidden_or_occluded);
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
@@ -1934,9 +1935,9 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
   }
 
   // Add a capturer when the contents is hidden. |view| should be unoccluded.
-  auto handle2 =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                       /*stay_awake=*/true);
+  auto handle2 = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_FALSE(view->is_occluded());
 
   // Show the contents. The view should be visible.
@@ -1970,14 +1971,14 @@ TEST_F(WebContentsImplTest, HiddenCapture) {
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
   EXPECT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
 
-  auto handle1 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                         /*stay_awake=*/true);
+  auto handle1 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
-  auto handle2 =
-      contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                         /*stay_awake=*/true);
+  auto handle2 = contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
   EXPECT_TRUE(rwhv->is_showing());
 
   handle1.RunAndReset();

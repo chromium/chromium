@@ -163,7 +163,7 @@ class ThumbnailTabHelper::TabStateTracker
     if (!scoped_capture_) {
       scoped_capture_ = web_contents()->IncrementCapturerCount(
           gfx::Size(), /*stay_hidden=*/true,
-          /*stay_awake=*/false);
+          /*stay_awake=*/false, /*is_activity=*/true);
     }
   }
 

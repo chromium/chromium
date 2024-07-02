@@ -82,7 +82,7 @@ class FindTrackingDelegate : public WebContentsDelegate {
     options->match_case = false;
 
     web_contents->Find(global_request_id++, base::UTF8ToUTF16(search_),
-                       std::move(options));
+                       std::move(options), /*skip_delay=*/false);
     run_loop_.Run();
 
     web_contents->SetDelegate(old_delegate);

@@ -139,9 +139,9 @@ void PaintPreviewTabService::CaptureTab(int tab_id,
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created
   // to ensure the renderer doesn't go away while that happens.
-  auto capture_handle =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                       /*stay_awake=*/true);
+  auto capture_handle = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
 
   auto file_manager = GetFileMixin()->GetFileManager();
 

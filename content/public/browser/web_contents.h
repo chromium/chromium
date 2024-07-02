@@ -762,7 +762,7 @@ class WebContents : public PageNavigator,
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake,
-      bool is_activity = true) = 0;
+      bool is_activity) = 0;
 
   // Getter for the capture handle, which allows a captured application to
   // opt-in to exposing information to its capturer(s).
@@ -1235,7 +1235,7 @@ class WebContents : public PageNavigator,
   virtual void Find(int request_id,
                     const std::u16string& search_text,
                     blink::mojom::FindOptionsPtr options,
-                    bool skip_delay = false) = 0;
+                    bool skip_delay) = 0;
 
   // Notifies the renderer that the user has closed the FindInPage window
   // (and what action to take regarding the selection).
@@ -1324,7 +1324,7 @@ class WebContents : public PageNavigator,
   // This supports sites using cross-screen window placement capabilities to
   // retain fullscreen and open or place a window on another screen.
   [[nodiscard]] virtual base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id = display::kInvalidDisplayId) = 0;
+      int64_t display_id) = 0;
 
   // Unblocks requests from renderer for a newly created window. This is
   // used in showCreatedWindow() or sometimes later in cases where
@@ -1544,7 +1544,7 @@ class WebContents : public PageNavigator,
   // than `max_dimension_dips` are diallowed in this web contents for as long as
   // any of the returned `ScopedClosureRunner` objects is alive.
   [[nodiscard]] virtual base::ScopedClosureRunner
-  CreateDisallowCustomCursorScope(int max_dimension_dips = 0) = 0;
+  CreateDisallowCustomCursorScope(int max_dimension_dips) = 0;
 
   // Enables overscroll history navigation.
   virtual void SetOverscrollNavigationEnabled(bool enabled) = 0;

@@ -432,7 +432,7 @@ class CONTENT_EXPORT WebContentsImpl
       const gfx::Size& capture_size,
       bool stay_hidden,
       bool stay_awake,
-      bool is_activity = true) override;
+      bool is_activity) override;
   const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
@@ -566,14 +566,14 @@ class CONTENT_EXPORT WebContentsImpl
   void Find(int request_id,
             const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options,
-            bool skip_delay = false) override;
+            bool skip_delay) override;
   void StopFinding(StopFindAction action) override;
   bool WasEverAudible() override;
   bool IsFullscreen() override;
   bool ShouldShowStaleContentOnEviction() override;
   void ExitFullscreen(bool will_cause_resize) override;
   [[nodiscard]] base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id = display::kInvalidDisplayId) override;
+      int64_t display_id) override;
   void ResumeLoadingCreatedWebContents() override;
   void SetIsOverlayContent(bool is_overlay_content) override;
   bool IsFocusedElementEditable() override;

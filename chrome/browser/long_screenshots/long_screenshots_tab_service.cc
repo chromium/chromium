@@ -108,9 +108,9 @@ void LongScreenshotsTabService::CaptureTab(int tab_id,
   // Mark |contents| as being captured so that the renderer doesn't go away
   // until the capture is finished. This is done even before a file is created
   // to ensure the renderer doesn't go away while that happens.
-  capture_handle_ =
-      contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                       /*stay_awake=*/true);
+  capture_handle_ = contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
   content::RenderFrameHost* rfh =
       GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), url);
   if (in_memory) {

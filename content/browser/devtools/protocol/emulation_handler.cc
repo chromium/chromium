@@ -815,10 +815,10 @@ Response EmulationHandler::SetFocusEmulationEnabled(bool enabled) {
     return Response::FallThrough();
   focus_emulation_enabled_ = enabled;
   if (enabled) {
-    capture_handle_ =
-        GetWebContents()->IncrementCapturerCount(gfx::Size(),
-                                                 /*stay_hidden=*/false,
-                                                 /*stay_awake=*/false);
+    capture_handle_ = GetWebContents()->IncrementCapturerCount(
+        gfx::Size(),
+        /*stay_hidden=*/false,
+        /*stay_awake=*/false, /*is_activity=*/true);
   } else {
     capture_handle_.RunAndReset();
   }

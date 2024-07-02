@@ -88,7 +88,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   options->find_match = find_match;
   options->run_synchronously_for_testing = run_synchronously_for_testing;
   GetWebContents().Find(current_find_request_id_, find_text_,
-                        std::move(options));
+                        std::move(options), /*skip_delay=*/false);
 }
 
 void FindTabHelper::StopFinding(SelectionAction selection_action) {

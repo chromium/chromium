@@ -39,7 +39,8 @@ void FindHelper::FindAllAsync(const std::u16string& search_string) {
   options->match_case = false;
   options->new_session = true;
 
-  web_contents_->Find(current_request_id_, search_string, std::move(options));
+  web_contents_->Find(current_request_id_, search_string, std::move(options),
+                      /*skip_delay=*/false);
 }
 
 void FindHelper::HandleFindReply(int request_id,
@@ -67,7 +68,7 @@ void FindHelper::FindNext(bool forward) {
   options->new_session = false;
 
   web_contents_->Find(current_request_id_, last_search_string_,
-                      std::move(options));
+                      std::move(options), /*skip_delay=*/false);
 }
 
 void FindHelper::ClearMatches() {

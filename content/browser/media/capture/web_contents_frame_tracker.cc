@@ -72,9 +72,9 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   }
 
   void IncrementCapturerCount(const gfx::Size& capture_size) override {
-    capture_handle_ =
-        contents_->IncrementCapturerCount(capture_size, /*stay_hidden=*/false,
-                                          /*stay_awake=*/true);
+    capture_handle_ = contents_->IncrementCapturerCount(
+        capture_size, /*stay_hidden=*/false,
+        /*stay_awake=*/true, /*is_activity=*/true);
   }
 
   void DecrementCapturerCount() override { capture_handle_.RunAndReset(); }

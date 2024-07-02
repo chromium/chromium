@@ -244,9 +244,9 @@ ForwardingAudioStreamFactory::~ForwardingAudioStreamFactory() {
 
 void ForwardingAudioStreamFactory::LoopbackStreamStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  capture_handle_ =
-      web_contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                             /*stay_awake=*/true);
+  capture_handle_ = web_contents()->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false,
+      /*stay_awake=*/true, /*is_activity=*/true);
 }
 
 void ForwardingAudioStreamFactory::LoopbackStreamStopped() {

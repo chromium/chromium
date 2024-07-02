@@ -3009,8 +3009,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // capture
-  base::ScopedClosureRunner capture_closure = wc->IncrementCapturerCount(
-      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  base::ScopedClosureRunner capture_closure =
+      wc->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                 /*stay_awake=*/false, /*is_activity=*/true);
   EXPECT_TRUE(wc->IsBeingVisiblyCaptured());
   // popup
   wc->EnterFullscreenMode(wc->GetPrimaryMainFrame(), {});
@@ -3952,7 +3953,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   // While the |fullscreen_block| is in scope, fullscreen should fail with an
   // error.
   base::ScopedClosureRunner fullscreen_block =
-      web_contents->ForSecurityDropFullscreen();
+      web_contents->ForSecurityDropFullscreen(
+          /*display_id=*/display::kInvalidDisplayId);
 
   EXPECT_TRUE(ExecJs(main_frame, "document.body.requestFullscreen();",
                      EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));

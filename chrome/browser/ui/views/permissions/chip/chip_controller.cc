@@ -568,9 +568,10 @@ void ChipController::OpenPermissionPromptBubble() {
     return;
   }
 
-  disallowed_custom_cursors_scope_ = permission_prompt_model_->GetDelegate()
-                                         ->GetAssociatedWebContents()
-                                         ->CreateDisallowCustomCursorScope();
+  disallowed_custom_cursors_scope_ =
+      permission_prompt_model_->GetDelegate()
+          ->GetAssociatedWebContents()
+          ->CreateDisallowCustomCursorScope(/*max_dimension_dips=*/0);
 
   // Prevent chip from collapsing while prompt bubble is open.
   ResetTimers();

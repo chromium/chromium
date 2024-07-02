@@ -7128,7 +7128,8 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
 
   // Any new WebContents opened while this WebContents is in fullscreen can be
   // used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
   // The new view source contents will be independent of this contents, so
   // release the fullscreen block.
   fullscreen_block.RunAndReset();
@@ -7389,7 +7390,8 @@ void WebContentsImpl::EnumerateDirectory(
 
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
@@ -7995,7 +7997,8 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
@@ -8106,7 +8109,8 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
@@ -8175,7 +8179,8 @@ void WebContentsImpl::RunFileChooser(
 
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
@@ -9107,7 +9112,8 @@ void WebContentsImpl::DidCallFocus() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidCallFocus");
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+  base::ScopedClosureRunner fullscreen_block =
+      ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
   // The other contents is independent of this contents, so release the
   // fullscreen block.
   fullscreen_block.RunAndReset();

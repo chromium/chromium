@@ -783,8 +783,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        CapturedContentEntersFullscreenWithinTab) {
   // Simulate tab capture, as used by getDisplayMedia() content sharing.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
-      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  base::ScopedClosureRunner capture_closure =
+      tab->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                  /*stay_awake=*/false, /*is_activity=*/true);
   EXPECT_TRUE(tab->IsBeingVisiblyCaptured());
 
   // The browser enters fullscreen-within-tab mode synchronously, but the window
@@ -812,8 +813,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        OpeningPopupDoesNotExitFullscreenWithinTab) {
   // Simulate visible tab capture and enter fullscreen-within-tab.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
-      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  base::ScopedClosureRunner capture_closure =
+      tab->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                  /*stay_awake=*/false, /*is_activity=*/true);
   tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
@@ -835,8 +837,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        BlockingContentsDoesNotExitFullscreenWithinTab) {
   // Simulate visible tab capture and enter fullscreen-within-tab.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
-      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  base::ScopedClosureRunner capture_closure =
+      tab->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                  /*stay_awake=*/false, /*is_activity=*/true);
   tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);

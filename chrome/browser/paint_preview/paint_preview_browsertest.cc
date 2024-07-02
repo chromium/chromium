@@ -526,12 +526,12 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   CreateClient();
   auto* client = PaintPreviewClient::FromWebContents(web_contents);
   // Do this twice to simulate conditions for crash.
-  auto handle1 =
-      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                           /*stay_awake=*/true);
-  auto handle2 =
-      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                           /*stay_awake=*/true);
+  auto handle1 = web_contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
+  auto handle2 = web_contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
 
   // A callback that causes the frame to reload and end up in an invalid state
   // if it is allowed to run during crash handling.

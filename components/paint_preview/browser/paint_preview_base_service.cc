@@ -67,9 +67,9 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   // TODO(crbug.com/40123632): Consider moving to client so that this always
   // happens. Although, it is harder to get this right in the client due to its
   // lifecycle.
-  auto capture_handle =
-      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                           /*stay_awake=*/true);
+  auto capture_handle = web_contents->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true,
+      /*stay_awake=*/true, /*is_activity=*/true);
 
   auto start_time = base::TimeTicks::Now();
   client->CapturePaintPreview(
