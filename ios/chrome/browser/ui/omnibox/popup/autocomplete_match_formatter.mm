@@ -219,10 +219,9 @@ UIColor* DimColorIncognito() {
 }
 
 - (NSInteger)numberOfLines {
-  // TODO (crbug/342608217) : double-check if we need to implement number of
-  // lines for the new answer proto.
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-    return 3;
+    return _match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY ? 3
+                                                                          : 1;
   }
   // Answers specify their own limit on the number of lines to show but are
   // additionally capped here at 3 to guard against unreasonable values.
