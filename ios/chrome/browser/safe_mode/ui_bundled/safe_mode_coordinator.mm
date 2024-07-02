@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
+#import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 
 #import <ostream>
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
-#import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
+#import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_view_controller.h"
 
 namespace {
 const int kStartupCrashLoopThreshold = 3;

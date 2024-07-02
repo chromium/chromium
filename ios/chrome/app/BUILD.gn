@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager/model:test_support",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/reading_list/model:test_support",
+    "//ios/chrome/browser/safe_mode/ui_bundled",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/shared/coordinator/scene",
@@ -131,7 +132,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/variations/model:fetcher",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/chrome/common/app_group",
@@ -266,8 +266,8 @@ source_set("safe_mode_app_state_agent") {
   deps = [
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/safe_mode/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/ui/safe_mode",
   ]
 }
 

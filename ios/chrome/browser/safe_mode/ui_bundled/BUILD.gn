@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("safe_mode") {
+source_set("ui_bundled") {
   configs += []
   sources = [
     "safe_mode_coordinator.h",
@@ -18,7 +18,7 @@ source_set("safe_mode") {
     "//ios/chrome/browser/safe_mode/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/safe_mode/resources",
+    "//ios/chrome/browser/safe_mode/ui_bundled/resources",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
@@ -36,7 +36,7 @@ source_set("eg_app_support+eg2") {
     "safe_mode_app_interface.mm",
   ]
   deps = [
-    ":safe_mode",
+    ":ui_bundled",
     "//ios/chrome/test/app:test_support",
   ]
 }
@@ -77,7 +77,7 @@ source_set("unit_tests") {
     "safe_mode_view_controller_unittest.mm",
   ]
   deps = [
-    ":safe_mode",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//components/crash/core/app",

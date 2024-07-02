@@ -7,8 +7,8 @@
 
 #include "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/app/safe_mode_app_state_agent.h"
+#include "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
 #include "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#include "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 
 // Class extension exposing private methods of SafeModeAppAgent for testing.
 @interface SafeModeAppAgent () <AppStateObserver,
