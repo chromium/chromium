@@ -1440,7 +1440,8 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
                      video_frame->visible_rect().y() * bytes_per_row +
                      video_frame->visible_rect().x() * sizeof(uint32_t);
     PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        video_frame.get(), dest_ptr, bytes_per_row);
+        video_frame.get(), dest_ptr, bytes_per_row,
+        /*premultiply_alpha=*/false);
     source_pixels = upload_pixels_[0].get();
   }
 
