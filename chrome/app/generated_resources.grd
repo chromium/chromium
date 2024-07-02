@@ -7844,12 +7844,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_THEMES_HEADER" desc="The header for the page that lists theme categories in the Customize Chrome side panel.">
         Themes
       </message>
-      <message name="IDS_NTP_CUSTOMIZE_MENU_BACKGROUND_LABEL" desc="The label for the backgrounds option in the customization menu on the New Tab Page.">
-        Background
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_MENU_BACKGROUND_DISABLED_LABEL" desc="The description for the backgrounds option in the customization menu on the New Tab Page when the option is disabled by the administrator.">
-        Custom backgrounds have been turned off by your administrator
-      </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL" desc="The label for the shortcuts option in the customization menu on the New Tab Page.">
         Shortcuts
       </message>
@@ -7858,9 +7852,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
         Cards
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_MENU_COLOR_LABEL" desc="The label for the colors and themes option in the customization menu on the New Tab Page">
-        Color and theme
       </message>
       <message name="IDS_NTP_CUSTOMIZE_NO_BACKGROUND_LABEL" desc="The label for the 'Default Chrome' tile in the customization menu on the New Tab Page">
         Default Chrome
@@ -7889,17 +7880,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_YOUR_SEARCHED_IMAGE_LABEL" desc="The label for the 'Your searched image' button in the customization menu on the New Tab Page side panel.">
         AI created theme
       </message>
-      <message name="IDS_NTP_CUSTOMIZE_UPLOAD_FROM_DEVICE_LABEL" desc="The label for the 'Upload from device' tile in the customization menu on the New Tab Page">
-        Upload from device
-      </message>
       <message name="IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL" desc="The second line of the label for the button that opens a link to a third party theme.">
         Current theme you have installed.
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_HIDE_SHORTCUTS_LABEL" desc="The label for the option to hide shortcuts in the customization menu on the New Tab Page">
-        Hide shortcuts
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_HIDE_SHORTCUTS_DESC" desc="The description for the option to hide shortcuts in the customization menu on the New Tab Page">
-        Don't show shortcuts on this page
       </message>
       <message name="IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL" desc="The label for the option to show cards in the customization menu on the New Tab Page">
         Show cards
@@ -7918,18 +7900,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC" desc="The description for the option to show most visited sites in the customization menu on the New Tab Page">
         Shortcuts are curated by you
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_HIDE_ALL_CARDS_LABEL" desc="The label for the option to hide all cards in the customization menu on the New Tab Page">
-        Hide all cards
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_CUSTOMIZE_CARDS_LABEL" desc="The label for the option to customize cards in the customization menu on the New Tab Page">
-        Customize cards
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_3PT_THEME_DESC" desc="The description for the installed third-party themes in the customization menu on the New Tab Page">
-        Current theme you have installed
-      </message>
-      <message name="IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL" desc="The label for the third-party theme uninstall button in the customization menu on the New Tab Page">
-        Uninstall
       </message>
       <message name="IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL" desc="The label for the color picker in the customization menu on the New Tab Page">
         Custom color
@@ -7952,9 +7922,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_THEME_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
         Your administrator has set a default theme which cannot be changed.
       </message>
-    <message name="IDS_NTP_THEMES_CONTAINER_LABEL" desc="The accessibility label description read by the screen reader for the Color and Theme container when customizing the New Tab Page.">
-      Pick a theme color
-    </message>
+      <message name="IDS_NTP_THEMES_CONTAINER_LABEL" desc="The accessibility label description read by the screen reader for the Color and Theme container when customizing the New Tab Page.">
+        Pick a theme color
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
         Default color
       </message>

@@ -86,18 +86,12 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"close", IDS_CLOSE},
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
       {"colorsContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
-      {"currentTheme", IDS_NTP_CUSTOMIZE_CHROME_CURRENT_THEME_LABEL},
       {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
-      {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"hueSliderTitle", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE},
       {"hueSliderAriaLabel", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_ARIA_LABEL},
       {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
       {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
       {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
-      {"themesContainerLabel",
-       IDS_PROFILE_CUSTOMIZATION_THEMES_CONTAINER_LABEL},
-      {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
-      {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
