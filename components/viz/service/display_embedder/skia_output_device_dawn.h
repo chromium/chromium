@@ -75,7 +75,6 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 
   scoped_refptr<gpu::SharedContextState> context_state_;
   wgpu::Surface surface_;
-  wgpu::SwapChain swap_chain_;
   wgpu::Texture texture_;
   sk_sp<SkSurface> sk_surface_;
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;

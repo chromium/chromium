@@ -167,17 +167,19 @@ bool SkiaOutputDeviceDawn::Reshape(const ReshapeParams& params) {
   }
 #endif
 
-  wgpu::SwapChainDescriptor swap_chain_desc;
-  swap_chain_desc.format = kSwapChainFormat;
-  swap_chain_desc.usage = kUsage;
-  swap_chain_desc.width = size_.width();
-  swap_chain_desc.height = size_.height();
-  swap_chain_desc.presentMode = wgpu::PresentMode::Mailbox;
-  swap_chain_ =
-      context_state_->dawn_context_provider()->GetDevice().CreateSwapChain(
-          surface_, &swap_chain_desc);
+  wgpu::SurfaceConfiguration config;
+  config.device = context_state_->dawn_context_provider()->GetDevice();
+  config.format = kSwapChainFormat;
+  config.usage = kUsage;
+  config.viewFormatCount = 0;
+  config.viewFormats = nullptr;
+  config.alphaMode = wgpu::CompositeAlphaMode::Auto;
+  config.width = size_.width();
+  config.height = size_.height();
+  config.presentMode = wgpu::PresentMode::Mailbox;
+  surface_.Configure(&config);
 
-  return swap_chain_ != nullptr;
+  return true;
 }
 
 void SkiaOutputDeviceDawn::Present(const std::optional<gfx::Rect>& update_rect,
@@ -185,7 +187,7 @@ void SkiaOutputDeviceDawn::Present(const std::optional<gfx::Rect>& update_rect,
                                    OutputSurfaceFrame frame) {
   DCHECK(!update_rect);
   StartSwapBuffers({});
-  swap_chain_.Present();
+  surface_.Present();
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
                     gfx::Size(size_.width(), size_.height()), std::move(frame));
 
@@ -209,8 +211,9 @@ void SkiaOutputDeviceDawn::Present(const std::optional<gfx::Rect>& update_rect,
 
 SkSurface* SkiaOutputDeviceDawn::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  wgpu::Texture texture = swap_chain_.GetCurrentTexture();
-  skgpu::graphite::BackendTexture backend_texture(texture.Get());
+  wgpu::SurfaceTexture texture;
+  surface_.GetCurrentTexture(&texture);
+  skgpu::graphite::BackendTexture backend_texture(texture.texture.Get());
 
   SkSurfaceProps surface_props;
   sk_surface_ = SkSurfaces::WrapBackendTexture(
