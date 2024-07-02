@@ -973,10 +973,11 @@ void SharedContextState::PurgeMemory(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
       // With moderate pressure, clear any unlocked resources.
       sk_surface_cache_.Clear();
-      // TODO(crbug.com/337979844): Determine if we want a Graphite equivalent.
       if (gr_context_) {
         gr_context_->purgeUnlockedResources(
             GrPurgeResourceOptions::kScratchResourcesOnly);
+      } else if (gpu_main_graphite_cache_controller_) {
+        gpu_main_graphite_cache_controller_->CleanUpScratchResources();
       }
       UpdateSkiaOwnedMemorySize();
       scratch_deserialization_buffer_.resize(
@@ -994,8 +995,8 @@ void SharedContextState::PurgeMemory(
         UseShaderCache(cache_use, kDisplayCompositorClientId);
         if (gr_context_) {
           gr_context_->freeGpuResources();
-        } else if (graphite_context_) {
-          graphite_context_->freeGpuResources();
+        } else if (gpu_main_graphite_cache_controller_) {
+          gpu_main_graphite_cache_controller_->CleanUpAllResources();
         }
       }
       UpdateSkiaOwnedMemorySize();

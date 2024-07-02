@@ -45,11 +45,15 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Cleans up all Skia-owned scratch resources.
+  void CleanUpScratchResources();
+
+  // Cleans up all resources.
+  void CleanUpAllResources();
+
  private:
   friend class base::RefCounted<GraphiteCacheController>;
   ~GraphiteCacheController();
-
-  void PerformCleanup();
 
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
   const raw_ptr<skgpu::graphite::Context> context_;

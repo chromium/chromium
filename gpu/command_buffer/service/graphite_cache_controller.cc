@@ -17,7 +17,7 @@ namespace {
 constexpr base::TimeDelta kResourceNotUsedSinceDelay = base::Seconds(5);
 
 // All unused resources should be purged after an idle time delay of 5 seconds.
-constexpr base::TimeDelta kPerformCleanupDelay = base::Seconds(5);
+constexpr base::TimeDelta kCleanUpAllResourcesDelay = base::Seconds(5);
 }
 
 GraphiteCacheController::GraphiteCacheController(
@@ -26,8 +26,8 @@ GraphiteCacheController::GraphiteCacheController(
     : recorder_(recorder), context_(context) {
   CHECK(recorder_);
   timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, kPerformCleanupDelay,
-      base::BindRepeating(&GraphiteCacheController::PerformCleanup,
+      FROM_HERE, kCleanUpAllResourcesDelay,
+      base::BindRepeating(&GraphiteCacheController::CleanUpAllResources,
                           weak_ptr_factory_.GetWeakPtr()));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -47,21 +47,26 @@ void GraphiteCacheController::ScheduleCleanup() {
   image_provider->PurgeImagesNotUsedSince(kResourceNotUsedSinceDelay);
   recorder_->performDeferredCleanup(
       std::chrono::seconds(kResourceNotUsedSinceDelay.InSeconds()));
-  // Reset the timer, so PerformCleanup() will be called until ScheduleCleanup()
-  // is not called for 5 seconds.
+  // Reset the timer, so CleanUpAllResources() will be called until
+  // ScheduleCleanup() is not called for 5 seconds.
   timer_->Reset();
 }
 
-void GraphiteCacheController::PerformCleanup() {
+void GraphiteCacheController::CleanUpScratchResources() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Cleanup all unused resources.
   if (context_) {
     context_->freeGpuResources();
   }
+  recorder_->freeGpuResources();
+}
+
+void GraphiteCacheController::CleanUpAllResources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* image_provider =
       static_cast<GraphiteImageProvider*>(recorder_->clientImageProvider());
   image_provider->ClearImageCache();
-  recorder_->freeGpuResources();
+
+  CleanUpScratchResources();
 }
 
 }  // namespace gpu::raster
