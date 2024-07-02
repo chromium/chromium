@@ -5,10 +5,12 @@
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,10 +23,15 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace extensions {
 
 class ManifestV2ExperimentManagerUnitTestBase
-    : public ExtensionServiceTestBase {
+    : public ExtensionServiceUserTestBase {
  public:
   ManifestV2ExperimentManagerUnitTestBase(
       const std::vector<base::test::FeatureRef>& enabled_features,
@@ -32,19 +39,27 @@ class ManifestV2ExperimentManagerUnitTestBase
   ~ManifestV2ExperimentManagerUnitTestBase() override = default;
 
   void SetUp() override {
-    ExtensionServiceTestBase::SetUp();
+    ExtensionServiceUserTestBase::SetUp();
 
     // Note: This is (subtly) different from
     // `InitializeEmptyExtensionService()`, which doesn't initialize a
     // testing PrefService.
     InitializeExtensionService(ExtensionServiceInitParams{});
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Log in the user on CrOS. This is necessary for the profile to be
+    // considered one that can install extensions, which itself is
+    // necessary for metrics testing.
+    ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
+        GetFakeUserManager()->AddUser(account_id_), account_id_));
+#endif
+
     experiment_manager_ = ManifestV2ExperimentManager::Get(profile());
   }
 
   void TearDown() override {
     experiment_manager_ = nullptr;
-    ExtensionServiceTestBase::TearDown();
+    ExtensionServiceUserTestBase::TearDown();
   }
 
   ManifestV2ExperimentManager* experiment_manager() {
@@ -401,6 +416,147 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
   EXPECT_FALSE(experiment_manager()->DidUserAcknowledgeNotice(ext2->id()));
 }
 
+// Tests that the proper manifest group is used when emitting metrics for
+// disabled extensions.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ProfileMetrics_ExtensionLocationsAreProperlyGrouped) {
+  struct {
+    mojom::ManifestLocation manifest_location;
+    std::string name;
+    std::string expected_histogram;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kInternal, "Internal",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Internal"},
+      // Note: component extensions aren't considered in the metrics, so
+      // shouldn't have any emitted histograms.
+      {mojom::ManifestLocation::kComponent, "Component", ""},
+      {mojom::ManifestLocation::kExternalPolicy, "Policy",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Policy"},
+      {mojom::ManifestLocation::kExternalPolicyDownload, "Policy Download",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Policy"},
+      {mojom::ManifestLocation::kExternalPref, "Pref",
+       "Extensions.MV2Deprecation.MV2ExtensionState.External"},
+      {mojom::ManifestLocation::kExternalPrefDownload, "Pref Download",
+       "Extensions.MV2Deprecation.MV2ExtensionState.External"},
+      {mojom::ManifestLocation::kExternalRegistry, "Registry",
+       "Extensions.MV2Deprecation.MV2ExtensionState.External"},
+      {mojom::ManifestLocation::kUnpacked, "Unpacked",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Unpacked"},
+      {mojom::ManifestLocation::kCommandLine, "Command Line",
+       "Extensions.MV2Deprecation.MV2ExtensionState.Unpacked"},
+  };
+
+  const char* histograms[] = {
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      "Extensions.MV2Deprecation.MV2ExtensionState.Component",
+      "Extensions.MV2Deprecation.MV2ExtensionState.Unpacked",
+      "Extensions.MV2Deprecation.MV2ExtensionState.Policy",
+      "Extensions.MV2Deprecation.MV2ExtensionState.External",
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    base::HistogramTester histogram_tester;
+
+    // Install the extension, disable affected extensions (which should usually
+    // include this extension), and record histograms.
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder(test_case.name)
+            .SetManifestVersion(2)
+            .SetLocation(test_case.manifest_location)
+            .Build();
+    service()->AddExtension(extension.get());
+
+    experiment_manager()->DisableAffectedExtensionsForTesting();
+    experiment_manager()->EmitMetricsForProfileReadyForTesting();
+
+    // In each case, at most one histogram should have any records, and it
+    // should have exactly one entry: the extension is soft-disabled.
+    for (const char* histogram : histograms) {
+      if (test_case.expected_histogram == histogram) {
+        histogram_tester.ExpectBucketCount(
+            histogram,
+            ManifestV2ExperimentManager::MV2ExtensionState::kSoftDisabled, 1);
+      } else {
+        histogram_tester.ExpectTotalCount(histogram, 0);
+      }
+    }
+
+    // Unload the extension so it doesn't interfere in later cases.
+    service()->UnloadExtension(extension->id(),
+                               UnloadedExtensionReason::UNINSTALL);
+  }
+}
+
+// Tests that MV3 extensions don't emit any metrics.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ProfileMetrics_MV3ExtensionsArentIncluded) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestVersion(3)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+  experiment_manager()->EmitMetricsForProfileReadyForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 0);
+}
+
+// Tests that extensions that are re-enabled by the user are properly emitted
+// as `kUserReEnabled`.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ProfileMetrics_UserReEnabledAreProperlyEmitted) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+  service()->EnableExtension(extension->id());
+  experiment_manager()->EmitMetricsForProfileReadyForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kUserReEnabled, 1);
+}
+
+// Tests that extensions that are disabled for other reasons (such as by user
+// action) emit `kOther` for their state.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ProfileMetrics_ExtensionsThatAreDisabledForOtherReasonsEmitOther) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+  service()->EnableExtension(extension->id());
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+  experiment_manager()->EmitMetricsForProfileReadyForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kOther, 1);
+}
+
 enum class MV2PolicyLevel {
   kAllowed,
   kDisallowed,
@@ -598,6 +754,31 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
       extension_prefs->GetDisableReasons(extension_id));
+}
+
+// Tests that MV2 extensions that are allowed by policy emit `kUnaffected` for
+// their state.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
+       ProfileMetrics_ExtensionsAllowedByPolicyEmitUnaffected) {
+  SetMV2PolicyLevel(MV2PolicyLevel::kAllowed);
+
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Test Extension")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+  experiment_manager()->EmitMetricsForProfileReadyForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester.ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kUnaffected, 1);
 }
 
 }  // namespace extensions

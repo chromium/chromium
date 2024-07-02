@@ -4,11 +4,14 @@
 
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -30,6 +33,30 @@ namespace {
 
 // Whether to override the MV2 deprecation for testing purposes.
 bool g_allow_mv2_for_testing = false;
+
+// Returns the suffix to use for histograms related to the manifest location
+// grouping.
+const char* GetHistogramManifestLocation(mojom::ManifestLocation location) {
+  switch (location) {
+    case mojom::ManifestLocation::kComponent:
+    case mojom::ManifestLocation::kExternalComponent:
+      return "Component";
+    case mojom::ManifestLocation::kExternalPolicy:
+    case mojom::ManifestLocation::kExternalPolicyDownload:
+      return "Policy";
+    case mojom::ManifestLocation::kCommandLine:
+    case mojom::ManifestLocation::kUnpacked:
+      return "Unpacked";
+    case mojom::ManifestLocation::kExternalRegistry:
+    case mojom::ManifestLocation::kExternalPref:
+    case mojom::ManifestLocation::kExternalPrefDownload:
+      return "External";
+    case mojom::ManifestLocation::kInternal:
+      return "Internal";
+    case mojom::ManifestLocation::kInvalidLocation:
+      NOTREACHED_NORETURN();
+  }
+}
 
 // Stores the bit for whether the user has acknowledged the MV2 deprecation
 // notice for a given extension in the warning stage.
@@ -281,8 +308,7 @@ void ManifestV2ExperimentManager::OnExtensionSystemReady() {
   CheckDisabledExtensions();
   DisableAffectedExtensions();
 
-  // TODO(https://crbug.com/339061151): Add metrics for disabled extension
-  // counts.
+  EmitMetricsForProfileReady();
 }
 
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
@@ -375,6 +401,68 @@ bool ManifestV2ExperimentManager::DidUserReEnableExtension(
          acknowledged;
 }
 
+void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
+  if (!ShouldDisableExtensionsForExperimentStage(experiment_stage_)) {
+    // Don't bother reporting MV2-specific metrics if the user isn't at a stage
+    // where extensions could be disabled.
+    return;
+  }
+
+  if (!profile_util::ProfileCanUseNonComponentExtensions(
+          Profile::FromBrowserContext(browser_context_))) {
+    // Don't report metrics if the user can't install extensions in this
+    // profile.
+    return;
+  }
+
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(browser_context_);
+
+  auto emit_state_for_mv2_extension = [this](const Extension& extension,
+                                             bool is_enabled) {
+    if (extension.manifest_version() != 2) {
+      return;
+    }
+
+    if (extension.GetType() != Manifest::TYPE_EXTENSION &&
+        extension.GetType() != Manifest::TYPE_LOGIN_SCREEN_EXTENSION) {
+      return;
+    }
+
+    if (Manifest::IsComponentLocation(extension.location())) {
+      return;
+    }
+
+    bool user_reenabled = DidUserReEnableExtension(extension.id());
+    MV2ExtensionState extension_state = MV2ExtensionState::kUnaffected;
+    if (!impact_checker_.IsExtensionAffected(extension)) {
+      extension_state = MV2ExtensionState::kUnaffected;
+    } else if (is_enabled && user_reenabled) {
+      extension_state = MV2ExtensionState::kUserReEnabled;
+    } else if (extension_prefs()->HasDisableReason(
+                   extension.id(),
+                   disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
+      CHECK(!is_enabled);
+      extension_state = MV2ExtensionState::kSoftDisabled;
+    } else {
+      extension_state = MV2ExtensionState::kOther;
+    }
+
+    std::string histogram_name =
+        base::StringPrintf("Extensions.MV2Deprecation.MV2ExtensionState.%s",
+                           GetHistogramManifestLocation(extension.location()));
+
+    base::UmaHistogramEnumeration(histogram_name, extension_state);
+  };
+
+  for (const auto& extension : extension_registry->enabled_extensions()) {
+    emit_state_for_mv2_extension(*extension, /*is_enabled=*/true);
+  }
+  for (const auto& extension : extension_registry->disabled_extensions()) {
+    emit_state_for_mv2_extension(*extension, /*is_enabled=*/false);
+  }
+}
+
 void ManifestV2ExperimentManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
@@ -418,6 +506,10 @@ bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
 
 void ManifestV2ExperimentManager::DisableAffectedExtensionsForTesting() {
   DisableAffectedExtensions();
+}
+
+void ManifestV2ExperimentManager::EmitMetricsForProfileReadyForTesting() {
+  EmitMetricsForProfileReady();
 }
 
 base::AutoReset<bool> ManifestV2ExperimentManager::AllowMV2ExtensionsForTesting(

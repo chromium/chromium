@@ -6,6 +6,7 @@
 
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
@@ -216,14 +217,20 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   // Adds a new MV2 extension with the given `name` to the profile, returning
   // it afterwards.
   const Extension* AddMV2Extension(std::string_view name) {
+    return AddExtensionWithManifestVersion(name, 2);
+  }
+
+  const Extension* AddExtensionWithManifestVersion(std::string_view name,
+                                                   int manifest_version) {
     static constexpr char kManifest[] =
         R"({
              "name": "%s",
-             "manifest_version": 2,
+             "manifest_version": %d,
              "version": "0.1"
            })";
     TestExtensionDir test_dir;
-    test_dir.WriteManifest(base::StringPrintf(kManifest, name.data()));
+    test_dir.WriteManifest(
+        base::StringPrintf(kManifest, name.data(), manifest_version));
     return InstallExtension(test_dir.UnpackedPath(), /*expected_change=*/1,
                             mojom::ManifestLocation::kInternal);
   }
@@ -245,9 +252,12 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
     return ManifestV2ExperimentManager::Get(profile());
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  base::HistogramTester histogram_tester_;
 };
 
 // A test series to verify MV2 extensions are disabled on startup.
@@ -277,6 +287,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       extension_registry()->enabled_extensions().Contains(extension_id));
 
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 0);
 }
 // Step 3 (Disable Stage): Verify the extension is disabled. Now the disabling
 // experiment is active, and any old MV2 extensions are disabled.
@@ -302,6 +315,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
       extension_prefs()->GetDisableReasons(extension_id));
+
+  // The extension is recorded as "soft disabled".
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kSoftDisabled, 1);
 }
 
 // A test series to verify extensions that are re-enabled by the user do not
@@ -354,6 +374,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
+
+  // The extension is reported as re-enabled by the user.
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kUserReEnabled, 1);
 }
 
 // Tests that extensions are re-enabled automatically if they update to MV3.
@@ -497,6 +524,14 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
+
+  // The extension is reported as "unaffected" since it is now exempt from
+  // the experiments.
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 1);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal",
+      ManifestV2ExperimentManager::MV2ExtensionState::kUnaffected, 1);
 }
 
 // Tests that if a user moves from a later experiment stage (disable with
@@ -542,6 +577,11 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
   // The user didn't re-enable the extension, so it shouldn't be marked as such.
   EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
+
+  // Since the user is no longer in the disable phase, no metrics should be
+  // reported.
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MV2Deprecation.MV2ExtensionState.Internal", 0);
 }
 
 }  // namespace extensions

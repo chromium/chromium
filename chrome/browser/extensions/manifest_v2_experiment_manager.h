@@ -40,6 +40,24 @@ class ManifestV2ExperimentManager : public KeyedService,
       delete;
   ~ManifestV2ExperimentManager() override;
 
+  // The possible states for an MV2 extension during the experiments.
+  // Do not re-order entries, as these are used in histograms.
+  // Exposed for testing purposes.
+  enum class MV2ExtensionState {
+    // Extension is unaffected by the MV2 deprecation (e.g., it's a policy-
+    // installed extension with the proper enterprise policies set).
+    kUnaffected = 0,
+    // The extension was disabled by Chrome, but may be re-enabled by the user.
+    kSoftDisabled = 1,
+    // The extension was previously disabled by Chrome, but was re-enabled by
+    // the user.
+    kUserReEnabled = 2,
+    // Any other state. This includes e.g. extensions that are disabled, but for
+    // other reasons.
+    kOther = 3,
+    kMaxValue = kOther,
+  };
+
   // Retrieves the ManifestV2ExperimentManager associated with the given
   // `browser_context`. Note this instance is shared between on- and off-the-
   // record contexts.
@@ -85,10 +103,11 @@ class ManifestV2ExperimentManager : public KeyedService,
 
   bool DidUserReEnableExtensionForTesting(const ExtensionId& extension_id);
 
-  // Calls DisableAffectedExtensions() directly for testing purposes. This is
+  // Helpers to call internal methods directly for testing purposes. These are
   // useful to have an extension that's installed in the body of a test get
   // disabled, since this normally only happens on startup.
   void DisableAffectedExtensionsForTesting();
+  void EmitMetricsForProfileReadyForTesting();
 
   // See ScopedTestMV2Enabler for details.
   static base::AutoReset<bool> AllowMV2ExtensionsForTesting(
@@ -120,6 +139,10 @@ class ManifestV2ExperimentManager : public KeyedService,
   // Returns true if a user re-enabled an extension after it was explicitly
   // disabled by the MV2 deprecation.
   bool DidUserReEnableExtension(const ExtensionId& extension_id);
+
+  // Emits metrics about the state of installed extensions related to the
+  // MV2 deprecation.
+  void EmitMetricsForProfileReady();
 
   // ExtensionRegistry:
   void OnExtensionLoaded(content::BrowserContext* browser_context,

@@ -4049,6 +4049,21 @@ of interesting buckets, such as "internal + external".
   </token>
 </histogram>
 
+<histogram
+    name="Extensions.MV2Deprecation.MV2ExtensionState.{ManifestLocation}"
+    enum="MV2ExtensionState" expires_after="2025-06-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    The state of a given MV2 extension on a user's device. Emitted once after
+    profile initialization for user profiles (profiles where users can install
+    extensions, specifically profiles that can have non-component extensions
+    installed). Emitted only if the user is in an MV2 experiment stage that can
+    disable MV2 extensions. Only emitted for non-component MV2 extensions.
+  </summary>
+  <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
 <histogram name="Extensions.Navigation.Scheme" enum="ExtensionNavigationScheme"
     expires_after="2024-11-17">
   <owner>jkokatsu@google.com</owner>

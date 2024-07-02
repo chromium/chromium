@@ -3316,6 +3316,13 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Manifest Version 3 extensions only"/>
 </enum>
 
+<enum name="MV2ExtensionState">
+  <int value="0" label="Unaffected"/>
+  <int value="1" label="Soft-disabled by Chrome"/>
+  <int value="2" label="Re-enabled by user"/>
+  <int value="3" label="Other (e.g. disabled for another reason)"/>
+</enum>
+
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFileDoesNotExist"/>
