@@ -45,7 +45,6 @@ import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
-import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -452,7 +451,7 @@ public class ChromeTabUtils {
                                 }
                             });
                 });
-        // Tablet and phone have different new tab buttons; click the right one.
+        // Tablet has a new tab button. Phones should fall back to the menu.
         if (activity.isTablet()) {
             StripLayoutHelper strip =
                     TabStripUtils.getStripLayoutHelper(activity, /* incognito= */ false);
@@ -460,7 +459,8 @@ public class ChromeTabUtils {
             TabStripUtils.clickCompositorButton(newTabButton, instrumentation, activity);
             instrumentation.waitForIdleSync();
         } else {
-            TouchCommon.singleClickView(activity.findViewById(R.id.new_tab_button));
+            newTabFromMenu(
+                    instrumentation, activity, /* incognito= */ false, /* waitForNtpLoad= */ false);
         }
 
         try {

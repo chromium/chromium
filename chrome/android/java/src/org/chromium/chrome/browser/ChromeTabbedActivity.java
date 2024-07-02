@@ -1045,7 +1045,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mLayoutManager,
                             mLayoutManager.getStripLayoutHelperManager(),
                             v -> onTabSwitcherClicked(),
-                            mNewTabButtonClickListener,
                             bookmarkClickHandler,
                             null);
 

@@ -43,9 +43,6 @@ public class ChromeTabSwitcherTest {
 
     private IUi2Locator mTabSwitcherButton = Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
 
-    private IUi2Locator mTabSwitcherToolbar =
-            Ui2Locators.withAnyResEntry(R.id.tab_switcher_toolbar);
-
     private IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
 
     private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
@@ -103,7 +100,7 @@ public class ChromeTabSwitcherTest {
 
         Log.i(TAG, "Activating tab switcher.");
         UiAutomatorUtils.getInstance().click(mTabSwitcherButton);
-        UiAutomatorUtils.getInstance().waitUntilAnyVisible(mTabSwitcherToolbar, mHubToolbar);
+        UiAutomatorUtils.getInstance().waitUntilAnyVisible(mHubToolbar);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabList);
 
         Log.i(TAG, "Test complete.");

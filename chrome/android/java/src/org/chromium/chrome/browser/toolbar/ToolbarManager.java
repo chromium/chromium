@@ -75,7 +75,6 @@ import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -1339,17 +1338,6 @@ public class ToolbarManager
     }
 
     /**
-     * Set container view on which GTS toolbar needs to inflate.
-     *
-     * @param containerView view containing GTS fullscreen toolbar.
-     */
-    public void setTabSwitcherFullScreenView(ViewGroup containerView) {
-        ViewStub toolbarStub =
-                containerView.findViewById(R.id.fullscreen_tab_switcher_toolbar_stub);
-        mToolbar.setFullScreenToolbarStub(toolbarStub);
-    }
-
-    /**
      * Handle a layout change event.
      *
      * @param layoutType The layout being switched to.
@@ -1376,12 +1364,9 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             Callback<LoadUrlParams> logoClickedCallback,
             ObservableSupplier<Integer> constraintsSupplier) {
-        ViewStub tabSwitcherToolbarStub = mActivity.findViewById(R.id.tab_switcher_toolbar_stub);
-
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
-                        tabSwitcherToolbarStub,
                         toolbarLayout,
                         mLocationBarModel,
                         mToolbarTabController,
@@ -1390,15 +1375,10 @@ public class ToolbarManager
                         mLayoutStateProviderSupplier,
                         browsingModeThemeColorProvider,
                         mMenuButtonCoordinator,
-                        mOverviewModeMenuButtonCoordinator,
                         mMenuButtonCoordinator.getMenuButtonHelperSupplier(),
                         mTabModelSelectorSupplier,
                         mHomepageEnabledSupplier,
                         mCompositorViewHolder::getResourceManager,
-                        () -> {
-                            return IncognitoUtils.isIncognitoModeEnabled(
-                                    mTabModelSelector.getCurrentModel().getProfile());
-                        },
                         HistoryManagerUtils::showHistoryManager,
                         PartnerBrowserCustomizations.getInstance()
                                 ::isHomepageProviderAvailableAndEnabled,
@@ -1681,7 +1661,6 @@ public class ToolbarManager
      * @param layoutManager A {@link LayoutManagerImpl} instance used to watch for scene changes.
      * @param stripLayoutHelperManager {@link StripLayoutHelperManager} instance used to manage the
      *     tab strip.
-     * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param newTabClickHandler The {@link OnClickListener} for the new tab button.
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
@@ -1690,7 +1669,6 @@ public class ToolbarManager
     public void initializeWithNative(
             @NonNull LayoutManagerImpl layoutManager,
             @Nullable StripLayoutHelperManager stripLayoutHelperManager,
-            OnClickListener tabSwitcherClickHandler,
             OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler) {
@@ -1709,7 +1687,6 @@ public class ToolbarManager
         mToolbar.initializeWithNative(
                 profile,
                 layoutManager::requestUpdate,
-                tabSwitcherClickHandler,
                 newTabClickHandler,
                 bookmarkClickHandler,
                 customTabsBackClickHandler,
@@ -1799,7 +1776,6 @@ public class ToolbarManager
                         mIncognitoStateProvider::isIncognitoSelected,
                         mPromoShownOneshotSupplier,
                         mLayoutStateProviderSupplier,
-                        mToolbar::setNewTabButtonHighlight,
                         mActivityTabProvider);
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
@@ -2021,7 +1997,6 @@ public class ToolbarManager
             // the activity to create the correct Toolbar from scratch.
             return;
         }
-        mToolbar.onAccessibilityStatusChanged(enabled);
     }
 
     @VisibleForTesting

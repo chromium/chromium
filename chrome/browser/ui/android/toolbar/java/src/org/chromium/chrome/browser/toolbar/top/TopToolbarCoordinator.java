@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -102,12 +100,6 @@ public class TopToolbarCoordinator implements Toolbar {
     private final ToolbarLayout mToolbarLayout;
     private final ObservableSupplierImpl<Tracker> mTrackerSupplier;
 
-    /**
-     * The coordinator for the tab switcher mode toolbar (phones only). This will be lazily created
-     * after ToolbarLayout is inflated.
-     */
-    private @Nullable TabSwitcherModeTTCoordinator mTabSwitcherModeCoordinator;
-
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
     private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -141,7 +133,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * Creates a new {@link TopToolbarCoordinator}.
      *
      * @param controlContainer The {@link ToolbarControlContainer} for the containing activity.
-     * @param toolbarStub The stub for the tab switcher mode toolbar.
      * @param toolbarLayout The {@link ToolbarLayout}.
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController The controller that handles interactions with the tab.
@@ -151,12 +142,10 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param browsingModeMenuButtonCoordinator Root component for app menu.
-     * @param overviewModeMenuButtonCoordinator Root component for tab switcher button.
      * @param appMenuButtonHelperSupplier For specific handling of the app menu button.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
-     * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
      *     homepage is enabled.
@@ -175,7 +164,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
-            ViewStub toolbarStub,
             ToolbarLayout toolbarLayout,
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
@@ -184,12 +172,10 @@ public class TopToolbarCoordinator implements Toolbar {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ThemeColorProvider normalThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
-            MenuButtonCoordinator overviewModeMenuButtonCoordinator,
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
-            BooleanSupplier isIncognitoModeEnabledSupplier,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
@@ -220,18 +206,6 @@ public class TopToolbarCoordinator implements Toolbar {
         mTrackerSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
 
-        if (HubFieldTrial.isHubEnabled()) {
-            // Hub has an entirely separate toolbar.
-            mTabSwitcherModeCoordinator = null;
-        } else if (mToolbarLayout instanceof ToolbarPhone
-                || mToolbarLayout instanceof ToolbarTablet) {
-            mTabSwitcherModeCoordinator =
-                    new TabSwitcherModeTTCoordinator(
-                            toolbarStub,
-                            overviewModeMenuButtonCoordinator,
-                            isIncognitoModeEnabledSupplier,
-                            mToolbarColorObserverManager);
-        }
         controlContainer.setPostInitializationDependencies(
                 this,
                 initializeWithIncognitoColors,
@@ -257,16 +231,6 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Set fullscreen GTS toolbar stub
-     * @param toolbarStub stub to set.
-     */
-    public void setFullScreenToolbarStub(ViewStub toolbarStub) {
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setFullScreenToolbarStub(toolbarStub);
-        }
-    }
-
-    /**
      * @param appMenuButtonHelper The helper for managing menu button interactions.
      */
     public void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
@@ -281,7 +245,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param profile The primary Profile associated with this Toolbar.
      * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
      * @param tabSwitcherClickHandler The click handler for the tab switcher button.
-     * @param newTabClickHandler The click handler for the new tab button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
      * @param appMenuDelegate Allows interacting with the app menu.
@@ -295,7 +258,6 @@ public class TopToolbarCoordinator implements Toolbar {
             Profile profile,
             Runnable layoutUpdater,
             OnClickListener tabSwitcherClickHandler,
-            OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler,
             AppMenuDelegate appMenuDelegate,
@@ -307,10 +269,6 @@ public class TopToolbarCoordinator implements Toolbar {
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         Callback<Integer> tabSwitcherLongClickCallback =
                 menuItemId -> appMenuDelegate.onOptionsItemSelected(menuItemId, null);
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setOnNewTabClickHandler(newTabClickHandler);
-            mTabSwitcherModeCoordinator.setTabModelSelector(mTabModelSelectorSupplier.get());
-        }
 
         mToolbarLayout.setTabCountSupplier(
                 mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
@@ -422,9 +380,6 @@ public class TopToolbarCoordinator implements Toolbar {
             mOverlayCoordinator = null;
         }
         mToolbarLayout.destroy();
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.destroy();
-        }
 
         if (mOptionalButtonController != null) {
             mOptionalButtonController.destroy();
@@ -554,17 +509,6 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Gives inheriting classes the chance to respond to accessibility state changes.
-     *
-     * @param enabled Whether or not accessibility is enabled.
-     */
-    public void onAccessibilityStatusChanged(boolean enabled) {
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.onAccessibilityStatusChanged(enabled);
-        }
-    }
-
-    /**
      * Gives inheriting classes the chance to do the necessary UI operations after Chrome is
      * restored to a previously saved state.
      */
@@ -669,13 +613,11 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * Gives inheriting classes the chance to show or hide the TabSwitcher mode of this toolbar.
+     *
      * @param inTabSwitcherMode Whether or not TabSwitcher mode should be shown or hidden.
      */
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
         mToolbarLayout.setTabSwitcherMode(inTabSwitcherMode);
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setTabSwitcherMode(inTabSwitcherMode);
-        }
     }
 
     /**
@@ -694,10 +636,6 @@ public class TopToolbarCoordinator implements Toolbar {
     public void setIncognitoStateProvider(
             IncognitoStateProvider provider,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier) {
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setIncognitoStateProvider(provider);
-        }
-
         if (overviewColorSupplier == null) {
             assert mToolbarLayout != null;
             cleanUpIncognitoStateObserver();
@@ -785,17 +723,6 @@ public class TopToolbarCoordinator implements Toolbar {
     @Override
     public int getHeight() {
         return mToolbarLayout.getHeight();
-    }
-
-    /**
-     * Sets the highlight on the new tab button shown during overview mode.
-     *
-     * @param highlight If the new tab button should be highlighted.
-     */
-    public void setNewTabButtonHighlight(boolean highlight) {
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setNewTabButtonHighlight(highlight);
-        }
     }
 
     /** Returns the {@link OptionalBrowsingModeButtonController}. */

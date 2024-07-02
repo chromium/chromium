@@ -82,7 +82,6 @@ public class HubProvider {
                                     menuButtonCoordinatorSupplier.get());
                         });
 
-        // Taken from IncognitoToggleTabLayout.
         mOnPaneFocused =
                 pane -> {
                     boolean isIncognito = pane.getPaneId() == PaneId.INCOGNITO_TAB_SWITCHER;

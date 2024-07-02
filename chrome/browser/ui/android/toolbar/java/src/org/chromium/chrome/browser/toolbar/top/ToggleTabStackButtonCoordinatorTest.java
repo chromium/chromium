@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,7 +45,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private ToggleTabStackButton mToggleTabStackButton;
     @Mock private android.content.res.Resources mResources;
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private Callback<Boolean> mSetNewTabButtonHighlightCallback;
 
     @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
@@ -98,7 +96,6 @@ public class ToggleTabStackButtonCoordinatorTest {
                 () -> mIsIncognito,
                 mPromoShownOneshotSupplier,
                 mLayoutSateProviderOneshotSupplier,
-                mSetNewTabButtonHighlightCallback,
                 new ObservableSupplierImpl<>());
     }
 
@@ -131,16 +128,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     private void verifyIphNotShown() {
         verify(mUserEducationHelper, never()).requestShowIPH(any());
         reset(mUserEducationHelper);
-    }
-
-    private void verifyNtpButtonHighlightChanged(boolean expectedHighlight) {
-        verify(mSetNewTabButtonHighlightCallback).onResult(expectedHighlight);
-        reset(mSetNewTabButtonHighlightCallback);
-    }
-
-    private void verifyNtpButtonHighlightNotChanged() {
-        verify(mSetNewTabButtonHighlightCallback, never()).onResult(any());
-        reset(mSetNewTabButtonHighlightCallback);
     }
 
     @Test
@@ -197,18 +184,14 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         iphCommand.onShowCallback.run();
         assertEquals(true, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         showOverviewMode();
         assertEquals(true, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightChanged(true);
 
         iphCommand.onDismissCallback.run();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
         hideOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightChanged(false);
     }
 
     @Test
@@ -224,19 +207,15 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         iphCommand.onShowCallback.run();
         assertEquals(true, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         iphCommand.onDismissCallback.run();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         showOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         hideOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
     }
 
     @Test
@@ -249,11 +228,9 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         showOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         hideOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
     }
 
     @Test
@@ -290,19 +267,15 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         iphCommand.onShowCallback.run();
         assertEquals(true, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         showOverviewMode();
         assertEquals(true, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         iphCommand.onDismissCallback.run();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
 
         hideOverviewMode();
         assertEquals(false, toggleTabStackButtonCoordinator.mIphBeingShown);
-        verifyNtpButtonHighlightNotChanged();
     }
 
     @Test

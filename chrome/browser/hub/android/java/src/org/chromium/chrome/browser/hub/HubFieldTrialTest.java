@@ -20,13 +20,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 /** Unit tests for {@link HubFieldTrial}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubFieldTrialTest {
-
-    @Test
-    @SmallTest
-    public void testHubEnabled() {
-        assertTrue(HubFieldTrial.isHubEnabled());
-    }
-
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})

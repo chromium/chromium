@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -40,7 +39,6 @@ public class ToggleTabStackButtonCoordinator {
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
-    private final Callback<Boolean> mSetNewTabButtonHighlightCallback;
     private final CurrentTabObserver mPageLoadObserver;
 
     private LayoutStateProvider mLayoutStateProvider;
@@ -50,12 +48,11 @@ public class ToggleTabStackButtonCoordinator {
     /**
      * @param context The Android context used for various view operations.
      * @param toggleTabStackButton The concrete {@link ToggleTabStackButton} class for this MVC
-     *         component.
+     *     component.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param layoutStateProviderSupplier Allows observing layout state.
-     * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
      * @param activityTabSupplier Supplier of the activity tab.
      */
     public ToggleTabStackButtonCoordinator(
@@ -65,14 +62,12 @@ public class ToggleTabStackButtonCoordinator {
             BooleanSupplier isIncognitoSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            Callback<Boolean> setNewTabButtonHighlightCallback,
             ObservableSupplier<Tab> activityTabSupplier) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
         mIsIncognitoSupplier = isIncognitoSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
-        mSetNewTabButtonHighlightCallback = setNewTabButtonHighlightCallback;
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
@@ -113,7 +108,6 @@ public class ToggleTabStackButtonCoordinator {
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER && mIphBeingShown) {
-                            mSetNewTabButtonHighlightCallback.onResult(true);
                             mHighlightedNewTabPageButton = true;
                         }
                     }
@@ -121,7 +115,6 @@ public class ToggleTabStackButtonCoordinator {
                     @Override
                     public void onStartedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER && mHighlightedNewTabPageButton) {
-                            mSetNewTabButtonHighlightCallback.onResult(false);
                             mHighlightedNewTabPageButton = false;
                         }
                     }
