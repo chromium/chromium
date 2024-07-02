@@ -1198,13 +1198,19 @@
   variants: *load-font-variant-definition
 
 - name: 2d.text.measure.selection-rects.tentative
-  desc: Check that TextMetrics::getSelectionRects() matches its DOM equivalent.
+  desc: >-
+    Check that TextMetrics::getSelectionRects() matches its DOM equivalent, with
+    direction {{ text_direction }}, text align {{ text_align }},
+    {{ letter_spacing }} letter spacing, and {{ variant_names[3] }}.
   canvas_types: ['HtmlCanvas', 'OffscreenCanvas']
   code: |
     function placeAndSelectTextInDOM(text, from, to) {
       const el = document.createElement("div");
       el.innerHTML = text;
       el.style.font = '50px sans-serif';
+      el.style.direction = '{{ text_direction }}';
+      el.style.textAlign = '{{ text_align }}';
+      el.style.letterSpacing = '{{ letter_spacing }}';
       document.body.appendChild(el);
 
       let range = document.createRange();
@@ -1212,6 +1218,10 @@
       range.setStart(el.childNodes[0], 0);
       range.setEnd(el.childNodes[0], text.length);
       const parent = range.getClientRects()[0];
+      let width = 0;
+      for (const rect of range.getClientRects()) {
+        width += rect.width;
+      }
 
       range.setStart(el.childNodes[0], from);
       range.setEnd(el.childNodes[0], to);
@@ -1224,8 +1234,21 @@
 
       document.body.removeChild(el);
 
+      // Offset to the alignment point determined by textAlign.
+      let text_align_dx;
+      switch (el.style.textAlign) {
+        case 'right':
+          text_align_dx = width;
+          break;
+        case 'center':
+          text_align_dx = width / 2;
+          break;
+        default:
+          text_align_dx = 0;
+      }
+
       for(let i = 0 ; i < sel_rects.length ; ++i) {
-        sel_rects[i].x -= parent.x;
+        sel_rects[i].x -= parent.x + text_align_dx;
         sel_rects[i].y -= parent.y;
       }
 
@@ -1242,16 +1265,36 @@
         // DOM is not straightforward.
       }
     }
+    {% if use_directional_override %}
+
+    function addDirectionalOverrideCharacters(text, direction_is_ltr) {
+      // source: www.w3.org/International/questions/qa-bidi-unicode-controls.en
+      const LTR_OVERRIDE = '\u202D';
+      const RTL_OVERRIDE = '\u202E';
+      const OVERRIDE_END = '\u202C';
+      if (direction_is_ltr) {
+        return LTR_OVERRIDE + text + OVERRIDE_END;
+      }
+      return RTL_OVERRIDE + text + OVERRIDE_END;
+    }
+    {% endif %}
 
     ctx.font = '50px sans-serif';
+    ctx.direction = '{{ text_direction }}';
+    ctx.textAlign = '{{ text_align }}';
+    ctx.letterSpacing = '{{ letter_spacing }}';
 
     const kTexts = [
       'UNAVAILABLE',
       '🏁🎶🏁',
-      '）（あ）（'
+      '）（あ）（',
+      '-abcd_'
     ]
 
-    for (const text of kTexts) {
+    for (text of kTexts) {
+      {% if use_directional_override %}
+      text = addDirectionalOverrideCharacters(text, ctx.direction == 'ltr');
+      {% endif %}
       const tm = ctx.measureText(text);
       // First character.
       checkRectListsMatch(
@@ -1283,6 +1326,26 @@
         placeAndSelectTextInDOM(text, 1, 0)
       );
     }
+  variants_layout: [single_file, single_file, single_file, single_file]
+  variants:
+  - direction-ltr:
+      text_direction: ltr
+    direction-rtl:
+      text_direction: rtl
+  - align-left:
+      text_align: left
+    align-center:
+      text_align: center
+    align-right:
+      text_align: right
+  - no-spacing:
+      letter_spacing: 0px
+    spacing:
+      letter_spacing: 10px
+  - no-directional-override:
+      use_directional_override: false
+    directional-override:
+      use_directional_override: true
 
 - name: 2d.text.measure.selection-rects-baselines.tentative
   desc: >-
@@ -1303,7 +1366,8 @@
     const kTexts = [
       'UNAVAILABLE',
       '🏁🎶🏁',
-      '）（あ）（'
+      '）（あ）（',
+      '-abcd_'
     ]
 
     for (const text of kTexts) {
@@ -1349,7 +1413,8 @@
     const kTexts = [
       'UNAVAILABLE',
       '🏁🎶🏁',
-      '）（あ）（'
+      '）（あ）（',
+      '-abcd_'
     ]
 
     for (const text of kTexts) {

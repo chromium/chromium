@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
 
@@ -72,12 +74,28 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
+  struct RunWithOffset {
+    DISALLOW_NEW();
+
+    void Trace(Visitor* visitor) const { visitor->Trace(shape_result_); }
+
+    Member<const ShapeResult> shape_result_{
+        nullptr, Member<const ShapeResult>::AtomicInitializerTag{}};
+    String text_;
+    TextDirection direction_;
+    unsigned character_offset_;
+    unsigned num_characters_;
+    float x_position_;
+  };
+
  private:
   void Update(const Font&,
               const TextDirection&,
               const TextBaseline&,
               const TextAlign&,
               const String&);
+
+  void ShapeTextIfNeeded();
 
   // x-direction
   double width_ = 0.0;
@@ -95,11 +113,25 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   Member<Baselines> baselines_;
 
   // Needed for selection rects.
-  Vector<TextRun> text_runs_;
   Font font_;
   uint32_t text_length_ = 0;
+
+  // Cache of ShapeResults that is lazily created the first time it's needed.
+  HeapVector<RunWithOffset> runs_with_offset_;
+  bool shaping_needed_ = false;
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::TextMetrics::RunWithOffset>
+    : VectorTraitsBase<blink::TextMetrics::RunWithOffset> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanTraceConcurrently = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_TEXT_METRICS_H_
