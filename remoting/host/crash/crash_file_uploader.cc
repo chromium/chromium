@@ -397,11 +397,15 @@ void CrashFileUploader::Core::OnUploadComplete(
               << "processing the report.";
     UpdateLastUploadTimeFile();
   } else {
-    auto response_code = (*it)->ResponseInfo()->headers->response_code();
+    std::string response_code = "<unknown>";
+    auto* response_info = (*it)->ResponseInfo();
+    if (response_info && response_info->headers) {
+      response_code =
+          base::NumberToString(response_info->headers->response_code());
+    }
     LOG(ERROR) << "Failed to upload crash report: " << crash_dump
                << ", response_code: " << response_code;
-    upload_result =
-        "Upload failed, response code: " + base::NumberToString(response_code);
+    upload_result = "Upload failed, response code: " + response_code;
   }
 
   simple_url_loaders_.erase(it);
