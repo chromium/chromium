@@ -78,7 +78,9 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
         });
   }
 
-  private onExportCertsClick_() {
+  private onExportCertsClick_(e: Event) {
+    // Export button click shouldn't collapse the list as well.
+    e.stopPropagation();
     CertificatesV2BrowserProxy.getInstance().handler.exportCertificates(
         this.certSource);
   }

@@ -30,7 +30,7 @@ suite('CertificateListV2Test', () => {
   }
 
   test('element check', async () => {
-    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+    testProxy.handler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -64,7 +64,7 @@ suite('CertificateListV2Test', () => {
   });
 
   test('export', async () => {
-    testProxy.handler.setCertificatesCallback((_: CertificateSource) => {
+    testProxy.handler.setCertificatesCallback(() => {
       return {
         certs: [
           {
@@ -92,6 +92,42 @@ suite('CertificateListV2Test', () => {
         await testProxy.handler.whenCalled('exportCertificates'),
         'export click provided wrong source');
   });
+
+  test('export click propagation', async () => {
+    testProxy.handler.setCertificatesCallback(() => {
+      return {
+        certs: [
+          {
+            sha256hashHex: 'deadbeef1',
+            displayName: 'cert1',
+          },
+          {
+            sha256hashHex: 'deadbeef2',
+            displayName: 'cert2',
+          },
+        ],
+      };
+    });
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertificates');
+    await microtasksFinished();
+
+    assertTrue(certList.$.certs.opened, 'list not opened');
+    assertTrue(isVisible(certList.$.exportCerts));
+
+    certList.$.exportCerts.click();
+
+    assertEquals(
+        CertificateSource.kChromeRootStore,
+        await testProxy.handler.whenCalled('exportCertificates'),
+        'export click provided wrong source');
+
+    await microtasksFinished();
+    // Check that list of certs is still opened after export button click.
+    assertTrue(certList.$.certs.opened, 'list not opened after click');
+  });
+
 
   test('export hidden', async () => {
     certList = document.createElement('certificate-list-v2');
