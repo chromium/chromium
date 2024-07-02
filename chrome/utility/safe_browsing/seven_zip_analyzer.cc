@@ -93,9 +93,6 @@ bool SevenZipAnalyzer::EntryDone(seven_zip::Result result,
 }
 
 void SevenZipAnalyzer::Init() {
-  // Request two temp files.
-  GetTempFile(base::BindOnce(&SevenZipAnalyzer::OnGetTempFile,
-                             weak_factory_.GetWeakPtr()));
   GetTempFile(base::BindOnce(&SevenZipAnalyzer::OnGetTempFile,
                              weak_factory_.GetWeakPtr()));
 }
@@ -117,6 +114,9 @@ void SevenZipAnalyzer::OnGetTempFile(base::File temp_file) {
   }
   if (!temp_file_.IsValid()) {
     temp_file_ = std::move(temp_file);
+    // Get the other temp file, returning here.
+    GetTempFile(base::BindOnce(&SevenZipAnalyzer::OnGetTempFile,
+                               weak_factory_.GetWeakPtr()));
     return;
   } else {
     temp_file2_ = std::move(temp_file);
