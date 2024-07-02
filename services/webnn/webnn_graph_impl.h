@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 
 #include <optional>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -23,12 +24,12 @@ class WebNNContextImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     : public mojom::WebNNGraph {
  public:
-  // The members of `ComputeResourceInfo` are used to validate the inputs
-  // of a graph execution. The input name and byte length of computation must
-  // match graph's expectation, the output name and byte length are used to
-  // create the result of computation.
+  // Describes the constraints of a graph's inputs and outputs.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
-    ComputeResourceInfo(const mojom::GraphInfo& graph_info,
+    ComputeResourceInfo(base::flat_map<std::string, OperandDescriptor>
+                            input_names_to_descriptors,
+                        base::flat_map<std::string, OperandDescriptor>
+                            output_names_to_descriptors,
                         base::PassKey<WebNNGraphImpl> pass_key);
     ~ComputeResourceInfo();
 

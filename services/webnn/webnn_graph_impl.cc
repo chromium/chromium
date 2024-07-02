@@ -1872,24 +1872,6 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-base::flat_map<std::string, OperandDescriptor>
-GetOperandNamesAndDescriptorsFromIds(
-    const std::vector<uint64_t>& operand_ids,
-    const base::flat_map<uint64_t, mojom::OperandPtr>& id_to_operand_map) {
-  base::flat_map<std::string, OperandDescriptor> names_to_descriptors;
-  names_to_descriptors.reserve(operand_ids.size());
-
-  for (auto& operand_id : operand_ids) {
-    const mojom::Operand& operand = *id_to_operand_map.at(operand_id);
-    // The `operand` is valid and the byte length of it was already verified in
-    // `ValidateGraph` function.
-    CHECK(operand.name.has_value());
-
-    names_to_descriptors.emplace(*operand.name, operand.descriptor);
-  }
-  return names_to_descriptors;
-}
-
 bool ValidateOperation(const ContextProperties& context_properties,
                        const IdToOperandMap& id_to_operand_map,
                        const mojom::Operation& operation,
@@ -2091,13 +2073,11 @@ bool ValidateWebNNBuffersUsage(
 }  // namespace
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
-    const mojom::GraphInfo& graph_info,
-    base::PassKey<WebNNGraphImpl> pass_key) {
-  input_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
-      graph_info.input_operands, graph_info.id_to_operand_map);
-  output_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
-      graph_info.output_operands, graph_info.id_to_operand_map);
-}
+    base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
+    base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
+    base::PassKey<WebNNGraphImpl> pass_key)
+    : input_names_to_descriptors(std::move(input_names_to_descriptors)),
+      output_names_to_descriptors(std::move(output_names_to_descriptors)) {}
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     ComputeResourceInfo&&) = default;
@@ -2133,10 +2113,10 @@ WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
   base::flat_set<uint64_t> processed_operands;
 
   // Keeps track of input and output names in order to assert they are unique.
-  std::vector<std::string_view> input_names;
-  input_names.reserve(graph_info.input_operands.size());
-  std::vector<std::string_view> output_names;
-  output_names.reserve(graph_info.output_operands.size());
+  base::flat_map<std::string, OperandDescriptor> inputs;
+  base::flat_map<std::string, OperandDescriptor> outputs;
+  inputs.reserve(graph_info.input_operands.size());
+  outputs.reserve(graph_info.output_operands.size());
 
   // Validate all operands in the graph for the dimensions and the byte length
   // of operand that can't be out of range, and hold the temporary information
@@ -2154,7 +2134,10 @@ WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
           // The name of input is empty.
           return std::nullopt;
         }
-        input_names.push_back(name.value());
+        if (!inputs.try_emplace(*name, operand->descriptor).second) {
+          // Input names must be unique.
+          return std::nullopt;
+        }
         graph_inputs.push_back(id);
         processed_operands.insert(id);
         break;
@@ -2167,7 +2150,10 @@ WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
             // The name of output is empty.
             return std::nullopt;
           }
-          output_names.push_back(name.value());
+          if (!outputs.try_emplace(*name, operand->descriptor).second) {
+            // Output names must be unique.
+            return std::nullopt;
+          }
           graph_outputs.push_back(id);
         } else {
           // The intermediate operand that connects with two operators has no
@@ -2197,16 +2183,6 @@ WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
     return std::nullopt;
   }
 
-  // Validate that input and output names are unique.
-  base::ranges::sort(input_names);
-  if (base::ranges::adjacent_find(input_names) != input_names.end()) {
-    return std::nullopt;
-  }
-  base::ranges::sort(output_names);
-  if (base::ranges::adjacent_find(output_names) != output_names.end()) {
-    return std::nullopt;
-  }
-
   // Validate the constant weight data are valid.
   if (!base::ranges::equal(graph_info.constant_id_to_buffer_map,
                            constant_id_to_byte_length_map,
@@ -2227,7 +2203,8 @@ WebNNGraphImpl::ValidateGraph(const ContextProperties& context_properties,
     }
   }
 
-  return ComputeResourceInfo(graph_info, base::PassKey<WebNNGraphImpl>());
+  return ComputeResourceInfo(std::move(inputs), std::move(outputs),
+                             base::PassKey<WebNNGraphImpl>());
 }
 
 // static
