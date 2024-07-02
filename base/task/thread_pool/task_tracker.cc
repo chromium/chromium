@@ -243,7 +243,7 @@ void TaskTracker::StartShutdown() {
   DCHECK(!shutdown_event_);
   DCHECK(!state_->HasShutdownStarted());
 
-  shutdown_event_ = std::make_unique<WaitableEvent>();
+  shutdown_event_.emplace();
 
   const bool tasks_are_blocking_shutdown = state_->StartShutdown();
 

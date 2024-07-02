@@ -9,6 +9,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 
@@ -272,7 +273,7 @@ class BASE_EXPORT TaskTracker {
 
   // Event instantiated when shutdown starts and signaled when shutdown
   // completes.
-  std::unique_ptr<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
+  std::optional<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
 
   // Used to generate unique |PendingTask::sequence_num| when posting tasks.
   AtomicSequenceNumber sequence_nums_;
