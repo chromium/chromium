@@ -97,6 +97,11 @@
           'shards': 4,
         },
       },
+      'android-14-x64-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'android-15-x64-fyi-rel': {
         'swarming': {
           'shards': 4,
