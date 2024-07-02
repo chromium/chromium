@@ -236,6 +236,7 @@ source_set("safe_browsing_metrics_collector") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -249,6 +250,7 @@ source_set("safe_browsing_metrics_collector_unittest") {
     ":safe_browsing_metrics_collector",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
