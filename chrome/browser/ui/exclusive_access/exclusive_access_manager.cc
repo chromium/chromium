@@ -51,6 +51,18 @@ enum class LockState {
   kMaxValue = kKeyboardAndPointerLocked,
 };
 
+// Check whether `event` is a kRawKeyDown type and doesn't have non-stateful
+// modifiers (i.e. shift, ctrl etc.).
+bool IsUnmodifiedEscKeyDownEvent(const input::NativeWebKeyboardEvent& event) {
+  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown) {
+    return false;
+  }
+  if (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 ExclusiveAccessManager::ExclusiveAccessManager(
@@ -182,10 +194,8 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
       for (auto controller : exclusive_access_controllers_) {
         controller->HandleUserReleasedEscapeEarly();
       }
-    } else if (event.GetType() ==
-                   input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-               !esc_key_hold_timer_.IsRunning() &&
-               event.GetModifiers() == blink::WebInputEvent::kNoModifiers) {
+    } else if (IsUnmodifiedEscKeyDownEvent(event) &&
+               !esc_key_hold_timer_.IsRunning()) {
       esc_key_hold_timer_.Start(
           FROM_HERE, kHoldEscapeTime,
           base::BindOnce(&ExclusiveAccessManager::HandleUserHeldEscape,
