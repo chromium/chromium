@@ -398,12 +398,19 @@ void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
   // Clip the requested area to the desktop area. See b/118675936.
   gfx::Size desktop_size = display_root_window_->bounds().size();
   request->set_area(gfx::Rect(desktop_size));
-  if (desktop_size != size_) {
-    // Perform scaling to desired size when copying output.
-    request->SetScaleRatio(
-        gfx::Vector2d(desktop_size.width(), desktop_size.height()),
-        gfx::Vector2d(size_.width(), size_.height()));
-  }
+
+  // Unconditionally set the scaling ratio, even if the two sizes are identical.
+  // What may be identical here may not be identical further down when the scale
+  // is transformed for the surface. Note that desktop_size is is not in
+  // physical pixels, and a scale factor is applied to adjust to them.
+  request->SetScaleRatio(
+      gfx::Vector2d(desktop_size.width(), desktop_size.height()),
+      gfx::Vector2d(size_.width(), size_.height()));
+
+  // Ensure we get the result size we want, and not +/- one pixel due to
+  // clamping or rounding.
+  request->set_result_selection(gfx::Rect(size_));
+
   layer->RequestCopyOfOutput(std::move(request));
 }
 
