@@ -127,17 +127,17 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
     }
 
     case kPixelFormat_hhhh: {
-      float actual_pixels_f32[num_pixels * 4];
-      float expected_pixels_f32[num_pixels * 4];
+      auto actual_pixels_f32 = base::HeapArray<float>::Uninit(num_pixels * 4);
+      auto expected_pixels_f32 = base::HeapArray<float>::Uninit(num_pixels * 4);
       EXPECT_TRUE(
           skcms_Transform(actual_pixels, skcms_PixelFormat_RGBA_hhhh,
                           skcms_AlphaFormat_Unpremul, nullptr,
-                          actual_pixels_f32, skcms_PixelFormat_BGRA_ffff,
+                          actual_pixels_f32.data(), skcms_PixelFormat_BGRA_ffff,
                           skcms_AlphaFormat_Unpremul, nullptr, num_pixels));
       EXPECT_TRUE(
           skcms_Transform(expected_pixels, skcms_PixelFormat_RGBA_hhhh,
                           skcms_AlphaFormat_Unpremul, nullptr,
-                          expected_pixels_f32, skcms_PixelFormat_BGRA_ffff,
+                          expected_pixels_f32.data(), skcms_PixelFormat_BGRA_ffff,
                           skcms_AlphaFormat_Unpremul, nullptr, num_pixels));
 
       for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
