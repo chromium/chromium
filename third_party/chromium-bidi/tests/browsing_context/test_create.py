@@ -101,10 +101,10 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCreatedEmitted(
         websocket, context_id, html, iframe):
     nested_iframe = html('<h1>PAGE_WITHOUT_CHILD_IFRAMES</h1>')
-    intermediate_page = html('<h1>PAGE_WITH_1_CHILD_IFRAME</h1>' +
-                             iframe(nested_iframe.replace('"', '&quot;')))
-    top_level_page = html('<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>' +
-                          iframe(intermediate_page.replace('"', '&quot;')))
+    intermediate_page = html(
+        f'<h1>PAGE_WITH_1_CHILD_IFRAME</h1>{iframe(nested_iframe)}')
+    top_level_page = html(
+        f'<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>{iframe(intermediate_page)}')
 
     await subscribe(websocket, ["browsingContext.contextCreated"])
 

@@ -73,7 +73,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 
@@ -119,7 +119,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         "type": "success",
         "result": {
             "navigation": navigation_id,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 
@@ -167,7 +167,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": html("<h2>test</h2>")
+            "url": url
         }
     }
 

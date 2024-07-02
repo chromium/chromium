@@ -21,28 +21,33 @@ HISTORY_LENGTH = 2
 
 
 @pytest.mark.asyncio
-async def test_traverse_history(websocket, context_id, html):
+async def test_traverse_history(websocket, context_id):
+    urls = []
     for i in range(HISTORY_LENGTH + 1):
-        await goto_url(websocket, context_id, html(i))
+        # TODO: use `html` fixture instead.
+        #  https://github.com/GoogleChromeLabs/chromium-bidi/issues/2376
+        url = f'data:text/html,{i}'
+        urls.append(url)
+        await goto_url(websocket, context_id, url)
 
     await subscribe(websocket, ["browsingContext.load"])
 
     await traverse_history(websocket, context_id, -2)
-    await assert_href_equals(websocket, html(HISTORY_LENGTH - 2))
+    await assert_href_equals(websocket, urls[HISTORY_LENGTH - 2])
 
     await traverse_history(websocket, context_id, 2)
-    await assert_href_equals(websocket, html(HISTORY_LENGTH))
+    await assert_href_equals(websocket, urls[HISTORY_LENGTH])
 
     await traverse_history(websocket, context_id, -1)
-    await assert_href_equals(websocket, html(HISTORY_LENGTH - 1))
+    await assert_href_equals(websocket, urls[HISTORY_LENGTH - 1])
 
     await traverse_history(websocket, context_id, 1)
-    await assert_href_equals(websocket, html(HISTORY_LENGTH))
+    await assert_href_equals(websocket, urls[HISTORY_LENGTH])
 
     # There is no event here.
     await traverse_history(websocket, context_id, 0)
     await assert_location_href_equals(websocket, context_id,
-                                      html(HISTORY_LENGTH))
+                                      urls[HISTORY_LENGTH])
 
 
 @pytest.mark.asyncio

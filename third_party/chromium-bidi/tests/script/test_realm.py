@@ -21,7 +21,8 @@ from test_helpers import (execute_command, read_JSON_message,
 
 
 @pytest.mark.asyncio
-async def test_realm_realmCreated(websocket, context_id, html):
+async def test_realm_realmCreated(websocket, context_id, html,
+                                  local_server_http):
     url = html()
 
     await subscribe(websocket, ["script.realmCreated"])
@@ -43,7 +44,7 @@ async def test_realm_realmCreated(websocket, context_id, html):
         "method": "script.realmCreated",
         "params": {
             "type": "window",
-            "origin": "null",
+            "origin": local_server_http.origin(),
             "realm": ANY_STR,
             "context": context_id,
         }

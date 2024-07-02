@@ -62,55 +62,20 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, context_id, html, iframe, url_example, url_another_example):
-    page_with_nested_iframe = html(iframe(url_example))
-    another_page_with_nested_iframe = html(iframe(url_another_example))
+async def test_browsingContext_afterNavigation_getTree_contextsReturned(
+        websocket, context_id, html, iframe, url_all_origins):
+    page_with_nested_iframe = html(iframe(url_all_origins))
+    another_page_with_nested_iframe = html(iframe(url_all_origins))
 
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
-    await goto_url(websocket, context_id, another_page_with_nested_iframe,
-                   "complete")
 
     result = await get_tree(websocket)
-
     assert {
         "contexts": [{
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                "url": url_another_example,
-                "children": [],
-                "userContext": "default",
-                "originalOpener": None
-            }],
-            "parent": None,
-            "url": another_page_with_nested_iframe,
-            "userContext": "default",
-            "originalOpener": None
-        }]
-    } == result
-
-
-@pytest.mark.asyncio
-async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
-        websocket, context_id, html, iframe):
-    nested_iframe = html('<h2>IFRAME</h2>')
-    another_nested_iframe = html('<h2>ANOTHER_IFRAME</h2>')
-    page_with_nested_iframe = html('<h1>MAIN_PAGE</h1>' +
-                                   iframe(nested_iframe))
-    another_page_with_nested_iframe = html('<h1>ANOTHER_MAIN_PAGE</h1>' +
-                                           iframe(another_nested_iframe))
-
-    await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
-
-    result = await get_tree(websocket)
-
-    assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": nested_iframe,
+                "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
                 "originalOpener": None
@@ -131,7 +96,7 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_context
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                "url": another_nested_iframe,
+                "url": url_all_origins,
                 "children": [],
                 "userContext": "default",
                 "originalOpener": None

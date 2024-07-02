@@ -220,7 +220,7 @@ async def test_remove_intercept_unblocks(websocket, context_id,
 @pytest.mark.asyncio
 async def test_remove_intercept_does_not_affect_another_intercept(
         websocket, context_id, another_context_id, url_example,
-        url_another_example):
+        url_example_another_origin):
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
@@ -246,7 +246,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": [{
                     "type": "string",
-                    "pattern": url_another_example,
+                    "pattern": url_example_another_origin,
                 }, ]
             },
         })
@@ -293,7 +293,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": url_another_example,
+                "url": url_example_another_origin,
                 "context": another_context_id,
                 "wait": "complete",
             }
@@ -313,7 +313,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
             "redirectCount": 0,
             "request": {
                 "request": ANY_STR,
-                "url": url_another_example,
+                "url": url_example_another_origin,
                 "method": "GET",
                 "headers": ANY_LIST,
                 "cookies": [],
@@ -362,7 +362,7 @@ async def test_remove_intercept_does_not_affect_another_intercept(
                     "headers": ANY_LIST,
                     "method": "GET",
                     "request": network_id_2,
-                    "url": url_another_example,
+                    "url": url_example_another_origin,
                 }, ),
             "timestamp": ANY_TIMESTAMP,
         },

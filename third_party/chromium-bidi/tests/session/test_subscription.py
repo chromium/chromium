@@ -100,7 +100,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInNestedContext(
-        websocket, context_id, html_iframe_same_origin, url_same_origin):
+        websocket, context_id, html, iframe, url_all_origins):
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
     # Navigate to some page.
@@ -108,7 +108,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": html_iframe_same_origin,
+                "url": html(iframe(url_all_origins)),
                 "wait": "complete",
                 "context": context_id
             }
@@ -121,7 +121,9 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
         "method": "browsingContext.contextCreated",
         "params": {
             "context": ANY_STR,
-            "url": url_same_origin,
+            # The `url` is always `about:blank`, as the navigation has not
+            # happened yet. https://github.com/w3c/webdriver-bidi/issues/220.
+            "url": "about:blank",
             "children": None,
             "parent": context_id,
             "userContext": "default",

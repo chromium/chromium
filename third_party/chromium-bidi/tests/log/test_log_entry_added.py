@@ -327,11 +327,12 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
         websocket, context_id, html):
     await subscribe(websocket, ["log.entryAdded"])
 
+    url = html("<script>throw new Error('some error')</script>")
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": html("<script>throw new Error('some error')</script>"),
+                "url": url,
                 "wait": "interactive",
                 "context": context_id
             }
@@ -353,10 +354,12 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": {
                 "callFrames": [{
-                    "url": "",
+                    "url": url,
                     "functionName": "",
                     "lineNumber": 0,
-                    "columnNumber": 14
+                    # Column number is a magical constant. It depends on the
+                    # html fixture wrapping content in document tag.
+                    "columnNumber": 127
                 }]
             },
             # ConsoleLogEntry

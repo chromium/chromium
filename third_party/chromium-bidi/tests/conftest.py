@@ -30,8 +30,24 @@ from tools.local_http_server import LocalHttpServer
 
 @pytest_asyncio.fixture(scope='session')
 def local_server_http() -> Generator[LocalHttpServer, None, None]:
-    """ Returns an instance of a LocalHttpServer without SSL. """
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to localhost.
+    """
     server = LocalHttpServer()
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()
+        return
+
+
+@pytest_asyncio.fixture(scope='session')
+def local_server_http_another_host() -> Generator[LocalHttpServer, None, None]:
+    """
+    Returns an instance of a LocalHttpServer without SSL pointing to `127.0.0.1`
+    """
+    server = LocalHttpServer('127.0.0.1')
     yield server
 
     server.clear()
@@ -208,19 +224,14 @@ async def sandbox_realm(websocket, context_id: str):
     return result["realm"]
 
 
-@pytest.fixture
-def url_same_origin():
-    """Return a same-origin URL."""
-    return 'about:blank'
-
-
-@pytest.fixture(
-    params=['url_example', 'url_another_example', 'html', 'about:blank'])
-def url_all_origins(request, url_example, url_another_example, html):
+@pytest.fixture(params=[
+    'url_example', 'url_example_another_origin', 'html', 'about:blank'
+])
+def url_all_origins(request, url_example, url_example_another_origin, html):
     if request.param == 'url_example':
         return url_example
-    if request.param == 'url_another_example':
-        return url_another_example
+    if request.param == 'url_example_another_origin':
+        return url_example_another_origin
     if request.param == 'html':
         return html('data:text/html,<h2>some page</h2>')
     if request.param == 'about:blank':
@@ -241,10 +252,10 @@ def url_example(local_server_http):
 
 
 @pytest.fixture
-def url_another_example(local_server_http):
+def url_example_another_origin(local_server_http_another_host):
     """Return a generic example URL with status code 200, in a domain other than
     the example_url fixture."""
-    return local_server_http.url_200('127.0.0.1')
+    return local_server_http_another_host.url_200()
 
 
 @pytest.fixture
@@ -397,10 +408,10 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
 
 
 @pytest.fixture
-def html():
-    """Return a factory for HTML data URL with the given content."""
+def html(local_server_http):
+    """Return a factory for URL with the given content."""
     def html(content=""):
-        return f'data:text/html,{content}'
+        return local_server_http.url_200(content=content)
 
     return html
 
@@ -414,17 +425,11 @@ def iframe():
     return iframe
 
 
-@pytest.fixture
-def html_iframe_same_origin(html, iframe, url_same_origin):
-    """Return a page URL with an iframe of the same origin."""
-    return html(iframe(url_same_origin))
-
-
 @pytest_asyncio.fixture
-async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
+async def iframe_id(websocket, context_id, html, iframe):
     """Navigate to a page with an iframe of the same origin, and return the
     iframe browser context id."""
-    await goto_url(websocket, context_id, html_iframe_same_origin)
+    await goto_url(websocket, context_id, html(iframe(html("<h1>FRAME</h1>"))))
     result = await get_tree(websocket, context_id)
 
     iframe_id = result["contexts"][0]["children"][0]["context"]
