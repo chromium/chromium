@@ -44,6 +44,11 @@ class WebVector;
 
 struct Impression;
 
+// Handles source and trigger registration from blink.
+// See
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registering-attribution-sources
+// and
+// https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution.
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
