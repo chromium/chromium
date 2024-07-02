@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "base/files/file.h"
+#include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 
@@ -33,7 +34,9 @@ class NET_EXPORT FileStream {
   explicit FileStream(const scoped_refptr<base::TaskRunner>& task_runner);
 
   // Construct a FileStream with an already opened file. |file| must be opened
-  // for async reading on Windows, and sync reading everywehere else.
+  // for async reading on Windows, and sync reading everywehere else. To use
+  // ConnectNamedPipe(), `file` must wrap a handle from CreateNamedPipe() with
+  // `FILE_FLAG_OVERLAPPED`.
   //
   // Uses |task_runner| for asynchronous operations.
   FileStream(base::File file,
@@ -156,6 +159,15 @@ class NET_EXPORT FileStream {
   //
   // This method should not be called if the stream was opened READ_ONLY.
   virtual int Flush(CompletionOnceCallback callback);
+
+#if BUILDFLAG(IS_WIN)
+  // Waits for a client to connect to the named pipe provided to the two-arg
+  // constructor. Returns `OK` if the client has already connected,
+  // `ERR_IO_PENDING` if `callback` will be run later with the result of the
+  // operation once the client connects, or another `Error` value in case of
+  // failure.
+  int ConnectNamedPipe(CompletionOnceCallback callback);
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   class Context;

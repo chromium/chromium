@@ -28,6 +28,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
+#include "net/base/file_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -71,9 +73,6 @@ namespace extensions {
 
 class FakeLauncher : public NativeProcessLauncher {
  public:
-  FakeLauncher(base::File read_file, base::File write_file)
-      : read_file_(std::move(read_file)), write_file_(std::move(write_file)) {}
-
   static std::unique_ptr<NativeProcessLauncher> Create(
       base::FilePath read_file,
       base::FilePath write_file) {
@@ -83,9 +82,9 @@ class FakeLauncher : public NativeProcessLauncher {
     read_flags |= base::File::FLAG_ASYNC;
     write_flags |= base::File::FLAG_ASYNC;
 #endif
-    return std::unique_ptr<NativeProcessLauncher>(
-        new FakeLauncher(base::File(read_file, read_flags),
-                         base::File(write_file, write_flags)));
+    return std::unique_ptr<NativeProcessLauncher>(new FakeLauncher(
+        CreateBackgroundTaskRunner(), base::File(read_file, read_flags),
+        base::File(write_file, write_flags)));
   }
 
   static std::unique_ptr<NativeProcessLauncher> CreateWithPipeInput(
@@ -96,21 +95,39 @@ class FakeLauncher : public NativeProcessLauncher {
     write_flags |= base::File::FLAG_ASYNC;
 #endif
 
-    return std::unique_ptr<NativeProcessLauncher>(new FakeLauncher(
-        std::move(read_pipe), base::File(write_file, write_flags)));
+    return std::unique_ptr<NativeProcessLauncher>(
+        new FakeLauncher(CreateBackgroundTaskRunner(), std::move(read_pipe),
+                         base::File(write_file, write_flags)));
   }
 
   void Launch(const GURL& origin,
               const std::string& native_host_name,
               LaunchedCallback callback) const override {
-    std::move(callback).Run(NativeProcessLauncher::RESULT_SUCCESS,
-                            base::Process(), std::move(read_file_),
-                            std::move(write_file_));
+    std::move(callback).Run(
+        NativeProcessLauncher::RESULT_SUCCESS, base::Process(),
+        std::exchange(read_file_, base::kInvalidPlatformFile),
+        std::move(read_stream_), std::move(write_stream_));
   }
 
  private:
-  mutable base::File read_file_;
-  mutable base::File write_file_;
+  FakeLauncher(scoped_refptr<base::TaskRunner> task_runner,
+               base::File read_file,
+               base::File write_file)
+      : read_file_(read_file.GetPlatformFile()),
+        read_stream_(std::make_unique<net::FileStream>(std::move(read_file),
+                                                       task_runner)),
+        write_stream_(std::make_unique<net::FileStream>(std::move(write_file),
+                                                        task_runner)) {}
+
+  static scoped_refptr<base::TaskRunner> CreateBackgroundTaskRunner() {
+    return base::ThreadPool::CreateTaskRunner(
+        {base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
+  }
+
+  mutable base::PlatformFile read_file_;
+  mutable std::unique_ptr<net::FileStream> read_stream_;
+  mutable std::unique_ptr<net::FileStream> write_stream_;
 };
 
 class NativeMessagingTest : public ::testing::Test,

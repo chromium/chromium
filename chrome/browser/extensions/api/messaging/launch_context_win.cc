@@ -1,39 +1,41 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
+#include "chrome/browser/extensions/api/messaging/launch_context.h"
 
 #include <windows.h>
 
 #include <shellapi.h>
-#include <stdint.h>
 
 #include <string>
+#include <utility>
 
-#include "base/command_line.h"
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/strcat_win.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"
-#include "extensions/common/extension_features.h"
+#include "net/base/file_stream.h"
+#include "net/base/net_errors.h"
 
 namespace extensions {
-
-const wchar_t kChromeNativeMessagingRegistryKey[] =
-    L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts";
-#if BUILDFLAG(CHROMIUM_BRANDING)
-const wchar_t kChromiumNativeMessagingRegistryKey[] =
-    L"SOFTWARE\\Chromium\\NativeMessagingHosts";
-#endif
 
 namespace {
 
@@ -59,6 +61,9 @@ bool GetManifestPathWithFlags(HKEY root_key,
                               const std::wstring& host_name,
                               std::wstring* result) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
+  static constexpr wchar_t kChromiumNativeMessagingRegistryKey[] =
+      L"SOFTWARE\\Chromium\\NativeMessagingHosts";
+
   // Try to read the path using the Chromium-specific registry for Chromium.
   // If that fails, fallback to Chrome-specific registry key below.
   if (GetManifestPathWithFlagsFromSubkey(root_key, flags,
@@ -68,6 +73,9 @@ bool GetManifestPathWithFlags(HKEY root_key,
   }
 #endif
 
+  static constexpr wchar_t kChromeNativeMessagingRegistryKey[] =
+      L"SOFTWARE\\Google\\Chrome\\NativeMessagingHosts";
+
   return GetManifestPathWithFlagsFromSubkey(
       root_key, flags, kChromeNativeMessagingRegistryKey, host_name, result);
 }
@@ -76,10 +84,9 @@ bool GetManifestPath(HKEY root_key,
                      const std::wstring& host_name,
                      std::wstring* result) {
   // First check 32-bit registry and then try 64-bit.
-  return GetManifestPathWithFlags(
-             root_key, KEY_WOW64_32KEY, host_name, result) ||
-         GetManifestPathWithFlags(
-             root_key, KEY_WOW64_64KEY, host_name, result);
+  return GetManifestPathWithFlags(root_key, KEY_WOW64_32KEY, host_name,
+                                  result) ||
+         GetManifestPathWithFlags(root_key, KEY_WOW64_64KEY, host_name, result);
 }
 
 // If the Host is an executable, we will invoke it directly to avoid problems
@@ -154,30 +161,31 @@ base::Process LaunchNativeHostViaCmd(const std::wstring& command,
 }  // namespace
 
 // static
-base::FilePath NativeProcessLauncher::FindManifest(
-    const std::string& host_name,
-    bool allow_user_level_hosts,
-    std::string* error_message) {
+base::FilePath LaunchContext::FindManifest(const std::string& host_name,
+                                           bool allow_user_level_hosts,
+                                           std::string& error_message) {
   std::wstring host_name_wide = base::UTF8ToWide(host_name);
 
   // If permitted, look in HKEY_CURRENT_USER first. If the manifest isn't found
   // there, then try HKEY_LOCAL_MACHINE. https://crbug.com/1034919#c6
   std::wstring path_str;
   bool found = false;
-  if (allow_user_level_hosts)
+  if (allow_user_level_hosts) {
     found = GetManifestPath(HKEY_CURRENT_USER, host_name_wide, &path_str);
-  if (!found)
+  }
+  if (!found) {
     found = GetManifestPath(HKEY_LOCAL_MACHINE, host_name_wide, &path_str);
+  }
 
   if (!found) {
-    *error_message =
+    error_message =
         "Native messaging host " + host_name + " is not registered.";
     return base::FilePath();
   }
 
   base::FilePath manifest_path(path_str);
   if (!manifest_path.IsAbsolute()) {
-    *error_message = "Path to native messaging host manifest must be absolute.";
+    error_message = "Path to native messaging host manifest must be absolute.";
     return base::FilePath();
   }
 
@@ -185,11 +193,8 @@ base::FilePath NativeProcessLauncher::FindManifest(
 }
 
 // static
-bool NativeProcessLauncher::LaunchNativeProcess(
+std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
     const base::CommandLine& command_line,
-    base::Process* process,
-    base::File* read_file,
-    base::File* write_file,
     bool native_hosts_executables_launch_directly) {
   // Timeout for the IO pipes.
   const DWORD kTimeoutMs = 5000;
@@ -200,7 +205,7 @@ bool NativeProcessLauncher::LaunchNativeProcess(
 
   if (!command_line.GetProgram().IsAbsolute()) {
     LOG(ERROR) << "Native Messaging host path must be absolute.";
-    return false;
+    return std::nullopt;
   }
 
   uint64_t pipe_name_token;
@@ -220,7 +225,7 @@ bool NativeProcessLauncher::LaunchNativeProcess(
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdout_pipe.IsValid()) {
     LOG(ERROR) << "Failed to create pipe " << out_pipe_name;
-    return false;
+    return std::nullopt;
   }
 
   base::win::ScopedHandle stdin_pipe(::CreateNamedPipeW(
@@ -230,7 +235,7 @@ bool NativeProcessLauncher::LaunchNativeProcess(
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdin_pipe.IsValid()) {
     LOG(ERROR) << "Failed to create pipe " << in_pipe_name;
-    return false;
+    return std::nullopt;
   }
 
   std::wstring command = command_line.GetCommandLineString();
@@ -238,9 +243,9 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   options.current_directory = command_line.GetProgram().DirName();
   options.start_hidden = true;
 
-  bool use_direct_launch =
-      command_line.GetProgram().MatchesFinalExtension(L".exe") &&
-      native_hosts_executables_launch_directly;
+  const bool use_direct_launch =
+      native_hosts_executables_launch_directly &&
+      command_line.GetProgram().MatchesFinalExtension(L".exe");
 
   base::Process launched_process;
   if (use_direct_launch) {
@@ -264,25 +269,99 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   if (!launched_process.IsValid()) {
     LOG(ERROR) << "Error launching process "
                << command_line.GetProgram().MaybeAsASCII();
-    return false;
+    return std::nullopt;
   }
 
-  // Wait for the named pipes to be opened by the host.
-  bool stdout_connected = ConnectNamedPipe(stdout_pipe.Get(), NULL) ?
-      TRUE : GetLastError() == ERROR_PIPE_CONNECTED;
-  bool stdin_connected = ConnectNamedPipe(stdin_pipe.Get(), NULL) ?
-      TRUE : GetLastError() == ERROR_PIPE_CONNECTED;
-  if (!stdout_connected || !stdin_connected) {
-    launched_process.Terminate(0, false);
-    LOG(ERROR) << "Failed to connect IO pipes when starting "
-               << command_line.GetProgram().MaybeAsASCII();
-    return false;
+  return ProcessState(std::move(launched_process), std::move(stdout_pipe),
+                      std::move(stdin_pipe));
+}
+
+void LaunchContext::ConnectPipes(base::ScopedPlatformFile read_file,
+                                 base::ScopedPlatformFile write_file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(native_process_.IsValid());
+
+  read_stream_ = std::make_unique<net::FileStream>(
+      base::File(std::move(read_file), /*async=*/true),
+      background_task_runner_);
+  write_stream_ = std::make_unique<net::FileStream>(
+      base::File(std::move(write_file), /*async=*/true),
+      background_task_runner_);
+
+  const int read_result = read_stream_->ConnectNamedPipe(
+      base::BindOnce(&LaunchContext::OnReadStreamConnectResult, GetWeakPtr()));
+  const int write_result = write_stream_->ConnectNamedPipe(
+      base::BindOnce(&LaunchContext::OnWriteStreamConnectResult, GetWeakPtr()));
+
+  read_pipe_connected_ = read_result == net::OK;
+  write_pipe_connected_ = write_result == net::OK;
+
+  if ((!read_pipe_connected_ && read_result != net::ERR_IO_PENDING) ||
+      (!write_pipe_connected_ && write_result != net::ERR_IO_PENDING)) {
+    // Failed connecting to one of the pipes to talk to the host.
+    OnFailure(NativeProcessLauncher::RESULT_FAILED_TO_START);
+    return;
   }
 
-  *process = std::move(launched_process);
-  *read_file = base::File(std::move(stdout_pipe), true /* async */);
-  *write_file = base::File(std::move(stdin_pipe), true /* async */);
-  return true;
+  if (read_pipe_connected_ && write_pipe_connected_) {
+    // The host has already connected to both pipes.
+    OnSuccess(base::kInvalidPlatformFile, std::move(read_stream_),
+              std::move(write_stream_));
+    return;
+  }
+
+  // Wait for calls to one or both of the StreamConnectResult methods once the
+  // connect operation(s) complete. In the meantime, watch the host process to
+  // make sure it doesn't tip over while waiting.
+  process_watcher_.StartWatchingOnce(native_process_.Handle(), this);
+}
+
+void LaunchContext::OnReadStreamConnectResult(int net_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (net_error != net::OK) {
+    // Failed to connect.
+    OnFailure(NativeProcessLauncher::RESULT_FAILED_TO_START);
+    return;
+  }
+  // The host has connected to the read pipe.
+  read_pipe_connected_ = true;
+  OnPipeConnected();
+}
+
+void LaunchContext::OnWriteStreamConnectResult(int net_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (net_error != net::OK) {
+    // Failed to connect.
+    OnFailure(NativeProcessLauncher::RESULT_FAILED_TO_START);
+    return;
+  }
+  // The host has connected to the write pipe.
+  write_pipe_connected_ = true;
+  OnPipeConnected();
+}
+
+void LaunchContext::OnPipeConnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!read_pipe_connected_ || !write_pipe_connected_) {
+    return;  // At least one pipe's result is still outstanding.
+  }
+  process_watcher_.StopWatching();
+  OnSuccess(base::kInvalidPlatformFile, std::move(read_stream_),
+            std::move(write_stream_));
+}
+
+void LaunchContext::OnObjectSignaled(HANDLE object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The host process has terminated unexpectedly.
+  CHECK_EQ(object, native_process_.Handle());
+  int exit_code = 0;  // EXIT_SUCCESS
+  if (native_process_.WaitForExitWithTimeout({}, &exit_code)) {
+    LOG(ERROR) << "Native Messaging host process exited with code "
+               << exit_code;
+  } else {
+    LOG(ERROR) << "Native Messaging host process exited unexpectedly";
+  }
+  OnFailure(NativeProcessLauncher::RESULT_FAILED_TO_START);
 }
 
 }  // namespace extensions

@@ -41,6 +41,12 @@ class WithTaskEnvironment {
     return task_environment_.MainThreadIsIdle();
   }
 
+  [[nodiscard]] base::RepeatingClosure QuitClosure() {
+    return task_environment_.QuitClosure();
+  }
+
+  void RunUntilQuit() { task_environment_.RunUntilQuit(); }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   void FastForwardBy(base::TimeDelta delta) {

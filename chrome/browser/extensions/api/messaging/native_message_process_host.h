@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/files/file.h"
+#include "base/files/platform_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -69,8 +69,9 @@ class NativeMessageProcessHost : public NativeMessageHost {
   // Callback for NativeProcessLauncher::Launch().
   void OnHostProcessLaunched(NativeProcessLauncher::LaunchResult result,
                              base::Process process,
-                             base::File read_file,
-                             base::File write_file);
+                             base::PlatformFile read_file,
+                             std::unique_ptr<net::FileStream> read_stream,
+                             std::unique_ptr<net::FileStream> write_stream);
 
   // Helper methods to read incoming messages.
   void WaitRead();

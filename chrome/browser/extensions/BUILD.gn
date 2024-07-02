@@ -1148,6 +1148,8 @@ source_set("extensions") {
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
       "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
       "api/image_writer_private/operation_nonchromeos.cc",
+      "api/messaging/launch_context.cc",
+      "api/messaging/launch_context.h",
       "api/messaging/native_message_process_host.cc",
       "api/messaging/native_message_process_host.h",
       "api/messaging/native_messaging_launch_from_native.cc",
@@ -1164,7 +1166,7 @@ source_set("extensions") {
       "//components/keep_alive_registry",
     ]
     if (is_posix) {
-      sources += [ "api/messaging/native_process_launcher_posix.cc" ]
+      sources += [ "api/messaging/launch_context_posix.cc" ]
     }
     if (use_gio) {
       configs += [ "//build/linux:gio_config" ]
@@ -1405,7 +1407,7 @@ source_set("extensions") {
   if (is_win) {
     sources += [
       "api/image_writer_private/removable_storage_provider_win.cc",
-      "api/messaging/native_process_launcher_win.cc",
+      "api/messaging/launch_context_win.cc",
       "external_registry_loader_win.cc",
       "external_registry_loader_win.h",
       "global_shortcut_listener_win.cc",

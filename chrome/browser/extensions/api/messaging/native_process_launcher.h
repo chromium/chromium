@@ -6,19 +6,24 @@
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_NATIVE_PROCESS_LAUNCHER_H_
 
 #include <memory>
+#include <string>
 
-#include "base/files/file.h"
+#include "base/files/platform_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/process/process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
 
 namespace base {
-class CommandLine;
 class FilePath;
 }
+
+namespace net {
+class FileStream;
+}
+
+class Profile;
 
 namespace extensions {
 
@@ -32,13 +37,15 @@ class NativeProcessLauncher {
     RESULT_FAILED_TO_START,
   };
 
-  // Callback that's called after the process has been launched. |result| is set
-  // to false in case of a failure. Handler must take ownership of the IO
-  // handles.
-  using LaunchedCallback = base::OnceCallback<void(LaunchResult result,
-                                                   base::Process process,
-                                                   base::File read_file,
-                                                   base::File write_file)>;
+  // Callback that's called after the process has been launched. Handler must
+  // take ownership of the process and streams. `read_file`, supplied only on
+  // POSIX, is the file descriptor owned by `read_stream`.
+  using LaunchedCallback =
+      base::OnceCallback<void(LaunchResult result,
+                              base::Process process,
+                              base::PlatformFile read_file,
+                              std::unique_ptr<net::FileStream> read_stream,
+                              std::unique_ptr<net::FileStream> write_stream)>;
 
   // Creates default launcher for the current OS. |native_view| refers to the
   // window that contains calling page. Can be nullptr, e.g. for background
@@ -58,8 +65,6 @@ class NativeProcessLauncher {
       const std::string& error_arg,
       Profile* profile);
 
-  NativeProcessLauncher() = default;
-
   NativeProcessLauncher(const NativeProcessLauncher&) = delete;
   NativeProcessLauncher& operator=(const NativeProcessLauncher&) = delete;
 
@@ -76,23 +81,7 @@ class NativeProcessLauncher {
                       LaunchedCallback callback) const = 0;
 
  protected:
-  // The following two methods are platform specific and are implemented in
-  // platform-specific .cc files.
-
-  // Finds manifest file for the native messaging host |native_host_name|.
-  // |user_level| is set to true if the manifest is installed on user level.
-  // Returns an empty path if the host with the specified name cannot be found.
-  static base::FilePath FindManifest(const std::string& native_host_name,
-                                     bool allow_user_level_hosts,
-                                     std::string* error_message);
-
-  // Launches native messaging process.
-  static bool LaunchNativeProcess(
-      const base::CommandLine& command_line,
-      base::Process* process,
-      base::File* read_file,
-      base::File* write_file,
-      bool native_hosts_executables_launch_directly);
+  NativeProcessLauncher() = default;
 };
 
 }  // namespace extensions

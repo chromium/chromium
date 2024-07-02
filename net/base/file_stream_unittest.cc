@@ -19,13 +19,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -895,6 +900,171 @@ TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
   EXPECT_EQ(file_size, total_bytes_read);
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+// A test fixture with helpers to create and connect to a named pipe for the
+// sake of testing FileStream::ConnectNamedPipe().
+class FileStreamPipeTest : public PlatformTest, public WithTaskEnvironment {
+ protected:
+  FileStreamPipeTest() = default;
+
+  // Creates a named pipe (of name `pipe_name_`) for asynchronous use. Returns a
+  // `File` wrapping it or an error.
+  base::File CreatePipe() {
+    base::win::ScopedHandle pipe(::CreateNamedPipeW(
+        pipe_name_.c_str(),
+        PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE |
+            FILE_FLAG_OVERLAPPED,
+        PIPE_TYPE_BYTE, /*nMaxInstances=*/1,
+        /*nOutBufferSize=*/0, /*nInBufferSize=*/0, /*nDefaultTimeOut=*/0,
+        /*lpSecurityAttributes=*/nullptr));
+    if (pipe.IsValid()) {
+      return base::File(std::move(pipe), /*async=*/true);
+    }
+    return base::File(base::File::GetLastFileError());
+  }
+
+  // Opens the pipe named `pipe_name_`, which must have previously been created
+  // via CreatePipe(). Returns a `File` wrapping it or an error.
+  base::File OpenPipe() {
+    base::win::ScopedHandle pipe(
+        ::CreateFileW(pipe_name_.c_str(), GENERIC_READ | GENERIC_WRITE,
+                      /*dwShareMode=*/0, /*lpSecurityAttributes=*/nullptr,
+                      OPEN_EXISTING, /*dwFlagsAndAttributes=*/0,
+                      /*hTemplateFile=*/nullptr));
+    if (!pipe.IsValid()) {
+      return base::File(base::File::GetLastFileError());
+    }
+    return base::File(std::move(pipe));
+  }
+
+ private:
+  // A random name for a pipe to be used for the test.
+  const std::wstring pipe_name_{base::StrCat(
+      {L"\\\\.\\pipe\\chromium.test.",
+       base::ASCIIToWide(base::UnguessableToken::Create().ToString())})};
+};
+
+// Tests that FileStream::ConnectNamedPipe() works when the client has already
+// opened the pipe.
+TEST_F(FileStreamPipeTest, ConnectNamedPipeAfterClient) {
+  base::File pipe(CreatePipe());
+  ASSERT_TRUE(pipe.IsValid())
+      << base::File::ErrorToString(pipe.error_details());
+
+  FileStream pipe_stream(std::move(pipe),
+                         base::SingleThreadTaskRunner::GetCurrentDefault());
+  ASSERT_TRUE(pipe_stream.IsOpen());
+
+  // Open the client end of the pipe.
+  base::File client(OpenPipe());
+  ASSERT_TRUE(client.IsValid())
+      << base::File::ErrorToString(client.error_details());
+
+  // Connecting should be synchronous and should not run the callback, but
+  // handle both cases anyway for the sake of robustness against the unexpected.
+  TestCompletionCallback callback;
+  ASSERT_THAT(
+      callback.GetResult(pipe_stream.ConnectNamedPipe(callback.callback())),
+      IsOk());
+
+  // Send some data over the pipe to be sure it works.
+  scoped_refptr<IOBufferWithSize> write_io_buffer = CreateTestDataBuffer();
+  int result = pipe_stream.Write(write_io_buffer.get(), write_io_buffer->size(),
+                                 callback.callback());
+
+  // Perform a synchronous read on the pipe.
+  auto buffer = base::HeapArray<uint8_t>::WithSize(write_io_buffer->size());
+  ASSERT_EQ(client.ReadAtCurrentPos(buffer.as_span()), write_io_buffer->size());
+
+  // The write above may have returned ERR_IO_PENDING. Pump messages until it
+  // completes, if so.
+  ASSERT_THAT(callback.GetResult(result), write_io_buffer->size());
+  ASSERT_EQ(buffer.as_span(), base::as_bytes(write_io_buffer->span()));
+}
+
+// Tests that FileStream::ConnectNamedPipe() works when called before the client
+// has a chance to open the pipe.
+TEST_F(FileStreamPipeTest, ConnectNamedPipeBeforeClient) {
+  base::File pipe(CreatePipe());
+  ASSERT_TRUE(pipe.IsValid())
+      << base::File::ErrorToString(pipe.error_details());
+
+  FileStream pipe_stream(std::move(pipe),
+                         base::SingleThreadTaskRunner::GetCurrentDefault());
+  ASSERT_TRUE(pipe_stream.IsOpen());
+
+  // The client hasn't opened yet, so the connect request should wait for an
+  // IO completion packet.
+  TestCompletionCallback callback;
+  ASSERT_THAT(pipe_stream.ConnectNamedPipe(callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  // Open the client end of the pipe.
+  base::File client(OpenPipe());
+  ASSERT_TRUE(client.IsValid())
+      << base::File::ErrorToString(client.error_details());
+
+  // Pump messages until the callback given to ConnectNamedPipe is run.
+  ASSERT_THAT(callback.WaitForResult(), IsOk());
+}
+
+// Tests that nothing bad happens if a FileStream is destroyed after
+// ConnectNamedPipe() but before a client connects.
+TEST_F(FileStreamPipeTest, CloseBeforeConnect) {
+  {
+    base::File pipe(CreatePipe());
+    ASSERT_TRUE(pipe.IsValid())
+        << base::File::ErrorToString(pipe.error_details());
+
+    FileStream pipe_stream(std::move(pipe),
+                           base::SingleThreadTaskRunner::GetCurrentDefault());
+    ASSERT_TRUE(pipe_stream.IsOpen());
+
+    // The client hasn't opened yet, so the connect request should wait for an
+    // IO completion packet. The callback should never be run, but it will be
+    // destroyed asynchronously after the stream is closed. Give the callback a
+    // `ScopedClosureRunner` that will quit the run loop when the callback is
+    // destroyed.
+    ASSERT_THAT(pipe_stream.ConnectNamedPipe(base::BindLambdaForTesting(
+                    [loop_quitter = base::ScopedClosureRunner(QuitClosure())](
+                        int error) { FAIL(); })),
+                IsError(ERR_IO_PENDING));
+
+    // Delete the FileStream; thereby cancelling the pending IO operation.
+  }
+
+  // Pump messages until the callback is destroyed following cancellation. The
+  // context is still alive at this point, as a task to close the file has been
+  // posted to the stream's task runner.
+  RunUntilQuit();
+
+  // Pump messages again until the task to close the file and delete the context
+  // runs.
+  RunUntilIdle();
+}
+
+using FileStreamPipeDeathTest = FileStreamPipeTest;
+
+// Tests that FileStream crashes if ConnectNamedPipe() is called for a normal
+// file.
+TEST_F(FileStreamPipeDeathTest, CannotConnectFile) {
+  const base::FilePath exe_path(base::PathService::CheckedGet(base::FILE_EXE));
+  base::File exe_file(exe_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_ASYNC |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
+  ASSERT_TRUE(exe_file.IsValid())
+      << base::File::ErrorToString(exe_file.error_details());
+
+  // Pass that file to a FileStream.
+  FileStream file_stream(std::move(exe_file),
+                         base::SingleThreadTaskRunner::GetCurrentDefault());
+  ASSERT_TRUE(file_stream.IsOpen());
+
+  ASSERT_CHECK_DEATH(
+      { file_stream.ConnectNamedPipe(CompletionOnceCallback()); });
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
