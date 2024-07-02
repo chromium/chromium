@@ -103,16 +103,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting protected EmptyTabObserver mUrlUpdatedObserver;
 
-    @IntDef({PriceDropMethod.NONE, PriceDropMethod.LEGACY, PriceDropMethod.NEW})
-    @Retention(RetentionPolicy.SOURCE)
-    protected @interface PriceDropMethod {
-        int NONE = 0;
-        int LEGACY = 1;
-        int NEW = 2;
-    }
-
-    @VisibleForTesting protected @PriceDropMethod int mPriceDropMethod = PriceDropMethod.NEW;
-
     static {
         PersistedTabData.addSupportedMaintenanceClass(USER_DATA_KEY);
     }
@@ -851,33 +841,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
-     * @return {@link PriceDrop} relating to the offer for the {@link ShoppingPersistedTabData}
-     *     TODO(crbug.com/40156017) Implement getPriceDrop to only return a result if there is
-     *     actually a price drop. Ensure priceString and previousPriceString are integers. Deprecate
-     *     getPrice and getPriceString(). Change price and previousPriceString representations to be
-     *     numeric to make drop comparison easier.
-     */
-    public PriceDrop getPriceDropLegacy() {
-        assert mPriceDropMethod == PriceDropMethod.LEGACY;
-        if (mPriceDropData.priceMicros == NO_PRICE_KNOWN
-                || mPriceDropData.previousPriceMicros == NO_PRICE_KNOWN
-                || !isQualifyingPriceDrop()
-                || isPriceChangeStale()) {
-            return null;
-        }
-        String formattedPrice = formatPrice(mPriceDropData.priceMicros);
-        String formattedPreviousPrice = formatPrice(mPriceDropData.previousPriceMicros);
-        if (formattedPrice.equals(formattedPreviousPrice)) {
-            return null;
-        }
-        return new PriceDrop(formattedPrice, formattedPreviousPrice);
-    }
-
-    /**
      * @return {@link PriceDrop} relating to the main offer in the page.
      */
     public PriceDrop getPriceDrop() {
-        assert mPriceDropMethod == PriceDropMethod.NEW;
         if (!isValidPriceDropUpdate()
                 || isPriceChangeStale()
                 || !mTab.getUrl().equals(mPriceDropData.gurl)) {
