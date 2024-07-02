@@ -298,8 +298,11 @@ dictionary MLTriangularOptions {
                                                  MLOperand hiddenState, MLOperand cellState, [EnforceRange] unsigned long hiddenSize,
                                                  optional MLLstmCellOptions options = {});
 
-  [RaisesException] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
-                sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand pad(MLOperand input, sequence<[EnforceRange] unsigned long> beginningPadding,
+                  sequence<[EnforceRange] unsigned long> endingPadding, optional MLPadOptions options = {});
 
   // Pooling operations
   [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
@@ -324,7 +327,10 @@ dictionary MLTriangularOptions {
 
   [RaisesException] MLOperand reshape(MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
 
-  [RaisesException] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand resample2d(MLOperand input, optional MLResample2dOptions options = {});
 
   [RaisesException] MLOperand sigmoid(MLOperand input);
   [RaisesException] MLActivation sigmoid();

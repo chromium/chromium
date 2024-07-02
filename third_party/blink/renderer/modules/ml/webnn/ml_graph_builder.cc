@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -77,6 +79,16 @@ namespace {
     exception_state.ThrowTypeError(String::FromUTF8(error));           \
     return nullptr;                                                    \
   });
+
+void LogConsoleWarning(ScriptState* script_state, const String& message) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context) {
+    return;
+  }
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning, message));
+}
 
 webnn::InputOperandLayout BlinkInputOperandLayoutToComponent(
     blink::V8MLInputOperandLayout::Enum type) {
@@ -1697,7 +1709,8 @@ MLOperand* MLGraphBuilder::matmul(const MLOperand* a,
   return output;
 }
 
-MLOperand* MLGraphBuilder::pad(const MLOperand* input,
+MLOperand* MLGraphBuilder::pad(ScriptState* script_state,
+                               const MLOperand* input,
                                const Vector<uint32_t>& beginning_padding,
                                const Vector<uint32_t>& ending_padding,
                                const MLPadOptions* options,
@@ -1711,7 +1724,8 @@ MLOperand* MLGraphBuilder::pad(const MLOperand* input,
 
   if (options->mode().AsEnum() != V8MLPaddingMode::Enum::kConstant &&
       fabs(options->value() - 0.0f) > std::numeric_limits<float>::epsilon()) {
-    ml_context_->LogConsoleWarning(
+    LogConsoleWarning(
+        script_state,
         "The pad value is ignored unless the options.mode is set to "
         "constant.");
   }
@@ -1857,7 +1871,8 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   return output;
 }
 
-MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
+MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
+                                      const MLOperand* input,
                                       const MLResample2dOptions* options,
                                       ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
@@ -1867,7 +1882,8 @@ MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
   Vector<float> default_scales = {1.0, 1.0};
   if (options->hasSizes()) {
     if (options->hasScales()) {
-      ml_context_->LogConsoleWarning(
+      LogConsoleWarning(
+          script_state,
           "When sizes and scales are both specified, scales argument is "
           "ignored.");
     }

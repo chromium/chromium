@@ -28,7 +28,7 @@
 
 namespace blink {
 
-class ML;
+class ExecutionContext;
 class MLBuffer;
 class MLBufferDescriptor;
 class MLComputeResult;
@@ -39,12 +39,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
  public:
   MLContext(
+      ExecutionContext* execution_context,
       const V8MLDevicePreference device_preference,
       const V8MLDeviceType device_type,
       const V8MLPowerPreference power_preference,
       const V8MLModelFormat model_format,
       const unsigned int num_threads,
-      ML* ml,
       webnn::mojom::blink::CreateContextSuccessPtr create_context_success);
 
   MLContext(const MLContext&) = delete;
@@ -57,9 +57,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   V8MLPowerPreference GetPowerPreference() const;
   V8MLModelFormat GetModelFormat() const;
   unsigned int GetNumThreads() const;
-  void LogConsoleWarning(const String& message);
-
-  ML* GetML();
 
   const webnn::ContextProperties& GetProperties() { return properties_; }
 
@@ -149,8 +146,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   V8MLPowerPreference power_preference_;
   V8MLModelFormat model_format_;
   unsigned int num_threads_;
-
-  Member<ML> ml_;
 
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.

@@ -52,6 +52,7 @@ class MLTransposeOptions;
 class MLTriangularOptions;
 class MLOperand;
 class MLOperandDescriptor;
+class ScriptState;
 
 typedef HeapVector<std::pair<String, Member<MLOperand>>> MLNamedOperands;
 
@@ -268,7 +269,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLOperand* b,
                     ExceptionState& exception_state);
 
-  MLOperand* pad(const MLOperand* input,
+  MLOperand* pad(ScriptState* script_state,
+                 const MLOperand* input,
                  const Vector<uint32_t>& beginningPadding,
                  const Vector<uint32_t>& endingPadding,
                  const MLPadOptions* options,
@@ -328,7 +330,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                      const Vector<uint32_t>& new_shape,
                      ExceptionState& exception_state);
 
-  MLOperand* resample2d(const MLOperand* input,
+  MLOperand* resample2d(ScriptState* script_state,
+                        const MLOperand* input,
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
 

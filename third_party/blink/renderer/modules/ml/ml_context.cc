@@ -25,8 +25,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_support_limits.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -52,24 +50,23 @@ MLSupportLimits* SupportedDataTypesToSupportLimits(
 }  // namespace
 
 MLContext::MLContext(
+    ExecutionContext* execution_context,
     const V8MLDevicePreference device_preference,
     const V8MLDeviceType device_type,
     const V8MLPowerPreference power_preference,
     const V8MLModelFormat model_format,
     const unsigned int num_threads,
-    ML* ml,
     webnn::mojom::blink::CreateContextSuccessPtr create_context_success)
     : device_preference_(device_preference),
       device_type_(device_type),
       power_preference_(power_preference),
       model_format_(model_format),
       num_threads_(num_threads),
-      ml_(ml),
-      remote_context_(ml->GetExecutionContext()),
+      remote_context_(execution_context),
       properties_(std::move(create_context_success->context_properties)) {
   remote_context_.Bind(
       std::move(create_context_success->context_remote),
-      ml_->GetExecutionContext()->GetTaskRunner(TaskType::kMachineLearning));
+      execution_context->GetTaskRunner(TaskType::kMachineLearning));
 }
 
 MLContext::~MLContext() = default;
@@ -94,22 +91,7 @@ unsigned int MLContext::GetNumThreads() const {
   return num_threads_;
 }
 
-void MLContext::LogConsoleWarning(const String& message) {
-  auto* execution_context = ml_->GetExecutionContext();
-  if (!execution_context) {
-    return;
-  }
-  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kWarning, message));
-}
-
-ML* MLContext::GetML() {
-  return ml_.Get();
-}
-
 void MLContext::Trace(Visitor* visitor) const {
-  visitor->Trace(ml_);
   visitor->Trace(remote_context_);
 
   ScriptWrappable::Trace(visitor);
