@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha03">
+<issues format="6" by="lint 8.6.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha08">
 
     <issue
         id="WrongCommentType"
@@ -30,7 +30,7 @@
         errorLine2="                                                                        ~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
-            line="107"
+            line="112"
             column="73"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="                                                                 ~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
-            line="176"
+            line="192"
             column="66"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="                                                              ~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
-            line="181"
+            line="197"
             column="63"/>
     </issue>
 
@@ -63,7 +63,7 @@
         errorLine2="                                                                 ~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
-            line="208"
+            line="224"
             column="66"/>
     </issue>
 
@@ -74,7 +74,7 @@
         errorLine2="                             ~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapper.java"
-            line="238"
+            line="254"
             column="30"/>
     </issue>
 
@@ -932,7 +932,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/AndroidHttpEngineWrapper.java"
-            line="265"
+            line="280"
             column="27"/>
     </issue>
 
@@ -976,7 +976,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/test/javatests/src/org/chromium/net/BidirectionalStreamTest.java"
-            line="1901"
+            line="1903"
             column="46"/>
     </issue>
 
@@ -1273,7 +1273,7 @@
         errorLine2="                                                                      ~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetTestRule.java"
-            line="691"
+            line="693"
             column="71"/>
     </issue>
 
@@ -1350,7 +1350,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/test/javatests/src/org/chromium/net/CronetUrlRequestTest.java"
-            line="3106"
+            line="3111"
             column="46"/>
     </issue>
 
@@ -1361,7 +1361,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/JavaUrlRequest.java"
-            line="1108"
+            line="1111"
             column="25"/>
     </issue>
 
@@ -1493,7 +1493,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/cronet/android/java/src/org/chromium/net/impl/CronetManifest.java"
-            line="39"
+            line="40"
             column="1"/>
     </issue>
 

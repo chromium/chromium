@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha03">
+<issues format="6" by="lint 8.6.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha08">
 
     <issue
         id="PictureInPictureIssue"

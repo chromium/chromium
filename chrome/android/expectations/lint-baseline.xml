@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha03">
+<issues format="6" by="lint 8.6.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha08">
 
     <issue
         id="WrongCommentType"
@@ -30,7 +30,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="68"
+            line="69"
             column="12"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="81"
+            line="82"
             column="12"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="83"
+            line="84"
             column="12"/>
     </issue>
 
@@ -63,7 +63,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="277"
+            line="279"
             column="8"/>
     </issue>
 
@@ -74,7 +74,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
-            line="367"
+            line="371"
             column="8"/>
     </issue>
 
@@ -118,7 +118,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="327"
+            line="330"
             column="8"/>
     </issue>
 
@@ -173,7 +173,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="139"
+            line="102"
             column="8"/>
     </issue>
 
@@ -184,7 +184,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="162"
+            line="125"
             column="8"/>
     </issue>
 
@@ -217,7 +217,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1519"
+            line="1517"
             column="8"/>
     </issue>
 
@@ -250,7 +250,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1256"
+            line="1269"
             column="43"/>
     </issue>
 
@@ -261,7 +261,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/ui/PaymentRequestSection.java"
-            line="865"
+            line="864"
             column="16"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="120"
+            line="121"
             column="27"/>
     </issue>
 
@@ -349,7 +349,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/input/SelectPopupDialog.java"
-            line="123"
+            line="124"
             column="76"/>
     </issue>
 
@@ -844,7 +844,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="431"
+            line="469"
             column="27"/>
     </issue>
 
@@ -855,7 +855,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="433"
+            line="471"
             column="27"/>
     </issue>
 
@@ -1053,7 +1053,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1869"
+            line="1839"
             column="47"/>
     </issue>
 
@@ -1064,7 +1064,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="2038"
+            line="2008"
             column="47"/>
     </issue>
 
@@ -1295,7 +1295,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="845"
+            line="817"
             column="36"/>
     </issue>
 
@@ -1306,7 +1306,7 @@
         errorLine2="                                                                                 ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="98"
+            line="106"
             column="82"/>
     </issue>
 
@@ -1504,7 +1504,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="312"
+            line="280"
             column="53"/>
     </issue>
 
@@ -1592,7 +1592,7 @@
         errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="472"
+            line="454"
             column="65"/>
     </issue>
 
@@ -1603,7 +1603,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="624"
+            line="630"
             column="5"/>
     </issue>
 
@@ -1614,7 +1614,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="319"
+            line="301"
             column="20"/>
     </issue>
 
@@ -1647,7 +1647,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2325"
+            line="2331"
             column="399"/>
     </issue>
 
@@ -1658,7 +1658,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2325"
+            line="2331"
             column="434"/>
     </issue>
 
@@ -1823,7 +1823,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
-            line="338"
+            line="162"
             column="33"/>
     </issue>
 
@@ -1834,7 +1834,7 @@
         errorLine2="                        ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="437"
+            line="438"
             column="25"/>
     </issue>
 
@@ -1863,67 +1863,67 @@
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                    android:drawableTop=&quot;@drawable/delete_icon&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTop=&quot;@drawable/delete_icon&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="51"
-            column="21"/>
+            line="42"
+            column="17"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                    android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="52"
-            column="21"/>
+            line="43"
+            column="17"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                    android:drawableTop=&quot;@drawable/save_icon&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTop=&quot;@drawable/save_icon&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="62"
-            column="21"/>
+            line="54"
+            column="17"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                    android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="63"
-            column="21"/>
+            line="55"
+            column="17"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                    android:drawableTop=&quot;@drawable/share_icon&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTop=&quot;@drawable/share_icon&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="73"
-            column="21"/>
+            line="65"
+            column="17"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
         message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                    android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="74"
-            column="21"/>
+            line="66"
+            column="17"/>
     </issue>
 
     <issue
@@ -2021,7 +2021,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="185"
+            line="184"
             column="13"/>
     </issue>
 
@@ -2296,7 +2296,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="702"
+            line="669"
             column="20"/>
     </issue>
 
@@ -2406,7 +2406,7 @@
         errorLine2="                ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="296"
+            line="307"
             column="17"/>
     </issue>
 
@@ -2461,7 +2461,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="314"
+            line="317"
             column="46"/>
     </issue>
 
@@ -2472,7 +2472,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="682"
+            line="678"
             column="20"/>
     </issue>
 
@@ -2483,7 +2483,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="590"
+            line="591"
             column="20"/>
     </issue>
 
@@ -2496,6 +2496,50 @@
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java"
             line="42"
             column="20"/>
+    </issue>
+
+    <issue
+        id="AccessibilityFocus"
+        message="Do not force accessibility focus, as this interferes with screen readers and gives an inconsistent user experience, especially across apps"
+        errorLine1="                        getChildAt(0)"
+        errorLine2="                        ^">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabView.java"
+            line="28"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="AccessibilityWindowStateChangedEvent"
+        message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
+        errorLine1="            mListView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/src/org/chromium/ui/DropdownPopupWindowImpl.java"
+            line="176"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="AccessibilityWindowStateChangedEvent"
+        message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
+        errorLine1="        sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java"
+            line="201"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="AccessibilityWindowStateChangedEvent"
+        message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
+        errorLine1="            mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java"
+            line="247"
+            column="13"/>
     </issue>
 
 </issues>
