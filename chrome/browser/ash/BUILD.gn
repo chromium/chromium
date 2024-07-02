@@ -19,7 +19,7 @@ assert(enable_extensions, "Ash Chrome has to be built with extensions")
 assert(is_chromeos_ash)
 assert(use_ozone)
 
-static_library("ash") {
+source_set("ash") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = []
@@ -1088,8 +1088,6 @@ static_library("ash") {
     "fileapi/recent_model_factory.h",
     "fileapi/recent_source.cc",
     "fileapi/recent_source.h",
-    "first_run/first_run.cc",
-    "first_run/first_run.h",
     "floating_sso/cookie_sync_conversions.cc",
     "floating_sso/cookie_sync_conversions.h",
     "floating_sso/floating_sso_service.cc",
@@ -2886,6 +2884,7 @@ static_library("ash") {
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/events",
     "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/first_run",
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/hats",
     "//chrome/browser/ash/kcer",
@@ -3452,6 +3451,7 @@ static_library("ash") {
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/events",
     "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/first_run",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/hats",
