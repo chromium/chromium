@@ -8,10 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/test/ash_test_util.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -31,6 +34,8 @@
 namespace ash {
 namespace {
 
+using ::testing::_;
+using ::testing::FieldsAre;
 using ::testing::Return;
 
 class MockPickerAssetUrlLoaderFactory : public network::SharedURLLoaderFactory {
@@ -159,6 +164,34 @@ TEST_F(PickerAssetFetcherImplTest, DoesNotFetchGifPreviewImageFromNonTenorUrl) {
   asset_fetcher.FetchGifPreviewImageFromUrl(kNonTenorUrl, future.GetCallback());
 
   EXPECT_TRUE(future.Get().isNull());
+}
+
+TEST_F(PickerAssetFetcherImplTest, ForwardsToDelegateToFetchThumbnail) {
+  MockPickerAssetFetcherDelegate mock_delegate;
+  base::test::TestFuture<base::FilePath, gfx::Size,
+                         PickerAssetFetcher::FetchFileThumbnailCallback>
+      future;
+  EXPECT_CALL(mock_delegate, FetchFileThumbnail)
+      .WillOnce([&](const base::FilePath& path, const gfx::Size& size,
+                    PickerAssetFetcher::FetchFileThumbnailCallback callback) {
+        future.SetValue(path, size, std::move(callback));
+      });
+  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
+
+  const base::FilePath kPath("test/image.png");
+  constexpr gfx::Size kThumbnailSize(10, 20);
+  base::test::TestFuture<const SkBitmap*, base::File::Error> callback_future;
+  asset_fetcher.FetchFileThumbnail(kPath, kThumbnailSize,
+                                   callback_future.GetCallback());
+
+  auto [path, size, callback] = future.Take();
+  EXPECT_EQ(path, kPath);
+  EXPECT_EQ(size, kThumbnailSize);
+  EXPECT_FALSE(callback_future.IsReady());
+  const SkBitmap* kBitmap = nullptr;
+  const base::File::Error kError = base::File::Error::FILE_ERROR_FAILED;
+  std::move(callback).Run(kBitmap, kError);
+  EXPECT_THAT(callback_future.Take(), FieldsAre(kBitmap, kError));
 }
 
 }  // namespace
