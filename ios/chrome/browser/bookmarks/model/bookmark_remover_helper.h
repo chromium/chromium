@@ -8,12 +8,15 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #import "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class ChromeBrowserState;
-class LegacyBookmarkModel;
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 // Helper class to asynchronously remove bookmarks.
 class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
@@ -40,17 +43,17 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   void BookmarkModelBeingDeleted() override;
 
  private:
-  // Invoked when the bookmark entries have been deleted. Invoke the
-  // completion callback with `success` (invocation is asynchronous so
-  // the object won't be deleted immediately).
-  void BookmarksRemoved(bool success);
+  void RemoveAllUserBookmarksFromLoadedModel();
+  void TriggerCompletion(bool success);
+
+  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<bookmarks::BookmarkModel> model_;
 
   base::Location location_;
   Callback completion_;
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
-  base::ScopedMultiSourceObservation<LegacyBookmarkModel,
-                                     bookmarks::BookmarkModelObserver>
-      bookmark_model_observations_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      bookmark_model_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
