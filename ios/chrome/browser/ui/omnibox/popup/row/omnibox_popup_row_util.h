@@ -7,12 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-/// Returns whether the omnibox layout guide can be applied.
-BOOL CanUseOmniboxLayoutGuide();
-
-/// Returns whether the omnibox layout guide should be applied.
-BOOL ShouldApplyOmniboxLayoutGuide(UITraitCollection* traitCollection);
-
 /// Returns whether the omnibox popout layout should be applied.
 BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection);
 

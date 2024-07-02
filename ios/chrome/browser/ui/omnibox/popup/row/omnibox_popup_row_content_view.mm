@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -147,15 +149,11 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
-    _separator.backgroundColor =
-        [UIColor colorNamed:IsIpadPopoutOmniboxEnabled()
-                                ? kOmniboxPopoutSuggestionRowSeparatorColor
-                                : kOmniboxSuggestionRowSeparatorColor];
+    _separator.backgroundColor = [UIColor
+        colorNamed:ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+                       ? kOmniboxPopoutSuggestionRowSeparatorColor
+                       : kOmniboxSuggestionRowSeparatorColor];
     [self addSubview:_separator];
-
-    NSLayoutAnchor* leadingAnchor = CanUseOmniboxLayoutGuide()
-                                        ? self.layoutMarginsGuide.leadingAnchor
-                                        : self.leadingAnchor;
 
     // Top space should be at least the given top margin, but can be more if
     // the row is short enough to use the minimum height constraint above.
@@ -180,9 +178,9 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _trailingButtonTrailingConstraint = [self.trailingAnchor
         constraintEqualToAnchor:_trailingButton.trailingAnchor
                        constant:kTrailingButtonTrailingMargin];
-    _leadingConstraint =
-        [_leadingIconView.leadingAnchor constraintEqualToAnchor:leadingAnchor
-                                                       constant:kLeadingSpace];
+    _leadingConstraint = [_leadingIconView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kLeadingSpace];
 
     [NSLayoutConstraint activateConstraints:@[
       // Row has a minimum height.

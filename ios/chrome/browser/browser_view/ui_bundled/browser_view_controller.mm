@@ -860,7 +860,7 @@ enum HeaderBehaviour {
   self.typingShield.autoresizingMask = initialViewAutoresizing;
   self.typingShield.accessibilityIdentifier = @"Typing Shield";
   self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.typingShield.backgroundColor =
         [UIColor colorNamed:kOmniboxPopoutOverlayColor];
   }
@@ -2064,7 +2064,7 @@ enum HeaderBehaviour {
   [_sideSwipeMediator setEnabled:NO];
 
   if (!IsVisibleURLNewTabPage(self.currentWebState) ||
-      IsIpadPopoutOmniboxEnabled()) {
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
     // gesture should propagate to NTP view.
     [self.view insertSubview:self.typingShield aboveSubview:self.contentArea];

@@ -91,7 +91,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    if (IsIpadPopoutOmniboxEnabled()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       _popupContainerView.backgroundColor =
           [UIColor colorNamed:kPrimaryBackgroundColor];
     } else {
@@ -101,7 +101,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-    if (IsIpadPopoutOmniboxEnabled()) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       self.viewController.view.layer.masksToBounds = YES;
 
       AddSameConstraints(viewController.view, _popupContainerView);
@@ -135,7 +135,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
             constraintEqualToAnchor:_popupContainerView.bottomAnchor],
       ]];
     }
-
   }
   return self;
 }
@@ -149,8 +148,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       self.bottomConstraintPhone.active = NO;
       self.bottomSeparator.hidden = YES;
-    } else if (!IsIpadPopoutOmniboxEnabled()) {
-      self.bottomConstraintTablet.active = NO;
     }
 
     [self.viewController willMoveToParentViewController:nil];
@@ -187,8 +184,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 /// Therefore, on trait collection change, re-add the popup and recreate the
 /// constraints to make sure the correct ones are used.
 - (void)updatePopupAfterTraitCollectionChange {
-  DCHECK(IsIpadPopoutOmniboxEnabled());
-
   // Re-add the popup container to break any existing constraints.
   [self.popupContainerView removeFromSuperview];
   [[self.delegate popupParentViewForPresenter:self]
@@ -201,15 +196,10 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 - (void)updateBottomConstraints {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    if (IsIpadPopoutOmniboxEnabled()) {
-      BOOL showRegularLayout =
-          IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
-      self.bottomConstraintPhone.active = !showRegularLayout;
-      self.bottomConstraintTablet.active = showRegularLayout;
-    } else {
-      self.bottomConstraintPhone.active = NO;
-      self.bottomConstraintTablet.active = YES;
-    }
+    BOOL showRegularLayout =
+        IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
+    self.bottomConstraintPhone.active = !showRegularLayout;
+    self.bottomConstraintTablet.active = showRegularLayout;
   } else {
     self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
@@ -229,7 +219,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   UIView* popup = self.popupContainerView;
   // Creates the constraints if the view is newly added to the view hierarchy.
 
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.bottomConstraintPhone = [popup.superview.safeAreaLayoutGuide
                                       .bottomAnchor
         constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
@@ -267,7 +257,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 // Updates the popup's view layer.
 - (void)updatePopupLayer {
-  if (!IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return;
   }
 
@@ -296,7 +286,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];
 
-  if (IsIpadPopoutOmniboxEnabled() &&
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       IsRegularXRegularSizeClass(self.popupContainerView.traitCollection)) {
     NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
         constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor

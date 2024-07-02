@@ -7,9 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Returns whether the popout omnibox is enabled.
-bool IsIpadPopoutOmniboxEnabled();
-
 // Kill switch to revert the removal of lock icon. When this feature is
 // enabled, the lock icon is shown in the omnibox for secure pages. When
 // disabled, no icon is shown for secure pages.

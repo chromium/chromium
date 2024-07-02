@@ -16,10 +16,6 @@ BASE_FEATURE(kOmniboxActionsInSuggest,
              "OmniboxIOSActionsInSuggest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsIpadPopoutOmniboxEnabled() {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-}
-
 bool IsRichAutocompletionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kRichAutocompletion);
 }

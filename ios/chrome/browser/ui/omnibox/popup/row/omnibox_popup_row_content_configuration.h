@@ -37,8 +37,6 @@ extern const CGFloat kOmniboxPopupCellMinimumHeight;
 /// Forced semantic content attribute.
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
-/// Omnibox textfield layout guide from  `OmniboxPopupViewController`.
-@property(nonatomic, weak) UILayoutGuide* omniboxLayoutGuide;
 /// Favicon retriever for `OmniboxIconView`.
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 /// Image retriever for `OmniboxIconView`.

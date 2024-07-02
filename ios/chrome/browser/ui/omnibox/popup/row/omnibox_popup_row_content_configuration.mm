@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
@@ -30,8 +31,6 @@ namespace {
 const CGFloat kTrailingButtonPointSize = 17.0f;
 /// Maximum number of lines displayed for search suggestions.
 const NSInteger kWrappingSuggestNumberOfLines = 2;
-/// Offset to align the suggestions with the omnibox leading image.
-const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 
 }  // namespace
 
@@ -160,7 +159,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   configuration.indexPath = self.indexPath;
   configuration.showSeparator = self.showSeparator;
   configuration.semanticContentAttribute = self.semanticContentAttribute;
-  configuration.omniboxLayoutGuide = self.omniboxLayoutGuide;
   configuration.faviconRetriever = self.faviconRetriever;
   configuration.imageRetriever = self.imageRetriever;
 
@@ -206,34 +204,10 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   configuration.trailingIconTintColor =
       allowHighlight ? UIColor.whiteColor : [UIColor colorNamed:kBlueColor];
 
-  // Constraint to omnibox layout guide.
-  if (_omniboxLayoutGuide && CanUseOmniboxLayoutGuide()) {
-    if (!ShouldApplyOmniboxLayoutGuide(state.traitCollection)) {
-      configuration.directionalLayoutMargin = NSDirectionalEdgeInsetsZero;
-    } else {
-      CGRect omniboxFrame = _omniboxLayoutGuide.layoutFrame;
-      CGRect popupFrame = _omniboxLayoutGuide.owningView.bounds;
-      UIEdgeInsets safeAreaInsets =
-          _omniboxLayoutGuide.owningView.safeAreaInsets;
-      CGFloat leftSpace = CGRectGetMinX(omniboxFrame) -
-                          CGRectGetMinX(popupFrame) - safeAreaInsets.left;
-      CGFloat rightSpace = CGRectGetMaxX(popupFrame) -
-                           CGRectGetMaxX(omniboxFrame) - safeAreaInsets.right;
-      BOOL omniboxIsRTL =
-          [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
-                      _semanticContentAttribute] ==
-          UIUserInterfaceLayoutDirectionRightToLeft;
-      CGFloat spacing = omniboxIsRTL ? rightSpace : leftSpace;
-      CGFloat leadingMargin = spacing + kOmniboxLayoutGuideLeadingOffset;
-      configuration.directionalLayoutMargin =
-          NSDirectionalEdgeInsetsMake(0, leadingMargin, 0, 0);
-    }
-  }
-
   // Update margins for popout omnibox. Popout omnibox is only available on
   // regular size class.
   configuration.isPopoutOmnibox =
-      IsIpadPopoutOmniboxEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       IsRegularXRegularSizeClass(state.traitCollection);
 
   return configuration;

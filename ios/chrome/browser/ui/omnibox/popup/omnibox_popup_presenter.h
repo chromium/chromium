@@ -44,7 +44,6 @@
 /// `isFocusingOmnibox`: Omnibox is being focused.
 - (void)updatePopupOnFocus:(BOOL)isFocusingOmnibox;
 
-/// Only called when IsIpadPopoutOmniboxEnabled is true.
 /// Tells the presenter to update, following a trait collection change.
 - (void)updatePopupAfterTraitCollectionChange;
 

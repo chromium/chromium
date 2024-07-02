@@ -183,7 +183,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   [self updateBackgroundColor];
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self.delegate autocompleteResultConsumerDidChangeTraitCollection:self];
   }
 }
@@ -256,17 +256,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
   self.tableView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentAutomatic;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      !IsIpadPopoutOmniboxEnabled()) {
-    /// The popup view in multitasking displays suggestion icons outside of the
-    /// safe area (too close to the leading edge). This is ok because the entire
-    /// rows act as touch targets.
-    self.viewRespectsSystemMinimumLayoutMargins = NO;
-    self.tableView.contentInsetAdjustmentBehavior =
-        UIScrollViewContentInsetAdjustmentNever;
-  }
 
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.tableView.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
     [self.tableView
@@ -336,21 +327,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
     return;
   }
 
-  CGRect omniboxFrame = self.omniboxGuide.layoutFrame;
-  CGFloat leftMargin =
-      (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
-          ? omniboxFrame.origin.x
-          : 0;
-  CGFloat rightMargin =
-      (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
-          ? self.view.bounds.size.width - omniboxFrame.origin.x -
-                omniboxFrame.size.width
-          : 0;
-
   // Adjust the carousel to be aligned with the omnibox textfield.
   UIEdgeInsets margins = self.carouselCell.layoutMargins;
   self.carouselCell.layoutMargins =
-      UIEdgeInsetsMake(margins.top, leftMargin, margins.bottom, rightMargin);
+      UIEdgeInsetsMake(margins.top, 0, margins.bottom, 0);
 
   // Update the headers padding.
   for (NSInteger i = 0; i < self.tableView.numberOfSections; ++i) {
@@ -784,10 +764,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
       initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width,
                                2 / tableView.window.screen.scale)];
 
-  hairline.backgroundColor =
-      [UIColor colorNamed:IsIpadPopoutOmniboxEnabled()
-                              ? kOmniboxPopoutSuggestionRowSeparatorColor
-                              : kOmniboxSuggestionRowSeparatorColor];
+  hairline.backgroundColor = [UIColor
+      colorNamed:ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+                     ? kOmniboxPopoutSuggestionRowSeparatorColor
+                     : kOmniboxSuggestionRowSeparatorColor];
   [footer addSubview:hairline];
   hairline.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
@@ -940,7 +920,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
             (NSUInteger)indexPath.row <
             self.currentResult[indexPath.section].suggestions.count - 1;
         configuration.semanticContentAttribute = self.semanticContentAttribute;
-        configuration.omniboxLayoutGuide = self.omniboxGuide;
         configuration.faviconRetriever = self.faviconRetriever;
         configuration.imageRetriever = self.imageRetriever;
 
@@ -1024,20 +1003,12 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// Updates the color of the background based on the incognito-ness and the size
 /// class.
 - (void)updateBackgroundColor {
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     return;
   }
 
-  ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
-      initWithStyle:self.incognito ? ToolbarStyle::kIncognito
-                                   : ToolbarStyle::kNormal];
-
-  if (IsRegularXRegularSizeClass(self)) {
-    self.view.backgroundColor = configuration.backgroundColor;
-  } else {
-    self.view.backgroundColor = [UIColor clearColor];
-  }
+  self.view.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark - UIScrollViewDelegate

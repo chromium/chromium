@@ -25,12 +25,9 @@ const CGFloat kStackMargin = 8.0f;
 const CGFloat kStackLeadingMargin = 16.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
-/// Width of the gradient applied on the leading and trailing edge of the
-/// carousel.
-const CGFloat kGradientWidth = 20.0f;
 
 UIColor* CarouselBackgroundColor() {
-  if (IsIpadPopoutOmniboxEnabled()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return [UIColor colorNamed:kPrimaryBackgroundColor];
   }
   return [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
@@ -58,24 +55,6 @@ UIStackView* CarouselStackView() {
   return stackView;
 }
 
-/// CAGradientLayer used in OmniboxPopupCarouselCell on iPad.
-CAGradientLayer* CarouselGradientLayer() {
-  CAGradientLayer* maskLayer = [CAGradientLayer layer];
-  UIColor* opaqueColor =
-      [CarouselBackgroundColor() colorWithAlphaComponent:1.0];
-  UIColor* transparentColor =
-      [CarouselBackgroundColor() colorWithAlphaComponent:0.0];
-  maskLayer.colors = @[
-    (id)transparentColor.CGColor, (id)opaqueColor.CGColor,
-    (id)opaqueColor.CGColor, (id)transparentColor.CGColor
-  ];
-  // locations are computed with `kGradientWidth` in `updateGradient`.
-  maskLayer.anchorPoint = CGPointZero;
-  maskLayer.startPoint = CGPointMake(0, 0.5);
-  maskLayer.endPoint = CGPointMake(1, 0.5);
-  return maskLayer;
-}
-
 }  // namespace
 
 @interface OmniboxPopupCarouselCell ()
@@ -84,10 +63,6 @@ CAGradientLayer* CarouselGradientLayer() {
 @property(nonatomic, strong) UIScrollView* scrollView;
 /// Horizontal UIStackView containing CarouselItems.
 @property(nonatomic, strong) UIStackView* suggestionsStackView;
-/// Indicates whether the view's marginLayoutGuide should be used.
-@property(nonatomic, assign, readonly) BOOL shouldApplyLayoutMarginsGuide;
-/// GradientLayer applied at the right edge of `scrollView`.
-@property(nonatomic, strong) CAGradientLayer* gradientLayer;
 
 #pragma mark Dynamic Spacing
 /// Number of that that can be fully visible. Apply dynamic spacing only when
@@ -107,7 +82,6 @@ CAGradientLayer* CarouselGradientLayer() {
   if (self) {
     _scrollView = CarouselScrollView();
     _suggestionsStackView = CarouselStackView();
-    _gradientLayer = CarouselGradientLayer();
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
     self.backgroundColor = CarouselBackgroundColor();
@@ -125,9 +99,6 @@ CAGradientLayer* CarouselGradientLayer() {
 }
 
 - (void)layoutSubviews {
-  if (self.shouldApplyLayoutMarginsGuide) {
-    [self updateGradient];
-  }
   if (base::i18n::IsRTL()) {
     self.scrollView.transform = CGAffineTransformMakeRotation(M_PI);
     self.suggestionsStackView.transform = CGAffineTransformMakeRotation(M_PI);
@@ -140,30 +111,21 @@ CAGradientLayer* CarouselGradientLayer() {
   [self.contentView addSubview:_scrollView];
   [_scrollView addSubview:_suggestionsStackView];
 
-  if (self.shouldApplyLayoutMarginsGuide) {
-    self.contentView.layer.mask = self.gradientLayer;
-  }
-
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
-      NSDirectionalEdgeInsetsMake(kStackMargin,
-                                  self.shouldApplyLayoutMarginsGuide
-                                      ? kStackMargin
-                                      : kStackLeadingMargin,
+      NSDirectionalEdgeInsetsMake(kStackMargin, kStackLeadingMargin,
                                   kStackMargin, kStackMargin));
 
-  id<LayoutGuideProvider> contentGuide =
-      self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide
-                                         : self.contentView;
-  AddSameCenterConstraints(_scrollView, contentGuide);
+  AddSameCenterConstraints(_scrollView, self.contentView);
 
   [NSLayoutConstraint activateConstraints:@[
-    [contentGuide.heightAnchor
+    [self.contentView.heightAnchor
         constraintEqualToAnchor:_scrollView.heightAnchor],
     [_scrollView.heightAnchor
         constraintEqualToAnchor:_suggestionsStackView.heightAnchor
                        constant:kStackMargin * 2],
-    [contentGuide.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor]
+    [self.contentView.widthAnchor
+        constraintEqualToAnchor:_scrollView.widthAnchor]
   ]];
 }
 
@@ -171,15 +133,6 @@ CAGradientLayer* CarouselGradientLayer() {
 
 - (NSUInteger)tileCount {
   return self.suggestionsStackView.arrangedSubviews.count;
-}
-
-- (BOOL)shouldApplyLayoutMarginsGuide {
-  if (IsIpadPopoutOmniboxEnabled()) {
-    return NO;
-  }
-  // Apply layoutMarginsGuide in Visual Treatment 1 only on Tablet because there
-  // is a minimum layoutMargin of 8 that we don't want on phones.
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 #pragma mark - Accessibility
@@ -374,16 +327,10 @@ CAGradientLayer* CarouselGradientLayer() {
 // spacing.
 - (void)updateDynamicSpacing {
   CGFloat availableWidth = self.bounds.size.width - 2 * kStackMargin;
-  if (self.shouldApplyLayoutMarginsGuide) {
-    availableWidth -= self.contentView.layoutMargins.left +
-                      self.contentView.layoutMargins.right + kGradientWidth;
-  }
   CGFloat tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing / 2;
 
-  if (!self.shouldApplyLayoutMarginsGuide) {
-    availableWidth = self.bounds.size.width - kStackLeadingMargin;
-    tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing;
-  }
+  availableWidth = self.bounds.size.width - kStackLeadingMargin;
+  tileWidth = kOmniboxPopupCarouselControlWidth + kMinStackSpacing;
 
   CGFloat maxVisibleTiles = availableWidth / tileWidth;
   CGFloat nearestHalfTile = maxVisibleTiles - 0.5;
@@ -416,21 +363,6 @@ CAGradientLayer* CarouselGradientLayer() {
   control.menuProvider = self.menuProvider;
 
   return control;
-}
-
-- (void)updateGradient {
-  DCHECK(self.shouldApplyLayoutMarginsGuide);
-  CGFloat contentWidth =
-      CGRectGetWidth(self.contentView.layoutMarginsGuide.layoutFrame);
-  CGRect gradientFrame = CGRectMake(self.contentView.layoutMargins.left, 0,
-                                    contentWidth, CGRectGetHeight(self.bounds));
-  CGFloat gradientWidth = kGradientWidth / contentWidth;
-  self.gradientLayer.frame = gradientFrame;
-  NSNumber* endOfFirstGradient = [NSNumber numberWithFloat:gradientWidth];
-  NSNumber* startOfSecondGradient =
-      [NSNumber numberWithFloat:1.0 - gradientWidth];
-  self.gradientLayer.locations =
-      @[ @0.0, endOfFirstGradient, startOfSecondGradient, @1.0 ];
 }
 
 @end

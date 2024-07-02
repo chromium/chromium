@@ -20,6 +20,7 @@
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -170,15 +171,11 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
-    _separator.backgroundColor =
-        [UIColor colorNamed:IsIpadPopoutOmniboxEnabled()
-                                ? kOmniboxPopoutSuggestionRowSeparatorColor
-                                : kOmniboxSuggestionRowSeparatorColor];
+    _separator.backgroundColor = [UIColor
+        colorNamed:ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+                       ? kOmniboxPopoutSuggestionRowSeparatorColor
+                       : kOmniboxSuggestionRowSeparatorColor];
     [self addSubview:_separator];
-
-    NSLayoutAnchor* leadingAnchor = CanUseOmniboxLayoutGuide()
-                                        ? self.layoutMarginsGuide.leadingAnchor
-                                        : self.leadingAnchor;
 
     // Top space should be at least the given top margin, but can be more if
     // the row is short enough to use the minimum height constraint above.
@@ -203,9 +200,9 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     _trailingButtonTrailingConstraint = [_richEntityView.trailingAnchor
         constraintEqualToAnchor:_trailingButton.trailingAnchor
                        constant:kTrailingButtonTrailingMargin];
-    _leadingConstraint =
-        [_leadingIconView.leadingAnchor constraintEqualToAnchor:leadingAnchor
-                                                       constant:kLeadingSpace];
+    _leadingConstraint = [_leadingIconView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kLeadingSpace];
 
     [NSLayoutConstraint activateConstraints:@[
       [_richEntityView.heightAnchor
