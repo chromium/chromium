@@ -26,4 +26,17 @@ class ContextualPanelModel {
       FetchConfigurationForWebStateCallback callback) = 0;
 };
 
+// Values of the UMA IOS.ContextualPanel.Model.Relevance histograms. Must be
+// kept up to date with IOSContextualPanelModelRelevance in enums.xml. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+// LINT.IfChange(ModelRelevanceType)
+enum class ModelRelevanceType {
+  NoData = 0,
+  Low = 1,
+  High = 2,
+  kMaxValue = High,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSContextualPanelModelRelevance)
+
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_MODEL_H_

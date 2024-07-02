@@ -116,6 +116,9 @@ class ContextualPanelTabHelper
   // Do any necessary work after all requests are completed or time out.
   void AllRequestsFinished();
 
+  // Fire any metrics that should fire when all requests are finished.
+  void FireRequestsFinishedMetrics();
+
   WEB_STATE_USER_DATA_KEY_DECL();
 
   // Whether the Contextual Panel is currently opened for the current tab.

@@ -33,6 +33,15 @@ chromium-metrics-reviews@google.com.
                record them here."/>
 </variants>
 
+<!-- LINT.IfChange(ContextualPanelItemType) -->
+
+<variants name="ContextualPanelItemType">
+  <variant name="PriceInsightsItem" summary="Price insights item"/>
+  <variant name="SamplePanelItem" summary="Sample panel item"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
+
 <variants name="IOSSaveToDriveQueryTypeVariant">
   <variant name="CreateFolder"
       summary="Recorded once when a query to create a Drive folder returns a
@@ -368,6 +377,26 @@ chromium-metrics-reviews@google.com.
     fail. Failure occurs when the rule lists are updated again before the first
     update finishes.
   </summary>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.Model.InfoBlocksWithContentCount"
+    units="count" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The number of Contextual Panel models with content for each navigation.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ContextualPanel.Model.Relevance.{ContextualPanelItemType}"
+    enum="IOSContextualPanelModelRelevance" expires_after="2025-06-30">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The relevance level for the Contextual Panel data for the given model. Fired
+    every navigation.
+  </summary>
+  <token key="ContextualPanelItemType" variants="ContextualPanelItemType"/>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"

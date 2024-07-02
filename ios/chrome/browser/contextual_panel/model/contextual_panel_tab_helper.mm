@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -239,6 +241,33 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
 
   for (auto& observer : observers_) {
     observer.ContextualPanelHasNewData(this, sorted_weak_configurations_);
+  }
+
+  FireRequestsFinishedMetrics();
+}
+
+void ContextualPanelTabHelper::FireRequestsFinishedMetrics() {
+  base::UmaHistogramExactLinear(
+      "IOS.ContextualPanel.Model.InfoBlocksWithContentCount",
+      sorted_weak_configurations_.size(),
+      static_cast<int>(ContextualPanelItemType::kMaxValue));
+
+  for (const auto& [key, response] : responses_) {
+    std::string item_type = StringForItemType(key);
+    std::string histogram_name =
+        std::string("IOS.ContextualPanel.Model.Relevance.").append(item_type);
+    ModelRelevanceType relevance_type;
+    if (!response.configuration) {
+      relevance_type = ModelRelevanceType::NoData;
+    } else {
+      int relevance = response.configuration->relevance;
+      if (relevance >= ContextualPanelItemConfiguration::high_relevance) {
+        relevance_type = ModelRelevanceType::High;
+      } else {
+        relevance_type = ModelRelevanceType::Low;
+      }
+    }
+    base::UmaHistogramEnumeration(histogram_name, relevance_type);
   }
 }
 

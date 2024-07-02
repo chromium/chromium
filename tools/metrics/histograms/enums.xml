@@ -13511,6 +13511,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="AccessibilityExtraExtraExtraLarge"/>
 </enum>
 
+<!-- LINT.IfChange(IOSContextualPanelModelRelevance) -->
+
+<enum name="IOSContextualPanelModelRelevance">
+  <int value="0" label="No Data"/>
+  <int value="1" label="Low"/>
+  <int value="2" label="High"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_model.h:ModelRelevanceType) -->
+
 <enum name="IOSDefaultBookmarkFolderOutcome">
   <int value="0" label="kUnset"/>
   <int value="1" label="kExistingLocalFolderSet"/>
