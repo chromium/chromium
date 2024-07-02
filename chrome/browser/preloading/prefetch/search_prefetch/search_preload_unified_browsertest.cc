@@ -103,7 +103,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
         {
             {features::kSupportSearchSuggestionForPrerender2,
              {
-                 {"implementation_type", "use_prefetch"},
                  {"shareable_cache", "disabled"},
              }},
             {kSearchPrefetchServicePrefetching,
@@ -1246,8 +1245,7 @@ class DSEPrerenderHoldbackSearchPreloadUnifiedBrowserTest
   DSEPrerenderHoldbackSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"}}},
+            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1271,8 +1269,7 @@ class PreloadingConfigHoldbackSearchPreloadUnifiedBrowserTest
   PreloadingConfigHoldbackSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"}}},
+            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1304,8 +1301,7 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
   HTTPCacheSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"}}},
+            {features::kSupportSearchSuggestionForPrerender2, {{}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -1581,8 +1577,7 @@ class NoCancelSearchPreloadUnifiedBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"},
-              {"shareable_cache", "disabled"}}},
+             {{"shareable_cache", "disabled"}}},
             {kSearchPrefetchSkipsCancel, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
@@ -1709,8 +1704,7 @@ class SearchPreloadUnifiedFallbackBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"},
-              {"shareable_cache", "enabled"}}},
+             {{"shareable_cache", "enabled"}}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"device_memory_threshold_MB", "0"}}},
@@ -2367,8 +2361,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2,
-             {{"implementation_type", "use_prefetch"},
-              {"shareable_cache", "enabled"}}},
+             {{"shareable_cache", "enabled"}}},
             {kSearchPrefetchSkipsCancel, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},

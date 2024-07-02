@@ -228,12 +228,8 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     : public OmniboxPrerenderBrowserTest {
  public:
   PrerenderOmniboxSearchSuggestionBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }}},
-        {});
+    feature_list_.InitAndEnableFeature(
+        features::kSupportSearchSuggestionForPrerender2);
   }
 
   void SetUp() override {
@@ -377,10 +373,7 @@ class PrerenderOmniboxSearchSuggestionReloadBrowserTest
 #endif  // BUILDFLAG(IS_ANDROID)
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }},
+        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
          {kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         // Disable BFCache, to test the HTTP Cache path.
@@ -450,10 +443,7 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
 #endif  // BUILDFLAG(IS_ANDROID)
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }},
+        {{features::kSupportSearchSuggestionForPrerender2, {{}}},
          {kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         {});

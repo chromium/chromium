@@ -612,11 +612,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2,
-          {
-              {"implementation_type", "use_prefetch"},
-          }}},
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSupportSearchSuggestionForPrerender2},
         {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
