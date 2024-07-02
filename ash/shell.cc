@@ -1652,6 +1652,13 @@ void Shell::Init(
       focus_controller_.get(), std::make_unique<WmShadowControllerDelegate>(),
       env);
 
+  if (features::IsFocusModeEnabled()) {
+    tasks_controller_ = std::make_unique<api::TasksController>(
+        shell_delegate_->CreateTasksDelegate());
+    focus_mode_controller_ = std::make_unique<FocusModeController>(
+        shell_delegate_->CreateFocusModeDelegate());
+  }
+
   logout_confirmation_controller_ =
       std::make_unique<LogoutConfirmationController>();
 
@@ -1692,11 +1699,6 @@ void Shell::Init(
   // One of the subcontrollers accesses the SystemNotificationController.
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
-
-  if (features::IsFocusModeEnabled()) {
-    focus_mode_controller_ = std::make_unique<FocusModeController>(
-        shell_delegate_->CreateFocusModeDelegate());
-  }
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which
@@ -1771,11 +1773,6 @@ void Shell::Init(
   }
   post_login_glanceables_metrics_reporter_ =
       std::make_unique<PostLoginGlanceablesMetricsRecorder>();
-
-  if (features::IsFocusModeEnabled()) {
-    tasks_controller_ = std::make_unique<api::TasksController>(
-        shell_delegate_->CreateTasksDelegate());
-  }
 
   annotator_controller_ = std::make_unique<AnnotatorController>();
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
