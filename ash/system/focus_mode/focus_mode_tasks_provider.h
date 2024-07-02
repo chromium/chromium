@@ -27,7 +27,7 @@ class TaskFetcher;
 // expected to be referenced within a list. However, we treat tasks as a flat
 // collection so the list id needs to be retained.
 struct TaskId {
-  bool empty() const { return !pending && (id.empty() || list_id.empty()); }
+  bool empty() const { return id.empty() || list_id.empty(); }
 
   std::strong_ordering operator<=>(const TaskId& other) const;
   bool operator==(const TaskId& other) const = default;
@@ -35,10 +35,6 @@ struct TaskId {
 
   std::string list_id;
   std::string id;
-
-  // If true, the task is waiting to be sent to the server and does not have a
-  // valid `list_id` or `id`.
-  bool pending = false;
 };
 
 // Represents a task.

@@ -76,15 +76,6 @@ struct TaskComparator {
 }  // namespace
 
 std::strong_ordering TaskId::operator<=>(const TaskId& other) const {
-  if (pending && other.pending) {
-    // Two pending ids are always equivalent.
-    return std::strong_ordering::equivalent;
-  }
-  if (pending != other.pending) {
-    // If pending does not match, use the ordering for bools.
-    return pending <=> other.pending;
-  }
-
   if (list_id < other.list_id || (list_id == other.list_id && id < other.id)) {
     return std::strong_ordering::less;
   }
