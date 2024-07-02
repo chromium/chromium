@@ -33,7 +33,7 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
 
     ExtensionServiceInitParams params;
     params.enable_bookmark_model = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
 
     browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(profile(), true);

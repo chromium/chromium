@@ -54,8 +54,8 @@ ExtensionServiceTestWithInstall::ExtensionServiceTestWithInstall(
 ExtensionServiceTestWithInstall::~ExtensionServiceTestWithInstall() {}
 
 void ExtensionServiceTestWithInstall::InitializeExtensionService(
-    const ExtensionServiceInitParams& params) {
-  ExtensionServiceTestBase::InitializeExtensionService(params);
+    ExtensionServiceInitParams params) {
+  ExtensionServiceTestBase::InitializeExtensionService(std::move(params));
 
   registry_observation_.Observe(registry());
 }

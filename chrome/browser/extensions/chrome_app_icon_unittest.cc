@@ -207,7 +207,7 @@ class ChromeAppIconTest : public ExtensionServiceTestBase {
     ExtensionServiceInitParams params;
     ASSERT_TRUE(params.ConfigureByTestDataDirectory(
         data_dir().AppendASCII("app_list")));
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     service_->Init();
   }
 };

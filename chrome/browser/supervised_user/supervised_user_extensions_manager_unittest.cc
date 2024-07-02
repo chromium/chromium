@@ -50,7 +50,7 @@ class SupervisedUserExtensionsManagerTestBase
     ExtensionServiceTestBase::SetUp();
     ExtensionServiceInitParams params;
     params.profile_is_supervised = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     // Flush the message loop, to ensure that credentials have been loaded in
     // Identity Manager.
     base::RunLoop().RunUntilIdle();

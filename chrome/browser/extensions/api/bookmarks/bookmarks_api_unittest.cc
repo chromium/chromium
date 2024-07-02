@@ -28,7 +28,7 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
 
     ExtensionServiceInitParams params;
     params.enable_bookmark_model = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
 
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);

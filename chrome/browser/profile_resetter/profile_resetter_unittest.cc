@@ -173,7 +173,7 @@ void ProfileResetterTest::SetUp() {
       NtpCustomBackgroundServiceFactory::GetInstance(),
       base::BindRepeating(&CreateFakeNtpCustomBackgroundService))};
 
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));

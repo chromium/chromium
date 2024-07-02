@@ -314,7 +314,7 @@ TEST_F(ExtensionServiceSyncTest, DisableExtensionFromSync) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
@@ -478,7 +478,7 @@ TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();
@@ -533,7 +533,7 @@ TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();

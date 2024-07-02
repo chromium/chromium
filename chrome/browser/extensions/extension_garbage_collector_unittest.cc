@@ -208,7 +208,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, GarbageCollectWithPendingUpdates) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(params.ConfigureByTestDataDirectory(
       data_dir().AppendASCII("pending_updates")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.
@@ -236,7 +236,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, UpdateOnStartup) {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(params.ConfigureByTestDataDirectory(
       data_dir().AppendASCII("pending_updates")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 
   // This is the directory that is going to be deleted, so make sure it actually
   // is there before the garbage collection.

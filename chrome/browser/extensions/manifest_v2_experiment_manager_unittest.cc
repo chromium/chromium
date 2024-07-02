@@ -37,8 +37,7 @@ class ManifestV2ExperimentManagerUnitTestBase
     // Note: This is (subtly) different from
     // `InitializeEmptyExtensionService()`, which doesn't initialize a
     // testing PrefService.
-    ExtensionServiceInitParams params;
-    InitializeExtensionService(params);
+    InitializeExtensionService(ExtensionServiceInitParams{});
 
     experiment_manager_ = ManifestV2ExperimentManager::Get(profile());
   }

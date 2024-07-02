@@ -96,8 +96,7 @@ class MV2DeprecationImpactCheckerUnitTest
     // Note: This is (subtly) different from
     // `InitializeEmptyExtensionService()`, which doesn't initialize a
     // testing PrefService.
-    ExtensionServiceInitParams params;
-    InitializeExtensionService(params);
+    InitializeExtensionService(ExtensionServiceInitParams{});
 
     // Sets the current level of the MV2 admin policy.
     sync_preferences::TestingPrefServiceSyncable* pref_service =

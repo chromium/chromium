@@ -64,7 +64,7 @@ namespace {
 
 // Create a testing profile according to |params|.
 std::unique_ptr<TestingProfile> BuildTestingProfile(
-    const ExtensionServiceTestBase::ExtensionServiceInitParams& params,
+    ExtensionServiceTestBase::ExtensionServiceInitParams params,
     base::ScopedTempDir& temp_dir,
     policy::PolicyService* policy_service) {
   TestingProfile::Builder profile_builder;
@@ -195,7 +195,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
       ExtensionGarbageCollectorFactory::GetInstance(),
       base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
 
-  profile_builder.AddTestingFactories(params.testing_factories);
+  profile_builder.AddTestingFactories(std::move(params.testing_factories));
 
   profile_builder.SetPath(profile_dir);
   return profile_builder.Build();
@@ -207,8 +207,7 @@ ExtensionServiceTestBase::ExtensionServiceInitParams::
     ExtensionServiceInitParams() = default;
 
 ExtensionServiceTestBase::ExtensionServiceInitParams::
-    ExtensionServiceInitParams(const ExtensionServiceInitParams& other) =
-        default;
+    ExtensionServiceInitParams(ExtensionServiceInitParams&& other) = default;
 
 ExtensionServiceTestBase::ExtensionServiceInitParams::
     ~ExtensionServiceInitParams() = default;
@@ -267,34 +266,41 @@ ExtensionServiceTestBase::~ExtensionServiceTestBase() {
 }
 
 void ExtensionServiceTestBase::InitializeExtensionService(
-    const ExtensionServiceTestBase::ExtensionServiceInitParams& params) {
-  profile_ = BuildTestingProfile(params, temp_dir_, policy_service_.get());
+    ExtensionServiceTestBase::ExtensionServiceInitParams params) {
+  const bool is_first_run = params.is_first_run;
+  const bool autoupdate_enabled = params.autoupdate_enabled;
+  const bool extensions_enabled = params.extensions_enabled;
+  const bool enable_install_limiter = params.enable_install_limiter;
+
+  profile_ =
+      BuildTestingProfile(std::move(params), temp_dir_, policy_service_.get());
   extensions_install_dir_ =
       profile_->GetPath().AppendASCII(kInstallDirectoryName);
   unpacked_install_dir_ =
       profile_->GetPath().AppendASCII(kUnpackedInstallDirectoryName);
 
-  CreateExtensionService(params);
+  CreateExtensionService(is_first_run, autoupdate_enabled, extensions_enabled,
+                         enable_install_limiter);
   registry_ = ExtensionRegistry::Get(profile());
 }
 
 void ExtensionServiceTestBase::InitializeEmptyExtensionService() {
   ExtensionServiceInitParams params;
   params.prefs_content = "";
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 }
 
 void ExtensionServiceTestBase::InitializeGoodInstalledExtensionService() {
   ExtensionServiceInitParams params;
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 }
 
 void ExtensionServiceTestBase::InitializeExtensionServiceWithUpdater() {
   ExtensionServiceInitParams params;
   params.autoupdate_enabled = true;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
   service_->updater()->Start();
 }
 
@@ -302,7 +308,7 @@ void ExtensionServiceTestBase::
     InitializeExtensionServiceWithExtensionsDisabled() {
   ExtensionServiceInitParams params;
   params.extensions_enabled = false;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
 }
 
 size_t ExtensionServiceTestBase::GetPrefKeyCount() {
@@ -443,17 +449,19 @@ ExtensionServiceTestBase::testing_pref_service() {
 }
 
 void ExtensionServiceTestBase::CreateExtensionService(
-    const ExtensionServiceInitParams& params) {
+    bool is_first_run,
+    bool autoupdate_enabled,
+    bool extensions_enabled,
+    bool enable_install_limiter) {
   TestExtensionSystem* system =
       static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
-  if (!params.is_first_run) {
+  if (!is_first_run) {
     ExtensionPrefs::Get(profile())->SetAlertSystemFirstRun();
   }
 
   service_ = system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), extensions_install_dir_,
-      unpacked_install_dir_, params.autoupdate_enabled,
-      params.extensions_enabled);
+      unpacked_install_dir_, autoupdate_enabled, extensions_enabled);
 
   service_->component_loader()->set_ignore_allowlist_for_testing(true);
 
@@ -468,7 +476,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
                                 service_->shared_module_service());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!params.enable_install_limiter) {
+  if (!enable_install_limiter) {
     InstallLimiter::Get(profile())->DisableForTest();
   }
 #endif

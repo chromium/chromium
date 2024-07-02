@@ -43,7 +43,7 @@ class SupervisedUserExtensionTestBase : public ExtensionServiceTestWithInstall {
   void InitServices(bool profile_is_supervised) {
     ExtensionServiceInitParams params;
     params.profile_is_supervised = profile_is_supervised;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     CreateExtensionManager();
   }
 
@@ -829,7 +829,7 @@ TEST_P(SupervisedUserExtensionTest,
        ExtensionsOnDesktopRemainEnabledOnSkipParentApprovalRelease) {
   ExtensionServiceInitParams params;
   params.profile_is_supervised = true;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
   SetDefaultParentalControlSettings();
   // Install an extension. It should be enabled as we haven't created the SU
   // extension manager yet. Treated as a pre-existing extension.
@@ -874,7 +874,7 @@ TEST_P(SupervisedUserExtensionTest,
        ExtensionsEnabledOnSkipParentApprovalReleaseCanBeUpgraded) {
   ExtensionServiceInitParams params;
   params.profile_is_supervised = true;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
   SetDefaultParentalControlSettings();
   // Install an extension. It should be enabled as we haven't created the SU
   // extension manager yet. Treated as a pre-existing extension.

@@ -536,7 +536,7 @@ void DeveloperPrivateApiUnitTest::SetUp() {
 
   ExtensionServiceInitParams init_params;
   init_params.profile_is_supervised = ProfileIsSupervised();
-  InitializeExtensionService(init_params);
+  InitializeExtensionService(std::move(init_params));
   extension_action_test_util::CreateToolbarModelForProfile(profile());
 
   browser_window_ = std::make_unique<TestBrowserWindow>();

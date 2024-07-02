@@ -53,7 +53,7 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
 
     ExtensionServiceInitParams params;
     params.profile_is_supervised = true;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
 
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
