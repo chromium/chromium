@@ -2064,7 +2064,7 @@
     "bases": ["external/wpt/credential-management/fedcm-multi-idp/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=FedCmMultipleIdentityProviders"],
-    "expires": "Jul 1, 2024"
+    "expires": "May 1, 2025"
   },
   {
     "prefix": "fedcm-register",
