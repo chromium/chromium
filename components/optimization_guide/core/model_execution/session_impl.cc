@@ -270,6 +270,24 @@ SessionImpl::AddContextResult SessionImpl::AddContextImpl(
   return AddContextResult::kUsingOnDevice;
 }
 
+
+
+void SessionImpl::Score(const std::string& text,
+                        OptimizationGuideModelScoreCallback callback) {
+  // Fail if not using on device, or no session was started yet.
+  if (!on_device_state_ || !on_device_state_->session ||
+      // Fail if context is incomplete
+      on_device_state_->add_context_before_execute ||
+      // Fail if execute was called
+      context_start_time_ == base::TimeTicks()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  on_device_state_->session->Score(text, base::BindOnce([](float score) {
+                                           return std::optional<float>(score);
+                                         }).Then(std::move(callback)));
+}
+
 void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback

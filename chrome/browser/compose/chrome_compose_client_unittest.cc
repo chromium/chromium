@@ -135,6 +135,11 @@ class MockSession
               (const google::protobuf::MessageLite& request_metadata));
   MOCK_METHOD(
       void,
+      Score,
+      (const std::string& text,
+       optimization_guide::OptimizationGuideModelScoreCallback callback));
+  MOCK_METHOD(
+      void,
       ExecuteModel,
       (const google::protobuf::MessageLite& request_metadata,
        optimization_guide::
@@ -151,6 +156,11 @@ class MockSessionWrapper
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override {
     session_->AddContext(request_metadata);
+  }
+  void Score(const std::string& text,
+             optimization_guide::OptimizationGuideModelScoreCallback callback)
+      override {
+    std::move(callback).Run(std::nullopt);
   }
   void ExecuteModel(
       const google::protobuf::MessageLite& request_metadata,

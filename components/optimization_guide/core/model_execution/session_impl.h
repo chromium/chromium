@@ -40,7 +40,7 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
 // Session implementation that uses either the on device model or the server
 // model.
 class SessionImpl : public OptimizationGuideModelExecutor::Session,
-                        public on_device_model::mojom::StreamingResponder {
+                    public on_device_model::mojom::StreamingResponder {
  public:
   class OnDeviceModelClient {
    public:
@@ -144,6 +144,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // optimization_guide::OptimizationGuideModelExecutor::Session:
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
+  void Score(const std::string& text,
+             OptimizationGuideModelScoreCallback callback) override;
   void ExecuteModel(
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
@@ -289,11 +291,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       int request_check_idx);
 
   // Callback invoked with RequestSafetyCheck result.
-  void OnRequestSafetyResult(
-      on_device_model::mojom::InputOptionsPtr options,
-      int request_check_idx,
-      std::string check_input_text,
-      on_device_model::mojom::SafetyInfoPtr safety_info);
+  void OnRequestSafetyResult(on_device_model::mojom::InputOptionsPtr options,
+                             int request_check_idx,
+                             std::string check_input_text,
+                             on_device_model::mojom::SafetyInfoPtr safety_info);
   void OnRequestDetectLanguageResult(
       on_device_model::mojom::InputOptionsPtr options,
       int request_check_idx,

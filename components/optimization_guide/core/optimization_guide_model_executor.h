@@ -59,6 +59,12 @@ using OptimizationGuideModelExecutionResultCallback =
     base::OnceCallback<void(OptimizationGuideModelExecutionResult,
                             std::unique_ptr<ModelQualityLogEntry>)>;
 
+
+// A callback for receiving a score from the model, or nullopt if the model
+// is not running.
+using OptimizationGuideModelScoreCallback =
+    base::OnceCallback<void(std::optional<float>)>;
+
 // The callback for receiving streamed output from the model. The log entry will
 // be null until `StreamingResponse.is_complete` is true.
 using OptimizationGuideModelExecutionResultStreamingCallback =
@@ -161,6 +167,13 @@ class OptimizationGuideModelExecutor {
     // `callback` with the kCancelled error.
     virtual void AddContext(
         const google::protobuf::MessageLite& request_metadata) = 0;
+
+    // Gets the probability score of the first token in `text` on top of the
+    // current context. Returns nullopt if there is no on-device session (such
+    // as due to a disconnect).
+    virtual void Score(
+        const std::string& text,
+        OptimizationGuideModelScoreCallback callback) = 0;
 
     // Execute the model with `request_metadata` and streams the result to
     // `callback`. The execute call will include context from the last
