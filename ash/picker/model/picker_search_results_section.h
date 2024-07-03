@@ -17,7 +17,6 @@ enum class ASH_EXPORT PickerSectionType {
   kNone,
   kCategories,
   kSuggestions,
-  kExpressions,
   kLinks,
   kFiles,
   kDriveFiles,

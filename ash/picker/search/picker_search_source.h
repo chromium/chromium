@@ -9,7 +9,6 @@ namespace ash {
 
 enum class PickerSearchSource {
   kOmnibox = 0,
-  kEmoji,
   kDate,
   kCategory,
   kLocalFile,

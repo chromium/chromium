@@ -121,8 +121,6 @@ std::u16string GetSectionTitleForPickerSectionType(
       return u"Matching categories";
     case PickerSectionType::kSuggestions:
       return u"Suggested";
-    case PickerSectionType::kExpressions:
-      return u"Matching expressions";
     case PickerSectionType::kLinks:
       return u"Matching links";
     case PickerSectionType::kFiles:

@@ -141,8 +141,6 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
     case PickerSectionType::kEditorWrite:
     case PickerSectionType::kEditorRewrite:
       NOTREACHED_NORETURN();
-    case PickerSectionType::kExpressions:
-      return PickerCategory::kExpressions;
     case PickerSectionType::kLinks:
       return PickerCategory::kLinks;
     case PickerSectionType::kFiles:

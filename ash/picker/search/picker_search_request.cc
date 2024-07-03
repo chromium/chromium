@@ -45,9 +45,6 @@ const char* SearchSourceToHistogram(PickerSearchSource source) {
   switch (source) {
     case PickerSearchSource::kOmnibox:
       return "Ash.Picker.Search.OmniboxProvider.QueryTime";
-    case PickerSearchSource::kEmoji:
-      // Unused.
-      return "Ash.Picker.Search.EmojiProvider.QueryTime";
     case PickerSearchSource::kDate:
       return "Ash.Picker.Search.DateProvider.QueryTime";
     case PickerSearchSource::kCategory:

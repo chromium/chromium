@@ -65,10 +65,6 @@ const TestCase kNonSuggestionTestCases[] = {
         .section_type = PickerSectionType::kLinks,
     },
     TestCase{
-        .source = PickerSearchSource::kEmoji,
-        .section_type = PickerSectionType::kExpressions,
-    },
-    TestCase{
         .source = PickerSearchSource::kCategory,
         .section_type = PickerSectionType::kCategories,
     },
@@ -456,8 +452,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox, {},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji, {},
-                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate, {},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kCategory, {},
@@ -527,15 +521,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"rewrite")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kExpressions),
-                Property("results", &PickerSearchResultsSection::results,
-                         ElementsAre(Property(
-                             "data", &PickerSearchResult::data,
-                             VariantWith<PickerSearchResult::TextData>(Field(
-                                 "primary_text",
-                                 &PickerSearchResult::TextData::primary_text,
-                                 u"emoji")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kLinks),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
@@ -571,9 +556,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
 
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
                                        {PickerSearchResult::Text(u"omnibox")},
-                                       /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")},
                                        /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(
       PickerSearchSource::kDate,
@@ -786,18 +768,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   EXPECT_CALL(search_results_callback,
               Call(ElementsAre(AllOf(
                   Property("type", &PickerSearchResultsSection::type,
-                           PickerSectionType::kExpressions),
-                  Property("results", &PickerSearchResultsSection::results,
-                           ElementsAre(Property(
-                               "data", &PickerSearchResult::data,
-                               VariantWith<PickerSearchResult::TextData>(Field(
-                                   "primary_text",
-                                   &PickerSearchResult::TextData::primary_text,
-                                   u"emoji")))))))))
-      .Times(1);
-  EXPECT_CALL(search_results_callback,
-              Call(ElementsAre(AllOf(
-                  Property("type", &PickerSearchResultsSection::type,
                            PickerSectionType::kCategories),
                   Property("results", &PickerSearchResultsSection::results,
                            ElementsAre(Property(
@@ -856,9 +826,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
                                        {PickerSearchResult::Text(u"drive")},
                                        /*has_more_results=*/false);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")},
-                                       /*has_more_results=*/false);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDate,
                                        {PickerSearchResult::Text(u"date")},
                                        /*has_more_results=*/false);
@@ -895,9 +862,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
                                        {PickerSearchResult::Text(u"omnibox")},
                                        /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")},
-                                       /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
                                        {PickerSearchResult::Text(u"local")},
                                        /*has_more_results=*/true);
@@ -916,7 +880,7 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
       search_results_callback,
       Call(Each(Property("has_more_results",
                          &PickerSearchResultsSection::has_more_results, true))))
-      .Times(4);
+      .Times(3);
 
   PickerSearchAggregator aggregator(
       kBurnInPeriod,
@@ -926,9 +890,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   task_environment().FastForwardBy(kBurnInPeriod);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kOmnibox,
                                        {PickerSearchResult::Text(u"omnibox")},
-                                       /*has_more_results=*/true);
-  aggregator.HandleSearchSourceResults(PickerSearchSource::kEmoji,
-                                       {PickerSearchResult::Text(u"emoji")},
                                        /*has_more_results=*/true);
   aggregator.HandleSearchSourceResults(PickerSearchSource::kLocalFile,
                                        {PickerSearchResult::Text(u"local")},

@@ -29,8 +29,6 @@ PickerSectionType SectionTypeFromSearchSource(PickerSearchSource source) {
   switch (source) {
     case PickerSearchSource::kOmnibox:
       return PickerSectionType::kLinks;
-    case PickerSearchSource::kEmoji:
-      return PickerSectionType::kExpressions;
     case PickerSearchSource::kDate:
     case PickerSearchSource::kMath:
     case PickerSearchSource::kClipboard:
@@ -149,7 +147,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kCategories,
            PickerSectionType::kEditorWrite,
            PickerSectionType::kEditorRewrite,
-           PickerSectionType::kExpressions,
            PickerSectionType::kLinks,
            PickerSectionType::kFiles,
            PickerSectionType::kDriveFiles,
