@@ -1033,7 +1033,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void onStartWithNative() {
         assert mNativeInitialized : "onStartWithNative was called before native was initialized.";
+
+        startUmaSession();
+
         super.onStartWithNative();
+
         ChromeActivitySessionTracker.getInstance().onStartWithNative(getProfileProviderSupplier());
         ChromeCachedFlags.getInstance().cacheNativeFlags();
 
@@ -1180,11 +1184,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onResumeWithNative() {
-        // Close the current UMA record and start a new UMA one.
-        markSessionResume();
+        startUmaSession();
 
         // Inform the activity lifecycle observers. Among other things, the observers record metrics
-        // pertaining to the "resumed" activity. This needs to happen after markSessionResume has
+        // pertaining to the "resumed" activity. This needs to happen after startUmaSession has
         // closed the old UMA record, pertaining to the previous (backgrounded) activity, and opened
         // a new one pertaining to the "resumed" activity.
         super.onResumeWithNative();
@@ -1324,12 +1327,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onPauseWithNative() {
         RecordUserAction.record("MobileGoToBackground");
         Tab tab = getActivityTab();
-        if (tab != null) getTabContentManager().cacheTabThumbnail(tab);
+        if (tab != null) {
+            getTabContentManager().cacheTabThumbnail(tab);
+        }
         getManualFillingComponent().onPause();
-
-        markSessionEnd();
-
         super.onPauseWithNative();
+        endUmaSession();
     }
 
     @Override
@@ -1344,8 +1347,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
             mSyncStateChangedListener = null;
         }
-        if (mContextReporter != null) mContextReporter.disable();
+        if (mContextReporter != null) {
+            mContextReporter.disable();
+        }
         super.onStopWithNative();
+        endUmaSession();
     }
 
     @CallSuper
@@ -1357,6 +1363,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void onNewIntentWithNative(Intent intent) {
+        startUmaSession();
+
         if (mFullscreenVideoPictureInPictureController != null) {
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
@@ -1547,8 +1555,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (isTopResumedActivity
                 && mNativeInitialized
                 && getActivityType() != UmaActivityObserver.getCurrentActivityType()) {
-            markSessionEnd();
-            markSessionResume();
+            endUmaSession();
+            startUmaSession();
         }
         super.onTopResumedActivityChanged(isTopResumedActivity);
     }
@@ -2275,8 +2283,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 // ChromeActivity will get a call to onPauseWithNative(), ending the current UMA
                 // session. When exiting multi-window, however, if ChromeActivity is resumed it
                 // stays in that state.
-                markSessionEnd();
-                markSessionResume();
+                endUmaSession();
+                startUmaSession();
                 ChromeSessionState.setIsInMultiWindowMode(
                         MultiWindowUtils.getInstance().isInMultiWindowMode(this));
             }
@@ -2765,13 +2773,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         RecordUserAction.record(recordAction);
     }
 
-    private void markSessionResume() {
+    protected void startUmaSession() {
         mUmaActivityObserver.startUmaSession(
                 getActivityType(), getTabModelSelector(), getWindowAndroid());
     }
 
     /** Mark that the UMA session has ended. */
-    private void markSessionEnd() {
+    protected void endUmaSession() {
         mUmaActivityObserver.endUmaSession();
     }
 

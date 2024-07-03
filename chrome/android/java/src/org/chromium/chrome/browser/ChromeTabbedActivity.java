@@ -1177,6 +1177,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onResumeWithNative() {
+        // While the super#onResumeWithNative call below also invokes #startUmaSession, we call
+        // it here (early) as well to setup the UMA activity state for any metrics emitted prior
+        // to call to super#onResumeWithNative below. It's safe to call #startUmaSession in both
+        // places as a session will only be started if one is not already running.
+        startUmaSession();
+
         // On warm startup, call setInitialOverviewState in onResume() instead of onStart(). This is
         // because onResume() is guaranteed to called after onNewIntent() and thus have the updated
         // Intent which is used by shouldShowOverviewPageOnStart(). See https://crbug.com/1321607.
@@ -1236,7 +1242,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onStartWithNative() {
+        // While the super#onStartWithNative call below also invokes #startUmaSession, we call
+        // it here (early) as well to setup the UMA activity state for any metrics emitted prior
+        // to call to super#onStartWithNative below. It's safe to call #startUmaSession in both
+        // places as a session will only be started if one is not already running.
+        startUmaSession();
+
         mMainIntentMetrics.logLaunchBehavior();
+
         super.onStartWithNative();
 
         // Don't call setInitialOverviewState if 1) we're waiting for the tab's creation or we risk

@@ -25,6 +25,9 @@ public class UmaActivityObserver {
     /**
      * Call when an android activity has resumed, with native code loaded.
      *
+     * <p>This function can safely be called multiple times in a given activity's start/resume
+     * sequence because it checks whether it is already tracking the current activity.
+     *
      * @param activityType The type of the Activity.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
      *     If null, UmaActivityObserver does not record page loads and tab counts.
@@ -35,9 +38,12 @@ public class UmaActivityObserver {
             @ActivityType int activityType,
             TabModelSelector tabModelSelector,
             AndroidPermissionDelegate permissionDelegate) {
-        // The activity should be inactive. If you hit this assert, please update
-        // crbug.com/172653 on how you got here.
-        assert !mIsSessionActive;
+        if (mIsSessionActive) {
+            if (activityType == sCurrentActivityType) {
+                return;
+            }
+            endUmaSession();
+        }
         mIsSessionActive = true;
 
         // Stage the activity type value such that it can be picked up when the new
@@ -55,9 +61,9 @@ public class UmaActivityObserver {
      * <p>The activity is expected to have previously started with nativve code loaded.
      */
     public void endUmaSession() {
-        // The activity should be active. If you hit this assert, please update
-        // crbug.com/172653 on how you got here.
-        assert mIsSessionActive;
+        if (!mIsSessionActive) {
+            return;
+        }
         mIsSessionActive = false;
 
         // Record session metrics.
