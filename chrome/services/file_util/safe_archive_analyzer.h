@@ -9,13 +9,16 @@
 
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
-#include "chrome/utility/safe_browsing/rar_analyzer.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
+#endif
+
+#if USE_UNRAR
+#include "chrome/utility/safe_browsing/rar_analyzer.h"
 #endif
 
 namespace base {
@@ -67,10 +70,12 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
   void Timeout();
 
   safe_browsing::ZipAnalyzer zip_analyzer_;
-  safe_browsing::RarAnalyzer rar_analyzer_;
   safe_browsing::SevenZipAnalyzer seven_zip_analyzer_;
 #if BUILDFLAG(IS_MAC)
   safe_browsing::dmg::DMGAnalyzer dmg_analyzer_;
+#endif
+#if USE_UNRAR
+  safe_browsing::RarAnalyzer rar_analyzer_;
 #endif
 
   // A timer to ensure no archive takes too long to unpack.

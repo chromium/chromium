@@ -35,6 +35,8 @@ source_set("file_util") {
     "//mojo/public/mojom/base",
   ]
 
+  defines = []
+
   if (is_chromeos_ash) {
     sources += [
       "zip_file_creator.cc",
@@ -59,6 +61,8 @@ source_set("file_util") {
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/utility/safe_browsing",
     ]
+
+    defines += [ "USE_UNRAR=$safe_browsing_use_unrar" ]
   }
 
   if (enable_extractors) {

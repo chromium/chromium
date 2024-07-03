@@ -19,4 +19,7 @@ declare_args() {
   } else {
     safe_browsing_mode = 1
   }
+
+  # Allows building without //third_party/unrar included, for license reasons
+  safe_browsing_use_unrar = true
 }

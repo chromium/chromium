@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/utility/safe_browsing/rar_analyzer.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
@@ -18,14 +17,16 @@
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
 #endif
 
+#if USE_UNRAR
+#include "chrome/utility/safe_browsing/rar_analyzer.h"
+#endif
+
 namespace safe_browsing {
 
 // static
 std::unique_ptr<ArchiveAnalyzer> ArchiveAnalyzer::CreateForArchiveType(
     DownloadFileType_InspectionType file_type) {
-  if (file_type == DownloadFileType::RAR) {
-    return std::make_unique<RarAnalyzer>();
-  } else if (file_type == DownloadFileType::ZIP) {
+  if (file_type == DownloadFileType::ZIP) {
     return std::make_unique<ZipAnalyzer>();
   } else if (file_type == DownloadFileType::SEVEN_ZIP) {
     return std::make_unique<SevenZipAnalyzer>();
@@ -34,6 +35,12 @@ std::unique_ptr<ArchiveAnalyzer> ArchiveAnalyzer::CreateForArchiveType(
 #if BUILDFLAG(IS_MAC)
   if (file_type == DownloadFileType::DMG) {
     return std::make_unique<dmg::DMGAnalyzer>();
+  }
+#endif
+
+#if USE_UNRAR
+  if (file_type == DownloadFileType::RAR) {
+    return std::make_unique<RarAnalyzer>();
   }
 #endif
 

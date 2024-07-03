@@ -74,6 +74,7 @@ void SafeArchiveAnalyzer::AnalyzeRarFile(
     const std::optional<std::string>& password,
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
     AnalyzeRarFileCallback callback) {
+#if USE_UNRAR
   DCHECK(rar_file.IsValid());
   temp_file_getter_.Bind(std::move(temp_file_getter));
   callback_ = std::move(callback);
@@ -90,6 +91,9 @@ void SafeArchiveAnalyzer::AnalyzeRarFile(
                         /*password=*/password,
                         std::move(analysis_finished_callback),
                         std::move(temp_file_getter_callback), &results_);
+#else
+  std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
+#endif
 }
 
 void SafeArchiveAnalyzer::AnalyzeSevenZipFile(
