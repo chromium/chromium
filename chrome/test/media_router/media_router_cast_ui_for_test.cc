@@ -4,7 +4,6 @@
 
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -12,24 +11,9 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/views/test/button_test_api.h"
 
 namespace media_router {
-
-namespace {
-
-ui::MouseEvent CreateMousePressedEvent() {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0),
-                        gfx::Point(0, 0), ui::EventTimeForNow(),
-                        ui::EF_LEFT_MOUSE_BUTTON, 0);
-}
-
-}  // namespace
 
 MediaRouterCastUiForTest::MediaRouterCastUiForTest(
     content::WebContents* web_contents)
@@ -63,8 +47,7 @@ void MediaRouterCastUiForTest::ChooseSourceType(
   CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
 
-  views::test::ButtonTestApi(dialog_view->sources_button_for_test())
-      .NotifyClick(CreateMousePressedEvent());
+  ClickOnButton(dialog_view->sources_button_for_test());
   int source_index;
   switch (source_type) {
     case CastDialogView::kTab:
@@ -86,13 +69,13 @@ CastDialogView::SourceType MediaRouterCastUiForTest::GetChosenSourceType()
 
 void MediaRouterCastUiForTest::StartCasting(const std::string& sink_name) {
   CastDialogSinkView* sink_view = GetSinkView(sink_name);
-  ClickOnView(sink_view->cast_sink_button_for_test());
+  ClickOnButton(sink_view->cast_sink_button_for_test());
 }
 
 void MediaRouterCastUiForTest::StopCasting(const std::string& sink_name) {
   CastDialogSinkView* sink_view = GetSinkView(sink_name);
   if (sink_view->stop_button_for_test()) {
-    ClickOnView(sink_view->stop_button_for_test());
+    ClickOnButton(sink_view->stop_button_for_test());
     return;
   }
   NOTREACHED_IN_MIGRATION() << "No stop button found for sink " << sink_name;

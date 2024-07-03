@@ -89,14 +89,17 @@ MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
     case UiForBrowserTest::kGmc:
       feature_list_.InitWithFeatures(
           {
-            media::kGlobalMediaControls, kGlobalMediaControlsCastStartStop,
+              media::kGlobalMediaControls,
+              kGlobalMediaControlsCastStartStop,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                // Without this flag, SodaInstaller::GetInstance() fails a
-                // DCHECK on Chrome OS.  The call to
-                // SodaInstaller::GetInstance() is in
-                // MediaDialogView::AddedToWidget(), which is called indirectly
-                // from MediaDialogView::ShowDialogForPresentationRequest().
-                ash::features::kOnDeviceSpeechRecognition,
+              // Without this flag, SodaInstaller::GetInstance() fails a DCHECK
+              // on Chrome OS. The call to SodaInstaller::GetInstance() is in
+              // MediaDialogView::AddedToWidget(), which is called indirectly
+              // from MediaDialogView::ShowDialogForPresentationRequest().
+              ash::features::kOnDeviceSpeechRecognition,
+#endif
+#if !BUILDFLAG(IS_CHROMEOS)
+              media::kGlobalMediaControlsUpdatedUI,
 #endif
           },
           {});
@@ -240,7 +243,8 @@ void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
   // Extract the fields.
   const std::string* error_message = dict_value->FindString("errorMessage");
   ASSERT_TRUE(error_message);
-  ASSERT_THAT(dict_value->FindBool("passed"), Optional(true)) << error_message;
+  ASSERT_THAT(dict_value->FindBool("passed"), Optional(true))
+      << error_message->c_str();
 }
 
 void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
@@ -333,11 +337,6 @@ void MediaRouterIntegrationBrowserTest::ExecuteScript(
 
 bool MediaRouterIntegrationBrowserTest::IsRouteCreatedOnUI() {
   return !test_ui_->GetRouteIdForSink(receiver_).empty();
-}
-
-bool MediaRouterIntegrationBrowserTest::IsUIShowingIssue() {
-  std::string issue_text = test_ui_->GetIssueTextForSink(receiver_);
-  return !issue_text.empty();
 }
 
 void MediaRouterIntegrationBrowserTest::ParseCommandLine() {

@@ -53,6 +53,8 @@ class MediaRouterIntegrationOneUABrowserTest
   void CaptureOffScreenTab() {
     GURL receiver_page =
         embedded_test_server()->GetURL("/presentation_receiver.html");
+    EXPECT_EQ(static_cast<int>(test_provider_->get_presentation_ids().size()),
+              1);
     std::string presentation_id = test_provider_->get_presentation_ids().at(0);
     test_provider_->CaptureOffScreenTab(GetActiveWebContents(), receiver_page,
                                         presentation_id);
