@@ -97,11 +97,13 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/test/test_future.h"
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "chrome/common/chrome_version.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/enclave/icloud_recovery_key_mac.h"
+#include "device/fido/mac/fake_icloud_keychain.h"
 #include "device/fido/mac/util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -602,6 +604,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     // replace this if they need.
     biometrics_override_ =
         std::make_unique<device::fido::mac::ScopedBiometricsOverride>(false);
+    if (__builtin_available(macOS 13.5, *)) {
+      fake_icloud_keychain_ =
+          std::make_unique<device::fido::icloud_keychain::Fake>();
+    }
+    scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
     clock_.SetNow(base::Time::FromTimeT(1000));
     OSCryptMocker::SetUp();
@@ -865,6 +872,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #elif BUILDFLAG(IS_MAC)
   std::unique_ptr<device::fido::mac::ScopedBiometricsOverride>
       biometrics_override_;
+  std::unique_ptr<device::fido::icloud_keychain::Fake> fake_icloud_keychain_;
+  std::unique_ptr<ScopedICloudDriveOverride> scoped_icloud_drive_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
@@ -997,6 +1006,89 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
+
+#if BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       RegisterICloudDriveEnabled_NoGPMDefault) {
+  // Override iCloud Drive to appear enabled. Because of this GPM should not be
+  // the default since none of the other conditions apply.
+  scoped_icloud_drive_override_.reset();
+  scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(true);
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorWithPinBrowserTest,
+    RegisterICloudDriveEnabledButAlsoPasskeyPresent_GPMDefault) {
+  // Override iCloud Drive to appear enabled, but also add a passkey to the
+  // store. That should be sufficient for GPM to be the default.
+  scoped_icloud_drive_override_.reset();
+  scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(true);
+  AddTestPasskeyToModel();
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EnclaveAuthenticatorWithPinBrowserTest,
+    RegisterICloudDriveEnabledButPermissionDenied_GPMDefault) {
+  // Override iCloud Drive to appear enabled, but override the iCloud Keychain
+  // permission to appear as if the user denied Chrome permission. That should
+  // cause GPM to be the default.
+  if (__builtin_available(iOS 13.5, *)) {
+    scoped_icloud_drive_override_.reset();
+    scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(true);
+    fake_icloud_keychain_.reset();
+    fake_icloud_keychain_ =
+        device::fido::icloud_keychain::NewFakeWithPermission(false);
+
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state = trusted_vault::
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+    delegate_observer()->WaitForUI();
+
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  }
+}
+
+#endif
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
                        MakeCredentialWithPrf) {

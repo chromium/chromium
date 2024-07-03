@@ -70,6 +70,9 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -96,6 +99,7 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/mac/icloud_keychain.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "extensions/browser/extension_registry.h"
@@ -322,6 +326,82 @@ class CableLinkingEventHandler : public ProfileObserver {
  private:
   raw_ptr<Profile> profile_;
 };
+
+#if BUILDFLAG(IS_MAC)
+
+bool UserDeniedICloudKeychainPermission() {
+  const std::optional<bool> has_permission =
+      device::fido::icloud_keychain::HasPermission();
+  return has_permission && has_permission.value() == false;
+}
+
+bool AccountHasPasskeys(Profile* profile) {
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetInstance()->GetForProfile(profile);
+  CHECK(passkey_model);
+  return !passkey_model->IsEmpty();
+}
+
+bool AccountHasNonAppleDevice(Profile* profile) {
+  syncer::DeviceInfoSyncService* const sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return false;
+  }
+
+  syncer::DeviceInfoTracker* const tracker =
+      sync_service->GetDeviceInfoTracker();
+  const std::vector<const syncer::DeviceInfo*> devices =
+      tracker->GetAllDeviceInfo();
+
+  return base::ranges::any_of(devices, [](const auto* device) {
+    switch (device->os_type()) {
+      case syncer::DeviceInfo::OsType::kIOS:
+      case syncer::DeviceInfo::OsType::kMac:
+        return false;
+      default:
+        return true;
+    }
+  });
+}
+
+bool EnclaveCanBeDefault(Profile* profile) {
+  if (AccountHasPasskeys(profile)) {
+    FIDO_LOG(EVENT)
+        << "Enclave can be default because account already has passkeys.";
+    return true;
+  }
+
+  if (AccountHasNonAppleDevice(profile)) {
+    FIDO_LOG(EVENT)
+        << "Enclave can be default because non-Apple device found in Sync.";
+    return true;
+  }
+
+  if (!IsICloudDriveEnabled()) {
+    FIDO_LOG(EVENT)
+        << "Enclave can be default because iCloud Drive isn't enabled.";
+    return true;
+  }
+
+  if (UserDeniedICloudKeychainPermission()) {
+    FIDO_LOG(EVENT) << "Enclave can be default because iCloud Keychain "
+                       "permission is denied.";
+    return true;
+  }
+
+  FIDO_LOG(EVENT) << "Enclave cannot be the default for this request. No "
+                     "enabling conditions apply.";
+  return false;
+}
+
+#else
+
+bool EnclaveCanBeDefault(Profile* profile) {
+  return true;
+}
+
+#endif
 
 }  // namespace
 
@@ -1401,6 +1481,12 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
     dialog_controller_->OnTransportAvailabilityChanged(std::move(tai));
     return;
   }
+
+  // At the time of writing we don't support GPM passkeys on iOS, so we want to
+  // avoid defaulting to GPM for macOS users who likely have an iPhone. But on
+  // all other platforms, GPM should be the default.
+  dialog_controller_->set_enclave_can_be_default(
+      EnclaveCanBeDefault(Profile::FromBrowserContext(GetBrowserContext())));
 
   dialog_controller_->StartFlow(std::move(tai), is_conditional_);
 

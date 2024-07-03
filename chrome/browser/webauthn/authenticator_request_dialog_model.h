@@ -57,6 +57,7 @@ struct VectorIcon;
 }
 
 class AuthenticatorRequestDialogController;
+class Profile;
 
 //                ┌───────┐
 //                │ View  │
@@ -874,6 +875,8 @@ class AuthenticatorRequestDialogController
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
 
+  void set_enclave_can_be_default(bool can_be_default);
+
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -994,6 +997,10 @@ class AuthenticatorRequestDialogController
   void OnUserConfirmedPriorityMechanism() override;
 
   void OnChromeOSGPMRequestReady() override;
+
+  // Returns true if this request could pick the enclave authenticator by
+  // default. This only makes sense for a create() call.
+  bool CanDefaultToEnclave(Profile* profile);
 
   raw_ptr<Model> model_;
 
@@ -1123,6 +1130,8 @@ class AuthenticatorRequestDialogController
   // syncing is enabled.
   bool has_icloud_drive_enabled_ = false;
 #endif
+
+  bool enclave_can_be_default_ = true;
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>

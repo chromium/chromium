@@ -2240,6 +2240,10 @@ if (!is_android) {
       ]
     }
 
+    if (is_mac) {
+      deps += [ "//device/fido:icloud_keychain_test_support" ]
+    }
+
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",

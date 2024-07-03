@@ -58,6 +58,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate() override;
   bool IsReady() const override;
+  bool IsEmpty() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
       const override;

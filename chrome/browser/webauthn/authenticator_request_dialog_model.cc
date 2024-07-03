@@ -441,21 +441,6 @@ bool HaveTouchId() {
 #endif
 }
 
-bool CanDefaultToEnclave(Profile* profile) {
-  const bool enclave_decline_limit_reached =
-      profile->GetPrefs()->GetInteger(
-          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
-      kMaxPriorityGPMCredentialCreations;
-  // If a user has declined bootstrapping too many times then GPM will still
-  // be available in the mechanism selection screen for credential creation,
-  // but it can no longer be a priority mechanism.
-  const bool enclave_bootstrap_limit_reached =
-      profile->GetPrefs()->GetInteger(
-          webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
-      device::enclave::kMaxGPMBootstrapPrompts;
-  return !enclave_decline_limit_reached && !enclave_bootstrap_limit_reached;
-}
-
 }  // namespace
 
 #define AUTHENTICATOR_REQUEST_EVENT_0(name) \
@@ -906,7 +891,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
   // See https://w3c.github.io/webauthn/#enum-hints
   const auto mech_it = base::ranges::find_if(
       model_->mechanisms,
-      [mechanism_is_transport, transport, profile,
+      [this, mechanism_is_transport, transport, profile,
        enclave_needs_reauth = enclave_needs_reauth_](const auto& mech) {
         switch (transport) {
           case AuthenticatorTransport::kUsbHumanInterfaceDevice:
@@ -1681,6 +1666,11 @@ void AuthenticatorRequestDialogController::set_allow_icloud_keychain(
 void AuthenticatorRequestDialogController::set_should_create_in_icloud_keychain(
     bool is_enabled) {
   should_create_in_icloud_keychain_ = is_enabled;
+}
+
+void AuthenticatorRequestDialogController::set_enclave_can_be_default(
+    bool can_be_default) {
+  enclave_can_be_default_ = can_be_default;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -2668,4 +2658,24 @@ void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
 void AuthenticatorRequestDialogController::OnChromeOSGPMRequestReady() {
   HideDialogAndDispatchToPlatformAuthenticator(
       device::AuthenticatorType::kChromeOSPasskeys);
+}
+
+bool AuthenticatorRequestDialogController::CanDefaultToEnclave(
+    Profile* profile) {
+  if (!enclave_can_be_default_) {
+    return false;
+  }
+
+  const bool enclave_decline_limit_reached =
+      profile->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount) >=
+      kMaxPriorityGPMCredentialCreations;
+  // If a user has declined bootstrapping too many times then GPM will still
+  // be available in the mechanism selection screen for credential creation,
+  // but it can no longer be a priority mechanism.
+  const bool enclave_bootstrap_limit_reached =
+      profile->GetPrefs()->GetInteger(
+          webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
+      device::enclave::kMaxGPMBootstrapPrompts;
+  return !enclave_decline_limit_reached && !enclave_bootstrap_limit_reached;
 }
