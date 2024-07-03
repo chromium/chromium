@@ -484,12 +484,11 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
 
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 
-  if (const std::optional<AttributionReport>& report =
-          result.replaced_event_level_report()) {
+  if (const AttributionReport* report = result.replaced_event_level_report()) {
     DCHECK_EQ(
         result.event_level_status(),
         AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority);
-    DCHECK(result.new_event_level_report().has_value());
+    DCHECK(result.new_event_level_report());
 
     observer_->OnReportHandled(
         WebUIReport(*report, /*is_debug_report=*/false,

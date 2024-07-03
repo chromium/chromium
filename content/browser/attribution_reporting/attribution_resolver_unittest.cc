@@ -82,9 +82,11 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Ge;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::Le;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -260,8 +262,7 @@ TEST_F(AttributionResolverTest,
       storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kNoMatchingImpressions),
-            NewEventLevelReportIs(std::nullopt),
-            NewAggregatableReportIs(std::nullopt),
+            NewEventLevelReportIs(IsNull()), NewAggregatableReportIs(IsNull()),
             CreateReportSourceIs(std::nullopt)));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
@@ -386,8 +387,8 @@ TEST_F(AttributionResolverTest,
           TriggerBuilder().SetDebugKey(20).Build()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            ReplacedEventLevelReportIs(std::nullopt),
-            DroppedEventLevelReportIs(Optional(TriggerDebugKeyIs(20u)))));
+            ReplacedEventLevelReportIs(IsNull()),
+            DroppedEventLevelReportIs(Pointee(TriggerDebugKeyIs(20u)))));
 }
 
 TEST_F(AttributionResolverTest,
@@ -780,8 +781,8 @@ TEST_F(AttributionResolverTest, MaxEventLevelReportsPerDestination) {
                             kNoCapacityForConversionDestination),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess),
-                    ReplacedEventLevelReportIs(std::nullopt),
-                    DroppedEventLevelReportIs(std::nullopt),
+                    ReplacedEventLevelReportIs(IsNull()),
+                    DroppedEventLevelReportIs(IsNull()),
                     CreateReportMaxEventLevelReportsLimitIs(1),
                     CreateReportMaxAggregatableReportsLimitIs(std::nullopt)));
 }
@@ -828,8 +829,8 @@ TEST_F(AttributionResolverTest,
                             kNoCapacityForConversionDestination),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess),
-                    ReplacedEventLevelReportIs(std::nullopt),
-                    DroppedEventLevelReportIs(std::nullopt),
+                    ReplacedEventLevelReportIs(IsNull()),
+                    DroppedEventLevelReportIs(IsNull()),
                     CreateReportMaxEventLevelReportsLimitIs(1),
                     CreateReportMaxAggregatableReportsLimitIs(std::nullopt)));
 }
@@ -859,8 +860,8 @@ TEST_F(AttributionResolverTest, MaxAggregatableReportsPerDestination) {
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
-                    ReplacedEventLevelReportIs(std::nullopt),
-                    DroppedEventLevelReportIs(std::nullopt),
+                    ReplacedEventLevelReportIs(IsNull()),
+                    DroppedEventLevelReportIs(IsNull()),
                     CreateReportMaxEventLevelReportsLimitIs(std::nullopt),
                     CreateReportMaxAggregatableReportsLimitIs(1)));
 }
@@ -907,8 +908,8 @@ TEST_F(AttributionResolverTest,
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
-                    ReplacedEventLevelReportIs(std::nullopt),
-                    DroppedEventLevelReportIs(std::nullopt),
+                    ReplacedEventLevelReportIs(IsNull()),
+                    DroppedEventLevelReportIs(IsNull()),
                     CreateReportMaxEventLevelReportsLimitIs(std::nullopt),
                     CreateReportMaxAggregatableReportsLimitIs(1)));
 }
@@ -1175,9 +1176,9 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            ReplacedEventLevelReportIs(std::nullopt),
+            ReplacedEventLevelReportIs(IsNull()),
             CreateReportMaxAttributionsLimitIs(2),
-            DroppedEventLevelReportIs(std::nullopt)));
+            DroppedEventLevelReportIs(IsNull())));
 
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(conversion3),
@@ -1185,9 +1186,9 @@ TEST_F(AttributionResolverTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::EventLevelResult::kExcessiveAttributions),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
-            ReplacedEventLevelReportIs(std::nullopt),
+            ReplacedEventLevelReportIs(IsNull()),
             CreateReportMaxAttributionsLimitIs(2),
-            DroppedEventLevelReportIs(std::nullopt)));
+            DroppedEventLevelReportIs(IsNull())));
 
   const auto source =
       source_builder.SetRemainingAggregatableAttributionBudget(65536 - 8)
@@ -1864,21 +1865,20 @@ TEST_F(AttributionResolverTest, TriggerPriority) {
                   TriggerBuilder().SetPriority(0).SetDebugKey(20).Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
-                    ReplacedEventLevelReportIs(std::nullopt),
+                    ReplacedEventLevelReportIs(IsNull()),
                     CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
-                    DroppedEventLevelReportIs(std::nullopt)));
+                    DroppedEventLevelReportIs(IsNull())));
 
   // This conversion should replace the one above because it has a higher
   // priority.
-  EXPECT_THAT(
-      storage()->MaybeCreateAndStoreReport(
-          TriggerBuilder().SetPriority(2).SetDebugKey(21).Build()),
-      AllOf(
-          CreateReportEventLevelStatusIs(AttributionTrigger::EventLevelResult::
-                                             kSuccessDroppedLowerPriority),
-          ReplacedEventLevelReportIs(Optional(TriggerDebugKeyIs(20u))),
-          CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
-          DroppedEventLevelReportIs(std::nullopt)));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  TriggerBuilder().SetPriority(2).SetDebugKey(21).Build()),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::
+                            kSuccessDroppedLowerPriority),
+                    ReplacedEventLevelReportIs(Pointee(TriggerDebugKeyIs(20u))),
+                    CreateReportSourceIs(Optional(SourceEventIdIs(5u))),
+                    DroppedEventLevelReportIs(IsNull())));
 
   storage()->StoreSource(SourceBuilder()
                              .SetSourceEventId(7)
@@ -1896,9 +1896,9 @@ TEST_F(AttributionResolverTest, TriggerPriority) {
           TriggerBuilder().SetPriority(0).SetDebugKey(23).Build()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kPriorityTooLow),
-            ReplacedEventLevelReportIs(std::nullopt),
+            ReplacedEventLevelReportIs(IsNull()),
             CreateReportSourceIs(Optional(SourceEventIdIs(7u))),
-            DroppedEventLevelReportIs(Optional(TriggerDebugKeyIs(23u)))));
+            DroppedEventLevelReportIs(Pointee(TriggerDebugKeyIs(23u)))));
 
   EXPECT_THAT(
       storage()->GetAttributionReports(base::Time::Max()),
@@ -1962,7 +1962,7 @@ TEST_F(AttributionResolverTest, TriggerPriority_UsesOriginalReportTime) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveReports),
             DroppedEventLevelReportIs(
-                Optional(ReportTimeIs(expected_first_report_time)))));
+                Pointee(ReportTimeIs(expected_first_report_time)))));
 }
 
 TEST_F(AttributionResolverTest, TriggerPriority_Simple) {
@@ -2050,7 +2050,7 @@ TEST_F(AttributionResolverTest, TriggerPriority_DeactivatesImpression) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveReports),
             DroppedEventLevelReportIs(
-                Optional(EventLevelDataIs(TriggerPriorityIs(2))))));
+                Pointee(EventLevelDataIs(TriggerPriorityIs(2))))));
 
   // As a result, the impression with data 5 should have reached event-level
   // attribution limit.
@@ -2146,7 +2146,7 @@ TEST_F(AttributionResolverTest, DedupKey_Dedups) {
           .Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
             result.event_level_status());
-  EXPECT_EQ(result.replaced_event_level_report(), std::nullopt);
+  EXPECT_FALSE(result.replaced_event_level_report());
 
   // Shouldn't be stored because conversion destination and dedup key match.
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kDeduplicated,
@@ -2686,8 +2686,8 @@ TEST_F(AttributionResolverTest,
           TriggerBuilder().SetDebugKey(20).Build()),
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kExcessiveReports),
-            ReplacedEventLevelReportIs(std::nullopt),
-            DroppedEventLevelReportIs(Optional(TriggerDebugKeyIs(20u)))));
+            ReplacedEventLevelReportIs(IsNull()),
+            DroppedEventLevelReportIs(Pointee(TriggerDebugKeyIs(20u)))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
@@ -2963,8 +2963,8 @@ TEST_F(AttributionResolverTest, MaybeCreateAndStoreReport_ReturnsNewReport) {
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(TriggerBuilder().Build()),
               AllOf(CreateReportEventLevelStatusIs(
                         AttributionTrigger::EventLevelResult::kSuccess),
-                    NewEventLevelReportIs(Optional(EventLevelDataIs(_))),
-                    NewAggregatableReportIs(std::nullopt)));
+                    NewEventLevelReportIs(Pointee(EventLevelDataIs(_))),
+                    NewAggregatableReportIs(IsNull())));
 }
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just
@@ -3502,8 +3502,8 @@ TEST_F(AttributionResolverTest,
           DefaultAggregatableTriggerBuilder().Build()),
       AllOf(CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
-            NewEventLevelReportIs(std::nullopt),
-            NewAggregatableReportIs(std::nullopt)));
+            NewEventLevelReportIs(IsNull()),
+            NewAggregatableReportIs(IsNull())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
@@ -3522,8 +3522,8 @@ TEST_F(AttributionResolverTest,
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kNoHistograms),
-            NewEventLevelReportIs(Optional(EventLevelDataIs(TriggerDataIs(5)))),
-            NewAggregatableReportIs(Eq(std::nullopt))));
+            NewEventLevelReportIs(Pointee(EventLevelDataIs(TriggerDataIs(5)))),
+            NewAggregatableReportIs(IsNull())));
 }
 
 TEST_F(AttributionResolverTest,
@@ -3565,8 +3565,8 @@ TEST_F(AttributionResolverTest, AggregatableAttribution_ReportsScheduled) {
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            NewEventLevelReportIs(Optional(EventLevelDataIs(_))),
-            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+            NewEventLevelReportIs(Pointee(EventLevelDataIs(_))),
+            NewAggregatableReportIs(Pointee(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
   const auto source =
@@ -3622,14 +3622,14 @@ TEST_F(
                 AttributionTrigger::EventLevelResult::kExcessiveReports),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            ReplacedEventLevelReportIs(std::nullopt),
-            NewEventLevelReportIs(std::nullopt),
-            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+            ReplacedEventLevelReportIs(IsNull()),
+            NewEventLevelReportIs(IsNull()),
+            NewAggregatableReportIs(Pointee(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(
                     DefaultAggregatableHistogramContributions(
                         /*histogram_values=*/{5}))))),
             DroppedEventLevelReportIs(
-                Optional(EventLevelDataIs(TriggerDataIs(5u))))));
+                Pointee(EventLevelDataIs(TriggerDataIs(5u))))));
   EXPECT_THAT(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
@@ -3715,7 +3715,7 @@ TEST_F(AttributionResolverTest, AggregationCoordinator_RoundTrip) {
               .Build(/*generate_event_trigger_data=*/false)),
       AllOf(CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kSuccess),
-            NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+            NewAggregatableReportIs(Pointee(AggregatableAttributionDataIs(
                 AggregationCoordinatorOriginIs(coordinator_origin))))));
   EXPECT_THAT(
       storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
@@ -3760,8 +3760,8 @@ TEST_F(AttributionResolverTest, NoEventTriggerData_NotRegisteredReturned) {
                 AttributionTrigger::EventLevelResult::kNotRegistered),
             CreateReportAggregatableStatusIs(
                 AttributionTrigger::AggregatableResult::kNoMatchingImpressions),
-            NewEventLevelReportIs(std::nullopt),
-            NewAggregatableReportIs(std::nullopt)));
+            NewEventLevelReportIs(IsNull()),
+            NewAggregatableReportIs(IsNull())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 
@@ -3854,7 +3854,7 @@ TEST_F(AttributionResolverTest, SourceRegistrationTimeConfig_RoundTrip) {
                 .Build(/*generate_event_trigger_data=*/false)),
         AllOf(CreateReportAggregatableStatusIs(
                   AttributionTrigger::AggregatableResult::kSuccess),
-              NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
+              NewAggregatableReportIs(Pointee(AggregatableAttributionDataIs(
                   SourceRegistrationTimeConfigIs(config))))));
   }
 }
@@ -4000,7 +4000,7 @@ TEST_F(AttributionResolverTest,
                       .Build(/*generate_event_trigger_data=*/false)),
               AllOf(CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess),
-                    NewAggregatableReportIs(Optional(AllOf(
+                    NewAggregatableReportIs(Pointee(AllOf(
                         AggregatableAttributionDataIs(
                             TriggerContextIdIs(Optional(std::string("123")))),
                         ReportTimeIs(report_time))))));

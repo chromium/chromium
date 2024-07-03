@@ -123,7 +123,6 @@ using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Le;
 using ::testing::Matcher;
-using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -957,7 +956,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Pointee(
                                       EventLevelDataIs(TriggerPriorityIs(1)))),
                                   CreateReportEventLevelStatusIs(
                                       AttributionTrigger::EventLevelResult::
@@ -969,7 +968,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
         observer,
         OnTriggerHandled(
             _,
-            AllOf(ReplacedEventLevelReportIs(std::nullopt),
+            AllOf(ReplacedEventLevelReportIs(IsNull()),
                   CreateReportEventLevelStatusIs(
                       AttributionTrigger::EventLevelResult::kPriorityTooLow))));
 
@@ -977,14 +976,14 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Pointee(
                                       EventLevelDataIs(TriggerPriorityIs(2)))),
                                   CreateReportEventLevelStatusIs(
                                       AttributionTrigger::EventLevelResult::
                                           kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Pointee(
                                       EventLevelDataIs(TriggerPriorityIs(3)))),
                                   CreateReportEventLevelStatusIs(
                                       AttributionTrigger::EventLevelResult::

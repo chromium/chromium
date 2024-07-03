@@ -914,12 +914,12 @@ void AttributionManagerImpl::OnReportStored(
 
   std::optional<base::Time> min_new_report_time;
 
-  if (auto& report = result.new_event_level_report()) {
+  if (auto* report = result.new_event_level_report()) {
     min_new_report_time = report->report_time();
     MaybeSendDebugReport(std::move(*report));
   }
 
-  if (auto& report = result.new_aggregatable_report()) {
+  if (auto* report = result.new_aggregatable_report()) {
     min_new_report_time = AttributionReport::MinReportTime(
         min_new_report_time, report->report_time());
 
