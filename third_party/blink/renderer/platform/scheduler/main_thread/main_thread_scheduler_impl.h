@@ -142,7 +142,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeDelta prioritize_compositing_after_delay_post_fcp;
   };
 
-  static const char* UseCaseToString(UseCase use_case);
   static const char* RAILModeToString(RAILMode rail_mode);
 
   explicit MainThreadSchedulerImpl(
@@ -545,6 +544,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   UseCase ComputeCurrentUseCase(
       base::TimeTicks now,
       base::TimeDelta* expected_use_case_duration) const;
+
+  // Helper for computing the RAILMode based on the given UseCase and current
+  // scheduler state.
+  RAILMode ComputeCurrentRAILMode(UseCase) const;
 
   // An input event of some sort happened, the policy may need updating.
   void UpdateForInputEventOnCompositorThread(

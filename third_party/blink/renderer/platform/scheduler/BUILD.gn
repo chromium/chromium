@@ -113,6 +113,7 @@ blink_platform_sources("scheduler") {
     "main_thread/render_widget_signals.h",
     "main_thread/task_type_names.cc",
     "main_thread/task_type_names.h",
+    "main_thread/use_case.cc",
     "main_thread/use_case.h",
     "main_thread/user_model.cc",
     "main_thread/user_model.h",

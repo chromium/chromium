@@ -1371,10 +1371,6 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
       return false;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
   }
 }
 
@@ -1471,58 +1467,12 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
           kFastCompositingIdleTimeThreshold;
 
   Policy new_policy;
-  new_policy.rail_mode = RAILMode::kAnimation;
   new_policy.use_case = main_thread_only().current_use_case;
+  new_policy.rail_mode = ComputeCurrentRAILMode(new_policy.use_case);
 
-  switch (new_policy.use_case) {
-    case UseCase::kCompositorGesture:
-      if (main_thread_only().blocking_input_expected_soon)
-        new_policy.rail_mode = RAILMode::kResponse;
-      break;
-
-    case UseCase::kSynchronizedGesture:
-      if (main_thread_only().blocking_input_expected_soon)
-        new_policy.rail_mode = RAILMode::kResponse;
-      break;
-
-    case UseCase::kMainThreadCustomInputHandling:
-      break;
-
-    case UseCase::kMainThreadGesture:
-      if (main_thread_only().blocking_input_expected_soon)
-        new_policy.rail_mode = RAILMode::kResponse;
-      break;
-
-    case UseCase::kTouchstart:
-      new_policy.rail_mode = RAILMode::kResponse;
-      new_policy.should_defer_task_queues = true;
-      break;
-
-    case UseCase::kNone:
-      // It's only safe to block tasks if we are expecting a compositor
-      // driven gesture.
-      if (main_thread_only().blocking_input_expected_soon &&
-          any_thread().last_gesture_was_compositor_driven) {
-        new_policy.rail_mode = RAILMode::kResponse;
-      }
-      break;
-
-    case UseCase::kEarlyLoading:
-      new_policy.rail_mode = RAILMode::kLoad;
-      break;
-
-    case UseCase::kLoading:
-      new_policy.rail_mode = RAILMode::kLoad;
-      // TODO(skyostil): Experiment with throttling rendering frame rate.
-      break;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
+  if (new_policy.use_case == UseCase::kTouchstart) {
+    new_policy.should_defer_task_queues = true;
   }
-
-  // TODO(skyostil): Add an idle state for foreground tabs too.
-  if (main_thread_only().renderer_hidden.get())
-    new_policy.rail_mode = RAILMode::kIdle;
 
   if (main_thread_only().renderer_pause_count != 0) {
     new_policy.should_pause_task_queues = true;
@@ -1571,6 +1521,46 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   main_thread_only().current_policy = new_policy;
 
   UpdateStateForAllTaskQueues(old_policy);
+}
+
+RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
+    UseCase use_case) const {
+  // TODO(skyostil): Add an idle state for foreground tabs too.
+  if (main_thread_only().renderer_hidden.get()) {
+    return RAILMode::kIdle;
+  }
+
+  switch (use_case) {
+    case UseCase::kTouchstart:
+      return RAILMode::kResponse;
+
+    case UseCase::kCompositorGesture:
+    case UseCase::kSynchronizedGesture:
+    case UseCase::kMainThreadGesture:
+      if (main_thread_only().blocking_input_expected_soon) {
+        return RAILMode::kResponse;
+      }
+      break;
+
+    case UseCase::kNone:
+      // It's only safe to block tasks if we are expecting a compositor
+      // driven gesture.
+      if (main_thread_only().blocking_input_expected_soon &&
+          any_thread().last_gesture_was_compositor_driven) {
+        return RAILMode::kResponse;
+      }
+      break;
+
+    case UseCase::kMainThreadCustomInputHandling:
+      break;
+
+    case UseCase::kEarlyLoading:
+    case UseCase::kLoading:
+      // TODO(skyostil): Experiment with throttling rendering frame rate.
+      return RAILMode::kLoad;
+  }
+
+  return RAILMode::kAnimation;
 }
 
 void MainThreadSchedulerImpl::UpdateStateForAllTaskQueues(
@@ -2691,10 +2681,6 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
     case UseCase::kEarlyLoading:
     case UseCase::kLoading:
       return std::nullopt;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
   }
 }
 
@@ -2727,31 +2713,6 @@ bool MainThreadSchedulerImpl::AllPagesFrozen() const {
       return false;
   }
   return true;
-}
-
-// static
-const char* MainThreadSchedulerImpl::UseCaseToString(UseCase use_case) {
-  switch (use_case) {
-    case UseCase::kNone:
-      return "none";
-    case UseCase::kCompositorGesture:
-      return "compositor_gesture";
-    case UseCase::kMainThreadCustomInputHandling:
-      return "main_thread_custom_input_handling";
-    case UseCase::kSynchronizedGesture:
-      return "synchronized_gesture";
-    case UseCase::kTouchstart:
-      return "touchstart";
-    case UseCase::kEarlyLoading:
-      return "early_loading";
-    case UseCase::kLoading:
-      return "loading";
-    case UseCase::kMainThreadGesture:
-      return "main_thread_gesture";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
-  }
 }
 
 // static

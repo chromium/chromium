@@ -147,15 +147,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the QueueTraits determine which queues should be used to run which task
   // types.
   struct QueueTraits {
-    QueueTraits()
-        : can_be_deferred(false),
-          can_be_throttled(false),
-          can_be_intensively_throttled(false),
-          can_be_paused(false),
-          can_be_frozen(false),
-          can_run_in_background(true),
-          can_run_when_virtual_time_paused(true),
-          can_be_paused_for_android_webview(false) {}
+    QueueTraits() = default;
 
     // Separate enum class for handling prioritisation decisions in task queues.
     enum class PrioritisationType {
@@ -244,20 +236,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
-    bool operator==(const QueueTraits& other) const {
-      return can_be_deferred == other.can_be_deferred &&
-             can_be_throttled == other.can_be_throttled &&
-             can_be_intensively_throttled ==
-                 other.can_be_intensively_throttled &&
-             can_be_paused == other.can_be_paused &&
-             can_be_frozen == other.can_be_frozen &&
-             can_run_in_background == other.can_run_in_background &&
-             can_run_when_virtual_time_paused ==
-                 other.can_run_when_virtual_time_paused &&
-             prioritisation_type == other.prioritisation_type &&
-             can_be_paused_for_android_webview ==
-                 other.can_be_paused_for_android_webview;
-    }
+    bool operator==(const QueueTraits& other) const = default;
 
     // Return a key suitable for WTF::HashMap.
     QueueTraitsKeyType Key() const {
@@ -280,14 +259,14 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    bool can_be_deferred : 1;
-    bool can_be_throttled : 1;
-    bool can_be_intensively_throttled : 1;
-    bool can_be_paused : 1;
-    bool can_be_frozen : 1;
-    bool can_run_in_background : 1;
-    bool can_run_when_virtual_time_paused : 1;
-    bool can_be_paused_for_android_webview : 1;
+    bool can_be_deferred : 1 = false;
+    bool can_be_throttled : 1 = false;
+    bool can_be_intensively_throttled : 1 = false;
+    bool can_be_paused : 1 = false;
+    bool can_be_frozen : 1 = false;
+    bool can_run_in_background : 1 = true;
+    bool can_run_when_virtual_time_paused : 1 = true;
+    bool can_be_paused_for_android_webview : 1 = false;
     PrioritisationType prioritisation_type = PrioritisationType::kRegular;
   };
 

@@ -318,8 +318,7 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     update_policy_count_++;
     MainThreadSchedulerImpl::UpdatePolicyLocked(update_type);
 
-    String use_case = MainThreadSchedulerImpl::UseCaseToString(
-        main_thread_only().current_use_case);
+    String use_case = UseCaseToString(main_thread_only().current_use_case);
     if (main_thread_only().blocking_input_expected_soon) {
       use_cases_.push_back(use_case + " blocking input expected");
     } else {
@@ -358,7 +357,7 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
 
 // Lets gtest print human readable Policy values.
 ::std::ostream& operator<<(::std::ostream& os, const UseCase& use_case) {
-  return os << MainThreadSchedulerImpl::UseCaseToString(use_case);
+  return os << UseCaseToString(use_case);
 }
 
 class MainThreadSchedulerImplTest : public testing::Test {
@@ -931,21 +930,6 @@ class MainThreadSchedulerImplTest : public testing::Test {
   static base::TimeDelta end_idle_when_hidden_delay() {
     return base::Milliseconds(
         MainThreadSchedulerImpl::kEndIdleWhenHiddenDelayMillis);
-  }
-
-  template <typename E>
-  static void CallForEachEnumValue(E first,
-                                   E last,
-                                   const char* (*function)(E)) {
-    for (E val = first; val < last;
-         val = static_cast<E>(static_cast<int>(val) + 1)) {
-      (*function)(val);
-    }
-  }
-
-  static void CheckAllUseCaseToString() {
-    CallForEachEnumValue<UseCase>(UseCase::kFirstUseCase, UseCase::kCount,
-                                  &MainThreadSchedulerImpl::UseCaseToString);
   }
 
   static scoped_refptr<MainThreadTaskQueue> ThrottleableTaskQueue(
@@ -2354,7 +2338,9 @@ TEST_F(MainThreadSchedulerImplTest, PauseRenderer) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, UseCaseToString) {
-  CheckAllUseCaseToString();
+  for (unsigned i = 0; i <= static_cast<unsigned>(UseCase::kMaxValue); i++) {
+    UseCaseToString(static_cast<UseCase>(i));
+  }
 }
 
 TEST_F(MainThreadSchedulerImplTest, MismatchedDidHandleInputEventOnMainThread) {
