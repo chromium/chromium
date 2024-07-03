@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -44,7 +43,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.toolbar.LocationBarModelUnitTest.ShadowTrustedCdn;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.url.GURL;
 
@@ -254,7 +252,7 @@ public class LocationBarModelUnitTest {
         verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
-        locationBarModel.updateForNonStaticLayout(false);
+        locationBarModel.updateForNonStaticLayout();
 
         // The omnibox is not showing, and we have not switched to a new tab yet, so don't expect
         // notifications of a url change
@@ -263,35 +261,6 @@ public class LocationBarModelUnitTest {
 
         verify(mLocationBarDataObserver).onTitleChanged();
         verify(mLocationBarDataObserver).onPrimaryColorChanged();
-        verify(mLocationBarDataObserver).onSecurityStateChanged();
-
-        locationBarModel.destroy();
-    }
-
-    @Test
-    @MediumTest
-    public void testObserversNotified_setIsShowingStartSurface() {
-        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.initializeWithNative();
-        locationBarModel.addObserver(mLocationBarDataObserver);
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-        locationBarModel.updateVisibleGurl();
-
-        verify(mLocationBarDataObserver, never()).onTitleChanged();
-        verify(mLocationBarDataObserver, never()).onUrlChanged();
-        verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
-        verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
-
-        locationBarModel.setShouldShowOmniboxInOverviewMode(true);
-        locationBarModel.setLayoutStateProvider(mLayoutStateProvider);
-        locationBarModel.updateForNonStaticLayout(true);
-
-        verify(mLocationBarDataObserver).onTitleChanged();
-        verify(mLocationBarDataObserver).onUrlChanged();
-        verify(mLocationBarDataObserver, atLeast(1)).onPrimaryColorChanged();
         verify(mLocationBarDataObserver).onSecurityStateChanged();
 
         locationBarModel.destroy();
@@ -332,37 +301,6 @@ public class LocationBarModelUnitTest {
         Assert.assertTrue("New url should notify", locationBarModel.updateVisibleGurl());
         Assert.assertFalse(
                 "Update should be suppressed again", locationBarModel.updateVisibleGurl());
-        locationBarModel.destroy();
-    }
-
-    @Test
-    @MediumTest
-    public void testUpdateVisibleGurlStartSurfaceShowing() {
-        doReturn(123L).when(mLocationBarModelJni).init(Mockito.any());
-        LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
-        doReturn(true).when(mRegularTabMock).isInitialized();
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-
-        locationBarModel.initializeWithNative();
-        locationBarModel.setShouldShowOmniboxInOverviewMode(true);
-        locationBarModel.setLayoutStateProvider(mLayoutStateProvider);
-        locationBarModel.addObserver(mLocationBarDataObserver);
-
-        locationBarModel.updateVisibleGurl();
-        Assert.assertEquals(locationBarModel.getCurrentGurl(), mExampleGurl);
-
-        locationBarModel.updateForNonStaticLayout(false);
-        locationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ true);
-        verify(mLocationBarDataObserver).onUrlChanged();
-        Assert.assertEquals(locationBarModel.getCurrentGurl(), UrlConstants.ntpGurl());
-
-        locationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ false);
-        verify(mLocationBarDataObserver, times(2)).onUrlChanged();
-        Assert.assertEquals(locationBarModel.getCurrentGurl(), mExampleGurl);
-
         locationBarModel.destroy();
     }
 }

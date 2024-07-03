@@ -839,33 +839,29 @@ class AutocompleteMediator
         if (mIsInZeroPrefixContext) {
             clearSuggestions();
             startCachedZeroSuggest();
-        } else {
-            // There may be no tabs when searching form omnibox in overview mode. In that case,
-            // LocationBarDataProvider.getCurrentUrl() returns NTP url.
-            if (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox()) {
-                boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
-                int cursorPosition =
-                        mUrlBarEditingTextProvider.getSelectionStart()
-                                        == mUrlBarEditingTextProvider.getSelectionEnd()
-                                ? mUrlBarEditingTextProvider.getSelectionStart()
-                                : -1;
-                GURL currentUrl = mDataProvider.getCurrentGurl();
+        } else if (mDataProvider.hasTab()) {
+            boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
+            int cursorPosition =
+                    mUrlBarEditingTextProvider.getSelectionStart()
+                                    == mUrlBarEditingTextProvider.getSelectionEnd()
+                            ? mUrlBarEditingTextProvider.getSelectionStart()
+                            : -1;
+            GURL currentUrl = mDataProvider.getCurrentGurl();
 
-                postAutocompleteRequest(
-                        () -> {
-                            if (!mPageClassification.isPresent()) return;
-                            startMeasuringSuggestionRequestToUiModelTime();
-                            mAutocomplete.ifPresent(
-                                    a ->
-                                            a.start(
-                                                    currentUrl,
-                                                    mPageClassification.getAsInt(),
-                                                    textWithoutAutocomplete,
-                                                    cursorPosition,
-                                                    preventAutocomplete));
-                        },
-                        OMNIBOX_SUGGESTION_START_DELAY_MS);
-            }
+            postAutocompleteRequest(
+                    () -> {
+                        if (!mPageClassification.isPresent()) return;
+                        startMeasuringSuggestionRequestToUiModelTime();
+                        mAutocomplete.ifPresent(
+                                a ->
+                                        a.start(
+                                                currentUrl,
+                                                mPageClassification.getAsInt(),
+                                                textWithoutAutocomplete,
+                                                cursorPosition,
+                                                preventAutocomplete));
+                    },
+                    OMNIBOX_SUGGESTION_START_DELAY_MS);
         }
 
         mDelegate.onUrlTextChanged();
@@ -1073,8 +1069,7 @@ class AutocompleteMediator
         mNewOmniboxEditSessionTimestamp = -1;
         startMeasuringSuggestionRequestToUiModelTime();
 
-        if (mDelegate.isUrlBarFocused()
-                && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
+        if (mDelegate.isUrlBarFocused() && mDataProvider.hasTab()) {
             mAutocomplete.ifPresent(
                     a -> {
                         if (!mPageClassification.isPresent()) return;

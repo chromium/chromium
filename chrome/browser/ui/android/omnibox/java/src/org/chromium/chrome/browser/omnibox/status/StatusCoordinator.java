@@ -318,12 +318,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     public void onClick(View view) {
         if (mUrlHasFocus) return;
 
-        // If isInOverviewAndShowingOmnibox is true, getTab isn't correct for PageInfo; if it's not
-        // null, it reflects a web page that the user isn't currently looking at.
-        // TODO(crbug.com/40732353): Add a particular page icon for start surface.
         if (!mLocationBarDataProvider.hasTab()
-                || mLocationBarDataProvider.getTab().getWebContents() == null
-                || mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
+                || mLocationBarDataProvider.getTab().getWebContents() == null) {
             return;
         }
 

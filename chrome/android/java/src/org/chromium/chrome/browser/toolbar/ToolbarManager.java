@@ -1203,7 +1203,7 @@ public class ToolbarManager
                     public void onStartedHiding(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.TAB_SWITCHER
                                 || layoutType == LayoutType.START_SURFACE) {
-                            mLocationBarModel.updateForNonStaticLayout(false);
+                            mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
                             updateButtonStatus();
                             if (mToolbar.setForceTextureCapture(true)) {
@@ -1244,7 +1244,6 @@ public class ToolbarManager
         mToolbar.setIncognitoStateProvider(mIncognitoStateProvider, overviewColorSupplier);
 
         ChromeAccessibilityUtil.get().addObserver(this);
-        mLocationBarModel.setShouldShowOmniboxInOverviewMode(mIsStartSurfaceEnabled);
 
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
@@ -1301,13 +1300,9 @@ public class ToolbarManager
      */
     private void updateForLayout(@LayoutType int layoutType) {
         if (layoutType == LayoutType.TAB_SWITCHER) {
-            mLocationBarModel.updateForNonStaticLayout(/* isShowingStartSurface= */ false);
+            mLocationBarModel.updateForNonStaticLayout();
             mToolbar.setTabSwitcherMode(layoutType == LayoutType.TAB_SWITCHER);
             updateButtonStatus();
-            if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
-                assert mLocationBar instanceof LocationBarCoordinator;
-                ((LocationBarCoordinator) mLocationBar).startAutocompletePrefetch();
-            }
         }
         mToolbar.setContentAttached(layoutType == LayoutType.BROWSING);
     }
@@ -2438,7 +2433,6 @@ public class ToolbarManager
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);
-        mLocationBarModel.setLayoutStateProvider(mLayoutStateProvider);
         if (mBottomControlsCoordinatorSupplier.get() != null) {
             mBottomControlsCoordinatorSupplier.get().setLayoutStateProvider(mLayoutStateProvider);
         }

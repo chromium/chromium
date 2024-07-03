@@ -67,11 +67,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public boolean isInOverviewAndShowingOmnibox() {
-        return false;
-    }
-
-    @Override
     public UrlBarData getUrlBarData() {
         return UrlBarData.EMPTY;
     }

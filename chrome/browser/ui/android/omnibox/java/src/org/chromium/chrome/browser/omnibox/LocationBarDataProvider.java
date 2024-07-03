@@ -72,7 +72,6 @@ public interface LocationBarDataProvider {
 
     /** Returns whether the currently active page is loading. */
     default boolean isLoading() {
-        if (isInOverviewAndShowingOmnibox()) return false;
         Tab tab = getTab();
         return tab != null && tab.isLoading();
     }
@@ -107,12 +106,6 @@ public interface LocationBarDataProvider {
 
     /** Returns whether the LocationBarDataProvider currently has an active tab. */
     boolean hasTab();
-
-    /**
-     * Returns whether the LocationBar's embedder is currently being displayed in overview mode and
-     * showing the omnibox.
-     */
-    boolean isInOverviewAndShowingOmnibox();
 
     /** Returns the contents of the {@link UrlBar}. */
     UrlBarData getUrlBarData();

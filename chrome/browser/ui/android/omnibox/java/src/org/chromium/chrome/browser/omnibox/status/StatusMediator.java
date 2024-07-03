@@ -315,7 +315,7 @@ public class StatusMediator
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
-        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
+        if (mProfileSupplier.hasValue() && isNtpVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -346,8 +346,8 @@ public class StatusMediator
         mUrlFocusPercent = percent;
         updateStatusVisibility();
 
-        // Only fade the animation on the new tab page or start surface.
-        if (mProfileSupplier.hasValue() && isNTPOrStartSurfaceVisible()) {
+        // Only fade the animation on the new tab page.
+        if (mProfileSupplier.hasValue() && isNtpVisible()) {
             setStatusIconAlpha(percent);
         } else {
             setStatusIconAlpha(1f);
@@ -451,9 +451,8 @@ public class StatusMediator
         return mPageIsOffline || mPageIsPaintPreview;
     }
 
-    private boolean isNTPOrStartSurfaceVisible() {
-        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()
-                || mLocationBarDataProvider.isInOverviewAndShowingOmnibox();
+    private boolean isNtpVisible() {
+        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
     }
 
     /**
@@ -543,7 +542,7 @@ public class StatusMediator
         }
 
         return (mUrlHasFocus || mUrlFocusPercent > 0)
-                && isNTPOrStartSurfaceVisible()
+                && isNtpVisible()
                 && mProfileSupplier.hasValue();
     }
 

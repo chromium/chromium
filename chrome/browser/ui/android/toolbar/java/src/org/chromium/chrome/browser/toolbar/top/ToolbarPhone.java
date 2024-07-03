@@ -793,10 +793,9 @@ public class ToolbarPhone extends ToolbarLayout
     private int getBoundsAfterAccountingForLeftButton() {
         int padding = mToolbarSidePaddingForRealOmnibox;
 
-        // If home button is visible, or it's now in overview and toolbar is not shown (url bar
-        // shouldn't be focused), mHomeButton.getMeasuredWidth() should be returned as the left
+        // If home button is visible, mHomeButton.getMeasuredWidth() should be returned as the left
         // bound.
-        if (mHomeButton.getVisibility() != GONE || isInOverviewAndToolbarInvisible()) {
+        if (mHomeButton.getVisibility() != GONE) {
             padding = mHomeButton.getMeasuredWidth();
         }
         return padding;
@@ -835,15 +834,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         return Math.max(mToolbarSidePaddingForRealOmnibox, toolbarButtonsContainerWidth);
-    }
-
-    /**
-     * Returns whether it's on overview mode (on start surface homepage or tab switcher surface) and
-     * toolbar phone is not shown.
-     */
-    private boolean isInOverviewAndToolbarInvisible() {
-        return getToolbarDataProvider().isInOverviewAndShowingOmnibox()
-                && mStartSurfaceScrollFraction != 1.0f;
     }
 
     private void updateToolbarBackground(@ColorInt int color) {
@@ -1097,10 +1087,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The visibility for {@link #mToolbarButtonsContainer}.
      */
     private int getToolbarButtonVisibility() {
-        return (mUrlExpansionFraction == 1f
-                        || getToolbarDataProvider().isInOverviewAndShowingOmnibox())
-                ? INVISIBLE
-                : VISIBLE;
+        return (mUrlExpansionFraction == 1f) ? INVISIBLE : VISIBLE;
     }
 
     /**
@@ -1169,8 +1156,7 @@ public class ToolbarPhone extends ToolbarLayout
             getToolbarDataProvider()
                     .getNewTabPageDelegate()
                     .setUrlFocusChangeAnimationPercent(mUrlFocusChangeFraction);
-            if (isLocationBarShownInNtp
-                    && !getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
+            if (isLocationBarShownInNtp) {
                 updateNtpTransitionAnimation();
             } else {
                 // Reset these values in case we transitioned to a different page during the
@@ -1913,8 +1899,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void updateButtonVisibility() {
-        boolean hideHomeButton =
-                !mIsHomeButtonEnabled || getToolbarDataProvider().isInOverviewAndShowingOmnibox();
+        boolean hideHomeButton = !mIsHomeButtonEnabled;
         if (hideHomeButton) {
             mHomeButton.setVisibility(View.GONE);
         } else {
@@ -1999,9 +1984,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateProgressBarVisibility() {
         getProgressBar()
                 .setVisibility(
-                        (mTabSwitcherState != STATIC_TAB
-                                        || getToolbarDataProvider().isInOverviewAndShowingOmnibox()
-                                        || mIsShowingStartSurfaceTabSwitcher)
+                        (mTabSwitcherState != STATIC_TAB || mIsShowingStartSurfaceTabSwitcher)
                                 ? INVISIBLE
                                 : VISIBLE);
     }
@@ -2018,15 +2001,6 @@ public class ToolbarPhone extends ToolbarLayout
         // exit event only in #onStartSurfaceStateChanged.
         if (inTabSwitcherMode) {
             mLocationBar.setUrlBarFocusable(false);
-        }
-
-        // This method is only used for grid tab switcher with the start surface disabled. When
-        // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
-        // is always called before setTabSwitcherMode(), so skip here.
-        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
-            // Prevent pressing the tab switcher button until after transition finishes.
-            mToggleTabStackButton.setClickable(false);
-            return;
         }
 
         // If setting tab switcher mode to true and the browser is already animating or in the tab
@@ -2389,10 +2363,7 @@ public class ToolbarPhone extends ToolbarLayout
                                     ToolbarPhone.this,
                                     "ToolbarPhone.triggerUrlFocusAnimation.CancelAwareAnimatorListener.onEnd");
                         }
-                        mLocationBar.finishUrlFocusChange(
-                                hasFocus,
-                                shouldShowKeyboard,
-                                getToolbarDataProvider().shouldShowLocationBarInOverviewMode());
+                        mLocationBar.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
                         mUrlFocusChangeInProgress = false;
                     }
                 });
@@ -2908,14 +2879,11 @@ public class ToolbarPhone extends ToolbarLayout
                                     getToolbarDataProvider()
                                             .getNewTabPageDelegate()
                                             .transitioningAwayFromLocationBar();
-                            boolean isInOverviewAndShowingOmnibox =
-                                    getToolbarDataProvider().isInOverviewAndShowingOmnibox();
 
                             return mTabSwitcherState == STATIC_TAB
                                     && !mUrlFocusChangeInProgress
                                     && !urlHasFocus()
-                                    && !transitioningAwayFromLocationBarInNtp
-                                    && !isInOverviewAndShowingOmnibox;
+                                    && !transitioningAwayFromLocationBarInNtp;
                         }
                     };
 

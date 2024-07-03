@@ -62,17 +62,6 @@ public interface ToolbarDataProvider {
     boolean isOffTheRecord();
 
     /**
-     * @return Whether the toolbar is currently being displayed in overview mode and showing the
-     *     omnibox.
-     */
-    boolean isInOverviewAndShowingOmnibox();
-
-    /**
-     * @return Whether the location bar should show when in overview mode.
-     */
-    boolean shouldShowLocationBarInOverviewMode();
-
-    /**
      * @return The current {@link Profile}.
      */
     Profile getProfile();
