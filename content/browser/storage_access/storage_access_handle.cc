@@ -11,9 +11,11 @@
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 
@@ -40,19 +42,33 @@ void StorageAccessHandle::Create(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::StorageAccessHandle> receiver) {
   CHECK(host);
-  // If full cookie access has not been granted then we should refuse to bind
-  // this interface. For more see:
+  // We need to check if either permission was granted *or* if full cookie
+  // access was granted as pre-3PCD the permission isn't possible to set and
+  // post-3PCD full cookie access remains sufficient, but is not necessary
+  // as permission access is possible without enabling full cookie access.
+  //
+  // For more see:
   // third_party/blink/renderer/modules/storage_access/README.md
   //
   // NOTE: This handles the general permissions check for the entire interface.
   // Specific binding sights (e.g., IndexedDB) should not need their own
   // additional checks once the StorageAccessHandle interface has been bound.
-  if (!GetContentClient()->browser()->IsFullCookieAccessAllowed(
+  bool has_full_cookie_access =
+      GetContentClient()->browser()->IsFullCookieAccessAllowed(
           host->GetBrowserContext(), WebContents::FromRenderFrameHost(host),
-          host->GetLastCommittedURL(), host->GetStorageKey())) {
+          host->GetLastCommittedURL(), host->GetStorageKey());
+  bool has_permission_access =
+      host->GetProcess()
+          ->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionStatusForCurrentDocument(
+              blink::PermissionType::STORAGE_ACCESS_GRANT, host) ==
+      blink::mojom::PermissionStatus::GRANTED;
+  if (!has_full_cookie_access && !has_permission_access) {
 #if DCHECK_IS_ON()
     mojo::ReportBadMessage(
-        "Binding a StorageAccessHandle requires third-party cookie access.");
+        "Binding a StorageAccessHandle requires third-party cookie access or "
+        "permission access.");
 #endif
     return;
   }

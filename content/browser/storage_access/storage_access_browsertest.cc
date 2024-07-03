@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -85,6 +86,14 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
     client_->set_is_full_cookie_access_allowed(is_full_cookie_access_allowed);
   }
 
+  void set_storage_access_permission_status(
+      const blink::mojom::PermissionStatus& status) {
+    static_cast<PermissionControllerImpl*>(
+        host()->GetBrowserContext()->GetPermissionController())
+        ->SetPermissionOverride(
+            std::nullopt, blink::PermissionType::STORAGE_ACCESS_GRANT, status);
+  }
+
   RenderFrameHostImpl* host() {
     return static_cast<RenderFrameHostImpl*>(
         static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -97,17 +106,33 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
   std::unique_ptr<MockContentBrowserClient> client_;
 };
 
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, AllowCookieAccess) {
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithPermission) {
   set_is_full_cookie_access_allowed(true);
+  set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
   BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
 }
 
-IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, DisallowCookieAccess) {
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithoutPermission) {
+  set_is_full_cookie_access_allowed(true);
+  set_storage_access_permission_status(blink::mojom::PermissionStatus::DENIED);
+  BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithoutCookiesWithPermission) {
   set_is_full_cookie_access_allowed(false);
+  set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
+  BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest,
+                       WithoutCookiesWithoutPermission) {
+  set_is_full_cookie_access_allowed(false);
+  set_storage_access_permission_status(blink::mojom::PermissionStatus::DENIED);
 #if DCHECK_IS_ON()
   BindStorageAccessHandleAndExpect(
       /*is_connected=*/false,
-      "Binding a StorageAccessHandle requires third-party cookie access.");
+      "Binding a StorageAccessHandle requires third-party cookie access or "
+      "permission access.");
 #else
   BindStorageAccessHandleAndExpect(/*is_connected=*/false, "");
 #endif

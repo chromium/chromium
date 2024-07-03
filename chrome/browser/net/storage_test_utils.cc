@@ -33,6 +33,10 @@ constexpr char kRequestStorageAccess[] =
     "document.requestStorageAccess()"
     "  .then(() => document.hasStorageAccess())";
 
+constexpr char kRequestStorageAccessBeyondCookies[] =
+    "document.requestStorageAccess({estimate: true}).then((handle) => "
+    "handle.estimate().then(() => true, () => false), () => false)";
+
 constexpr char kRequestStorageAccessFor[] =
     "document.requestStorageAccessFor($1)";
 
@@ -163,6 +167,12 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame,
     options |= content::EXECUTE_SCRIPT_NO_USER_GESTURE;
   }
   return content::EvalJs(frame, kRequestStorageAccess, options).ExtractBool();
+}
+
+bool RequestAndCheckStorageAccessBeyondCookiesForFrame(
+    content::RenderFrameHost* frame) {
+  return content::EvalJs(frame, kRequestStorageAccessBeyondCookies)
+      .ExtractBool();
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,
