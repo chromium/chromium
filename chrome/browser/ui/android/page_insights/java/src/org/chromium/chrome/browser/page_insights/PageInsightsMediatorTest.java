@@ -65,6 +65,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -662,6 +663,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "http://b/350825734")
     public void testAutoTrigger_signedIn_providesBothXSurfaceLoggingParamsAndLogs()
             throws Exception {
         createMediator(SHORT_TRIGGER_DELAY_MS);
