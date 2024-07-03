@@ -952,8 +952,12 @@ bool SharedContextState::OnMemoryDump(
                                                       pmd);
       graphite_context()->dumpMemoryStatistics(&trace_memory_dump);
       gpu_main_graphite_recorder()->dumpMemoryStatistics(&trace_memory_dump);
-      viz_compositor_graphite_recorder()->dumpMemoryStatistics(
-          &trace_memory_dump);
+
+      // NOTE: We cannot dump the memory statistics of the Viz compositor
+      // recorder here because it can be called only on the Viz thread.
+      // TODO(https://crbug.com/330806170): Wire up SkiaOutputSurfaceImpl as a
+      // MemoryDumpProvider and dump the statistics of the Viz compositor
+      // recorder there.
     }
   }
 
