@@ -102,6 +102,8 @@ _NEGATIVE_FILTER = [
     'ChromeDriverSiteIsolation.testClickNavigateRemoteToLocal',
     # crbug.com/chromedriver/4513
     'ChromeDriverSiteIsolation.testClickNavigateRemoteToSameRemote',
+    # crbug.com/350916212
+    'BidiTest.testFocusInFirstTab',
 ]
 
 
