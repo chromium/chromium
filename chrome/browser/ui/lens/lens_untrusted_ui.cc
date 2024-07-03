@@ -163,8 +163,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       "realboxDefaultIcon",
       "//resources/cr_components/searchbox/icons/google_g.svg");
   html_source->AddBoolean("reportMetrics", false);
-  // TODO(b/337657623): Update when strings are finalized.
   html_source->AddLocalizedString("searchBoxHint",
+                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_SHORT);
+  html_source->AddLocalizedString("searchBoxHintMultimodal",
                                   IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
   html_source->AddBoolean("searchboxInSidePanel", true);
 
