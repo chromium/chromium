@@ -184,9 +184,7 @@ const char* const kBadFlags[] = {
 // Dangerous feature flags in about:flags for which to display a warning that
 // "stability and security will suffer".
 static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
-    // These features enables experimental support for isolated web apps, which
-    // unlock capabilities with a high potential for security / privacy abuse.
-    &features::kIsolatedWebApps,
+    // This feature enables developer mode support for Isolated Web Apps.
     &features::kIsolatedWebAppDevMode,
 
 #if BUILDFLAG(IS_ANDROID)
