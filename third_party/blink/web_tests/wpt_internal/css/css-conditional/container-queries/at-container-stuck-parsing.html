@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<title>CSS Containment Test: @container snapped query parsing</title>
-<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
+<title>CSS Conditional Test: @container stuck query parsing</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-rule">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/css/css-contain/container-queries/support/cq-testcommon.js"></script>
+<script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
 <div style="container-name:name;container-type:scroll-state">
   <main id="main"></main>
 </div>
@@ -61,20 +61,25 @@
     test_condition_valid(condition, true /* unknown */);
   }
 
-  test_condition_known('scroll-state(snapped)');
-  test_condition_known('scroll-state(snapped: x)');
-  test_condition_known('scroll-state(snapped: y)');
-  test_condition_known('scroll-state(snapped: none)');
-  test_condition_known('scroll-state(snapped: block)');
-  test_condition_known('scroll-state(snapped: inline)');
-  test_condition_known('(scroll-state(snapped: block))');
-  test_condition_known('scroll-state((snapped: inline))');
-  test_condition_known('scroll-state(not ((snapped: inline) and (snapped: block)))');
-  test_condition_known('scroll-state((snapped: x) or (snapped: y))');
+  test_condition_known('scroll-state(stuck)');
+  test_condition_known('scroll-state(stuck: none)');
+  test_condition_known('scroll-state(stuck: top)');
+  test_condition_known('scroll-state(stuck: left)');
+  test_condition_known('scroll-state(stuck: bottom)');
+  test_condition_known('scroll-state(stuck: right)');
+  test_condition_known('scroll-state(stuck: inset-block-start)');
+  test_condition_known('scroll-state(stuck: inset-block-end)');
+  test_condition_known('scroll-state(stuck: inset-inline-start)');
+  test_condition_known('scroll-state(stuck: inset-inline-end)');
+  test_condition_known('(scroll-state(stuck: top))');
+  test_condition_known('scroll-state((stuck: top))');
+  test_condition_known('scroll-state(not ((stuck: top) and (stuck: bottom)))');
+  test_condition_known('scroll-state((stuck: right) or (stuck: left))');
 
-  test_condition_unknown('scroll-state(snapped: auto)');
-  test_condition_unknown('scroll-state(snapped: true)');
-  test_condition_unknown('scroll-state(style(snapped: inline))');
-  test_condition_unknown('style(scroll-state(snapped: inline))');
-  test_condition_unknown('scroll-state(snapped:)');
+  test_condition_unknown('scroll-state(stuck: auto)');
+  test_condition_unknown('scroll-state(stuck: true)');
+  test_condition_unknown('scroll-state(style(stuck: top))');
+  test_condition_unknown('style(scroll-state(stuck: top))');
+  test_condition_unknown('scroll-state(stuck:)');
+  test_condition_unknown('scroll-state(--foo)');
 </script>
