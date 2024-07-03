@@ -28,10 +28,10 @@ class OdfsSkyvaultUploader
     kMaxValue = kScreenCapture,
   };
 
-  // Starts uploading the file specified at `file_system_url`.
+  // Starts uploading the file specified at `path` which is in /tmp.
   static void Upload(
       Profile* profile,
-      const storage::FileSystemURL& file_system_url,
+      const base::FilePath& path,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback,
       base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);

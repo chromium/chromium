@@ -81,14 +81,8 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
     case CloudProvider::kOneDrive:
       // TODO(ayaelattar): Add DCheck that the file is in /tmp.
 
-      auto* file_system_context =
-          file_manager::util::GetFileManagerFileSystemContext(profile_);
-      DCHECK(file_system_context);
-      auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
-          blink::StorageKey(), storage::kFileSystemTypeLocal,
-          download_item_->GetTargetFilePath());
       ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-          profile_, file_system_url,
+          profile_, download_item_->GetTargetFilePath(),
           ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),

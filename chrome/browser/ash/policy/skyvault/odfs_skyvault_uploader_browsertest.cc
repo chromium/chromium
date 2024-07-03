@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -81,8 +80,8 @@ class OdfsSkyvaultUploaderTest : public InProcessBrowserTest {
   }
 
   // Copy the test file with `test_file_name` into the directory `target_dir`.
-  storage::FileSystemURL CopyTestFile(const std::string& test_file_name,
-                                      base::FilePath target_dir) {
+  base::FilePath CopyTestFile(const std::string& test_file_name,
+                              base::FilePath target_dir) {
     const base::FilePath copied_file_path =
         target_dir.AppendASCII(test_file_name);
 
@@ -93,18 +92,13 @@ class OdfsSkyvaultUploaderTest : public InProcessBrowserTest {
       CHECK(base::CopyFile(test_file_path, copied_file_path));
     }
 
-    FileSystemURL copied_file_url = FilePathToFileSystemURL(
-        profile(),
-        file_manager::util::GetFileManagerFileSystemContext(profile()),
-        copied_file_path);
-
     // Check that the copied file exists at the intended location.
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(base::PathExists(copied_file_path));
     }
 
-    return copied_file_url;
+    return copied_file_path;
   }
 
   void CheckPathExistsOnODFS(const base::FilePath& path) {
@@ -141,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   SetUpMyFiles();
   SetUpODFS();
   const std::string test_file_name = "video_long.ogv";
-  storage::FileSystemURL source_file_url =
-      CopyTestFile(test_file_name, my_files_dir_);
+  base::FilePath source_file_path = CopyTestFile(test_file_name, my_files_dir_);
 
   // Start the upload workflow and end the test once the upload upload callback
   // is run.
@@ -150,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_url, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), true);
 
@@ -167,15 +160,14 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailedUpload) {
       base::File::Error::FILE_ERROR_NO_MEMORY);
   provided_file_system_->SetReauthenticationRequired(false);
   const std::string test_file_name = "id3Audio.mp3";
-  storage::FileSystemURL source_file_url =
-      CopyTestFile(test_file_name, my_files_dir_);
+  base::FilePath source_file_path = CopyTestFile(test_file_name, my_files_dir_);
 
   // Start the upload workflow and end the test once the upload upload callback
   // is run.
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   OdfsSkyvaultUploader::Upload(
-      profile(), source_file_url, OdfsSkyvaultUploader::FileType::kDownload,
+      profile(), source_file_path, OdfsSkyvaultUploader::FileType::kDownload,
       progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), false);
 

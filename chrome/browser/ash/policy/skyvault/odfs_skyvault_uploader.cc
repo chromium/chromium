@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
+#include "base/files/file_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -27,10 +28,17 @@ void OnUploadDone(
 // static.
 void OdfsSkyvaultUploader::Upload(
     Profile* profile,
-    const storage::FileSystemURL& file_system_url,
+    const base::FilePath& path,
     FileType file_type,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback) {
+  auto* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(profile);
+  DCHECK(file_system_context);
+  base::FilePath tmp_dir;
+  DCHECK(base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path));
+  auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
+      blink::StorageKey(), storage::kFileSystemTypeLocal, path);
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
       new OdfsSkyvaultUploader(profile, file_system_url, file_type,
                                std::move(progress_callback));
