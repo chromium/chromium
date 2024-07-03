@@ -10,3 +10,6 @@
 
 # crbug.com/350874535
 -org.chromium.android_webview.test.AwContentsGarbageCollectionTest.testActivityDoesNotLeak
+
+# crbug.com/351017155
+-org.chromium.android_webview.test.VariationsSeedLoaderTest.testFinchSeedExpirationAgeFlag
