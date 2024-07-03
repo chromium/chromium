@@ -3013,6 +3013,9 @@
           '--use-weston',
           '--weston-use-gl',
         ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
       },
     },
 

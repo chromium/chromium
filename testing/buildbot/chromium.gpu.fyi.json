@@ -8078,7 +8078,8 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*"
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8737,7 +8738,8 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*"
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9285,7 +9287,8 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*"
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9798,7 +9801,8 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*"
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10346,7 +10350,8 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*"
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
