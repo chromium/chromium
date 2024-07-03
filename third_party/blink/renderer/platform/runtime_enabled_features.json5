@@ -4221,6 +4221,10 @@
       origin_trial_feature_name: "FoldableAPIs",
     },
     {
+      name: "ViewTransitionDisableSnapBrowserControlsOnHidden",
+      status: "stable",
+    },
+    {
       // If enabled, ViewTransition API is supported for navigations including
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.

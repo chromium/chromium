@@ -441,8 +441,10 @@ void ViewTransition::ProcessCurrentState() {
         // performing the capture.
         bool snap_browser_controls =
             document_->GetFrame()->IsOutermostMainFrame() &&
-            document_->GetPage()->GetBrowserControls().PermittedState() !=
-                cc::BrowserControlsState::kHidden &&
+            (!RuntimeEnabledFeatures::
+                 ViewTransitionDisableSnapBrowserControlsOnHiddenEnabled() ||
+             document_->GetPage()->GetBrowserControls().PermittedState() !=
+                 cc::BrowserControlsState::kHidden) &&
             creation_type_ == CreationType::kForSnapshot;
         if (!style_tracker_->Capture(snap_browser_controls)) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
