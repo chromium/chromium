@@ -12,6 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display/software_output_device.h"
@@ -196,8 +197,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     gfx::Size size;
     float device_scale_factor = 1.f;
     gfx::ColorSpace color_space;
-    // TODO(sunnyps): Change to SkColorType.
-    gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+    SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
     RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
 
     friend bool operator==(const ReshapeParams&,

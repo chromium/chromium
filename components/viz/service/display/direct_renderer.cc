@@ -276,10 +276,10 @@ void DirectRenderer::DrawFrame(
       current_frame()->root_render_pass->has_transparent_background;
   gfx::ColorSpace frame_color_space =
       RenderPassColorSpace(current_frame()->root_render_pass);
-  gfx::BufferFormat frame_buffer_format =
+  SharedImageFormat frame_si_format = GetSinglePlaneSharedImageFormat(
       current_frame()->display_color_spaces.GetOutputBufferFormat(
           current_frame()->root_render_pass->content_color_usage,
-          frame_has_alpha);
+          frame_has_alpha));
   gfx::Size surface_resource_size =
       CalculateSizeForOutputSurface(device_viewport_size);
   if (overlay_processor_) {
@@ -297,8 +297,7 @@ void DirectRenderer::DrawFrame(
     if (output_surface_->IsDisplayedAsOverlayPlane()) {
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
-              device_viewport_size, surface_resource_size,
-              GetSinglePlaneSharedImageFormat(frame_buffer_format),
+              device_viewport_size, surface_resource_size, frame_si_format,
               frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
               GetPrimaryPlaneOverlayTestingMailbox());
       primary_plane = &(current_frame()->output_surface_plane.value());
@@ -326,7 +325,7 @@ void DirectRenderer::DrawFrame(
     // If we promote any quad to an underlay then the main plane must support
     // alpha.
     // TODO(ccameron): We should update |frame_color_space|, and
-    // |frame_buffer_format| based on the change in |frame_has_alpha|.
+    // |frame_si_format| based on the change in |frame_has_alpha|.
     if (current_frame()->output_surface_plane) {
       frame_has_alpha |= current_frame()->output_surface_plane->enable_blending;
       root_render_pass->has_transparent_background = frame_has_alpha;
@@ -346,7 +345,7 @@ void DirectRenderer::DrawFrame(
   reshape_params.size = surface_resource_size;
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
-  reshape_params.format = frame_buffer_format;
+  reshape_params.format = frame_si_format;
   reshape_params.alpha_type = frame_has_alpha ? RenderPassAlphaType::kPremul
                                               : RenderPassAlphaType::kOpaque;
   if (next_frame_needs_full_frame_redraw_ ||
@@ -836,7 +835,7 @@ DirectRenderer::CalculateRenderPassRequirements(
     CHECK(!render_pass->generate_mipmap);
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format = GetSharedImageFormat(reshape_buffer_format());
+    requirements.format = reshape_si_format();
     if (is_root) {
       requirements.alpha_type = reshape_alpha_type();
     } else {

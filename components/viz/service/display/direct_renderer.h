@@ -403,7 +403,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     DCHECK(current_frame_valid_);
     return &current_frame_;
   }
-  gfx::BufferFormat reshape_buffer_format() const {
+  SharedImageFormat reshape_si_format() const {
     DCHECK(reshape_params_);
     return reshape_params_->format;
   }
