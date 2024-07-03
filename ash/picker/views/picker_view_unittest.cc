@@ -160,6 +160,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     }
   }
 
+  void StopSearch() override {}
+
   void StartEmojiSearch(const std::u16string& query,
                         EmojiSearchResultsCallback callback) override {
     std::move(callback).Run(options_.emoji_results);

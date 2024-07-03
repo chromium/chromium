@@ -403,6 +403,11 @@ void PickerController::StartSearch(const std::u16string& query,
                                   std::move(callback));
 }
 
+void PickerController::StopSearch() {
+  CHECK(search_controller_);
+  search_controller_->StopSearch();
+}
+
 void PickerController::StartEmojiSearch(const std::u16string& query,
                                         EmojiSearchResultsCallback callback) {
   search_controller_->StartEmojiSearch(query, std::move(callback));

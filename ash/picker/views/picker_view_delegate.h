@@ -55,6 +55,9 @@ class ASH_EXPORT PickerViewDelegate {
                            std::optional<PickerCategory> category,
                            SearchResultsCallback callback) = 0;
 
+  // Stops the previous search, if any.
+  virtual void StopSearch() = 0;
+
   // Starts a emoji search for `query`. Results will be returned via `callback`.
   virtual void StartEmojiSearch(const std::u16string& query,
                                 EmojiSearchResultsCallback callback) = 0;
