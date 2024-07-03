@@ -1095,7 +1095,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
   if (!context_properties.gather_input_supported_data_types.Has(
           input.data_type())) {
     return base::unexpected(NotSupportedInputArgumentTypeError(
-        ops::kGather, input.data_type(),
+        input.data_type(),
         context_properties.gather_input_supported_data_types));
   }
 
@@ -1103,7 +1103,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
   if (!context_properties.gather_indices_supported_data_types.Has(
           indices.data_type())) {
     return base::unexpected(NotSupportedArgumentTypeError(
-        ops::kGather, kIndicesParam, indices.data_type(),
+        kIndicesParam, indices.data_type(),
         context_properties.gather_indices_supported_data_types));
   }
 

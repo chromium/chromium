@@ -108,16 +108,14 @@ inline constexpr char kReduceSumSquare[] = "reduceSumSquare";
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     DataTypeToString(OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedArgumentTypeError(std::string_view op_name,
-                                  std::string_view argument_name,
+    NotSupportedArgumentTypeError(std::string_view argument_name,
                                   OperandDataType type,
                                   SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedConstantTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedInputArgumentTypeError(std::string_view op_name,
-                                       OperandDataType type,
+    NotSupportedInputArgumentTypeError(OperandDataType type,
                                        SupportedDataTypes supported_types);
 
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)

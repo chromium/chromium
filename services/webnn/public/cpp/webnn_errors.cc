@@ -47,12 +47,11 @@ std::string DataTypeToString(OperandDataType type) {
   }
 }
 
-std::string NotSupportedArgumentTypeError(std::string_view op_name,
-                                          std::string_view argument_name,
+std::string NotSupportedArgumentTypeError(std::string_view argument_name,
                                           OperandDataType type,
                                           SupportedDataTypes supported_types) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
-                       " for ", op_name, " argument ", argument_name,
+                       " for argument ", argument_name,
                        SupportedDataTypesString(supported_types)});
 }
 
@@ -64,12 +63,10 @@ std::string NotSupportedConstantTypeError(OperandDataType type,
 }
 
 std::string NotSupportedInputArgumentTypeError(
-    std::string_view op_name,
     OperandDataType type,
     SupportedDataTypes supported_types) {
   static constexpr char kInputParam[] = "input";
-  return NotSupportedArgumentTypeError(op_name, kInputParam, type,
-                                       supported_types);
+  return NotSupportedArgumentTypeError(kInputParam, type, supported_types);
 }
 
 std::string NotSupportedInputTypeError(std::string_view input_name,
