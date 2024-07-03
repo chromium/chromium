@@ -13,6 +13,7 @@
 #include "base/test/test_file_util.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
@@ -73,6 +74,7 @@ constexpr char kExampleUserDisplayName[] = "Test User";
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleGaiaId[] = "123";
 constexpr char kExampleDmToken[] = "example_dm_token";
+constexpr char kExampleClientId[] = "random_client_id";
 
 constexpr char kUniqueIdentifierTemplate[] = "iss:%s,sub:%s";
 
@@ -362,6 +364,7 @@ class OidcAuthenticationSigninInterceptorTest
           .WillOnce(Invoke([&]() {
             mock_client_ptr->SetDMToken(kExampleDmToken);
             mock_client_ptr->SetStatus(policy::DM_STATUS_SUCCESS);
+            mock_client_ptr->client_id_ = kExampleClientId;
             mock_client_ptr->oidc_user_display_name_ = kExampleUserDisplayName;
             mock_client_ptr->oidc_user_email_ = kExampleUserEmail;
             mock_client_ptr->third_party_identity_type_ =
@@ -434,6 +437,14 @@ class OidcAuthenticationSigninInterceptorTest
       EXPECT_EQ(entry->GetProfileManagementId(),
                 base::StringPrintf(kUniqueIdentifierTemplate, issuer_id.c_str(),
                                    subject_id.c_str()));
+
+      EXPECT_EQ(added_profile_->GetPrefs()->GetString(
+                    enterprise_signin::prefs::kPolicyRecoveryToken),
+                kExampleDmToken);
+      EXPECT_EQ(added_profile_->GetPrefs()->GetString(
+                    enterprise_signin::prefs::kPolicyRecoveryClientId),
+                kExampleClientId);
+
       if (will_policy_fetch_succeed_) {
         CoreAccountId account_id =
             IdentityManagerFactory::GetForProfile(added_profile_)

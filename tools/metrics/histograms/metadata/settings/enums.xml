@@ -540,6 +540,7 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
   <int value="32" label="kMediaCdmOriginData"/>
   <int value="33" label="kGoogleServicesLastSignedInUsername"/>
+  <int value="34" label="kPolicyRecoveryToken"/>
 </enum>
 
 </enums>

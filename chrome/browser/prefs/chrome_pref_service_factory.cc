@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_model_associator_client.h"
@@ -176,6 +177,9 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {33, prefs::kGoogleServicesLastSignedInUsername,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::PERSONAL},
+    {34, enterprise_signin::prefs::kPolicyRecoveryToken,
+     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
+     ValueType::IMPERSONAL},
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.
