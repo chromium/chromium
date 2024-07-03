@@ -455,12 +455,10 @@ std::optional<LogicalSize> OutOfFlowLayoutPart::InitialContainingBlockFixedSize(
   return size.ConvertToLogical(container.Style().GetWritingMode());
 }
 
-OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
-                                         const ConstraintSpace& container_space,
-                                         BoxFragmentBuilder* container_builder)
+OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
-      is_absolute_container_(container_node.IsAbsoluteContainer()),
-      is_fixed_container_(container_node.IsFixedContainer()),
+      is_absolute_container_(container_builder->Node().IsAbsoluteContainer()),
+      is_fixed_container_(container_builder->Node().IsFixedContainer()),
       has_block_fragmentation_(
           InvolvedInBlockFragmentation(*container_builder)) {
   // If there are no OOFs inside, we can return early, except if this is the
@@ -485,7 +483,7 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
     default_containing_block_info_for_fixed_.rect.size =
-        InitialContainingBlockFixedSize(container_node)
+        InitialContainingBlockFixedSize(container_builder->Node())
             .value_or(default_containing_block_info_for_absolute_.rect.size);
   }
   LogicalOffset container_offset = {border_scrollbar.inline_start,
@@ -1268,8 +1266,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
                                           LayoutUnit());
 
   // Layout the OOF positioned elements inside the inner multicol.
-  OutOfFlowLayoutPart inner_part(multicol, limited_multicol_constraint_space,
-                                 &limited_multicol_container_builder);
+  OutOfFlowLayoutPart inner_part(&limited_multicol_container_builder);
   inner_part.outer_container_builder_ =
       outer_container_builder_ ? outer_container_builder_ : container_builder_;
   inner_part.LayoutFragmentainerDescendants(

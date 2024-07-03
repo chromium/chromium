@@ -526,7 +526,7 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
 }
 
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
-  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), this).Run();
+  OutOfFlowLayoutPart(this).Run();
 }
 
 const LayoutResult* BoxFragmentBuilder::ToBoxFragment(

@@ -42,9 +42,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   STACK_ALLOCATED();
 
  public:
-  OutOfFlowLayoutPart(const BlockNode& container_node,
-                      const ConstraintSpace& container_space,
-                      BoxFragmentBuilder* container_builder);
+  explicit OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder);
   void Run();
 
   struct ColumnBalancingInfo {

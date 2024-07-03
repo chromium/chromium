@@ -527,8 +527,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
 
     // Handle any OOF fragmentainer descendants that were found before the
     // spanner.
-    OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_)
-        .HandleFragmentation();
+    OutOfFlowLayoutPart(&container_builder_).HandleFragmentation();
     walker.UpdateNextColumnBreakToken(container_builder_.Children());
 
     BreakStatus break_status =
@@ -938,8 +937,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       }
       DCHECK(column_balancing_info.HasOutOfFlowFragmentainerDescendants());
 
-      OutOfFlowLayoutPart oof_part(Node(), GetConstraintSpace(),
-                                   &container_builder_);
+      OutOfFlowLayoutPart oof_part(&container_builder_);
       oof_part.SetColumnBalancingInfo(&column_balancing_info, &columns);
       oof_part.HandleFragmentation();
       actual_column_count += column_balancing_info.num_new_columns;
