@@ -6,6 +6,7 @@
 
 #include "base/functional/bind_internal.h"
 #include "base/functional/callback_forward.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +35,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -328,10 +330,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 enum class SyncConfirmationUIAction { kTurnSyncOn, kGoToSettings };
 
-class SyncConfirmationUITest : public SigninBrowserTestBase,
-                               public testing::WithParamInterface<
-                                   std::tuple<bool, SyncConfirmationUIAction>>,
-                               public LoginUIService::Observer {
+class SyncConfirmationUITest
+    : public SigninBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, SyncConfirmationUIAction, std::string>>,
+      public LoginUIService::Observer {
  public:
   void SetUpOnMainThread() override {
     SigninBrowserTestBase::SetUpOnMainThread();
@@ -348,6 +351,21 @@ class SyncConfirmationUITest : public SigninBrowserTestBase,
     SigninBrowserTestBase::TearDownOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SigninBrowserTestBase::SetUpCommandLine(command_line);
+
+    if (GetLanguage().empty()) {
+      return;
+    }
+    command_line->AppendSwitchASCII(switches::kLang, GetLanguage());
+
+    // On Linux & Lacros the command line switch has no effect, we need to use
+    // environment variables to change the language.
+    scoped_env_override_ =
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "LANGUAGE", GetLanguage());
+  }
+
   // LoginUIService::Observer:
   void OnSyncConfirmationUIClosed(
       LoginUIService::SyncConfirmationUIClosedResult result) override {
@@ -358,7 +376,7 @@ class SyncConfirmationUITest : public SigninBrowserTestBase,
       const AccountInfo& account_info) {
     AccountInfo new_account_info = account_info;
     // The account name contains characters that are escaped in HTML.
-    new_account_info.full_name = "The name's <>&\"', James <>&\"'";
+    new_account_info.full_name = "The name's <>&\"', James\u00a0<>&\"'";
     new_account_info.given_name = new_account_info.full_name;
     //  Fill all required fields to make `AccountInfo` valid.
     new_account_info.hosted_domain = kNoHostedDomainFound;
@@ -370,6 +388,8 @@ class SyncConfirmationUITest : public SigninBrowserTestBase,
   bool IsSigninIntercept() { return std::get<0>(GetParam()); }
 
   SyncConfirmationUIAction GetAction() { return std::get<1>(GetParam()); }
+
+  std::string GetLanguage() { return std::get<2>(GetParam()); }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() {
     return static_cast<consent_auditor::FakeConsentAuditor*>(
@@ -412,6 +432,7 @@ class SyncConfirmationUITest : public SigninBrowserTestBase,
  private:
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       login_ui_service_observation_{this};
+  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
 };
 
 // Regression test for https://crbug.com/325749258.
@@ -444,6 +465,15 @@ IN_PROC_BROWSER_TEST_P(SyncConfirmationUITest,
               ElementsAre(consent_auditor::Feature::CHROME_SYNC));
 }
 
+std::string SyncConfirmationUITestParamToTestSuffix(
+    const testing::TestParamInfo<SyncConfirmationUITest::ParamType>& info) {
+  auto [is_signin_intercept, action, language] = info.param;
+  return base::StrCat({language, is_signin_intercept ? "Intercept" : "",
+                       action == SyncConfirmationUIAction::kTurnSyncOn
+                           ? "Accept"
+                           : "GoToSettings"});
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
@@ -455,4 +485,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
-                        SyncConfirmationUIAction::kGoToSettings)));
+                        SyncConfirmationUIAction::kGoToSettings),
+        testing::Values("", "pl")),
+    &SyncConfirmationUITestParamToTestSuffix);
