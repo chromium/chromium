@@ -206,6 +206,7 @@ bool ShouldApplyNewPopupMaxWidth(SuggestionType suggestion_type,
 // Creates a label for the suggestion's main text.
 std::unique_ptr<views::Label> CreateMainTextLabel(
     const Suggestion& suggestion,
+    std::optional<user_education::DisplayNewBadge> show_new_badge,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
   views::style::TextStyle main_text_label_style;
   if (suggestion.apply_deactivated_style) {
@@ -216,9 +217,12 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
                                 : kMainTextStyleLight;
   }
 
-  auto label = std::make_unique<views::Label>(
+  auto label = std::make_unique<user_education::NewBadgeLabel>(
       suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       main_text_label_style);
+  if (show_new_badge.has_value()) {
+    label->SetDisplayNewBadge(show_new_badge.value());
+  }
 
   if (!suggestion.main_text.is_primary) {
     label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
@@ -327,8 +331,8 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   layout_manager->set_minimum_cross_axis_size(
       views::MenuConfig::instance().touchable_menu_height);
 
-  std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion, kMainTextStyleLight);
+  std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
+      suggestion, /*show_new_badge=*/std::nullopt, kMainTextStyleLight);
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
   if (!suggestion.apply_deactivated_style) {
@@ -437,13 +441,14 @@ std::unique_ptr<views::View> GetPasswordIconView(
 
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
     const Suggestion& suggestion,
+    std::optional<user_education::DisplayNewBadge> show_new_badge,
     std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match,
     PasswordFaviconLoader* favicon_loader) {
   auto view = std::make_unique<PopupRowContentView>();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion);
+      CreateMainTextLabel(suggestion, show_new_badge);
   main_text_label->SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
   if (filter_match) {
     main_text_label->SetTextStyleRange(kMainTextStyleHighlighted,
@@ -482,12 +487,13 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
 // created by corresponding `Create*PopupRowContentView()` methods.
 std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
     const Suggestion& suggestion,
+    std::optional<user_education::DisplayNewBadge> show_new_badge,
     FillingProduct main_filling_product,
     std::optional<AutofillPopupController::SuggestionFilterMatch>
         filter_match) {
   auto view = std::make_unique<PopupRowContentView>();
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion);
+      CreateMainTextLabel(suggestion, show_new_badge);
   if (filter_match) {
     main_text_label->SetTextStyleRange(kMainTextStyleHighlighted,
                                        filter_match->main_text_match);
@@ -514,7 +520,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
 
   const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion);
+      CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
   FormatLabel(*main_text_label, kSuggestion.main_text,
               controller->GetMainFillingProduct(),
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
@@ -596,6 +602,14 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
         CreateFooterPopupRowContentView(suggestion));
   }
 
+  const auto show_new_badge =
+      suggestion.feature_for_new_badge
+          ? std::optional<user_education::DisplayNewBadge>(
+                UserEducationService::MaybeShowNewBadge(
+                    controller->GetWebContents()->GetBrowserContext(),
+                    *suggestion.feature_for_new_badge))
+          : std::nullopt;
+
   switch (type) {
     // These `type` should never be displayed in a `PopupRowView`.
     case SuggestionType::kSeparator:
@@ -606,29 +620,37 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePasswordPopupRowContentView(suggestion, std::move(filter_match),
+          CreatePasswordPopupRowContentView(suggestion, show_new_badge,
+                                            std::move(filter_match),
                                             favicon_loader));
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification: {
-      const auto show_new_badge = UserEducationService::MaybeShowNewBadge(
-          controller->GetWebContents()->GetBrowserContext(),
-          compose::features::kEnableComposeSavedStateNudge);
+      // TODO: crbug.com/350873603 - Migrate Compose to use the Suggestion
+      // field.
+      const auto should_show_new_badge =
+          UserEducationService::MaybeShowNewBadge(
+              controller->GetWebContents()->GetBrowserContext(),
+              compose::features::kEnableComposeSavedStateNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateComposePopupRowContentView(suggestion, show_new_badge));
+          CreateComposePopupRowContentView(suggestion, should_show_new_badge));
     }
     case SuggestionType::kComposeProactiveNudge: {
-      const auto show_new_badge = UserEducationService::MaybeShowNewBadge(
-          controller->GetWebContents()->GetBrowserContext(),
-          compose::features::kEnableComposeProactiveNudge);
+      // TODO: crbug.com/350873603 - Migrate Compose to use the Suggestion
+      // field.
+      const auto should_show_new_badge =
+          UserEducationService::MaybeShowNewBadge(
+              controller->GetWebContents()->GetBrowserContext(),
+              compose::features::kEnableComposeProactiveNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateComposePopupRowContentView(suggestion, show_new_badge));
+          CreateComposePopupRowContentView(suggestion, should_show_new_badge));
     }
     default:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePopupRowContentView(suggestion, main_filling_product,
+          CreatePopupRowContentView(suggestion, show_new_badge,
+                                    main_filling_product,
                                     std::move(filter_match)));
   }
 }

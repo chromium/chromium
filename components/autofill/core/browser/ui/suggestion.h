@@ -274,6 +274,10 @@ struct Suggestion {
   // The In-Product-Help feature that should be shown for the suggestion.
   raw_ptr<const base::Feature> feature_for_iph = nullptr;
 
+  // The feature for the new badge if one is supposed to be shown. Currently
+  // available only on Desktop.
+  raw_ptr<const base::Feature> feature_for_new_badge = nullptr;
+
   // If specified, this text will be played back as voice over for a11y.
   std::optional<std::u16string> voice_over;
 

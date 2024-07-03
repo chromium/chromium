@@ -151,8 +151,9 @@ bool IsPointerLocked(content::WebContents* web_contents) {
          (rwhv = rfh->GetView()) && rwhv->IsPointerLocked();
 }
 
-void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
-                                      const Suggestion& suggestion) {
+void NotifyUserEducationAboutAcceptedSuggestion(
+    content::BrowserContext* browser_context,
+    const Suggestion& suggestion) {
   if (suggestion.type == SuggestionType::kVirtualCreditCardEntry) {
     feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
         ->NotifyEvent(suggestion.feature_for_iph ==
@@ -169,6 +170,7 @@ void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
         ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
   }
 
+  // TODO: crbug.com/350873603 - Use the feature specified in the suggestion.
 #if !BUILDFLAG(IS_ANDROID)
   if (suggestion.feature_for_iph ==
       &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
@@ -184,6 +186,12 @@ void NotifyIphAboutAcceptedSuggestion(content::BrowserContext* browser_context,
   if (suggestion.type == SuggestionType::kComposeProactiveNudge) {
     UserEducationService::MaybeNotifyPromoFeatureUsed(
         browser_context, compose::features::kEnableComposeProactiveNudge);
+  }
+
+  // Notifications for the new badge system.
+  if (suggestion.feature_for_new_badge) {
+    UserEducationService::MaybeNotifyPromoFeatureUsed(
+        browser_context, *suggestion.feature_for_new_badge);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

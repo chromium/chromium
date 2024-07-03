@@ -413,8 +413,8 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   if (!suggestion.is_acceptable) {
     return;
   }
-  NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
-                                   suggestion);
+  NotifyUserEducationAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
+                                             suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
