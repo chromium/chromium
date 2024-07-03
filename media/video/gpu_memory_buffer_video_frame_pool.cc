@@ -88,10 +88,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
         gpu_factories_(gpu_factories),
         output_format_(GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED),
         tick_clock_(base::DefaultTickClock::GetInstance()),
-        is_mappable_si_enabled_(
-            base::FeatureList::IsEnabled(
-                kAlwaysUseMappableSIForGpuMemoryBufferVideoFramePool) &&
-            IsMultiPlaneFormatForSoftwareVideoEnabled()) {
+        is_mappable_si_enabled_(base::FeatureList::IsEnabled(
+            kAlwaysUseMappableSIForGpuMemoryBufferVideoFramePool)) {
     DCHECK(media_task_runner_);
     DCHECK(worker_task_runner_);
 
@@ -162,10 +160,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     // same method. With MappableSI, keeping the |scoped_mapping| will allow to
     // Map() and reset(UnMap()) it as needed to achieve same behavior.
     std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping;
-
-    // Tracks whether the SharedImage is created with GpuMemoryBuffer containing
-    // multiplanar format and prefers external sampler.
-    bool needs_external_sampler = false;
   };
 
   // All the resources needed to compose a frame.
@@ -766,16 +760,14 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   return output;
 }
 
-bool SetPrefersExternalSampler(viz::SharedImageFormat& format) {
+void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
   if (format.is_multi_plane()) {
     // Set prefers external sampler only for multiplanar formats on ozone based
     // platforms.
 #if BUILDFLAG(IS_OZONE)
     format.SetPrefersExternalSampler();
-    return true;
 #endif
   }
-  return false;
 }
 
 }  // unnamed namespace
@@ -1362,24 +1354,15 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     // ::GetOrCreateFrameResource().
     if (!is_mappable_si_enabled_ && !plane_resource.shared_image) {
       constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
-      if (IsMultiPlaneFormatForSoftwareVideoEnabled()) {
-        viz::SharedImageFormat si_format =
-            OutputFormatToSharedImageFormat(output_format_, plane);
-        if (handle.type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-          if (SetPrefersExternalSampler(si_format)) {
-            plane_resource.needs_external_sampler = true;
-          }
-        }
-        plane_resource.shared_image =
-            sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
-                                    color_space, si_usage_, kDebugLabel},
-                                   std::move(handle));
-      } else {
-        plane_resource.shared_image = sii->CreateSharedImage(
-            gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
-            {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-             si_usage_, kDebugLabel});
+      viz::SharedImageFormat si_format =
+          OutputFormatToSharedImageFormat(output_format_, plane);
+      if (handle.type != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+        SetPrefersExternalSampler(si_format);
       }
+      plane_resource.shared_image =
+          sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
+                                  color_space, si_usage_, kDebugLabel},
+                                 std::move(handle));
       CHECK(plane_resource.shared_image);
     } else {
       sii->UpdateSharedImage(frame_resources->sync_token,
@@ -1416,8 +1399,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     frame->set_ycbcr_info(ycbcr_info);
   }
 
-  if (NumGpuMemoryBuffers(output_format_) == 1 &&
-      IsMultiPlaneFormatForSoftwareVideoEnabled()) {
+  if (NumGpuMemoryBuffers(output_format_) == 1) {
     // Set type only for NV12_SINGLE_GMB and P010 cases. For NV12_DUAL_GMB and
     // I420 cases there are still multiple GMBs with one for each plane so we
     // have multiple shared images and it still goes through the legacy

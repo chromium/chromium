@@ -597,12 +597,6 @@ BASE_FEATURE(kUseWritePixelsYUV,
              "UseWritePixelsYUV",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables creating single shared image and mailbox for multi-planar formats for
-// software video decoders.
-BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
-             "UseMultiPlaneFormatForSoftwareVideo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
@@ -1844,10 +1838,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 #else
   return false;
 #endif
-}
-
-bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
-  return true;
 }
 
 bool IsWritePixelsYUVEnabled() {

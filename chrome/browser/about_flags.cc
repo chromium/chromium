@@ -10375,11 +10375,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcS2Idle)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"use-multi-plane-format-for-software-video",
-     flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoName,
-     flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForSoftwareVideo)},
-
     {"use-write-pixels-yuv", flag_descriptions::kUseWritePixelsYUVName,
      flag_descriptions::kUseWritePixelsYUVDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kUseWritePixelsYUV)},

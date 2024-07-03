@@ -2286,9 +2286,6 @@ extern const char kSanitizerApiDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
-extern const char kUseMultiPlaneFormatForSoftwareVideoName[];
-extern const char kUseMultiPlaneFormatForSoftwareVideoDescription[];
-
 extern const char kUseWritePixelsYUVName[];
 extern const char kUseWritePixelsYUVDescription[];
 

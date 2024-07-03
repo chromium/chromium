@@ -3910,12 +3910,6 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
-const char kUseMultiPlaneFormatForSoftwareVideoName[] =
-    "Enable multi-plane formats for software video decoder";
-const char kUseMultiPlaneFormatForSoftwareVideoDescription[] =
-    "Enable single shared image and mailbox for multi-plane formats for "
-    "software video decoder";
-
 const char kUseWritePixelsYUVName[] =
     "Enable WritePixelsYUV for software pixel upload";
 const char kUseWritePixelsYUVDescription[] =

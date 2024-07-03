@@ -22823,25 +22823,6 @@
             ]
         }
     ],
-    "UseMultiPlaneFormatForSoftwareVideo": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseMultiPlaneFormatForSoftwareVideo"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSmartRefForGPUFenceHandle": [
         {
             "platforms": [
