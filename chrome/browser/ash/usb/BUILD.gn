@@ -32,6 +32,7 @@ static_library("usb") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/plugin_vm",
     "//chromeos/ash/components/dbus",
@@ -47,7 +48,9 @@ source_set("unit_tests") {
   sources = [ "cros_usb_detector_unittest.cc" ]
 
   deps = [
+    ":usb",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/plugin_vm:test_support",
     "//chrome/test:test_support",

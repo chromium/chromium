@@ -159,6 +159,8 @@ source_set("sync") {
       "//ash/constants",
       "//ash/public/cpp",
       "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/sync_wifi",
@@ -166,6 +168,9 @@ source_set("sync") {
       "//components/desks_storage",
       "//ui/events/ash",
     ]
+
+    # TODO(crbug.com/40251079): Remove circular dependencies.
+    allow_circular_includes_from = [ "//chrome/browser/ash/arc/tracing" ]
   }
 }
 

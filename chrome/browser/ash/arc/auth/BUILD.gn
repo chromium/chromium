@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("auth") {
+  sources = [
+    "arc_auth_code_fetcher.h",
+    "arc_auth_context.cc",
+    "arc_auth_context.h",
+    "arc_auth_service.cc",
+    "arc_auth_service.h",
+    "arc_background_auth_code_fetcher.cc",
+    "arc_background_auth_code_fetcher.h",
+    "arc_fetcher_base.cc",
+    "arc_fetcher_base.h",
+    "arc_robot_auth_code_fetcher.cc",
+    "arc_robot_auth_code_fetcher.h",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/account_manager_core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp",
+  ]
+}

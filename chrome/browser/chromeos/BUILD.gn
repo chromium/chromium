@@ -423,6 +423,11 @@ source_set("chromeos") {
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc/enterprise/cert_store",
+      "//chrome/browser/ash/arc/fileapi",
+      "//chrome/browser/ash/arc/intent_helper",
+      "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/crosapi",
@@ -450,6 +455,11 @@ source_set("chromeos") {
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc/enterprise/cert_store",
+      "//chrome/browser/ash/arc/fileapi",
+      "//chrome/browser/ash/arc/intent_helper",
+      "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/mahi:mahi",

@@ -17,6 +17,7 @@ static_library("first_run") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

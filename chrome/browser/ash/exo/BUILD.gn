@@ -18,6 +18,7 @@ static_library("exo") {
     "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/arc",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/plugin_vm",

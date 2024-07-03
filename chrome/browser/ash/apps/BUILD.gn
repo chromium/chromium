@@ -65,6 +65,8 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",

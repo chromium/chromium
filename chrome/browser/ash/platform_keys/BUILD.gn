@@ -18,7 +18,6 @@ static_library("platform_keys") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/network",

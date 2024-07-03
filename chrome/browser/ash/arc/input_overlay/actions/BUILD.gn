@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("actions") {
+  sources = [
+    "action.cc",
+    "action.h",
+    "action_move.cc",
+    "action_move.h",
+    "action_tap.cc",
+    "action_tap.h",
+    "input_element.cc",
+    "input_element.h",
+    "position.cc",
+    "position.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/arc/input_overlay/db/proto",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "input_element_unittest.cc",
+    "position_unittest.cc",
+  ]
+
+  deps = [
+    ":actions",
+    "//base",
+    "//chrome/browser/ash/arc/input_overlay",
+    "//testing/gtest",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+}

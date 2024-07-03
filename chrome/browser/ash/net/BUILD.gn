@@ -49,6 +49,7 @@ static_library("net") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/platform_keys",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
     "//chrome/common",
@@ -86,6 +87,8 @@ static_library("net") {
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/platform_keys" ]
 }
 
 static_library("test_support") {

@@ -43,6 +43,7 @@ source_set("account_manager") {
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/net",
     "//chromeos/ash/components/browser_context_helper",
@@ -50,6 +51,8 @@ source_set("account_manager") {
     "//components/user_manager",
     "//content/public/browser",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/arc/auth" ]
 }
 
 source_set("unit_tests") {
