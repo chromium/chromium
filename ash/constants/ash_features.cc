@@ -1735,6 +1735,14 @@ BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
              "InternalServerSideSpeechRecognitionByFinch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the internal server side speech recognition on ChromeOS.
+// The supported locales for this feature are specified using the locales
+// filter in finch config. The languages controlled by this feature use the
+// S3 USM_RNNT model.
+BASE_FEATURE(kInternalServerSideSpeechRecognitionUSMModelFinch,
+             "InternalServerSideSpeechRecognitionUSMModelFinch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3897,7 +3905,9 @@ bool IsInternalServerSideSpeechRecognitionControlEnabled() {
 bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return base::FeatureList::IsEnabled(
-      kInternalServerSideSpeechRecognitionByFinch);
+             kInternalServerSideSpeechRecognitionByFinch) ||
+         base::FeatureList::IsEnabled(
+             kInternalServerSideSpeechRecognitionUSMModelFinch);
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
