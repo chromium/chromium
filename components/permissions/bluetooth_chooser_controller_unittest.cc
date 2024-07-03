@@ -56,10 +56,10 @@ class BluetoothChooserControllerTest : public testing::Test {
     last_device_id_ = device_id;
   }
 
+  std::string last_device_id_;
   TestBluetoothChooserController bluetooth_chooser_controller_;
   NiceMock<MockChooserControllerView> mock_bluetooth_chooser_view_;
   content::BluetoothChooserEvent last_event_;
-  std::string last_device_id_;
 };
 
 class BluetoothChooserControllerWithDevicesAddedTest
