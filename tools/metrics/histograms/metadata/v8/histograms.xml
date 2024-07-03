@@ -1907,12 +1907,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmFlushedLiftoffCodeSizeBytes" units="bytes"
-    expires_after="2025-06-01">
+    expires_after="2025-07-01">
   <owner>evih@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
   <summary>
-    The amount of Liftoff code flushed. Recorded on emergency GCs for
-    allocations and on memory pressure.
+    The amount of executable Liftoff code that was flushed. Recorded on
+    emergency GCs for allocations and on memory pressure.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmFlushedLiftoffMetadataSizeBytes" units="bytes"
+    expires_after="2025-07-01">
+  <owner>evih@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The amount of Liftoff meta data that was flushed. Recorded on emergency GCs
+    for allocations and on memory pressure.
   </summary>
 </histogram>
 
@@ -2093,6 +2103,18 @@ chromium-metrics-reviews@google.com.
     The percentage of WebAssembly code freed by garbage collection (ratio of
     total freed code to total generated code so far). Recorded for each live
     module after each full GC.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmModuleMetadataSizeKiB" units="KB"
+    expires_after="2025-07-01">
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>evih@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The amount of meta data in KiB used by individual WebAssembly modules.
+    Recorded for each live module after each full GC.
   </summary>
 </histogram>
 
