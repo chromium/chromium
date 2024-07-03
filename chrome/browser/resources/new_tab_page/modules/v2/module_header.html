@@ -68,10 +68,8 @@
     <template is="dom-repeat" items="[[group]]">
       <button id="[[item.action]]" class="dropdown-item"
           on-click="onButtonClick_" data-action$="[[item.action]]">
-        <iron-icon
-            class="action-menu-icon cr-icon"
-            icon="[[item.icon]]">
-        </iron-icon>
+        <cr-icon class="action-menu-icon cr-icon" icon="[[item.icon]]">
+        </cr-icon>
         [[item.text]]
       </button>
     </template>

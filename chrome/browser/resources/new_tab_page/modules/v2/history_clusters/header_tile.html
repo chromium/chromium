@@ -143,13 +143,11 @@
         on-menu-button-click="onMenuButtonClick_"
         menu-item-groups="[[getMenuItemGroups_()]]"
         more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
-        <cr-icon-button iron-icon="modules:done" on-click="onDoneClick_"
-            slot="title-actions" title="$i18n{modulesHistoryDoneButton}">
-        </cr-icon-button>
+      <cr-icon-button iron-icon="modules:done" on-click="onDoneClick_"
+          slot="title-actions" title="$i18n{modulesHistoryDoneButton}">
+      </cr-icon-button>
     </ntp-module-header-v2>
-    <h2 id="label" class="label-container">
-    [[clusterLabel]]
-    </h2>
+    <h2 id="label" class="label-container">[[clusterLabel]]</h2>
   </button>
 </template>
 <template is="dom-if" if="[[suggestionChipHeaderEnabled_]]">
@@ -158,9 +156,9 @@
       on-menu-button-click="onMenuButtonClick_"
       menu-item-groups="[[getMenuItemGroups_()]]"
       more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
-      <cr-icon-button iron-icon="modules:done" on-click="onDoneClick_"
-          slot="title-actions" title="$i18n{modulesHistoryDoneButton}">
-      </cr-icon-button>
+    <cr-icon-button iron-icon="modules:done" on-click="onDoneClick_"
+        slot="title-actions" title="$i18n{modulesHistoryDoneButton}">
+    </cr-icon-button>
   </ntp-module-header-v2>
   <a id="suggestion-chip" class="label-container" href="[[normalizedUrl.url]]"
       on-click="onSuggestClick_">
