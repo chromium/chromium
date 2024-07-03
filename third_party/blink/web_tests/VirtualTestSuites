@@ -230,7 +230,7 @@
              "--disable-composited-antialiasing"],
     "owners": ["kevers@chromium.org",
                "blink-interactions@google.com"],
-    "expires": "Jul 1, 2024"
+    "expires": "Dec 1, 2024"
   },
 
   "The skipped base test requires a compositor to pass as root scrollbar scrolling",
