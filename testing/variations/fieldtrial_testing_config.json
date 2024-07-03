@@ -24712,6 +24712,23 @@
             ]
         }
     ],
+    "WebRTC-Bwe-ProbingConfiguration": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "network_state_probe_duration:200ms,network_state_interval:10s,min_probe_delta:20ms,est_lower_than_network_ratio:0.7,skip_if_est_larger_than_fraction_of_max:0.9,alr_scale:1.5,step_size:1.5"
+                }
+            ]
+        }
+    ],
     "WebRTC-Bwe-ReceiverLimitCapsOnly": [
         {
             "platforms": [
