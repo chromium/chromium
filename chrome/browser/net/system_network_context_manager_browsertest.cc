@@ -10,6 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,10 +32,14 @@
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
@@ -43,6 +49,8 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "sandbox/policy/features.h"
@@ -64,6 +72,7 @@ using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
 const char* kCookieName = "Cookie";
 const char* kHostA = "a.test";
+const char* kHostB = "b.test";
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
                        StaticAuthParams) {
@@ -459,6 +468,85 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerHttpNegotiateHeader,
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
+namespace {
+struct CookieAccess {
+  content::CookieAccessDetails::Type type;
+  std::string cookie_name;
+  std::string cookie_value;
+  net::CookieAccessResult cookie_access_result;
+
+  friend std::ostream& operator<<(std::ostream& o, const CookieAccess& d) {
+    o << (d.type == content::CookieAccessDetails::Type::kRead ? "read"
+                                                              : "change");
+    o << " name=" << d.cookie_name;
+    o << " value=" << d.cookie_value;
+    o << " access_result=";
+    net::PrintTo(d.cookie_access_result, &o);
+    return o;
+  }
+
+ public:
+  bool operator==(const CookieAccess&) const = default;
+};
+
+class CookieTracker : public content::WebContentsObserver {
+ public:
+  explicit CookieTracker(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void OnCookiesAccessed(content::NavigationHandle* navigation,
+                         const content::CookieAccessDetails& details) override {
+    OnCookiesAccessed(details);
+  }
+
+  void OnCookiesAccessed(content::RenderFrameHost* rfh,
+                         const content::CookieAccessDetails& details) override {
+    OnCookiesAccessed(details);
+  }
+
+  void WaitForCookies(size_t count) {
+    waiting_for_cookies_count_ = count;
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    QuitIfReady();
+    run_loop.Run();
+  }
+
+  std::vector<CookieAccess>& cookie_accesses() { return cookie_accesses_; }
+
+ private:
+  void OnCookiesAccessed(const content::CookieAccessDetails& details) {
+    for (const auto& cookie_with_access_result :
+         details.cookie_access_result_list) {
+      for (size_t i = 0; i < details.count; ++i) {
+        cookie_accesses_.emplace_back(details.type,
+                                      cookie_with_access_result.cookie.Name(),
+                                      cookie_with_access_result.cookie.Value(),
+                                      cookie_with_access_result.access_result);
+      }
+    }
+
+    QuitIfReady();
+  }
+
+  void QuitIfReady() {
+    if (quit_closure_.is_null()) {
+      return;
+    }
+    if (cookie_accesses_.size() < waiting_for_cookies_count_) {
+      return;
+    }
+    std::move(quit_closure_).Run();
+  }
+
+  std::vector<CookieAccess> cookie_accesses_;
+  size_t waiting_for_cookies_count_ = 0;
+  base::OnceClosure quit_closure_;
+};
+
+}  // namespace
+
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     : public SystemNetworkContextManagerBrowsertest {
  public:
@@ -478,8 +566,10 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
     // Since we set kWaitForFirstPartySetsInit, all cookie-carrying network
     // requests are blocked until FPS is initialized.
-    feature_list_.InitWithFeatures({net::features::kWaitForFirstPartySetsInit},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {net::features::kWaitForFirstPartySetsInit,
+         net::features::kForceThirdPartyCookieBlocking},
+        {});
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -504,10 +594,6 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  GURL EchoCookiesUrl(const std::string& host) {
-    return https_server_.GetURL(host, "/echoheader?Cookie");
   }
 
  private:
@@ -538,7 +624,8 @@ IN_PROC_BROWSER_TEST_F(
   const GURL host_root = https_server()->GetURL(kHostA, "/");
   ASSERT_TRUE(content::SetCookie(
       browser()->profile(), host_root,
-      base::StrCat({kCookieName, "=1; secure; max-age=2147483647"})));
+      base::StrCat(
+          {kCookieName, "=1; SameSite=None; secure; max-age=2147483647"})));
   ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
               net::CookieStringIs(
                   testing::UnorderedElementsAre(testing::Key(kCookieName))));
@@ -551,24 +638,64 @@ IN_PROC_BROWSER_TEST_F(
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  const GURL host_root = https_server()->GetURL(kHostA, "/");
-  ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
-              net::CookieStringIs(
-                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
+  CookieTracker cookie_tracker(web_contents());
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
-  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
-                  .ExtractString(),
-              net::CookieStringIs(
-                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
+  const GURL url_a = https_server()->GetURL(kHostA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a));
+  cookie_tracker.WaitForCookies(2);
+  const CookieAccess expected_first_party_access{
+      content::CookieAccessDetails::Type::kRead, "Cookie", "1",
+      net::CookieAccessResult(
+          net::CookieEffectiveSameSite::NO_RESTRICTION,
+          net::CookieInclusionStatus(
+              net::CookieInclusionStatus::WARN_PORT_MISMATCH),
+          net::CookieAccessSemantics::NONLEGACY, true)};
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(
+                  // a.test/title1.html
+                  expected_first_party_access,
+                  // a.test/favicon.ico
+                  expected_first_party_access));
+  cookie_tracker.cookie_accesses().clear();
+
+  const GURL url_b_cross_site(https_server()->GetURL(
+      kHostB, "/cross_site_iframe_factory.html?b.test(a.test)"));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url_b_cross_site));
+  cookie_tracker.WaitForCookies(2);
+  net::CookieInclusionStatus expected_third_party_inclusion_status;
+  // If the sites are in the same Related Website Sets, we're expecting the
+  // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET exclusion reason.
+  expected_third_party_inclusion_status.AddExclusionReason(
+      net::CookieInclusionStatus::
+          EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+  expected_third_party_inclusion_status.AddExclusionReason(
+      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+  expected_third_party_inclusion_status.AddWarningReason(
+      net::CookieInclusionStatus::WARN_PORT_MISMATCH);
+  const CookieAccess expected_third_party_access{
+      content::CookieAccessDetails::Type::kRead, "Cookie", "1",
+      net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,
+                              expected_third_party_inclusion_status,
+                              net::CookieAccessSemantics::NONLEGACY, true)};
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(
+                  // a.test iframe under b.test
+                  expected_third_party_access,
+                  // a.test/tree_parser_util.js in an iframe under b.test
+                  expected_third_party_access));
+  cookie_tracker.cookie_accesses().clear();
 
   SimulateNetworkServiceCrash();
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
-  EXPECT_THAT(content::EvalJs(web_contents(), "document.body.textContent")
-                  .ExtractString(),
-              net::CookieStringIs(
-                  testing::UnorderedElementsAre(testing::Key(kCookieName))));
+  EXPECT_TRUE(NavigateToURL(web_contents(), url_b_cross_site));
+  cookie_tracker.WaitForCookies(2);
+  EXPECT_THAT(cookie_tracker.cookie_accesses(),
+              testing::ElementsAre(
+                  // a.test iframe under b.test
+                  expected_third_party_access,
+                  // a.test/tree_parser_util.js in an iframe under b.test
+                  expected_third_party_access));
+  cookie_tracker.cookie_accesses().clear();
 }
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
