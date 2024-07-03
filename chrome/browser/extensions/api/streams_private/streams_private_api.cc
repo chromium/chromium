@@ -71,18 +71,7 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   GURL handler_url(Extension::GetBaseURLFromExtensionId(extension_id).spec() +
                    handler->handler_url());
 
-  // If this is an inner contents, then (a) it's a guest view and doesn't have a
-  // tab id anyway, or (b) it's a portal. In the portal case, providing a
-  // distinct tab id breaks the pdf viewer / extension APIs. For now we just
-  // indicate that a portal contents has no tab id. Unfortunately, this will
-  // still be broken in subtle ways once the portal is activated (e.g. some
-  // forms of zooming won't work).
-  // TODO(crbug.com/40114809): Present a coherent representation of a tab id for
-  // portal contents.
-  int tab_id = web_contents->GetOuterWebContents()
-                   ? SessionID::InvalidValue().id()
-                   : ExtensionTabUtil::GetTabId(web_contents);
-
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::unique_ptr<StreamContainer> stream_container(
       new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));
