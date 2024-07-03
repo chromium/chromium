@@ -450,10 +450,7 @@ source_set("account_checker_unittests") {
 }
 
 source_set("commerce_constants") {
-  sources = [
-    "commerce_constants.cc",
-    "commerce_constants.h",
-  ]
+  sources = [ "commerce_constants.h" ]
 }
 
 source_set("commerce_types") {
