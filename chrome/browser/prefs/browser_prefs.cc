@@ -1078,6 +1078,11 @@ constexpr char kBirchUseSelfShare[] = "ash.birch.use_self_share";
 constexpr char kDefaultSearchProviderChoicePending[] =
     "default_search_provider.engine_choice_pending";
 
+// Deprecated 07/2024
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+inline constexpr char kFirstRunStudyGroup[] = "browser.first_run_study_group";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1165,6 +1170,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 06/2024.
   registry->RegisterBooleanPref(kLocalUserFilesMigrationEnabled, false);
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Deprecated 07/2024.
+  registry->RegisterStringPref(kFirstRunStudyGroup, std::string());
 #endif
 }
 
@@ -2387,6 +2396,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_state->ClearPref(kLocalUserFilesMigrationEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Added 07/2024.
+  local_state->ClearPref(kFirstRunStudyGroup);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

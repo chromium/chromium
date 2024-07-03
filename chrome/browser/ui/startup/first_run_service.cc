@@ -172,7 +172,6 @@ bool IsFirstRunMarkedFinishedInPrefs() {
 // static
 void FirstRunService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFirstRunFinished, false);
-  registry->RegisterStringPref(prefs::kFirstRunStudyGroup, "");
 }
 
 FirstRunService::FirstRunService(Profile& profile,

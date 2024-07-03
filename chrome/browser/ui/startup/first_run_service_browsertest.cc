@@ -167,13 +167,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.EntryPoint",
                                       FirstRunService::EntryPoint::kOther, 1);
 
-  // We don't expect synthetic trials to be registered here, since no group
-  // is configured with the feature. For the positive test case, see
-  // `FirstRunServiceCohortBrowserTest.GroupRegisteredAfterFre`.
-  PrefService* local_state = g_browser_process->local_state();
-  EXPECT_FALSE(local_state->HasPrefPath(prefs::kFirstRunStudyGroup));
-  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
-
   ProfilePicker::Hide();
   EXPECT_EQ(expected_proceed, proceed_future.Get());
 

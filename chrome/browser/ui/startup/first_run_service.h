@@ -38,8 +38,6 @@ using ResumeTaskCallback = base::OnceCallback<void(bool proceed)>;
 // It is not available on the other profiles.
 class FirstRunService : public KeyedService {
  public:
-  static constexpr char kSyntheticTrialName[] = "ForYouFreSynthetic";
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class EntryPoint {
