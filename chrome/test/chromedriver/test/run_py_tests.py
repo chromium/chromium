@@ -154,6 +154,8 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testFindChildElementsStaleElement2',
     # Flaky: https://crbug.com/1486520
     'ChromeDriverTest.testClickStaleElement',
+    # Flaky: https://crbug.com/346530330
+    'FedCmSpecificTest.testClickErrorGotIt',
 ]
 
 _BROWSER_SPECIFIC_FILTER = {}
