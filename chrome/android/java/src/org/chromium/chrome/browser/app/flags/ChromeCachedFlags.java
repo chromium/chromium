@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
+import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
@@ -90,6 +91,7 @@ public class ChromeCachedFlags {
                         BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,
                         ChromeBaseAppCompatActivity.DEFAULT_FONT_FAMILY_TESTING,
+                        TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
                         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,

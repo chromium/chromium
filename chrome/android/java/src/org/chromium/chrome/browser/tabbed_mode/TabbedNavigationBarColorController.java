@@ -347,6 +347,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
         mForceShowDivider = forceShowDivider;
 
         if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
+                && !isNavBarColorAnimationDisabled()
                 && !toEdge
                 && !disableAnimation) {
             animateNavigationBarColor(currentNavigationBarColor, newNavigationBarColor);
@@ -505,5 +506,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
 
     int getNavigationBarColorForTesting() {
         return mNavigationBarColor;
+    }
+
+    private static boolean isNavBarColorAnimationDisabled() {
+        return TabbedSystemUiCoordinator.NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM.getValue();
     }
 }

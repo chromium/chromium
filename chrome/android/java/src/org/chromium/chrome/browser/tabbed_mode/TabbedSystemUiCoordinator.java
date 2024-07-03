@@ -10,10 +10,12 @@ import android.view.Window;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -35,6 +37,14 @@ import java.util.Optional;
  */
 public class TabbedSystemUiCoordinator {
     private @Nullable TabbedNavigationBarColorController mNavigationBarColorController;
+
+    private static final String NAV_BAR_COLOR_ANIMATION_DISABLED_PARAM = "color_animation_disabled";
+    public static final BooleanCachedFieldTrialParameter
+            NAV_BAR_COLOR_ANIMATION_DISABLED_CACHED_PARAM =
+                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                            ChromeFeatureList.NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND,
+                            NAV_BAR_COLOR_ANIMATION_DISABLED_PARAM,
+                            false);
 
     /**
      * Construct a new {@link TabbedSystemUiCoordinator}.
