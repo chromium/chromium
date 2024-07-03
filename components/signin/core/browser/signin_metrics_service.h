@@ -14,6 +14,8 @@
 class PrefService;
 class PrefRegistrySimple;
 
+extern const char kExplicitSigninMigrationHistogramName[];
+
 // This class should be used to records metrics related to sign in events.
 // Some metrics might not be session bound, needing some information to be
 // stored through prefs.
@@ -21,6 +23,21 @@ class PrefRegistrySimple;
 class SigninMetricsService : public KeyedService,
                              public signin::IdentityManager::Observer {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ExplicitSigninMigration)
+  enum class ExplicitSigninMigration {
+    kMigratedSignedOut = 0,
+    kMigratedSignedIn = 1,
+    kMigratedSyncing = 2,
+
+    kNotMigratedSignedIn = 3,
+    kNotMigratedSyncing = 4,
+
+    kMaxValue = kNotMigratedSyncing,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:ExplicitSigninMigration)
+
   explicit SigninMetricsService(signin::IdentityManager& identity_manager,
                                 PrefService& pref_service);
   ~SigninMetricsService() override;

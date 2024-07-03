@@ -8,14 +8,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +42,9 @@ enum class Resolution { kReauth, kWebSignin, kSignout };
 
 class SigninMetricsServiceTest : public ::testing::Test {
  public:
-  SigninMetricsServiceTest() {
+  SigninMetricsServiceTest()
+      : identity_test_environment_(/*test_url_loader_factory=*/nullptr,
+                                   &pref_service_) {
     SigninMetricsService::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -152,8 +157,8 @@ class SigninMetricsServiceTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<SigninMetricsService> signin_metrics_service_;
 
@@ -426,4 +431,50 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.ResolutionSourceCompleted",
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, 1);
+}
+
+TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
+  {
+    base::HistogramTester histogram_tester;
+    CreateSigninMetricsService();
+    histogram_tester.ExpectUniqueSample(
+        kExplicitSigninMigrationHistogramName,
+        SigninMetricsService::ExplicitSigninMigration::kMigratedSignedOut,
+        /*expected_bucket_count=*/1);
+  }
+
+  Signin("test@gmail.com",
+         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  ASSERT_FALSE(pref_service().GetBoolean(prefs::kExplicitBrowserSignin));
+
+  {
+    base::HistogramTester histogram_tester;
+    CreateSigninMetricsService();
+    histogram_tester.ExpectUniqueSample(
+        kExplicitSigninMigrationHistogramName,
+        SigninMetricsService::ExplicitSigninMigration::kNotMigratedSignedIn,
+        /*expected_bucket_count=*/1);
+  }
+
+  pref_service().SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  {
+    base::HistogramTester histogram_tester;
+    CreateSigninMetricsService();
+    histogram_tester.ExpectUniqueSample(
+        kExplicitSigninMigrationHistogramName,
+        SigninMetricsService::ExplicitSigninMigration::kMigratedSignedIn,
+        /*expected_bucket_count=*/1);
+  }
+
+  EnableSync("test@gmail.com");
+
+  {
+    base::HistogramTester histogram_tester;
+    CreateSigninMetricsService();
+    histogram_tester.ExpectUniqueSample(
+        kExplicitSigninMigrationHistogramName,
+        SigninMetricsService::ExplicitSigninMigration::kMigratedSyncing,
+        /*expected_bucket_count=*/1);
+  }
 }

@@ -18,9 +18,13 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
+
+const char kExplicitSigninMigrationHistogramName[] =
+    "Signin.ExplicitSigninMigration";
 
 namespace {
 
@@ -36,8 +40,8 @@ constexpr char kSigninPendingStartTimePref[] =
 constexpr char kWebSigninAccountStartTimesPref[] =
     "signin.web_signin_accounts_start_time_dict";
 
-// These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SigninPendingResolution {
   kReauth = 0,
   kSignout = 1,
@@ -103,6 +107,25 @@ SigninMetricsService::SigninMetricsService(
     PrefService& pref_service)
     : identity_manager_(identity_manager), pref_service_(pref_service) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
+
+  // Record migration status to explicit signin.
+  ExplicitSigninMigration explicit_signin_migration =
+      ExplicitSigninMigration::kMigratedSignedOut;
+  const bool explicit_signin_pref =
+      pref_service.GetBoolean(prefs::kExplicitBrowserSignin);
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    explicit_signin_migration =
+        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSyncing
+                             : ExplicitSigninMigration::kNotMigratedSyncing;
+  } else if (identity_manager_->HasPrimaryAccount(
+                 signin::ConsentLevel::kSignin)) {
+    explicit_signin_migration =
+        explicit_signin_pref ? ExplicitSigninMigration::kMigratedSignedIn
+                             : ExplicitSigninMigration::kNotMigratedSignedIn;
+  }
+
+  base::UmaHistogramEnumeration(kExplicitSigninMigrationHistogramName,
+                                explicit_signin_migration);
 }
 
 SigninMetricsService::~SigninMetricsService() = default;

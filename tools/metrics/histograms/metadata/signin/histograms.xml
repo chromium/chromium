@@ -918,6 +918,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ExplicitSigninMigration" enum="ExplicitSigninMigration"
+    expires_after="2025-07-02">
+  <owner>droger@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <summary>
+    Migration status for the explicit signin migration from Dice automatic
+    signin. Recorded for each profile when it is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
     enum="GaiaRemoteConsentFlowResult" expires_after="2024-11-03">
   <owner>alexilin@chromium.org</owner>

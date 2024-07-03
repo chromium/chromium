@@ -222,6 +222,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:ChromeSignoutConfirmationChoice) -->
 
+<!-- LINT.IfChange(ExplicitSigninMigration) -->
+
+<enum name="ExplicitSigninMigration">
+  <int value="0" label="Migrated, signed out"/>
+  <int value="1" label="Migrated, signed in"/>
+  <int value="2" label="Migrated, syncing"/>
+  <int value="3" label="Not Migrated, signed in"/>
+  <int value="4" label="Not Migrated, syncing"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/signin_metrics_service.h:ExplicitSigninMigration) -->
+
 <enum name="FRESigninEvents">
   <int value="0" label="Checking managed status"/>
   <int value="1" label="Signing in - unmanaged"/>
