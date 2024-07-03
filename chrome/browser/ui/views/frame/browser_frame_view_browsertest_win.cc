@@ -370,6 +370,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
 
   // ClientView should be covering the entire screen.
   EXPECT_EQ(frame_view_->GetBoundsForClientView().y(), 0);
+
+  // Exit full screen.
+  frame_view_->frame()->SetFullscreen(false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,

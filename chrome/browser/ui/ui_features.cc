@@ -43,7 +43,7 @@ const base::FeatureParam<bool> kCastListedFirst{&kCastAppMenuExperiment,
 // Enables icon in titlebar for web apps.
 BASE_FEATURE(kWebAppIconInTitlebar,
              "WebAppIconInTitlebar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
