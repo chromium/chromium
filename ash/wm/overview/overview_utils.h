@@ -39,6 +39,14 @@ ASH_EXPORT OverviewSession* GetOverviewSession();
 // Returns true if `window` can cover available workspace.
 bool CanCoverAvailableWorkspace(aura::Window* window);
 
+// Fades `widget` to opacity one and sets the transform to target with the enter
+// overview settings. Have OverviewController observe this animation as a enter
+// animation if `observe` is true.
+void FadeInAndTransformWidgetToOverview(views::Widget* widget,
+                                        const gfx::Transform& target_transform,
+                                        OverviewAnimationType animation_type,
+                                        bool observe);
+
 // Fades `widget` to opacity one with the enter overview settings.
 // Have OverviewController observe this animation as a enter animation if
 // `observe` is true.

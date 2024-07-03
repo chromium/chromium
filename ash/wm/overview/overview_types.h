@@ -14,6 +14,8 @@ enum OverviewAnimationType {
   OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
   // Used to fade out the label.
   OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT,
+  // Used to show the informed restore dialog when entering Overview.
+  OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER,
   // Used to position windows when entering/exiting overview mode and when a
   // window is closed while overview mode is active.
   OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER,

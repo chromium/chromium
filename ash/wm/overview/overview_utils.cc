@@ -74,17 +74,29 @@ bool CanCoverAvailableWorkspace(aura::Window* window) {
   return WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned();
 }
 
-void FadeInWidgetToOverview(views::Widget* widget,
-                            OverviewAnimationType animation_type,
-                            bool observe) {
+void FadeInAndTransformWidgetToOverview(views::Widget* widget,
+                                        const gfx::Transform& target_transform,
+                                        OverviewAnimationType animation_type,
+                                        bool observe) {
   aura::Window* window = widget->GetNativeWindow();
-  if (window->layer()->GetTargetOpacity() == 1.f)
+  auto* window_layer = window->layer();
+  const bool animate_opacity = window_layer->GetTargetOpacity() != 1;
+  const bool animate_transform =
+      window_layer->GetTargetTransform() != target_transform;
+  if (!animate_opacity && !animate_transform) {
     return;
+  }
 
   // Fade in the widget from its current opacity.
   ScopedOverviewAnimationSettings scoped_overview_animation_settings(
       animation_type, window);
-  window->layer()->SetOpacity(1.0f);
+  if (animate_opacity) {
+    window_layer->SetOpacity(1.0f);
+  }
+
+  if (animate_transform) {
+    window_layer->SetTransform(target_transform);
+  }
 
   if (observe) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
@@ -92,6 +104,14 @@ void FadeInWidgetToOverview(views::Widget* widget,
     OverviewController::Get()->AddEnterAnimationObserver(
         std::move(enter_observer));
   }
+}
+
+void FadeInWidgetToOverview(views::Widget* widget,
+                            OverviewAnimationType animation_type,
+                            bool observe) {
+  FadeInAndTransformWidgetToOverview(widget,
+                                     widget->GetLayer()->GetTargetTransform(),
+                                     animation_type, observe);
 }
 
 void PrepareWidgetForShutdownAnimation(views::Widget* widget) {

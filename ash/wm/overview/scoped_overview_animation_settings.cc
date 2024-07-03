@@ -30,6 +30,9 @@ constexpr base::TimeDelta kCloseScale = base::Milliseconds(100);
 constexpr base::TimeDelta kFadeInDelay = base::Milliseconds(83);
 constexpr base::TimeDelta kFadeIn = base::Milliseconds(167);
 
+// The time duration for informed restore dialog to fade in.
+constexpr base::TimeDelta kShowInformedRestoreDialog = base::Milliseconds(800);
+
 // The time duration for widgets to fade out.
 constexpr base::TimeDelta kFadeOut = base::Milliseconds(100);
 
@@ -56,6 +59,8 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kFadeIn;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT:
       return kFadeOut;
+    case OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER:
+      return kShowInformedRestoreDialog;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_EXIT:
       return kWindowRestoreDuration;
     case OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER:
@@ -118,6 +123,11 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
       break;
     case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_FADE_OUT:
       animation_settings_->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+      animation_settings_->SetPreemptionStrategy(
+          ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
+      break;
+    case OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER:
+      animation_settings_->SetTweenType(gfx::Tween::EASE_IN_OUT_EMPHASIZED);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
       break;

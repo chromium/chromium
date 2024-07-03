@@ -169,6 +169,8 @@ constexpr int kFeedbackGridMinHeight = 100;
 // The bottom padding applied to the bottom of the birch bar.
 constexpr int kBirchBarBottomPadding = 16;
 
+constexpr float kInformedRestoreDialogInitScale = 1.2f;
+
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
 constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
@@ -725,10 +727,15 @@ void OverviewGrid::PrepareForOverview() {
     // `informed_restore_widget_` has no default animation. Otherwise, set the
     // opacity to 0.f and perform a fade in animation.
     if (enter_exit_type != OverviewEnterExitType::kImmediateEnter) {
-      informed_restore_widget_->SetOpacity(0.f);
-      FadeInWidgetToOverview(informed_restore_widget_.get(),
-                             OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
-                             /*observe=*/true);
+      auto* widget_layer = informed_restore_widget_->GetLayer();
+      widget_layer->SetOpacity(0.f);
+      widget_layer->SetTransform(gfx::TransformAboutPivot(
+          gfx::RectF(widget_layer->size()).CenterPoint(),
+          gfx::Transform::MakeScale(kInformedRestoreDialogInitScale)));
+      FadeInAndTransformWidgetToOverview(
+          informed_restore_widget_.get(), gfx::Transform(),
+          OVERVIEW_ANIMATION_SHOW_INFORMED_RESTORE_DIALOG_ON_ENTER,
+          /*observe=*/true);
     }
   }
 
