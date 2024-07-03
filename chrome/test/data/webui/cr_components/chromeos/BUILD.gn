@@ -11,7 +11,7 @@ webui_ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"
+  tsconfig_base = "tsconfig_base.json"
 
   in_files = [
     "bluetooth/bluetooth_base_page_test.ts",

@@ -560,6 +560,7 @@ build_webui("build") {
   ]
   mojo_base_path = "mojom-webui"
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = ts_definition_files  # Defined in os_settings.gni
   ts_deps = [

@@ -253,8 +253,9 @@ export class EarconEngine {
 
     // Clear source once it finishes playing.
     const source = this.lastEarconSources_[earcon];
-    if (source !== undefined && source instanceof AudioScheduledSourceNode) {
-      source.onended = () => {
+    if (source !== undefined &&
+        (source as any) instanceof AudioScheduledSourceNode) {
+      (source as AudioScheduledSourceNode).onended = () => {
         delete this.lastEarconSources_[earcon];
       };
     }

@@ -694,7 +694,7 @@ gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
   try {
     const uniqueID = gCrWeb.fill.ID_SYMBOL;
     if (typeof element[uniqueID] === 'undefined') {
-      element[uniqueID] = document[uniqueID]++;
+      element[uniqueID] = document[uniqueID]!++;
       // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
       // is deprecated.
       elementMap.set(

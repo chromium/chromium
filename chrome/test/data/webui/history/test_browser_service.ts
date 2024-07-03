@@ -148,7 +148,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       this.actionMap[action] = 0;
     }
 
-    this.actionMap[action]++;
+    this.actionMap[action]!++;
   }
 
   recordHistogram(histogram: string, value: number, max: number) {
@@ -162,7 +162,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       this.histogramMap[histogram]![value] = 0;
     }
 
-    this.histogramMap[histogram]![value]++;
+    this.histogramMap[histogram]![value]!++;
     this.methodCalled('recordHistogram');
   }
 
