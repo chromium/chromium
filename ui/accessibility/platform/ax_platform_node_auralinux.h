@@ -403,8 +403,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   RAW_PTR_EXCLUSION AtkObject* atk_object_ = nullptr;
   RAW_PTR_EXCLUSION AtkHyperlink* atk_hyperlink_ = nullptr;
 
-  // A weak pointers which help us track the ATK embeds relation.
-  // RAW_PTR_EXCLUSION: #addr-of
+  // A weak pointer which help us track the ATK embeds relation.
+  // RAW_PTR_EXCLUSION: #addr-of and not much we can do about it (see
+  // crbug.com/346693629).
   RAW_PTR_EXCLUSION AtkObject* document_parent_ = nullptr;
 
   // Whether or not this node (if it is a frame or a window) was
