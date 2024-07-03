@@ -49,13 +49,14 @@ using PagePropertyFlags = base::
 class PageNodeImpl
     : public PublicNodeImpl<PageNodeImpl, PageNode>,
       public TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>,
-      public SupportsNodeInlineData<NodeAttachedDataStorage,
-                                    PageLoadTrackerDecoratorData,
+      public SupportsNodeInlineData<PageLoadTrackerDecoratorData,
                                     PageAggregatorData,
 #if !BUILDFLAG(IS_ANDROID)
                                     SiteDataNodeData,
 #endif
-                                    FrozenData> {
+                                    FrozenData,
+                                    // Keep this last to avoid merge conflicts.
+                                    NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<PageNodeImpl>;
 

@@ -38,8 +38,9 @@ class FrameNodeImpl
     : public PublicNodeImpl<FrameNodeImpl, FrameNode>,
       public TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>,
       public mojom::DocumentCoordinationUnit,
-      public SupportsNodeInlineData<NodeAttachedDataStorage,
-                                    execution_context::FrameExecutionContext> {
+      public SupportsNodeInlineData<execution_context::FrameExecutionContext,
+                                    // Keep this last to avoid merge conflicts.
+                                    NodeAttachedDataStorage> {
  public:
   static const char kDefaultPriorityReason[];
 

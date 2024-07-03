@@ -28,8 +28,9 @@ class ProcessNodeImpl;
 class WorkerNodeImpl
     : public PublicNodeImpl<WorkerNodeImpl, WorkerNode>,
       public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>,
-      public SupportsNodeInlineData<NodeAttachedDataStorage,
-                                    execution_context::WorkerExecutionContext> {
+      public SupportsNodeInlineData<execution_context::WorkerExecutionContext,
+                                    // Keep this last to avoid merge conflicts.
+                                    NodeAttachedDataStorage> {
  public:
   static const char kDefaultPriorityReason[];
 

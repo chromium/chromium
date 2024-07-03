@@ -55,9 +55,10 @@ class ProcessNodeImpl
     : public PublicNodeImpl<ProcessNodeImpl, ProcessNode>,
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
       public mojom::ProcessCoordinationUnit,
-      public SupportsNodeInlineData<NodeAttachedDataStorage,
-                                    ProcessPriorityAggregatorData,
-                                    FrozenData> {
+      public SupportsNodeInlineData<ProcessPriorityAggregatorData,
+                                    FrozenData,
+                                    // Keep this last to avoid merge conflicts.
+                                    NodeAttachedDataStorage> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
