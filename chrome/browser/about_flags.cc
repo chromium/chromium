@@ -4006,7 +4006,7 @@ const FeatureEntry::FeatureVariation
 };
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-// The variations of ComposeProactiveNudge
+// Vatiations of the Compose proactive nudge.
 const FeatureEntry::FeatureParam kComposeProactiveNudge_CompactUI_50[] = {
     {"proactive_nudge_compact_ui", "true"},
     {"proactive_nudge_show_probability", "0.5"}};
@@ -4032,6 +4032,46 @@ const FeatureEntry::FeatureVariation kComposeProactiveNudgeVariations[] = {
      std::size(kComposeProactiveNudge_CompactUI_100), nullptr},
     {"Large UI - show 100%", kComposeProactiveNudge_LargeUI_100,
      std::size(kComposeProactiveNudge_LargeUI_100), nullptr}};
+
+// Variations of the Compose selection nudge.
+const FeatureEntry::FeatureParam kComposeSelectionNudge_1[] = {
+    {"selection_nudge_length", "1"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_15[] = {
+    {"selection_nudge_length", "15"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_30[] = {
+    {"selection_nudge_length", "30"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_30_1s[] = {
+    {"selection_nudge_length", "30"},
+    {"selection_nudge_delay_milliseconds", "1000"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_30_2s[] = {
+    {"selection_nudge_length", "30"},
+    {"selection_nudge_delay_milliseconds", "2000"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_50[] = {
+    {"selection_nudge_length", "50"}};
+
+const FeatureEntry::FeatureParam kComposeSelectionNudge_100[] = {
+    {"selection_nudge_length", "100"}};
+
+const FeatureEntry::FeatureVariation kComposeSelectionNudgeVariations[] = {
+    {"1 Char", kComposeSelectionNudge_1, std::size(kComposeSelectionNudge_1),
+     nullptr},
+    {"15 Char", kComposeSelectionNudge_15, std::size(kComposeSelectionNudge_15),
+     nullptr},
+    {"30 Char", kComposeSelectionNudge_30, std::size(kComposeSelectionNudge_30),
+     nullptr},
+    {"50 Char", kComposeSelectionNudge_50, std::size(kComposeSelectionNudge_50),
+     nullptr},
+    {"100 Char", kComposeSelectionNudge_100,
+     std::size(kComposeSelectionNudge_100), nullptr},
+    {"30 Char - 1sec", kComposeSelectionNudge_30_1s,
+     std::size(kComposeSelectionNudge_30_1s), nullptr},
+    {"30 char - 2sec", kComposeSelectionNudge_30_2s,
+     std::size(kComposeSelectionNudge_30_2s), nullptr}};
 #endif  // ENABLE_COMPOSE
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -11095,6 +11135,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(autofill::features::kComposePopupAnnouncePolitely)},
 
+    {"compose-selection-nudge", flag_descriptions::kComposeSelectionNudgeName,
+     flag_descriptions::kComposeSelectionNudgeDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         compose::features::kEnableComposeSelectionNudge,
+         kComposeSelectionNudgeVariations,
+         "ComposeSelectionNudge")},
 #endif
 
     {"related-website-sets-permission-grants",

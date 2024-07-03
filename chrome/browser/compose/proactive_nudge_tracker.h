@@ -25,6 +25,7 @@ namespace compose {
 // show for Compose. It has the following states:
 //   - kInitial,
 //   - kWaitingForTimer,
+//   - kTimerCanceled,
 //   - kWaitingForSegmentation,
 //   - kWaitingForProactiveNudgeRequest,
 //   - kShouldNotBeShown,
@@ -71,6 +72,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   enum class ShowState {
     kInitial,
     kWaitingForTimer,
+    kTimerCanceled,
     kWaitingForSegmentation,
     kWaitingForProactiveNudgeRequest,
     kShouldNotBeShown,
@@ -104,6 +106,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
     bool timer_complete = false;
+    bool selection_nudge_requested = false;
+    bool timer_canceled = false;
 
     ShowState show_state = ShowState::kInitial;
 
@@ -167,6 +171,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   void TransitionToState(ShowState new_show_state);
 
   void BeginWaitingForTimer();
+  void BeginTimerCanceled();
   void BeginSegmentation();
   void BeginWaitingForProactiveNudgeRequest();
   void BeginShouldNotBeShown();
@@ -184,8 +189,9 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   std::unique_ptr<State> state_;
 
-  // Fields on which the nudge has been shown.
-  std::set<autofill::FieldGlobalId> seen_fields_;
+  // Map indicating if the classification result from the segmentation platform
+  // allows the nudge to be shown for previously queried fields.
+  std::map<autofill::FieldGlobalId, bool> seen_fields_;
 
   std::map<autofill::FieldGlobalId, std::unique_ptr<EngagementTracker>>
       engagement_trackers_;

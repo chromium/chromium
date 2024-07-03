@@ -8273,6 +8273,9 @@ const char kComposePoliteNudgeName[] = "Compose Polite a11y announcement";
 const char kComposePoliteNudgeDescription[] =
     "Uses polite announcements to alert the user that a compose popup is "
     "available to interact with.";
+const char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
+const char kComposeSelectionNudgeDescription[] =
+    "Enables nudge on selection for Compose";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

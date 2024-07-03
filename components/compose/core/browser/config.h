@@ -91,7 +91,16 @@ struct Config {
   bool proactive_nudge_segmentation = true;
 
   // How long to wait to show the proactive nudge.
-  base::TimeDelta proactive_nudge_delay = base::Seconds(3);
+  base::TimeDelta proactive_nudge_delay = base::Seconds(1);
+
+  // Whether the nudge on selection should be enabled.
+  bool selection_nudge_enabled = false;
+
+  // Minimum selection length needed before showing the selection nudge.
+  unsigned int selection_nudge_length = 30;
+
+  // How long to wait to show the selection nudge.
+  base::TimeDelta selection_nudge_delay = base::Milliseconds(500);
 
   // If true, nudge at most once per field per navigation. If false, at most
   // once per field per focus.

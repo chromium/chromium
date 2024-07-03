@@ -37,6 +37,9 @@ BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
 // Controls whether or not the nudge displays at the cursor.
 BASE_DECLARE_FEATURE(kEnableComposeNudgeAtCursor);
 
+// Controls whether or not the nudge should be shown on text selection.
+BASE_DECLARE_FEATURE(kEnableComposeSelectionNudge);
+
 // Controls whether the language check is bypassed for the context menu option.
 BASE_DECLARE_FEATURE(kEnableComposeLanguageBypassForContextMenu);
 

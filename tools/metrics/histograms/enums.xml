@@ -21154,6 +21154,7 @@ from previous Chrome versions.
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="224065816" label="SuppressToolbarCaptures:enabled"/>
   <int value="224221928" label="AutocorrectByDefault:disabled"/>
+  <int value="224269251" label="EnableComposeSelectionNudge:disabled"/>
   <int value="224381468"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:enabled"/>
   <int value="224476390" label="PageInfoAboutThisSiteNonMsbb:enabled"/>
@@ -21611,6 +21612,7 @@ from previous Chrome versions.
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
   <int value="406549604" label="NtpSafeBrowsingModule:enabled"/>
   <int value="407698827" label="HindiInscriptLayout:enabled"/>
+  <int value="407923796" label="EnableComposeSelectionNudge:enabled"/>
   <int value="408128088"
       label="AutofillEnableSaveCardLoadingAndConfirmation:enabled"/>
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>

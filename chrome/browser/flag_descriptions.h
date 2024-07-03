@@ -4838,6 +4838,9 @@ extern const char kComposeNudgeAtCursorDescription[];
 
 extern const char kComposePoliteNudgeName[];
 extern const char kComposePoliteNudgeDescription[];
+
+extern const char kComposeSelectionNudgeName[];
+extern const char kComposeSelectionNudgeDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
