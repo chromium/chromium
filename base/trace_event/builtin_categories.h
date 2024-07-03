@@ -365,6 +365,7 @@
   X("input,rail")                                                             \
   X("input,input.scrolling")                                                  \
   X("input,views")                                                            \
+  X("interactions,input.scrolling")                                           \
   X("interactions,startup")                                                   \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \

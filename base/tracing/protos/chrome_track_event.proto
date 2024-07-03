@@ -1559,6 +1559,15 @@ message WebContentInteraction {
   optional int64 total_duration_ms = 2;
 }
 
+message ScrollMetrics {
+  optional int64 frame_count = 1;
+  optional int64 vsync_count = 2;
+  optional int64 missed_vsync_max = 3;
+  optional int64 missed_vsync_sum = 4;
+  optional int64 delayed_frame_count = 5;
+  optional int64 predictor_janky_frame_count = 6;
+}
+
 // The EventForwarder is a subsystem in android that forwards events from Java
 // code to Chromium's native implementation. In this case we register how many
 // events there was, what time this event occurred and the current x & y on the
@@ -1906,7 +1915,7 @@ message AnimationFrameScriptTimingInfo {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1066
+  // Next ID: 1067
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2046,5 +2055,7 @@ message ChromeTrackEvent {
 
     optional AnimationFrameScriptTimingInfo animation_frame_script_timing_info =
         1065;
+
+    optional ScrollMetrics scroll_metrics = 1066;
   }
 }

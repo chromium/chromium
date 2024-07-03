@@ -1674,6 +1674,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
     if (global_trackers_.scroll_jank_ukm_reporter) {
       global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
+      global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
+          *(earliest_event->AsScrollUpdate()));
     }
   }
 
@@ -1697,7 +1699,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
                                        args_.interval);
   }
   if (global_trackers_.scroll_jank_ukm_reporter) {
-    global_trackers_.scroll_jank_ukm_reporter->EmitPredictorJankUkm();
+    global_trackers_.scroll_jank_ukm_reporter
+        ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
   }
 }
 
