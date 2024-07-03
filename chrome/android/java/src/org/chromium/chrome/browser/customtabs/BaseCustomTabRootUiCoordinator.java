@@ -220,7 +220,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(),
-                () -> null,
                 lastUserInteractionTimeSupplier,
                 browserControlsManager,
                 windowAndroid,

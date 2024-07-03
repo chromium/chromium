@@ -2093,7 +2093,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mHubManagerSupplier,
                 mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier,
-                mStartSurfaceParentTabSupplier,
                 this::getLastUserInteractionTime,
                 getBrowserControlsManager(),
                 getWindowAndroid(),
@@ -3567,9 +3566,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean isInOverviewMode() {
-        return mLayoutManager != null
-                && (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)
-                        || mLayoutManager.isLayoutVisible(LayoutType.START_SURFACE));
+        return mLayoutManager != null && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
     }
 
     @Override

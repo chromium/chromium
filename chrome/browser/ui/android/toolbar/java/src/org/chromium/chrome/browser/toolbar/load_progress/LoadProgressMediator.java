@@ -27,21 +27,16 @@ public class LoadProgressMediator {
     private final PropertyModel mModel;
     private final CurrentTabObserver mTabObserver;
     private final LoadProgressSimulator mLoadProgressSimulator;
-    private final boolean mIsStartSurfaceEnabled;
     private boolean mPreventUpdates;
 
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param model MVC property model instance used for load progress bar.
-     * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      */
     public LoadProgressMediator(
-            @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull PropertyModel model,
-            boolean isStartSurfaceEnabled) {
+            @NonNull ObservableSupplier<Tab> tabSupplier, @NonNull PropertyModel model) {
         mModel = model;
         mLoadProgressSimulator = new LoadProgressSimulator(model);
-        mIsStartSurfaceEnabled = isStartSurfaceEnabled;
         mTabObserver =
                 new CurrentTabObserver(
                         tabSupplier,
@@ -132,9 +127,6 @@ public class LoadProgressMediator {
 
     private void onNewTabObserved(Tab tab) {
         if (tab == null) {
-            // If start surface is enabled and new tab is null, then new tab is home page or tab
-            // switcher. Finish progress bar loading.
-            if (mIsStartSurfaceEnabled) finishLoadProgress(false);
             return;
         }
 

@@ -25,15 +25,13 @@ public class LoadProgressCoordinator {
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param progressBarView Toolbar progress bar view.
-     * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      */
     public LoadProgressCoordinator(
             @NonNull ObservableSupplier<Tab> tabSupplier,
-            @NonNull ToolbarProgressBar progressBarView,
-            boolean isStartSurfaceEnabled) {
+            @NonNull ToolbarProgressBar progressBarView) {
         mProgressBarView = progressBarView;
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
-        mMediator = new LoadProgressMediator(tabSupplier, mModel, isStartSurfaceEnabled);
+        mMediator = new LoadProgressMediator(tabSupplier, mModel);
         mLoadProgressViewBinder = new LoadProgressViewBinder();
 
         mPropertyModelChangeProcessor =

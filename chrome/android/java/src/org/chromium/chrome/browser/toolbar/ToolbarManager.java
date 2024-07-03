@@ -74,7 +74,6 @@ import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -91,7 +90,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -188,7 +186,6 @@ import org.chromium.net.NetError;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -295,7 +292,6 @@ public class ToolbarManager
     private Runnable mOnInitializedRunnable;
     private Runnable mMenuStateObserver;
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
-    private Runnable mStartSurfaceMenuStateObserver;
 
     private boolean mShouldUpdateToolbarPrimaryColor = true;
     private int mCurrentThemeColor;
@@ -504,7 +500,6 @@ public class ToolbarManager
      * @param topUiThemeColorProvider The ThemeColorProvider object for top UI.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param shareDelegateSupplier Supplier for ShareDelegate.
-     * @param identityDiscController The controller that coordinates the state of the identity disc
      * @param buttonDataProviders The list of button data providers for the optional toolbar button
      *     in the browsing mode toolbar, given in precedence order.
      * @param tabProvider The {@link ActivityTabProvider} for accessing current activity tab.
@@ -527,7 +522,6 @@ public class ToolbarManager
      * @param statusBarColorController The {@link StatusBarColorController} for the app.
      * @param appMenuDelegate Allows interacting with the app menu.
      * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle.
-     * @param startSurfaceParentTabSupplier Supplies the StartSurface's parent tab.
      * @param bottomSheetController Controls the state of the bottom sheet.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
@@ -556,7 +550,6 @@ public class ToolbarManager
             TopUiThemeColorProvider topUiThemeColorProvider,
             TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            IdentityDiscController identityDiscController,
             List<ButtonDataProvider> buttonDataProviders,
             ActivityTabProvider tabProvider,
             ScrimCoordinator scrimCoordinator,
@@ -577,7 +570,6 @@ public class ToolbarManager
             StatusBarColorController statusBarColorController,
             AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
@@ -758,6 +750,8 @@ public class ToolbarManager
                         R.id.menu_button_wrapper);
         if (canShowUpdateBadge) mMenuStateObserver = mMenuButtonCoordinator.getStateObserver();
 
+        // TODO(b/351005760): Investigate the feasibility of replacing
+        // mOverviewModeMenuButtonCoordinator with mMenuButtonCoordinator when Hub is enabled.
         mOverviewModeMenuButtonCoordinator =
                 new MenuButtonCoordinator(
                         appMenuCoordinatorSupplier,
@@ -772,34 +766,13 @@ public class ToolbarManager
                         onMenuButtonClicked,
                         R.id.none);
 
-        if (mIsStartSurfaceEnabled && canShowUpdateBadge) {
-            mStartSurfaceMenuStateObserver = mOverviewModeMenuButtonCoordinator.getStateObserver();
-        }
-
-        Callback<LoadUrlParams> startSurfaceLogoClickedCallback =
-                mCallbackController.makeCancelable(
-                        (urlParams) -> {
-                            // On NTP, the logo is in the new tab page layout instead of the toolbar
-                            // and the logo click events are processed in NewTabPageLayout. This
-                            // callback passed into TopToolbarCoordinator will only be used for
-                            // StartSurfaceToolbar, so add an assertion here.
-                            assert ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
-                            ReturnToChromeUtil.handleLoadUrlFromStartSurface(
-                                    urlParams,
-                                    /* isBackground= */ false,
-                                    /* incognito= */ false,
-                                    startSurfaceParentTabSupplier.get());
-                        });
-
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
                         toolbarLayout,
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
-                        identityDiscController,
                         initializeWithIncognitoColors,
-                        startSurfaceLogoClickedCallback,
                         mConstraintsProxy);
         mTabStripHeightSupplier = new ObservableSupplierImpl<>(mToolbar.getTabStripHeight());
         mActionModeController =
@@ -823,21 +796,6 @@ public class ToolbarManager
                             mTabCreatorManager.getTabCreator(
                                     mIncognitoStateProvider.isIncognitoSelected()));
         } else {
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
-                    (omniboxParams, isIncognito) -> {
-                        LoadUrlParams params =
-                                new LoadUrlParams(
-                                        omniboxParams.url,
-                                        omniboxParams.transitionType
-                                                | PageTransition.FROM_ADDRESS_BAR);
-                        params.setInputStartTimestamp(omniboxParams.inputStartTimestamp);
-                        return ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
-                                params,
-                                omniboxParams.postDataType,
-                                omniboxParams.postData,
-                                isIncognito,
-                                startSurfaceParentTabSupplier.get());
-                    };
             ChromePageInfo toolbarPageInfo =
                     new ChromePageInfo(
                             modalDialogManagerSupplier,
@@ -866,7 +824,7 @@ public class ToolbarManager
                             shareDelegateSupplier,
                             mIncognitoStateProvider,
                             activityLifecycleDispatcher,
-                            overrideUrlLoadingDelegate,
+                            (omniboxParams, isIncognito) -> false,
                             new BackKeyBehaviorDelegate() {},
                             toolbarPageInfo::show,
                             IntentHandler::bringTabToFront,
@@ -926,8 +884,7 @@ public class ToolbarManager
         mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =
-                new LoadProgressCoordinator(
-                        mActivityTabProvider, mToolbar.getProgressBar(), mIsStartSurfaceEnabled);
+                new LoadProgressCoordinator(mActivityTabProvider, mToolbar.getProgressBar());
         mToolbar.addUrlExpansionObserver(statusBarColorController);
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
@@ -1360,9 +1317,7 @@ public class ToolbarManager
             ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
-            IdentityDiscController identityDiscController,
             boolean initializeWithIncognitoColors,
-            Callback<LoadUrlParams> logoClickedCallback,
             ObservableSupplier<Integer> constraintsSupplier) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
@@ -1740,10 +1695,6 @@ public class ToolbarManager
             mUpdateMenuItemHelper.registerObserver(mMenuStateObserver);
         }
 
-        if (mStartSurfaceMenuStateObserver != null) {
-            mUpdateMenuItemHelper.registerObserver(mStartSurfaceMenuStateObserver);
-        }
-
         mInitializedWithNative = true;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         refreshSelectedTab(mActivityTabProvider.get());
@@ -1937,11 +1888,6 @@ public class ToolbarManager
         }
 
         if (mOverviewModeMenuButtonCoordinator != null) {
-            if (mStartSurfaceMenuStateObserver != null && mUpdateMenuItemHelper != null) {
-                mUpdateMenuItemHelper.unregisterObserver(mStartSurfaceMenuStateObserver);
-            }
-            mStartSurfaceMenuStateObserver = null;
-
             mOverviewModeMenuButtonCoordinator.destroy();
             mOverviewModeMenuButtonCoordinator = null;
         }
