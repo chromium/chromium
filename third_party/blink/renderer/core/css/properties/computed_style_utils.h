@@ -353,6 +353,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForScrollStart(const ComputedStyle&,
                                        const ScrollStartData&);
   static CSSValue* ValueForInsetArea(const blink::InsetArea&);
+  static CSSValue* ValueForPositionTryOptions(const PositionTryOptions&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

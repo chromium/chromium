@@ -4316,4 +4316,37 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
                                             CSSValuePhase::kComputedValue);
 }
 
+CSSValue* ComputedStyleUtils::ValueForPositionTryOptions(
+    const PositionTryOptions& options) {
+  CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
+  for (const PositionTryOption& option : options.GetOptions()) {
+    if (!option.GetInsetArea().IsNone()) {
+      if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
+        // <inset-area>
+        option_list->Append(*ValueForInsetArea(option.GetInsetArea()));
+      } else {
+        // inset-area( <inset-area> )
+        auto* function =
+            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
+        function->Append(*ValueForInsetArea(option.GetInsetArea()));
+        option_list->Append(*function);
+      }
+      continue;
+    }
+    // [<dashed-ident> || <try-tactic>]
+    CSSValueList* option_value = CSSValueList::CreateSpaceSeparated();
+    if (const ScopedCSSName* name = option.GetPositionTryName()) {
+      option_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
+    }
+    const TryTacticList& tactic_list = option.GetTryTactic();
+    for (TryTactic tactic : tactic_list) {
+      if (tactic != TryTactic::kNone) {
+        option_value->Append(*CSSIdentifierValue::Create(tactic));
+      }
+    }
+    option_list->Append(*option_value);
+  }
+  return option_list;
+}
+
 }  // namespace blink

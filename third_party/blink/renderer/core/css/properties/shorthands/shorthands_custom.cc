@@ -3024,7 +3024,11 @@ const CSSValue* PositionTry::CSSValueFromComputedStyleInternal(
       order != ComputedStyleInitialValues::InitialPositionTryOrder()) {
     list->Append(*CSSIdentifierValue::Create(order));
   }
-  list->Append(*CSSIdentifierValue::Create(style.PositionTryOrder()));
+  if (const PositionTryOptions* options = style.GetPositionTryOptions()) {
+    list->Append(*ComputedStyleUtils::ValueForPositionTryOptions(*options));
+  } else {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+  }
   return list;
 }
 
