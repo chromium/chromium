@@ -2816,6 +2816,194 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGelu(
+    Adapter* adapter,
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::GeluPtr& gelu,
+    mojom::GraphInfoPtr& graph_info,
+    GraphBuilderDml& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map,
+    std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
+    uint64_t& next_operand_id) {
+  // Check feature level by referring to MSDN doc:
+  // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
+  if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1)) {
+    return CreateOperatorNodeForUnary<DML_ACTIVATION_GELU_OPERATOR_DESC,
+                                      DML_OPERATOR_ACTIVATION_GELU>(
+        id_to_operand_map, gelu, graph_builder, id_to_node_output_map);
+  }
+
+  // Emulate gelu (0.5 * x * (1 + erf(x / sqrt(2)))) with decomposed
+  // operations on platforms with low feature level according to
+  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gelu-method
+  //
+  // Build constant operand (2.0)
+  const OperandPtr& input_operand =
+      id_to_operand_map.at(gelu->input_operand_id);
+  const OperandDataType data_type = input_operand->descriptor.data_type();
+  uint64_t constant_for_sqrt_operand_id = BuildConstantOperandForFloatValue(
+      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      /*default value*/ 2.0);
+  uint32_t constant_for_sqrt_input_index =
+      CreateInputNode(id_to_operand_map, constant_for_sqrt_operand_id,
+                      graph_builder, id_to_node_output_map);
+  CHECK(constant_id_to_input_index_map
+            .try_emplace(constant_for_sqrt_operand_id,
+                         constant_for_sqrt_input_index)
+            .second);
+  const NodeOutput* constant_for_sqrt_output = GetNodeOutputForOperand(
+      id_to_node_output_map, constant_for_sqrt_operand_id);
+
+  // Formula: sqrt(2)
+  const TensorDesc sqrt_output_tensor_desc =
+      TensorDesc(GetTensorDataType(data_type), /*dimensions*/ {1});
+  DML_ELEMENT_WISE_SQRT_OPERATOR_DESC sqrt_operator_desc{
+      .InputTensor =
+          &constant_for_sqrt_output->GetTensorDesc().GetDMLTensorDesc(),
+      .OutputTensor = &sqrt_output_tensor_desc.GetDMLTensorDesc(),
+  };
+  std::array<const NodeOutput*, 1> sqrt_inputs = {constant_for_sqrt_output};
+  const OperatorNode* sqrt_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_SQRT, &sqrt_operator_desc, sqrt_inputs);
+  if (!sqrt_node) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "For the emulation of gelu: failed to create sqrt operator."));
+  }
+  const NodeOutput* sqrt_output =
+      graph_builder.CreateNodeOutput(sqrt_node, sqrt_output_tensor_desc);
+
+  // Formula: x / sqrt(2)
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, gelu->input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  const std::vector<uint32_t>& input_dimensions =
+      input_tensor_desc.GetDimensions();
+  TensorDesc div_divisor_tensor_desc = sqrt_output->GetTensorDesc();
+  div_divisor_tensor_desc.BroadcastTo(input_dimensions);
+  uint64_t output_id = gelu->output_operand_id;
+  const auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  const TensorDesc& div_output_tensor_desc = output_tensor_desc;
+  std::array<const NodeOutput*, 2> div_inputs = {input, sqrt_output};
+  const OperatorNode* div_node =
+      CreateBinaryOperator<DML_ELEMENT_WISE_DIVIDE_OPERATOR_DESC>(
+          input_tensor_desc, div_divisor_tensor_desc, div_output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE, div_inputs);
+  if (!div_node) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "For the emulation of gelu: failed to create div operator."));
+  }
+  const NodeOutput* div_output =
+      graph_builder.CreateNodeOutput(div_node, div_output_tensor_desc);
+
+  // Formula: erf(x / sqrt(2))
+  const TensorDesc& erf_output_tensor_desc = output_tensor_desc;
+  DML_ELEMENT_WISE_ERF_OPERATOR_DESC erf_operator_desc{
+      .InputTensor = &div_output->GetTensorDesc().GetDMLTensorDesc(),
+      .OutputTensor = &erf_output_tensor_desc.GetDMLTensorDesc(),
+  };
+  std::array<const NodeOutput*, 1> erf_inputs = {div_output};
+  const OperatorNode* erf_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_ERF, &erf_operator_desc, erf_inputs);
+  if (!erf_node) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "For the emulation of gelu: failed to create erf operator."));
+  }
+  const NodeOutput* erf_output =
+      graph_builder.CreateNodeOutput(erf_node, erf_output_tensor_desc);
+
+  // Build constant operand (1.0)
+  uint64_t constant_for_add_operand_id = BuildConstantOperandForFloatValue(
+      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      /*default value*/ 1.0);
+  uint32_t constant_for_add_input_index =
+      CreateInputNode(id_to_operand_map, constant_for_add_operand_id,
+                      graph_builder, id_to_node_output_map);
+  CHECK(constant_id_to_input_index_map
+            .try_emplace(constant_for_add_operand_id,
+                         constant_for_add_input_index)
+            .second);
+  const NodeOutput* constant_for_add_output = GetNodeOutputForOperand(
+      id_to_node_output_map, constant_for_add_operand_id);
+
+  // Formula: 1 + erf(x / sqrt(2))
+  const TensorDesc& add_output_tensor_desc = output_tensor_desc;
+  TensorDesc constant_for_add_tensor_desc =
+      constant_for_add_output->GetTensorDesc();
+  constant_for_add_tensor_desc.BroadcastTo(input_dimensions);
+  std::array<const NodeOutput*, 2> add_inputs = {erf_output,
+                                                 constant_for_add_output};
+  const OperatorNode* add_node =
+      CreateBinaryOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
+          erf_output_tensor_desc, constant_for_add_tensor_desc,
+          add_output_tensor_desc, graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD,
+          add_inputs);
+  if (!add_node) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "For the emulation of gelu: failed to create add operator."));
+  }
+  const NodeOutput* add_output =
+      graph_builder.CreateNodeOutput(add_node, add_output_tensor_desc);
+
+  // Formula: x * (1 + erf(x / sqrt(2)))
+  const TensorDesc& second_mul_output_tensor_desc = output_tensor_desc;
+  std::array<const NodeOutput*, 2> second_mul_inputs = {input, add_output};
+  const OperatorNode* second_mul_node =
+      CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
+          input_tensor_desc, add_output_tensor_desc,
+          second_mul_output_tensor_desc, graph_builder,
+          DML_OPERATOR_ELEMENT_WISE_MULTIPLY, second_mul_inputs);
+  if (!second_mul_node) {
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "For the emulation of gelu: failed "
+                                        "to create multiply operator."));
+  }
+  const NodeOutput* second_mul_output = graph_builder.CreateNodeOutput(
+      second_mul_node, second_mul_output_tensor_desc);
+
+  // Build constant operand (0.5)
+  uint64_t constant_for_mul_operand_id = BuildConstantOperandForFloatValue(
+      graph_info, next_operand_id, data_type, /*rank*/ 1,
+      /*default value*/ 0.5);
+  uint32_t constant_for_mul_input_index =
+      CreateInputNode(id_to_operand_map, constant_for_mul_operand_id,
+                      graph_builder, id_to_node_output_map);
+  CHECK(constant_id_to_input_index_map
+            .try_emplace(constant_for_mul_operand_id,
+                         constant_for_mul_input_index)
+            .second);
+  const NodeOutput* constant_for_mul_output = GetNodeOutputForOperand(
+      id_to_node_output_map, constant_for_mul_operand_id);
+
+  // Formula: 0.5 * x * (1 + erf(x / sqrt(2)))
+  TensorDesc constant_for_mul_tensor_desc =
+      constant_for_mul_output->GetTensorDesc();
+  constant_for_mul_tensor_desc.BroadcastTo(input_dimensions);
+  std::array<const NodeOutput*, 2> mul_constant_inputs = {
+      second_mul_output, constant_for_mul_output};
+  const OperatorNode* mul_constant_node =
+      CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
+          second_mul_output_tensor_desc, constant_for_mul_tensor_desc,
+          output_tensor_desc, graph_builder, DML_OPERATOR_ELEMENT_WISE_MULTIPLY,
+          mul_constant_inputs);
+  if (!mul_constant_node) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        "For the emulation of gelu: failed to create multiply operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      mul_constant_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 // Creates a DirectML operator for the WebNN general matrix multiplication
 // (GEMM) of the expression alpha * A * B + beta * C.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
@@ -5608,26 +5796,11 @@ void GraphImplDml::CreateAndBuild(
             id_to_node_output_map);
         break;
       }
-      case Operation::Tag::kGelu: {
-        // Check feature level by referring to MSDN doc:
-        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
-        //
-        // TODO(crbug.com/338686898): Emulate gelu with decomposed operations on
-        // platforms with low feature level according to
-        // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-gelu-method
-        if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1)) {
-          create_operator_result =
-              CreateOperatorNodeForUnary<DML_ACTIVATION_GELU_OPERATOR_DESC,
-                                         DML_OPERATOR_ACTIVATION_GELU>(
-                  id_to_operand_map, operation->get_gelu(), graph_builder,
-                  id_to_node_output_map);
-        } else {
-          create_operator_result = base::unexpected(CreateError(
-              mojom::Error::Code::kUnknownError,
-              "Failed to create Gelu operator because the DirectML feature "
-              "level on this platform is lower than the minimum required "
-              "one."));
-        }
+      case mojom::Operation::Tag::kGelu: {
+        create_operator_result = CreateOperatorNodeForGelu(
+            adapter.get(), id_to_operand_map, operation->get_gelu(), graph_info,
+            graph_builder, id_to_node_output_map,
+            constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case mojom::Operation::Tag::kGemm: {
