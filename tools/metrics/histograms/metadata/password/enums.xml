@@ -104,8 +104,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to create UserConsentVerifier factory."/>
   <int value="8" label="Failed to call UserConsentVerifier API."/>
   <int value="9" label="Failed to post authentication task."/>
-  <int value="10" label="Uknown return status"/>
-  <int value="11" label="Authentication async operation failed"/>
+  <int value="10" label="Uknown return status."/>
+  <int value="11" label="Authentication async operation failed."/>
+  <int value="12" label="Failed to find last active browser."/>
+  <int value="13" label="Failed to find hwnd for native window."/>
 </enum>
 
 <enum name="AuthenticationStateWin">

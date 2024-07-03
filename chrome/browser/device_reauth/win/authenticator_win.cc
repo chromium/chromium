@@ -6,6 +6,7 @@
 
 #include <objbase.h>
 
+#include <UserConsentVerifierInterop.h>
 #include <windows.foundation.h>
 #include <windows.security.credentials.ui.h>
 #include <windows.storage.streams.h>
@@ -15,6 +16,7 @@
 #include <string>
 #include <utility>
 
+#include "authenticator_win.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -30,12 +32,14 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_types.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/aura/window.h"
+#include "ui/views/win/hwnd_util.h"
 
 namespace {
 
@@ -137,9 +141,7 @@ void ReportCantCheckAvailability(
                                   BiometricAuthenticationStatusWin::kUnknown));
 }
 
-// Used to change the parameter of the `callback` to match what barrier callback
-// is expecting.
-bool WrapCallback(std::vector<bool> result) {
+bool VectorToFirstElement(std::vector<bool> result) {
   CHECK_EQ(result.size(), 1u);
   return result[0];
 }
@@ -220,22 +222,22 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
     case AuthenticationResultStatusWin::kFailedToCreateFactory:
     case AuthenticationResultStatusWin::kFailedToPostTask:
     case AuthenticationResultStatusWin::kAsyncOperationFailed:
+    case AuthenticationResultStatusWin::kFailedToFindBrowser:
+    case AuthenticationResultStatusWin::kFailedToFindHWNDForNativeWindow:
       // This values are not returned by UserConsentVerifier API.
       NOTREACHED_NORETURN();
   }
 }
 
-void OnAuthenticationReceived(scoped_refptr<base::SequencedTaskRunner> thread,
-                              base::OnceCallback<void(bool)> callback,
+void OnAuthenticationReceived(base::OnceCallback<void(bool)> callback,
                               const std::u16string& message,
                               UserConsentVerificationResult result) {
-  thread->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ReturnAuthenticationValue, std::move(callback),
                                 result, message));
 }
 
 void OnAuthenticationAsyncOpFail(
-    scoped_refptr<base::SequencedTaskRunner> thread,
     base::OnceCallback<void(bool)> callback,
     const std::u16string& message,
     HRESULT hr) {
@@ -243,13 +245,14 @@ void OnAuthenticationAsyncOpFail(
       AuthenticationResultStatusWin::kAsyncOperationFailed);
   RecordAuthenticationAsyncOpFailureReson(hr);
 
-  thread->PostTask(FROM_HERE, base::BindOnce(&AuthenticateWithLegacyApi,
-                                             message, std::move(callback)));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AuthenticateWithLegacyApi, message, std::move(callback)));
 }
 
+// TODO(b/349728186): Cleanup after Win11 solution is launched.
 void PerformWindowsHelloAuthenticationAsync(
     base::OnceCallback<void(bool)> callback,
-    scoped_refptr<base::SequencedTaskRunner> thread,
     const std::u16string& message) {
   ComPtr<IUserConsentVerifierStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
@@ -273,17 +276,16 @@ void PerformWindowsHelloAuthenticationAsync(
     return;
   }
 
-  // Needed in order to pass the callback both to the PostAsyncHandlers call and
-  // to the AuthenticateWithLegacyApi if the former fails to post the task.
+  // In order to pass the callback to both the PostAsyncHandlers call and
+  // to the AuthenticateWithLegacyApi (if the former fails to post the task) a
+  // RepeatingCallback is needed. The callback will be executed at most once.
   auto barrier_callback = base::BarrierCallback<bool>(
-      1, base::BindOnce(&WrapCallback).Then(std::move(callback)));
+      1, base::BindOnce(&VectorToFirstElement).Then(std::move(callback)));
 
   hr = base::win::PostAsyncHandlers(
       async_op.Get(),
-      base::BindOnce(&OnAuthenticationReceived, thread, barrier_callback,
-                     message),
-      base::BindOnce(&OnAuthenticationAsyncOpFail, thread, barrier_callback,
-                     message));
+      base::BindOnce(&OnAuthenticationReceived, barrier_callback, message),
+      base::BindOnce(&OnAuthenticationAsyncOpFail, barrier_callback, message));
 
   if (FAILED(hr)) {
     RecordWindowsHelloAuthenticationResult(
@@ -292,6 +294,99 @@ void PerformWindowsHelloAuthenticationAsync(
     return;
   }
 }
+
+void PerformInteropWindowsHelloAuthenticationAsync(
+    base::OnceCallback<void(bool)> callback,
+    const std::u16string& message) {
+  ComPtr<IUserConsentVerifierInterop> factory;
+  HRESULT hr = base::win::GetActivationFactory<
+      IUserConsentVerifierInterop,
+      RuntimeClass_Windows_Security_Credentials_UI_UserConsentVerifier>(
+      &factory);
+  if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToCreateFactory);
+    AuthenticateWithLegacyApi(message, std::move(callback));
+    return;
+  }
+  ComPtr<IAsyncOperation<UserConsentVerificationResult>> async_op;
+
+  Browser* browser = chrome::FindLastActive();
+  if (!browser) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToFindBrowser);
+    AuthenticateWithLegacyApi(message, std::move(callback));
+    return;
+  }
+
+  HWND hwnd = views::HWNDForNativeWindow(browser->window()->GetNativeWindow());
+  if (!hwnd) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToFindHWNDForNativeWindow);
+    AuthenticateWithLegacyApi(message, std::move(callback));
+    return;
+  }
+
+  hr = factory->RequestVerificationForWindowAsync(
+      hwnd,
+      base::win::HStringReference(base::UTF16ToWide(message).c_str()).Get(),
+      __uuidof(IAsyncOperation<UserConsentVerificationResult>), &async_op);
+
+  if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToCallAPI);
+    AuthenticateWithLegacyApi(message, std::move(callback));
+    return;
+  }
+
+  // In order to pass the callback to both the PostAsyncHandlers call and
+  // to the AuthenticateWithLegacyApi (if the former fails to post the task) a
+  // RepeatingCallback is needed. The callback will be executed at most once.
+  auto barrier_callback = base::BarrierCallback<bool>(
+      1, base::BindOnce(&VectorToFirstElement).Then(std::move(callback)));
+
+  hr = base::win::PostAsyncHandlers(
+      async_op.Get(),
+      base::BindOnce(&OnAuthenticationReceived, barrier_callback, message),
+      base::BindOnce(&OnAuthenticationAsyncOpFail, barrier_callback, message));
+
+  if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToPostTask);
+    AuthenticateWithLegacyApi(message, barrier_callback);
+    return;
+  }
+}
+
+void PerformWin11Authentication(
+    const std::u16string& message,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kAuthenticateUsingInteropWindowsHelloApi)) {
+    PerformInteropWindowsHelloAuthenticationAsync(std::move(result_callback),
+                                                  message);
+    return;
+  }
+  AuthenticateWithLegacyApi(message, std::move(result_callback));
+}
+
+void PerformWin10Authentication(
+    const std::u16string& message,
+    base::OnceCallback<void(bool)> result_callback) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kAuthenticateUsingNewWindowsHelloApi)) {
+    // Posting authentication using the new API on a background thread causes
+    // Windows Hello dialog not to attach to Chrome's UI and instead it is
+    // visible behind it. Running it on the default thread isn't that bad
+    // because the thread itself is not blocked and there are operations
+    // happening while the win hello dialog is visible.
+    PerformWindowsHelloAuthenticationAsync(std::move(result_callback), message);
+    return;
+  }
+  AuthenticateWithLegacyApi(message, std::move(result_callback));
+}
+
 }  // namespace
 
 AuthenticatorWin::AuthenticatorWin() = default;
@@ -303,24 +398,19 @@ void AuthenticatorWin::AuthenticateUser(
     base::OnceCallback<void(bool)> result_callback) {
   RecordAuthenticationState(AuthenticationStateWin::kStarted);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kAuthenticateUsingNewWindowsHelloApi)) {
-    // Posting authentication using the new API on a background thread causes
-    // Windows Hello dialog not to attach to Chrome's UI and instead it is
-    // visible behind it. Running it on the default thread isn't that bad
-    // because the thread itself is not blocked and there are operations
-    // happening while the win hello dialog is visible.
-    PerformWindowsHelloAuthenticationAsync(
-        std::move(result_callback)
-            .Then(base::BindOnce(RecordAuthenticationState,
-                                 AuthenticationStateWin::kFinished)),
-        base::SequencedTaskRunner::GetCurrentDefault(), message);
-  } else {
-    AuthenticateWithLegacyApi(
+  // TODO(b/349728186): Cleanup after Win11 solution is launched.
+  if (base::win::GetVersion() >= base::win::Version::WIN11) {
+    PerformWin11Authentication(
         message, std::move(result_callback)
                      .Then(base::BindOnce(RecordAuthenticationState,
                                           AuthenticationStateWin::kFinished)));
+    return;
   }
+
+  PerformWin10Authentication(
+      message, std::move(result_callback)
+                   .Then(base::BindOnce(RecordAuthenticationState,
+                                        AuthenticationStateWin::kFinished)));
 }
 
 void AuthenticatorWin::CheckIfBiometricsAvailable(
