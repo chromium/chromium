@@ -202,12 +202,24 @@ source_set("side_panel") {
     "//ui/gfx/geometry:geometry_skia",
     "//ui/webui",
 
-    # TODO(crbug.com/346711540,crbug.com/346699817,crbug.com/345645751):
+    # TODO(crbug.com/345645751): Use //chrome/browser instead after fixing cyclic dependency.
+    "//components/enterprise/common/proto:connectors_proto",
+
+    # TODO(crbug.com/346711540,crbug.com/346699817,crbug.com/345645751,
+    #      crbug.com/346694160,crbug.com/346709958,crbug.com/346707816):
     # Use //chrome/browser/ui instead after fixing cyclic dependency.
+    "//chrome/browser/cart:mojo_bindings",
+    "//chrome/browser/companion/visual_query",
     "//chrome/browser/ui:webui_name_variants",
+    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
     "//components/enterprise/buildflags",
+    "//components/page_image_service/mojom:mojo_bindings",
     "//components/paint_preview/buildflags",
     "//components/segmentation_platform/public/proto",
+    "//components/user_education/webui",
     "//components/webapps/common:mojo_bindings",
+    "//ui/webui/resources/cr_components/commerce:mojo_bindings",
   ]
 }
