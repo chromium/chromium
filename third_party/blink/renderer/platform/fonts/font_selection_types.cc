@@ -27,50 +27,31 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
-namespace {
-
-class IntegerHasher {
-  STACK_ALLOCATED();
-
- public:
-  void add(unsigned integer) {
-    m_underlyingHasher.AddCharactersAssumingAligned(integer, integer >> 16);
-  }
-
-  unsigned hash() const { return m_underlyingHasher.GetHash(); }
-
- private:
-  StringHasher m_underlyingHasher;
-};
-
-}  // namespace
-
 namespace blink {
 
 unsigned FontSelectionRequest::GetHash() const {
-  IntegerHasher hasher;
-  hasher.add(weight.RawValue());
-  hasher.add(width.RawValue());
-  hasher.add(slope.RawValue());
-  return hasher.hash();
+  int16_t val[] = {
+      weight.RawValue(),
+      width.RawValue(),
+      slope.RawValue(),
+  };
+  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
+                                  sizeof(val));
 }
 
 unsigned FontSelectionRequestKeyHashTraits::GetHash(
     const FontSelectionRequestKey& key) {
-  IntegerHasher hasher;
-  hasher.add(key.request.GetHash());
-  hasher.add(key.isDeletedValue);
-  return hasher.hash();
+  uint32_t val[] = {key.request.GetHash(), key.isDeletedValue};
+  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
+                                  sizeof(val));
 }
 
 unsigned FontSelectionCapabilitiesHashTraits::GetHash(
     const FontSelectionCapabilities& key) {
-  IntegerHasher hasher;
-  hasher.add(key.width.UniqueValue());
-  hasher.add(key.slope.UniqueValue());
-  hasher.add(key.weight.UniqueValue());
-  hasher.add(key.IsHashTableDeletedValue());
-  return hasher.hash();
+  uint32_t val[] = {key.width.UniqueValue(), key.slope.UniqueValue(),
+                    key.weight.UniqueValue(), key.IsHashTableDeletedValue()};
+  return StringHasher::HashMemory(reinterpret_cast<const char*>(val),
+                                  sizeof(val));
 }
 
 String FontSelectionValue::ToString() const {

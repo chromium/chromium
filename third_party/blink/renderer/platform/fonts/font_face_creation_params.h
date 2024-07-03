@@ -98,22 +98,22 @@ class FontFaceCreationParams {
 
   unsigned GetHash() const {
     if (creation_type_ == kCreateFontByFciIdAndTtcIndex) {
-      StringHasher hasher;
       // Hashing the filename and ints in this way is sensitive to character
       // encoding and endianness. However, since the hash is not transferred
       // over a network or permanently stored and only used for the runtime of
       // Chromium, this is not a concern.
-      if (HasFilename()) {
-        const auto& filename = Filename();
-        hasher.AddCharacters(reinterpret_cast<const LChar*>(filename.data()),
-                             static_cast<unsigned>(filename.length()));
-      }
-      hasher.AddCharacters(reinterpret_cast<const LChar*>(&ttc_index_),
-                           sizeof(ttc_index_));
-      hasher.AddCharacters(
-          reinterpret_cast<const LChar*>(&fontconfig_interface_id_),
-          sizeof(fontconfig_interface_id_));
-      return hasher.GetHash();
+      //
+      // NOTE: StringHasher::HashMemory() currently needs an even number of
+      // bytes, so we just truncate the last one if it's odd. This limitation
+      // will go away in the future.
+      std::tuple<int, int, unsigned> hash_data = {
+          ttc_index_, fontconfig_interface_id_,
+          HasFilename()
+              ? StringHasher::HashMemory(
+                    Filename().data(),
+                    static_cast<unsigned>(Filename().length() / 2 * 2))
+              : 0};
+      return StringHasher::HashMemory(&hash_data, sizeof(hash_data));
     }
     return CaseFoldingHash::GetHash(family_.empty() ? g_empty_atom : family_);
   }
