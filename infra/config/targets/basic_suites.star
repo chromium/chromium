@@ -120,7 +120,7 @@ targets.legacy_basic_suite(
     tests = {
         "android_browsertests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 4,
             ),
         ),
         "android_sync_integration_tests": targets.legacy_test_config(

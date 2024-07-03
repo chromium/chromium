@@ -41,9 +41,6 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
       'android-12-x64-rel': {
         # TODO(crbug.com/40188616): Remove experiment and ci_only
@@ -54,9 +51,6 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
       'android-12l-x64-dbg-tests': {
         'args': [
@@ -65,27 +59,18 @@
           # https://crbug.com/1468262
           'All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
       'android-13-x64-fyi-rel': {
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
-        'swarming': {
-          'shards': 4,
-        },
       },
       'android-13-x64-rel': {
         'ci_only': True,
@@ -93,18 +78,15 @@
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
         ],
+      },
+      'android-arm64-proguard-rel': {
         'swarming': {
-          'shards': 4,
+          'shards': 2,
         },
       },
-      'android-14-x64-rel': {
+      'android-asan': {
         'swarming': {
-          'shards': 4,
-        },
-      },
-      'android-15-x64-fyi-rel': {
-        'swarming': {
-          'shards': 4,
+          'shards': 2,
         },
       },
       'android-code-coverage-native': {
@@ -140,7 +122,11 @@
           'dimensions': {
             'cores': '8', # crbug.com/1292221
           },
-          'shards': 3,
+        },
+      },
+      'android-tablet-14-arm64-fyi-rel': {
+        'swarming': {
+          'shards': 2,
         },
       },
       # Keep this same as android-oreo-x86-rel above

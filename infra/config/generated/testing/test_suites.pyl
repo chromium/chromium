@@ -113,7 +113,7 @@
     'android_specific_chromium_gtests': {
       'android_browsertests': {
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
       'android_sync_integration_tests': {
