@@ -1585,6 +1585,45 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
   EXPECT_TRUE(view->search_results_view_for_testing().GetVisible());
 }
 
+TEST_F(PickerViewTest, KeyNavigationToSeeMoreResults) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A")}},
+                    /*has_more_results=*/false),
+                PickerSearchResultsSection(
+                    PickerSectionType::kLinks,
+                    {PickerSearchResult::BrowsingHistory({}, u"Result B", {})},
+                    /*has_more_results=*/true),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  future.Clear();
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->search_results_view_for_testing()
+                             .section_list_view_for_testing()
+                             ->GetTopItem());
+
+  // Navigate to see more button, then press enter.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+
+  // Should call search a second time.
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(GetPickerViewFromWidget(*widget)
+                  ->search_results_view_for_testing()
+                  .GetVisible());
+}
+
 TEST_F(PickerViewTest,
        ClickingMoreEmojisButtonOpensEmojiPickerWithQuerySearch) {
   FakePickerViewDelegate delegate(

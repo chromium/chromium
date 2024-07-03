@@ -354,7 +354,6 @@ void PickerSectionView::AddTitleTrailingLink(
           .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
-          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
           .Build());
 }
 

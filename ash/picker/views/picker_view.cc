@@ -534,6 +534,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetQueryText(std::u16string(query));
   search_field_view_->SetBackButtonVisible(true);
+  search_field_view_->RequestFocus();
 
   if (query.empty()) {
     // Getting suggested results for a category can be slow, so show a loading

@@ -108,11 +108,9 @@ views::View* PickerSearchResultsView::GetItemAbove(views::View* item) {
     return nullptr;
   }
   if (views::IsViewClass<PickerItemView>(item)) {
-    // Try to move directly to an item above the currently item, i.e. skip
-    // non-item views.
-    if (views::View* item_above = section_list_view_->GetItemAbove(item)) {
-      return item_above;
-    }
+    // Skip views that aren't PickerItemViews, to allow users to quickly
+    // navigate between items.
+    return section_list_view_->GetItemAbove(item);
   }
   views::View* prev_item = GetNextPickerPseudoFocusableView(
       item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
@@ -124,11 +122,9 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
     return nullptr;
   }
   if (views::IsViewClass<PickerItemView>(item)) {
-    // Try to move directly to an item below the currently item, i.e. skip
-    // non-item views.
-    if (views::View* item_below = section_list_view_->GetItemBelow(item)) {
-      return item_below;
-    }
+    // Skip views that aren't PickerItemViews, to allow users to quickly
+    // navigate between items.
+    return section_list_view_->GetItemBelow(item);
   }
   views::View* next_item = GetNextPickerPseudoFocusableView(
       item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
