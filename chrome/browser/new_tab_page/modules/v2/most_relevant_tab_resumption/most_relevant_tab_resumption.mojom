@@ -5,6 +5,15 @@ module ntp.most_relevant_tab_resumption.mojom;
 import "components/history/core/browser/mojom/history_types.mojom";
 import "url/mojom/url.mojom";
 
+// components/visited_url_ranking/public/visited_url_ranking_service.h.
+// This should be updated when the enum at the above file is updated.
+enum ScoredURLUserAction {
+  kUnknown = 0,
+  kSeen = 1,
+  kActivated = 2,
+  kDismissed = 3,
+};
+
 // Browser-side handler for requests from the NTP Tab Resumption WebUI page.
 interface PageHandler {
   // Queries for tabs.
@@ -23,5 +32,5 @@ interface PageHandler {
   RestoreTab(history.mojom.Tab tab);
 
   // Records the action taken on a tab.
-  RecordActivatedAction(string url_key, int64 visit_request_id);
+  RecordAction(ScoredURLUserAction action, string url_key, int64 visit_request_id);
 };

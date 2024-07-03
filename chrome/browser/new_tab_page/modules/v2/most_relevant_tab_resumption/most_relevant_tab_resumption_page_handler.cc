@@ -355,13 +355,32 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
   }
 }
 
-void MostRelevantTabResumptionPageHandler::RecordActivatedAction(
+void MostRelevantTabResumptionPageHandler::RecordAction(
+    ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction action,
     const std::string& url_key,
     int64_t visit_request_id) {
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
+  visited_url_ranking::ScoredURLUserAction user_action;
+  switch (action) {
+    case ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction::
+        kUnknown:
+      user_action = visited_url_ranking::ScoredURLUserAction::kUnknown;
+      break;
+    case ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction::kSeen:
+      user_action = visited_url_ranking::ScoredURLUserAction::kSeen;
+      break;
+    case ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction::
+        kActivated:
+      user_action = visited_url_ranking::ScoredURLUserAction::kActivated;
+      break;
+    case ntp::most_relevant_tab_resumption::mojom::ScoredURLUserAction::
+        kDismissed:
+      user_action = visited_url_ranking::ScoredURLUserAction::kDismissed;
+      break;
+  }
   visited_url_ranking_service->RecordAction(
-      visited_url_ranking::ScoredURLUserAction::kActivated, url_key,
+      user_action, url_key,
       segmentation_platform::TrainingRequestId(visit_request_id));
 }
