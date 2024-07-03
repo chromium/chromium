@@ -129,12 +129,84 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
         assertFalse(isVisible(removeButton));
       });
 
-  // TODO(crbug.com/339061151): Action menu button should be visible in the
-  // disabled stage, once functionality is added.
-  test('action menu button for extension is hidden', function() {
+  test(
+      'find alternative action is visible if extension has a recommendations ' +
+          'url, and opens url when clicked',
+      async function() {
+        // Open the extension's action menu.
+        let extension = getExtension();
+        let actionButton =
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
+        assertTrue(!!actionButton);
+        actionButton.click();
+
+        // Find alternative action is hidden when the extension doesn't have a
+        // recommendations url.
+        let findAlternativeAction =
+            panelElement.shadowRoot!.querySelector<HTMLElement>(
+                '#findAlternativeAction');
+        assertFalse(isVisible(findAlternativeAction));
+
+        // Add a recommendations url to the existent extension.
+        const id = 'a'.repeat(32);
+        const recommendationsUrl =
+            `https://chromewebstore.google.com/detail/${id}` +
+            `/related-recommendations`;
+        panelElement.set('extensions.0', createExtensionInfo({
+                           name: 'Extension A',
+                           id,
+                           isAffectedByMV2Deprecation: true,
+                           recommendationsUrl,
+                         }));
+        await flushTasks();
+
+        // Reopen the extension's action menu.
+        extension = getExtension();
+        actionButton =
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
+        assertTrue(!!actionButton);
+        actionButton.click();
+
+        // Find alternative action is visible when the extension has a
+        // recommendations url.
+        findAlternativeAction =
+            panelElement.shadowRoot!.querySelector<HTMLElement>(
+                '#findAlternativeAction');
+        assertTrue(isVisible(findAlternativeAction));
+
+        // Click on the find alternative action, and verify it triggered the
+        // correct delegate call.
+        findAlternativeAction?.click();
+        await mockDelegate.whenCalled('openUrl');
+        assertEquals(1, mockDelegate.getCallCount('openUrl'));
+        assertDeepEquals([recommendationsUrl], mockDelegate.getArgs('openUrl'));
+      });
+
+  test('keep action is always hidden', function() {
+    // Open the extension's action menu.
     const extension = getExtension();
     const actionButton =
         extension.querySelector<CrIconButtonElement>('#actionMenuButton');
-    assertFalse(isVisible(actionButton));
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    // Keep action is always hidden.
+    const keepAction =
+        panelElement.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+    assertFalse(isVisible(keepAction));
+  });
+
+  test('remove action is always hidden', function() {
+    // Open the extension's action menu.
+    const extension = getExtension();
+    const actionButton =
+        extension.querySelector<CrIconButtonElement>('#actionMenuButton');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    // Remove action is always hidden.
+    const removeAction =
+        panelElement.shadowRoot!.querySelector<HTMLElement>('#removeAction');
+    assertFalse(isVisible(removeAction));
   });
 });

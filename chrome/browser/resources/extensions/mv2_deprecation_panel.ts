@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_style.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -152,13 +153,34 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Returns whether the extensions action menu button should be displayed.
+   * Returns whether the find alternative button in the extension's action menu
+   * should be displayed.
    */
-  private showExtensionActionMenuButton_(): boolean {
-    // Button is only visible for the warning stage.
-    // TODO(crbug.com/339061151): Button should also be visible for the
-    // disabled stage (and have a different callback).
+  private showExtensionFindAlternativeAction_(): boolean {
+    // Button is only visible for the disabled stage iff extension has a
+    // recommendations url.
+    return this.mv2ExperimentStage ===
+        Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
+        this.extensionWithActionMenuOpened_ &&
+        !!this.extensionWithActionMenuOpened_.recommendationsUrl;
+  }
+
+  /**
+   * Returns whether the keep button in the extension's action menu should be
+   * displayed.
+   */
+  private showExtensionKeepAction_(): boolean {
     return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
+  }
+
+  /**
+   * Returns whether the remove button in the extension's action menu should be
+   * displayed.
+   */
+  private showExtensionRemoveAction_(): boolean {
+    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING &&
+        this.extensionWithActionMenuOpened_ &&
+        !this.extensionWithActionMenuOpened_.mustRemainInstalled;
   }
 
   /**
@@ -240,9 +262,25 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
    */
   private onExtensionActionMenuClick_(
       event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
-    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
     this.extensionWithActionMenuOpened_ = event.model.item;
-    this.$.actionMenu.showAt(event.target as HTMLElement);
+    this.$.actionMenu.showAt(
+        event.target as HTMLElement,
+        {anchorAlignmentY: AnchorAlignment.AFTER_END});
+  }
+
+  /**
+   * Opens a URL in the Web Store with extension recommendations for the
+   * extension whose find alternative action is clicked.
+   */
+  private onFindAlternativeExtensionActionClick_(): void {
+    assert(
+        this.mv2ExperimentStage === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+    const recommendationsUrl: string|undefined =
+        this.extensionWithActionMenuOpened_.recommendationsUrl;
+    assert(!!recommendationsUrl);
+    this.delegate.openUrl(recommendationsUrl);
   }
 
   /**

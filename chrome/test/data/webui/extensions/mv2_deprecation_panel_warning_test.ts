@@ -148,6 +148,21 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
     assertFalse(isVisible(removeButton));
   });
 
+  test('find alternative action is always hidden', function() {
+    // Open the extension's action menu.
+    const extension = getExtension();
+    const actionButton =
+        extension.querySelector<CrIconButtonElement>('#actionMenuButton');
+    assertTrue(!!actionButton);
+    actionButton.click();
+
+    // Find alternative action is always hidden.
+    const findAlternativeAction =
+        panelElement.shadowRoot!.querySelector<HTMLElement>(
+            '#findAlternativeAction');
+    assertFalse(isVisible(findAlternativeAction));
+  });
+
   test(
       'remove action is visible if extension can be removed, and triggers' +
           'the extension removal when clicked',
