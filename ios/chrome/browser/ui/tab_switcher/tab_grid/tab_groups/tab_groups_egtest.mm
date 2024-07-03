@@ -1180,4 +1180,66 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_nil()];
 }
 
+// Tests the group creation with a tab from another window using search result.
+- (void)testCreateGroupFromTabInAnotherWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+
+  // Opens a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Open a link in the 2nd window.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)
+       inWindowWithNumber:1];
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+
+  // Switch back to the first window and search for the tab in 2nd window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_replaceText(kTab1Title)];
+
+  // Create a group from search result.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+
+  // Check the tab been moved in a group in the first window and no longer
+  // present in the second one.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  OpenTabGroupAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
+
+  [ChromeEarlGrey closeAllExtraWindows];
+}
+
 @end
