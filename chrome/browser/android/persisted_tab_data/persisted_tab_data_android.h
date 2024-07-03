@@ -67,6 +67,7 @@ class PersistedTabDataAndroid
 
  private:
   friend class AuxiliarySearchProviderBrowserTest;
+  friend class SyncedTabDelegateAndroidTest;
   friend class PersistedTabDataAndroidBrowserTest;
   friend class PersistedTabDataAndroidHelper;
   friend class SensitivityPersistedTabDataAndroid;

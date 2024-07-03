@@ -51,8 +51,8 @@ class IOSChromeSyncedTabDelegate
   int64_t GetTaskIdForNavigationId(int nav_id) const override;
   int64_t GetParentTaskIdForNavigationId(int nav_id) const override;
   int64_t GetRootTaskIdForNavigationId(int nav_id) const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      sync_sessions::SyncSessionsClient* sessions_client) override;
 
  private:
   friend class web::WebStateUserData<IOSChromeSyncedTabDelegate>;

@@ -19,7 +19,7 @@ namespace browser_sync {
 // placeholder tab's web contents, which is done by creating a renderless web
 // contents using the tab's web contents state. The web contents state is
 // mmapped so it is not expensive to restore the web contents from, and allows
-// the SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate to be
+// the SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync to be
 // performed synchronously as no disk read is required.
 class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
  public:
@@ -39,7 +39,8 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
   std::unique_ptr<sync_sessions::SyncedTabDelegate>
-  CreatePlaceholderTabSyncedTabDelegate() override;
+  ReadPlaceholderTabSnapshotIfItShouldSync(
+      sync_sessions::SyncSessionsClient* sessions_client) override;
 
   // Check if the synced tab delegate has a valid web contents.
   bool HasWebContents() const;

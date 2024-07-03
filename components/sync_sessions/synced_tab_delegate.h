@@ -67,11 +67,11 @@ class SyncedTabDelegate {
   virtual bool IsPlaceholderTab() const = 0;
 
   // Reads placeholder tab data from the associated web contents as a snapshot.
-  // Must be called only if IsPlaceholderTab() returns true. It returns a
-  // callback that will determine if a WebContentsStateSyncedTabDelegate should
-  // have its sync data reassociated with its tab.
+  // Must be called only if IsPlaceholderTab() returns true. The nullness of the
+  // returned delegate indicates if the tab should be reassociated with sync.
   virtual std::unique_ptr<SyncedTabDelegate>
-  CreatePlaceholderTabSyncedTabDelegate() = 0;
+  ReadPlaceholderTabSnapshotIfItShouldSync(
+      SyncSessionsClient* sessions_client) = 0;
 
   // Task IDs represent navigations and relationships between navigations. -1
   // indicates the Task ID is unknown. A Navigation ID is a Unique ID and

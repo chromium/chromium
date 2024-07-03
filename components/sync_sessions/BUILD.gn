@@ -4,6 +4,8 @@
 
 static_library("sync_sessions") {
   sources = [
+    "features.cc",
+    "features.h",
     "local_session_event_handler_impl.cc",
     "local_session_event_handler_impl.h",
     "local_session_event_router.h",

@@ -65,9 +65,10 @@ bool WebContentsStateSyncedTabDelegate::HasWebContents() const {
 }
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
-WebContentsStateSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+WebContentsStateSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    sync_sessions::SyncSessionsClient* sessions_client) {
   NOTREACHED_IN_MIGRATION()
-      << "CreatePlaceholderTabSyncedTabDelegate should be called only "
+      << "ReadPlaceholderTabSnapshotIfItShouldSync should be called only "
          "via the SyncedTabDelegateAndroid implementation.";
   return nullptr;
 }

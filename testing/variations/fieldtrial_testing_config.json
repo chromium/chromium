@@ -15099,6 +15099,21 @@
             ]
         }
     ],
+    "OptimizeAssociateWindowsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptimizeAssociateWindowsAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeStaticAnimationProperties": [
         {
             "platforms": [

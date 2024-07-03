@@ -41,8 +41,8 @@ class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
     // because this function returns true.
     return false;
   }
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override {
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      sync_sessions::SyncSessionsClient* sessions_client) override {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }

@@ -165,7 +165,8 @@ int64_t TestSyncedTabDelegate::GetRootTaskIdForNavigationId(int nav_id) const {
 }
 
 std::unique_ptr<SyncedTabDelegate>
-TestSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+TestSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    SyncSessionsClient* sessions_client) {
   NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
@@ -189,7 +190,8 @@ void PlaceholderTabDelegate::SetPlaceholderTabSyncedTabDelegate(
 }
 
 std::unique_ptr<SyncedTabDelegate>
-PlaceholderTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+PlaceholderTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    SyncSessionsClient* sessions_client) {
   CHECK(placeholder_tab_synced_tab_delegate_);
   return std::move(placeholder_tab_synced_tab_delegate_);
 }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -268,7 +269,9 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
           // The placeholder tab doesn't have a tracked counterpart. This is
           // possible, for example, if the tab was created as a placeholder tab.
           bool was_tab_resynced = AssociatePlaceholderTab(
-              synced_tab->CreatePlaceholderTabSyncedTabDelegate(), batch);
+              synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(
+                  sessions_client_),
+              batch);
 
           if (was_tab_resynced) {
             // If the tab was presumed to have resynced successfully, perform

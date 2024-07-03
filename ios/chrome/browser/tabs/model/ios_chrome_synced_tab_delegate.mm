@@ -254,9 +254,10 @@ int64_t IOSChromeSyncedTabDelegate::GetRootTaskIdForNavigationId(
 }
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
-IOSChromeSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+IOSChromeSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    sync_sessions::SyncSessionsClient* sessions_client) {
   NOTREACHED_IN_MIGRATION()
-      << "CreatePlaceholderTabSyncedTabDelegate is not supported for the "
+      << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported for the "
          "iOS platform.";
   return nullptr;
 }

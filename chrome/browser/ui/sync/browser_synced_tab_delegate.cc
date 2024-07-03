@@ -30,9 +30,10 @@ bool BrowserSyncedTabDelegate::IsPlaceholderTab() const {
 }
 
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
-BrowserSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
+BrowserSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
+    sync_sessions::SyncSessionsClient* sessions_client) {
   NOTREACHED_IN_MIGRATION()
-      << "CreatePlaceholderTabSyncedTabDelegate is not supported on "
+      << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported on "
          "desktop platforms.";
   return nullptr;
 }

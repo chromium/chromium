@@ -127,7 +127,7 @@ TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
 #if BUILDFLAG(IS_ANDROID)
   // TabHelpers::AttachTabHelpers() will not be called for a placeholder tab's
   // WebContents that is temporarily created from a serialized state in
-  // SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate(). When
+  // SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(). When
   // this occurs, early-out and return a nullptr.
   if (!navigation_observer) {
     return nullptr;

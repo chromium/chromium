@@ -68,8 +68,8 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   int64_t GetTaskIdForNavigationId(int nav_id) const override;
   int64_t GetParentTaskIdForNavigationId(int nav_id) const override;
   int64_t GetRootTaskIdForNavigationId(int nav_id) const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      SyncSessionsClient* sessions_client) override;
 
  private:
   const SessionID window_id_;
@@ -103,8 +103,8 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   // SyncedTabDelegate overrides.
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      SyncSessionsClient* sessions_client) override;
   // Everything else is invalid to invoke as it depends on a valid WebContents.
   SessionID GetWindowId() const override;
   bool IsBeingDestroyed() const override;

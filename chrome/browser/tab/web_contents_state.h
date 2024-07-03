@@ -38,6 +38,11 @@ struct WebContentsStateByteBuffer {
                                  web_contents_byte_buffer_result,
                              int saved_state_version);
 
+  // Initialize from a raw span that needs to be owned elsewhere.
+  // `backing_buffer` is never used. Useful for tests.
+  WebContentsStateByteBuffer(base::raw_span<const uint8_t> raw_data,
+                             int saved_state_version);
+
   WebContentsStateByteBuffer(const WebContentsStateByteBuffer&) = delete;
   WebContentsStateByteBuffer& operator=(const WebContentsStateByteBuffer&) =
       delete;
@@ -107,6 +112,15 @@ class WebContentsState {
       bool initially_hidden,
       bool no_renderer);
 
+  // Extracts state and navigation entries from the given Pickle data and
+  // returns whether un-pickling the data succeeded.
+  static bool ExtractNavigationEntries(
+      base::span<const uint8_t> buffer,
+      int saved_state_version,
+      bool* is_off_the_record,
+      int* current_entry_index,
+      std::vector<sessions::SerializedNavigationEntry>* navigations);
+
   // Synthesizes a stub, single-navigation state for a tab that will be loaded
   // lazily.
   static base::android::ScopedJavaLocalRef<jobject>
@@ -118,6 +132,14 @@ class WebContentsState {
       jint referrer_policy,
       const base::android::JavaParamRef<jobject>& initiator_origin,
       jboolean is_off_the_record);
+
+  // Creates a single navigation entry in a serilized form.
+  static base::Pickle CreateSingleNavigationStateAsPickle(
+      const std::u16string& title,
+      const GURL& url,
+      content::Referrer referrer,
+      url::Origin initiator_origin,
+      bool is_off_the_record);
 
   // Appends a single-navigation state to a WebContentsState to be later loaded
   // lazily.
