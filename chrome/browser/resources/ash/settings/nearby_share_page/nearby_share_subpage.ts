@@ -128,6 +128,14 @@ export class SettingsNearbyShareSubpageElement extends
         computed: `computeShouldShowFastInititationNotificationToggle_(
                 settings.isFastInitiationHardwareSupported)`,
       },
+
+      /**
+       * Determines whether the QuickShareV2 flag is enabled.
+       */
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+      },
     };
   }
 
@@ -137,6 +145,7 @@ export class SettingsNearbyShareSubpageElement extends
 
   isSettingsRetreived: boolean;
   private inHighVisibility_: boolean;
+  private isQuickShareV2Enabled_: boolean;
   private manageContactsUrl_: string;
   private profileLabel_: string;
   private profileName_: string;

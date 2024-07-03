@@ -6,6 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsNearbyShareSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrToggleElement, NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, FastInitiationNotificationState} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -88,7 +89,7 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
   }
 
-  setup(async () => {
+  async function init() {
     setupFakes();
     fakeSettings.setEnabled(true);
     fakeSettings.setIsOnboardingComplete(true);
@@ -101,10 +102,27 @@ suite('<settings-nearby-share-subpage>', () => {
     assertTrue(!!toggle);
     featureToggleButton = toggle;
     await flushTasks();
+  }
+
+  /**
+   * Sets up Quick Share v2 tests which require the QuickShareV2 flag to be
+   * enabled on page load.
+   */
+  async function setupQuickShareV2() {
+    subpage.remove();
+    loadTimeData.overrideValues({'isQuickShareV2Enabled': true});
+    await init();
+  }
+
+  setup(async () => {
+    await init();
   });
 
   teardown(() => {
     subpage.remove();
+    // TODO(b/350547931): Permanently enable QSv2, remove flag and need to
+    // override it.
+    loadTimeData.overrideValues({'isQuickShareV2Enabled': false});
     accountManagerBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
@@ -718,4 +736,13 @@ suite('<settings-nearby-share-subpage>', () => {
     assertFalse(subpage.prefs.nearby_sharing.enabled.value);
     subpageControlsHidden(true);
   });
+
+  test(
+      'Subpage shows no Quick Share on/off toggle on QuickShareV2 enabled',
+      async () => {
+        setupQuickShareV2();
+        const enableQuickShareToggle =
+            subpage.shadowRoot!.querySelector('#featureToggleButton');
+        assertFalse(!!enableQuickShareToggle);
+      });
 });

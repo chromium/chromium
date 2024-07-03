@@ -208,6 +208,11 @@ export class SettingsMultidevicePageElement extends
         type: Boolean,
         value: false,
       },
+
+      isQuickShareV2Enabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isQuickShareV2Enabled'),
+      },
     };
   }
 
@@ -220,6 +225,7 @@ export class SettingsMultidevicePageElement extends
   private isPasswordDialogShowing_: boolean;
   private isPhoneScreenLockEnabled_: boolean;
   private isPinNumberDialogShowing_: boolean;
+  private isQuickShareV2Enabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private section_: Section;
   private shouldEnableNearbyShareBackgroundScanningRevamp_: boolean;
@@ -619,7 +625,8 @@ export class SettingsMultidevicePageElement extends
   }
 
   private showNearbyShareToggle_(isOnboardingComplete: boolean): boolean {
-    return isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_();
+    return !this.isQuickShareV2Enabled_ &&
+        (isOnboardingComplete || this.isNearbyShareDisallowedByPolicy_());
   }
 
   private showNearbyShareSetupButton_(isOnboardingComplete: boolean): boolean {
@@ -627,7 +634,8 @@ export class SettingsMultidevicePageElement extends
   }
 
   private showNearbyShareOnOffString_(isOnboardingComplete: boolean): boolean {
-    return isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_();
+    return !this.isQuickShareV2Enabled_ &&
+        (isOnboardingComplete && !this.isNearbyShareDisallowedByPolicy_());
   }
 
   private showNearbyShareSetUpDescription_(isOnboardingComplete: boolean):

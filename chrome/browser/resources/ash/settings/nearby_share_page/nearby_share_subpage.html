@@ -46,31 +46,33 @@
     padding: 0 var(--cr-section-padding);
   }
 </style>
-<!-- Use a template to work around visual glitch where the toggle flips
+<template is="dom-if" if="[[!isQuickShareV2Enabled_]]">
+  <!-- Use a template to work around visual glitch where the toggle flips
     on when the page first loads. -->
-<template is="dom-if" if="[[prefs]]" restamp>
-  <template is="dom-if"
-      if="[[prefs.nearby_sharing.onboarding_complete.value]]" restamp>
-    <settings-toggle-button id="featureToggleButton"
-        label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
-            '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
-        pref="{{prefs.nearby_sharing.enabled}}"
-        deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
-        class="primary-toggle">
-    </settings-toggle-button>
-  </template>
-  <template is="dom-if"
-      if="[[!prefs.nearby_sharing.onboarding_complete.value]]" restamp>
-    <div id="setupRow">
-      <div class="flex">
-        <div aria-hidden="true" class="enabled-toggle-off">
-          $i18n{deviceOff}
+  <template is="dom-if" if="[[prefs]]" restamp>
+    <template is="dom-if"
+        if="[[prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+      <settings-toggle-button id="featureToggleButton"
+          label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
+              '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
+          pref="{{prefs.nearby_sharing.enabled}}"
+          deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
+          class="primary-toggle">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if"
+        if="[[!prefs.nearby_sharing.onboarding_complete.value]]" restamp>
+      <div id="setupRow">
+        <div class="flex">
+          <div aria-hidden="true" class="enabled-toggle-off">
+            $i18n{deviceOff}
+          </div>
         </div>
+        <cr-button id="setUpButton" on-click="showOnboarding_">
+          $i18n{nearbyShareSetUpButtonTitle}
+        </cr-button>
       </div>
-      <cr-button id="setUpButton" on-click="showOnboarding_">
-        $i18n{nearbyShareSetUpButtonTitle}
-      </cr-button>
-    </div>
+    </template>
   </template>
 </template>
 <template is="dom-if" id="subpageContent" if="[[shouldShowSubpageContent_(

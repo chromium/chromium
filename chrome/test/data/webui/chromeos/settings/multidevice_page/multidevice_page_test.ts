@@ -202,6 +202,16 @@ suite('<settings-multidevice-page>', () => {
     browserProxy.resetResolver('setFeatureEnabledState');
   }
 
+  /**
+   * Sets up Quick Share v2 tests which require the QuickShareV2 flag to be
+   * enabled on page load.
+   */
+  async function setupQuickShareV2() {
+    multidevicePage.remove();
+    loadTimeData.overrideValues({'isQuickShareV2Enabled': true});
+    await init();
+  }
+
   suiteSetup(() => {
     ALL_MODES = Object.values(MultiDeviceSettingsMode)
                     .filter((item) => typeof item === 'number') as
@@ -242,6 +252,9 @@ suite('<settings-multidevice-page>', () => {
       isNearbyShareSupported: true,
       isChromeosScreenLockEnabled: false,
       isPhoneScreenLockEnabled: false,
+      // TODO(b/350547931): Permanently enable QSv2, remove flag and need to
+      // override it.
+      isQuickShareV2Enabled: false,
     });
     await init();
   });
@@ -1001,4 +1014,13 @@ suite('<settings-multidevice-page>', () => {
     assertEquals(routes.NEARBY_SHARE, router.currentRoute);
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
+
+  test(
+      'Subpage shows no Quick Share on/off toggle on QuickShareV2 enabled',
+      async () => {
+        setupQuickShareV2();
+        const quickShareToggle = multidevicePage.shadowRoot!.querySelector(
+            '#nearbySharingToggleButton');
+        assertFalse(!!quickShareToggle);
+      });
 });

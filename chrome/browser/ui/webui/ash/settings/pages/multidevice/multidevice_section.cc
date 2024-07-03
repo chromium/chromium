@@ -787,6 +787,9 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddBoolean(
       "isFastPairSoftwareScanningSupportEnabled",
       ash::features::IsFastPairSoftwareScanningSupportEnabled());
+
+  html_source->AddBoolean("isQuickShareV2Enabled",
+                          ::features::IsQuickShareV2Enabled());
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
