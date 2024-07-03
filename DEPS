@@ -706,16 +706,6 @@ deps = {
       },
     ],
   },
-  'src/third_party/data_sharing_sdk': {
-      'packages': [
-          {
-              'package': 'chrome_internal/third_party/google3/data_sharing_sdk',
-              'version': '5SuJanzumNz47vjH8C_JvwdiPKWGU4dO05k_pJViCKEC',
-          },
-      ],
-      'condition': 'checkout_src_internal',
-      'dep_type': 'cipd',
-  },
   # Pull down Node binaries for WebUI toolchain.
   # The Linux binary is always downloaded regardless of host os and architecture
   # since remote node actions run on Linux worker.
