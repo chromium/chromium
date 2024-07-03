@@ -101,8 +101,10 @@ class SavedTabGroupModel {
       const base::Uuid& id,
       const tab_groups::TabGroupVisualData* visual_data);
 
-  SavedTabGroup* GetGroupContainingTab(const base::Uuid& saved_tab_guid);
-  SavedTabGroup* GetGroupContainingTab(const LocalTabID& local_tab_id);
+  const SavedTabGroup* GetGroupContainingTab(
+      const base::Uuid& saved_tab_guid) const;
+  const SavedTabGroup* GetGroupContainingTab(
+      const LocalTabID& local_tab_id) const;
 
   // Adds a saved tab to `index` in the specified group denoted by `group_id` if
   // it exists. Notify local observers if the tab was added locally, and sync
@@ -185,6 +187,10 @@ class SavedTabGroupModel {
   void MigrateTabGroupSavesUIUpdate();
 
  private:
+  // Returns mutable group containing tab with ID `saved_tab_guid`, otherwise
+  // returns null.
+  SavedTabGroup* MutableGroupContainingTab(const base::Uuid& saved_tab_guid);
+
   // Moves the group denoted by `id` to the position `new_index`.
   void ReorderGroupImpl(const base::Uuid& id, int new_index);
 

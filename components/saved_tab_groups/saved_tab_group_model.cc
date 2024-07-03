@@ -274,8 +274,8 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
   }
 }
 
-SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
-    const base::Uuid& saved_tab_guid) {
+const SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
+    const base::Uuid& saved_tab_guid) const {
   for (auto& saved_group : saved_tab_groups_) {
     if (saved_group.ContainsTab(saved_tab_guid))
       return &saved_group;
@@ -284,8 +284,8 @@ SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
   return nullptr;
 }
 
-SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
-    const LocalTabID& local_tab_id) {
+const SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
+    const LocalTabID& local_tab_id) const {
   for (auto& saved_group : saved_tab_groups_) {
     if (saved_group.ContainsTab(local_tab_id))
       return &saved_group;
@@ -335,21 +335,20 @@ void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
 
 void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
                                           SavedTabGroupTab tab) {
-  std::optional<int> group_index = GetIndexOf(group_id);
-  CHECK(group_index.has_value());
+  SavedTabGroup* group = Get(group_id);
+  CHECK(group);
 
-  const SavedTabGroupTab* const old_tab =
-      saved_tab_groups_[group_index.value()].GetTab(tab.saved_tab_guid());
-
-  if (old_tab->url() != tab.url()) {
+  if (group->GetTab(tab.saved_tab_guid())->url() != tab.url()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_SavedTabGroups_TabNavigated"));
   }
 
-  saved_tab_groups_[group_index.value()].UpdateTab(tab);
+  // Make a copy before moving the `tab`.
+  const base::Uuid tab_guid_copy = tab.saved_tab_guid();
+  group->UpdateTab(std::move(tab));
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(group_id, tab.saved_tab_guid());
+    observer.SavedTabGroupUpdatedLocally(group_id, tab_guid_copy);
   }
 }
 
@@ -519,7 +518,7 @@ const SavedTabGroupTab* SavedTabGroupModel::MergeRemoteTab(
     const SavedTabGroupTab& remote_tab) {
   const base::Uuid& group_guid = remote_tab.saved_group_guid();
   const base::Uuid& tab_guid = remote_tab.saved_tab_guid();
-  SavedTabGroup* const group = GetGroupContainingTab(tab_guid);
+  SavedTabGroup* const group = MutableGroupContainingTab(tab_guid);
   CHECK(group);
   // TODO(crbug.com/319521964): check whether group has the same group GUID.
 
@@ -589,8 +588,8 @@ SavedTabGroupModel::UpdateLocalCacheGuid(
     }
   }
 
-  return std::make_pair<>(std::move(updated_group_ids),
-                          std::move(updated_tab_ids));
+  return std::make_pair(std::move(updated_group_ids),
+                        std::move(updated_tab_ids));
 }
 
 void SavedTabGroupModel::LoadStoredEntries(std::vector<SavedTabGroup> groups,
@@ -674,6 +673,11 @@ void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
                                            /*tab_guid=*/std::nullopt);
     }
   }
+}
+
+SavedTabGroup* SavedTabGroupModel::MutableGroupContainingTab(
+    const base::Uuid& saved_tab_guid) {
+  return const_cast<SavedTabGroup*>(GetGroupContainingTab(saved_tab_guid));
 }
 
 void SavedTabGroupModel::ReorderGroupImpl(const base::Uuid& id, int new_index) {
