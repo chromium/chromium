@@ -8410,6 +8410,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE" desc="Subtitle for the suggestion chip that links to release notes">
         Explore the latest features
       </message>
+      <message name="IDS_ASH_BIRCH_LOST_MEDIA_MEDIA_TAB_SUBTITLE" desc="The subtitle for a suggestion chip for a media tab that is currently playing. Note: The 'Playing' is supposed to indicate the status of the tab, not the identity of the tab. 'Switch to tab' is an action/verb that switches to the tab if the item is pressed.">
+      Playing &#x00B7; Switch to tab
+      </message>
+      <message name="IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE" desc="The subtitle for a suggestion chip for a video conference tab that is currently ongoing. Note: The 'Ongoing' is supposed to indicate the status of the tab, not the identity of the tab. 'Switch to tab' is an action/verb that switches to the tab if the item is pressed.">
+      Ongoing &#x00B7; Switch to tab
+      </message>
      </messages>
     </release>
 </grit>
