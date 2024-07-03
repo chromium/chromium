@@ -488,7 +488,6 @@
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_reminder_desktop_ui_controller_factory.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -1280,7 +1279,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   tpcd::trial::TopLevelTrialServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   TrackingProtectionNoticeFactory::GetInstance();
-  TrackingProtectionReminderDesktopUiControllerFactory::GetInstance();
 #endif
   TrackingProtectionOnboardingFactory::GetInstance();
   TrackingProtectionReminderFactory::GetInstance();

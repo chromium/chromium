@@ -479,44 +479,4 @@ TEST_F(TrackingProtectionReminderServiceUnsetReminderDelayTest,
   EXPECT_EQ(reminder_service()->GetReminderType(), ReminderType::kNone);
 }
 
-class TrackingProtectionReminderServiceOnReminderExperiencedTest
-    : public TrackingProtectionReminderServiceTest {
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    return {{kTrackingProtectionReminder, {{}}}};
-  }
-};
-
-TEST_F(TrackingProtectionReminderServiceOnReminderExperiencedTest,
-       UpdatesReminderStatus) {
-  // Reminder status will only update if called with status = `kPendingReminder`
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionReminderStatus,
-      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
-                           kPendingReminder));
-
-  reminder_service()->OnReminderExperienced();
-
-  // Confirm that the status was updated to `kExperiencedReminder`.
-  EXPECT_EQ(
-      prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
-      static_cast<int>(tracking_protection::TrackingProtectionReminderStatus::
-                           kExperiencedReminder));
-}
-
-TEST_F(TrackingProtectionReminderServiceOnReminderExperiencedTest,
-       DoesNotUpdateReminderStatus) {
-  // Set the reminder status to a value != `kPendingReminder`
-  prefs()->SetInteger(
-      prefs::kTrackingProtectionReminderStatus,
-      static_cast<int>(
-          tracking_protection::TrackingProtectionReminderStatus::kUnset));
-
-  reminder_service()->OnReminderExperienced();
-
-  // Confirm that the status did not change.
-  EXPECT_EQ(prefs()->GetInteger(prefs::kTrackingProtectionReminderStatus),
-            static_cast<int>(
-                tracking_protection::TrackingProtectionReminderStatus::kUnset));
-}
-
 }  // namespace privacy_sandbox

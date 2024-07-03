@@ -46,15 +46,6 @@ class TrackingProtectionReminderService
   // Determines the type of reminder that should be experienced.
   ReminderType GetReminderType();
 
-  // Returns if the profile is pending a reminder.
-  bool IsPendingReminder();
-
-  // Returns the reminder status for the user.
-  tracking_protection::TrackingProtectionReminderStatus GetReminderStatus();
-
-  // Called after a reminder was experienced
-  void OnReminderExperienced();
-
   // KeyedService:
   void Shutdown() override;
 
@@ -85,7 +76,6 @@ class TrackingProtectionReminderService
   bool is_mode_b_user_ = true;
   friend class TrackingProtectionReminderServiceModeBEnabledTest;
   friend class TrackingProtectionReminderServiceTest;
-  friend class TrackingProtectionReminderDesktopUiControllerTest;
 };
 
 }  // namespace privacy_sandbox
