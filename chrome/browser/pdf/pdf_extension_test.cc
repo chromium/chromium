@@ -1518,7 +1518,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_EQ(plugin_frames[0]->GetLastCommittedOrigin(),
             iframe->GetLastCommittedOrigin());
   EXPECT_NE(plugin_frames[0]->GetProcess(), iframe->GetProcess());
-  EXPECT_FALSE(content::HasOriginKeyedProcess(plugin_frames[0]));
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(),
+      content::HasOriginKeyedProcess(plugin_frames[0]));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
