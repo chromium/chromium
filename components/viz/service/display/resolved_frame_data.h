@@ -13,6 +13,7 @@
 #include "base/functional/bind_internal.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -244,6 +245,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool is_valid() const { return valid_; }
   uint64_t previous_frame_index() const { return previous_frame_index_; }
 
+  gfx::Size size_in_pixels() const;
+  float device_scale_factor() const;
+
   // Returns namespace ID for the client that submitted this frame. This is used
   // to deduplicate layer IDs from different clients.
   uint32_t GetClientNamespaceId() const;
@@ -256,8 +260,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   void ForceReleaseResource();
 
   // Updates resolved frame data for a new active frame. This will recompute
-  // ResolvedPassData. It also updates display resource provider with resources
-  // used in new active frame.
+  // ResolvedPassData. It also updates surface client and display resource
+  // provider with resources used in new active frame.
   //
   // This performs the following validation on the active CompositorFrame.
   // 1. Checks each ResourceId was registered with DisplayResourceProvider and
@@ -289,6 +293,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // All functions after this point are accessors for the resolved frame and
   // should only be called if is_valid() returns true.
+
+  const CompositorFrameMetadata& GetMetadata() const;
 
   // Returns true if the root render pass is embedded from the the root surface
   // root render pass.

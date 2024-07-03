@@ -110,6 +110,14 @@ void ResolvedFrameData::SetFullDamageForNextAggregation() {
   previous_frame_index_ = kInvalidFrameIndex;
 }
 
+gfx::Size ResolvedFrameData::size_in_pixels() const {
+  return surface_->size_in_pixels();
+}
+
+float ResolvedFrameData::device_scale_factor() const {
+  return surface_->device_scale_factor();
+}
+
 uint32_t ResolvedFrameData::GetClientNamespaceId() const {
   return static_cast<uint32_t>(child_resource_id_);
 }
@@ -128,6 +136,13 @@ void ResolvedFrameData::UpdateForActiveFrame(
 
   auto& compositor_frame = surface_->GetActiveFrame();
   auto& resource_list = compositor_frame.resource_list;
+
+  // Ref the resources in the surface, and let the provider know we've received
+  // new resources from the compositor frame.
+  if (surface_->client()) {
+    surface_->client()->RefResources(resource_list);
+  }
+
   auto& render_passes = compositor_frame.render_pass_list;
   size_t num_render_pass = render_passes.size();
   DCHECK(!render_passes.empty());
@@ -349,6 +364,11 @@ void ResolvedFrameData::ResetAfterAggregation() {
 
   previous_frame_index_ = frame_index_;
   used_in_aggregation_ = false;
+}
+
+const CompositorFrameMetadata& ResolvedFrameData::GetMetadata() const {
+  CHECK(valid_);
+  return surface_->GetActiveFrameMetadata();
 }
 
 bool ResolvedFrameData::WillDraw() const {
