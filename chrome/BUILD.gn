@@ -1664,6 +1664,7 @@ if (is_android) {
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_mobile",
+      "//components/stylus_handwriting/android",
       "//content/public/app",
     ]
 

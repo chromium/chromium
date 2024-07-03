@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
@@ -32,6 +33,8 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     private static final String TAG = "AndroidStylus";
 
     private final InputMethodManager mInputMethodManager;
+
+    private StylusHandwritingInitiator mStylusHandwritingInitiator;
 
     public static boolean isEnabled(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
@@ -83,6 +86,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
     AndroidStylusWritingHandler(Context context) {
         mInputMethodManager = context.getSystemService(InputMethodManager.class);
+        mStylusHandwritingInitiator = new StylusHandwritingInitiator(mInputMethodManager);
     }
 
     @Override
@@ -94,6 +98,11 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
         View view = webContents.getViewAndroidDelegate().getContainerView();
         view.setAutoHandwritingEnabled(false);
+    }
+
+    @Override
+    public boolean handleTouchEvent(MotionEvent event, View currentView) {
+        return mStylusHandwritingInitiator.onTouchEvent(event, currentView);
     }
 
     @Override
@@ -147,5 +156,9 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     @Override
     public int getStylusPointerIcon() {
         return TYPE_HANDWRITING;
+    }
+
+    void setHandwritingInitiatorForTesting(StylusHandwritingInitiator stylusHandwritingInitiator) {
+        mStylusHandwritingInitiator = stylusHandwritingInitiator;
     }
 }
