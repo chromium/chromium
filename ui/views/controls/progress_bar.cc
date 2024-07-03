@@ -61,19 +61,10 @@ int RoundToPercent(double fractional_value) {
 
 ProgressBar::ProgressBar() {
   SetFlipCanvasOnPaintForRTLUI(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kProgressIndicator);
 }
 
 ProgressBar::~ProgressBar() = default;
-
-void ProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kProgressIndicator;
-  if (IsIndeterminate()) {
-    node_data->RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
-  } else {
-    node_data->SetValue(base::FormatPercent(RoundToPercent(current_value_)));
-  }
-}
 
 gfx::Size ProgressBar::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
@@ -343,12 +334,18 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
 }
 
 void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
+  // Exit early if ProgressBar is Indeterminate or not visible.
+  if (IsIndeterminate()) {
+    GetViewAccessibility().RemoveValue();
+    return;
+  }
   if (!GetWidget() || !GetWidget()->IsVisible() ||
       RoundToPercent(current_value_) == last_announced_percentage_) {
     return;
   }
   last_announced_percentage_ = RoundToPercent(current_value_);
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  GetViewAccessibility().SetValue(
+      base::FormatPercent(last_announced_percentage_));
 }
 
 BEGIN_METADATA(ProgressBar)

@@ -165,4 +165,16 @@ TEST_F(ProgressBarTest, RoundCornerMax) {
             bar()->GetPreferredCornerRadii());
 }
 
+// Test that if value is set negative, which means progress bar is
+// indeterminate, the string attribute value should be empty.
+TEST_F(ProgressBarTest, RemoveValue) {
+  // setting negative progress bar value
+  bar()->SetValue(-0.626);
+
+  ui::AXNodeData node_data;
+  bar()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(std::string(""),
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
 }  // namespace views
