@@ -28,11 +28,6 @@ if __name__ == '__main__':
       'content/browser/bad_message.h': {
           'name': 'BadMessageReasonContent'
       },
-      'components/autofill/content/browser/bad_message.h': {
-          'name': 'BadMessageReasonAutofill',
-          'end_marker': '^kMaxValue .*',
-          'strip_k_prefix': True
-      },
       'components/guest_view/browser/bad_message.h': {
           'name': 'BadMessageReasonGuestView'
       },

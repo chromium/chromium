@@ -370,7 +370,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="219" label="REGISTER_PROTOCOL_HANDLER_INVALID_URL"/>
   <int value="220" label="NC_SAME_DOCUMENT_POST_COMMIT_ERROR"/>
   <int value="221" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
-  <int value="222" label="RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
+  <int value="222" label="OBSOLETE_RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
   <int value="223" label="RFH_UNEXPECTED_EMBEDDING_TOKEN"/>
   <int value="224" label="RFH_MISSING_EMBEDDING_TOKEN"/>
   <int value="225" label="RFH_BAD_DOCUMENT_POLICY_HEADER"/>
@@ -381,7 +381,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="230" label="RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME"/>
   <int value="231" label="RFH_CSP_ATTRIBUTE"/>
   <int value="232" label="RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED"/>
-  <int value="233" label="RWH_CLOSE_PORTAL"/>
+  <int value="233" label="OBSOLETE_RWH_CLOSE_PORTAL"/>
   <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
   <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
   <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
