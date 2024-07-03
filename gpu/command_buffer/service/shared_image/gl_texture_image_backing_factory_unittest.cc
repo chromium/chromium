@@ -451,7 +451,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ,
+                               SHARED_IMAGE_USAGE_RASTER_READ,
+                               SHARED_IMAGE_USAGE_RASTER_WRITE};
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
   bool supported = backing_factory_->CanCreateSharedImage(
