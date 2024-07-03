@@ -258,6 +258,7 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   auto* controller = FocusModeController::Get();
   SetVisiblePreferred(controller->in_focus_session() ||
                       controller->in_ending_moment());
+  tasks_observation_.Observe(&controller->tasks_model());
   controller->AddObserver(this);
 }
 
@@ -265,6 +266,7 @@ FocusModeTray::~FocusModeTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
+  tasks_observation_.Reset();
   FocusModeController::Get()->RemoveObserver(this);
 }
 
@@ -353,30 +355,14 @@ void FocusModeTray::ShowBubble() {
       controller->current_session()->GetSnapshot(base::Time::Now());
   UpdateBubbleViews(session_snapshot_.value());
 
-  if (controller->HasSelectedTask()) {
-    // There is a chance that we have a selected task but the title isn't
-    // updated yet, since we do not save that to user prefs.
-    if (const std::string& task_title = controller->selected_task_title();
-        !task_title.empty()) {
-      CreateTaskItemView(task_title);
-    }
-
-    if (glanceables_util::IsNetworkConnected()) {
-      // Fetch the selected task to verify if it is still in the uncompleted
-      // state.
-      controller->tasks_provider().GetTask(
-          controller->selected_task_list_id(), controller->selected_task_id(),
-          base::BindOnce(&FocusModeTray::OnTaskFetched,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
-
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
 
   SetIsActive(true);
   progress_indicator_->layer()->SetOpacity(0);
   UpdateProgressRing();
+
+  controller->tasks_model().RequestUpdate();
 }
 
 void FocusModeTray::UpdateTrayItemColor(bool is_active) {
@@ -442,6 +428,65 @@ void FocusModeTray::OnActiveSessionDurationChanged(
   MaybeUpdateCountdownViewUI(session_snapshot);
 }
 
+void FocusModeTray::OnSelectedTaskChanged(
+    const std::optional<FocusModeTask>& task) {
+  if (!bubble_) {
+    return;
+  }
+
+  // Task was either completed or cleared.
+  if (!task) {
+    selected_task_.reset();
+    if (!task_item_view_) {
+      // Task view is already gone. Nothing to do.
+      return;
+    }
+
+    if (task_item_view_->GetWasCompleted()) {
+      // Task was already completed and is in the process of being deleted.
+      return;
+    }
+
+    // Task was deleted.
+    OnClearTask();
+    return;
+  }
+
+  // A new task was picked or updated. Update the UI.
+  const std::string& task_title = task->title;
+  if (task_title.empty()) {
+    // Can't create a task view for an empty title.
+    return;
+  }
+
+  selected_task_ = task->task_id;
+
+  if (task_item_view_) {
+    // Assume that the title changed and try to update it.
+    task_item_view_->UpdateTitle(base::UTF8ToUTF16(task_title));
+    return;
+  }
+
+  CreateTaskItemView(task_title);
+
+  // We need to update the bubble after creating the `task_item_view_` so the
+  // widget bounds are updated and shows the view.
+  bubble_->bubble_view()->UpdateBubble();
+}
+
+void FocusModeTray::OnTasksUpdated(const std::vector<FocusModeTask>& tasks) {}
+
+void FocusModeTray::OnTaskCompleted(const FocusModeTask& completed_task) {
+  // Initiate UI update to indicate that the task was completed.
+  if (!task_item_view_ || task_item_view_->GetWasCompleted()) {
+    return;
+  }
+
+  task_item_view_->UpdateStyleToCompleted();
+
+  OnClearTask();
+}
+
 void FocusModeTray::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
@@ -464,38 +509,6 @@ const views::Label* FocusModeTray::GetTaskTitleForTesting() const {
   return task_item_view_->GetTaskTitle();
 }
 
-void FocusModeTray::OnTaskFetched(const FocusModeTask& task_entry) {
-  if (!bubble_) {
-    return;
-  }
-
-  // If the selected task could not be found, then an error has occurred.
-  if (task_entry.task_id.empty()) {
-    return;
-  }
-
-  const std::string title = task_entry.title;
-  if (task_entry.completed || title.empty()) {
-    // TODO(b/342268177): Since we are only using this to clear/delete the task,
-    // we should separate this out to a different function.
-    OnCompleteTask(/*update=*/false);
-    return;
-  }
-
-  // TODO(b/342268177): Move this to the `FocusModeController`.
-  FocusModeController::Get()->SetSelectedTask(task_entry);
-
-  if (!task_item_view_) {
-    CreateTaskItemView(title);
-
-    // We need to update the bubble after creating the `task_item_view_` so the
-    // widget bounds are updated and shows the view.
-    bubble_->bubble_view()->UpdateBubble();
-  } else {
-    task_item_view_->UpdateTitle(base::UTF8ToUTF16(title));
-  }
-}
-
 void FocusModeTray::CreateTaskItemView(const std::string& task_title) {
   if (task_title.empty()) {
     return;
@@ -504,9 +517,8 @@ void FocusModeTray::CreateTaskItemView(const std::string& task_title) {
   task_item_view_ =
       bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
           base::UTF8ToUTF16(task_title),
-          base::BindRepeating(&FocusModeTray::OnCompleteTask,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              /*update=*/true)));
+          base::BindRepeating(&FocusModeTray::HandleCompleteTaskButton,
+                              weak_ptr_factory_.GetWeakPtr())));
   task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
                                views::BoxLayoutFlexSpecification());
 }
@@ -561,14 +573,24 @@ void FocusModeTray::MaybeUpdateEndingMomentViewUI(
   }
 }
 
-void FocusModeTray::OnCompleteTask(bool update) {
-  if (!task_item_view_ || task_item_view_->GetWasCompleted()) {
+void FocusModeTray::HandleCompleteTaskButton() {
+  // The user clicked on the task complete button. Notify the model. UI updates
+  // happen in the model events.
+  if (!selected_task_.has_value()) {
+    // If there is no selected id, just clear the UI.
+    OnClearTask();
     return;
   }
 
-  task_item_view_->UpdateStyleToCompleted();
+  FocusModeController::Get()->tasks_model().UpdateTask(
+      FocusModeTasksModel::TaskUpdate::CompletedUpdate(*selected_task_));
+}
 
-  FocusModeController::Get()->CompleteTask(update);
+void FocusModeTray::OnClearTask() {
+  selected_task_.reset();
+  if (!task_item_view_) {
+    return;
+  }
 
   // We want to show the check icon and a strikethrough on the label for
   // `kStartAnimationDelay` before removing `task_item_view_` from the

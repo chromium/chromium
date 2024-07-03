@@ -8,6 +8,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -15,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -26,6 +28,11 @@ class FocusModeCountdownViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+
+    // Prepare a TaskClient for FocusModeController.
+    AccountId account = AccountId::FromUserEmail("user@chromium.org");
+    CreateFakeTasksClient(account);
+    SimulateUserLogin(account);
 
     focus_mode_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();

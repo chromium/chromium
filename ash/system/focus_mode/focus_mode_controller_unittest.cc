@@ -382,6 +382,7 @@ TEST_F(FocusModeControllerMultiUserTest, StartNewSessionDuringEndingMoment) {
 // and disappearing.
 TEST_F(FocusModeControllerMultiUserTest, EndingMomentNudgeTest) {
   SimulateUserLogin(GetUser1AccountId());
+  CreateFakeTasksClient(GetUser1AccountId());
   base::TimeDelta kSessionDuration = base::Minutes(20);
 
   auto* controller = FocusModeController::Get();

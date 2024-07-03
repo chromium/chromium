@@ -9,7 +9,9 @@
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
+#include "ash/system/focus_mode/focus_mode_tasks_model.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -26,7 +28,8 @@ class TrayBubbleWrapper;
 // the focus session. The tray also controls a bubble that is shown when the
 // button is clicked.
 class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
-                                 public FocusModeController::Observer {
+                                 public FocusModeController::Observer,
+                                 public FocusModeTasksModel::Observer {
   METADATA_HEADER(FocusModeTray, TrayBackgroundView)
 
  public:
@@ -55,6 +58,11 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void OnActiveSessionDurationChanged(
       const FocusModeSession::Snapshot& session_snapshot) override;
 
+  // FocusModeTasksModel::Observer:
+  void OnSelectedTaskChanged(const std::optional<FocusModeTask>& task) override;
+  void OnTasksUpdated(const std::vector<FocusModeTask>& tasks) override;
+  void OnTaskCompleted(const FocusModeTask& completed_task) override;
+
   // views::View:
   void Layout(PassKey) override;
 
@@ -74,10 +82,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // TODO(b/314022131): Move `TaskItemView` to its own files.
   class TaskItemView;
-
-  // Called when the selected task has been fetched from the tasks provider.
-  // Used to determine if it is completed or not.
-  void OnTaskFetched(const FocusModeTask& task_entry);
 
   // Helper function for creating and setting up the `TaskItemView`.
   void CreateTaskItemView(const std::string& task_title);
@@ -102,7 +106,10 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // completed, or if the task is already completed when we show the bubble.
   // `update` is used to determine if we need to update the tasks provider (i.e.
   // we don't if the task is already marked as completed).
-  void OnCompleteTask(bool update);
+  void HandleCompleteTaskButton();
+
+  // Perform the UI update to dismiss the task view.
+  void OnClearTask();
 
   // Called when the animation in `AnimateBubbleResize` starts.
   void OnBubbleResizeAnimationStarted();
@@ -138,6 +145,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // task.
   raw_ptr<TaskItemView> task_item_view_ = nullptr;
 
+  // `TaskId` of the selected task shown in the `task_item_view_` if it exists.
+  std::optional<TaskId> selected_task_;
+
   raw_ptr<views::BoxLayoutView> bubble_view_container_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
@@ -154,6 +164,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // moment; it will be reset to false when starting or ending a focus session,
   // or extending a focus session during the ending moment.
   bool bounce_in_animation_finished_ = false;
+
+  base::ScopedObservation<FocusModeTasksModel, FocusModeTasksModel::Observer>
+      tasks_observation_{this};
 
   base::WeakPtrFactory<FocusModeTray> weak_ptr_factory_{this};
 };
