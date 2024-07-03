@@ -262,6 +262,18 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void ClearActiveDescendant();
 
   void SetIsInvisible(bool is_invisible);
+  void SetIsExpanded();
+  void SetIsCollapsed();
+
+  // Sets the view's expanded and collapsed states back to false. Expanded and
+  // collapsed states are typically mutually exclusive; however, certain views,
+  // such as the notification header view, offer an extra feature wherein the
+  // view itself cannot be either expanded or collapsed. This occurs in
+  // situations where the view is considered invisible, and therefore not
+  // interactable. Therefore, in such situations, it was necessary to explicitly
+  // remove both expanded and collapsed states from the view accessibility
+  // cache.
+  void RemoveExpandCollapseState();
 
   void SetIsDefault(bool is_default);
 

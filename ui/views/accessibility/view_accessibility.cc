@@ -1036,4 +1036,55 @@ void ViewAccessibility::SetIsProtected(bool is_protected) {
   SetState(ax::mojom::State::kProtected, is_protected);
 }
 
+void ViewAccessibility::SetIsExpanded() {
+  // Check to see if the expanded state is already set, if already set no need
+  // to add the state again.
+  if (data_.HasState(ax::mojom::State::kExpanded)) {
+    // The expanded and collapsed state must be mutually exclusive.
+    CHECK(!data_.HasState(ax::mojom::State::kCollapsed));
+    return;
+  }
+
+  bool should_notify = data_.HasState(ax::mojom::State::kCollapsed);
+  SetState(ax::mojom::State::kExpanded, true);
+  SetState(ax::mojom::State::kCollapsed, false);
+
+  // We should not notify when initial state (expanded = false, collapsed =
+  // false) changes. As changes to initial state generally stands for when the
+  // accessibility properties are being set by a view constructor or when the
+  // view author explicitly resets the value of expanded and collapsed state. In
+  // both these cases we dont wont to fire the accessibility event.
+  if (should_notify) {
+    NotifyEvent(ax::mojom::Event::kExpandedChanged, true);
+  }
+}
+
+void ViewAccessibility::SetIsCollapsed() {
+  // Check to see if the collapsed state is already set, if already set no need
+  // to add the state again.
+  if (data_.HasState(ax::mojom::State::kCollapsed)) {
+    // The expanded and collapsed state must be mutually exclusive.
+    CHECK(!data_.HasState(ax::mojom::State::kExpanded));
+    return;
+  }
+
+  bool should_notify = data_.HasState(ax::mojom::State::kExpanded);
+  SetState(ax::mojom::State::kCollapsed, true);
+  SetState(ax::mojom::State::kExpanded, false);
+
+  // We should not notify when initial state (expanded = false, collapsed =
+  // false) changes. As changes to initial state generally stands for when the
+  // accessibility properties are being set by a view constructor or when the
+  // view author explicitly resets the value of expanded and collapsed state. In
+  // both these cases we dont wont to fire the accessibility event.
+  if (should_notify) {
+    NotifyEvent(ax::mojom::Event::kExpandedChanged, true);
+  }
+}
+
+void ViewAccessibility::RemoveExpandCollapseState() {
+  SetState(ax::mojom::State::kExpanded, false);
+  SetState(ax::mojom::State::kCollapsed, false);
+}
+
 }  // namespace views
