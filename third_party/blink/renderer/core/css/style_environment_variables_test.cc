@@ -372,21 +372,6 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Remove) {
                                GetCSSPropertyBackgroundColor()));
 }
 
-TEST_F(StyleEnvironmentVariablesTest,
-       DISABLED_PrintExpectedVariableNameHashes) {
-  const UADefinedVariable variables[] = {
-      UADefinedVariable::kSafeAreaInsetTop,
-      UADefinedVariable::kSafeAreaInsetLeft,
-      UADefinedVariable::kSafeAreaInsetRight,
-      UADefinedVariable::kSafeAreaInsetBottom};
-  for (const auto& variable : variables) {
-    const AtomicString name = StyleEnvironmentVariables::GetVariableName(
-        variable, /*feature_context=*/nullptr);
-    printf("0x%x\n",
-           DocumentStyleEnvironmentVariables::GenerateHashFromName(name));
-  }
-}
-
 TEST_F(StyleEnvironmentVariablesTest, RecordUseCounter_IgnoreMediaControls) {
   InitializeWithHTML(GetFrame(), "<video controls />");
 

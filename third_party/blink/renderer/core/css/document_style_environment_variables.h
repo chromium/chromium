@@ -21,9 +21,6 @@ class FeatureContext;
 class CORE_EXPORT DocumentStyleEnvironmentVariables
     : public StyleEnvironmentVariables {
  public:
-  // Generate a hash from the provided name.
-  static unsigned GenerateHashFromName(const AtomicString&);
-
   // Create an instance bound to |parent| that will invalidate |document|'s
   // style when a variable is changed.
   DocumentStyleEnvironmentVariables(StyleEnvironmentVariables& parent,
@@ -57,9 +54,9 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
 
  private:
   // Record variable usage using |UseCounter|.
-  void RecordVariableUsage(unsigned id);
+  void RecordVariableUsage(const AtomicString& name);
 
-  HashSet<unsigned> seen_variables_;
+  HashSet<AtomicString> seen_variables_;
   Member<Document> document_;
 };
 
