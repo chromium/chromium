@@ -320,14 +320,13 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         String expectedTitle = mActivity.getString(R.string.safety_hub_safe_browsing_on_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_on_summary);
-        String expectedPrimaryButtonText = mActivity.getString(R.string.safety_hub_turn_on_button);
         String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_settings_button);
+                mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
         assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
-        assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
+        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
     }
@@ -343,7 +342,7 @@ public class SafetyHubModuleViewBinderTest {
         String expectedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary);
         String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_settings_button);
+                mActivity.getString(R.string.safety_hub_go_to_security_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
@@ -363,14 +362,12 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.prefs_safe_browsing_no_protection_summary);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_off_summary);
         String expectedPrimaryButtonText = mActivity.getString(R.string.safety_hub_turn_on_button);
-        String expectedSecondaryButtonText =
-                mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
         assertEquals(ERROR_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
         assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
-        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
+        assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertTrue(mSafeBrowsingPreference.isExpanded());
     }
 }

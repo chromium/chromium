@@ -1778,12 +1778,16 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_GO_TO_SETTINGS_BUTTON" translateable="false">
         Go to Settings
       </message>
+      <message name="IDS_SAFETY_HUB_GO_TO_SECURITY_SETTINGS_BUTTON" translateable="false">
+        Go to security settings
+      </message>
       <message name="IDS_SAFETY_HUB_TURN_ON_BUTTON" translateable="false">
         Turn on
       </message>
-       <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATIONS_BUTTON" translateable="false">
+      <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATIONS_BUTTON" translateable="false">
         Go to notifications
-      </message>      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" translateable="false">
+      </message>
+      <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_MENU_TEXT" translateable="false">
         Go to site settings
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_MENU_TEXT" translateable="false">

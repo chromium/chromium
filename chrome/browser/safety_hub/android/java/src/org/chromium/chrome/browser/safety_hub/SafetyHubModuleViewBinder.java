@@ -84,11 +84,9 @@ public class SafetyHubModuleViewBinder {
         String summary;
         Drawable iconDrawable;
         String primaryButtonText = null;
-        String secondaryButtonText =
-                preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
+        String secondaryButtonText = null;
         View.OnClickListener primaryButtonListener = null;
-        View.OnClickListener secondaryButtonListener =
-                model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
+        View.OnClickListener secondaryButtonListener = null;
         boolean expanded = false;
 
         switch (safeBrowsingState) {
@@ -102,8 +100,12 @@ public class SafetyHubModuleViewBinder {
                                 .getContext()
                                 .getString(R.string.safety_hub_safe_browsing_on_summary);
                 iconDrawable = getCheckmarkIcon(preference);
-                primaryButtonText =
-                        preference.getContext().getString(R.string.safety_hub_turn_on_button);
+                secondaryButtonText =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_go_to_security_settings_button);
+                secondaryButtonListener =
+                        model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
                 break;
             case SafeBrowsingState.ENHANCED_PROTECTION:
                 title =
@@ -115,6 +117,12 @@ public class SafetyHubModuleViewBinder {
                                 .getContext()
                                 .getString(R.string.safety_hub_safe_browsing_enhanced_summary);
                 iconDrawable = getCheckmarkIcon(preference);
+                secondaryButtonText =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_go_to_security_settings_button);
+                secondaryButtonListener =
+                        model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
                 break;
             default:
                 title =
@@ -128,6 +136,8 @@ public class SafetyHubModuleViewBinder {
                 iconDrawable = getErrorIcon(preference);
                 primaryButtonText =
                         preference.getContext().getString(R.string.safety_hub_turn_on_button);
+                primaryButtonListener =
+                        model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
                 expanded = true;
         }
 

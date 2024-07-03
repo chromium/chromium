@@ -143,7 +143,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
                                 v -> launchSettingsActivity(SafeBrowsingSettingsFragment.class))
                         .with(
                                 SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,

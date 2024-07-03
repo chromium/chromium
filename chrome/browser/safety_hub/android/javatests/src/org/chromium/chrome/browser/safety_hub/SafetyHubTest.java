@@ -384,10 +384,7 @@ public final class SafetyHubTest {
     @MediumTest
     @Feature({"SafetyHubSafeBrowsing"})
     public void testSafeBrowsingModule() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
-                                .setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION));
+        setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -450,10 +447,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     public void testPreferenceExpand() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
-                                .setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING));
+        setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
 
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
@@ -531,5 +525,13 @@ public final class SafetyHubTest {
     private void scrollToPreference(Matcher<View> matcher) {
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
+    }
+
+    private void setSafeBrowsingState(@SafeBrowsingState int state) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                            .setSafeBrowsingState(state);
+                });
     }
 }
