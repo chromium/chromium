@@ -281,7 +281,6 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            "PinnedShowReadingListSidePanelButton"},
           {kActionSidePanelShowSearchCompanion,
            "PinnedShowSearchCompanionSidePanelButton"},
-          {kActionSidePanelShowPerformance, "ShowPerformanceSidePanelButton"},
           {kActionTaskManager, "PinnedTaskManagerButton"},
           {kActionSidePanelShowLensOverlayResults,
            "PinnedShowLensOverlayResultsSidePanelButton"},

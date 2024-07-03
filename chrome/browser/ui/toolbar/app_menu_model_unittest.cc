@@ -41,7 +41,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "components/performance_manager/public/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -354,19 +353,6 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
-}
-
-TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{performance_manager::features::
-                                kPerformanceControlsSidePanel},
-      /*disabled_features=*/{});
-  AppMenuModel model(this, browser());
-  model.Init();
-  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_PERFORMANCE));
-  size_t performance_index = model.GetIndexOfCommandId(IDC_PERFORMANCE).value();
-  EXPECT_TRUE(model.IsEnabledAt(performance_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, CustomizeChromeItem) {

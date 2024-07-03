@@ -73,10 +73,6 @@ BASE_DECLARE_FEATURE(kDiscardRingImprovements);
 
 // Round 3 Performance Controls features
 
-// This enables the performance controls side panel for learning about and
-// configuring performance settings.
-BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
-
 // This enables the performance detection backend.
 BASE_DECLARE_FEATURE(kPerformanceIntervention);
 

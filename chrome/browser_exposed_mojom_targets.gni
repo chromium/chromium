@@ -53,7 +53,6 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings",
   "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
   "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
-  "//chrome/browser/ui/webui/side_panel/performance_controls:mojo_bindings",
   "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
   "//chrome/browser/ui/webui/suggest_internals:mojo_bindings",
   "//chrome/browser/ui/webui/tab_search:mojo_bindings",

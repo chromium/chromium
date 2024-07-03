@@ -96,7 +96,6 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -169,7 +168,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowLensOverlay);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCreateShortcutItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
@@ -848,13 +846,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   if (!features::IsExtensionMenuInRootAppMenu()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
   }
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_PERFORMANCE,
-                                     IDS_SHOW_PERFORMANCE, kPerformanceIcon);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
-                           kPerformanceMenuItem);
-  }
+
+  AddItemWithStringIdAndVectorIcon(this, IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE,
+                                   kPerformanceIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
+                         kPerformanceMenuItem);
+
   if (chrome::CanOpenTaskManager()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_TASK_MANAGER, IDS_TASK_MANAGER,
                                      kTaskManagerIcon);
@@ -1852,13 +1849,6 @@ void AppMenuModel::Build() {
                         browser()->window()->MaybeShowNewBadgeFor(
                             features::kTabOrganization));
     }
-  }
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    AddItemWithStringId(IDC_PERFORMANCE, IDS_SHOW_PERFORMANCE);
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_PERFORMANCE).value(),
-                           kPerformanceMenuItem);
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE,

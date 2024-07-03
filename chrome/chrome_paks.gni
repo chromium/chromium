@@ -190,7 +190,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_companion_resources.pak",
         "$root_gen_dir/chrome/side_panel_customize_chrome_resources.pak",
         "$root_gen_dir/chrome/side_panel_history_clusters_resources.pak",
-        "$root_gen_dir/chrome/side_panel_performance_resources.pak",
         "$root_gen_dir/chrome/side_panel_read_anything_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_resources.pak",
         "$root_gen_dir/chrome/side_panel_shared_resources.pak",

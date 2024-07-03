@@ -176,10 +176,6 @@ const char kChromeUIPasswordManagerCheckupURL[] =
     "chrome://password-manager/checkup?start=true";
 const char kChromeUIPasswordManagerSettingsURL[] =
     "chrome://password-manager/settings";
-const char kChromeUIPerformanceSidePanelHost[] =
-    "performance-side-panel.top-chrome";
-const char kChromeUIPerformanceSidePanelURL[] =
-    "chrome://performance-side-panel.top-chrome";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
 const char kChromeUIPolicyTestURL[] = "chrome://policy/test";

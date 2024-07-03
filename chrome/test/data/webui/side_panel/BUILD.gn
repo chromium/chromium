@@ -18,16 +18,6 @@ build_webui_tests("build") {
     "bookmarks/commerce/test_shopping_service_api_proxy.ts",
     "commerce/shopping_insights_app_test.ts",
     "commerce/price_tracking_section_test.ts",
-    "performance_controls/app_test.ts",
-    "performance_controls/battery_saver_card_test.ts",
-    "performance_controls/browser_health_card_test.ts",
-    "performance_controls/memory_saver_card_test.ts",
-    "performance_controls/performance_page_api_proxy_test.ts",
-    "performance_controls/battery_saver_card_api_proxy_test.ts",
-    "performance_controls/memory_saver_card_api_proxy_test.ts",
-    "performance_controls/test_performance_page_api_proxy.ts",
-    "performance_controls/test_battery_saver_card_api_proxy.ts",
-    "performance_controls/test_memory_saver_card_api_proxy.ts",
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
   ]
@@ -40,9 +30,6 @@ build_webui_tests("build") {
     "chrome://bookmarks-side-panel.top-chrome/shared/*|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
-            target_gen_dir),
-    "chrome://performance-side-panel.top-chrome/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/side_panel/performance_controls/tsc/*",
             target_gen_dir),
     "chrome://read-later.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/reading_list/tsc/*",
@@ -66,7 +53,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/commerce:build_ts",
-    "//chrome/browser/resources/side_panel/performance_controls:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//third_party/polymer/v3_0:library",

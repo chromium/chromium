@@ -35233,6 +35233,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SidePanel.Performance.Shown">
+  <obsolete>Deprecated 07/2024. No longer needed.</obsolete>
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <description>
@@ -44486,8 +44487,6 @@ should be able to be added at any place in this file.
   <suffix name="kActionSidePanelShowFeed" label="Show feed side panel action"/>
   <suffix name="kActionSidePanelShowHistoryCluster"
       label="Show history clusster side panel action"/>
-  <suffix name="kActionSidePanelShowPerformance"
-      label="Show performance side panel action"/>
   <suffix name="kActionSidePanelShowReadAnything"
       label="Show read anything side panel action"/>
   <suffix name="kActionSidePanelShowReadingList"

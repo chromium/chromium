@@ -36,7 +36,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/performance_manager/public/features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -165,15 +164,6 @@ void BrowserActions::InitializeBrowserActions() {
                       IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
                       kActionSidePanelShowReadAnything, browser, true)
           .Build());
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kPerformance, IDS_SHOW_PERFORMANCE,
-                        IDS_SHOW_PERFORMANCE, kMemorySaverIcon,
-                        kActionSidePanelShowPerformance, browser, true)
-            .Build());
-  }
 
   if (LensOverlayController::IsEnabled(browser)) {
     actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(

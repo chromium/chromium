@@ -17,8 +17,6 @@
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,8 +24,8 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
-#include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
-#include "chrome/browser/ui/webui/side_panel/performance_controls/performance.mojom-shared.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -147,15 +145,6 @@ void MemorySaverChipView::UpdateImpl() {
 
 void MemorySaverChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    PerformanceSidePanelCoordinator::GetOrCreateForBrowser(browser_)->Show(
-        {side_panel::mojom::PerformanceSidePanelNotification::
-             kMemorySaverRevisitDiscardedTab},
-        SidePanelOpenTrigger::kToolbarButton);
-    return;
-  }
-
   // If the dialog bubble is currently open, close it.
   if (IsBubbleShowing()) {
     bubble_->Close();

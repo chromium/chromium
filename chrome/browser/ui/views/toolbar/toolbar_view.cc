@@ -423,12 +423,9 @@ void ToolbarView::Init() {
     }
   }
 
-  // Only show the Battery Saver button when it is not controlled by the OS and
-  // the performance side panel is not enabled. On ChromeOS the battery icon in
-  // the shelf shows the same information.
-  if (!performance_manager::user_tuning::IsBatterySaverModeManagedByOS() &&
-      !base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
+  // Only show the Battery Saver button when it is not controlled by the OS. On
+  // ChromeOS the battery icon in the shelf shows the same information.
+  if (!performance_manager::user_tuning::IsBatterySaverModeManagedByOS()) {
     battery_saver_button_ = container_view_->AddChildView(
         std::make_unique<BatterySaverButton>(browser_view_));
   }

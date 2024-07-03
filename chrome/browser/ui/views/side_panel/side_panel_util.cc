@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/performance_controls/performance_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -55,13 +53,6 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   // Add bookmarks.
   BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
       ->CreateAndRegisterEntry(global_registry);
-
-  // Add performance.
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    PerformanceSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
-  }
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {

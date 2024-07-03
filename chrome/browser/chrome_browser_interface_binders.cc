@@ -79,7 +79,6 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 #include "components/performance_manager/embedder/binders.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -203,7 +202,6 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
-#include "chrome/browser/ui/webui/side_panel/performance_controls/performance_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -1214,9 +1212,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
-      HistoryClustersSidePanelUI, PerformanceSidePanelUI,
-      ShoppingInsightsSidePanelUI, media_router::AccessCodeCastUI,
-      commerce::ProductSpecificationsUI>(map);
+      HistoryClustersSidePanelUI, ShoppingInsightsSidePanelUI,
+      media_router::AccessCodeCastUI, commerce::ProductSpecificationsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
@@ -1375,13 +1372,6 @@ void PopulateChromeWebUIFrameBinders(
       shopping_service::mojom::ShoppingServiceHandlerFactory,
       BookmarksSidePanelUI, commerce::ProductSpecificationsUI,
       ShoppingInsightsSidePanelUI, HistoryUI>(map);
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kPerformanceControlsSidePanel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::PerformancePageHandlerFactory,
-        PerformanceSidePanelUI>(map);
-  }
 
   RegisterWebUIControllerInterfaceBinder<
       side_panel::mojom::CustomizeChromePageHandlerFactory, CustomizeChromeUI>(
