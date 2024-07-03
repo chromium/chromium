@@ -393,8 +393,7 @@ TEST(PrefServiceTest, WriteablePrefStoreFlags) {
        PrefRegistry::LOSSY_PREF | kCustomRegistrationFlag,
        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG}};
 
-  for (size_t i = 0; i < std::size(kRegistrationToWriteFlags); ++i) {
-    RegistrationToWriteFlags entry = kRegistrationToWriteFlags[i];
+  for (const RegistrationToWriteFlags& entry : kRegistrationToWriteFlags) {
     registry->RegisterDictionaryPref(entry.pref_name,
                                      entry.registration_flags);
 

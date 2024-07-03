@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 #define COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 
+#include <array>
 #include <functional>
 #include <map>
 #include <memory>
@@ -262,7 +263,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   }
 
   // Keeps the PrefStore references in order of precedence.
-  PrefStoreKeeper pref_stores_[PREF_STORE_TYPE_MAX + 1];
+  std::array<PrefStoreKeeper, PREF_STORE_TYPE_MAX + 1> pref_stores_;
 
   // Used for generating notifications. This is a weak reference,
   // since the notifier is owned by the corresponding PrefService.
