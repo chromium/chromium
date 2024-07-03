@@ -28,6 +28,14 @@ def CheckHistograms(input_api, output_api):  # pylint: disable=C0103
         return update_use_counter_css.ReadCssProperties(source_path)
 
     _VALIDATE_HISTOGRAM_ARGS = {
+        'third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom':
+        {
+            'update_script_name': 'update_use_counter_feature_enum.py',
+            'histogram_enum_name': 'FeatureObserver',
+            'start_marker': '^enum WebDXFeature {',
+            'end_marker': '^kNumberOfFeatures',
+            'strip_k_prefix': True,
+        },
         'third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom':
         {
             'update_script_name': 'update_use_counter_feature_enum.py',

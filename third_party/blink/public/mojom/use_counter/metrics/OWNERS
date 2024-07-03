@@ -10,3 +10,4 @@ per-file css_property_id.mojom=*
 # is required for adding/removing entries from this enum (consistent with
 # metrics/histograms/enums.xml).
 per-file web_feature.mojom=*
+per-file webdx_feature.mojom=*
