@@ -436,7 +436,7 @@
     "args": ["--force-device-scale-factor=2",
              "--enable-threaded-compositing"],
     "owners": ["fserb@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "scalefactor200",
@@ -953,7 +953,7 @@
     "bases": [],
     "args": ["--force-color-profile=scrgb-linear"],
     "owners": ["fserb@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "color-spin",
@@ -961,7 +961,7 @@
     "bases": [],
     "args": ["--force-color-profile=color-spin-gamma24"],
     "owners": ["fserb@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "wide-gamut",
@@ -969,7 +969,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
     "args": ["--force-color-profile=display-p3-d65"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "split-cache-by-include-credentials",
@@ -1201,7 +1201,7 @@
               "--enable-accelerated-2d-canvas",
               "--enable-gpu-rasterization"],
     "owners": ["fserb@chromium.org", "vasilyt@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "disable-frequency-capping-for-overlay-popup-detection",
