@@ -56,10 +56,6 @@ const base::FeatureParam<bool>
 
 BASE_FEATURE(kPrefetchProxy, "PrefetchProxy", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchUnblockOnCancel,
-             "PrefetchUnblockOnCancel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchCookieIndices,
              "PrefetchCookieIndices",
              base::FEATURE_DISABLED_BY_DEFAULT);
