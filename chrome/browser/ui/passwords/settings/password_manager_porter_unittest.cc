@@ -88,14 +88,6 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
   base::FilePath forced_path_;
 };
 
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
   explicit TestSelectFileDialogFactory(const base::FilePath& forced_path)
@@ -107,8 +99,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new TestSelectFileDialog(
-        listener, std::make_unique<TestSelectFilePolicy>(), forced_path_);
+    return new TestSelectFileDialog(listener, nullptr, forced_path_);
   }
 
  private:
@@ -163,8 +154,7 @@ class FakeCancellingSelectFileDialogFactory
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new FakeCancellingSelectFileDialog(
-        listener, std::make_unique<TestSelectFilePolicy>());
+    return new FakeCancellingSelectFileDialog(listener, nullptr);
   }
 };
 

@@ -115,15 +115,6 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
   bool auto_cancel_;
 };
 
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  // Pure virtual methods that need to be implemented.
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 // A test SelectFileDialogFactory so that the TestSelectFileDialog is used.
 class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
@@ -136,8 +127,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new TestSelectFileDialog(
-        listener, std::make_unique<TestSelectFilePolicy>(), auto_cancel_);
+    return new TestSelectFileDialog(listener, nullptr, auto_cancel_);
   }
 
  private:

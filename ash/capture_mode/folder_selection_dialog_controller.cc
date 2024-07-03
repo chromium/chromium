@@ -27,16 +27,6 @@ namespace ash {
 
 namespace {
 
-class NullSelectFolderPolicy : public ui::SelectFilePolicy {
- public:
-  NullSelectFolderPolicy() = default;
-  ~NullSelectFolderPolicy() override = default;
-
-  // ui::SelectFileDialog:
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 // Returns true if |event| is targeting a window in the subtree rooted at
 // |window|.
 bool IsEventTargetingWindowInSubtree(const ui::Event* event,
@@ -60,7 +50,7 @@ FolderSelectionDialogController::FolderSelectionDialogController(
           root->GetChildById(kShellWindowId_SettingBubbleContainer)),
       select_folder_dialog_(ui::SelectFileDialog::Create(
           /*listener=*/this,
-          std::make_unique<NullSelectFolderPolicy>())) {
+          /*policy=*/nullptr)) {
   DCHECK(delegate_);
   DCHECK(root);
   DCHECK(root->IsRootWindow());

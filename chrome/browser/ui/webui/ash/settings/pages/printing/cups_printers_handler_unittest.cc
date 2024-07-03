@@ -103,14 +103,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
   ~FakePpdProvider() override {}
 };
 
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of
 // selecting a file and verify that the extensions are correctly set.
 class FakeSelectFileDialog : public ui::SelectFileDialog {
@@ -188,8 +180,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
     // TODO(jimmyxgong): Investigate why using |policy| created by
     // CupsPrintersHandler crashes the test.
-    return new FakeSelectFileDialog(listener,
-                                    std::make_unique<TestSelectFilePolicy>(),
+    return new FakeSelectFileDialog(listener, nullptr,
                                     expected_file_type_info_);
   }
 

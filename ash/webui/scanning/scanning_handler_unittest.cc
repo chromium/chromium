@@ -38,14 +38,6 @@ constexpr char kTestFilePath[] = "/test/file/path";
 
 }  // namespace
 
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
 // A test ui::SelectFileDialog.
 class TestSelectFileDialog : public ui::SelectFileDialog {
  public:
@@ -122,7 +114,7 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
 
   std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy()
       override {
-    return std::make_unique<TestSelectFilePolicy>();
+    return nullptr;
   }
 
   std::string GetBaseNameFromPath(const base::FilePath& path) override {

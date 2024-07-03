@@ -72,20 +72,6 @@ std::vector<std::string> GetCombinedLogContents(
   return GetLogLines(contents);
 }
 
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
-};
-
-// A fake SelectFilePolicyCreator.
-std::unique_ptr<ui::SelectFilePolicy> CreateTestSelectFilePolicy(
-    content::WebContents* web_contents) {
-  return std::make_unique<TestSelectFilePolicy>();
-}
-
 // A fake DiagnosticsBrowserDelegate.
 class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
  public:
@@ -184,7 +170,10 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
     DiagnosticsLogController::Initialize(
         std::make_unique<FakeDiagnosticsBrowserDelegate>());
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
-        base::BindRepeating(&CreateTestSelectFilePolicy),
+        base::BindRepeating(
+            [](content::WebContents*) -> std::unique_ptr<ui::SelectFilePolicy> {
+              return nullptr;
+            }),
         /*telemetry_log*/ nullptr, /*routine_log*/ nullptr,
         /*networking_log*/ nullptr, &holding_space_client_);
     session_log_handler_->SetWebUIForTest(&web_ui_);
