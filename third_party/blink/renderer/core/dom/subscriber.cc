@@ -114,49 +114,37 @@ Subscriber::Subscriber(base::PassKey<Observable>,
 }
 
 void Subscriber::next(ScriptValue value) {
-  if (internal_observer_) {
-    internal_observer_->Next(value);
+  if (!active_) {
+    return;
   }
+
+  // This is a DCHECK because dispatching every single value to a subscriber is
+  // performance-criticial.
+  DCHECK(internal_observer_);
+  internal_observer_->Next(value);
 }
 
 void Subscriber::complete(ScriptState* script_state) {
-  ObservableInternalObserver* internal_observer = internal_observer_;
-  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
-  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
-  // `internal_observer` out before calling this.
+  if (!active_) {
+    return;
+  }
+
   CloseSubscription();
 
   // This will trigger the abort of `signal_`, which will run all of the
   // registered teardown callbacks.
   complete_or_error_controller_->abort(script_state);
 
-  if (internal_observer) {
-    CHECK(signal_->aborted());
-    internal_observer->Complete();
-  }
+  CHECK(signal_->aborted());
+  CHECK(internal_observer_);
+  internal_observer_->Complete();
 }
 
 void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
-  ObservableInternalObserver* internal_observer = internal_observer_;
-  // `CloseSubscription()` makes it impossible to invoke user-provided callbacks
-  // via `internal_observer_` anymore/re-entrantly, which is why we pull the
-  // `internal_observer` out before calling this.
-  CloseSubscription();
-
-  // This will trigger the abort of `signal_`, which will run all of the
-  // registered teardown callbacks.
-  complete_or_error_controller_->abort(script_state, error_value);
-
-  if (internal_observer) {
-    CHECK(signal_->aborted());
-    internal_observer->Error(script_state, error_value);
-  } else {
-    // The given `internal_observer` can be null here if the subscription is
-    // already closed (`CloseSubscription() manually clears
-    // `internal_observer_`).
-    //
-    // In this case, if the observable is still producing errors, we must
-    // surface them to the global via "report the exception":
+  if (!active_) {
+    // If `active_` is false, the subscription has already been closed by
+    // `CloseSubscription()`. In this case, if the observable is still producing
+    // errors, we must surface them to the global via "report the exception":
     // https://html.spec.whatwg.org/C#report-the-exception.
     //
     // Reporting the exception requires a valid `ScriptState`, which we don't
@@ -169,7 +157,18 @@ void Subscriber::error(ScriptState* script_state, ScriptValue error_value) {
     ScriptState::Scope scope(script_state);
     V8ScriptRunner::ReportException(script_state->GetIsolate(),
                                     error_value.V8Value());
+    return;
   }
+
+  CloseSubscription();
+
+  // This will trigger the abort of `signal_`, which will run all of the
+  // registered teardown callbacks.
+  complete_or_error_controller_->abort(script_state, error_value);
+
+  CHECK(signal_->aborted());
+  CHECK(internal_observer_);
+  internal_observer_->Error(script_state, error_value);
 }
 
 void Subscriber::addTeardown(V8VoidFunction* teardown) {
@@ -184,11 +183,8 @@ void Subscriber::addTeardown(V8VoidFunction* teardown) {
 
 void Subscriber::CloseSubscription() {
   close_subscription_algorithm_handle_.Clear();
+  // This makes it impossible to signal any more values to the subscriber.
   active_ = false;
-
-  // Reset all handlers, making it impossible to signal any more values to the
-  // subscriber.
-  internal_observer_ = nullptr;
 }
 
 void Subscriber::Trace(Visitor* visitor) const {
