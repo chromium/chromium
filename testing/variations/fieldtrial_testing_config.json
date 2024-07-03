@@ -1089,12 +1089,12 @@
             ],
             "experiments": [
                 {
-                    "name": "VirtualSwapEnabled_100PercentVmSize_5SecondSwapInterval",
+                    "name": "VirtualSwapEnabled_25PercentVmSize_10SecondSwapInterval",
                     "params": {
                         "guest_reclaim_enabled": "true",
-                        "size_percentage": "100",
+                        "size_percentage": "25",
                         "virtual_swap_enabled": "true",
-                        "virtual_swap_interval_ms": "5000"
+                        "virtual_swap_interval_ms": "10000"
                     },
                     "enable_features": [
                         "ArcGuestZram"
