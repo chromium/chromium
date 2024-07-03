@@ -10011,7 +10011,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/attestation/browser/device_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/browser/signing_key_policy_observer.cc",
-      "../browser/enterprise/connectors/device_trust/signals/dependency_factory_impl_unittest.cc",
+      "../browser/enterprise/core/dependency_factory_impl_unittest.cc",
       "../browser/enterprise/profile_management/oidc_auth_response_capture_navigation_throttle_unittest.cc",
       "../browser/enterprise/profile_management/profile_management_navigation_throttle_unittest.cc",
       "../browser/enterprise/profile_management/saml_response_parser_unittest.cc",

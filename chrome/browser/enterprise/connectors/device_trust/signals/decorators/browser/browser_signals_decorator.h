@@ -20,9 +20,9 @@ namespace policy {
 class CloudPolicyManager;
 }  // namespace policy
 
-namespace enterprise_management {
+namespace enterprise_core {
 class DependencyFactory;
-}  // namespace enterprise_management
+}  // namespace enterprise_core
 
 namespace enterprise_signals {
 struct DeviceInfo;
@@ -40,8 +40,7 @@ class BrowserSignalsDecorator : public SignalsDecorator {
  public:
   BrowserSignalsDecorator(
       policy::CloudPolicyManager* browser_cloud_policy_manager,
-      std::unique_ptr<enterprise_management::DependencyFactory>
-          dependency_factory,
+      std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory,
       device_signals::SignalsAggregator* signals_aggregator);
   ~BrowserSignalsDecorator() override;
 
@@ -75,7 +74,7 @@ class BrowserSignalsDecorator : public SignalsDecorator {
                             base::OnceClosure done_closure);
 
   const raw_ptr<policy::CloudPolicyManager> browser_cloud_policy_manager_;
-  std::unique_ptr<enterprise_management::DependencyFactory> dependency_factory_;
+  std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory_;
 
   // Signals aggregator, which is a profile-keyed service. Can be nullptr in
   // the case where the Profile is an incognito profile.

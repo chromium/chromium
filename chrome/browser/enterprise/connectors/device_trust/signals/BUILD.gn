@@ -11,14 +11,13 @@ source_set("signals") {
   public_deps = [
     "//base",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+    "//chrome/browser/enterprise/core",
   ]
 }
 
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_dependency_factory.cc",
-    "mock_dependency_factory.h",
     "mock_signals_filterer.cc",
     "mock_signals_filterer.h",
     "mock_signals_service.cc",
@@ -27,7 +26,6 @@ source_set("test_support") {
 
   public_deps = [
     ":signals",
-    "//components/enterprise/core",
     "//testing/gmock",
   ]
 }

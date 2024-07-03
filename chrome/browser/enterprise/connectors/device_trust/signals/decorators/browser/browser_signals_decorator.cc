@@ -49,8 +49,7 @@ std::optional<std::string> TryGetEnrollmentDomain(
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
     policy::CloudPolicyManager* browser_cloud_policy_manager,
-    std::unique_ptr<enterprise_management::DependencyFactory>
-        dependency_factory,
+    std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory,
     device_signals::SignalsAggregator* signals_aggregator)
     : browser_cloud_policy_manager_(browser_cloud_policy_manager),
       dependency_factory_(std::move(dependency_factory)),

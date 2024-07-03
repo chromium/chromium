@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #include "chrome/browser/enterprise/client_certificates/profile_context_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/dependency_factory_impl.h"
+#include "chrome/browser/enterprise/core/dependency_factory_impl.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -112,8 +112,7 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(
-              std::make_unique<enterprise_connectors::DependencyFactoryImpl>(
-                  profile),
+              std::make_unique<enterprise_core::DependencyFactoryImpl>(profile),
               profile_id_service,
               enterprise_attestation::DMServerClient::Create(
                   device_management_service, std::move(url_loader_factory)))));

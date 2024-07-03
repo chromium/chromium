@@ -24,8 +24,7 @@ namespace enterprise_attestation {
 class ProfileCloudManagementDelegate : public CloudManagementDelegate {
  public:
   ProfileCloudManagementDelegate(
-      std::unique_ptr<enterprise_management::DependencyFactory>
-          dependency_factory,
+      std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory,
       enterprise::ProfileIdService* profile_id_service,
       std::unique_ptr<DMServerClient> dmserver_client);
 
@@ -42,7 +41,7 @@ class ProfileCloudManagementDelegate : public CloudManagementDelegate {
   const enterprise_management::PolicyData* GetPolicyData() const;
   std::optional<std::string> GetClientID() const;
 
-  std::unique_ptr<enterprise_management::DependencyFactory> dependency_factory_;
+  std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory_;
   const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 
   std::unique_ptr<DMServerClient> dmserver_client_;

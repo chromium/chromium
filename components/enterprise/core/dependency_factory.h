@@ -9,7 +9,7 @@ namespace policy {
 class CloudPolicyManager;
 }  // namespace policy
 
-namespace enterprise_management {
+namespace enterprise_core {
 
 // Factory that can be used to lazy-load dependencies.
 class DependencyFactory {
@@ -19,6 +19,6 @@ class DependencyFactory {
   virtual policy::CloudPolicyManager* GetUserCloudPolicyManager() const = 0;
 };
 
-}  // namespace enterprise_management
+}  // namespace enterprise_core
 
 #endif  // COMPONENTS_ENTERPRISE_CORE_DEPENDENCY_FACTORY_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_DEPENDENCY_FACTORY_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_DEPENDENCY_FACTORY_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CORE_MOCK_DEPENDENCY_FACTORY_H_
+#define CHROME_BROWSER_ENTERPRISE_CORE_MOCK_DEPENDENCY_FACTORY_H_
 
 #include "components/enterprise/core/dependency_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace enterprise_connectors::test {
+namespace enterprise_core::test {
 
-class MockDependencyFactory : public enterprise_management::DependencyFactory {
+class MockDependencyFactory : public DependencyFactory {
  public:
   MockDependencyFactory();
   ~MockDependencyFactory() override;
@@ -21,6 +21,6 @@ class MockDependencyFactory : public enterprise_management::DependencyFactory {
               (const, override));
 };
 
-}  // namespace enterprise_connectors::test
+}  // namespace enterprise_core::test
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_MOCK_DEPENDENCY_FACTORY_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CORE_MOCK_DEPENDENCY_FACTORY_H_

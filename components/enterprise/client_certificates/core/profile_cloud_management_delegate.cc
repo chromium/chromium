@@ -16,8 +16,7 @@
 namespace enterprise_attestation {
 
 ProfileCloudManagementDelegate::ProfileCloudManagementDelegate(
-    std::unique_ptr<enterprise_management::DependencyFactory>
-        dependency_factory,
+    std::unique_ptr<enterprise_core::DependencyFactory> dependency_factory,
     enterprise::ProfileIdService* profile_id_service,
     std::unique_ptr<DMServerClient> dmserver_client)
     : dependency_factory_(std::move(dependency_factory)),
