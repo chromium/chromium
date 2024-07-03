@@ -93,6 +93,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-cfi-thin-lto-chrome",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-pi-arc-cfi-thin-lto-chrome",
 )
 
