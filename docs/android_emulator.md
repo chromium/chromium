@@ -28,11 +28,9 @@ tools/android/avd/avd.py list
 
 | Configurations | Android Version | CPU Arch| AVD Target | Builder |
 |:-------------- |:--------------- |:------- |:---------- |:------- |
-| `generic_android19.textpb` | K | x86 | google_apis | N/A |
-| `generic_android22.textpb` | L | x86 | google_apis | N/A |
-| `generic_android23.textpb` | M | x86 | google_apis | N/A |
-| `generic_android27.textpb` | O | x86 | google_apis | N/A |
-| `android_28_google_apis_x86.textpb` | P | x86 | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
+| `generic_android26.textpb` | 8.0 (O) | x86 | google_apis | N/A |
+| `generic_android27.textpb` | 8.1 (O_MR1) | x86 | google_apis | N/A |
+| `android_28_google_apis_x86.textpb` | 9 (P) | x86 | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
 | `android_29_google_apis_x86.textpb` | 10 (Q) | x86 | google_apis | N/A |
 | `android_30_google_apis_x86.textpb` | 11 (R) | x86 | google_apis | [android-11-x86-rel][android-11-x86-rel] |
 | `android_31_google_apis_x64.textpb` | 12 (S) | x86_64 | google_apis | [android-12-x64-rel][android-12-x64-rel] |
@@ -86,7 +84,7 @@ down. This is how builders run the emulator.
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/generic_android28.textpb
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb
     ```
 
  * `--emulator-count`
@@ -96,7 +94,7 @@ down. This is how builders run the emulator.
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --emulator-count 4
     ```
 
@@ -107,7 +105,7 @@ down. This is how builders run the emulator.
 
     ```
     $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --emulator-enable-network
     ```
 
@@ -118,7 +116,7 @@ down. This is how builders run the emulator.
 
     ```
       $ out/Debug/bin/run_base_unittests \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --emulator-window
     ```
 
@@ -135,7 +133,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb
     ```
 
     > Note: `avd.py start` will start an emulator instance and then terminate.
@@ -148,7 +146,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --enable-network
     ```
 
@@ -159,7 +157,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --emulator-window
     ```
 
@@ -175,7 +173,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --no-read-only
     ```
 
@@ -186,7 +184,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --wipe-data
     ```
 
@@ -209,7 +207,7 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     ```
       $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --avd-config tools/android/avd/proto/android_33_google_apis_x64.textpb \
           --debug-tags init,snapshot
     ```
 

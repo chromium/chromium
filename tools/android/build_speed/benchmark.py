@@ -61,14 +61,15 @@ _SUPPORTED_EMULATORS = {
     'generic_android23.textpb': 'x86',
     'generic_android24.textpb': 'x86',
     'generic_android25.textpb': 'x86',
+    'generic_android26.textpb': 'x86',
     'generic_android27.textpb': 'x86',
-    'generic_android28.textpb': 'x86',
-    'generic_android29.textpb': 'x86',
-    'generic_android30.textpb': 'x86',
-    'generic_android31.textpb': 'x64',
-    'generic_android32_foldable.textpb': 'x64',
-    'generic_android33': 'x64',
-    'generic_android34': 'x64',
+    'android_28_google_apis_x86.textpb': 'x86',
+    'android_29_google_apis_x86.textpb': 'x86',
+    'android_30_google_apis_x86.textpb': 'x86',
+    'android_31_google_apis_x64.textpb': 'x64',
+    'android_32_google_apis_x64_foldable.textpb': 'x64',
+    'android_33_google_apis_x64': 'x64',
+    'android_34_google_apis_x64': 'x64',
 }
 
 _GN_ARGS = [

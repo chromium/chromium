@@ -462,7 +462,7 @@ out/Debug/bin/run_content_shell_test_apk \
     --repeat=-1 \
     --break-on-failure \
     --emulator window \
-    --avd-config tools/android/avd/proto/generic_android30.textpb \
+    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
     -f "*WebContentsAccessibilityTreeTest*testExample"
 ```
 
@@ -481,7 +481,7 @@ out/Debug/bin/run_chrome_public_test_apk \
     --repeat=-1 \
     --break-on-failure \
     --emulator window \
-    --avd-config tools/android/avd/proto/generic_android30.textpb \
+    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
     -f "*ImageDescriptions*"
 ```
 

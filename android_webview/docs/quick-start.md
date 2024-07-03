@@ -61,7 +61,7 @@ this:
 
   ```shell
   $ tools/android/avd/avd.py start \
-      --avd-config tools/android/avd/proto/generic_android29.textpb --emulator-window
+      --avd-config tools/android/avd/proto/android_29_google_apis_x86.textpb --emulator-window
   ```
 
 2. Android Studio Emulator image. [Install the Android Studio

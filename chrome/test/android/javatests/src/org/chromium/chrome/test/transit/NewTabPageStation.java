@@ -43,9 +43,9 @@ public class NewTabPageStation extends PageStation {
 
         boolean isTablet = DeviceFormFactor.isTablet();
 
-        // TODO(crbug.com/40267786): On generic_android32_foldable these elements do not appear or
-        // appear unreliably when a keyboard is attached, which is the case for local development
-        // and in bots.
+        // TODO(crbug.com/40267786): On android_32_google_apis_x64_foldable these elements do not
+        // appear or appear unreliably when a keyboard is attached, which is the case for local
+        // development and in bots.
         if (!isTablet) {
             elements.declareView(SEARCH_LOGO);
             elements.declareView(SEARCH_BOX);
