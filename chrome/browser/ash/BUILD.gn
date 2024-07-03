@@ -1976,22 +1976,6 @@ source_set("ash") {
     "printing/cups_printers_manager_factory.h",
     "printing/cups_printers_manager_proxy.cc",
     "printing/cups_printers_manager_proxy.h",
-    "printing/enterprise/bulk_printers_calculator.cc",
-    "printing/enterprise/bulk_printers_calculator.h",
-    "printing/enterprise/bulk_printers_calculator_factory.cc",
-    "printing/enterprise/bulk_printers_calculator_factory.h",
-    "printing/enterprise/calculators_policies_binder.cc",
-    "printing/enterprise/calculators_policies_binder.h",
-    "printing/enterprise/enterprise_printers_provider.cc",
-    "printing/enterprise/enterprise_printers_provider.h",
-    "printing/enterprise/managed_printer_translator.cc",
-    "printing/enterprise/managed_printer_translator.h",
-    "printing/enterprise/print_servers_policy_provider.cc",
-    "printing/enterprise/print_servers_policy_provider.h",
-    "printing/enterprise/print_servers_provider.cc",
-    "printing/enterprise/print_servers_provider.h",
-    "printing/enterprise/print_servers_provider_factory.cc",
-    "printing/enterprise/print_servers_provider_factory.h",
     "printing/fake_cups_print_job_manager.cc",
     "printing/fake_cups_print_job_manager.h",
     "printing/history/print_job_database.h",
@@ -2430,6 +2414,7 @@ source_set("ash") {
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/remote_apps",
     "//chrome/browser/ash/sharesheet",
@@ -2870,7 +2855,6 @@ source_set("ash") {
     ":app_install_events_proto",
     ":attestation_proto",
     ":device_policy_remover_generated",
-    ":managed_printer_proto",
     "//apps",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:arc_metrics_constants",
@@ -3037,6 +3021,8 @@ source_set("ash") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
+    "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/enterprise:managed_printer_proto",
     "//chrome/browser/ash/quick_pair",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/secure_channel",
@@ -4593,12 +4579,6 @@ source_set("unit_tests") {
     "printing/cups_print_job_notification_unittest.cc",
     "printing/cups_printer_status_creator_unittest.cc",
     "printing/cups_printers_manager_unittest.cc",
-    "printing/enterprise/bulk_printers_calculator_unittest.cc",
-    "printing/enterprise/calculators_policies_binder_unittest.cc",
-    "printing/enterprise/enterprise_printers_provider_unittest.cc",
-    "printing/enterprise/managed_printer_translator_unittest.cc",
-    "printing/enterprise/print_servers_policy_provider_unittest.cc",
-    "printing/enterprise/print_servers_provider_unittest.cc",
     "printing/history/print_job_database_impl_unittest.cc",
     "printing/history/print_job_history_cleaner_unittest.cc",
     "printing/history/print_job_history_service_impl_unittest.cc",
@@ -4693,7 +4673,6 @@ source_set("unit_tests") {
     ":ash",
     ":attestation_proto",
     ":lock_unlock_event_proto",
-    ":managed_printer_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":test_support",
@@ -4804,6 +4783,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/plugin_vm:test_support",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/ash/printing/enterprise",
+    "//chrome/browser/ash/printing/enterprise:managed_printer_proto",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/shimless_rma",
@@ -5314,6 +5295,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/phonehub:unit_tests",
     "//chrome/browser/ash/platform_keys:unit_tests",
     "//chrome/browser/ash/plugin_vm:unit_tests",
+    "//chrome/browser/ash/printing/enterprise:unit_tests",
     "//chrome/browser/ash/release_notes:unit_tests",
     "//chrome/browser/ash/remote_apps:unit_tests",
     "//chrome/browser/ash/secure_channel:unit_tests",
@@ -5456,10 +5438,6 @@ proto_library("user_activity_event_proto") {
 
 proto_library("user_event_reporter_testing_record_proto") {
   sources = [ "policy/reporting/user_event_reporter_testing_record.proto" ]
-}
-
-proto_library("managed_printer_proto") {
-  sources = [ "printing/enterprise/managed_printer_configuration.proto" ]
 }
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
