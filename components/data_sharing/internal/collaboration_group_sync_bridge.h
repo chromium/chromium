@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -33,9 +34,9 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
     ~Observer() override = default;
 
     virtual void OnGroupsUpdated(
-        const std::vector<std::string>& added_group_ids,
-        const std::vector<std::string>& updated_group_ids,
-        const std::vector<std::string>& deleted_group_ids) = 0;
+        const std::vector<GroupId>& added_group_ids,
+        const std::vector<GroupId>& updated_group_ids,
+        const std::vector<GroupId>& deleted_group_ids) = 0;
     virtual void OnDataLoaded() = 0;
   };
 
@@ -72,7 +73,7 @@ class CollaborationGroupSyncBridge : public syncer::ModelTypeSyncBridge {
 
   // Own methods.
   // Returns ids of all synced (not deleted) collaboration groups.
-  std::vector<std::string> GetCollaborationGroupIds() const;
+  std::vector<GroupId> GetCollaborationGroupIds() const;
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

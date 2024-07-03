@@ -34,7 +34,7 @@ void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
 
 void EmptyDataSharingService::ReadGroup(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
 void EmptyDataSharingService::CreateGroup(
@@ -42,16 +42,16 @@ void EmptyDataSharingService::CreateGroup(
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
 void EmptyDataSharingService::DeleteGroup(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
 void EmptyDataSharingService::InviteMember(
-    const std::string& group_id,
+    const GroupId& group_id,
     const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
 void EmptyDataSharingService::RemoveMember(
-    const std::string& group_id,
+    const GroupId& group_id,
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 

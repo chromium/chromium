@@ -31,21 +31,21 @@ class EmptyDataSharingService : public DataSharingService {
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;
-  void ReadGroup(const std::string& group_id,
+  void ReadGroup(const GroupId& group_id,
                  base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                      callback) override;
   void CreateGroup(const std::string& group_name,
                    base::OnceCallback<void(const GroupDataOrFailureOutcome&)>
                        callback) override;
   void DeleteGroup(
-      const std::string& group_id,
+      const GroupId& group_id,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   void InviteMember(
-      const std::string& group_id,
+      const GroupId& group_id,
       const std::string& invitee_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   void RemoveMember(
-      const std::string& group_id,
+      const GroupId& group_id,
       const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) override;
   bool ShouldInterceptNavigationForShareURL(const GURL& url) override;

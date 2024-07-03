@@ -145,9 +145,9 @@ void DataSharingServiceImpl::ReadAllGroups(
   }
 
   data_sharing_pb::ReadGroupsParams params;
-  for (const std::string& group_id :
+  for (const GroupId& group_id :
        collaboration_group_sync_bridge_->GetCollaborationGroupIds()) {
-    params.add_group_ids(group_id);
+    params.add_group_ids(group_id.value());
   }
 
   if (params.group_ids().empty()) {
@@ -163,7 +163,7 @@ void DataSharingServiceImpl::ReadAllGroups(
 }
 
 void DataSharingServiceImpl::ReadGroup(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {
   // TODO(crbug.com/301390275): this method should read data from the cache
   // instead of SDK.
@@ -178,7 +178,7 @@ void DataSharingServiceImpl::ReadGroup(
   }
 
   data_sharing_pb::ReadGroupsParams params;
-  params.add_group_ids(group_id);
+  params.add_group_ids(group_id.value());
   sdk_delegate_->ReadGroups(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnReadSingleGroupCompleted,
@@ -207,7 +207,7 @@ void DataSharingServiceImpl::CreateGroup(
 }
 
 void DataSharingServiceImpl::DeleteGroup(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
   if (!sdk_delegate_) {
     // Reply in a posted task to avoid reentrance on the calling side.
@@ -219,7 +219,7 @@ void DataSharingServiceImpl::DeleteGroup(
   }
 
   data_sharing_pb::DeleteGroupParams params;
-  params.set_group_id(group_id);
+  params.set_group_id(group_id.value());
   sdk_delegate_->DeleteGroup(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnSimpleGroupActionCompleted,
@@ -227,7 +227,7 @@ void DataSharingServiceImpl::DeleteGroup(
 }
 
 void DataSharingServiceImpl::InviteMember(
-    const std::string& group_id,
+    const GroupId& group_id,
     const std::string& invitee_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
   if (!sdk_delegate_) {
@@ -249,7 +249,7 @@ void DataSharingServiceImpl::InviteMember(
 }
 
 void DataSharingServiceImpl::RemoveMember(
-    const std::string& group_id,
+    const GroupId& group_id,
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {
   if (!sdk_delegate_) {
@@ -271,9 +271,9 @@ void DataSharingServiceImpl::RemoveMember(
 }
 
 void DataSharingServiceImpl::OnGroupsUpdated(
-    const std::vector<std::string>& added_group_ids,
-    const std::vector<std::string>& updated_group_ids,
-    const std::vector<std::string>& deleted_group_ids) {
+    const std::vector<GroupId>& added_group_ids,
+    const std::vector<GroupId>& updated_group_ids,
+    const std::vector<GroupId>& deleted_group_ids) {
   // TODO(crbug.com/301390275): get rid of this method and corresponding
   // asynchronous logic. Once caching is supported, observers should be
   // notified upon cache updates instead.
@@ -282,7 +282,7 @@ void DataSharingServiceImpl::OnGroupsUpdated(
   }
 
   // Deletions could be notified immediately.
-  for (const std::string& group_id : deleted_group_ids) {
+  for (const GroupId& group_id : deleted_group_ids) {
     for (auto& observer : observers_) {
       observer.OnGroupRemoved(group_id);
     }
@@ -290,11 +290,11 @@ void DataSharingServiceImpl::OnGroupsUpdated(
 
   // Fetch added and updated groups.
   data_sharing_pb::ReadGroupsParams params;
-  for (const std::string& group_id : added_group_ids) {
-    params.add_group_ids(group_id);
+  for (const GroupId& group_id : added_group_ids) {
+    params.add_group_ids(group_id.value());
   }
-  for (const std::string& group_id : updated_group_ids) {
-    params.add_group_ids(group_id);
+  for (const GroupId& group_id : updated_group_ids) {
+    params.add_group_ids(group_id.value());
   }
   if (params.group_ids().empty()) {
     // No groups to read.
@@ -307,10 +307,10 @@ void DataSharingServiceImpl::OnGroupsUpdated(
           &DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted,
           weak_ptr_factory_.GetWeakPtr(),
           /*added_group_ids=*/
-          std::set<std::string>(added_group_ids.begin(), added_group_ids.end()),
+          std::set<GroupId>(added_group_ids.begin(), added_group_ids.end()),
           /*updated_group_ids=*/
-          std::set<std::string>(updated_group_ids.begin(),
-                                updated_group_ids.end())));
+          std::set<GroupId>(updated_group_ids.begin(),
+                            updated_group_ids.end())));
 }
 
 void DataSharingServiceImpl::OnDataLoaded() {
@@ -323,10 +323,10 @@ void DataSharingServiceImpl::OnDataLoaded() {
   }
 
   data_sharing_pb::ReadGroupsParams params;
-  std::vector<std::string> group_ids =
+  std::vector<GroupId> group_ids =
       collaboration_group_sync_bridge_->GetCollaborationGroupIds();
-  for (const std::string& group_id : group_ids) {
-    params.add_group_ids(group_id);
+  for (const GroupId& group_id : group_ids) {
+    params.add_group_ids(group_id.value());
   }
 
   if (params.group_ids().empty()) {
@@ -339,8 +339,8 @@ void DataSharingServiceImpl::OnDataLoaded() {
       base::BindOnce(
           &DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted,
           weak_ptr_factory_.GetWeakPtr(), /*added_group_ids=*/
-          std::set<std::string>(group_ids.begin(), group_ids.end()),
-          /*updated_group_ids=*/std::set<std::string>()));
+          std::set<GroupId>(group_ids.begin(), group_ids.end()),
+          /*updated_group_ids=*/std::set<GroupId>()));
 }
 
 void DataSharingServiceImpl::OnReadSingleGroupCompleted(
@@ -396,7 +396,7 @@ void DataSharingServiceImpl::OnCreateGroupCompleted(
 }
 
 void DataSharingServiceImpl::OnGaiaIdLookupForAddMemberCompleted(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
     const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                          absl::Status>& result) {
@@ -406,7 +406,7 @@ void DataSharingServiceImpl::OnGaiaIdLookupForAddMemberCompleted(
   }
 
   data_sharing_pb::AddMemberParams params;
-  params.set_group_id(group_id);
+  params.set_group_id(group_id.value());
   params.set_member_gaia_id(result.value().gaia_id());
   sdk_delegate_->AddMember(
       params,
@@ -415,7 +415,7 @@ void DataSharingServiceImpl::OnGaiaIdLookupForAddMemberCompleted(
 }
 
 void DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted(
-    const std::string& group_id,
+    const GroupId& group_id,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
     const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                          absl::Status>& result) {
@@ -425,7 +425,7 @@ void DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted(
   }
 
   data_sharing_pb::RemoveMemberParams params;
-  params.set_group_id(group_id);
+  params.set_group_id(group_id.value());
   params.set_member_gaia_id(result.value().gaia_id());
   sdk_delegate_->RemoveMember(
       params,
@@ -434,8 +434,8 @@ void DataSharingServiceImpl::OnGaiaIdLookupForRemoveMemberCompleted(
 }
 
 void DataSharingServiceImpl::OnReadGroupsToNotifyObserversCompleted(
-    const std::set<std::string>& added_group_ids,
-    const std::set<std::string>& updated_group_ids,
+    const std::set<GroupId>& added_group_ids,
+    const std::set<GroupId>& updated_group_ids,
     const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
         read_groups_result) {
   if (!read_groups_result.has_value()) {

@@ -60,7 +60,7 @@ data_sharing_pb::GroupMember MakeGroupMemberProto(
 
 TEST(GroupDataProtoUtilsTest, ShouldConvertGroupDataToProto) {
   GroupData group_data;
-  group_data.group_id = kGroupId;
+  group_data.group_id = GroupId(kGroupId);
   group_data.display_name = kGroupDisplayName;
   group_data.members.push_back(MakeGroupMember(
       kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
@@ -91,7 +91,7 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
 
   GroupData group_data = GroupDataFromProto(group_data_proto);
 
-  EXPECT_EQ(group_data.group_id, kGroupId);
+  EXPECT_EQ(group_data.group_id, GroupId(kGroupId));
   EXPECT_EQ(group_data.display_name, kGroupDisplayName);
 
   ASSERT_THAT(group_data.members, SizeIs(1));
@@ -106,7 +106,7 @@ TEST(GroupDataProtoUtilsTest, ShouldMakeGroupDataFromProto) {
 TEST(GroupDataProtoUtilsTest,
      ShouldConvertGroupDataToProtoAndBackWithMultipleMembers) {
   GroupData original_group_data;
-  original_group_data.group_id = kGroupId;
+  original_group_data.group_id = GroupId(kGroupId);
   original_group_data.display_name = kGroupDisplayName;
   original_group_data.members.push_back(MakeGroupMember(
       kGaiaId1, kUser1DisplayName, kEmail1, MemberRole::kOwner, kAvatarUrl1));
@@ -116,7 +116,7 @@ TEST(GroupDataProtoUtilsTest,
   GroupData group_data_from_proto =
       GroupDataFromProto(GroupDataToProto(original_group_data));
 
-  EXPECT_EQ(group_data_from_proto.group_id, kGroupId);
+  EXPECT_EQ(group_data_from_proto.group_id, original_group_data.group_id);
   EXPECT_EQ(group_data_from_proto.display_name, kGroupDisplayName);
 
   ASSERT_THAT(group_data_from_proto.members, SizeIs(2));

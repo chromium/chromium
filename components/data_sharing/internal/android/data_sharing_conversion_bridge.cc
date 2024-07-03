@@ -44,7 +44,7 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateJavaGroupData(
     j_members.push_back(CreateJavaGroupMember(env, member));
   }
   return Java_GroupData_createGroupData(
-      env, ConvertUTF8ToJavaString(env, group_data.group_id),
+      env, ConvertUTF8ToJavaString(env, group_data.group_id.value()),
       ConvertUTF8ToJavaString(env, group_data.display_name),
       ToTypedJavaArrayOfObjects(
           env, base::make_span(j_members),

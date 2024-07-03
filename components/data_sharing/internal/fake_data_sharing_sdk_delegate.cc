@@ -15,7 +15,7 @@ FakeDataSharingSDKDelegate::FakeDataSharingSDKDelegate() = default;
 FakeDataSharingSDKDelegate::~FakeDataSharingSDKDelegate() = default;
 
 std::optional<data_sharing_pb::GroupData> FakeDataSharingSDKDelegate::GetGroup(
-    const std::string& group_id) {
+    const GroupId& group_id) {
   auto it = groups_.find(group_id);
   if (it != groups_.end()) {
     return it->second;
@@ -23,12 +23,12 @@ std::optional<data_sharing_pb::GroupData> FakeDataSharingSDKDelegate::GetGroup(
   return std::nullopt;
 }
 
-void FakeDataSharingSDKDelegate::RemoveGroup(const std::string& group_id) {
+void FakeDataSharingSDKDelegate::RemoveGroup(const GroupId& group_id) {
   groups_.erase(group_id);
 }
 
 void FakeDataSharingSDKDelegate::UpdateGroup(
-    const std::string& group_id,
+    const GroupId& group_id,
     const std::string& new_display_name) {
   auto it = groups_.find(group_id);
   ASSERT_TRUE(it != groups_.end());
@@ -36,16 +36,19 @@ void FakeDataSharingSDKDelegate::UpdateGroup(
   it->second.set_display_name(new_display_name);
 }
 
-std::string FakeDataSharingSDKDelegate::AddGroupAndReturnId(
+GroupId FakeDataSharingSDKDelegate::AddGroupAndReturnId(
     const std::string& display_name) {
+  const GroupId group_id = GroupId(base::NumberToString(next_group_id_++));
+
   data_sharing_pb::GroupData group_data;
-  group_data.set_group_id(base::NumberToString(next_group_id_++));
+  group_data.set_group_id(group_id.value());
   group_data.set_display_name(display_name);
-  groups_[group_data.group_id()] = group_data;
-  return group_data.group_id();
+  groups_[group_id] = group_data;
+
+  return group_id;
 }
 
-void FakeDataSharingSDKDelegate::AddMember(const std::string& group_id,
+void FakeDataSharingSDKDelegate::AddMember(const GroupId& group_id,
                                            const std::string& member_gaia_id) {
   auto group_it = groups_.find(group_id);
   ASSERT_TRUE(group_it != groups_.end());
@@ -68,7 +71,7 @@ void FakeDataSharingSDKDelegate::CreateGroup(
     base::OnceCallback<
         void(const base::expected<data_sharing_pb::CreateGroupResult,
                                   absl::Status>&)> callback) {
-  std::string group_id = AddGroupAndReturnId(params.display_name());
+  const GroupId group_id = AddGroupAndReturnId(params.display_name());
 
   data_sharing_pb::CreateGroupResult result;
   *result.mutable_group_data() = groups_[group_id];
@@ -83,7 +86,8 @@ void FakeDataSharingSDKDelegate::ReadGroups(
         const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
         callback) {
   data_sharing_pb::ReadGroupsResult result;
-  for (const auto& group_id : params.group_ids()) {
+  for (const auto& raw_group_id : params.group_ids()) {
+    const GroupId group_id(raw_group_id);
     if (groups_.find(group_id) != groups_.end()) {
       *result.add_group_data() = groups_[group_id];
     }
@@ -105,7 +109,7 @@ void FakeDataSharingSDKDelegate::ReadGroups(
 void FakeDataSharingSDKDelegate::AddMember(
     const data_sharing_pb::AddMemberParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  auto group_it = groups_.find(params.group_id());
+  auto group_it = groups_.find(GroupId(params.group_id()));
   absl::Status status = absl::OkStatus();
   if (group_it != groups_.end()) {
     data_sharing_pb::GroupMember member;
@@ -122,7 +126,7 @@ void FakeDataSharingSDKDelegate::AddMember(
 void FakeDataSharingSDKDelegate::RemoveMember(
     const data_sharing_pb::RemoveMemberParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  auto group_it = groups_.find(params.group_id());
+  auto group_it = groups_.find(GroupId(params.group_id()));
   if (group_it == groups_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -152,8 +156,9 @@ void FakeDataSharingSDKDelegate::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
   absl::Status status = absl::OkStatus();
-  if (groups_.find(params.group_id()) != groups_.end()) {
-    groups_.erase(params.group_id());
+  const GroupId group_id(params.group_id());
+  if (groups_.find(group_id) != groups_.end()) {
+    groups_.erase(group_id);
   } else {
     status = absl::Status(absl::StatusCode::kNotFound, "Group not found");
   }

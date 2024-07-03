@@ -38,9 +38,9 @@ using base::test::RunClosure;
 using testing::Eq;
 
 sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
-    const std::string& id) {
+    const GroupId& id) {
   sync_pb::CollaborationGroupSpecifics result;
-  result.set_collaboration_id(id);
+  result.set_collaboration_id(id.value());
   result.set_last_updated_timestamp_millis_since_unix_epoch(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   return result;
@@ -82,7 +82,7 @@ class MockObserver : public DataSharingService::Observer {
 
   MOCK_METHOD(void, OnGroupChanged, (const GroupData&), (override));
   MOCK_METHOD(void, OnGroupAdded, (const GroupData&), (override));
-  MOCK_METHOD(void, OnGroupRemoved, (const std::string&), (override));
+  MOCK_METHOD(void, OnGroupRemoved, (const GroupId&), (override));
 };
 
 
@@ -154,7 +154,7 @@ TEST_F(DataSharingServiceImplTest, ShouldCreateGroup) {
 
 TEST_F(DataSharingServiceImplTest, ShouldDeleteGroup) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy path.
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
   ASSERT_TRUE(not_owned_sdk_delegate_->GetGroup(group_id).has_value());
 
@@ -174,7 +174,7 @@ TEST_F(DataSharingServiceImplTest, ShouldDeleteGroup) {
 TEST_F(DataSharingServiceImplTest, ShouldReadGroup) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy path.
   const std::string display_name = "display_name";
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
 
   DataSharingService::GroupDataOrFailureOutcome outcome;
@@ -198,10 +198,10 @@ TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy path.
   // Delegate stores 2 groups.
   const std::string display_name1 = "group1";
-  const std::string group_id1 =
+  const GroupId group_id1 =
       not_owned_sdk_delegate_->AddGroupAndReturnId(display_name1);
   const std::string display_name2 = "group2";
-  const std::string group_id2 =
+  const GroupId group_id2 =
       not_owned_sdk_delegate_->AddGroupAndReturnId(display_name2);
 
   // Mimics initial sync for collaboration group datatype with the same two
@@ -242,7 +242,7 @@ TEST_F(DataSharingServiceImplTest, ShouldReadAllGroups) {
 
 TEST_F(DataSharingServiceImplTest, ShouldInviteMember) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
@@ -267,7 +267,7 @@ TEST_F(DataSharingServiceImplTest, ShouldInviteMember) {
 
 TEST_F(DataSharingServiceImplTest, ShouldRemoveMember) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
 
   const std::string email = "user@gmail.com";
@@ -292,7 +292,7 @@ TEST_F(DataSharingServiceImplTest, ShouldRemoveMember) {
 
 TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupAddition) {
   const std::string display_name = "display_name";
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
 
   base::RunLoop run_loop;
@@ -319,7 +319,7 @@ TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupAddition) {
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupRemoval) {
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
   auto* collaboration_group_bridge =
       data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
@@ -352,7 +352,7 @@ TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupRemoval) {
 }
 
 TEST_F(DataSharingServiceImplTest, ShouldNotifyObserverOnGroupChange) {
-  const std::string group_id =
+  const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
   auto* collaboration_group_bridge =
       data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();

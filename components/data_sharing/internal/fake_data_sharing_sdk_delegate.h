@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
+#include "components/data_sharing/public/group_data.h"
 
 namespace data_sharing {
 
@@ -19,18 +20,16 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
   ~FakeDataSharingSDKDelegate() override;
 
   // Convenience methods for testing.
-  std::optional<data_sharing_pb::GroupData> GetGroup(
-      const std::string& group_id);
+  std::optional<data_sharing_pb::GroupData> GetGroup(const GroupId& group_id);
 
-  void RemoveGroup(const std::string& group_id);
+  void RemoveGroup(const GroupId& group_id);
 
-  void UpdateGroup(const std::string& group_id,
+  void UpdateGroup(const GroupId& group_id,
                    const std::string& new_display_name);
 
-  std::string AddGroupAndReturnId(const std::string& display_name);
+  GroupId AddGroupAndReturnId(const std::string& display_name);
 
-  void AddMember(const std::string& group_id,
-                 const std::string& member_gaia_id);
+  void AddMember(const GroupId& group_id, const std::string& member_gaia_id);
 
   void AddAccount(const std::string& email, const std::string& gaia_id);
 
@@ -61,7 +60,7 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
                                     absl::Status>&)> callback) override;
 
  private:
-  std::map<std::string, data_sharing_pb::GroupData> groups_;
+  std::map<GroupId, data_sharing_pb::GroupData> groups_;
   std::map<std::string, std::string> email_to_gaia_id_;
   int next_group_id_ = 0;
 };

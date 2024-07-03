@@ -66,7 +66,7 @@ GroupMember GroupMemberFromProto(
 
 data_sharing_pb::GroupData GroupDataToProto(const GroupData& group_data) {
   data_sharing_pb::GroupData result;
-  result.set_group_id(group_data.group_id);
+  result.set_group_id(group_data.group_id.value());
   result.set_display_name(group_data.display_name);
   for (const auto& member : group_data.members) {
     *result.add_members() = GroupMemberToProto(member);
@@ -77,7 +77,7 @@ data_sharing_pb::GroupData GroupDataToProto(const GroupData& group_data) {
 GroupData GroupDataFromProto(
     const data_sharing_pb::GroupData& group_data_proto) {
   GroupData result;
-  result.group_id = group_data_proto.group_id();
+  result.group_id = GroupId(group_data_proto.group_id());
   result.display_name = group_data_proto.display_name();
   for (const auto& member_proto : group_data_proto.members()) {
     result.members.push_back(GroupMemberFromProto(member_proto));

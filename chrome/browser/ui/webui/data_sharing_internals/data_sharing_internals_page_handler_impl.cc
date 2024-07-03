@@ -53,7 +53,7 @@ void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
     std::vector<data_sharing_internals::mojom::GroupDataPtr> group_data;
     for (const auto& data : group_result.value()) {
       auto group_entry = data_sharing_internals::mojom::GroupData::New();
-      group_entry->group_id = data.group_id;
+      group_entry->group_id = data.group_id.value();
       group_entry->name = data.display_name;
       for (const auto& member : data.members) {
         auto group_member = data_sharing_internals::mojom::GroupMember::New();

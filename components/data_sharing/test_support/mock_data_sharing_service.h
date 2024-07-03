@@ -34,21 +34,21 @@ class MockDataSharingService : public DataSharingService {
       void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));
   MOCK_METHOD2(
       ReadGroup,
-      void(const std::string&,
+      void(const GroupId&,
            base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
   MOCK_METHOD2(
       CreateGroup,
       void(const std::string&,
            base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
   MOCK_METHOD2(DeleteGroup,
-               void(const std::string&,
+               void(const GroupId&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD3(InviteMember,
-               void(const std::string&,
+               void(const GroupId&,
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD3(RemoveMember,
-               void(const std::string&,
+               void(const GroupId&,
                     const std::string&,
                     base::OnceCallback<void(PeopleGroupActionOutcome)>));
   MOCK_METHOD1(ShouldInterceptNavigationForShareURL, bool(const GURL&));

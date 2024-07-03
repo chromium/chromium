@@ -79,7 +79,7 @@ class DataSharingServiceAndroid::GroupDataObserverBridge
   // DataSharingService::Observer impl:
   void OnGroupChanged(const GroupData& group_data) override;
   void OnGroupAdded(const GroupData& group_data) override;
-  void OnGroupRemoved(const std::string& group_id) override;
+  void OnGroupRemoved(const GroupId& group_id) override;
 
  private:
   ScopedJavaLocalRef<jobject> java_obj_;
@@ -114,10 +114,10 @@ void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupAdded(
 }
 
 void DataSharingServiceAndroid::GroupDataObserverBridge::OnGroupRemoved(
-    const std::string& group_id) {
+    const GroupId& group_id) {
   JNIEnv* env = AttachCurrentThread();
-  Java_ObserverBridge_onGroupRemoved(env, java_obj_,
-                                     ConvertUTF8ToJavaString(env, group_id));
+  Java_ObserverBridge_onGroupRemoved(
+      env, java_obj_, ConvertUTF8ToJavaString(env, group_id.value()));
 }
 
 // This function is declared in data_sharing_service.h and
@@ -169,7 +169,7 @@ void DataSharingServiceAndroid::ReadGroup(
     const JavaParamRef<jstring>& group_id,
     const JavaParamRef<jobject>& j_callback) {
   data_sharing_service_->ReadGroup(
-      ConvertJavaStringToUTF8(env, group_id),
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
       base::BindOnce(&RunGroupDataOrFailureOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
@@ -189,7 +189,7 @@ void DataSharingServiceAndroid::DeleteGroup(
     const JavaParamRef<jstring>& group_id,
     const JavaParamRef<jobject>& j_callback) {
   data_sharing_service_->DeleteGroup(
-      ConvertJavaStringToUTF8(env, group_id),
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
       base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
@@ -200,7 +200,7 @@ void DataSharingServiceAndroid::InviteMember(
     const JavaParamRef<jstring>& invitee_email,
     const JavaParamRef<jobject>& j_callback) {
   data_sharing_service_->InviteMember(
-      ConvertJavaStringToUTF8(env, group_id),
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
       ConvertJavaStringToUTF8(env, invitee_email),
       base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
@@ -212,7 +212,7 @@ void DataSharingServiceAndroid::RemoveMember(
     const JavaParamRef<jstring>& member_email,
     const JavaParamRef<jobject>& j_callback) {
   data_sharing_service_->RemoveMember(
-      ConvertJavaStringToUTF8(env, group_id),
+      GroupId(ConvertJavaStringToUTF8(env, group_id)),
       ConvertJavaStringToUTF8(env, member_email),
       base::BindOnce(&RunPeopleGroupActionOutcomeCallback,
                      ScopedJavaGlobalRef<jobject>(j_callback)));

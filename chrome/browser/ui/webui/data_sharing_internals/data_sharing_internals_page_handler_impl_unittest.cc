@@ -28,7 +28,7 @@ const data_sharing::MemberRole kMemberRole = data_sharing::MemberRole::kOwner;
 
 data_sharing::GroupData GetTestGroupData() {
   data_sharing::GroupData data;
-  data.group_id = kGroup1Id;
+  data.group_id = data_sharing::GroupId(kGroup1Id);
   data.display_name = kGroup1Name;
   data_sharing::GroupMember member;
   member.display_name = kMemberName;
@@ -56,6 +56,8 @@ class MockPage : public data_sharing_internals::mojom::Page {
   mojo::Receiver<data_sharing_internals::mojom::Page> receiver_{this};
 };
 
+// TODO(crbug.com/328265318): reuse mock from
+// components/data_sharing/test_support.
 class MockDataSharingService : public data_sharing::DataSharingService {
  public:
   MockDataSharingService() = default;
@@ -83,7 +85,7 @@ class MockDataSharingService : public data_sharing::DataSharingService {
               (override));
   MOCK_METHOD(void,
               ReadGroup,
-              (const std::string&,
+              (const data_sharing::GroupId&,
                base::OnceCallback<void(const GroupDataOrFailureOutcome&)>),
               (override));
   MOCK_METHOD(void,
@@ -93,18 +95,18 @@ class MockDataSharingService : public data_sharing::DataSharingService {
               (override));
   MOCK_METHOD(void,
               DeleteGroup,
-              (const std::string&,
+              (const data_sharing::GroupId&,
                base::OnceCallback<void(PeopleGroupActionOutcome)>),
               (override));
   MOCK_METHOD(void,
               InviteMember,
-              (const std::string&,
+              (const data_sharing::GroupId&,
                const std::string&,
                base::OnceCallback<void(PeopleGroupActionOutcome)>),
               (override));
   MOCK_METHOD(void,
               RemoveMember,
-              (const std::string&,
+              (const data_sharing::GroupId&,
                const std::string&,
                base::OnceCallback<void(PeopleGroupActionOutcome)>),
               (override));

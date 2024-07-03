@@ -39,10 +39,10 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 sync_pb::CollaborationGroupSpecifics MakeSpecifics(
-    const std::string& id,
+    const GroupId& id,
     const base::Time& last_update = base::Time::Now()) {
   sync_pb::CollaborationGroupSpecifics result;
-  result.set_collaboration_id(id);
+  result.set_collaboration_id(id.value());
   result.set_last_updated_timestamp_millis_since_unix_epoch(
       last_update.InMillisecondsSinceUnixEpoch());
   return result;
@@ -90,9 +90,9 @@ class MockObserver : public CollaborationGroupSyncBridge::Observer {
 
   MOCK_METHOD(void,
               OnGroupsUpdated,
-              (const std::vector<std::string>&,
-               const std::vector<std::string>&,
-               const std::vector<std::string>&),
+              (const std::vector<GroupId>&,
+               const std::vector<GroupId>&,
+               const std::vector<GroupId>&),
               (override));
   MOCK_METHOD(void, OnDataLoaded, (), (override));
 };
@@ -153,24 +153,24 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldReturnClientTag) {
   CreateBridgeAndWaitForReadyToSync();
   EXPECT_TRUE(bridge().SupportsGetClientTag());
-  const std::string id = "collaboration1";
+  const GroupId id("collaboration1");
   EXPECT_THAT(bridge().GetClientTag(EntityDataFromSpecifics(MakeSpecifics(id))),
-              Eq(id));
+              Eq(id.value()));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldReturnStorageKey) {
   CreateBridgeAndWaitForReadyToSync();
   EXPECT_TRUE(bridge().SupportsGetStorageKey());
-  const std::string id = "collaboration1";
+  const GroupId id("collaboration1");
   EXPECT_THAT(
       bridge().GetStorageKey(EntityDataFromSpecifics(MakeSpecifics(id))),
-      Eq(id));
+      Eq(id.value()));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldValidateEntityData) {
   CreateBridgeAndWaitForReadyToSync();
-  EXPECT_TRUE(
-      bridge().IsEntityDataValid(EntityDataFromSpecifics(MakeSpecifics("id"))));
+  EXPECT_TRUE(bridge().IsEntityDataValid(
+      EntityDataFromSpecifics(MakeSpecifics(GroupId("id")))));
   // Specifics without `collaboration_id` considered invalid.
   EXPECT_FALSE(bridge().IsEntityDataValid(
       EntityDataFromSpecifics(sync_pb::CollaborationGroupSpecifics())));
@@ -179,10 +179,13 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldValidateEntityData) {
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
   CreateBridgeAndWaitForReadyToSync();
 
+  const GroupId id1("id1");
+  const GroupId id2("id2");
+
   const sync_pb::CollaborationGroupSpecifics specifics1 =
-      MakeSpecifics("id1", base::Time::FromMillisecondsSinceUnixEpoch(1000));
+      MakeSpecifics(id1, base::Time::FromMillisecondsSinceUnixEpoch(1000));
   const sync_pb::CollaborationGroupSpecifics specifics2 =
-      MakeSpecifics("id2", base::Time::FromMillisecondsSinceUnixEpoch(2000));
+      MakeSpecifics(id2, base::Time::FromMillisecondsSinceUnixEpoch(2000));
 
   syncer::EntityChangeList entity_changes;
   entity_changes.push_back(EntityChangeAddFromSpecifics(specifics1));
@@ -197,7 +200,7 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics1), EqualsProto(specifics2)));
   EXPECT_THAT(bridge().GetCollaborationGroupIds(),
-              UnorderedElementsAre("id1", "id2"));
+              UnorderedElementsAre(id1, id2));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest,
@@ -206,20 +209,22 @@ TEST_F(CollaborationGroupSyncBridgeTest,
   CreateBridgeAndWaitForReadyToSync();
   testing::Mock::VerifyAndClearExpectations(&observer());
 
+  const GroupId id1("id1");
+  const GroupId id2("id2");
+
   const sync_pb::CollaborationGroupSpecifics specifics1 =
-      MakeSpecifics("id1", base::Time::FromMillisecondsSinceUnixEpoch(1000));
+      MakeSpecifics(id1, base::Time::FromMillisecondsSinceUnixEpoch(1000));
   sync_pb::CollaborationGroupSpecifics specifics2 =
-      MakeSpecifics("id2", base::Time::FromMillisecondsSinceUnixEpoch(2000));
+      MakeSpecifics(id2, base::Time::FromMillisecondsSinceUnixEpoch(2000));
 
   syncer::EntityChangeList intitial_entity_changes;
   intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics1));
   intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics2));
 
   // Mimics initial sync with two entities described above.
-  EXPECT_CALL(
-      observer(),
-      OnGroupsUpdated(/*added_group_ids*/ UnorderedElementsAre("id1", "id2"), _,
-                      _));
+  EXPECT_CALL(observer(),
+              OnGroupsUpdated(
+                  /*added_group_ids*/ UnorderedElementsAre(id1, id2), _, _));
   bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
                              std::move(intitial_entity_changes));
   testing::Mock::VerifyAndClearExpectations(&observer());
@@ -231,8 +236,9 @@ TEST_F(CollaborationGroupSyncBridgeTest,
 
   // Mimic incremental update: `specifics1` is deleted, `specifics2` is updated,
   // `specifics3` is added.
+  const GroupId id3("id3");
   const sync_pb::CollaborationGroupSpecifics specifics3 =
-      MakeSpecifics("id3", base::Time::FromMillisecondsSinceUnixEpoch(3000));
+      MakeSpecifics(id3, base::Time::FromMillisecondsSinceUnixEpoch(3000));
   specifics2.set_last_updated_timestamp_millis_since_unix_epoch(4000);
 
   syncer::EntityChangeList incremental_changes;
@@ -241,9 +247,9 @@ TEST_F(CollaborationGroupSyncBridgeTest,
   incremental_changes.push_back(EntityChangeAddFromSpecifics(specifics3));
 
   EXPECT_CALL(observer(),
-              OnGroupsUpdated(/*added_group_ids*/ ElementsAre("id3"),
-                              /*updated_group_ids*/ ElementsAre("id2"),
-                              /*deleted_group_ids*/ ElementsAre("id1")));
+              OnGroupsUpdated(/*added_group_ids*/ ElementsAre(id3),
+                              /*updated_group_ids*/ ElementsAre(id2),
+                              /*deleted_group_ids*/ ElementsAre(id1)));
   bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
                                        std::move(incremental_changes));
 
@@ -252,7 +258,7 @@ TEST_F(CollaborationGroupSyncBridgeTest,
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics2), EqualsProto(specifics3)));
   EXPECT_THAT(bridge().GetCollaborationGroupIds(),
-              UnorderedElementsAre("id2", "id3"));
+              UnorderedElementsAre(id2, id3));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadMetadata) {
@@ -285,10 +291,13 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadMetadata) {
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadData) {
   CreateBridgeAndWaitForReadyToSync();
 
+  const GroupId id1("id1");
+  const GroupId id2("id2");
+
   const sync_pb::CollaborationGroupSpecifics specifics1 =
-      MakeSpecifics("id1", base::Time::FromMillisecondsSinceUnixEpoch(1000));
+      MakeSpecifics(id1, base::Time::FromMillisecondsSinceUnixEpoch(1000));
   sync_pb::CollaborationGroupSpecifics specifics2 =
-      MakeSpecifics("id2", base::Time::FromMillisecondsSinceUnixEpoch(2000));
+      MakeSpecifics(id2, base::Time::FromMillisecondsSinceUnixEpoch(2000));
 
   syncer::EntityChangeList intitial_entity_changes;
   intitial_entity_changes.push_back(EntityChangeAddFromSpecifics(specifics1));
@@ -306,7 +315,7 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadData) {
       GetBridgeSpecifics(),
       UnorderedElementsAre(EqualsProto(specifics1), EqualsProto(specifics2)));
   EXPECT_THAT(bridge().GetCollaborationGroupIds(),
-              UnorderedElementsAre("id1", "id2"));
+              UnorderedElementsAre(id1, id2));
 }
 
 TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
@@ -322,9 +331,9 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
 
   syncer::EntityChangeList intitial_entity_changes;
   intitial_entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeSpecifics("id1")));
+      EntityChangeAddFromSpecifics(MakeSpecifics(GroupId("id1"))));
   intitial_entity_changes.push_back(
-      EntityChangeAddFromSpecifics(MakeSpecifics("id2")));
+      EntityChangeAddFromSpecifics(MakeSpecifics(GroupId("id2"))));
 
   // Mimics initial sync with some entities and metadata.
   bridge().MergeFullSyncData(std::move(metadata_changes),

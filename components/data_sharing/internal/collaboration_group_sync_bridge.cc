@@ -77,9 +77,9 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       model_type_store_->CreateWriteBatch();
 
-  std::vector<std::string> added_ids;
-  std::vector<std::string> updated_ids;
-  std::vector<std::string> deleted_ids;
+  std::vector<GroupId> added_ids;
+  std::vector<GroupId> updated_ids;
+  std::vector<GroupId> deleted_ids;
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& collaboration_id = change->storage_key();
@@ -106,13 +106,13 @@ CollaborationGroupSyncBridge::ApplyIncrementalSyncChanges(
     }
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
-        added_ids.push_back(collaboration_id);
+        added_ids.emplace_back(collaboration_id);
         break;
       case syncer::EntityChange::ACTION_UPDATE:
-        updated_ids.push_back(collaboration_id);
+        updated_ids.emplace_back(collaboration_id);
         break;
       case syncer::EntityChange::ACTION_DELETE:
-        deleted_ids.push_back(collaboration_id);
+        deleted_ids.emplace_back(collaboration_id);
         break;
     }
   }
@@ -243,12 +243,12 @@ void CollaborationGroupSyncBridge::OnModelTypeStoreCommit(
   }
 }
 
-std::vector<std::string>
-CollaborationGroupSyncBridge::GetCollaborationGroupIds() const {
+std::vector<GroupId> CollaborationGroupSyncBridge::GetCollaborationGroupIds()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<std::string> ids;
+  std::vector<GroupId> ids;
   for (const auto& [id, _] : ids_to_specifics_) {
-    ids.push_back(id);
+    ids.emplace_back(id);
   }
   return ids;
 }

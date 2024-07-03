@@ -11,6 +11,7 @@
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/internal/fake_data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -77,9 +78,9 @@ void JNI_TestServiceObserver_OnObserverNotify(JNIEnv* env, jlong observer_ptr) {
 namespace {
 
 sync_pb::CollaborationGroupSpecifics MakeCollaborationGroupSpecifics(
-    const std::string& id) {
+    const GroupId& id) {
   sync_pb::CollaborationGroupSpecifics result;
-  result.set_collaboration_id(id);
+  result.set_collaboration_id(id.value());
   result.set_last_updated_timestamp_millis_since_unix_epoch(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   return result;
@@ -147,9 +148,9 @@ class DataSharingServiceAndroidTest : public testing::Test {
   // Creates group and returns ID.
   // Mimics initial sync for collaboration group datatype, this should trigger
   // OnGroupAdded() notification.
-  std::string CreateGroup() {
+  GroupId CreateGroup() {
     const std::string display_name = "display_name";
-    const std::string group_id =
+    const GroupId group_id =
         not_owned_sdk_delegate_->AddGroupAndReturnId(display_name);
 
     auto* collaboration_group_bridge =
@@ -167,7 +168,7 @@ class DataSharingServiceAndroidTest : public testing::Test {
 
   // Removes the group with `group_id`, which would trigger the OnGroupRemoved()
   // notification.
-  void RemoveGroup(const std::string& group_id) {
+  void RemoveGroup(const GroupId& group_id) {
     auto* collaboration_group_bridge =
         data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
     not_owned_sdk_delegate_->RemoveGroup(group_id);
@@ -182,7 +183,7 @@ class DataSharingServiceAndroidTest : public testing::Test {
 
   // Updates the group with `group_id` with a different name, which wuld trigger
   // the OnGroupUpdated() notification.
-  void UpdateGroup(const std::string& group_id) {
+  void UpdateGroup(const GroupId& group_id) {
     const std::string new_display_name = "new_display_name";
     auto* collaboration_group_bridge =
         data_sharing_service_->GetCollaborationGroupSyncBridgeForTesting();
@@ -231,7 +232,7 @@ TEST_F(DataSharingServiceAndroidTest, GroupRemovedObservation) {
   EXPECT_EQ(observer.GetGroupAddedCount(), 0);
   EXPECT_EQ(observer.GetGroupRemovedCount(), 0);
 
-  std::string group_id = CreateGroup();
+  GroupId group_id = CreateGroup();
 
   run_loop.Run();
   EXPECT_EQ(observer.GetGroupChangeCount(), 0);
@@ -257,7 +258,7 @@ TEST_F(DataSharingServiceAndroidTest, GroupChangeObservation) {
   EXPECT_EQ(observer.GetGroupAddedCount(), 0);
   EXPECT_EQ(observer.GetGroupRemovedCount(), 0);
 
-  std::string group_id = CreateGroup();
+  GroupId group_id = CreateGroup();
 
   run_loop.Run();
   EXPECT_EQ(observer.GetGroupChangeCount(), 0);
