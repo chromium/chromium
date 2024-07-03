@@ -52,7 +52,8 @@ bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     return true;
   }
 
-  if (!event.IsMouseEvent() && !event.IsTouchEvent()) {
+  if (!event.IsMouseEvent() && !event.IsTouchEvent() &&
+      !event.IsGestureEvent()) {
     return false;
   }
 
