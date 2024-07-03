@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
@@ -21,38 +22,43 @@ namespace {
 
 // Key corresponding to which we store a ruleset's checksum for the Declarative
 // Net Request API.
-constexpr char kDNRChecksumKey[] = "checksum";
+constexpr std::string_view kChecksumKey = "checksum";
 
 // Key corresponding to which we store a ruleset's disabled rule ids for the
 // Declarative Net Request API.
-constexpr char kDNRDisabledStaticRuleIds[] = "dnr_disabled_static_rule_ids";
+constexpr std::string_view kDisabledStaticRuleIds =
+    "dnr_disabled_static_rule_ids";
 
 // Key corresponding to the list of enabled static ruleset IDs for an extension.
 // Used for the Declarative Net Request API.
-constexpr char kDNREnabledStaticRulesetIDs[] = "dnr_enabled_ruleset_ids";
+constexpr std::string_view kEnabledStaticRulesetIDs = "dnr_enabled_ruleset_ids";
 
 // A preference that indicates the amount of rules allocated to an extension
 // from the global pool.
-constexpr const char kDNRExtensionRulesAllocated[] =
+constexpr std::string_view kExtensionRulesAllocated =
     "dnr_extension_rules_allocated";
 
 // A boolean that indicates if a ruleset should be ignored.
-constexpr const char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
+constexpr std::string_view kIgnoreRulesetKey = "ignore_ruleset";
+
+// A boolean that indicates if an extension should have its unused rule
+// allocation kept during its next load.
+constexpr std::string_view kKeepExcessAllocation = "dnr_keep_excess_allocation";
 
 // A boolean preference that indicates whether the extension's icon should be
 // automatically badged to the matched action count for a tab. False by default.
-constexpr char kPrefDNRUseActionCountAsBadgeText[] =
+constexpr std::string_view kUseActionCountAsBadgeText =
     "dnr_use_action_count_as_badge_text";
 
 // Stores preferences corresponding to dynamic indexed ruleset for the
 // Declarative Net Request API. Note: we use a separate preference key for
-// dynamic rulesets instead of using the |kDNRStaticRulesetPref| dictionary.
-// This is because the |kDNRStaticRulesetPref| dictionary is re-populated on
+// dynamic rulesets instead of using the `kDNRStaticRulesetPref` dictionary.
+// This is because the `kDNRStaticRulesetPref` dictionary is re-populated on
 // each packed extension update and also on reloads of unpacked extensions.
 // However for both of these cases, we want the dynamic ruleset preferences to
 // stay unchanged. Also, this helps provide flexibility to have the dynamic
 // ruleset preference schema diverge from the static one.
-constexpr char kDNRDynamicRulesetPref[] = "dnr_dynamic_ruleset";
+constexpr std::string_view kDynamicRulesetPref = "dnr_dynamic_ruleset";
 
 base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
     const base::Value::Dict* disabled_rule_ids_dict,
@@ -98,6 +104,17 @@ size_t CountDisabledRules(const base::Value::Dict* disabled_rule_ids_dict) {
   return count;
 }
 
+bool ReadPrefAsBooleanAndReturn(const ExtensionPrefs& prefs,
+                                const ExtensionId& extension_id,
+                                std::string_view key) {
+  bool value = false;
+  if (prefs.ReadPrefAsBoolean(extension_id, key, &value)) {
+    return value;
+  }
+
+  return false;
+}
+
 }  // namespace
 
 PrefsHelper::PrefsHelper(ExtensionPrefs& prefs)
@@ -138,7 +155,7 @@ PrefsHelper::GetDisabledRuleIdsDict(
   return prefs_->ReadPrefAsDict(
       extension_id,
       ExtensionPrefs::JoinPrefs(
-          {ExtensionPrefs::kDNRStaticRulesetPref, kDNRDisabledStaticRuleIds}));
+          {ExtensionPrefs::kDNRStaticRulesetPref, kDisabledStaticRuleIds}));
 }
 
 base::flat_set<int> PrefsHelper::GetDisabledStaticRuleIds(
@@ -158,7 +175,7 @@ void PrefsHelper::SetDisabledStaticRuleIds(
     RulesetID ruleset_id,
     const base::flat_set<int>& disabled_rule_ids) {
   std::string key = ExtensionPrefs::JoinPrefs(
-      {ExtensionPrefs::kDNRStaticRulesetPref, kDNRDisabledStaticRuleIds});
+      {ExtensionPrefs::kDNRStaticRulesetPref, kDisabledStaticRuleIds});
 
   ExtensionPrefs::ScopedDictionaryUpdate update(&*prefs_, extension_id, key);
 
@@ -237,7 +254,7 @@ bool PrefsHelper::GetStaticRulesetChecksum(
     int& checksum) const {
   std::string pref = ExtensionPrefs::JoinPrefs(
       {ExtensionPrefs::kDNRStaticRulesetPref,
-       base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
+       base::NumberToString(ruleset_id.value()), kChecksumKey});
   return prefs_->ReadPrefAsInteger(extension_id, pref, &checksum);
 }
 
@@ -247,21 +264,21 @@ void PrefsHelper::SetStaticRulesetChecksum(
     int checksum) {
   std::string pref = ExtensionPrefs::JoinPrefs(
       {ExtensionPrefs::kDNRStaticRulesetPref,
-       base::NumberToString(ruleset_id.value()), kDNRChecksumKey});
+       base::NumberToString(ruleset_id.value()), kChecksumKey});
   prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
 }
 
 bool PrefsHelper::GetDynamicRulesetChecksum(const ExtensionId& extension_id,
                                             int& checksum) const {
   std::string pref =
-      ExtensionPrefs::JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
+      ExtensionPrefs::JoinPrefs({kDynamicRulesetPref, kChecksumKey});
   return prefs_->ReadPrefAsInteger(extension_id, pref, &checksum);
 }
 
 void PrefsHelper::SetDynamicRulesetChecksum(const ExtensionId& extension_id,
                                             int checksum) {
   std::string pref =
-      ExtensionPrefs::JoinPrefs({kDNRDynamicRulesetPref, kDNRChecksumKey});
+      ExtensionPrefs::JoinPrefs({kDynamicRulesetPref, kChecksumKey});
   prefs_->UpdateExtensionPref(extension_id, pref, base::Value(checksum));
 }
 
@@ -269,7 +286,7 @@ std::optional<std::set<RulesetID>> PrefsHelper::GetEnabledStaticRulesets(
     const ExtensionId& extension_id) const {
   std::set<RulesetID> ids;
   const base::Value::List* ids_value =
-      prefs_->ReadPrefAsList(extension_id, kDNREnabledStaticRulesetIDs);
+      prefs_->ReadPrefAsList(extension_id, kEnabledStaticRulesetIDs);
   if (!ids_value) {
     return std::nullopt;
   }
@@ -292,25 +309,20 @@ void PrefsHelper::SetEnabledStaticRulesets(const ExtensionId& extension_id,
     ids_list.Append(id.value());
   }
 
-  prefs_->UpdateExtensionPref(extension_id, kDNREnabledStaticRulesetIDs,
+  prefs_->UpdateExtensionPref(extension_id, kEnabledStaticRulesetIDs,
                               base::Value(std::move(ids_list)));
 }
 
 bool PrefsHelper::GetUseActionCountAsBadgeText(
     const ExtensionId& extension_id) const {
-  bool value = false;
-  if (prefs_->ReadPrefAsBoolean(extension_id, kPrefDNRUseActionCountAsBadgeText,
-                                &value)) {
-    return value;
-  }
-
-  return false;
+  return ReadPrefAsBooleanAndReturn(*prefs_, extension_id,
+                                    kUseActionCountAsBadgeText);
 }
 
 void PrefsHelper::SetUseActionCountAsBadgeText(
     const ExtensionId& extension_id,
     bool use_action_count_as_badge_text) {
-  prefs_->UpdateExtensionPref(extension_id, kPrefDNRUseActionCountAsBadgeText,
+  prefs_->UpdateExtensionPref(extension_id, kUseActionCountAsBadgeText,
                               base::Value(use_action_count_as_badge_text));
 }
 
@@ -320,20 +332,15 @@ bool PrefsHelper::ShouldIgnoreRuleset(const ExtensionId& extension_id,
                                       RulesetID ruleset_id) const {
   std::string pref = ExtensionPrefs::JoinPrefs(
       {ExtensionPrefs::kDNRStaticRulesetPref,
-       base::NumberToString(ruleset_id.value()), kDNRIgnoreRulesetKey});
-  bool value = false;
-  if (prefs_->ReadPrefAsBoolean(extension_id, pref, &value)) {
-    return value;
-  }
-
-  return false;
+       base::NumberToString(ruleset_id.value()), kIgnoreRulesetKey});
+  return ReadPrefAsBooleanAndReturn(*prefs_, extension_id, pref);
 }
 
 // Returns the global rule allocation for the given |extension_id|. If no
 // rules are allocated to the extension, false is returned.
 bool PrefsHelper::GetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
                                               int& rule_count) const {
-  if (!prefs_->ReadPrefAsInteger(extension_id, kDNRExtensionRulesAllocated,
+  if (!prefs_->ReadPrefAsInteger(extension_id, kExtensionRulesAllocated,
                                  &rule_count)) {
     return false;
   }
@@ -352,7 +359,25 @@ void PrefsHelper::SetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
   if (rule_count > 0) {
     pref_value = base::Value(rule_count);
   }
-  prefs_->UpdateExtensionPref(extension_id, kDNRExtensionRulesAllocated,
+  prefs_->UpdateExtensionPref(extension_id, kExtensionRulesAllocated,
+                              std::move(pref_value));
+}
+
+bool PrefsHelper::GetKeepExcessAllocation(
+    const ExtensionId& extension_id) const {
+  return ReadPrefAsBooleanAndReturn(*prefs_, extension_id,
+                                    kKeepExcessAllocation);
+}
+
+void PrefsHelper::SetKeepExcessAllocation(const ExtensionId& extension_id,
+                                          bool keep_excess_allocation) {
+  // Clear the pref entry if the extension will not keep its excess global rules
+  // allocation.
+  std::optional<base::Value> pref_value;
+  if (keep_excess_allocation) {
+    pref_value = base::Value(true);
+  }
+  prefs_->UpdateExtensionPref(extension_id, kKeepExcessAllocation,
                               std::move(pref_value));
 }
 

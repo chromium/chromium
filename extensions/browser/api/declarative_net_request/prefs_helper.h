@@ -127,6 +127,12 @@ class PrefsHelper {
   void SetAllocatedGlobalRuleCount(const ExtensionId& extension_id,
                                    int rule_count);
 
+  // Whether the extension with the given `extension_id` should have its excess
+  // global rules allocation kept during its next load.
+  bool GetKeepExcessAllocation(const ExtensionId& extension_id) const;
+  void SetKeepExcessAllocation(const ExtensionId& extension_id,
+                               bool keep_excess_allocation);
+
  private:
   const base::Value::Dict* GetDisabledRuleIdsDict(const ExtensionId&) const;
   void SetDisabledStaticRuleIds(const ExtensionId& extension_id,

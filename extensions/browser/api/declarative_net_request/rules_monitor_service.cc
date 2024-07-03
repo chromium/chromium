@@ -464,7 +464,8 @@ void RulesMonitorService::OnExtensionWillBeInstalled(
   // behavior. The preference is set in OnExtensionWillBeInstalled instead of
   // OnExtensionInstalled because OnExtensionInstalled is called after
   // OnExtensionLoaded.
-  prefs_->SetDNRKeepExcessAllocation(extension->id(), true);
+  PrefsHelper helper(*prefs_);
+  helper.SetKeepExcessAllocation(extension->id(), true);
 }
 
 void RulesMonitorService::OnExtensionLoaded(
@@ -554,8 +555,10 @@ void RulesMonitorService::OnExtensionUnloaded(
   // unused rule allocation should not be kept for this extension the next
   // time its rulesets are loaded, as it is no longer "the first load after an
   // update".
-  if (reason != UnloadedExtensionReason::UPDATE)
-    prefs_->SetDNRKeepExcessAllocation(extension->id(), false);
+  if (reason != UnloadedExtensionReason::UPDATE) {
+    PrefsHelper helper(*prefs_);
+    helper.SetKeepExcessAllocation(extension->id(), false);
+  }
 
   if (ShouldReleaseAllocationOnUnload(prefs_, *extension, reason))
     global_rules_tracker_.ClearExtensionAllocation(extension->id());

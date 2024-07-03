@@ -697,12 +697,6 @@ class ExtensionPrefs : public KeyedService {
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
 
-  // Whether the extension with the given |extension_id| should have its excess
-  // global rules allocation kept during its next load.
-  bool GetDNRKeepExcessAllocation(const ExtensionId& extension_id) const;
-  void SetDNRKeepExcessAllocation(const ExtensionId& extension_id,
-                                  bool keep_excess_allocation);
-
   // Backfills the first_install_time pref for currently installed extensions
   // that did not have the pref recorded when they were installed.
   // TODO(anunoy): Remove this in M113.

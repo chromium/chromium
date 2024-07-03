@@ -6276,9 +6276,9 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
 
   void VerifyKeepExcessAllocation(const ExtensionId& extension_id,
                                   bool expected_keep_allocation) {
-    const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+    PrefsHelper helper(*ExtensionPrefs::Get(profile()));
     EXPECT_EQ(expected_keep_allocation,
-              prefs->GetDNRKeepExcessAllocation(extension_id));
+              helper.GetKeepExcessAllocation(extension_id));
   }
 
  private:

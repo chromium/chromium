@@ -96,8 +96,8 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
   DCHECK_LE(new_rule_count, static_cast<size_t>(GetMaximumRulesPerRuleset()) *
                                 dnr_api::MAX_NUMBER_OF_STATIC_RULESETS);
 
-  bool keep_excess_allocation =
-      extension_prefs_->GetDNRKeepExcessAllocation(extension_id);
+  PrefsHelper helper(*extension_prefs_);
+  bool keep_excess_allocation = helper.GetKeepExcessAllocation(extension_id);
 
   if (new_rule_count <=
       static_cast<size_t>(GetStaticGuaranteedMinimumRuleCount())) {
@@ -135,10 +135,9 @@ bool GlobalRulesTracker::OnExtensionRuleCountUpdated(
     DCHECK_GT(new_allocated_rule_count, old_allocated_rule_count);
     // The extension is now using more than its pre-update rule allocation.
     // Remove its ability to keep the excess allocation.
-    extension_prefs_->SetDNRKeepExcessAllocation(extension_id, false);
+    helper.SetKeepExcessAllocation(extension_id, false);
   }
 
-  PrefsHelper helper(*extension_prefs_);
   allocated_global_rule_count_ = new_global_rule_count;
   helper.SetAllocatedGlobalRuleCount(extension_id, new_allocated_rule_count);
 
