@@ -1199,8 +1199,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
   // Can only block until head if the request has been started using a
   // streaming URL loader and head/failure/redirect hasn't been received yet.
   if (streaming_loader_ && !redirect_chain_.empty() &&
-      redirect_chain_.back()->response_reader_->IsWaitingForResponse() &&
-      PrefetchShouldBlockUntilHead(prefetch_type_)) {
+      redirect_chain_.back()->response_reader_->IsWaitingForResponse()) {
     return ServableState::kShouldBlockUntilHeadReceived;
   }
 

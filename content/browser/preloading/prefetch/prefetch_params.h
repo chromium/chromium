@@ -105,10 +105,6 @@ base::TimeDelta PrefetchCanaryCheckTimeout();
 // The number of retries to allow for canary checks.
 int PrefetchCanaryCheckRetries();
 
-// Whether or not |PrefetchService| should block until the head of a prefetch
-// request is received when considering to serve a prefetch for a navigation.
-bool PrefetchShouldBlockUntilHead(const PrefetchType& prefetch_type);
-
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(

@@ -210,29 +210,6 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-bool PrefetchShouldBlockUntilHead(const PrefetchType& prefetch_type) {
-  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
-    switch (prefetch_type.GetEagerness()) {
-      case blink::mojom::SpeculationEagerness::kEager:
-        return base::GetFieldTrialParamByFeatureAsBool(
-            features::kPrefetchUseContentRefactor,
-            "block_until_head_eager_prefetch", true);
-      case blink::mojom::SpeculationEagerness::kModerate:
-        return base::GetFieldTrialParamByFeatureAsBool(
-            features::kPrefetchUseContentRefactor,
-            "block_until_head_moderate_prefetch", true);
-      case blink::mojom::SpeculationEagerness::kConservative:
-        return base::GetFieldTrialParamByFeatureAsBool(
-            features::kPrefetchUseContentRefactor,
-            "block_until_head_conservative_prefetch", true);
-    }
-  } else {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        features::kPrefetchUseContentRefactor,
-        "block_until_head_embedder_prefetch", true);
-  }
-}
-
 base::TimeDelta PrefetchBlockUntilHeadTimeout(
     const PrefetchType& prefetch_type) {
   int timeout_in_milliseconds = 0;
