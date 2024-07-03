@@ -4,10 +4,10 @@
     border-radius: 12px;
     height: 100%;
     margin: 0 8px;
+    margin-bottom: var(--sp-card-block-padding);
     min-width: var(--container-min-width);
     overflow: hidden;
     padding: 20px;
-    margin-bottom: var(--sp-card-block-padding);
   }
 
   .sp-scroller {
@@ -19,11 +19,11 @@
   }
 
   #appFlexParent {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
+    height: 100%;
     overflow-x: var(--app-overflow-x);
+    width: 100%;
   }
 
   #appFlexParent #container-parent {
@@ -35,8 +35,8 @@
   }
 
   .sp-scroller::-webkit-scrollbar-track {
-    margin-top: 6px;
     margin-bottom: 6px;
+    margin-top: 6px;
   }
 
   /* User select should be disabled on the Read Anything panel when Read Aloud
@@ -56,15 +56,17 @@
     font-size: var(--font-size);
     letter-spacing: var(--letter-spacing);
     line-height: var(--line-height);
-    padding: 20px;
+    margin: 0 auto;
     /* max-width should match line width limit in read_anything_constants.h. */
     max-width: 60ch;
-    margin: 0 auto;
     overflow-wrap: break-word;
+    padding: 20px;
   }
+
   #appFlexParent a:link {
     color: var(--link-color);
   }
+
   #appFlexParent a:visited {
     color: var(--visited-link-color);
   }
@@ -78,12 +80,14 @@
     background: var(--selection-color);
     color: var(--selection-text-color);
   }
+
   #appFlexParent .current-read-highlight {
     background-color: var(--current-highlight-bg-color);
   }
+
   #appFlexParent .previous-read-highlight {
-    color: var(--previous-highlight-color);
     background-color: transparent;
+    color: var(--previous-highlight-color);
   }
 
   #appFlexParent img {
@@ -98,12 +102,12 @@
   }
 
   #toastTitle {
-    display:inline-block;
+    display: inline-block;
     font-size: 1em;
   }
 
   #toastMessage {
-    display:inline-block;
+    display: inline-block;
     font-size: 1em;
   }
 
@@ -116,51 +120,53 @@
 <div id="appFlexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
-      is-speech-active="[[speechPlayingState.isSpeechActive]]"
-      is-audio-currently-playing="[[speechPlayingState.isAudioCurrentlyPlaying]]"
-      is-read-aloud-playable=
-      "[[isReadAloudPlayable(
-        hasContent_, selectedVoice_, speechEngineLoaded, willDrawAgainSoon_)]]"
-      selected-voice="[[selectedVoice_]]"
-      enabled-langs="[[enabledLangs]]"
-      voice-pack-install-status="[[voiceStatusLocalState]]"
-      available-voices="[[availableVoices_]]"
-      preview-voice-playing="[[previewVoicePlaying]]"
-      locale-to-display-name="[[localeToDisplayName]]"
-      last-downloaded-lang="[[lastDownloadedLang]]"
-      on-select-voice="onSelectVoice_"
-      on-voice-language-toggle="onVoiceLanguageToggle_"
-      on-preview-voice="onPreviewVoice_"
-      on-voice-menu-close="onVoiceMenuClose_"
-      on-play-pause-click="onPlayPauseClick_"
-      on-font-size-change="updateFontSize_"
-      on-font-change="onFontChange_"
-      on-rate-change="resetSpeechPostSettingChange_"
-      on-next-granularity-click="playNextGranularity_"
-      on-previous-granularity-click="playPreviousGranularity_"
-      on-links-toggle="updateLinks"
-      on-images-toggle="updateImages"
-      on-letter-spacing-change="onLetterSpacingChange_"
-      on-theme-change="onThemeChange_"
-      on-line-spacing-change="onLineSpacingChange_"
-      on-highlight-toggle="onHighlightToggle_"
-      on-reset-toolbar="onResetToolbar_"
-      on-toolbar-overflow="onToolbarOverflow_"
-      id="toolbar">
+        is-speech-active="[[speechPlayingState.isSpeechActive]]"
+        is-audio-currently-playing="[[speechPlayingState.isAudioCurrentlyPlaying]]"
+        is-read-aloud-playable="[[isReadAloudPlayable(
+            hasContent_, selectedVoice_, speechEngineLoaded, willDrawAgainSoon_)]]"
+        selected-voice="[[selectedVoice_]]"
+        enabled-langs="[[enabledLangs]]"
+        voice-pack-install-status="[[voiceStatusLocalState]]"
+        available-voices="[[availableVoices_]]"
+        preview-voice-playing="[[previewVoicePlaying]]"
+        locale-to-display-name="[[localeToDisplayName]]"
+        last-downloaded-lang="[[lastDownloadedLang]]"
+        on-select-voice="onSelectVoice_"
+        on-voice-language-toggle="onVoiceLanguageToggle_"
+        on-preview-voice="onPreviewVoice_"
+        on-voice-menu-close="onVoiceMenuClose_"
+        on-play-pause-click="onPlayPauseClick_"
+        on-font-size-change="updateFontSize_"
+        on-font-change="onFontChange_"
+        on-rate-change="resetSpeechPostSettingChange_"
+        on-next-granularity-click="playNextGranularity_"
+        on-previous-granularity-click="playPreviousGranularity_"
+        on-links-toggle="updateLinks"
+        on-images-toggle="updateImages"
+        on-letter-spacing-change="onLetterSpacingChange_"
+        on-theme-change="onThemeChange_"
+        on-line-spacing-change="onLineSpacingChange_"
+        on-highlight-toggle="onHighlightToggle_"
+        on-reset-toolbar="onResetToolbar_"
+        on-toolbar-overflow="onToolbarOverflow_"
+        id="toolbar">
     </read-anything-toolbar>
   </div>
-  <div id="container-parent" class="sp-card sp-scroller"
-       hidden="[[!hasContent_]]">
-    <div id="container" class$=
-    "user-select-disabled-when-speech-active-[[speechPlayingState.isSpeechActive]]">
+  <div
+      id="container-parent"
+      class="sp-card sp-scroller"
+      hidden="[[!hasContent_]]">
+    <div
+        id="container"
+        class$="user-select-disabled-when-speech-active-[[speechPlayingState.isSpeechActive]]">
   </div>
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">
     <sp-empty-state
-      image-path="[[emptyStateImagePath_]]"
-      dark-image-path="[[emptyStateDarkImagePath_]]"
-      heading="[[emptyStateHeading_]]"
-      body="[[emptyStateSubheading_]]">
+        image-path="[[emptyStateImagePath_]]"
+        dark-image-path="[[emptyStateDarkImagePath_]]"
+        heading="[[emptyStateHeading_]]"
+        body="[[emptyStateSubheading_]]">
     </sp-empty-state>
   </div>
 </div>

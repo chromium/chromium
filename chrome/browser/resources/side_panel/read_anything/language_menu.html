@@ -1,9 +1,9 @@
 <style include="cr-icons">
     #languageMenu::part(dialog) {
-      width: 275px;
-      height: fit-content;
-      background: var(--color-side-panel-content-background);
       --scroll-border-color: var(--color-side-panel-dialog-divider);
+      background: var(--color-side-panel-content-background);
+      height: fit-content;
+      width: 275px;
     }
 
     cr-icon {
@@ -13,48 +13,48 @@
     }
 
     .language-menu-title-bar {
-      display: flex;
-      width: 100%;
       align-items: center;
+      display: flex;
       justify-content: space-between;
+      width: 100%;
     }
 
     .language-menu-title {
+      display: table-cell;
       float: left;
-      text-align: left;
       font-size: 16px;
       font-weight: 500;
-      display: table-cell;
+      text-align: left;
       vertical-align: middle;
     }
 
     .language-menu-close-button {
-      float: right;
       display: table-cell;
+      float: right;
       vertical-align: middle;
     }
 
     .language-line {
-      display: flex;
       align-items: center;
-      justify-content: space-between;
       background-color: transparent;
       border: none;
+      display: flex;
+      justify-content: space-between;
       width: 100%;
     }
 
     .dropdown-line {
-      height: 48px;
       align-items: center;
+      height: 48px;
     }
 
     .language-name {
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
       font-size: 13px;
       font-weight: 500;
+      max-width: 100%;
+      overflow: hidden;
       padding-inline-end: 16px;
+      text-overflow: ellipsis;
     }
 
     .language-menu-body {
@@ -78,17 +78,17 @@
     }
 
     #toastDiv {
-      white-space: normal;
       line-height: 1.2;
+      white-space: normal;
     }
 
     #toastTitle {
-      display:block;
+      display: block;
       font-size: 1em;
     }
 
     #toastMessage {
-      display:inline-block;
+      display: inline-block;
       font-size: 1em;
     }
 
@@ -97,54 +97,62 @@
 <cr-dialog id="languageMenu" ignore-popstate on-close="onCloseDialog_">
   <div slot="title" class="language-menu-title-bar">
     <div class="language-menu-title">$i18n{readingModeLanguageMenuTitle}</div>
-    <cr-icon-button id="close" class="action-icon language-menu-close-button"
-      iron-icon="cr:close"
-      on-click="closeLanguageMenu_"
-      aria-label="$i18n{readingModeLanguageMenuClose}">
+    <cr-icon-button
+        id="close"
+        class="action-icon language-menu-close-button"
+        iron-icon="cr:close"
+        on-click="closeLanguageMenu_"
+        aria-label="$i18n{readingModeLanguageMenuClose}">
     </cr-icon-button>
   </div>
   <div slot="header">
     <cr-input
-      class="search-field"
-      type="search"
-      placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
-      value="{{languageSearchValue_}}">
-        <cr-icon slot="inline-prefix" alt="" icon="cr:search">
-        </cr-icon>
-        <cr-icon-button iron-icon="cr:clear"
-          hidden$="[[!languageSearchValue_]]" slot="inline-suffix"
+        class="search-field"
+        type="search"
+        placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
+        value="{{languageSearchValue_}}">
+      <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
+      <cr-icon-button
+          iron-icon="cr:clear"
+          hidden$="[[!languageSearchValue_]]"
+          slot="inline-suffix"
           on-click="onClearSearchClick_"
           title="$i18n{readingModeLanguageMenuSearchClear}">
-        </cr-icon-button>
+      </cr-icon-button>
     </cr-input>
   </div>
   <div slot="body" class="language-menu-body">
-    <span id="noResultsMessage"
-    hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
-    $i18n{languageMenuNoResults}</span>
-    <template is="dom-repeat" initial-count="34" index-as="index"
+    <span
+        id="noResultsMessage"
+        hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
+      $i18n{languageMenuNoResults}
+    </span>
+    <template
+        is="dom-repeat"
+        initial-count="34"
+        index-as="index"
         items="[[availableLanguages_]]">
-        <div class="language-line dropdown-line">
-          <span id$="language-name-[[index]]" class="language-name">
-            [[item.readableLanguage]]
-          </span>
-          <cr-toggle
+      <div class="language-line dropdown-line">
+        <span id$="language-name-[[index]]" class="language-name">
+          [[item.readableLanguage]]
+        </span>
+        <cr-toggle
             checked="[[item.checked]]"
             on-change="onToggleChange_"
             disabled$="[[item.disabled]]"
-            aria-labelledby$="language-name-[[index]]"></cr-toggle>
-        </div>
-        <span id="notificationText"
-              class$="notification-error-[[item.notification.isError]]"
-              aria-live="polite">
-              [[i18nWraper(item.notification.text)]]
-        </span>
+            aria-labelledby$="language-name-[[index]]">
+        </cr-toggle>
+      </div>
+      <span
+          id="notificationText"
+          class$="notification-error-[[item.notification.isError]]"
+          aria-live="polite">
+        [[i18nWraper(item.notification.text)]]
+      </span>
     </template>
     <cr-toast id="toast-in-dialog" duration="[[toastDuration_]]">
       <div id="toastDiv">
-        <span id="toastTitle">
-          [[toastTitle_]]
-        </span>
+        <span id="toastTitle">[[toastTitle_]]</span>
         <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
       </div>
     </cr-toast>
