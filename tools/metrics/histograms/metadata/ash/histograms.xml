@@ -1950,7 +1950,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.CameraDisconnectionsDuringRecordings.{TabletOrClamshell}"
-    units="camera disconnections" expires_after="2024-08-15">
+    units="camera disconnections" expires_after="2025-07-03">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -8175,11 +8175,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
-    enum="DeviceOrientation" expires_after="2024-07-27">
+    enum="DeviceOrientation" expires_after="2025-07-03">
   <owner>zxdan@chromium.org</owner>
   <owner>afakhry@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>fanafan@google.com</owner>
   <summary>
     Emitted at entry to split view mode and each time the orientation or the
     device mode changes to report whether the device is in clamshell mode or
@@ -9405,10 +9404,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Enter.PresentationTime" units="ms"
-    expires_after="2024-07-27">
-  <owner>andp@chromium.org</owner>
+    expires_after="2025-07-03">
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the window cycle event (alt+tab) was received to when the next
@@ -9453,10 +9451,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.SameApp.DeskMode" enum="AltTabMode"
-    expires_after="2024-07-27">
-  <owner>andp@chromium.org</owner>
-  <owner>benbecker@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2025-07-03">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when same app window cycling ends, if and only if user had 2 or more
     desks and Bento is not disabled, to report the same-desk vs all-desk mode
@@ -9476,10 +9473,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.SameApp.SkippedWindows"
-    units="windows" expires_after="2024-07-27">
-  <owner>andp@chromium.org</owner>
-  <owner>benbecker@chromium.org</owner>
-  <owner>nupurjain@chromium.org</owner>
+    units="windows" expires_after="2025-07-03">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The number of windows the user didn't have to tab through because they were
     using Alt-Backtick instead of Alt-Tab. Recorded as the number of
