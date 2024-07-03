@@ -114,10 +114,10 @@ class ScopedFtFace {
   FT_Error ft_error_ = FT_Err_Ok;
 };
 
-void IndexFile(FT_Library ft_library,
-               blink::FontUniqueNameTable* font_table,
-               const std::string& font_file_path,
-               uint32_t ttc_index) {
+void IndexFileFreeType(FT_Library ft_library,
+                       blink::FontUniqueNameTable* font_table,
+                       const std::string& font_file_path,
+                       uint32_t ttc_index) {
   ScopedFtFace face(ft_library, font_file_path.c_str(), ttc_index);
 
   if (!face.IsValid() || !FT_Get_Sfnt_Name_Count(face.get()))
@@ -165,8 +165,8 @@ void IndexFile(FT_Library ft_library,
   }
 }
 
-int32_t NumberOfFacesInFontFile(FT_Library ft_library,
-                                const std::string& font_filename) {
+int32_t NumberOfFacesInFontFileFreeType(FT_Library ft_library,
+                                        const std::string& font_filename) {
   // According to FreeType documentation calling FT_Open_Face with a negative
   // index value allows us to probe how many fonts can be found in a font file
   // (which can be a single font ttf or a TrueType collection (.ttc)).
@@ -174,6 +174,19 @@ int32_t NumberOfFacesInFontFile(FT_Library ft_library,
   if (!probe_face.IsValid())
     return 0;
   return probe_face.get()->num_faces;
+}
+
+void IndexFilesFreeType(const std::vector<std::string>& fonts_to_index,
+                        blink::FontUniqueNameTable* font_table) {
+  ScopedFtLibrary ft_library;
+  for (const auto& font_file : fonts_to_index) {
+    int32_t number_of_faces =
+        NumberOfFacesInFontFileFreeType(ft_library.get(), font_file);
+    for (int32_t i = 0; i < number_of_faces; ++i) {
+      TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTable - IndexFile");
+      IndexFileFreeType(ft_library.get(), font_table, font_file, i);
+    }
+  }
 }
 
 }  // namespace
@@ -249,18 +262,11 @@ bool FontUniqueNameLookup::UpdateTable() {
 
   std::vector<std::string> font_files_to_index = GetFontFilePaths();
 
-  ScopedFtLibrary ft_library;
   blink::FontUniqueNameTable font_table;
   font_table.set_stored_for_platform_version_identifier(
       GetAndroidBuildFingerprint());
-  for (const auto& font_file : font_files_to_index) {
-    int32_t number_of_faces =
-        NumberOfFacesInFontFile(ft_library.get(), font_file);
-    for (int32_t i = 0; i < number_of_faces; ++i) {
-      TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTable - IndexFile");
-      IndexFile(ft_library.get(), &font_table, font_file, i);
-    }
-  }
+
+  IndexFilesFreeType(font_files_to_index, &font_table);
 
   blink::FontTableMatcher::SortUniqueNameTableForSearch(&font_table);
 
