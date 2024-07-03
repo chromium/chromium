@@ -228,7 +228,8 @@ TEST_GN_ARGS_JSON = """\
 {
   "gn_args": {
     "string_arg": "has double quotes",
-    "bool_arg_lower_case": true
+    "bool_arg_lower_case": true,
+    "string_list_arg": ["foo", "bar", "baz"]
   }
 }
 """
@@ -1022,6 +1023,7 @@ class UnitTest(unittest.TestCase):
                     'Writing """\\\n'
                     'bool_arg_lower_case = true\n'
                     'string_arg = "has double quotes"\n'
+                    'string_list_arg = [ "foo", "bar", "baz" ]\n'
                     '""" to _path_/args.gn.\n\n')
     if sys.platform == 'win32':
       expected_out += 'c:\\fake_src\\buildtools\\win\\gn.exe gen _path_\n'

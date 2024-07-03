@@ -915,15 +915,20 @@ class MetaBuildWrapper:
 
   def _convert_args_dict_to_args_string(self, args_dict):
     """Format a dict of GN args into a single string."""
-    for k, v in args_dict.items():
+
+    def convert_value(v):
+      if isinstance(v, list):
+        return f'[{",".join(convert_value(e) for e in v)}]'
       if isinstance(v, str):
         # Re-add the quotes around strings so they show up as they would in the
         # args.gn file.
-        args_dict[k] = '"%s"' % v
-      elif isinstance(v, bool):
+        return f'"{v}"'
+      if isinstance(v, bool):
         # Convert boolean values to lower case strings.
-        args_dict[k] = str(v).lower()
-    return ' '.join(['%s=%s' % (k, v) for (k, v) in args_dict.items()])
+        return str(v).lower()
+      return v
+
+    return ' '.join(f'{k}={convert_value(v)}' for k, v in args_dict.items())
 
   def Lookup(self):
     self.ReadConfigFile(self.args.config_file)
