@@ -1206,8 +1206,6 @@ source_set("ash") {
     "policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
-    "annotator/untrusted_annotator_ui_config.cc",
-    "annotator/untrusted_annotator_ui_config.h",
     "login/screens/placeholder_screen.cc",
     "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
@@ -5404,6 +5402,7 @@ source_set("browser_tests") {
 
     # Gather browser tests from subdirectories.
     "//chrome/browser/ash/accessibility:browser_tests",
+    "//chrome/browser/ash/annotator:browser_tests",
     "//chrome/browser/ash/app_mode:browser_tests",
     "//chrome/browser/ash/app_restore:browser_tests",
     "//chrome/browser/ash/apps:browser_tests",

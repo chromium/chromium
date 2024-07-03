@@ -69,10 +69,6 @@ if (is_chromeos_ash && include_js2gtest_tests) {
   import("//chrome/test/base/ash/js2gtest.gni")
 }
 
-if (is_chromeos_ash) {
-  import("//ash/webui/projector_app/projector_app.gni")
-}
-
 # This target exists to reference other test executables to bring these files
 # into the build.
 group("test") {
@@ -5070,11 +5066,6 @@ if (!is_android) {
           "//chrome/browser/chromeos/extensions/printing_metrics",
           "//chromeos/printing",
           "//printing:test_support",
-        ]
-      }
-      if (enable_cros_projector_app && enable_cros_media_app) {
-        sources += [
-          "../browser/ash/annotator/annotator_ui_integration_browsertest.cc",
         ]
       }
       if (enable_assistant_integration_tests) {
