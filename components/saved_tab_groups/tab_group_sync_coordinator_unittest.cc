@@ -14,6 +14,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
+
 namespace tab_groups {
 namespace {
 
@@ -81,6 +83,27 @@ TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupRemovedWithSyncId) {
 
   EXPECT_CALL(*delegate_, CloseLocalTabGroup(testing::_)).Times(0);
   coordinator_->OnTabGroupRemoved(sync_id, TriggerSource::REMOTE);
+}
+
+TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupAddedFromLocal) {
+  SavedTabGroup group(test::CreateTestSavedTabGroup());
+
+  EXPECT_CALL(*delegate_, CreateLocalTabGroup(_)).Times(0);
+  coordinator_->OnTabGroupAdded(group, TriggerSource::LOCAL);
+}
+
+TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupUpdatedFromLocal) {
+  SavedTabGroup group(test::CreateTestSavedTabGroup());
+
+  EXPECT_CALL(*delegate_, UpdateLocalTabGroup(_)).Times(0);
+  coordinator_->OnTabGroupUpdated(group, TriggerSource::LOCAL);
+}
+
+TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupRemovedFromLocal) {
+  LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
+
+  EXPECT_CALL(*delegate_, CloseLocalTabGroup(_)).Times(0);
+  coordinator_->OnTabGroupRemoved(local_id, TriggerSource::LOCAL);
 }
 
 }  // namespace tab_groups

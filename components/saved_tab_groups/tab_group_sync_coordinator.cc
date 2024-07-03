@@ -40,16 +40,26 @@ void TabGroupSyncCoordinator::HandleOpenTabGroupRequest(
 
 void TabGroupSyncCoordinator::OnTabGroupAdded(const SavedTabGroup& group,
                                               TriggerSource source) {
+  if (source != TriggerSource::REMOTE) {
+    return;
+  }
   platform_delegate_->CreateLocalTabGroup(group);
 }
 
 void TabGroupSyncCoordinator::OnTabGroupUpdated(const SavedTabGroup& group,
                                                 TriggerSource source) {
+  if (source != TriggerSource::REMOTE) {
+    return;
+  }
   platform_delegate_->UpdateLocalTabGroup(group);
 }
 
 void TabGroupSyncCoordinator::OnTabGroupRemoved(const LocalTabGroupID& local_id,
                                                 TriggerSource source) {
+  if (source != TriggerSource::REMOTE) {
+    return;
+  }
+
   platform_delegate_->CloseLocalTabGroup(local_id);
 }
 
