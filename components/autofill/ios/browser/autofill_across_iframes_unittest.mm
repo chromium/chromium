@@ -793,8 +793,6 @@ TEST_F(AutofillAcrossIframesTest, FillMultiFrameForm) {
 // Tests filling fields singularly, one by one, in a multi frame form.
 // This tests the scenario where the user fills the form with the fill data
 // from a suggestion they've selected.
-// TODO(https://crbug.com/349823720): Disabled due to consistent failures on
-// `ios-asan`.
 TEST_F(AutofillAcrossIframesTest, DISABLED_FillMultiFrameForm_SingleField) {
   const std::u16string kNamePlaceholder = u"Name";
   const std::u16string kFakeName = u"Bob Bobbertson";
