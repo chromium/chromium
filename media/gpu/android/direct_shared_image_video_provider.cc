@@ -151,6 +151,10 @@ void GpuSharedImageVideoFactory::CreateImage(
 
   if (base::FeatureList::IsEnabled(
           media::kUseClientSharedImageForAndroidVideo)) {
+    if (!stub_) {
+      return;
+    }
+
     auto codec_image =
         base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
 
