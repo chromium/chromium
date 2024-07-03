@@ -65,7 +65,7 @@ BASE_FEATURE(kAlwaysAcceptServerDataInModel,
 // honored. This feature flag should be used only in case of an emergency.
 BASE_FEATURE(kTabGroupSyncAutoOpenKillSwitch,
              "TabGroupSyncAutoOpenKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature flag to restrict download on synced tabs if the navigation is
 // triggered without attention..

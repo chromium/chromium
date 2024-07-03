@@ -77,10 +77,10 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-                || !mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) {
-            return;
-        }
+        boolean isAutoOpenEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
+                        && mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
+        if (!isAutoOpenEnabled) return;
 
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.createNewTabGroup(
