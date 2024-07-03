@@ -1305,6 +1305,30 @@ class PortTest(LoggingTestCase):
         self.assertFalse(
             port.is_slow_wpt_test('/dom/ranges/Range-attributes-slow.html'))
 
+    def test_is_testharness_test_wpt(self):
+        port = self.make_port(with_tests=True)
+        add_manifest_to_mock_filesystem(port)
+        self.assertTrue(
+            port.is_testharness_test(
+                'external/wpt/dom/ranges/Range-attributes.html'))
+        self.assertFalse(
+            port.is_testharness_test(
+                'external/wpt/portals/portals-no-frame-crash.html'))
+
+    def test_is_testhanress_test_legacy(self):
+        port = self.make_port(with_tests=True)
+        fs = port.host.filesystem
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'testharness.html'),
+            '<html><script src="../../resources/testharness.js"></script>')
+        fs.write_text_file(
+            fs.join(port.web_tests_dir(), 'not-testharness.html'),
+            '<html><script src="../../resources/js-test.js"></script>')
+
+        self.assertTrue(port.is_testharness_test('testharness.html'))
+        self.assertFalse(port.is_testharness_test('not-testharness.html'))
+        self.assertFalse(port.is_testharness_test('does-not-exist.html'))
+
     def test_get_wpt_fuzzy_metadata_for_non_wpt_test(self):
         port = self.make_port(with_tests=True)
 

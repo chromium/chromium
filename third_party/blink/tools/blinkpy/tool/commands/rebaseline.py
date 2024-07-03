@@ -64,10 +64,11 @@ from blinkpy.tool.commands.command import (
     check_file_option,
 )
 from blinkpy.tool.grammar import pluralize
-from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
 from blinkpy.web_tests.port import factory
+from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
 
@@ -855,10 +856,10 @@ class BaselineLoader:
      2. Finding a "good" baseline for fuzzy-matched pixel tests according to
         some heuristics. See `choose_valid_baseline(...)` for details.
     """
-    def __init__(self, host: Host):
+
+    def __init__(self, host: Host, default_port: Port):
         self._host = host
-        self._default_port = host.port_factory.get()
-        self._default_port.set_option_default('manifest_update', False)
+        self._default_port = default_port
         self._digests_to_contents = {}
         # Image diff statistics are commutative. By canonicalizing the
         # (expected, actual) argument order and caching the result, we can
@@ -1025,8 +1026,10 @@ class Worker:
     def start(self):
         self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
+        self._default_port = self._host.port_factory.get()
+        self._default_port.set_option_default('manifest_update', False)
         self._fs = self._connection.host.filesystem
-        self._baseline_loader = BaselineLoader(self._host)
+        self._baseline_loader = BaselineLoader(self._host, self._default_port)
 
     def stop(self):
         if hasattr(self, '_baseline_loader'):
@@ -1045,14 +1048,20 @@ class Worker:
                         group: TestBaselineSet):
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
+        copies.sort(key=lambda copy: copy[1])
         if self._dry_run:
-            for source, dest in sorted(copies, key=lambda copy: copy[1]):
-                assert source or suffix == 'txt', (
-                    'non-txt baselines cannot be all-pass')
-                _log.debug('Would have copied %s -> %s', source
-                           or '<all-pass>', dest)
+            for source, dest in copies:
+                _log.debug('Would have copied %s -> %s', source or '<extra>',
+                           dest)
         else:
-            self._copier.write_copies(copies)
+            # The placeholder is the contents of an "extra baseline" (as
+            # defined by `ResultDigest`) that replicates omitting an explicit
+            # baseline.
+            if self._default_port.is_testharness_test(test_name):
+                placeholder = testharness_results.ABBREVIATED_ALL_PASS
+            else:
+                placeholder = ''
+            self._copier.write_copies(copies, placeholder)
         return test_name, suffix
 
     def _download_baselines(self, base_test: str,

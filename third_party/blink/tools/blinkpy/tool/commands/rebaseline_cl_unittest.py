@@ -1168,6 +1168,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_abbreviated_all_pass_generation(self):
         baseline_name = self.mac_port.output_filename(
             'one/text-fail.html', self.mac_port.BASELINE_SUFFIX, '.txt')
+        self._write('one/text-fail.html',
+                    '<script src="/resources/testharness.js"></script>')
         self._remove(baseline_name)
         options = self.command_options(builders=['MOCK Try Linux'])
         exit_code = self.command.execute(options, ['one/text-fail.html'],

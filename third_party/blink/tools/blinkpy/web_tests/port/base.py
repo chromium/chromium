@@ -240,6 +240,12 @@ class Port(object):
         r'"(?:(.+):)?(?:\s*maxDifference\s*=\s*)?(?:(\d+)-)?(\d+);(?:\s*totalPixels\s*=\s*)?(?:(\d+)-)?(\d+)"\s*/?>'
     )
 
+    # Pattern for detecting testharness tests from their contents. Like
+    # `WPT_FUZZY_REGEX`, this pattern is only used for non-WPT tests. The
+    # manifest supplies this information for WPTs.
+    _TESTHARNESS_PATTERN = re.compile(
+        r'<script\s.*src=.*resources/testharness\.js.*>', re.IGNORECASE)
+
     # Add fully-qualified test names here to generate per-test traces.
     #
     # To generate traces for a limited set of tests running on CI bots, upload
@@ -1346,6 +1352,17 @@ class Port(object):
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
+
+    def is_testharness_test(self, test_name: str) -> bool:
+        """Detect whether a test uses the testharness.js framework."""
+        base_test = self.lookup_virtual_test_base(test_name) or test_name
+        wpt_dir, path_from_root = self.split_wpt_dir(base_test)
+        if wpt_dir:
+            manifest = self.wpt_manifest(wpt_dir)
+            return manifest.get_test_type(path_from_root) == 'testharness'
+        maybe_test_contents = self.read_test(base_test, 'latin-1')
+        return maybe_test_contents and bool(
+            self._TESTHARNESS_PATTERN.search(maybe_test_contents))
 
     def extract_wpt_pac(self, test_name):
         match = self.WPT_REGEX.match(test_name)
