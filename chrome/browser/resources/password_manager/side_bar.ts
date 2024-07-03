@@ -143,7 +143,7 @@ export class PasswordManagerSideBarElement extends
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
-   * accessibility purposes, taps are handled separately by <iron-selector>.
+   * accessibility purposes, taps are handled separately.
    */
   private onItemClick_(e: Event) {
     e.preventDefault();

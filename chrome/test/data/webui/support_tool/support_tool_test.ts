@@ -197,18 +197,19 @@ suite('SupportToolTest', function() {
   });
 
   test('support tool pages navigation', () => {
-    const ironPages = supportTool.shadowRoot!.querySelector('iron-pages');
+    const pages = supportTool.shadowRoot!.querySelector('cr-page-selector');
+    assertTrue(!!pages);
+
     // The selected page index must be 0, which means initial page is
     // IssueDetails.
-    assertEquals(ironPages!.selected, SupportToolPageIndex.ISSUE_DETAILS);
+    assertEquals(pages.selected, SupportToolPageIndex.ISSUE_DETAILS);
     // Only continue button container must be visible in initial page.
     assertFalse(
         supportTool.shadowRoot!.getElementById(
                                    'continueButtonContainer')!.hidden);
     // Click on continue button to move onto data collector selection page.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
-    assertEquals(
-        ironPages!.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+    assertEquals(pages.selected, SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Click on continue button to start data collection.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     browserProxy.whenCalled('startDataCollection').then(function([
@@ -268,7 +269,7 @@ suite('SupportToolTest', function() {
     // Go to the data collector selection page.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Take screenshot.
     const screenshot = supportTool.$.dataCollectors.shadowRoot!
@@ -297,7 +298,7 @@ suite('SupportToolTest', function() {
     // Go to the data collector selection page.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     // Take a screenshot.
     const screenshot = supportTool.$.dataCollectors.shadowRoot!
@@ -344,7 +345,7 @@ suite('SupportToolTest', function() {
       // Make sure the issue details page is displayed after cancelling data
       // collection.
       assertEquals(
-          supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+          supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
           SupportToolPageIndex.ISSUE_DETAILS);
     });
     assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
@@ -356,7 +357,7 @@ suite('SupportToolTest', function() {
     // filled.
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
     supportTool.shadowRoot!.getElementById('continueButton')!.click();
     // Check the contents of PII selection page.
@@ -374,7 +375,7 @@ suite('SupportToolTest', function() {
     webUIListenerCallback('support-data-export-started');
     flush();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.EXPORT_SPINNER);
     const exportResult: DataExportResult = {
       success: true,
@@ -384,7 +385,7 @@ suite('SupportToolTest', function() {
     webUIListenerCallback('data-export-completed', exportResult);
     flush();
     assertEquals(
-        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        supportTool.shadowRoot!.querySelector('cr-page-selector')!.selected,
         SupportToolPageIndex.DATA_EXPORT_DONE);
   });
 });

@@ -112,7 +112,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
-   * accessibility purposes, taps are handled separately by <iron-selector>.
+   * accessibility purposes, taps are handled separately.
    */
   private onLinkClick_(event: Event) {
     if ((event.target as HTMLElement).matches('a:not(#extensionsLink)')) {

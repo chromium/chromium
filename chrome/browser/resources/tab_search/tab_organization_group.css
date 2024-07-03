@@ -85,7 +85,7 @@ tab-search-item {
   width: 100%;
 }
 
-iron-selector > .mwb-list-item:focus {
+cr-page-selector > .mwb-list-item:focus {
   background-color: var(--mwb-list-item-selected-background-color);
 }
 

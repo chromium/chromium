@@ -13,7 +13,7 @@
     width: 500px;
   }
 
-  iron-pages {
+  cr-page-selector {
     flex: 1;
     position: relative;
   }
@@ -43,7 +43,7 @@
 
 <template is="dom-if" if="[[showTabs_]]">
   <cr-tabs tab-names="[[tabNames_]]" selected="{{selectedTabIdx_}}"> </cr-tabs>
-  <iron-pages selected="[[selectedTabIdx_]]">
+  <cr-page-selector selected="[[selectedTabIdx_]]">
     <div class="tabpanel" id="clipboard">
       <ul class="list">
         <li>Clipboard data source Type: [[clipboardSourceType_]]</li>
@@ -164,5 +164,5 @@
         </template>
       </table>
     </div>
-  </iron-pages>
+  </cr-page-selector>
 </template>

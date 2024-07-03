@@ -19,26 +19,26 @@ found in the LICENSE file.
 </style>
 
 <div id="support-tool-pages">
-  <iron-pages selected="[[selectedPage_]]" attr-for-selected="page-index">
+  <cr-page-selector selected="[[selectedPage_]]" attr-for-selected="page-index">
     <issue-details id="issueDetails"
-        page-index="[[supportToolPageIndex_.ISSUE_DETAILS]]">
+        page-index$="[[supportToolPageIndex_.ISSUE_DETAILS]]">
     </issue-details>
     <data-collectors id="dataCollectors"
-        page-index="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
+        page-index$="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
     </data-collectors>
     <spinner-page id="spinnerPage"  page-title="$i18n{dataCollectionSpinner}"
-        page-index="[[supportToolPageIndex_.SPINNER]]">
+        page-index$="[[supportToolPageIndex_.SPINNER]]">
     </spinner-page>
     <pii-selection id="piiSelection"
-        page-index="[[supportToolPageIndex_.PII_SELECTION]]">
+        page-index$="[[supportToolPageIndex_.PII_SELECTION]]">
     </pii-selection>
     <spinner-page id="exportSpinner" page-title="$i18n{dataExportSpinner}"
-        page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]">
+        page-index$="[[supportToolPageIndex_.EXPORT_SPINNER]]">
     </spinner-page>
     <data-export-done id="dataExportDone"
         page-index="[[supportToolPageIndex_.DATA_EXPORT_DONE]]">
     </data-export-done>
-  </iron-pages>
+  </cr-page-selector>
 </div>
 <div class="navigation-buttons" id="continueButtonContainer"
     hidden$="[[shouldHideContinueButtonContainer_(selectedPage_)]]">

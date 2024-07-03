@@ -6,6 +6,7 @@ import type {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement} from
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
@@ -110,19 +111,19 @@ suite('ExtensionsActivityLogTest', function() {
       });
 
   test('tab transitions', async () => {
-    flush();
+    await microtasksFinished();
 
     // Default view should be the history view.
     boundTestVisible('activity-log-history', true);
 
     // Navigate to the activity log stream.
     activityLog.$.tabs.selected = 1;
-    await activityLog.$.tabs.updateComplete;
+    await microtasksFinished();
 
     // One activity is recorded and should appear in the stream.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    flush();
+    await microtasksFinished();
     boundTestVisible('activity-log-stream', true);
     assertEquals(1, getStreamItems().length);
 
@@ -131,7 +132,7 @@ suite('ExtensionsActivityLogTest', function() {
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
-    flush();
+    await microtasksFinished();
     boundTestVisible('activity-log-history', true);
 
     // Another activity is recorded, but should not appear in the stream as
@@ -139,7 +140,7 @@ suite('ExtensionsActivityLogTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
     activityLog.$.tabs.selected = 1;
-    await activityLog.$.tabs.updateComplete;
+    await microtasksFinished();
 
     // The one activity in the stream should have persisted between tab
     // switches.
