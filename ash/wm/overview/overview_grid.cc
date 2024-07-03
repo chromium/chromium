@@ -2319,7 +2319,6 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
 void OverviewGrid::RefreshGridBounds(bool animate) {
   SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
                               /*ignored_items=*/{}, animate);
-  UpdateNoWindowsWidget(empty(), animate, /*is_continuous_enter=*/false);
 
   if (informed_restore_widget_) {
     InformedRestoreContentsView* contents_view =

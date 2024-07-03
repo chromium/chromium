@@ -11226,20 +11226,6 @@ class OakTest : public OverviewTestBase {
   OakTest& operator=(const OakTest&) = delete;
   ~OakTest() override = default;
 
-  void SnapOneTestWindow(aura::Window* window,
-                         WindowStateType state_type,
-                         float snap_ratio,
-                         WindowSnapActionSource snap_action_source) {
-    WindowState* window_state = WindowState::Get(window);
-    const WindowSnapWMEvent snap_event(
-        state_type == WindowStateType::kPrimarySnapped
-            ? WM_EVENT_SNAP_PRIMARY
-            : WM_EVENT_SNAP_SECONDARY,
-        snap_ratio, snap_action_source);
-    window_state->OnWMEvent(&snap_event);
-    EXPECT_EQ(state_type, window_state->GetStateType());
-  }
-
   gfx::Rect GetDisplayBoundsForRootWindow(aura::Window* root_window) {
     return display::Screen::GetScreen()
         ->GetDisplayNearestWindow(root_window)
@@ -11509,6 +11495,43 @@ TEST_F(OakTest, HideDesksWidgetInPartialOverview) {
   win2.reset();
   ASSERT_TRUE(IsInOverviewSession());
   EXPECT_TRUE(desks_widget->IsVisible());
+}
+
+// Tests the no windows widget doesn't show during dragging to partial overview.
+// Regression test for http://b/313505530.
+TEST_F(OakTest, NoWindowsWidget) {
+  UpdateDisplay("800x600,800x600");
+  const aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  // Enter full overview with no windows. Test we show the no windows widget.
+  ToggleOverview();
+  EXPECT_TRUE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_TRUE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+  ToggleOverview();
+
+  // Enter full overview with windows only on display 1.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 200, 200)));
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  // TODO(b/313505530): Determine whether to show the widget.
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+
+  // Start dragging. Test we don't show the widget.
+  auto* event_generator = GetEventGenerator();
+  auto* overview_item = GetOverviewItemForWindow(w1.get());
+  DragItemToPoint(overview_item, gfx::Point(0, 0), event_generator,
+                  /*by_touch_gestures=*/false, /*drop=*/false);
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
+
+  // Release the drag. Test we don't show the widget.
+  event_generator->ReleaseLeftButton();
+  ASSERT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[0])->no_windows_widget());
+  EXPECT_FALSE(GetOverviewGridForRoot(root_windows[1])->no_windows_widget());
 }
 
 // Tests that the wallpaper view layer clips correctly with animation upon
