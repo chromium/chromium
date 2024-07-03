@@ -27,9 +27,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -40,6 +43,10 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link TabsSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+    ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+})
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -131,5 +138,25 @@ public class TabsSettingsUnitTest {
         assertTrue(autoOpenSyncedTabGroupsSwitch.isChecked());
         verify(mPrefServiceMock).setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, true);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    public void testTabGroupSyncSettingsHiddenWhenFeatureOff() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+        assertFalse(autoOpenSyncedTabGroupsSwitch.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
+    public void testTabGroupSyncSettingsHiddenWhenKillswitchEnabled() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+        assertFalse(autoOpenSyncedTabGroupsSwitch.isVisible());
     }
 }

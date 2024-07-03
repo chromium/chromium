@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -35,6 +36,15 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     private void configureAutoOpenSyncedTabGroupsSwitch() {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+
+        boolean isTabGroupSyncAutoOpenConfigurable =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH);
+        if (!isTabGroupSyncAutoOpenConfigurable) {
+            autoOpenSyncedTabGroupsSwitch.setVisible(false);
+            return;
+        }
 
         PrefService prefService = UserPrefs.get(getProfile());
         boolean isEnabled = prefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);

@@ -514,6 +514,8 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    // See https://chromium-review.googlesource.com/c/chromium/src/+/5671009.
+    @DisabledTest(message = "Disabled for M127 as we cannot update golden after a merge.")
     public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -969,15 +971,34 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
-    public void testTabsSettingsOn() {
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+    })
+    public void testTabsSettingsOn_GroupSync_KillSwitchInactive() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
     }
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
+    })
+    public void testTabsSettingsOn_GroupSync_KillSwitchActive() {
+        launchSettingsActivity();
+        Assert.assertNull(
+                "Tabs settings should not be shown",
+                mMainSettings.findPreference(MainSettings.PREF_TABS));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
+    })
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
     public void testTabsSettingsOff() {
         launchSettingsActivity();
         Assert.assertNull(
