@@ -116,6 +116,36 @@ void UpdateLcppStringFrequencyStatData(
     LcppStringFrequencyStatData& lcpp_stat_data,
     std::optional<std::string>& dropped_entry);
 
+// Update `lcpp_stat_data` adding `new_entry` with `sliding_window_size` and
+// `max_histogram_buckets` parameters by the top-k algorithm while
+// keeping `map` have same keys in `lcpp_stat_data`.
+// See lcp_critical_path_predictor_util.cc for detail.
+template <typename T>
+T* UpdateFrequencyStatAndTryGetEntry(
+    size_t sliding_window_size,
+    size_t max_histogram_buckets,
+    const std::string& new_entry,
+    LcppStringFrequencyStatData& frequency_stat,
+    google::protobuf::Map<std::string, T>& map) {
+  std::optional<std::string> dropped_entry;
+  UpdateLcppStringFrequencyStatData(sliding_window_size, max_histogram_buckets,
+                                    new_entry, frequency_stat, dropped_entry);
+  // Since UpdateLcppStringFrequencyStatData modifies a part of `data`,
+  // caller should update the stored data if the function is called.
+  if (dropped_entry) {
+    if (*dropped_entry == new_entry) {
+      // This means `frequency_stat` is already full of well-used other
+      // first-level-path entries.
+      // However since the frequency map is updated, we need to update
+      // root `data` too via `data_updated` flag.
+      return nullptr;
+    } else {
+      map.erase(*dropped_entry);
+    }
+  }
+  return &(map[new_entry]);
+}
+
 // Returns true if the LcppData is valid. i.e. looks not corrupted.
 // Otherwise, data might be corrupted.
 bool IsValidLcppStat(const LcppStat& lcpp_stat);

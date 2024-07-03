@@ -618,28 +618,14 @@ LcppStat* TryToGetLcppStatForKeyStat(const LoadingPredictorConfig& config,
   }
 
   LcppKeyStat& key_stat = *data.mutable_lcpp_key_stat();
-  auto& lcpp_stat_map = *key_stat.mutable_lcpp_stat_map();
-
-  std::optional<std::string> dropped_entry;
-  UpdateLcppStringFrequencyStatData(
-      config.lcpp_multiple_key_histogram_sliding_window_size,
-      config.lcpp_multiple_key_max_histogram_buckets, first_level_path,
-      *key_stat.mutable_key_frequency_stat(), dropped_entry);
   // Since UpdateLcppStringFrequencyStatData modifies a part of `data`,
   // caller should update the stored data if the function is called.
   data_updated = true;
-  if (dropped_entry) {
-    if (*dropped_entry == first_level_path) {
-      // This means `key_stat` is already full of well-used other
-      // first-level-path entries.
-      // However since the frequency map is updated, we need to update
-      // root `data` too via `data_updated` flag.
-      return nullptr;
-    } else {
-      lcpp_stat_map.erase(*dropped_entry);
-    }
-  }
-  return &lcpp_stat_map[first_level_path];
+  return UpdateFrequencyStatAndTryGetEntry(
+      config.lcpp_multiple_key_histogram_sliding_window_size,
+      config.lcpp_multiple_key_max_histogram_buckets, first_level_path,
+      *key_stat.mutable_key_frequency_stat(),
+      *key_stat.mutable_lcpp_stat_map());
 }
 
 bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
