@@ -34,7 +34,7 @@ cr-grid {
 }
 
 #colorPickerIcon {
-  -webkit-mask-image: url(chrome://resources/cr_components/customize_themes/colorize.svg);
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(

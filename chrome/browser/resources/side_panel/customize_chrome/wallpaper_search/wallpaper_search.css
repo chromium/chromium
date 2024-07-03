@@ -152,7 +152,7 @@ customize-chrome-combobox {
 }
 
 #colorPickerIcon {
-  -webkit-mask-image: url(icons/colorize.svg);
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(
