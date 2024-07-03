@@ -1932,7 +1932,7 @@ void TextureManager::RemoveFramebufferManager(
 
 void TextureManager::Initialize() {
   // Reset PIXEL_UNPACK_BUFFER to avoid unrelated GL error on some GL drivers.
-  if (feature_info_->gl_version_info().is_es3_capable) {
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0)) {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
   }
 

@@ -18,7 +18,6 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_initializer.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -64,10 +63,6 @@ GLImplementationParts GetRequestedGLImplementation(
 
   std::vector<GLImplementationParts> allowed_impls =
       GetAllowedGLImplementations();
-
-  if (GetGlWorkarounds().disable_es3gl_context_for_testing) {
-    GLVersionInfo::DisableES3ForTesting();
-  }
 
   // If the passthrough command decoder is enabled, put ANGLE first if allowed
   if (g_is_angle_enabled && UsePassthroughCommandDecoder(cmd)) {

@@ -372,7 +372,7 @@ void TestHelper::SetupContextGroupInitExpectations(
         .RetiresOnSaturation();
   }
 
-  if (gl_info.is_es3_capable) {
+  if (gl_info.IsAtLeastGLES(3, 0)) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS, _))
         .WillOnce(SetArgPointee<1>(kMaxTransformFeedbackSeparateAttribs))
         .RetiresOnSaturation();
@@ -396,12 +396,12 @@ void TestHelper::SetupContextGroupInitExpectations(
   EXPECT_CALL(*gl, GetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, _))
       .WillOnce(SetArgPointee<1>(kMaxCubeMapTextureSize))
       .RetiresOnSaturation();
-  if (gl_info.is_es3_capable) {
+  if (gl_info.IsAtLeastGLES(3, 0)) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_3D_TEXTURE_SIZE, _))
         .WillOnce(SetArgPointee<1>(kMax3DTextureSize))
         .RetiresOnSaturation();
   }
-  if (gl_info.is_es3_capable) {
+  if (gl_info.IsAtLeastGLES(3, 0)) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, _))
         .WillOnce(SetArgPointee<1>(kMaxArrayTextureLayers))
         .RetiresOnSaturation();
@@ -446,7 +446,8 @@ void TestHelper::SetupContextGroupInitExpectations(
       .RetiresOnSaturation();
 
   bool use_default_textures = bind_generates_resource;
-  SetupTextureManagerInitExpectations(gl, enable_es3, gl_info.is_es3_capable,
+  SetupTextureManagerInitExpectations(gl, enable_es3,
+                                      gl_info.IsAtLeastGLES(3, 0),
                                       extension_set, use_default_textures);
 }
 
@@ -814,7 +815,7 @@ void TestHelper::SetupProgramSuccessExpectations(
     }
   }
 
-  if (feature_info->gl_version_info().is_es3_capable &&
+  if (feature_info->gl_version_info().IsAtLeastGLES(3, 0) &&
       !feature_info->disable_shader_translator()) {
     for (size_t ii = 0; ii < num_program_outputs; ++ii) {
       ProgramOutputInfo& info = program_outputs[ii];

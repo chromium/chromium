@@ -309,29 +309,20 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   gl::ProcsGL* gl = &gl::g_current_gl_driver->fn;
   gl::GLApi* api = gl::g_current_gl_context;
 
-  GrGLStandard standard =
-      version_info.is_es ? kGLES_GrGLStandard : kGL_GrGLStandard;
+  GrGLStandard standard = kGLES_GrGLStandard;
 
   // Depending on the advertised version and extensions, skia checks for
   // existence of entrypoints. However some of those we don't yet handle in
   // gl_bindings, so we need to fake the version to the maximum fully supported
-  // by the bindings (GL 4.1 or ES 3.0), and blocklist extensions that skia
-  // handles but bindings don't.
+  // by the bindings (ES 3.0), and blocklist extensions that skia handles but
+  // bindings don't.
   // TODO(piman): add bindings for missing entrypoints.
   GrGLFunction<GrGLGetStringFn> get_string;
-  const bool apply_version_override =
-      version_info.IsAtLeastGL(4, 2) || version_info.IsAtLeastGLES(3, 1);
+  const bool apply_version_override = version_info.IsAtLeastGLES(3, 1);
 
-  if (apply_version_override || version_info.IsVersionSubstituted()) {
+  if (apply_version_override) {
     GLVersionInfo::VersionStrings version;
-    if (version_info.IsVersionSubstituted()) {
-      version = version_info.GetFakeVersionStrings(version_info.major_version,
-                                                   version_info.minor_version);
-    } else if (version_info.is_es) {
-      version = version_info.GetFakeVersionStrings(3, 0);
-    } else {
-      version = version_info.GetFakeVersionStrings(4, 1);
-    }
+    version = version_info.GetFakeVersionStrings(3, 0);
 
     get_string = [version](GLenum name) {
       return GetStringHook(version.gl_version, version.glsl_version, name);

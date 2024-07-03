@@ -1727,15 +1727,6 @@
       ]
     },
     {
-      "id": 289,
-      "description": "Fake entry for testing command buffer init failures on ES 2.0",
-      "cr_bugs": [923134],
-      "test_group": 3,
-      "features": [
-        "disable_es3_gl_context_for_testing"
-      ]
-    },
-    {
       "id": 290,
       "description": "Round down glBindBufferRange size to a multiple of 4 on Qualcomm Adreno GPUs for uniform buffers",
       "cr_bugs": [906743],

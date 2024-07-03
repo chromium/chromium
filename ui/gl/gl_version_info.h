@@ -45,10 +45,6 @@ struct GL_EXPORT GLVersionInfo {
   // and glGetString(GL_SHADING_LANGUAGE_VERSION) matching major/minor versions
   VersionStrings GetFakeVersionStrings(unsigned major, unsigned minor) const;
 
-  // Returns true if the major/minor version was changed for any reasons and we
-  // might need to propagate changes further, e.g. to Skia
-  bool IsVersionSubstituted() const;
-
   // We need to emulate GL_ALPHA and GL_LUMINANCE and GL_LUMINANCE_ALPHA
   // texture formats on core profile and ES3, except for ANGLE and Swiftshader.
   bool NeedsLuminanceAlphaEmulation() const {
@@ -67,11 +63,8 @@ struct GL_EXPORT GLVersionInfo {
   unsigned minor_version = 0;
   bool is_es2 = false;
   bool is_es3 = false;
-  bool is_es3_capable = false;
   std::string driver_vendor;
   std::string driver_version;
-
-  static void DisableES3ForTesting();
 
  private:
   void Initialize(const char* version_str,
@@ -80,7 +73,6 @@ struct GL_EXPORT GLVersionInfo {
   void ParseVersionString(const char* version_str);
   void ParseDriverInfo(const char* version_str);
   void ExtractDriverVendorANGLE(const char* renderer_str);
-  bool IsES3Capable(const gfx::ExtensionSet& extensions) const;
 };
 
 }  // namespace gl

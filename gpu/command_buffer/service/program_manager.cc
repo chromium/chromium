@@ -912,9 +912,10 @@ bool Program::UpdateUniforms() {
 }
 
 void Program::UpdateProgramOutputs() {
-  if (!feature_info().gl_version_info().is_es3_capable ||
-      feature_info().disable_shader_translator())
+  if (!feature_info().gl_version_info().IsAtLeastGLES(3, 0) ||
+      feature_info().disable_shader_translator()) {
     return;
+  }
 
   Shader* fragment_shader =
       shaders_from_last_successful_link_[ShaderTypeToIndex(GL_FRAGMENT_SHADER)]

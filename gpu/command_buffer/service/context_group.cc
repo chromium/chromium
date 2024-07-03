@@ -226,7 +226,7 @@ gpu::ContextResult ContextGroup::Initialize(
     DCHECK(max_dual_source_draw_buffers_ >= 1);
   }
 
-  if (feature_info_->gl_version_info().is_es3_capable) {
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0)) {
     const GLint kMinTransformFeedbackSeparateAttribs = 4;
     if (!QueryGLFeatureU(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS,
                          kMinTransformFeedbackSeparateAttribs,
@@ -332,7 +332,7 @@ gpu::ContextResult ContextGroup::Initialize(
     return was_lost ? gpu::ContextResult::kTransientFailure
                     : gpu::ContextResult::kFatalFailure;
   }
-  if (feature_info_->gl_version_info().is_es3_capable &&
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0) &&
       !QueryGLFeature(GL_MAX_3D_TEXTURE_SIZE, kMin3DTextureSize,
                       &max_3d_texture_size)) {
     bool was_lost = decoder->CheckResetStatus();
@@ -344,7 +344,7 @@ gpu::ContextResult ContextGroup::Initialize(
     return was_lost ? gpu::ContextResult::kTransientFailure
                     : gpu::ContextResult::kFatalFailure;
   }
-  if (feature_info_->gl_version_info().is_es3_capable &&
+  if (feature_info_->gl_version_info().IsAtLeastGLES(3, 0) &&
       !QueryGLFeature(GL_MAX_ARRAY_TEXTURE_LAYERS, kMinArrayTextureLayers,
                       &max_array_texture_layers)) {
     bool was_lost = decoder->CheckResetStatus();

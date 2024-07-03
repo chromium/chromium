@@ -15,12 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/version.h"
 
-namespace {
-
-static bool disable_es3_for_testing = false;
-
-}  // namespace
-
 namespace gl {
 
 GLVersionInfo::GLVersionInfo(const char* version_str,
@@ -64,22 +58,6 @@ void GLVersionInfo::Initialize(const char* version_str,
     DCHECK(!is_d3d || is_angle);
     if (is_angle && driver_vendor == "ANGLE")
       ExtractDriverVendorANGLE(renderer_str);
-  }
-  is_es3_capable = IsES3Capable(extensions);
-
-  // Post-fixup in case the user requested disabling ES3 capability
-  // for testing purposes.
-  if (disable_es3_for_testing) {
-    is_es3_capable = false;
-    if (is_es) {
-      major_version = 2;
-      minor_version = 0;
-      is_es2 = true;
-      is_es3 = false;
-    } else {
-      major_version = 3;
-      minor_version = 2;
-    }
   }
 }
 
@@ -264,45 +242,6 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
       }
     }
   }
-}
-
-bool GLVersionInfo::IsES3Capable(const gfx::ExtensionSet& extensions) const {
-  // Version ES3 capable without extensions needed.
-  if (IsAtLeastGLES(3, 0) || IsAtLeastGL(4, 2)) {
-    return true;
-  }
-
-  // Don't try supporting ES3 on ES2, or desktop before 3.3.
-  if (is_es || !IsAtLeastGL(3, 3)) {
-    return false;
-  }
-
-  bool has_transform_feedback =
-      (IsAtLeastGL(4, 0) ||
-       gfx::HasExtension(extensions, "GL_ARB_transform_feedback2"));
-
-  // This code used to require the GL_ARB_gpu_shader5 extension in order to
-  // have support for dynamic indexing of sampler arrays, which was
-  // optionally supported in ESSL 1.00. However, since this is expressly
-  // forbidden in ESSL 3.00, and some desktop drivers (specifically
-  // Mesa/Gallium on AMD GPUs) don't support it, we no longer require it.
-
-  // tex storage is available in core spec since GL 4.2.
-  bool has_tex_storage =
-      gfx::HasExtension(extensions, "GL_ARB_texture_storage");
-
-  // TODO(cwallez) check for texture related extensions. See crbug.com/623577
-
-  return (has_transform_feedback && has_tex_storage);
-}
-
-void GLVersionInfo::DisableES3ForTesting() {
-  disable_es3_for_testing = true;
-}
-
-bool GLVersionInfo::IsVersionSubstituted() const {
-  // This is the only reason we're changing versions right now
-  return disable_es3_for_testing;
 }
 
 GLVersionInfo::VersionStrings GLVersionInfo::GetFakeVersionStrings(
