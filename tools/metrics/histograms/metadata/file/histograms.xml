@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.UpdateAvailableApps.{NumApps}" units="ms"
-    expires_after="2024-06-27">
+    expires_after="2025-06-27">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
