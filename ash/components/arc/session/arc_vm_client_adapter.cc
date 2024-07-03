@@ -973,12 +973,13 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     VLOG(2) << "Using virtio-blk with the concierge-provided disk for /data";
 
     // If request.disk_size is not set, concierge calculates the desired size
-    // (90% of the available space) and creates a sparse disk image.
+    // (95% of the total space) and creates a sparse disk image.
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(user_id_hash_);
     request.set_vm_name(kArcVmName);
     request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
     request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+    request.set_storage_ballooning(true);
 
     GetConciergeClient()->CreateDiskImage(
         std::move(request),
