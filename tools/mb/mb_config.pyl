@@ -324,6 +324,13 @@
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck',
     },
 
+    'tryserver.internal.chrome.fyi': {
+      'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_reclient',
+      'linux-finch-smoke-chrome': 'official_reclient',
+      'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
+      'win-finch-smoke-chrome': 'official_reclient',
+    },
+
     'tryserver.internal.optimization_guide': {
       'model_validation-linux': 'optimization_guide_rel',
       'model_validation-mac-arm64': 'optimization_guide_rel',
