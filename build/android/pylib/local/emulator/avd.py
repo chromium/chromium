@@ -28,6 +28,8 @@ from pylib import constants
 from pylib.local.emulator import ini
 from pylib.local.emulator.proto import avd_pb2
 
+from lib.proto import exception_recorder
+
 # A common root directory to store the CIPD packages for creating or starting
 # the emulator instance, e.g. emulator binary, system images, AVDs.
 COMMON_CIPD_ROOT = os.path.join(constants.DIR_SOURCE_ROOT, '.android_emulator')
@@ -842,7 +844,7 @@ class AvdConfig:
         for line in cmd_helper.IterCmdOutputLines(ensure_cmd):
           logging.info('    %s', line)
       except subprocess.CalledProcessError as e:
-        # avd.py is executed with python2.
+        exception_recorder.register(e)
         # pylint: disable=W0707
         raise AvdException('Failed to install CIPD packages: %s' % str(e),
                            command=ensure_cmd)
