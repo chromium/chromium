@@ -16,14 +16,20 @@ def main(argv):
   options = webdriver.ChromeOptions()
   os.environ["CHROME_LOG_FILE"] = r"C:\temp\chrome_log.txt"
 
+  # This flag tells Chrome to send heartbeat events on start up.
+  options.add_argument(
+      "--enable-features=EncryptedReportingManualTestHeartbeatEvent,EncryptedReportingPipeline"
+  )
+
   driver = create_chrome_webdriver(chrome_options=options)
 
   try:
+
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
     driver.get(policy_url)
-    # Give the page 10 seconds for enrollment and legend rending
-    time.sleep(10)
+    # Give the page 2 seconds to render the legend
+    time.sleep(2)
     driver.find_element(By.ID, 'reload-policies').click
     status_box = driver.find_element(By.CSS_SELECTOR, "status-box")
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
@@ -35,12 +41,19 @@ def main(argv):
     device_id = el.find_element(By.CLASS_NAME,
                                 'machine-enrollment-device-id').text
     print("DEVICE_ID=" + device_id.strip())
-
-    ## Upload a report
-    driver.find_element(By.ID, 'upload-report').click
   except Exception as error:
     print(error)
   finally:
+    # Give the browser some time to send heartbeat events.
+    time.sleep(20)
+
+    # Print CHROME_LOG_FILE
+    print("PRINTING CHROME LOG FILE....")
+    with open(os.environ["CHROME_LOG_FILE"]) as file:
+      content = file.read()
+      print(content)
+    print("DONE PRINTING CHROME LOG FILE.")
+
     driver.quit()
 
 

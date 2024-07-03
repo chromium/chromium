@@ -35,8 +35,9 @@ class ReportCbcmEvents(ChromeReportingConnectorTestCase):
     to the reporting server and returns the machine/device id.
     """
     local_dir = os.path.dirname(os.path.abspath(__file__))
-    return self.RunWebDriverTest(self.win_config['client'],
-                                 os.path.join(local_dir, '../cbcm_enroll.py'))
+    return self.RunWebDriverTest(
+        self.win_config['client'],
+        os.path.join(local_dir, 'report_cbcm_events_webdriver.py'))
 
   def IsEventValid(self, event, test_start_time, device_id):
     timestamp_in_microseconds = int(
