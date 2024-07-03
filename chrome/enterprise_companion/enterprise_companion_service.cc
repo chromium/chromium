@@ -16,15 +16,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/event_logger.h"
 
 namespace enterprise_companion {
 
 class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
  public:
-  EnterpriseCompanionServiceImpl(std::unique_ptr<DMClient> dm_client,
-                                 base::OnceClosure shutdown_callback)
+  EnterpriseCompanionServiceImpl(
+      std::unique_ptr<DMClient> dm_client,
+      base::OnceClosure shutdown_callback,
+      std::unique_ptr<EventLoggerManager> event_logger_manager)
       : dm_client_(std::move(dm_client)),
-        shutdown_callback_(std::move(shutdown_callback)) {}
+        shutdown_callback_(std::move(shutdown_callback)),
+        event_logger_manager_(std::move(event_logger_manager)) {}
   ~EnterpriseCompanionServiceImpl() override = default;
 
   // Overrides for EnterpriseCompanionService.
@@ -44,9 +48,13 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
 
+    scoped_refptr<EventLogger> event_logger =
+        event_logger_manager_->CreateEventLogger();
     dm_client_->RegisterBrowser(
+        event_logger,
         base::BindOnce(&EnterpriseCompanionServiceImpl::OnRegistrationCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       event_logger));
   }
 
  private:
@@ -54,17 +62,19 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
 
   std::unique_ptr<DMClient> dm_client_;
   base::OnceClosure shutdown_callback_;
+  std::unique_ptr<EventLoggerManager> event_logger_manager_;
 
   void OnRegistrationCompleted(
       base::OnceCallback<void(const EnterpriseCompanionStatus&)>
           policy_fetch_callback,
+      scoped_refptr<EventLogger> event_logger,
       const EnterpriseCompanionStatus& device_registration_status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!device_registration_status.ok()) {
       std::move(policy_fetch_callback).Run(device_registration_status);
     } else {
-      dm_client_->FetchPolicies(std::move(policy_fetch_callback));
+      dm_client_->FetchPolicies(event_logger, std::move(policy_fetch_callback));
     }
   }
 
@@ -73,9 +83,11 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
     std::unique_ptr<DMClient> dm_client,
+    std::unique_ptr<EventLoggerManager> event_logger_manager,
     base::OnceClosure shutdown_callback) {
   return std::make_unique<EnterpriseCompanionServiceImpl>(
-      std::move(dm_client), std::move(shutdown_callback));
+      std::move(dm_client), std::move(shutdown_callback),
+      std::move(event_logger_manager));
 }
 
 }  // namespace enterprise_companion

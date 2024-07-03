@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
@@ -47,6 +48,8 @@ constexpr char kPolicyValue3[] = "test policy value 3";
 constexpr int kPublicKey1Version = 100;
 constexpr int kTimestamp1 = 42;
 constexpr int kTimestamp2 = 84;
+
+using ::testing::ElementsAre;
 
 // Wraps a real DM storage instance allowing behavior to be augmented by tests.
 class TestDMStorage final : public device_management_storage::DMStorage {
@@ -186,6 +189,43 @@ class TestTokenService
   std::string dm_token_;
 };
 
+class TestEventLogger : public EventLogger {
+ public:
+  const std::vector<EnterpriseCompanionStatus>& registration_events() {
+    return registration_events_;
+  }
+  const std::vector<EnterpriseCompanionStatus>& policy_fetch_events() {
+    return policy_fetch_events_;
+  }
+
+  // Overrides for EventLogger.
+  void Flush() override {}
+
+  OnEnrollmentFinishCallback OnEnrollmentStart() override {
+    return base::BindOnce(
+        [](scoped_refptr<TestEventLogger> logger,
+           const EnterpriseCompanionStatus& status) {
+          logger->registration_events_.push_back(status);
+        },
+        base::WrapRefCounted(this));
+  }
+
+  OnPolicyFetchFinishCallback OnPolicyFetchStart() override {
+    return base::BindOnce(
+        [](scoped_refptr<TestEventLogger> logger,
+           const EnterpriseCompanionStatus& status) {
+          logger->policy_fetch_events_.push_back(status);
+        },
+        base::WrapRefCounted(this));
+  }
+
+ private:
+  std::vector<EnterpriseCompanionStatus> registration_events_;
+  std::vector<EnterpriseCompanionStatus> policy_fetch_events_;
+
+  ~TestEventLogger() override = default;
+};
+
 }  // namespace
 
 class DMClientTest : public ::testing::Test {
@@ -223,9 +263,11 @@ class DMClientTest : public ::testing::Test {
   raw_ptr<MockCloudPolicyClient> mock_cloud_policy_client_ = nullptr;
   base::MockCallback<PolicyFetchResponseValidator>
       mock_policy_fetch_response_validator_;
+  scoped_refptr<TestEventLogger> test_event_logger_ =
+      base::MakeRefCounted<TestEventLogger>();
 
-  // Ensure a valid registration state by storing an enrollment token, fake DM
-  // token, and configuring the cloud policy client.
+  // Ensure a valid registration state by storing an enrollment token, fake
+  // DM token, and configuring the cloud policy client.
   void EnsureRegistered() {
     test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
     test_token_service_->StoreDmToken(kFakeDMToken);
@@ -257,6 +299,7 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -265,6 +308,9 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
   run_loop.Run();
 
   EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
 TEST_F(DMClientTest, RegisterDeviceFailure) {
@@ -276,6 +322,7 @@ TEST_F(DMClientTest, RegisterDeviceFailure) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER));
@@ -286,6 +333,10 @@ TEST_F(DMClientTest, RegisterDeviceFailure) {
   run_loop.Run();
 
   EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                  policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER)));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
 TEST_F(DMClientTest, RegistrationRemovesPolicies) {
@@ -311,6 +362,7 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   // Register the device. All policies should be removed as a side effect.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -319,6 +371,9 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   run_loop.Run();
 
   EXPECT_FALSE(dm_storage_->ReadPolicyData(kPolicyType1));
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
 TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
@@ -327,6 +382,7 @@ TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -342,12 +398,16 @@ TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
+  // Skipping registration should result in no logged events.
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
 TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
@@ -369,6 +429,7 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   // Registration should be skipped as DM token is still present.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -376,11 +437,15 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
 
   EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
   EXPECT_TRUE(dm_storage_->ReadPolicyData(kPolicyType1));
+  // Skipping registration should result in no logged events.
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfNotRegistered) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kRegistrationPreconditionFailed));
@@ -392,6 +457,10 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfNotRegistered) {
   EXPECT_TRUE(cached_policy_info->public_key().empty());
   EXPECT_FALSE(cached_policy_info->has_key_version());
   EXPECT_EQ(cached_policy_info->timestamp(), 0);
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus(
+                  ApplicationError::kRegistrationPreconditionFailed)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfDMStorageCannotPersist) {
@@ -400,6 +469,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfDMStorageCannotPersist) {
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kPolicyPersistenceImpossible));
@@ -411,6 +481,10 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfDMStorageCannotPersist) {
   EXPECT_TRUE(cached_policy_info->public_key().empty());
   EXPECT_FALSE(cached_policy_info->has_key_version());
   EXPECT_EQ(cached_policy_info->timestamp(), 0);
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus(
+                  ApplicationError::kPolicyPersistenceImpossible)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
@@ -420,6 +494,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
@@ -434,6 +509,10 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
   EXPECT_TRUE(cached_policy_info->public_key().empty());
   EXPECT_FALSE(cached_policy_info->has_key_version());
   EXPECT_EQ(cached_policy_info->timestamp(), 0);
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                  policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
@@ -445,6 +524,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsCloudPolicyValidationResult(
             policy::CloudPolicyValidatorBase::VALIDATION_POLICY_PARSE_ERROR));
@@ -460,6 +540,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
   EXPECT_TRUE(cached_policy_info->public_key().empty());
   EXPECT_FALSE(cached_policy_info->has_key_version());
   EXPECT_EQ(cached_policy_info->timestamp(), 0);
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(
+      test_event_logger_->policy_fetch_events(),
+      ElementsAre(EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_POLICY_PARSE_ERROR)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
@@ -472,6 +557,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kPolicyPersistenceFailed));
@@ -487,6 +573,10 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
   EXPECT_TRUE(cached_policy_info->public_key().empty());
   EXPECT_FALSE(cached_policy_info->has_key_version());
   EXPECT_EQ(cached_policy_info->timestamp(), 0);
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus(
+                  ApplicationError::kPolicyPersistenceFailed)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesSuccess) {
@@ -517,6 +607,7 @@ TEST_F(DMClientTest, FetchPoliciesSuccess) {
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
@@ -540,6 +631,10 @@ TEST_F(DMClientTest, FetchPoliciesSuccess) {
       dm_storage_->ReadPolicyData(kPolicyType2);
   ASSERT_TRUE(read_data2);
   EXPECT_EQ(read_data2->SerializeAsString(), data2.SerializeAsString());
+
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
 }
 
 TEST_F(DMClientTest, FetchPoliciesOverwrite) {
@@ -571,6 +666,7 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
 
   base::RunLoop first_fetch_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(first_fetch_loop.QuitClosure()));
@@ -596,6 +692,7 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
 
   base::RunLoop second_fetch_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(second_fetch_loop.QuitClosure()));
@@ -617,6 +714,11 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
       dm_storage_->ReadPolicyData(kPolicyType2);
   ASSERT_TRUE(read_data2);
   EXPECT_EQ(read_data2->SerializeAsString(), data2.SerializeAsString());
+
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success(),
+                          EnterpriseCompanionStatus::Success()));
 }
 
 // Tests that the DM token is removed if the server requests the device to be
@@ -628,6 +730,7 @@ TEST_F(DMClientTest, FetchPoliciesReset) {
 
   base::RunLoop first_fetch_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET));
@@ -641,6 +744,10 @@ TEST_F(DMClientTest, FetchPoliciesReset) {
   first_fetch_loop.Run();
 
   EXPECT_TRUE(test_token_service_->GetDmToken().empty());
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                  policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET)));
 }
 
 // Tests that the DM token is replaced with the invalid token if the server
@@ -652,6 +759,7 @@ TEST_F(DMClientTest, FetchPoliciesInvalidation) {
 
   base::RunLoop first_fetch_loop;
   dm_client_->FetchPolicies(
+      test_event_logger_,
       base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
@@ -665,6 +773,10 @@ TEST_F(DMClientTest, FetchPoliciesInvalidation) {
   first_fetch_loop.Run();
 
   EXPECT_TRUE(dm_storage_->IsDeviceDeregistered());
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(test_event_logger_->policy_fetch_events(),
+              ElementsAre(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+                  policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND)));
 }
 
 }  // namespace enterprise_companion

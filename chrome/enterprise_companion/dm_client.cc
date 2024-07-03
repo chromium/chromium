@@ -25,6 +25,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -41,6 +42,21 @@ namespace {
 
 constexpr char kGoogleUpdateMachineLevelAppsPolicyType[] =
     "google/machine-level-apps";
+
+// Given the void-returning callbacks A and B with the same signature, return a
+// callback that invokes A and B in sequence with the same arguments.
+template <typename... Args>
+base::OnceCallback<void(Args...)> TeeOnceCallback(
+    base::OnceCallback<void(Args...)> a,
+    base::OnceCallback<void(Args...)> b) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(Args...)> a,
+         base::OnceCallback<void(Args...)> b, Args... args) {
+        std::move(a).Run(args...);
+        std::move(b).Run(args...);
+      },
+      std::move(a), std::move(b));
+}
 
 // Convert a CloudPolicyClient::ResponseMap to a DMPolicyMap by dropping the
 // "settings entity ID" from the key and serializing the fetch response.
@@ -162,7 +178,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   ~DMClientImpl() override { cloud_policy_client_->RemoveObserver(this); }
 
   // Overrides for DMClient.
-  void RegisterBrowser(StatusCallback callback) override {
+  void RegisterBrowser(scoped_refptr<EventLogger> event_logger,
+                       StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!pending_callback_);
 
@@ -172,15 +189,21 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     }
 
     dm_storage_->RemoveAllPolicies();
-    pending_callback_ = std::move(callback);
+    pending_callback_ =
+        TeeOnceCallback(std::move(callback), event_logger->OnEnrollmentStart());
     cloud_policy_client_->RegisterBrowserWithEnrollmentToken(
         dm_storage_->GetEnrollmentToken(), dm_storage_->GetDeviceID(),
         client_data_delegate_, dm_storage_->IsEnrollmentMandatory());
   }
 
-  void FetchPolicies(StatusCallback callback) override {
+  void FetchPolicies(scoped_refptr<EventLogger> event_logger,
+                     StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(!pending_callback_);
+    // Wrap the callback with event logging early to ensure that precondition
+    // errors are logged.
+    callback = TeeOnceCallback(std::move(callback),
+                               event_logger->OnPolicyFetchStart());
 
     if (!cloud_policy_client_->is_registered()) {
       VLOG(1) << "Failed to fetch policies: client is not registered";
@@ -343,7 +366,7 @@ CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
         return std::make_unique<policy::CloudPolicyClient>(
             dm_service, shared_url_loader_factory);
       },
-      shared_url_loader_factory);
+      std::move(shared_url_loader_factory));
 }
 
 PolicyFetchResponseValidator GetDefaultPolicyFetchResponseValidator() {

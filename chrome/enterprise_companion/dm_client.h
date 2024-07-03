@@ -24,6 +24,8 @@ class CloudPolicyClient;
 
 namespace enterprise_companion {
 
+class EventLogger;
+
 extern const char kGoogleUpdateMachineLevelAppsPolicyType[];
 
 using CloudPolicyClientProvider =
@@ -47,10 +49,12 @@ class DMClient {
   virtual ~DMClient() = default;
 
   // Register the browser with the enrollment token from storage.
-  virtual void RegisterBrowser(StatusCallback callback) = 0;
+  virtual void RegisterBrowser(scoped_refptr<EventLogger> event_logger,
+                               StatusCallback callback) = 0;
 
   // Fetch policies using the DM token from storage.
-  virtual void FetchPolicies(StatusCallback callback) = 0;
+  virtual void FetchPolicies(scoped_refptr<EventLogger> event_logger,
+                             StatusCallback callback) = 0;
 };
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(

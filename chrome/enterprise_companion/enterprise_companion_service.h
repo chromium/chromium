@@ -13,6 +13,8 @@
 
 namespace enterprise_companion {
 
+class EventLoggerManager;
+
 // The core of the enterprise companion. All functions and callbacks must be
 // called on the same sequence.
 class EnterpriseCompanionService {
@@ -27,6 +29,7 @@ class EnterpriseCompanionService {
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
     std::unique_ptr<DMClient> dm_client,
+    std::unique_ptr<EventLoggerManager> event_logger_manager,
     base::OnceClosure shutdown_callback);
 
 }  // namespace enterprise_companion

@@ -24,6 +24,7 @@
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/lock.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
@@ -108,6 +109,8 @@ class EnterpriseCompanionApp {
         CreateEnterpriseCompanionServiceStub(CreateEnterpriseCompanionService(
             CreateDMClient(
                 GetDefaultCloudPolicyClientProvider(url_loader_factory)),
+            CreateEventLoggerManager(
+                CreateEventLogUploader(url_loader_factory)),
             std::move(shutdown_callback)));
   }
 
