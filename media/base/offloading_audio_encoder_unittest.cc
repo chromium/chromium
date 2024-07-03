@@ -41,9 +41,16 @@ class OffloadingAudioEncoderTest : public testing::Test {
     EXPECT_CALL(*mock_audio_encoder_, DisablePostedCallbacks());
     offloading_encoder_ = std::make_unique<OffloadingAudioEncoder>(
         std::move(mock_audio_encoder), work_runner_, callback_runner_);
-    EXPECT_CALL(*mock_audio_encoder_, OnDestruct()).WillOnce(Invoke([this]() {
-      EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-    }));
+    EXPECT_CALL(*mock_audio_encoder_, OnDestruct())
+        .WillOnce(Invoke([work_runner = work_runner_]() {
+          EXPECT_TRUE(work_runner->RunsTasksInCurrentSequence());
+        }));
+  }
+
+  void TearDown() override {
+    // `mock_audio_encoder_` will be destroyed on `work_runner_` when tearing
+    // down the test fixture so clear it now to avoid dangling pointer issues.
+    mock_audio_encoder_ = nullptr;
   }
 
   void RunLoop() { task_environment_.RunUntilIdle(); }
@@ -51,7 +58,7 @@ class OffloadingAudioEncoderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> work_runner_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  raw_ptr<MockAudioEncoder, AcrossTasksDanglingUntriaged> mock_audio_encoder_;
+  raw_ptr<MockAudioEncoder> mock_audio_encoder_;
   std::unique_ptr<OffloadingAudioEncoder> offloading_encoder_;
 };
 
