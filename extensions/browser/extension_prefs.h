@@ -882,11 +882,6 @@ class ExtensionPrefs : public KeyedService {
   // for a given extension.
   bool HasWithholdingPermissionsSetting(const ExtensionId& extension_id) const;
 
-  // Helper function to retrieve various time prefs like first install time,
-  // last updated time, last launch time for a given extension.
-  base::Time GetTimePrefHelper(const ExtensionId& extension_id,
-                               const char* pref_key) const;
-
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The pref service specific to this set of extension prefs. Owned by the

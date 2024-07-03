@@ -1101,7 +1101,10 @@ void ExtensionPrefs::ModifyBitMapPrefBits(const ExtensionId& extension_id,
 
 base::Time ExtensionPrefs::LastPingDay(const ExtensionId& extension_id) const {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
-  return ReadTime(GetExtensionPref(extension_id), kLastPingDay);
+  static constexpr PrefMap kMap = {kLastPingDay, PrefType::kTime,
+                                   PrefScope::kExtensionSpecific};
+
+  return ReadPrefAsTime(extension_id, kMap);
 }
 
 void ExtensionPrefs::SetLastPingDay(const ExtensionId& extension_id,
@@ -1123,7 +1126,10 @@ void ExtensionPrefs::SetBlocklistLastPingDay(const base::Time& time) {
 base::Time ExtensionPrefs::LastActivePingDay(
     const ExtensionId& extension_id) const {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
-  return ReadTime(GetExtensionPref(extension_id), kLastActivePingDay);
+  static constexpr PrefMap kMap = {kLastActivePingDay, PrefType::kTime,
+                                   PrefScope::kExtensionSpecific};
+
+  return ReadPrefAsTime(extension_id, kMap);
 }
 
 void ExtensionPrefs::SetLastActivePingDay(const ExtensionId& extension_id,
@@ -1753,19 +1759,20 @@ bool ExtensionPrefs::WasInstalledByOem(const ExtensionId& extension_id) const {
   return false;
 }
 
-base::Time ExtensionPrefs::GetTimePrefHelper(const ExtensionId& extension_id,
-                                             const char* pref_key) const {
-  return ReadTime(GetExtensionPref(extension_id), pref_key);
-}
-
 base::Time ExtensionPrefs::GetFirstInstallTime(
     const ExtensionId& extension_id) const {
-  return GetTimePrefHelper(extension_id, kPrefFirstInstallTime);
+  static constexpr PrefMap kMap = {kPrefFirstInstallTime, PrefType::kTime,
+                                   PrefScope::kExtensionSpecific};
+
+  return ReadPrefAsTime(extension_id, kMap);
 }
 
 base::Time ExtensionPrefs::GetLastUpdateTime(
     const ExtensionId& extension_id) const {
-  return GetTimePrefHelper(extension_id, kPrefLastUpdateTime);
+  static constexpr PrefMap kMap = {kPrefLastUpdateTime, PrefType::kTime,
+                                   PrefScope::kExtensionSpecific};
+
+  return ReadPrefAsTime(extension_id, kMap);
 }
 
 bool ExtensionPrefs::DoNotSync(const ExtensionId& extension_id) const {
@@ -1778,7 +1785,10 @@ bool ExtensionPrefs::DoNotSync(const ExtensionId& extension_id) const {
 
 base::Time ExtensionPrefs::GetLastLaunchTime(
     const ExtensionId& extension_id) const {
-  return GetTimePrefHelper(extension_id, kPrefLastLaunchTime);
+  static constexpr PrefMap kMap = {kPrefLastLaunchTime, PrefType::kTime,
+                                   PrefScope::kExtensionSpecific};
+
+  return ReadPrefAsTime(extension_id, kMap);
 }
 
 void ExtensionPrefs::SetLastLaunchTime(const ExtensionId& extension_id,
