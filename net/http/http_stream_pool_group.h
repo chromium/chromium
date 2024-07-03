@@ -67,7 +67,11 @@ class HttpStreamPool::Group {
     return handed_out_stream_count_ + idle_stream_sockets_.size();
   }
 
-  void CleanupIdleStreamSocketsForTesting() { CleanupIdleStreamSockets(); }
+  // Increments the generation of this group. Closes idle streams. Streams
+  // handed out before this increment won't be reused.
+  void IncrementGeneration();
+
+  void CleanupTimedoutIdleStreamSocketsForTesting();
 
  private:
   struct IdleStreamSocket {
@@ -82,13 +86,18 @@ class HttpStreamPool::Group {
     base::TimeTicks time_became_idle;
   };
 
-  void CleanupIdleStreamSockets();
+  enum class CleanupMode {
+    // Clean up only timed out idle streams.
+    kTimeoutOnly,
+    // Clean up all idle streams.
+    kForce,
+  };
+  void CleanupIdleStreamSockets(CleanupMode mode);
 
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
 
   size_t handed_out_stream_count_ = 0;
-  // TODO(crbug.com/346835898): Support generation.
   int64_t generation_ = 0;
   std::list<IdleStreamSocket> idle_stream_sockets_;
 };

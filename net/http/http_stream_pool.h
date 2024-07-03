@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 
 namespace net {
 
@@ -19,7 +20,8 @@ class HttpStreamKey;
 // HttpStreamKey.
 //
 // Currently only supports non-proxy streams.
-class NET_EXPORT_PRIVATE HttpStreamPool {
+class NET_EXPORT_PRIVATE HttpStreamPool
+    : public NetworkChangeNotifier::IPAddressObserver {
  public:
   // The maximum number of sockets per pool. The same as
   // ClientSocketPoolManager::max_sockets_per_pool().
@@ -27,17 +29,41 @@ class NET_EXPORT_PRIVATE HttpStreamPool {
 
   class NET_EXPORT_PRIVATE Group;
 
-  HttpStreamPool();
+  explicit HttpStreamPool(bool cleanup_on_ip_address_change = true);
 
   HttpStreamPool(const HttpStreamPool&) = delete;
   HttpStreamPool& operator=(const HttpStreamPool&) = delete;
 
-  ~HttpStreamPool();
+  ~HttpStreamPool() override;
+
+  // Increments/Decrements the total number of idle streams in this pool.
+  void IncrementTotalIdleStreamCount();
+  void DecrementTotalIdleStreamCount();
+
+  // Increments/Decrements the total number of active streams this pool handed
+  // out.
+  void IncrementTotalHandedOutStreamCount();
+  void DecrementTotalHandedOutStreamCount();
+
+  size_t TotalActiveStreamCount() const {
+    return total_handed_out_stream_count_ + total_idle_stream_count_;
+  }
+
+  // NetworkChangeNotifier::IPAddressObserver methods:
+  void OnIPAddressChanged() override;
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
  private:
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+
+  const bool cleanup_on_ip_address_change_;
+
+  // The total number of active streams this pool handed out across all groups.
+  size_t total_handed_out_stream_count_ = 0;
+
+  // The total number of idle streams in this pool.
+  size_t total_idle_stream_count_ = 0;
 
   std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
 };

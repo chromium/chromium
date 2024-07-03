@@ -11,6 +11,7 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_change_notifier.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_pool.h"
 #include "net/log/net_log.h"
@@ -71,10 +72,15 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
  public:
   HttpStreamPoolGroupTest()
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        pool_(std::make_unique<HttpStreamPool>()) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    InitializePool();
+  }
 
  protected:
+  void InitializePool(bool cleanup_on_ip_address_change = true) {
+    pool_ = std::make_unique<HttpStreamPool>(cleanup_on_ip_address_change);
+  }
+
   HttpStreamPool& pool() { return *pool_; }
 
  private:
@@ -90,6 +96,7 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStream) {
   CHECK(stream);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
 TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
@@ -103,11 +110,13 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
   stream.reset();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   FastForwardBy(Group::kUnusedIdleStreamSocketTimeout);
-  group.CleanupIdleStreamSocketsForTesting();
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
 
 TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
@@ -122,19 +131,22 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
   stream.reset();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   static_assert(Group::kUnusedIdleStreamSocketTimeout <=
                 Group::kUsedIdleStreamSocketTimeout);
 
   FastForwardBy(Group::kUnusedIdleStreamSocketTimeout);
-  group.CleanupIdleStreamSocketsForTesting();
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   FastForwardBy(Group::kUsedIdleStreamSocketTimeout);
-  group.CleanupIdleStreamSocketsForTesting();
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
 
 TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketNotIdle) {
@@ -149,6 +161,7 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketNotIdle) {
   stream.reset();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
 
 TEST_F(HttpStreamPoolGroupTest, IdleSocketDisconnected) {
@@ -163,11 +176,80 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketDisconnected) {
   stream.reset();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 
   raw_stream_socket->set_is_connected(false);
-  group.CleanupIdleStreamSocketsForTesting();
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
   ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+
+  Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::move(stream_socket));
+  CHECK(stream);
+
+  stream.reset();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  RunUntilIdle();
+
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+
+  Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::move(stream_socket));
+  CHECK(stream);
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  RunUntilIdle();
+
+  stream.reset();
+
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, IPAddressChangeIgnored) {
+  InitializePool(/*cleanup_on_ip_address_change=*/false);
+
+  auto stream_socket = std::make_unique<FakeStreamSocket>();
+  Group& group = pool().GetOrCreateGroupForTesting(HttpStreamKey());
+  std::unique_ptr<HttpStream> stream =
+      group.CreateTextBasedStream(std::move(stream_socket));
+  CHECK(stream);
+
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  RunUntilIdle();
+
+  stream.reset();
+
+  group.CleanupTimedoutIdleStreamSocketsForTesting();
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+  ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
 }
 
 }  // namespace net
