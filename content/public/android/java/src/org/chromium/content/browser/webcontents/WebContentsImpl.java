@@ -488,14 +488,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public List<WebContentsImpl> getInnerWebContents() {
-        checkNotDestroyed();
-        WebContentsImpl[] innerWebContents =
-                WebContentsImplJni.get().getInnerWebContents(mNativeWebContentsAndroid);
-        return Collections.unmodifiableList(Arrays.asList(innerWebContents));
-    }
-
-    @Override
     public @Visibility int getVisibility() {
         checkNotDestroyed();
         return WebContentsImplJni.get().getVisibility(mNativeWebContentsAndroid);
@@ -1283,8 +1275,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         RenderFrameHost[] getAllRenderFrameHosts(long nativeWebContentsAndroid);
 
         RenderWidgetHostViewImpl getRenderWidgetHostView(long nativeWebContentsAndroid);
-
-        WebContentsImpl[] getInnerWebContents(long nativeWebContentsAndroid);
 
         @Visibility
         int getVisibility(long nativeWebContentsAndroid);

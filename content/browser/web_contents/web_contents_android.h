@@ -211,9 +211,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetRenderWidgetHostView(
       JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetInnerWebContents(
-      JNIEnv* env);
-
   jint GetVisibility(JNIEnv* env);
 
   void UpdateWebContentsVisibility(JNIEnv* env, jint visibiity);

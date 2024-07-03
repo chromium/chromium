@@ -35,9 +35,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
-import java.util.List;
-
 /** Mock class for {@link WebContents}. */
 @SuppressLint("ParcelCreator")
 public class MockWebContents implements WebContents {
@@ -116,11 +113,6 @@ public class MockWebContents implements WebContents {
     @Nullable
     public RenderWidgetHostView getRenderWidgetHostView() {
         return null;
-    }
-
-    @Override
-    public List<? extends WebContents> getInnerWebContents() {
-        return Collections.emptyList();
     }
 
     @Override
