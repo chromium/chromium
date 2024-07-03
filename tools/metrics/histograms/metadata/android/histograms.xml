@@ -4061,7 +4061,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.RestoreTabsOnFRE.PromoShowResult"
+<histogram name="Android.RestoreTabsOnFRE.PromoShowResult2"
     enum="RestoreTabsOnFREPromoShowResult" expires_after="2024-12-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>bjfong@google.com</owner>

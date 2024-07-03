@@ -1235,9 +1235,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Promo was shown"/>
   <int value="1" label="Promo was not eligible to show"/>
   <int value="2"
-      label="Either sync was not enabled, no tabs were synced or synced tabs
-             were not finished syncing"/>
+      label="No tabs were synced or synced tabs were not finished syncing"/>
   <int value="3" label="Promo was not shown due to a null profile"/>
+  <int value="4" label="Tab sync was not enabled"/>
 </enum>
 
 <enum name="RestoreTabsOnFRERestoredTabsResult">
