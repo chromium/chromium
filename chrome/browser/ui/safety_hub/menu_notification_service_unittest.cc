@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -589,5 +590,40 @@ TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest,
   EXPECT_EQ(
       menu_notification_service()->GetLastShownNotificationModule().value(),
       safety_hub::SafetyHubModuleType::PASSWORDS);
+}
+
+TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest, PasswordMigration) {
+  const std::string& kOrigin = "https://www.example1.com";
+  // Add a leaked password to make prefs store password data.
+  SetMockCredentialEntry(kOrigin, true);
+  EXPECT_TRUE(menu_notification_service()->GetNotificationToShow().has_value());
+
+  // Modify stored password data on prefs to test migration from old state to
+  // new state.
+  const base::Value::Dict& stored_notifications =
+      prefs()->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
+  base::Value::Dict new_stored_notification(stored_notifications.Clone());
+  const base::Value::Dict* stored_password_data =
+      new_stored_notification.FindDict("passwords");
+
+  // Store notification password as its old format by only passing origin.
+  base::Value::Dict old_password_not_value;
+  base::Value::List compromised_origins;
+  compromised_origins.Append(kOrigin);
+  old_password_not_value.Set(safety_hub::kSafetyHubPasswordCheckOriginsKey,
+                             std::move(compromised_origins));
+  base::Value::Dict new_stored_password_data(stored_password_data->Clone());
+  new_stored_password_data.Set("result", std::move(old_password_not_value));
+
+  // Update the value stored on prefs
+  new_stored_notification.Set("passwords", std::move(new_stored_password_data));
+  prefs()->SetDict(safety_hub_prefs::kMenuNotificationsPrefsKey,
+                   std::move(new_stored_notification));
+  EXPECT_TRUE(menu_notification_service()->GetNotificationToShow().has_value());
+
+  // Adding a new notification with the new format should keep showing the
+  // notification.
+  SetMockCredentialEntry(kOrigin, true);
+  EXPECT_TRUE(menu_notification_service()->GetNotificationToShow().has_value());
 }
 #endif  // BUILDFLAG(IS_ANDROID)

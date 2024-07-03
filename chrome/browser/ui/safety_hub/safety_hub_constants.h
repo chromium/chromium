@@ -44,6 +44,27 @@ extern const char kAbusiveRevocationExpirationKey[];
 // Key of the lifetime for an abusive notification permission object.
 extern const char kAbusiveRevocationLifetimeKey[];
 
+// Key of the base::Value dictionary we assign to the
+// REVOKED_ABUSIVE_NOTIFICATION_PERMISSION value.
+extern const char kRevokedStatusDictKeyStr[];
+// When users take action to grant a permission despite warnings against doing
+// so, we should ignore the origin in future auto revocations. To do this, we
+// will assign the REVOKED_ABUSIVE_NOTIFICATION_PERMISSION permission
+// base::Value to the "ignore" string. Otherwise, the value should be "revoke".
+extern const char kIgnoreStr[];
+extern const char kRevokeStr[];
+
+// Key to store origin for a detected compromised password in
+// PasswordStatusCheckResult.
+extern const char kOrigin[];
+// Key to store username for a detected compromised password in
+// PasswordStatusCheckResult.
+extern const char kUsername[];
+// Key to store password data in the prefs. The data will look like:
+// kSafetyHubPasswordCheckOriginsKey: [ {origin: example1.com, username: user1},
+//                                      {origin: example2.com, username: user2}]
+extern const char kSafetyHubPasswordCheckOriginsKey[];
+
 // State that a top card in the Safety Hub page can be in. This enum should
 // remain sorted from the "worst" state (warning) to the "best" state (safe).
 // Should be kept in sync with the corresponding enum in
@@ -101,16 +122,6 @@ enum class SafetyHubSurfaces {
 // Duration to wait for cleaning up the revoked permissions after showing them
 // to the user.
 extern const base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting;
-
-// This string is used for the key of the base::Value dictionary we assign to
-// the REVOKED_ABUSIVE_NOTIFICATION_PERMISSION value.
-extern const char kRevokedStatusDictKeyStr[];
-// When users take action to grant a permission despite warnings against doing
-// so, we should ignore the origin in future auto revocations. To do this, we
-// will assign the REVOKED_ABUSIVE_NOTIFICATION_PERMISSION permission
-// base::Value to the "ignore" string. Otherwise, the value should be "revoke".
-extern const char kIgnoreStr[];
-extern const char kRevokeStr[];
 
 }  // namespace safety_hub
 

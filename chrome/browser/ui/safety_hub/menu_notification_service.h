@@ -101,10 +101,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
   std::optional<safety_hub::SafetyHubModuleType>
   GetLastShownNotificationModule() const;
 
-  // Returns the |service_info_map_|. For testing purposes only.
-  SafetyHubMenuNotification* GetNotificationForTesting(
-      safety_hub::SafetyHubModuleType service_type);
-
   void UpdateResultGetterForTesting(
       safety_hub::SafetyHubModuleType type,
       base::RepeatingCallback<

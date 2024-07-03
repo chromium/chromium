@@ -559,7 +559,8 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCount() {
     }
     if (password_manager::IsCompromised(entry)) {
       compromised_credential_count_++;
-      latest_result_->AddToCompromisedOrigins(entry.GetURL().spec());
+      latest_result_->AddToCompromisedPasswords(
+          entry.GetURL().spec(), base::UTF16ToUTF8(entry.username));
     }
     if (entry.IsWeak()) {
       weak_credential_count_++;

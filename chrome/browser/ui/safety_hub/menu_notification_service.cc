@@ -219,11 +219,6 @@ void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
                          std::move(notifications));
 }
 
-SafetyHubMenuNotification*
-SafetyHubMenuNotificationService::GetNotificationForTesting(
-    safety_hub::SafetyHubModuleType service_type) {
-  return module_info_map_.find(service_type)->second.get()->notification.get();
-}
 
 std::unique_ptr<SafetyHubMenuNotification>
 SafetyHubMenuNotificationService::GetNotificationFromDict(

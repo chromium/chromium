@@ -804,7 +804,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   EXPECT_TRUE(opt_old_result.has_value());
   PasswordStatusCheckResult* old_result =
       static_cast<PasswordStatusCheckResult*>(opt_old_result.value().get());
-  EXPECT_THAT(old_result->GetCompromisedOrigins(), testing::IsEmpty());
+  EXPECT_THAT(old_result->GetCompromisedPasswords(), testing::IsEmpty());
 
   // When a leaked password is found, the result should be updated.
   password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
@@ -815,8 +815,9 @@ TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
   EXPECT_TRUE(opt_new_result.has_value());
   PasswordStatusCheckResult* new_result =
       static_cast<PasswordStatusCheckResult*>(opt_new_result.value().get());
-  EXPECT_THAT(new_result->GetCompromisedOrigins(),
-              testing::ElementsAre(kOrigin1));
+  EXPECT_THAT(new_result->GetCompromisedPasswords(),
+              testing::ElementsAre(
+                  PasswordPair(kOrigin1, base::UTF16ToASCII(kUsername2))));
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedSchedulingTest,
