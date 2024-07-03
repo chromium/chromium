@@ -2589,6 +2589,26 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       kTokenRequestDelay - fetch_time);
 }
 
+void FederatedAuthRequestImpl::MarkUserAsSignedIn(
+    const GURL& idp_config_url,
+    const std::string& account_id) {
+  // Auto re-authentication can only be triggered when there's already a
+  // sharing permission OR the IdP is exempted with 3PC access. Either way
+  // we shouldn't explicitly grant permission here.
+  CHECK(!account_id_.empty());
+  if (identity_selection_type_ == kExplicit) {
+    permission_delegate_->GrantSharingPermission(
+        origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+        account_id);
+  } else {
+    permission_delegate_->RefreshExistingSharingPermission(
+        origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+        account_id);
+  }
+
+  SetRequiresUserMediation(false, base::DoNothing());
+}
+
 void FederatedAuthRequestImpl::CompleteTokenRequest(
     const GURL& idp_config_url,
     IdpNetworkRequestManager::FetchStatus status,
@@ -2650,21 +2670,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
         return;
       }
 
-      // Auto re-authentication can only be triggered when there's already a
-      // sharing permission OR the IdP is exempted with 3PC access. Either way
-      // we shouldn't explicitly grant permission here.
-      CHECK(!account_id_.empty());
-      if (identity_selection_type_ == kExplicit) {
-        permission_delegate_->GrantSharingPermission(
-            origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-            account_id_);
-      } else {
-        permission_delegate_->RefreshExistingSharingPermission(
-            origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-            account_id_);
-      }
-
-      SetRequiresUserMediation(false, base::DoNothing());
+      MarkUserAsSignedIn(idp_config_url, account_id_);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           idp_config_url, id_assertion_response_time_ - select_account_time_,
@@ -3006,9 +3012,7 @@ bool FederatedAuthRequestImpl::OnResolve(
   }
   request_dialog_controller_->CloseModalDialog();
 
-  permission_delegate_->GrantSharingPermission(
-      origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-      account_id.value_or(account_id_));
+  MarkUserAsSignedIn(idp_config_url, account_id.value_or(account_id_));
 
   fedcm_metrics_->RecordContinueOnResponseAndTurnaroundTime(
       id_assertion_response_time_ - select_account_time_,

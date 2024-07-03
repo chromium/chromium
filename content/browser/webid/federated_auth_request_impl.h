@@ -333,6 +333,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdpNetworkRequestManager::FetchStatus status,
       const GURL& url);
 
+  // Called after we get at token (either from the ID assertion endpoint or
+  // from IdentityProvider.resolve) to update our various permissions.
+  void MarkUserAsSignedIn(const GURL& idp_config_url,
+                          const std::string& account_id);
+
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
       std::optional<content::FedCmRequestIdTokenStatus> token_status,
