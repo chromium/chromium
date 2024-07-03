@@ -205,7 +205,6 @@ source_set("common_sources") {
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",
-    "url_constants.cc",
     "url_constants.h",
     "url_utils.cc",
     "url_utils.h",

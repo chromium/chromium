@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/common/content_export.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "url/url_constants.h"
 
@@ -18,54 +17,61 @@ namespace content {
 // Canonical schemes you can use as input to GURL.SchemeIs().
 // TODO(jam): some of these don't below in the content layer, but are accessed
 // from there.
-CONTENT_EXPORT extern const char kChromeDevToolsScheme[];
-CONTENT_EXPORT extern const char kChromeErrorScheme[];
-CONTENT_EXPORT extern const char kChromeUIScheme[];  // Used for WebUIs.
-CONTENT_EXPORT extern const char kChromeUIUntrustedScheme[];
-CONTENT_EXPORT extern const char kViewSourceScheme[];
+inline constexpr char kChromeDevToolsScheme[] = "devtools";
+inline constexpr char kChromeErrorScheme[] = "chrome-error";
+inline constexpr char kChromeUIScheme[] = "chrome";  // Used for WebUIs.
+inline constexpr char kChromeUIUntrustedScheme[] = "chrome-untrusted";
+inline constexpr char kViewSourceScheme[] = "view-source";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-CONTENT_EXPORT extern const char kExternalFileScheme[];
+inline constexpr char kExternalFileScheme[] = "externalfile";
 #endif
 #if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT extern const char kAndroidAppScheme[];
+inline constexpr char kAndroidAppScheme[] = "android-app";
 #endif
 
 // The `googlechrome:` scheme is registered on several platforms, and is
 // both interesting and dangerous.
-CONTENT_EXPORT extern const char kGoogleChromeScheme[];
+inline constexpr char kGoogleChromeScheme[] = "googlechrome";
 
-CONTENT_EXPORT extern const char kChromeUIAccessibilityHost[];
-CONTENT_EXPORT extern const char kChromeUIAttributionInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIBlobInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIBrowserCrashHost[];
-CONTENT_EXPORT extern const char kChromeUIDinoHost[];
-CONTENT_EXPORT extern const char kChromeUIGpuHost[];
-CONTENT_EXPORT extern const char kChromeUIHistogramHost[];
-CONTENT_EXPORT extern const char kChromeUIIndexedDBInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIMediaInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIMemoryExhaustHost[];
-CONTENT_EXPORT extern const char kChromeUINetworkErrorHost[];
-CONTENT_EXPORT extern const char kChromeUINetworkErrorsListingHost[];
-CONTENT_EXPORT extern const char kChromeUIPrivateAggregationInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIProcessInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIQuotaInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUIResourcesHost[];
-CONTENT_EXPORT extern const char kChromeUIServiceWorkerInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUITracesInternalsHost[];
-CONTENT_EXPORT extern const char kChromeUITracingHost[];
-CONTENT_EXPORT extern const char kChromeUIUkmHost[];
-CONTENT_EXPORT extern const char kChromeUIUntrustedResourcesURL[];
-CONTENT_EXPORT extern const char kChromeUIWebRTCInternalsHost[];
+inline constexpr char kChromeUIAttributionInternalsHost[] =
+    "attribution-internals";
+inline constexpr char kChromeUIBlobInternalsHost[] = "blob-internals";
+inline constexpr char kChromeUIBrowserCrashHost[] =
+    "inducebrowsercrashforrealz";
+inline constexpr char kChromeUIDinoHost[] = "dino";
+inline constexpr char kChromeUIGpuHost[] = "gpu";
+inline constexpr char kChromeUIHistogramHost[] = "histograms";
+inline constexpr char kChromeUIIndexedDBInternalsHost[] = "indexeddb-internals";
+inline constexpr char kChromeUIMediaInternalsHost[] = "media-internals";
+inline constexpr char kChromeUIMemoryExhaustHost[] = "memory-exhaust";
+inline constexpr char kChromeUINetworkErrorHost[] = "network-error";
+inline constexpr char kChromeUINetworkErrorsListingHost[] = "network-errors";
+inline constexpr char kChromeUIPrivateAggregationInternalsHost[] =
+    "private-aggregation-internals";
+inline constexpr char kChromeUIProcessInternalsHost[] = "process-internals";
+inline constexpr char kChromeUIQuotaInternalsHost[] = "quota-internals";
+inline constexpr char kChromeUIResourcesHost[] = "resources";
+inline constexpr char kChromeUIServiceWorkerInternalsHost[] =
+    "serviceworker-internals";
+inline constexpr char kChromeUITracesInternalsHost[] = "traces-internals";
+inline constexpr char kChromeUITracingHost[] = "tracing";
+inline constexpr char kChromeUIUkmHost[] = "ukm";
+inline constexpr char kChromeUIUntrustedResourcesURL[] =
+    "chrome-untrusted://resources/";
+inline constexpr char kChromeUIWebRTCInternalsHost[] = "webrtc-internals";
 #if BUILDFLAG(ENABLE_VR)
-CONTENT_EXPORT extern const char kChromeUIWebXrInternalsHost[];
+inline constexpr char kChromeUIWebXrInternalsHost[] = "webxr-internals";
 #endif
 
 // Special URL used to start a navigation to an error page.
-CONTENT_EXPORT extern const char kUnreachableWebDataURL[];
+// This error URL is loaded in normal web renderer processes, so it should not
+// have a chrome:// scheme that might let it be confused with a WebUI page.
+inline constexpr char kUnreachableWebDataURL[] =
+    "chrome-error://chromewebdata/";
 
 // Special URL used to rewrite URLs coming from untrusted processes, when the
 // source process is not allowed access to the initially requested URL.
-CONTENT_EXPORT extern const char kBlockedURL[];
+inline constexpr char kBlockedURL[] = "about:blank#blocked";
 
 }  // namespace content
 
