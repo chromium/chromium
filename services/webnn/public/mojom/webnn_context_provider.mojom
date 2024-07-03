@@ -85,6 +85,7 @@ struct SupportedDataTypes {
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.
 struct CreateContextSuccess {
   pending_remote<WebNNContext>? context_remote;
+  pending_receiver<WebNNContextClient>? context_client_receiver;
   ContextProperties context_properties;
 };
 
@@ -122,6 +123,15 @@ interface WebNNContext {
   // from the renderer.
   CreateBuffer(pending_associated_receiver<WebNNBuffer> receiver,
       BufferInfo buffer_info, mojo_base.mojom.UnguessableToken buffer_handle);
+};
+
+// This interface runs in the renderer process and is called from the GPU
+// process. When the `MLContext` object lost error in the GPU process is
+// captured, it can send the error message to the renderer process and also
+// handle the lost error in the renderer process.
+interface WebNNContextClient {
+ // Called to explain why the `WebNNContextClient` is no longer available.
+  OnLost(string message);
 };
 
 // This interface runs in the GPU process and is called from the renderer

@@ -23,6 +23,7 @@ namespace webnn::dml {
 
 namespace {
 
+// TODO(crbug.com/349640007): We should crash GPU process for non `lost` errors.
 base::unexpected<mojom::ErrorPtr> HandleAdapterFailure(
     mojom::Error::Code error_code,
     std::string_view error_message,

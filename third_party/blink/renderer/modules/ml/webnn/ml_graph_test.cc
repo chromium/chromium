@@ -497,7 +497,10 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
  public:
-  explicit FakeWebNNContext(MLGraphTest& helper) : helper_(helper) {}
+  explicit FakeWebNNContext(
+      MLGraphTest& helper,
+      mojo::PendingRemote<blink_mojom::WebNNContextClient> client_remote)
+      : helper_(helper), client_remote_(std::move(client_remote)) {}
   FakeWebNNContext(const FakeWebNNContext&) = delete;
   FakeWebNNContext(FakeWebNNContext&&) = delete;
   ~FakeWebNNContext() override = default;
@@ -531,6 +534,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
   WebNNContextHelper context_helper_;
 
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
+  mojo::PendingRemote<blink_mojom::WebNNContextClient> client_remote_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
@@ -558,9 +562,11 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
   void CreateWebNNContext(blink_mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override {
     mojo::PendingRemote<blink_mojom::WebNNContext> blink_remote;
+    mojo::PendingRemote<blink_mojom::WebNNContextClient> client_remote;
+    auto client_receiver = client_remote.InitWithNewPipeAndPassReceiver();
     // The receiver bind to FakeWebNNContext.
     mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNContext>(
-        std::make_unique<FakeWebNNContext>(*helper_),
+        std::make_unique<FakeWebNNContext>(*helper_, std::move(client_remote)),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     webnn::ContextProperties context_properties{
@@ -571,7 +577,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         /*gather_indices_supported_data_types=*/
         webnn::SupportedDataTypes::All()};
     auto success = blink_mojom::CreateContextSuccess::New(
-        std::move(blink_remote), std::move(context_properties));
+        std::move(blink_remote), std::move(client_receiver),
+        std::move(context_properties));
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }

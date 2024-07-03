@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                   mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                    WebNNContextProviderImpl* context_provider,
                    ContextProperties properties);
 
@@ -71,6 +72,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       ContextProperties backend_context_properties);
 
   const ContextProperties& properties() { return properties_; }
+
+  void OnLost(const std::string& context_lost_info);
 
  protected:
   void OnConnectionError();
@@ -107,6 +110,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   mojo::Receiver<mojom::WebNNContext> receiver_;
+  mojo::Remote<mojom::WebNNContextClient> client_remote_;
 
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;

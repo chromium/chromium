@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/buffer_impl_dml.h"
@@ -51,10 +52,14 @@ ContextProperties GetProperties() {
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info)
-    : WebNNContextImpl(std::move(receiver), context_provider, GetProperties()),
+    : WebNNContextImpl(std::move(receiver),
+                       std::move(client_remote),
+                       context_provider,
+                       GetProperties()),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {
@@ -116,8 +121,7 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   }
 
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to create the external buffer: "
-               << logging::SystemErrorCodeToString(hr);
+    HandleContextLostOrCrash("Failed to create the external buffer.", hr);
     return nullptr;
   }
 
@@ -151,10 +155,9 @@ void ContextImplDml::ReadBuffer(
                             static_cast<uint64_t>(src_buffer_size),
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to create the download buffer: "
-               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    HandleContextLostOrCrash("Failed to create the download buffer.", hr);
     return;
   }
 
@@ -162,6 +165,7 @@ void ContextImplDml::ReadBuffer(
   if (FAILED(hr)) {
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    HandleRecordingError("Failed to start recording.", hr);
     return;
   }
 
@@ -171,9 +175,9 @@ void ContextImplDml::ReadBuffer(
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
   if (FAILED(hr)) {
-    HandleRecordingError("Failed to close and execute the command list.", hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    HandleRecordingError("Failed to close and execute the command list.", hr);
     return;
   }
 
@@ -195,9 +199,9 @@ void ContextImplDml::OnReadbackComplete(
   adapter_->command_queue()->ReleaseCompletedResources();
 
   if (FAILED(hr)) {
-    HandleRecordingError("Failed to download the buffer.", hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    HandleRecordingError("Failed to download the buffer.", hr);
     return;
   }
 
@@ -207,10 +211,9 @@ void ContextImplDml::OnReadbackComplete(
   void* mapped_download_data = nullptr;
   hr = download_buffer->Map(0, nullptr, &mapped_download_data);
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to map the download buffer: "
-               << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(ToError<mojom::ReadBufferResult>(
         mojom::Error::Code::kUnknownError, "Failed to read buffer."));
+    HandleContextLostOrCrash("Failed to map the download buffer.", hr);
     return;
   }
 
@@ -235,9 +238,7 @@ void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
     hr = CreateUploadBuffer(adapter_->d3d12_device(), src_buffer.size(),
                             L"WebNN_Upload_Buffer", buffer_to_map);
     if (FAILED(hr)) {
-      // TODO(crbug.com/41492165): generate error using context.
-      LOG(ERROR) << "[WebNN] Failed to create the upload buffer: "
-                 << logging::SystemErrorCodeToString(hr);
+      HandleContextLostOrCrash("Failed to create the upload buffer.", hr);
       return;
     }
   }
@@ -248,8 +249,7 @@ void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
   void* mapped_buffer_data = nullptr;
   hr = buffer_to_map->Map(0, nullptr, &mapped_buffer_data);
   if (FAILED(hr)) {
-    LOG(ERROR) << "[WebNN] Failed to map the buffer: "
-               << logging::SystemErrorCodeToString(hr);
+    HandleContextLostOrCrash("Failed to map the buffer.", hr);
     return;
   }
 
@@ -264,7 +264,9 @@ void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
 
   // Uploads are only required when the mapped buffer was a staging buffer.
   if (dst_buffer->buffer() != buffer_to_map.Get()) {
-    if (FAILED(StartRecordingIfNecessary())) {
+    hr = StartRecordingIfNecessary();
+    if (FAILED(hr)) {
+      HandleRecordingError("Failed to start recording.", hr);
       return;
     }
 
@@ -318,27 +320,52 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
   CHECK(command_recorder_);
 
   // If the recorder is already recording, no need to re-open.
-  HRESULT hr = S_OK;
   if (command_recorder_->IsOpen()) {
-    return hr;
+    return S_OK;
   }
 
   // Open the command recorder for recording the context execution commands.
-  hr = command_recorder_->Open();
-  if (FAILED(hr)) {
-    HandleRecordingError("Failed to open the command recorder.", hr);
-    return hr;
-  }
+  RETURN_IF_FAILED(command_recorder_->Open());
 
   CHECK(command_recorder_->IsOpen());
 
-  return hr;
+  return S_OK;
 }
 
 void ContextImplDml::HandleRecordingError(std::string_view error_message,
                                        HRESULT hr) {
-  LOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();
+  HandleContextLostOrCrash(error_message, hr);
+}
+
+void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
+                                              HRESULT hr) {
+  LOG(ERROR) << "[WebNN] " << message_for_log;
+  std::string_view message_for_promise;
+  switch (hr) {
+    case E_OUTOFMEMORY:
+      message_for_promise = "out of memory.";
+      break;
+    case DXGI_ERROR_DEVICE_REMOVED:
+      message_for_promise = "device removed.";
+      break;
+    case DXGI_ERROR_DEVICE_RESET:
+      message_for_promise = "device reset.";
+      break;
+    default:
+      message_for_promise = "internal error.";
+  }
+
+  OnLost(base::StrCat({"WebNN context is lost due to ", message_for_promise}));
+  LOG(ERROR) << "[WebNN] " << logging::SystemErrorCodeToString(hr);
+  HRESULT device_removed_reason =
+      adapter_->d3d12_device()->GetDeviceRemovedReason();
+  if (FAILED(device_removed_reason)) {
+    LOG(ERROR) << "[WebNN] Device Removed Reason: "
+               << logging::SystemErrorCodeToString(device_removed_reason);
+  }
+  CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_REMOVED ||
+        hr == DXGI_ERROR_DEVICE_RESET);
 }
 
 }  // namespace webnn::dml

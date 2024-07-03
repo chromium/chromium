@@ -18,9 +18,11 @@ namespace webnn::tflite {
 
 ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver),
+                       std::move(client_remote),
                        context_provider,
                        GraphBuilderTflite::GetContextProperties()),
       options_(std::move(options)) {}
