@@ -260,7 +260,9 @@ static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
   uint8x16_t x2;
   memcpy(&x1, ptr, sizeof(x1));
   memcpy(&x2, ptr + 8, sizeof(x2));
-  return vcombine_u64(vqmovn_u16(x1), vqmovn_u16(x2));
+  return vreinterpretq_u8_u64(
+      vcombine_u64(vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x1))),
+                   vreinterpret_u64_u8(vqmovn_u16(vreinterpretq_u16_u8(x2)))));
 }
 static inline uint8x16_t LoadAndCollapseHighBytes(const LChar* ptr) {
   uint8x16_t ret;
@@ -304,13 +306,19 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // of the top half. (The alternative would be to use TBL
     // instructions to simulate the shifts, but they can be slow
     // on mobile CPUs.)
-    quoted ^= vshlq_n_u64(vreinterpretq_u64_u8(quoted), 8);
-    quoted ^= vshlq_n_u64(vreinterpretq_u64_u8(quoted), 16);
-    quoted ^= vshlq_n_u64(vreinterpretq_u64_u8(quoted), 32);
     quoted ^=
-        vcombine_u64(vdup_n_u64(0), vdup_lane_u8(vget_low_u64(quoted), 7));
+        vreinterpretq_u8_u64(vshlq_n_u64(vreinterpretq_u64_u8(quoted), 8));
+    quoted ^=
+        vreinterpretq_u8_u64(vshlq_n_u64(vreinterpretq_u64_u8(quoted), 16));
+    quoted ^=
+        vreinterpretq_u8_u64(vshlq_n_u64(vreinterpretq_u64_u8(quoted), 32));
+    quoted ^= vreinterpretq_u8_u64(vcombine_u64(
+        vdup_n_u64(0),
+        vreinterpret_u64_u8(vdup_lane_u8(
+            vreinterpret_u8_u64(vget_low_u64(vreinterpretq_u64_u8(quoted))),
+            7))));
     quoted ^= prev_quoted;
-    const uint8x16_t mixed_quote = quoted == ('\'' ^ '"');
+    const uint8x16_t mixed_quote = quoted == static_cast<char>('\'' ^ '"');
 
     x &= ~(quoted > vdupq_n_u8(0));
 
@@ -324,8 +332,11 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
         vreinterpretq_u8_u64(vshlq_n_u64(vreinterpretq_u64_u8(parens), 16));
     parens +=
         vreinterpretq_u8_u64(vshlq_n_u64(vreinterpretq_u64_u8(parens), 32));
-    parens += vreinterpretq_u8_u64(
-        vcombine_u64(vdup_n_u64(0), vdup_lane_u8(vget_low_u64(parens), 7)));
+    parens += vreinterpretq_u8_u64(vcombine_u64(
+        vdup_n_u64(0),
+        vreinterpret_u64_u8(vdup_lane_u8(
+            vreinterpret_u8_u64(vget_low_u64(vreinterpretq_u64_u8(parens))),
+            7))));
     parens += prev_parens;
 
     // The VSHRN trick below doesn't guarantee the use of the top bit
@@ -335,7 +346,8 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // so we do a signed shift to just replicate the top bit into the entire
     // byte. (Supposedly, this also has one cycle better throughput on
     // some CPUs.)
-    const uint8x16_t parens_overflow = vshrq_n_s8(parens, 7);
+    const uint8x16_t parens_overflow =
+        vreinterpretq_u8_s8(vshrq_n_s8(vreinterpretq_s8_u8(parens), 7));
 
     const uint8x16_t opening_block = (x | vdupq_n_u8(0x20)) == '{';
     const uint8x16_t eq_rightbrace = x == '}';
@@ -343,8 +355,8 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
                           comment_start | eq_rightbrace | parens_overflow;
 
     // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
-    uint64_t must_end_narrowed =
-        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(must_end, 4)), 0);
+    uint64_t must_end_narrowed = vget_lane_u64(
+        vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_u8(must_end), 4)), 0);
     if (must_end_narrowed != 0) {
       unsigned idx = __builtin_ctzll(must_end_narrowed) >> 2;
       ptr += idx;
@@ -365,8 +377,10 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
 
     // As mentioned above, broadcast instead of shifting.
     ptr += 16;
-    prev_quoted = vdupq_lane_u8(vget_high_u64(quoted), 7);
-    prev_parens = vdupq_lane_u8(vget_high_u64(parens), 7);
+    prev_quoted = vdupq_lane_u8(
+        vreinterpret_u8_u64(vget_high_u64(vreinterpretq_u64_u8(quoted))), 7);
+    prev_parens = vdupq_lane_u8(
+        vreinterpret_u8_u64(vget_high_u64(vreinterpretq_u64_u8(parens))), 7);
   }
   return 0;
 }

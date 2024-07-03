@@ -330,9 +330,12 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
 
     // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
     uint64_t is_decimal_bits =
-        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(is_decimal_mask, 4)), 0);
-    uint64_t is_mark_bits =
-        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(is_mark_mask, 4)), 0);
+        vget_lane_u64(vreinterpret_u64_u8(vshrn_n_u16(
+                          vreinterpretq_u16_s8(is_decimal_mask), 4)),
+                      0);
+    uint64_t is_mark_bits = vget_lane_u64(
+        vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_s8(is_mark_mask), 4)),
+        0);
 
     // Only count the first decimal mark.
     is_mark_bits &= -is_mark_bits;

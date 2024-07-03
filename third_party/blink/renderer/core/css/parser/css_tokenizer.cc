@@ -785,7 +785,8 @@ StringView CSSTokenizer::ConsumeName() {
       // or all-one for each byte, so we can use the code from
       // https://community.arm.com/arm-community-blogs/b/infrastructure-solutions-blog/posts/porting-x86-vector-bitmask-optimizations-to-arm-neon
       non_name_mask = non_name_mask && (b >= 0);
-      uint8x8_t narrowed_mask = vshrn_n_u16(non_name_mask, 4);
+      uint8x8_t narrowed_mask =
+          vshrn_n_u16(vreinterpretq_u16_s8(non_name_mask), 4);
       uint64_t bits = vget_lane_u64(vreinterpret_u64_u8(narrowed_mask), 0);
       if (bits == 0) {
         size += 16;
