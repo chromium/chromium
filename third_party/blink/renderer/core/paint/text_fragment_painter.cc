@@ -140,28 +140,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   return ruby_logical_side != style.GetTextEmphasisLineLogicalSide();
 }
 
-enum class DisclosureOrientation { kLeft, kRight, kUp, kDown };
-
-DisclosureOrientation GetDisclosureOrientation(const ComputedStyle& style,
-                                               bool is_open) {
-  // TODO(layout-dev): Sideways-lr and sideways-rl are not yet supported.
-  const auto mode = style.GetWritingMode();
-  DCHECK_NE(mode, WritingMode::kSidewaysRl);
-  DCHECK_NE(mode, WritingMode::kSidewaysLr);
-
-  if (is_open) {
-    if (blink::IsHorizontalWritingMode(mode)) {
-      return DisclosureOrientation::kDown;
-    }
-    return IsFlippedBlocksWritingMode(mode) ? DisclosureOrientation::kLeft
-                                            : DisclosureOrientation::kRight;
-  }
-  if (blink::IsHorizontalWritingMode(mode)) {
-    return style.IsLeftToRightDirection() ? DisclosureOrientation::kRight
-                                          : DisclosureOrientation::kLeft;
-  }
-  return style.IsLeftToRightDirection() ? DisclosureOrientation::kDown
-                                        : DisclosureOrientation::kUp;
+PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
+                                           bool is_open) {
+  const auto direction_mode = style.GetWritingDirection();
+  return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
 Path CreatePath(const gfx::PointF* path) {
@@ -184,13 +166,13 @@ Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
       {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}, {0.0f, 0.07f}};
 
   switch (GetDisclosureOrientation(style, is_open)) {
-    case DisclosureOrientation::kLeft:
+    case PhysicalDirection::kLeft:
       return CreatePath(kLeftPoints);
-    case DisclosureOrientation::kRight:
+    case PhysicalDirection::kRight:
       return CreatePath(kRightPoints);
-    case DisclosureOrientation::kUp:
+    case PhysicalDirection::kUp:
       return CreatePath(kUpPoints);
-    case DisclosureOrientation::kDown:
+    case PhysicalDirection::kDown:
       return CreatePath(kDownPoints);
   }
 

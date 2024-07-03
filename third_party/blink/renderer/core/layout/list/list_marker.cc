@@ -446,10 +446,11 @@ PhysicalRect ListMarker::RelativeSymbolMarkerRect(
                                 LayoutUnit(3 * (ascent - ascent * 2 / 3) / 2),
                                 bullet_width, bullet_width);
   }
-  // TextDirection and the outer height don't matter here.
+  // TextDirection doesn't matter here.  Passing
+  // `relative_rect.size.inline_size` to get a correct result in sideways-lr.
   WritingModeConverter converter(
       {ToLineWritingMode(style.GetWritingMode()), TextDirection::kLtr},
-      PhysicalSize(width, LayoutUnit()));
+      PhysicalSize(width, relative_rect.size.inline_size));
   return converter.ToPhysical(relative_rect);
 }
 
