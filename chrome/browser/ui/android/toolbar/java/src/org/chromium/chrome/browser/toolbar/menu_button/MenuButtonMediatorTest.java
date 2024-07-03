@@ -214,7 +214,6 @@ public class MenuButtonMediatorTest {
         mMenuButtonMediator.getMenuButtonHelperSupplier();
         mMenuButtonMediator.onMenuHighlightChanged(true);
         mMenuButtonMediator.onMenuVisibilityChanged(false);
-        mMenuButtonMediator.setAppMenuUpdateBadgeSuppressed(true);
         mMenuButtonMediator.updateReloadingState(true);
         mMenuButtonMediator.updateStateChanged();
     }

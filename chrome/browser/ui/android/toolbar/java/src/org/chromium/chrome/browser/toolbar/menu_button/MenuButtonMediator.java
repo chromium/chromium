@@ -61,7 +61,6 @@ class MenuButtonMediator implements AppMenuObserver {
     private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
-    private boolean mSuppressAppMenuUpdateBadge;
     private Resources mResources;
     private final OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
     private final Supplier<MenuButtonState> mMenuButtonStateSupplier;
@@ -174,15 +173,6 @@ class MenuButtonMediator implements AppMenuObserver {
         mPropertyModel.set(MenuButtonProperties.IS_HIGHLIGHTING, isHighlighting);
     }
 
-    void setAppMenuUpdateBadgeSuppressed(boolean isSuppressed) {
-        mSuppressAppMenuUpdateBadge = isSuppressed;
-        if (isSuppressed) {
-            removeAppMenuUpdateBadge(false);
-        } else if (isUpdateAvailable() && mCanShowAppUpdateBadge) {
-            showAppMenuUpdateBadge(false);
-        }
-    }
-
     void setVisibility(boolean visible) {
         mPropertyModel.set(MenuButtonProperties.IS_VISIBLE, visible);
     }
@@ -220,9 +210,6 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private void showAppMenuUpdateBadge(boolean animate) {
-        if (mSuppressAppMenuUpdateBadge) {
-            return;
-        }
         MenuButtonState buttonState = mMenuButtonStateSupplier.get();
         assert buttonState != null : "No button state when trying to show the badge.";
         updateContentDescription(true, buttonState.menuContentDescription);
