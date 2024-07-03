@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {QUERY, Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {cleanUpSwitchingTemplate, closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
+import {cleanUpSeaPenQueryStates, closeSeaPenIntroductionDialog, getShouldShowSeaPenIntroductionDialog} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logSeaPenVisited} from './sea_pen_metrics_logger.js';
@@ -104,9 +104,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     // thumbnail loading status and Sea Pen query when
     // switching template; otherwise, states from the last query search will
     // remain in sea-pen-images element.
-    cleanUpSwitchingTemplate(this.getStore());
-    // TODO(b/347323691): remove the QUERY case when Freeform is removed from
-    // template list.
+    cleanUpSeaPenQueryStates(this.getStore());
     if (templateId === QUERY) {
       this.goToRoute(SeaPenPaths.FREEFORM);
       return;
@@ -118,9 +116,15 @@ export class SeaPenRouterElement extends WithSeaPenStore {
   async goToRoute(
       relativePath: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
     assert(typeof this.basePath === 'string', 'basePath must be set');
+    const routingPath = this.basePath + relativePath;
+    // Skip page transition animation if no changes in routing path.
+    if (this.path_ === routingPath) {
+      this.setProperties({queryParams_: queryParams});
+      return Promise.resolve();
+    }
     return maybeDoPageTransition(
         () => this.setProperties(
-            {path_: this.basePath + relativePath, queryParams_: queryParams}));
+            {path_: routingPath, queryParams_: queryParams}));
   }
 
   /**

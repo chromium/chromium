@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
-import {cleanUpSwitchingTemplate} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
+import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {logSeaPenTemplateSelect} from 'chrome://resources/ash/common/sea_pen/sea_pen_metrics_logger.js';
 import {SeaPenPaths, SeaPenRouterElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
@@ -242,7 +242,7 @@ export class VcBackgroundBreadcrumbElement extends
     // thumbnail loading status and Sea Pen query when
     // switching template; otherwise, states from the last query search will
     // remain in sea-pen-images element.
-    cleanUpSwitchingTemplate(getSeaPenStore());
+    cleanUpSeaPenQueryStates(getSeaPenStore());
     const transitionsEnabled = getTransitionEnabled();
     // disables the page transition when switching templates from the drop down.
     // Then resets it back to the original value after routing is done to not

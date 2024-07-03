@@ -156,10 +156,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
-    if (!seaPenQuery || !seaPenQuery.textQuery) {
-      return;
-    }
-    this.textValue_ = seaPenQuery.textQuery;
+    this.textValue_ = seaPenQuery?.textQuery ?? '';
   }
 
   private onClickInputQuerySearchButton_(event: Event) {

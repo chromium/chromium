@@ -15,6 +15,8 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {cleanUpSeaPenQueryStates} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
+import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -745,6 +747,11 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
             Paths.SEA_PEN_COLLECTION);
         return;
       case kSeaPenPromptingId:
+        // cleans up the Sea Pen states such as thumbnail response status code,
+        // thumbnail loading status and Sea Pen query when
+        // switching template; otherwise, states from the last query search will
+        // remain in sea-pen-images element.
+        cleanUpSeaPenQueryStates(getSeaPenStore());
         PersonalizationRouterElement.instance().goToRoute(
             Paths.SEA_PEN_FREEFORM);
         return;
