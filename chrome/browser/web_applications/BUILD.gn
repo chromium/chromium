@@ -152,6 +152,8 @@ source_set("web_applications") {
     "isolated_web_apps/isolated_web_app_validator.h",
     "isolated_web_apps/isolated_web_app_version.cc",
     "isolated_web_apps/isolated_web_app_version.h",
+    "isolated_web_apps/key_rotation/iwa_key_rotation_info_provider.cc",
+    "isolated_web_apps/key_rotation/iwa_key_rotation_info_provider.h",
     "isolated_web_apps/pending_install_info.cc",
     "isolated_web_apps/pending_install_info.h",
     "isolated_web_apps/remove_isolated_web_app_data.cc",
@@ -159,6 +161,7 @@ source_set("web_applications") {
     "isolated_web_apps/signed_web_bundle_metadata.cc",
     "isolated_web_apps/signed_web_bundle_metadata.h",
     "isolated_web_apps/signed_web_bundle_reader.cc",
+    "isolated_web_apps/signed_web_bundle_reader.h",
     "isolated_web_apps/signed_web_bundle_reader.h",
     "isolated_web_apps/update_manifest/update_manifest.cc",
     "isolated_web_apps/update_manifest/update_manifest.h",
@@ -587,6 +590,7 @@ source_set("web_applications") {
   }
 
   public_deps = [
+    "//chrome/browser/web_applications/isolated_web_apps/key_rotation/proto",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
     "//chrome/browser/web_applications/proto:proto_helpers",
@@ -643,6 +647,8 @@ source_set("web_applications_test_support") {
     "isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h",
     "isolated_web_apps/test/iwa_test_server_configurator.cc",
     "isolated_web_apps/test/iwa_test_server_configurator.h",
+    "isolated_web_apps/test/key_rotation/test_utils.cc",
+    "isolated_web_apps/test/key_rotation/test_utils.h",
     "isolated_web_apps/test/test_signed_web_bundle_builder.cc",
     "isolated_web_apps/test/test_signed_web_bundle_builder.h",
     "test/debug_info_printer.cc",
@@ -704,7 +710,10 @@ source_set("web_applications_test_support") {
       "isolated_web_apps/test/test_iwa_installer_factory.h",
     ]
   }
-  public_deps = [ "//components/webapps/common:mojo_bindings" ]
+  public_deps = [
+    "//chrome/browser/web_applications/isolated_web_apps/key_rotation/proto",
+    "//components/webapps/common:mojo_bindings",
+  ]
   deps = [
     ":web_applications",
     "//base/test:test_support",
@@ -830,6 +839,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/isolated_web_app_url_loader_factory_unittest.cc",
     "isolated_web_apps/isolated_web_app_validator_unittest.cc",
     "isolated_web_apps/isolated_web_app_version_unittest.cc",
+    "isolated_web_apps/key_rotation/iwa_key_rotation_info_provider_unittest.cc",
     "isolated_web_apps/pending_install_info_unittest.cc",
     "isolated_web_apps/signed_web_bundle_metadata_unittest.cc",
     "isolated_web_apps/signed_web_bundle_reader_unittest.cc",

@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_rotation/iwa_key_rotation_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -47,7 +48,8 @@ class IsolatedWebAppResponseReaderFactory {
           std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
           signature_verifier_factory = base::BindRepeating([]() {
             return std::make_unique<
-                web_package::SignedWebBundleSignatureVerifier>();
+                web_package::SignedWebBundleSignatureVerifier>(
+                IwaKeyRotationInfoProvider::GetInstance());
           }));
   virtual ~IsolatedWebAppResponseReaderFactory();
 

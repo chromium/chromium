@@ -18,12 +18,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
+#include "components/web_package/signed_web_bundles/key_rotation/key_rotation_info_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
@@ -74,27 +76,82 @@ std::vector<uint8_t> CreateIntegrityBlockV2Cbor(
   return ib_cbor;
 }
 
-bool WebBundleIdCorrespondsToAnyPublicKey(
-    const std::string& web_bundle_id,
-    const std::vector<SignedWebBundleSignatureStackEntry>& signatures) {
+bool ForAnyKnownPublicKey(
+    const std::vector<SignedWebBundleSignatureStackEntry>& signatures,
+    auto predicate) {
   return base::ranges::any_of(signatures, [&](const auto& signature) {
     return absl::visit(
         base::Overloaded{
             [&](const auto& signature_info) {
-              return SignedWebBundleId::CreateForPublicKey(
-                         signature_info.public_key())
-                         .id() == web_bundle_id;
+              return predicate(signature_info.public_key());
             },
             [](const SignedWebBundleSignatureInfoUnknown&) { return false; }},
         signature.signature_info());
   });
 }
 
+base::expected<void, SignedWebBundleSignatureVerifier::Error>
+WebBundleIdCorrespondsToAnyPublicKey(
+    const std::string& web_bundle_id,
+    const std::vector<SignedWebBundleSignatureStackEntry>& signatures) {
+  if (!ForAnyKnownPublicKey(signatures, [&](const auto& public_key) {
+        return SignedWebBundleId::CreateForPublicKey(public_key).id() ==
+               web_bundle_id;
+      })) {
+    return base::unexpected(
+        SignedWebBundleSignatureVerifier::Error::ForWebBundleIdError(
+            "Web Bundle ID <%s> doesn't match any public key in the signature "
+            "list.",
+            web_bundle_id));
+  }
+  return base::ok();
+}
+
+base::expected<void, SignedWebBundleSignatureVerifier::Error>
+ValidateWebBundleId(
+    const std::string& web_bundle_id,
+    const std::vector<SignedWebBundleSignatureStackEntry>& signatures,
+    KeyRotationInfoProvider* kr_info_provider) {
+  if (!kr_info_provider) {
+    return WebBundleIdCorrespondsToAnyPublicKey(web_bundle_id, signatures);
+  }
+
+  return absl::visit(
+      base::Overloaded{
+          [&](const KeyRotationInfoProvider::ExpectedKey& expected_key)
+              -> base::expected<void, SignedWebBundleSignatureVerifier::Error> {
+            if (!ForAnyKnownPublicKey(signatures, [&](const auto& public_key) {
+                  return base::ranges::equal(public_key.bytes(), *expected_key);
+                })) {
+              return base::unexpected(
+                  SignedWebBundleSignatureVerifier::Error::ForWebBundleIdError(
+                      "Rotated key for Web Bundle ID <%s> doesn't match any "
+                      "public key in the signature list.",
+                      web_bundle_id));
+            }
+
+            return base::ok();
+          },
+          [&](const KeyRotationInfoProvider::KeyDisabledTag&)
+              -> base::expected<void, SignedWebBundleSignatureVerifier::Error> {
+            return base::unexpected(
+                SignedWebBundleSignatureVerifier::Error::ForWebBundleIdError(
+                    "Web Bundle ID <%s> is disabled via the Key Rotation "
+                    "Component.",
+                    web_bundle_id));
+          },
+          [&](const KeyRotationInfoProvider::KeyNotFoundTag&) {
+            return WebBundleIdCorrespondsToAnyPublicKey(web_bundle_id,
+                                                        signatures);
+          }},
+      kr_info_provider->GetExpectedSigningKey(web_bundle_id));
+}
+
 }  // namespace
 
 SignedWebBundleSignatureVerifier::SignedWebBundleSignatureVerifier(
-    uint64_t web_bundle_chunk_size)
-    : web_bundle_chunk_size_(web_bundle_chunk_size) {
+    KeyRotationInfoProvider* kr_info_provider)
+    : kr_info_provider_(kr_info_provider) {
   static_assert(kSHA512DigestLength == SHA512_DIGEST_LENGTH);
 }
 
@@ -102,10 +159,15 @@ SignedWebBundleSignatureVerifier::~SignedWebBundleSignatureVerifier() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void SignedWebBundleSignatureVerifier::SetWebBundleChunkSizeForTesting(
+    uint64_t web_bundle_chunk_size) {
+  web_bundle_chunk_size_ = web_bundle_chunk_size;
+}
+
 void SignedWebBundleSignatureVerifier::VerifySignatures(
     base::File file,
     SignedWebBundleIntegrityBlock integrity_block,
-    SignatureVerificationCallback callback) {
+    SignatureVerificationCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int64_t integrity_block_size =
@@ -171,11 +233,12 @@ SignedWebBundleSignatureVerifier::CalculateHashOfUnsignedWebBundle(
 void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
     SignedWebBundleIntegrityBlock integrity_block,
     SignatureVerificationCallback callback,
-    base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash) {
+    base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RETURN_IF_ERROR(unsigned_web_bundle_hash, [&](std::string error) {
-    std::move(callback).Run(Error::ForInternalError(std::move(error)));
+    std::move(callback).Run(
+        base::unexpected(Error::ForInternalError(std::move(error))));
   });
 
   // The algorithm shown in [1] is a more abstract view of the verification
@@ -195,22 +258,18 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // [1]
   // https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
 
-  base::expected<void, Error> verification_result =
+  std::move(callback).Run(
       integrity_block.is_v2()
           ? VerifyWithHashForIntegrityBlockV2(*unsigned_web_bundle_hash,
                                               std::move(integrity_block))
           : VerifyWithHashForIntegrityBlockV1(*unsigned_web_bundle_hash,
-                                              std::move(integrity_block));
-  std::move(callback).Run(
-      verification_result.has_value()
-          ? std::nullopt
-          : std::make_optional(verification_result.error()));
+                                              std::move(integrity_block)));
 }
 
 base::expected<void, SignedWebBundleSignatureVerifier::Error>
 SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlockV1(
     SHA512Digest unsigned_web_bundle_hash,
-    SignedWebBundleIntegrityBlock integrity_block_v1) {
+    SignedWebBundleIntegrityBlock integrity_block_v1) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (integrity_block_v1.signature_stack().size() != 1) {
@@ -253,16 +312,13 @@ SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlockV1(
 base::expected<void, SignedWebBundleSignatureVerifier::Error>
 SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlockV2(
     SHA512Digest unsigned_web_bundle_hash,
-    SignedWebBundleIntegrityBlock integrity_block_v2) {
+    SignedWebBundleIntegrityBlock integrity_block_v2) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& signatures = integrity_block_v2.signature_stack().entries();
-  if (!WebBundleIdCorrespondsToAnyPublicKey(
-          integrity_block_v2.attributes().web_bundle_id(), signatures)) {
-    return base::unexpected(
-        Error::ForInternalError("`webBundleId` doesn't correspond to any "
-                                "public key in the signature stack."));
-  }
+  RETURN_IF_ERROR(
+      ValidateWebBundleId(integrity_block_v2.attributes().web_bundle_id(),
+                          signatures, kr_info_provider_));
 
   std::vector<uint8_t> ib_cbor = CreateIntegrityBlockV2Cbor(integrity_block_v2);
   for (const auto& signature_stack_entry : signatures) {

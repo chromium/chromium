@@ -38,6 +38,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -91,28 +92,6 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
 
  private:
   base::expected<void, std::string> integrity_block_validation_result_;
-};
-
-class FakeSignatureVerifier
-    : public web_package::SignedWebBundleSignatureVerifier {
- public:
-  explicit FakeSignatureVerifier(
-      std::optional<VerifierError> error,
-      base::RepeatingClosure on_verify_signatures = base::DoNothing())
-      : error_(error), on_verify_signatures_(on_verify_signatures) {}
-
-  void VerifySignatures(
-      base::File file,
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      SignatureVerificationCallback callback) override {
-    on_verify_signatures_.Run();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), error_));
-  }
-
- private:
-  std::optional<VerifierError> error_;
-  base::RepeatingClosure on_verify_signatures_;
 };
 
 }  // namespace
@@ -171,7 +150,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
             base::BindRepeating(
                 []() -> std::unique_ptr<
                          web_package::SignedWebBundleSignatureVerifier> {
-                  return std::make_unique<FakeSignatureVerifier>(std::nullopt);
+                  return std::make_unique<
+                      web_package::test::FakeSignatureVerifier>(std::nullopt);
                 })));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -333,7 +313,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
           base::BindRepeating(
               []() -> std::unique_ptr<
                        web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<FakeSignatureVerifier>(std::nullopt);
+                return std::make_unique<
+                    web_package::test::FakeSignatureVerifier>(std::nullopt);
               })));
 
   network::ResourceRequest resource_request;
@@ -470,7 +451,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
           base::BindLambdaForTesting(
               [&]() -> std::unique_ptr<
                         web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<FakeSignatureVerifier>(
+                return std::make_unique<
+                    web_package::test::FakeSignatureVerifier>(
                     std::nullopt, base::BindLambdaForTesting([&]() {
                       ++num_signature_verifications;
                     }));
@@ -633,7 +615,8 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
           base::BindRepeating(
               []() -> std::unique_ptr<
                        web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<FakeSignatureVerifier>(std::nullopt);
+                return std::make_unique<
+                    web_package::test::FakeSignatureVerifier>(std::nullopt);
               })));
 
   base::test::TestFuture<ReadResult> read_response_future;
@@ -670,7 +653,8 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
           base::BindRepeating(
               []() -> std::unique_ptr<
                        web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<FakeSignatureVerifier>(GetParam());
+                return std::make_unique<
+                    web_package::test::FakeSignatureVerifier>(GetParam());
               })));
 
   base::test::TestFuture<ReadResult> read_response_future;
@@ -681,7 +665,8 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, signatures are only verified at installation-time, thus the
-  // `FakeSignatureVerifier` set up above will never be called.
+  // `web_package::test::FakeSignatureVerifier` set up above will never be
+  // called.
   FulfillMetadata();
   FulfillResponse(resource_request);
 

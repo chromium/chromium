@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "net/base/url_util.h"
@@ -269,8 +270,8 @@ void SignedWebBundleReader::OnSignaturesVerified(
     const base::TimeTicks& verification_start_time,
     uint64_t file_length,
     ReadErrorCallback callback,
-    std::optional<web_package::SignedWebBundleSignatureVerifier::Error>
-        verification_error) {
+    base::expected<void, web_package::SignedWebBundleSignatureVerifier::Error>
+        verification_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
@@ -282,11 +283,11 @@ void SignedWebBundleReader::OnSignaturesVerified(
       "WebApp.Isolated.SignatureVerificationFileLength",
       base::saturated_cast<int>(std::round(file_length / (1024.0 * 1024.0))));
 
-  if (verification_error.has_value()) {
-    FulfillWithError(std::move(callback),
-                     UnusableSwbnFileError(*verification_error));
-    return;
-  }
+  RETURN_IF_ERROR(
+      verification_result,
+      [&](web_package::SignedWebBundleSignatureVerifier::Error error) {
+        FulfillWithError(std::move(callback), UnusableSwbnFileError(error));
+      });
 
   // Signatures are valid; continue with parsing of metadata.
   ReadMetadata(std::move(callback));

@@ -12,7 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
+#include "components/web_package/signed_web_bundles/key_rotation/key_rotation_info_provider.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
@@ -31,22 +33,32 @@ class SignedWebBundleSignatureVerifier {
     static Error ForInvalidSignature(const std::string& message) {
       return {.type = Type::kSignatureInvalidError, .message = message};
     }
+    static Error ForWebBundleIdError(const char* format,
+                                     const std::string& web_bundle_id) {
+      return {.type = Type::kWebBundleIdError,
+              .message = base::StringPrintf(format, web_bundle_id.c_str())};
+    }
 
-    enum class Type { kInternalError, kSignatureInvalidError };
-    Type type;
+    enum class Type {
+      kInternalError,
+      kSignatureInvalidError,
+      kWebBundleIdError,
+    } type;
     std::string message;
   };
 
-  // Takes the chunk size in which the Signed Web Bundle is read for calculating
-  // its SHA512 hash. Higher values use more RAM, but may potentially be a bit
-  // faster. It is exposed here instead of being a constant mainly for testing.
-  explicit SignedWebBundleSignatureVerifier(
-      uint64_t web_bundle_chunk_size = 10 * 1000 * 1000);
+  // Embedder-supplied key rotation info provider. Might be nullptr.
+  explicit SignedWebBundleSignatureVerifier(KeyRotationInfoProvider*);
+
+  // Changes the chunk size in which the Signed Web Bundle is read for
+  // calculating its SHA512 hash. Higher values use more RAM, but may
+  // potentially be a bit faster. Only used in tests.
+  void SetWebBundleChunkSizeForTesting(uint64_t web_bundle_chunk_size);
 
   virtual ~SignedWebBundleSignatureVerifier();
 
   using SignatureVerificationCallback =
-      base::OnceCallback<void(std::optional<Error>)>;
+      base::OnceCallback<void(base::expected<void, Error>)>;
 
   // Verifies the signatures of the Signed Web Bundle `file` with the integrity
   // block `integrity_block`. Executes the `callback` with `std::nullopt` on
@@ -56,7 +68,7 @@ class SignedWebBundleSignatureVerifier {
   // TODO(crbug.com/40239682): Support more than one signature.
   virtual void VerifySignatures(base::File file,
                                 SignedWebBundleIntegrityBlock integrity_block,
-                                SignatureVerificationCallback callback);
+                                SignatureVerificationCallback callback) const;
 
  private:
   // We don't use `SHA512_DIGEST_LENGTH` here, because we don't want to include
@@ -75,17 +87,22 @@ class SignedWebBundleSignatureVerifier {
   void OnHashOfUnsignedWebBundleCalculated(
       SignedWebBundleIntegrityBlock integrity_block,
       SignatureVerificationCallback callback,
-      base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash);
+      base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash) const;
 
   base::expected<void, Error> VerifyWithHashForIntegrityBlockV1(
       SHA512Digest unsigned_web_bundle_hash,
-      SignedWebBundleIntegrityBlock integrity_block_v1);
+      SignedWebBundleIntegrityBlock integrity_block_v1) const;
 
   base::expected<void, Error> VerifyWithHashForIntegrityBlockV2(
       SHA512Digest unsigned_web_bundle_hash,
-      SignedWebBundleIntegrityBlock integrity_block_v2);
+      SignedWebBundleIntegrityBlock integrity_block_v2) const;
 
-  const uint64_t web_bundle_chunk_size_;
+  // The chunk size in which the Signed Web Bundle is read for calculating its
+  // SHA512 hash. Default is ~10mb.
+  uint64_t web_bundle_chunk_size_ = 10 * 1000 * 1000;
+
+  // Embedder-supplied key rotation info provider. Might be nullptr.
+  raw_ptr<KeyRotationInfoProvider> kr_info_provider_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -20,6 +20,7 @@
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -35,6 +36,8 @@
 #include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,46 +76,6 @@ constexpr uint8_t kAttributesCbor[] = {
     0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02, 0x72, 0xfe,
     0x2b, 0xce, 0x81, 0xbb, 0x3b, 0x71, 0x3f, 0x2d};
 
-using PublicKey = absl::variant<Ed25519PublicKey, EcdsaP256PublicKey>;
-
-mojom::SignatureInfoPtr CreateSignatureInfo(
-    const Ed25519PublicKey& public_key,
-    base::span<const uint8_t> signature) {
-  auto ed25519_signature_info = mojom::SignatureInfoEd25519::New();
-  ed25519_signature_info->public_key = public_key;
-  ed25519_signature_info->signature = *Ed25519Signature::Create(signature);
-  return mojom::SignatureInfo::NewEd25519(std::move(ed25519_signature_info));
-}
-
-mojom::SignatureInfoPtr CreateSignatureInfo(
-    const EcdsaP256PublicKey& public_key,
-    base::span<const uint8_t> signature) {
-  auto ecdsa_p256_sha256_signature_info =
-      mojom::SignatureInfoEcdsaP256SHA256::New();
-  ecdsa_p256_sha256_signature_info->public_key = public_key;
-  ecdsa_p256_sha256_signature_info->signature =
-      *EcdsaP256SHA256Signature::Create(signature);
-  return mojom::SignatureInfo::NewEcdsaP256Sha256(
-      std::move(ecdsa_p256_sha256_signature_info));
-}
-
-mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
-    const PublicKey& public_key,
-    base::span<const uint8_t> signature,
-    base::span<const uint8_t> attributes_cbor) {
-  auto raw_signature_stack_entry =
-      mojom::BundleIntegrityBlockSignatureStackEntry::New();
-
-  raw_signature_stack_entry->attributes_cbor =
-      std::vector(std::begin(attributes_cbor), std::end(attributes_cbor));
-  raw_signature_stack_entry->signature_info =
-      absl::visit(base::Overloaded{[&](const auto& public_key) {
-                    return CreateSignatureInfo(public_key, signature);
-                  }},
-                  public_key);
-  return raw_signature_stack_entry;
-}
-
 SignedWebBundleId CreateForKeyPair(const WebBundleSigner::KeyPair& key_pair) {
   return absl::visit(
       [](const auto& key_pair) {
@@ -148,12 +111,9 @@ class SignedWebBundleSignatureVerifierGoToolTest
 TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
   auto file_path = GetTestFilePath(std::get<0>(GetParam()).first);
 
-  base::test::TestFuture<std::optional<SignedWebBundleSignatureVerifier::Error>>
-      future;
-
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack;
-  raw_signature_stack.push_back(MakeSignatureStackEntry(
+  raw_signature_stack.push_back(test::MakeSignatureStackEntry(
       Ed25519PublicKey::Create(base::span(kEd25519PublicKey)),
       kEd25519Signature, kAttributesCbor));
 
@@ -169,18 +129,20 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
       base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   ASSERT_TRUE(file.IsValid());
 
-  SignedWebBundleSignatureVerifier signature_verifier(std::get<1>(GetParam()));
-  signature_verifier.VerifySignatures(
-      std::move(file), std::move(integrity_block), future.GetCallback());
+  SignedWebBundleSignatureVerifier signature_verifier(
+      /*kr_info_provider=*/nullptr);
+  signature_verifier.SetWebBundleChunkSizeForTesting(std::get<1>(GetParam()));
 
-  auto error = future.Take();
+  auto result =
+      test::VerifySignatures(signature_verifier, file, integrity_block);
   auto expected_error = std::get<0>(GetParam()).second;
+
   if (expected_error.has_value()) {
-    ASSERT_TRUE(error.has_value());
-    EXPECT_EQ(error->type, expected_error->type);
-    EXPECT_EQ(error->message, expected_error->message);
+    ASSERT_TRUE(!result.has_value());
+    EXPECT_EQ(result.error().type, expected_error->type);
+    EXPECT_EQ(result.error().message, expected_error->message);
   } else {
-    ASSERT_FALSE(error.has_value()) << error->message;
+    ASSERT_TRUE(result.has_value()) << result.error().message;
   }
 }
 
@@ -221,10 +183,7 @@ INSTANTIATE_TEST_SUITE_P(
              base::NumberToString(chunk_size);
     });
 
-class SignedWebBundleSignatureVerifierTest
-    : public ::testing::TestWithParam<
-          std::pair<std::vector<WebBundleSigner::KeyPair>,
-                    std::optional<SignedWebBundleSignatureVerifier::Error>>> {
+class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
  protected:
   void SetUp() override { EXPECT_TRUE(temp_dir.CreateUniqueTempDir()); }
 
@@ -235,7 +194,8 @@ class SignedWebBundleSignatureVerifierTest
     auto integrity_block = WebBundleSigner::CreateIntegrityBlockForBundle(
         web_bundle, key_pairs,
         /*ib_attributes=*/
-        {{.web_bundle_id = CreateForKeyPair(key_pairs[0]).id()}});
+        WebBundleSigner::IntegrityBlockAttributes(
+            {.web_bundle_id = CreateForKeyPair(key_pairs[0]).id()}));
     auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
     std::vector<uint8_t> signed_web_bundle;
     base::Extend(signed_web_bundle, integrity_block_cbor);
@@ -261,72 +221,16 @@ class SignedWebBundleSignatureVerifierTest
     return file;
   }
 
-  base::expected<SignedWebBundleIntegrityBlock, std::string>
-  CreateParsedIntegrityBlock(
-      const cbor::Value& integrity_block,
-      size_t integrity_block_size,
-      const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
-    std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
-        raw_signature_stack;
-    const auto& signature_stack = integrity_block.GetArray().back().GetArray();
-    for (size_t idx = 0; idx < signature_stack.size(); idx++) {
-      const auto& signature_stack_entry = signature_stack[idx];
-      const auto& key_pair = key_pairs[idx];
-
-      const auto& attributes = signature_stack_entry.GetArray()[0];
-      auto attributes_cbor = *cbor::Writer::Write(attributes);
-
-      const auto& signature =
-          signature_stack_entry.GetArray()[1].GetBytestring();
-
-      auto public_key = absl::visit(
-          base::Overloaded{
-              [&](const WebBundleSigner::Ed25519KeyPair& key_pair)
-                  -> PublicKey {
-                auto ed25519_public_key = *Ed25519PublicKey::Create(
-                    base::FindOrNull(
-                        attributes.GetMap(),
-                        cbor::Value(kEd25519PublicKeyAttributeName))
-                        ->GetBytestring());
-                EXPECT_EQ(ed25519_public_key, key_pair.public_key);
-                return ed25519_public_key;
-              },
-              [&](const WebBundleSigner::EcdsaP256KeyPair& key_pair)
-                  -> PublicKey {
-                auto ecdsa_p256_public_key = *EcdsaP256PublicKey::Create(
-                    base::FindOrNull(
-                        attributes.GetMap(),
-                        cbor::Value(kEcdsaP256PublicKeyAttributeName))
-                        ->GetBytestring());
-                EXPECT_EQ(ecdsa_p256_public_key, key_pair.public_key);
-                return ecdsa_p256_public_key;
-              }},
-          key_pair);
-
-      raw_signature_stack.push_back(
-          MakeSignatureStackEntry(public_key, signature, attributes_cbor));
-    }
-
-    const auto& attributes = integrity_block.GetArray()[2].GetMap();
-    const auto& web_bundle_id =
-        base::FindOrNull(attributes, cbor::Value(kWebBundleIdAttributeName))
-            ->GetString();
-    EXPECT_EQ(CreateForKeyPair(key_pairs[0]).id(), web_bundle_id);
-
-    auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
-    raw_integrity_block->size = integrity_block_size;
-    raw_integrity_block->signature_stack = std::move(raw_signature_stack);
-    raw_integrity_block->attributes = IntegrityBlockAttributes(
-        web_bundle_id, *cbor::Writer::Write(cbor::Value(attributes)));
-
-    return SignedWebBundleIntegrityBlock::Create(
-        std::move(raw_integrity_block));
-  }
-
  private:
   base::test::TaskEnvironment task_environment;
   base::ScopedTempDir temp_dir;
 };
+
+class SignedWebBundleSignatureVerifierTest
+    : public SignedWebBundleSignatureVerifierTestBase,
+      public ::testing::WithParamInterface<
+          std::pair<std::vector<WebBundleSigner::KeyPair>,
+                    std::optional<SignedWebBundleSignatureVerifier::Error>>> {};
 
 TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   const auto& key_pairs = std::get<0>(GetParam());
@@ -335,24 +239,43 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
   auto file = MakeWebBundleFile(signed_web_bundle_path);
-  ASSERT_OK_AND_ASSIGN(auto parsed_integrity_block,
-                       CreateParsedIntegrityBlock(
-                           integrity_block, integrity_block_size, key_pairs));
+  auto parsed_integrity_block =
+      test::ParseIntegrityBlockFromValue(integrity_block);
 
-  base::test::TestFuture<std::optional<SignedWebBundleSignatureVerifier::Error>>
-      future;
-  SignedWebBundleSignatureVerifier signature_verifier;
-  signature_verifier.VerifySignatures(
-      std::move(file), std::move(parsed_integrity_block), future.GetCallback());
+  const auto& signatures = parsed_integrity_block.signature_stack().entries();
+  ASSERT_EQ(signatures.size(), key_pairs.size());
 
-  auto error = future.Take();
+  std::vector<test::PublicKey> inferred_public_keys =
+      base::ToVector(signatures, [](const auto& signature) {
+        return absl::visit(
+            base::Overloaded{[](const auto& signature_info) -> test::PublicKey {
+                               return signature_info.public_key();
+                             },
+                             [](const SignedWebBundleSignatureInfoUnknown&)
+                                 -> test::PublicKey { NOTREACHED_NORETURN(); }},
+            signature.signature_info());
+      });
+  std::vector<test::PublicKey> expected_public_keys =
+      base::ToVector(key_pairs, [](const auto& key_pair) {
+        return absl::visit(
+            [](const auto& key_pair) -> test::PublicKey {
+              return key_pair.public_key;
+            },
+            key_pair);
+      });
+  EXPECT_EQ(inferred_public_keys, expected_public_keys);
+
+  SignedWebBundleSignatureVerifier signature_verifier(
+      /*kr_info_provider=*/nullptr);
+  auto result =
+      test::VerifySignatures(signature_verifier, file, parsed_integrity_block);
   auto expected_error = std::get<1>(GetParam());
   if (expected_error.has_value()) {
-    ASSERT_TRUE(error.has_value());
-    EXPECT_EQ(error->type, expected_error->type);
-    EXPECT_EQ(error->message, expected_error->message);
+    ASSERT_TRUE(!result.has_value());
+    EXPECT_EQ(result.error().type, expected_error->type);
+    EXPECT_EQ(result.error().message, expected_error->message);
   } else {
-    ASSERT_FALSE(error.has_value()) << error->message;
+    ASSERT_TRUE(result.has_value()) << result.error().message;
   }
 }
 

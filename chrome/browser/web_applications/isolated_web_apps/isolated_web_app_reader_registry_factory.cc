@@ -48,10 +48,7 @@ IsolatedWebAppReaderRegistryFactory::BuildServiceInstanceForBrowserContext(
 
   auto validator = std::make_unique<IsolatedWebAppValidator>();
   auto reader_factory = std::make_unique<IsolatedWebAppResponseReaderFactory>(
-      profile, std::move(validator), base::BindRepeating([]() {
-        return std::make_unique<
-            web_package::SignedWebBundleSignatureVerifier>();
-      }));
+      profile, std::move(validator));
   return std::make_unique<IsolatedWebAppReaderRegistry>(
       std::move(reader_factory));
 }

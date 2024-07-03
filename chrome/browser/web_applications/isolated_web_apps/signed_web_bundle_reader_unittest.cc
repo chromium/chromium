@@ -33,6 +33,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -66,25 +67,6 @@ constexpr std::array<uint8_t, 64> kEd25519Signature = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
-
-class FakeSignatureVerifier
-    : public web_package::SignedWebBundleSignatureVerifier {
- public:
-  explicit FakeSignatureVerifier(
-      std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error)
-      : error_(error) {}
-
-  void VerifySignatures(
-      base::File file,
-      web_package::SignedWebBundleIntegrityBlock integrity_block,
-      SignatureVerificationCallback callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), error_));
-  }
-
- private:
-  std::optional<web_package::SignedWebBundleSignatureVerifier::Error> error_;
-};
 
 }  // namespace
 
@@ -124,7 +106,8 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
     std::unique_ptr<SignedWebBundleReader> reader =
         SignedWebBundleReader::Create(
             swbn_file_path, base_url,
-            std::make_unique<FakeSignatureVerifier>(signature_verifier_error));
+            std::make_unique<web_package::test::FakeSignatureVerifier>(
+                signature_verifier_error));
 
     reader->StartReading(
         base::BindLambdaForTesting(
@@ -374,7 +357,8 @@ class SignedWebBundleReaderTest : public testing::Test {
     std::unique_ptr<SignedWebBundleReader> reader =
         SignedWebBundleReader::Create(
             temp_file_path, base_url,
-            std::make_unique<FakeSignatureVerifier>(signature_verifier_error));
+            std::make_unique<web_package::test::FakeSignatureVerifier>(
+                signature_verifier_error));
 
     reader->StartReading(
         base::BindLambdaForTesting(
@@ -445,7 +429,7 @@ TEST(SignedWebBundleReaderFileFalureTest, CantOpenFile) {
 
   std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
       file_path, std::nullopt,
-      std::make_unique<FakeSignatureVerifier>(std::nullopt));
+      std::make_unique<web_package::test::FakeSignatureVerifier>(std::nullopt));
 
   base::test::TestFuture<base::expected<void, UnusableSwbnFileError>>
       error_future;
