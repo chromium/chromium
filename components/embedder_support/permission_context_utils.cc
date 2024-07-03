@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "components/permissions/contexts/geolocation_permission_context_system.h"
+#include "services/device/public/cpp/device_features.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 namespace embedder_support {
@@ -79,10 +80,17 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           std::move(delegates.geolocation_permission_context_delegate),
           is_regular_profile);
 #elif BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
-      std::make_unique<permissions::GeolocationPermissionContextSystem>(
-          browser_context,
-          std::move(delegates.geolocation_permission_context_delegate));
+  if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+    permission_contexts[ContentSettingsType::GEOLOCATION] =
+        std::make_unique<permissions::GeolocationPermissionContextSystem>(
+            browser_context,
+            std::move(delegates.geolocation_permission_context_delegate));
+  } else {
+    permission_contexts[ContentSettingsType::GEOLOCATION] =
+        std::make_unique<permissions::GeolocationPermissionContext>(
+            browser_context,
+            std::move(delegates.geolocation_permission_context_delegate));
+  }
 #else
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContext>(

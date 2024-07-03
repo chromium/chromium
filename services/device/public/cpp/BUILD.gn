@@ -12,7 +12,10 @@ component("device_features") {
     "device_features_export.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  deps = [ "//services/device/public/mojom:geolocation_internals" ]
+  deps = [
+    "//services/device/public/cpp/geolocation:buildflags",
+    "//services/device/public/mojom:geolocation_internals",
+  ]
   public_deps = [ "//base" ]
 
   defines = [ "DEVICE_FEATURES_IMPLEMENTATION" ]

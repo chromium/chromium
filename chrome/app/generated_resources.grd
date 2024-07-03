@@ -14376,6 +14376,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Turn on "Google Chrome" in Location Services on your Mac
         </message>
       </if>
+      <if expr="is_win">
+        <message name="IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS" desc="Title for the geolocation bubble that is used when a site requests geolocation, but geolocation is blocked on an OS level in Windows.">
+          Location is turned off in Windows System Preferences
+        </message>
+      </if>
         <message name="IDS_GEOLOCATION_TURNED_OFF" desc="Description text in the omnibox icon showing when location permission is blocked on an OS level.">
           Location turned off
         </message>
@@ -14475,13 +14480,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Microphone turned off
         </message>
       </if>
-      <if expr="is_chromeos">
-        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in ChromeOS, in order for the user to be able to modify the ability to access camera, microphone and geolocation for Chrome.">
+      <if expr="is_win or is_chromeos">
+        <message name="IDS_OPEN_SETTINGS_LINK" desc="Title for the button that takes the user to the Security and Privacy settings in Windows or ChromeOS, in order for the user to be able to modify the ability to access camera, microphone and geolocation for Chrome.">
           Open Settings
         </message>
       </if>
-      <if expr="is_macosx or is_chromeos">
-        <message name="IDS_TURNED_OFF" desc="Description text for the state of camera or microphone">
+      <if expr="is_macosx or is_chromeos or is_win">
+        <message name="IDS_TURNED_OFF" desc="Description text for the state of camera or microphone or geolocation">
           Turned off
         </message>
       </if>

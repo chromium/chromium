@@ -179,7 +179,8 @@ GeolocationProviderImpl::GeolocationProviderImpl()
       base::Unretained(this)));
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  if (g_geolocation_system_permission_manager) {
+  if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
+      g_geolocation_system_permission_manager) {
     observers_ = g_geolocation_system_permission_manager->GetObserverList();
     observers_->AddObserver(this);
     system_permission_status_ =
@@ -196,7 +197,7 @@ GeolocationProviderImpl::GeolocationProviderImpl()
 
 GeolocationProviderImpl::~GeolocationProviderImpl() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  if (observers_) {
+  if (features::IsOsLevelGeolocationPermissionSupportEnabled() && observers_) {
     observers_->RemoveObserver(this);
   }
 #endif
@@ -241,7 +242,8 @@ void GeolocationProviderImpl::OnClientsChanged() {
     // - kDenied: Use previously generated error result (no action here).
     // - kUndetermined: Wait for OnSystemPermissionUpdated() to handle changes
     // (no action here).
-    if (system_permission_status_ != LocationSystemPermissionStatus::kAllowed) {
+    if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
+        system_permission_status_ != LocationSystemPermissionStatus::kAllowed) {
       return;
     }
 #endif

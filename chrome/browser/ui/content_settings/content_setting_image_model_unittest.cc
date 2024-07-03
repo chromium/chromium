@@ -319,6 +319,10 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kWinSystemLocationPermission}, {});
+#endif  // BUILDFLAG(IS_WIN)
   auto test_geolocation_system_permission_manager =
       std::make_unique<device::FakeGeolocationSystemPermissionManager>();
   device::FakeGeolocationSystemPermissionManager*
@@ -379,6 +383,10 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 }
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kWinSystemLocationPermission}, {});
+#endif  // BUILDFLAG(IS_WIN)
   auto test_geolocation_system_permission_manager =
       std::make_unique<device::FakeGeolocationSystemPermissionManager>();
   test_geolocation_system_permission_manager->SetSystemPermission(

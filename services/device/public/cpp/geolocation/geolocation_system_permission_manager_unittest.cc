@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+
 #include <memory>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,14 +35,17 @@ class SourceImpl : public device::SystemGeolocationSource {
     callback_ = callback;
   }
 
+  // These methods are not used in the tests, but need to be implemented.
 #if BUILDFLAG(IS_MAC)
-  // This methods are not used in the tests, but need to be implemented on Mac.
   void StartWatchingPosition(bool) override {}
   void StopWatchingPosition() override {}
-  void RequestPermission() override {}
   void AddPositionUpdateObserver(PositionObserver* observer) override {}
   void RemovePositionUpdateObserver(PositionObserver* observer) override {}
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void RequestPermission() override {}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Helper function to force observer notification (normally done by
   // implementations of PermissionProvider).
@@ -55,6 +61,19 @@ class SourceImpl : public device::SystemGeolocationSource {
 
 class GeolocationSystemPermissionTests : public testing::Test {
  public:
+  GeolocationSystemPermissionTests() {
+#if BUILDFLAG(IS_WIN)
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWinSystemLocationPermission},
+        /*disabled_features=*/{});
+#endif  // BUILDFLAG(IS_WIN)
+  }
+
+  GeolocationSystemPermissionTests(const GeolocationSystemPermissionTests&) =
+      delete;
+  GeolocationSystemPermissionTests& operator=(
+      const GeolocationSystemPermissionTests&) = delete;
+
   ~GeolocationSystemPermissionTests() override {
     task_environment_.RunUntilIdle();
   }
@@ -68,6 +87,7 @@ class GeolocationSystemPermissionTests : public testing::Test {
  protected:
   std::vector<std::unique_ptr<MockObserver>> observers_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(GeolocationSystemPermissionTests, TestAddObserver) {

@@ -25,6 +25,9 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kEnableBluetoothSerialPortProfileInSerialApi);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kGeolocationDiagnosticsObserver);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialPortConnected);
+#if BUILDFLAG(IS_WIN)
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWinSystemLocationPermission);
+#endif  // BUILDFLAG(IS_WIN)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kLocationProviderManager);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -34,6 +37,8 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kUsbDeviceLinuxOpenCrashKey);
 extern const DEVICE_FEATURES_EXPORT
     base::FeatureParam<device::mojom::LocationProviderManagerMode>
         kLocationProviderManagerParam;
+
+DEVICE_FEATURES_EXPORT bool IsOsLevelGeolocationPermissionSupportEnabled();
 
 }  // namespace features
 

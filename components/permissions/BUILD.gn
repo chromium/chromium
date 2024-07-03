@@ -336,6 +336,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/webrtc",
     "//content/test:test_support",
+    "//services/device/public/cpp:device_features",
     "//services/device/public/cpp:test_support",
     "//sql",
     "//sql:test_support",

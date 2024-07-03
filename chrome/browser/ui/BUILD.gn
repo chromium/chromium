@@ -6567,6 +6567,7 @@ static_library("ui") {
       "//components/user_notes/interfaces",
       "//device/vr/buildflags:buildflags",
       "//services/data_decoder/public/cpp",
+      "//services/device/public/cpp:device_features",
       "//services/media_session/public/mojom",
       "//services/screen_ai/buildflags",
       "//ui/base/dragdrop:types",

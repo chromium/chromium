@@ -57,6 +57,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -217,7 +218,14 @@ class GeolocationPermissionContextTests
 };
 
 GeolocationPermissionContextTests::GeolocationPermissionContextTests() {
-  feature_list_.InitAndEnableFeature(permissions::features::kOneTimePermission);
+  feature_list_.InitWithFeatures(/*enabled_features=*/
+                                 {
+                                     permissions::features::kOneTimePermission,
+#if BUILDFLAG(IS_WIN)
+                                     ::features::kWinSystemLocationPermission,
+#endif  // BUILDFLAG(IS_WIN)
+                                 },
+                                 /*disabled_features=*/{});
 }
 
 PermissionRequestID GeolocationPermissionContextTests::RequestID(

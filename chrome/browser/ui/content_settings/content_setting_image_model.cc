@@ -47,7 +47,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/buildflags.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -62,11 +63,6 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#endif
-
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #endif
 
 using content::WebContents;
@@ -664,19 +660,20 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           "ContentSettings.Geolocation.BlockedIconShown"));
       set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
       if (content_settings->geolocation_was_just_granted_on_site_level()) {
-#if BUILDFLAG(IS_MAC)
-        if (IsGeolocationPermissionDetermined()) {
-          // If the system permission is already denied then requesting the
-          // system permission will not show a prompt. Show the bubble instead.
-          set_should_auto_open_bubble(true);
-        } else {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
+            !IsGeolocationPermissionDetermined()) {
           // Ask the system to display a permission prompt for location access.
           device::GeolocationSystemPermissionManager::GetInstance()
               ->RequestSystemPermission();
+        } else {
+          // If the system permission is already denied then requesting the
+          // system permission will not show a prompt. Show the bubble instead.
+          set_should_auto_open_bubble(true);
         }
 #else
         set_should_auto_open_bubble(true);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       }
       // At this point macOS may not have told us whether location permission
       // has been allowed or blocked. Wait until the permission state is
@@ -731,9 +728,9 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
-#if !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  return true;
-#else
+  if (!features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+    return true;
+  }
   device::GeolocationSystemPermissionManager*
       geolocation_system_permission_manager =
           device::GeolocationSystemPermissionManager::GetInstance();
@@ -742,14 +739,12 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
       geolocation_system_permission_manager->GetSystemPermission();
 
   return permission == device::LocationSystemPermissionStatus::kAllowed;
-#endif
 }
 
 bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
-#if !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  return true;
-#else
-
+  if (!features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+    return true;
+  }
   device::GeolocationSystemPermissionManager*
       geolocation_system_permission_manager =
           device::GeolocationSystemPermissionManager::GetInstance();
@@ -758,7 +753,6 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
       geolocation_system_permission_manager->GetSystemPermission();
 
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
-#endif
 }
 
 std::unique_ptr<ContentSettingBubbleModel>

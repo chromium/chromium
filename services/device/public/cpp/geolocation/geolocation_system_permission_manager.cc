@@ -6,8 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "services/device/public/cpp/device_features.h"
 
 namespace device {
 
@@ -97,16 +97,12 @@ GeolocationSystemPermissionManager::SystemGeolocationSourceForTest() {
 
 LocationSystemPermissionStatus
 GeolocationSystemPermissionManager::GetSystemPermission() const {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  CHECK(features::IsOsLevelGeolocationPermissionSupportEnabled());
   return permission_cache_;
-#else
-  NOTREACHED_NORETURN();
-#endif  // BUILDFLAG(IS_APPLE) ||
-        // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 }
 
 void GeolocationSystemPermissionManager::RequestSystemPermission() {
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   system_geolocation_source_->RequestPermission();
 #endif
 }
