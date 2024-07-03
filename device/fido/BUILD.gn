@@ -236,8 +236,6 @@ component("fido") {
         "pin_internal.cc",
         "pin_internal.h",
         "platform_credential_store.h",
-        "platform_user_verification_policy.cc",
-        "platform_user_verification_policy.h",
         "reset_request_handler.cc",
         "reset_request_handler.h",
         "set_pin_request_handler.cc",

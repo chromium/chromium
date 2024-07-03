@@ -395,8 +395,6 @@ static constexpr char kGetAssertionConditionalUI[] = R"((() => {
 bool IsReady(GPMEnclaveController::AccountState state) {
   switch (state) {
     case GPMEnclaveController::AccountState::kReady:
-    case GPMEnclaveController::AccountState::kReadyWithPIN:
-    case GPMEnclaveController::AccountState::kReadyWithBiometrics:
       return true;
     default:
       LOG(ERROR) << "State " << static_cast<int>(state)
@@ -1190,16 +1188,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
-#if !BUILDFLAG(IS_MAC)
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
-#endif
   dialog_model()->OnGPMCreatePasskey();
-
-#if !BUILDFLAG(IS_MAC)
-  model_observer()->WaitForStep();
-  dialog_model()->OnGPMPinEntered(u"123456");
-#endif
 
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
 

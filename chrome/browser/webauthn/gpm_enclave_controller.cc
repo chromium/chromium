@@ -41,7 +41,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -64,7 +66,6 @@
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
-#include "device/fido/platform_user_verification_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -273,12 +274,19 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     device::UserVerificationRequirement uv,
     bool have_added_device,
     bool has_pin,
-    EnclaveManager::UvKeyState uv_key_state) {
+    EnclaveManager::UvKeyState uv_key_state,
+    bool platform_has_biometrics) {
   if (have_added_device) {
     return EnclaveUserVerificationMethod::kImplicit;
   }
 
-  if (!device::fido::PlatformWillDoUserVerification(uv)) {
+  // If the platform has biometrics now, but didn't when we enrolled, we need to
+  // act as if they are missing because we've no UV key to use them with.
+  if (uv_key_state == EnclaveManager::UvKeyState::kNone) {
+    platform_has_biometrics = false;
+  }
+
+  if (!GpmWillDoUserVerification(uv, platform_has_biometrics)) {
     return EnclaveUserVerificationMethod::kNone;
   }
 
@@ -779,49 +787,21 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   SetAccountStateReady();
   SetFailedPINAttemptCount(0);
 
-  switch (account_state_) {
-    case AccountState::kReady:
-      model_->SetStep(Step::kGPMConnecting);
-      StartTransaction();
-      break;
+  uv_method_ = PickEnclaveUserVerificationMethod(
+      user_verification_requirement_, have_added_device_,
+      enclave_manager_->has_wrapped_pin(),
+      enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+      *model_->platform_has_biometrics);
+  // `have_added_device_` is set, which satisfies UV, so we must have picked
+  // "implicit" UV.
+  CHECK_EQ(*uv_method_, EnclaveUserVerificationMethod::kImplicit);
 
-    case AccountState::kReadyWithBiometrics:
-      model_->SetStep(Step::kGPMTouchID);
-      break;
-
-    default:
-      // kReadyWithPIN is not possible because `have_added_device_` is set
-      // and so user verification will be satisfied with the stored security
-      // domain secret in this case.
-      NOTREACHED_NORETURN();
-  }
+  model_->SetStep(Step::kGPMConnecting);
+  StartTransaction();
 }
 
 void GPMEnclaveController::SetAccountStateReady() {
-  uv_method_ = PickEnclaveUserVerificationMethod(
-      user_verification_requirement_, have_added_device_,
-      enclave_manager_->has_wrapped_pin(), enclave_manager_->uv_key_state());
-  switch (*uv_method_) {
-    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
-    case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-    case EnclaveUserVerificationMethod::kNone:
-    case EnclaveUserVerificationMethod::kImplicit:
-      account_state_ = AccountState::kReady;
-      break;
-
-    case EnclaveUserVerificationMethod::kPIN:
-      account_state_ = AccountState::kReadyWithPIN;
-      break;
-
-    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
-      account_state_ = AccountState::kReadyWithBiometrics;
-      break;
-
-    case EnclaveUserVerificationMethod::kUnsatisfiable:
-      account_state_ = AccountState::kNone;
-      break;
-  }
-
+  account_state_ = AccountState::kReady;
   pin_is_arbitrary_ = enclave_manager_->has_wrapped_pin() &&
                       enclave_manager_->wrapped_pin_is_arbitrary();
 }
@@ -834,13 +814,33 @@ void GPMEnclaveController::OnGPMSelected() {
 
   switch (account_state_) {
     case AccountState::kEmpty:
-    case AccountState::kReady:
-    case AccountState::kReadyWithPIN:
       model_->SetStep(Step::kGPMCreatePasskey);
       break;
 
-    case AccountState::kReadyWithBiometrics:
-      model_->SetStep(Step::kGPMTouchID);
+    case AccountState::kReady:
+      uv_method_ = PickEnclaveUserVerificationMethod(
+          user_verification_requirement_, have_added_device_,
+          enclave_manager_->has_wrapped_pin(),
+          enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+          *model_->platform_has_biometrics);
+
+      switch (*uv_method_) {
+        case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+        case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
+        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kImplicit:
+        case EnclaveUserVerificationMethod::kPIN:
+          model_->SetStep(Step::kGPMCreatePasskey);
+          break;
+
+        case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+          model_->SetStep(Step::kGPMTouchID);
+          break;
+
+        case EnclaveUserVerificationMethod::kUnsatisfiable:
+          model_->SetStep(Step::kGPMError);
+          break;
+      }
       break;
 
     case AccountState::kRecoverable:
@@ -879,19 +879,36 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
   switch (account_state_) {
     case AccountState::kReady:
-      if (model_->step() != Step::kConditionalMediation) {
-        // The autofill UI shows its own loading indicator.
-        model_->SetStep(Step::kGPMConnecting);
+      uv_method_ = PickEnclaveUserVerificationMethod(
+          user_verification_requirement_, have_added_device_,
+          enclave_manager_->has_wrapped_pin(),
+          enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
+          *model_->platform_has_biometrics);
+
+      switch (*uv_method_) {
+        case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+        case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
+        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kImplicit:
+          if (model_->step() != Step::kConditionalMediation) {
+            // The autofill UI shows its own loading indicator.
+            model_->SetStep(Step::kGPMConnecting);
+          }
+          StartTransaction();
+          break;
+
+        case EnclaveUserVerificationMethod::kPIN:
+          PromptForPin();
+          break;
+
+        case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+          model_->SetStep(Step::kGPMTouchID);
+          break;
+
+        case EnclaveUserVerificationMethod::kUnsatisfiable:
+          model_->SetStep(Step::kGPMError);
+          break;
       }
-      StartTransaction();
-      break;
-
-    case AccountState::kReadyWithPIN:
-      PromptForPin();
-      break;
-
-    case AccountState::kReadyWithBiometrics:
-      model_->SetStep(Step::kGPMTouchID);
       break;
 
     case AccountState::kRecoverable:
@@ -994,20 +1011,30 @@ void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
 void GPMEnclaveController::OnGPMCreatePasskey() {
   CHECK_EQ(model_->step(), Step::kGPMCreatePasskey);
   CHECK(account_state_ == AccountState::kEmpty ||
-        account_state_ == AccountState::kReady ||
-        account_state_ == AccountState::kReadyWithPIN ||
-        account_state_ == AccountState::kReadyWithBiometrics);
+        account_state_ == AccountState::kReady);
   if (account_state_ == AccountState::kEmpty) {
     model_->SetStep(Step::kGPMCreatePin);
-  } else if (account_state_ == AccountState::kReady) {
-    model_->SetStep(Step::kGPMConnecting);
-    StartTransaction();
-  } else if (account_state_ == AccountState::kReadyWithPIN) {
-    PromptForPin();
-  } else if (account_state_ == AccountState::kReadyWithBiometrics) {
-    model_->SetStep(Step::kGPMTouchID);
   } else {
-    NOTREACHED_NORETURN();
+    switch (*uv_method_) {
+      case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+      case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
+      case EnclaveUserVerificationMethod::kNone:
+      case EnclaveUserVerificationMethod::kImplicit:
+        model_->SetStep(Step::kGPMConnecting);
+        StartTransaction();
+        break;
+
+      case EnclaveUserVerificationMethod::kPIN:
+        PromptForPin();
+        break;
+
+      case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+        model_->SetStep(Step::kGPMTouchID);
+        break;
+
+      case EnclaveUserVerificationMethod::kUnsatisfiable:
+        NOTREACHED_NORETURN();
+    }
   }
 }
 

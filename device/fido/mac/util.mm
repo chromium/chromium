@@ -196,6 +196,13 @@ CodeSigningState ProcessIsSigned() {
                                     : CodeSigningState::kNotSigned;
 }
 
+bool ProfileAuthenticatorWillDoUserVerification(
+    device::UserVerificationRequirement requirement,
+    bool platform_has_biometrics) {
+  return requirement == device::UserVerificationRequirement::kRequired ||
+         platform_has_biometrics;
+}
+
 std::optional<bool>& GetBiometricOverride() {
   static std::optional<bool> flag;
   return flag;

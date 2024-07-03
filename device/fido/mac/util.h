@@ -75,6 +75,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedProcessIsSignedOverride {
   ~ScopedProcessIsSignedOverride();
 };
 
+// Returns whether the macOS profile authenticator will do user verification.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool ProfileAuthenticatorWillDoUserVerification(
+    device::UserVerificationRequirement requirement,
+    bool platform_has_biometrics);
+
 // Returns whether biometrics are available for use. On macOS, this translates
 // to whether the device supports Touch ID, and whether the sensor is ready to
 // be used (i.e. not soft-locked from consecutive bad attempts; laptop lid not

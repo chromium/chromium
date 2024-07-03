@@ -1176,7 +1176,7 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
 #if BUILDFLAG(IS_WIN)
   // Windows does deferred UV key creation. This test has to trigger the actual
   // create before testing that it is later deleted.
-  EXPECT_EQ(manager_.uv_key_state(),
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   auto key_creation_callback = manager_.UserVerifyingKeyCreationCallback();
   quit_closure = task_env_.QuitClosure();
@@ -1297,10 +1297,11 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyAvailable) {
   EXPECT_TRUE(add_future.Wait());
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(manager_.uv_key_state(),
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
 #else
-  EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kUsesSystemUI);
 #endif
 }
 
@@ -1329,7 +1330,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUnavailable) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
   ASSERT_TRUE(manager_.is_registered());
-  EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kNone);
 }
 
 TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
@@ -1360,7 +1362,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
 #if BUILDFLAG(IS_WIN)
   // Windows does deferred UV key creation. This test has to trigger the actual
   // create before testing that it is later deleted.
-  EXPECT_EQ(manager_.uv_key_state(),
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   auto key_creation_callback = manager_.UserVerifyingKeyCreationCallback();
   quit_closure = task_env_.QuitClosure();
@@ -1372,7 +1374,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyLost) {
           }));
   task_env_.RunUntilQuit();
 #else
-  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+  ASSERT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kUsesSystemUI);
 #endif
   manager_.ClearCachedKeysForTesting();
   DisableUVKeySupport();
@@ -1432,7 +1435,8 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+  ASSERT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1466,16 +1470,17 @@ TEST_F(EnclaveUVTest, ChromeHandlesBiometrics) {
       crypto::ScopedFakeAppleKeychainV2::UVMethod::kBiometrics);
   // The TouchID view is only available on macOS 12+.
   if (__builtin_available(macos 12, *)) {
-    EXPECT_EQ(manager_.uv_key_state(),
+    EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/true),
               EnclaveManager::UvKeyState::kUsesChromeUI);
   } else {
-    EXPECT_EQ(manager_.uv_key_state(),
+    EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
               EnclaveManager::UvKeyState::kUsesSystemUI);
   }
 
   scoped_fake_apple_keychain_.SetUVMethod(
       crypto::ScopedFakeAppleKeychainV2::UVMethod::kPasswordOnly);
-  EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1504,7 +1509,7 @@ TEST_F(EnclaveUVTest, DeferredUVKeyCreation) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  EXPECT_EQ(manager_.uv_key_state(),
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   const auto& user_state =
       manager_.local_state_for_testing().users().find(gaia_id_)->second;
@@ -1550,7 +1555,7 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   ASSERT_FALSE(manager_.is_idle());
   EXPECT_TRUE(add_future.Wait());
 
-  EXPECT_EQ(manager_.uv_key_state(),
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
             EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
   const auto& user_state =
       manager_.local_state_for_testing().users().find(gaia_id_)->second;

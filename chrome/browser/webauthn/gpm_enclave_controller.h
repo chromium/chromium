@@ -74,12 +74,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
     kEmpty,
     // The enclave is ready to use.
     kReady,
-    // The enclave is ready to use, but the UI needs to collect a PIN before
-    // making a transaction.
-    kReadyWithPIN,
-    // The enclave is ready to use, but the UI needs to collect biometrics
-    // before making a transaction.
-    kReadyWithBiometrics,
   };
 
   explicit GPMEnclaveController(

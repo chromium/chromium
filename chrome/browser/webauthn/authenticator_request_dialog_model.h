@@ -478,6 +478,8 @@ struct AuthenticatorRequestDialogModel {
   std::vector<device::DiscoverableCredentialMetadata> creds;
   // preselected_cred contains a credential preselected by the user.
   std::optional<device::DiscoverableCredentialMetadata> preselected_cred;
+  // Whether the platform can check biometrics and has biometrics configured.
+  std::optional<bool> platform_has_biometrics;
   // offer_try_again_in_ui indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain
   // errors.

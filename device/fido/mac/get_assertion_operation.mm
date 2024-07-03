@@ -21,7 +21,6 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/mac/util.h"
-#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/strings/grit/fido_strings.h"
@@ -64,12 +63,13 @@ void GetAssertionOperation::Run() {
     return;
   }
 
-  bool require_uv =
-      PlatformWillDoUserVerification(request_.user_verification) ||
-      std::any_of(credentials->begin(), credentials->end(),
-                  [](const Credential& credential) {
-                    return credential.RequiresUvForSignature();
-                  });
+  bool require_uv = ProfileAuthenticatorWillDoUserVerification(
+                        request_.user_verification,
+                        device::fido::mac::DeviceHasBiometricsAvailable()) ||
+                    std::any_of(credentials->begin(), credentials->end(),
+                                [](const Credential& credential) {
+                                  return credential.RequiresUvForSignature();
+                                });
   if (require_uv) {
     touch_id_context_->PromptTouchId(
         l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON,

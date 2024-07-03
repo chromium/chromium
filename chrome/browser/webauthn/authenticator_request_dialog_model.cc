@@ -37,6 +37,7 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
+#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -62,7 +63,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -433,9 +433,12 @@ std::optional<content::GlobalRenderFrameHostId> FrameHostIdFromMaybeNull(
   return render_frame_host->GetGlobalId();
 }
 
-bool HaveTouchId() {
+bool ProfileAuthenticatorWillDoUserVerification(
+    device::UserVerificationRequirement requirement,
+    bool platform_has_biometrics) {
 #if BUILDFLAG(IS_MAC)
-  return device::fido::mac::DeviceHasBiometricsAvailable();
+  return device::fido::mac::ProfileAuthenticatorWillDoUserVerification(
+      requirement, platform_has_biometrics);
 #else
   return false;
 #endif
@@ -726,8 +729,10 @@ void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
 
 void AuthenticatorRequestDialogController::
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection() {
-  const bool will_do_uv = device::fido::PlatformWillDoUserVerification(
-      transport_availability_.user_verification_requirement);
+  const bool enclave_will_do_uv = GpmWillDoUserVerification(
+      transport_availability_.user_verification_requirement,
+      transport_availability_.platform_has_biometrics);
+  constexpr bool kIsMac = BUILDFLAG(IS_MAC);
 
   if (pending_step_) {
     SetCurrentStep(*pending_step_);
@@ -754,7 +759,8 @@ void AuthenticatorRequestDialogController::
         (cred->value().source == device::AuthenticatorType::kICloudKeychain ||
          // The enclave Touch ID prompts shows the credential details.
          (cred->value().source == device::AuthenticatorType::kEnclave &&
-          will_do_uv && HaveTouchId()));
+          enclave_will_do_uv && kIsMac &&
+          transport_availability_.platform_has_biometrics));
 
     if (cred != nullptr &&
         // Credentials on phones should never be triggered automatically.
@@ -769,7 +775,9 @@ void AuthenticatorRequestDialogController::
          // biometric or a UV requirement because, otherwise, there'll not be
          // *any* UI.
          (cred->value().source == device::AuthenticatorType::kTouchID &&
-          !will_do_uv))) {
+          !ProfileAuthenticatorWillDoUserVerification(
+              transport_availability_.user_verification_requirement,
+              transport_availability_.platform_has_biometrics)))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
@@ -810,36 +818,42 @@ void AuthenticatorRequestDialogController::
         }
         return;
       }
-      // If not doing UV, but the allowlist matches an enclave credential,
-      // show UI to serve as user presence.
-      if (!will_do_uv && transport_availability_.request_type ==
-                             device::FidoRequestType::kGetAssertion) {
-        for (auto& cred : transport_availability_.recognized_credentials) {
-          if (cred.source == device::AuthenticatorType::kEnclave) {
-            model_->creds = {cred};
-            SetCurrentStep(Step::kPreSelectSingleAccount);
-            return;
-          }
-        }
-      }
-      if (transport_availability_.has_platform_authenticator_credential ==
-          device::FidoRequestHandlerBase::RecognizedCredential::
-              kNoRecognizedCredential) {
-        // If there are no local matches but there are phone or enclave
-        // passkeys, jump to the first one of them.
-        for (auto& mechanism : model_->mechanisms) {
-          const auto& type = mechanism.type;
-          if (absl::holds_alternative<Mechanism::Credential>(type)) {
-            if (absl::get<Mechanism::Credential>(type)->source ==
-                device::AuthenticatorType::kEnclave) {
-              CHECK(will_do_uv);
-              mechanism.callback.Run();
+
+      // Don't jump to an enclave credential if we need to do reauth because the
+      // OAuth token won't work. Also, don't jump to a phone credential either
+      // because reauthenticating is probably a better option for the user.
+      if (!enclave_needs_reauth_) {
+        // If not doing UV, but the allowlist matches an enclave credential,
+        // show UI to serve as user presence.
+        if (!enclave_will_do_uv && transport_availability_.request_type ==
+                                       device::FidoRequestType::kGetAssertion) {
+          for (auto& cred : transport_availability_.recognized_credentials) {
+            if (cred.source == device::AuthenticatorType::kEnclave) {
+              model_->creds = {cred};
+              SetCurrentStep(Step::kPreSelectSingleAccount);
               return;
             }
-            if (absl::get<Mechanism::Credential>(type)->source ==
-                device::AuthenticatorType::kPhone) {
-              SetCurrentStep(Step::kPhoneConfirmationSheet);
-              return;
+          }
+        }
+        if (transport_availability_.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kNoRecognizedCredential) {
+          // If there are no local matches but there are phone or enclave
+          // passkeys, jump to the first one of them.
+          for (auto& mechanism : model_->mechanisms) {
+            const auto& type = mechanism.type;
+            if (absl::holds_alternative<Mechanism::Credential>(type)) {
+              if (absl::get<Mechanism::Credential>(type)->source ==
+                  device::AuthenticatorType::kEnclave) {
+                CHECK(enclave_will_do_uv);
+                mechanism.callback.Run();
+                return;
+              }
+              if (absl::get<Mechanism::Credential>(type)->source ==
+                  device::AuthenticatorType::kPhone) {
+                SetCurrentStep(Step::kPhoneConfirmationSheet);
+                return;
+              }
             }
           }
         }
@@ -1095,15 +1109,13 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
       } else {
         // For requests with an allow list, pre-select a random credential.
         model_->creds = {platform_credentials.front()};
-#if BUILDFLAG(IS_MAC)
-        if (device::fido::PlatformWillDoUserVerification(
-                transport_availability_.user_verification_requirement)) {
+        if (ProfileAuthenticatorWillDoUserVerification(
+                transport_availability_.user_verification_requirement,
+                transport_availability_.platform_has_biometrics)) {
           // If it's not preferable to complete the request by clicking
           // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();
-        } else  // NOLINT(readability/braces)
-#endif
-        {
+        } else {
           // Otherwise show the chosen credential to the user. For platform
           // authenticators with optional UV (e.g. Touch ID), this step
           // essentially acts as the user presence check.
@@ -2562,6 +2574,8 @@ void AuthenticatorRequestDialogController::
       base::Contains(transport_availability_.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model_->is_off_the_record = transport_availability_.is_off_the_record_context;
+  model_->platform_has_biometrics =
+      transport_availability_.platform_has_biometrics;
   if (model_->cable_ui_type) {
     model_->cable_should_suggest_usb =
         *model_->cable_ui_type !=

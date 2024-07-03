@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
+#include "device/fido/mac/util.h"
 #endif
 
 namespace device {
@@ -80,6 +81,10 @@ struct TransportAvailabilityCallbackReadiness {
   // callback is pending |OnIsUvpaa| being called.
   bool win_is_uvpaa_check_pending = false;
 
+  // platform_biometrics_check_pending is set if an asynchronous check for
+  // local biometric availability is pending.
+  bool platform_biometrics_check_pending = false;
+
   // num_discoveries_pending is the number of discoveries that are still yet to
   // signal that they have started.
   unsigned num_discoveries_pending = 0;
@@ -93,7 +98,8 @@ struct TransportAvailabilityCallbackReadiness {
   bool CanMakeCallback() const {
     return !callback_made && !ble_information_pending &&
            num_platform_credential_checks_pending == 0 &&
-           !win_is_uvpaa_check_pending && num_discoveries_pending == 0;
+           !win_is_uvpaa_check_pending && !platform_biometrics_check_pending &&
+           num_discoveries_pending == 0;
   }
 };
 
@@ -281,6 +287,14 @@ void FidoRequestHandlerBase::InitDiscoveries(
         base::BindOnce(&FidoRequestHandlerBase::ConstructBleAdapterPowerManager,
                        weak_factory_.GetWeakPtr()));
   }
+
+#if BUILDFLAG(IS_MAC)
+  transport_availability_info_.platform_has_biometrics =
+      device::fido::mac::DeviceHasBiometricsAvailable();
+#elif BUILDFLAG(IS_WIN)
+  // TODO(enclave): this should check whether biometrics are actually available.
+  transport_availability_info_.platform_has_biometrics = true;
+#endif
 
   MaybeSignalTransportsEnumerated();
 }

@@ -238,7 +238,7 @@ class EnclaveManager : public EnclaveManagerInterface {
     // biometrics.
     kUsesChromeUI,
   };
-  UvKeyState uv_key_state() const;
+  UvKeyState uv_key_state(bool platform_has_biometrics) const;
   // Calls the given callback with `true` if the current platform supports
   // making user-verifying keys.
   static void AreUserVerifyingKeysSupported(Callback callback);

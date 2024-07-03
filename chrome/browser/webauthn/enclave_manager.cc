@@ -2587,7 +2587,9 @@ void EnclaveManager::ChangePIN(std::string updated_pin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->registered());
   CHECK(user_->has_wrapped_pin());
-  CHECK(rapt.has_value() || uv_key_state() != UvKeyState::kNone);
+  // TODO(enclave): remove the ability to change the PIN based on UV. We don't
+  // want to allow that.
+  CHECK(rapt.has_value() || uv_key_state(false) != UvKeyState::kNone);
 
   auto action = std::make_unique<PendingAction>();
   action->callback = std::move(callback);
@@ -3061,7 +3063,8 @@ EnclaveManager::GetWrappedPIN() {
       user_->wrapped_pin());
 }
 
-EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
+EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
+    bool platform_has_biometrics) const {
   CHECK(is_ready());
 #if BUILDFLAG(IS_WIN)
   if (user_->deferred_uv_key_creation()) {
@@ -3072,7 +3075,7 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
     return UvKeyState::kNone;
   }
 #if BUILDFLAG(IS_MAC)
-  if (device::fido::mac::DeviceHasBiometricsAvailable()) {
+  if (platform_has_biometrics) {
     // LAAuthenticationView is only supported on macOS 12+.
     if (__builtin_available(macOS 12.0, *)) {
       // Chrome will display an LAAuthenticationView with a Touch ID prompt.

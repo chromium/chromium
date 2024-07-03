@@ -43,6 +43,7 @@
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -61,7 +62,6 @@
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
-#include "device/fido/platform_user_verification_policy.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,10 +72,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/webauthn_api.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/util.h"
 #endif
 
 namespace {
@@ -203,6 +199,7 @@ enum class TransportAvailabilityParam {
   kCreateInICloudKeychain,
   kNoTouchId,
   kUVRequired,
+  kUVPreferred,
   kHintSecurityKeys,
   kHintHybrid,
   kHintClientDevice,
@@ -263,6 +260,8 @@ std::string_view TransportAvailabilityParamToString(
       return "kNoTouchId";
     case TransportAvailabilityParam::kUVRequired:
       return "kUVRequired";
+    case TransportAvailabilityParam::kUVPreferred:
+      return "kUVPreferred";
     case TransportAvailabilityParam::kHintSecurityKeys:
       return "kHintSecurityKeys";
     case TransportAvailabilityParam::kHintHybrid:
@@ -398,13 +397,17 @@ class FakeEnclaveController : public AuthenticatorRequestDialogModel::Observer {
   }
 
   void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override {
-    if (device::fido::PlatformWillDoUserVerification(
-            device::UserVerificationRequirement::kPreferred)) {
+    if (GpmWillDoUserVerification(
+            device::UserVerificationRequirement::kPreferred,
+            *model_->platform_has_biometrics)) {
       if (kIsMac) {
         model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMTouchID);
       } else {
         model_->SetStep(AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
       }
+    } else {
+      model_->SetStep(
+          AuthenticatorRequestDialogModel::Step::kSelectSingleAccount);
     }
   }
 
@@ -499,6 +502,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       TransportAvailabilityParam::kNoTouchId;
   [[maybe_unused]] const auto ickc_creds =
       TransportAvailabilityParam::kHasICloudKeychainCreds;
+  [[maybe_unused]] const auto uv_pref =
+      TransportAvailabilityParam::kUVPreferred;
   [[maybe_unused]] const auto uv_req = TransportAvailabilityParam::kUVRequired;
   const auto enclave_needs_sign_in =
       TransportAvailabilityParam::kEnclaveNeedsSignIn;
@@ -598,12 +603,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {c(touchid_cred1)}, hero},
       // When TouchID is present, we can jump directly to the platform UI, which
       // will be a Touch ID prompt.
-      {L, ga, {internal}, {has_plat, one_touchid_cred}, {}, {c(touchid_cred1)},
-       plat_ui},
+      {L, ga, {internal}, {has_plat, one_touchid_cred, uv_pref}, {},
+       {c(touchid_cred1)}, plat_ui},
       // Or if uv=required, plat_ui is also ok because it'll be a password
       // prompt.
       {L, ga, {internal}, {has_plat, one_touchid_cred, uv_req, no_touchid}, {},
        {c(touchid_cred1)}, plat_ui},
+      // The profile authenticator does UV even for uv=discouraged.
+      {L, ga, {internal}, {has_plat, one_touchid_cred}, {}, {c(touchid_cred1)},
+       plat_ui},
 #endif
       // Even with an empty allow list.
       {L,
@@ -887,7 +895,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       {L,
        ga,
        {cable, internal},
-       {only_hybrid_or_internal, empty_al, enclave_cred},
+       {only_hybrid_or_internal, empty_al, enclave_cred, uv_pref},
        {},
        {c(enclave_cred1), add},
        enclave_touchid},
@@ -895,20 +903,38 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       {L,
        ga,
        {cable, internal},
-       {only_hybrid_or_internal, empty_al, enclave_cred, no_touchid},
+       {only_hybrid_or_internal, empty_al, enclave_cred, no_touchid, uv_pref},
+       {},
+       {c(enclave_cred1), add},
+       hero},
+      // And not if uv=discouraged
+      {L,
+       ga,
+       {cable, internal},
+       {only_hybrid_or_internal, empty_al, enclave_cred},
        {},
        {c(enclave_cred1), add},
        hero},
     #endif
+    #if !BUILDFLAG(IS_CHROMEOS)
       // If an enclave credential is in an allowlist, we should jump to UV
       // immediately.
+      {L,
+       ga,
+       {cable},
+       {only_hybrid_or_internal, enclave_cred, uv_pref},
+       {},
+       {c(enclave_cred1), add},
+       kIsMac ? enclave_touchid : use_pk},
+     #endif
+      // But, again, not for uv=discouraged.
       {L,
        ga,
        {cable, internal},
        {only_hybrid_or_internal, enclave_cred},
        {},
        {c(enclave_cred1), add},
-       kIsMac ? enclave_touchid : enclave_pin},
+       use_pk},
       // When the enclave needs to sign-in again, that should appear as a
       // mechanism and the MSS should be shown.
       {L,
@@ -1246,7 +1272,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     transports_info.user_verification_requirement =
         base::Contains(test.params, TransportAvailabilityParam::kUVRequired)
             ? device::UserVerificationRequirement::kRequired
-            : device::UserVerificationRequirement::kDiscouraged;
+            : (base::Contains(test.params,
+                              TransportAvailabilityParam::kUVPreferred)
+                   ? device::UserVerificationRequirement::kPreferred
+                   : device::UserVerificationRequirement::kDiscouraged);
 
     if (base::Contains(test.params,
                        TransportAvailabilityParam::kHasPlatformCredential)) {
@@ -1391,8 +1420,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       controller.set_should_create_in_icloud_keychain(true);
     }
 #if BUILDFLAG(IS_MAC)
-    device::fido::mac::ScopedBiometricsOverride scoped_biometrics_override(
-        !base::Contains(test.params, TransportAvailabilityParam::kNoTouchId));
+    transports_info.platform_has_biometrics =
+        !base::Contains(test.params, TransportAvailabilityParam::kNoTouchId);
 #endif
 
     std::optional<device::FidoTransportProtocol> hint_transport;
@@ -2389,13 +2418,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
     transports_info.available_transports = kAllTransports;
     transports_info.has_empty_allow_list = has_empty_allow_list;
-#if BUILDFLAG(IS_MAC)
-    // The TouchID authenticator will be immediately dispatched to if the device
-    // has biometrics configured. Simulate a lack of biometrics to align with
-    // other platforms.
-    device::fido::mac::ScopedBiometricsOverride scoped_biometrics_override(
-        false);
-#endif  // BUILDFLAG(IS_MAC)
     transports_info.user_verification_requirement =
         device::UserVerificationRequirement::kPreferred;
     transports_info.has_platform_authenticator_credential = device::

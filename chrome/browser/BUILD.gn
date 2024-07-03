@@ -4577,6 +4577,8 @@ static_library("browser") {
       "webauthn/enclave_manager_interface.h",
       "webauthn/gpm_enclave_controller.cc",
       "webauthn/gpm_enclave_controller.h",
+      "webauthn/gpm_user_verification_policy.cc",
+      "webauthn/gpm_user_verification_policy.h",
       "webauthn/local_credential_management.cc",
       "webauthn/local_credential_management.h",
       "webauthn/observable_authenticator_list.cc",
