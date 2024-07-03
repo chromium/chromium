@@ -155,17 +155,6 @@ export class NetworkRequest {
     return `${url}${fragment}`;
   }
 
-  get method(): string {
-    return (
-      this.#requestOverrides?.method ??
-      this.#request.info?.request.method ??
-      this.#request.paused?.request.method ??
-      this.#request.auth?.request.method ??
-      this.#response.paused?.request.method ??
-      NetworkRequest.unknownParameter
-    );
-  }
-
   get redirectCount() {
     return this.#redirectCount;
   }
@@ -184,6 +173,145 @@ export class NetworkRequest {
 
   isDataUrl(): boolean {
     return this.url.startsWith('data:');
+  }
+
+  get #method(): string | undefined {
+    return (
+      this.#requestOverrides?.method ??
+      this.#request.info?.request.method ??
+      this.#request.paused?.request.method ??
+      this.#request.auth?.request.method ??
+      this.#response.paused?.request.method
+    );
+  }
+
+  get #navigationId(): BrowsingContext.Navigation | null {
+    // Heuristic to determine if this is a navigation request, and if not return null.
+    if (
+      !this.#request.info ||
+      !this.#request.info.loaderId ||
+      // When we navigate all CDP network events have `loaderId`
+      // CDP's `loaderId` and `requestId` match when
+      // that request triggered the loading
+      this.#request.info.loaderId !== this.#request.info.requestId
+    ) {
+      return null;
+    }
+
+    // Get virtual navigation ID from the browsing context.
+    return this.#networkStorage.getVirtualNavigationId(
+      this.#context ?? undefined
+    );
+  }
+
+  get #cookies() {
+    let cookies: Network.Cookie[] = [];
+    if (this.#request.extraInfo) {
+      cookies = this.#request.extraInfo.associatedCookies
+        .filter(({blockedReasons}) => {
+          return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+        })
+        .map(({cookie}) => cdpToBiDiCookie(cookie));
+    }
+    return cookies;
+  }
+
+  get #bodySize() {
+    let bodySize: number = 0;
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
+      bodySize = this.#requestOverrides.bodySize;
+    } else {
+      bodySize = bidiBodySizeFromCdpPostDataEntries(
+        this.#request.info?.request.postDataEntries ?? []
+      );
+    }
+    return bodySize;
+  }
+
+  get #context() {
+    return (
+      this.#response.paused?.frameId ??
+      this.#request.info?.frameId ??
+      this.#request.paused?.frameId ??
+      this.#request.auth?.frameId ??
+      null
+    );
+  }
+
+  /** Returns the HTTP status code associated with this request if any. */
+  get #statusCode(): number | undefined {
+    return (
+      this.#response.paused?.responseStatusCode ??
+      this.#response.extraInfo?.statusCode ??
+      this.#response.info?.status
+    );
+  }
+
+  get #requestHeaders(): Network.Header[] {
+    let headers: Network.Header[] = [];
+    if (this.#requestOverrides?.headers) {
+      headers = this.#requestOverrides.headers;
+    } else {
+      headers = [
+        ...bidiNetworkHeadersFromCdpNetworkHeaders(
+          this.#request.info?.request.headers
+        ),
+        ...bidiNetworkHeadersFromCdpNetworkHeaders(
+          this.#request.extraInfo?.headers
+        ),
+      ];
+    }
+
+    return headers;
+  }
+
+  get #authChallenges(): Network.AuthChallenge[] | undefined {
+    // TODO: get headers from Fetch.requestPaused
+    if (!this.#response.info) {
+      return;
+    }
+
+    if (!(this.#statusCode === 401 || this.#statusCode === 407)) {
+      return undefined;
+    }
+
+    const headerName =
+      this.#statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+
+    const authChallenges = [];
+    for (const [header, value] of Object.entries(this.#response.info.headers)) {
+      // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+      // Or verify this works
+      if (
+        header.localeCompare(headerName, undefined, {sensitivity: 'base'}) === 0
+      ) {
+        authChallenges.push({
+          scheme: value.split(' ').at(0) ?? '',
+          realm: value.match(REALM_REGEX)?.at(0) ?? '',
+        });
+      }
+    }
+
+    return authChallenges;
+  }
+
+  // TODO: implement.
+  get #timings(): Network.FetchTimingInfo {
+    return {
+      timeOrigin: 0,
+      requestTime: 0,
+      redirectStart: 0,
+      redirectEnd: 0,
+      fetchStart: 0,
+      dnsStart: 0,
+      dnsEnd: 0,
+      connectStart: 0,
+      connectEnd: 0,
+      tlsStart: 0,
+      requestStart: 0,
+      responseStart: 0,
+      responseEnd: 0,
+    };
   }
 
   #phaseChanged() {
@@ -435,7 +563,6 @@ export class NetworkRequest {
       postData,
     });
 
-    // TODO: Store postData's size only
     this.#requestOverrides = {
       url: overrides.url,
       method: overrides.method,
@@ -564,7 +691,7 @@ export class NetworkRequest {
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(overrides.headers);
 
-    const responseCode = overrides.statusCode ?? this.statusCode ?? 200;
+    const responseCode = overrides.statusCode ?? this.#statusCode ?? 200;
 
     await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
       requestId: this.#fetchId,
@@ -574,25 +701,6 @@ export class NetworkRequest {
       body: getCdpBodyFromBiDiBytesValue(overrides.body),
     });
     this.#interceptPhase = undefined;
-  }
-
-  get #context() {
-    return (
-      this.#response.paused?.frameId ??
-      this.#request.info?.frameId ??
-      this.#request.paused?.frameId ??
-      this.#request.auth?.frameId ??
-      null
-    );
-  }
-
-  /** Returns the HTTP status code associated with this request if any. */
-  get statusCode(): number | undefined {
-    return (
-      this.#response.paused?.responseStatusCode ??
-      this.#response.extraInfo?.statusCode ??
-      this.#response.info?.status
-    );
   }
 
   async #continueWithAuth(
@@ -656,7 +764,7 @@ export class NetworkRequest {
 
     return {
       context: this.#context,
-      navigation: this.#getNavigationId(),
+      navigation: this.#navigationId,
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
@@ -685,15 +793,12 @@ export class NetworkRequest {
       // ),
     ];
 
-    // TODO: get headers from Fetch.requestPaused
-    const authChallenges = this.#authChallenges(
-      this.#response.info?.headers ?? {}
-    );
+    const authChallenges = this.#authChallenges;
 
     return {
       url: this.url,
       protocol: this.#response.info?.protocol ?? '',
-      status: this.statusCode ?? -1, // TODO: Throw an exception or use some other status code?
+      status: this.#statusCode ?? -1, // TODO: Throw an exception or use some other status code?
       statusText:
         this.#response.info?.statusText ||
         this.#response.paused?.responseStatusText ||
@@ -716,80 +821,18 @@ export class NetworkRequest {
     };
   }
 
-  #getNavigationId(): BrowsingContext.Navigation | null {
-    // Heuristic to determine if this is a navigation request, and if not return null.
-    if (
-      !this.#request.info ||
-      !this.#request.info.loaderId ||
-      // When we navigate all CDP network events have `loaderId`
-      // CDP's `loaderId` and `requestId` match when
-      // that request triggered the loading
-      this.#request.info.loaderId !== this.#request.info.requestId
-    ) {
-      return null;
-    }
-
-    // Get virtual navigation ID from the browsing context.
-    return this.#networkStorage.getVirtualNavigationId(
-      this.#request?.info?.frameId
-    );
-  }
-
   #getRequestData(): Network.RequestData {
-    const cookies = this.#request.extraInfo
-      ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
-      : [];
-
-    let headers: Network.Header[] = [];
-    if (this.#requestOverrides?.headers) {
-      headers = this.#requestOverrides.headers;
-    } else {
-      headers = [
-        ...bidiNetworkHeadersFromCdpNetworkHeaders(
-          this.#request.info?.request.headers
-        ),
-        ...bidiNetworkHeadersFromCdpNetworkHeaders(
-          this.#request.extraInfo?.headers
-        ),
-      ];
-    }
-    let bodySize: number = 0;
-    if (typeof this.#requestOverrides?.bodySize === 'number') {
-      bodySize = this.#requestOverrides.bodySize;
-    } else {
-      bodySize = bidiBodySizeFromCdpPostDataEntries(
-        this.#request.info?.request.postDataEntries ?? []
-      );
-    }
+    const headers = this.#requestHeaders;
 
     return {
       request: this.#id,
       url: this.url,
-      method: this.method,
+      method: this.#method ?? NetworkRequest.unknownParameter,
       headers,
-      cookies,
+      cookies: this.#cookies,
       headersSize: computeHeadersSize(headers),
-      bodySize,
-      timings: this.#getTimings(),
-    };
-  }
-
-  // TODO: implement.
-  #getTimings(): Network.FetchTimingInfo {
-    return {
-      timeOrigin: 0,
-      requestTime: 0,
-      redirectStart: 0,
-      redirectEnd: 0,
-      fetchStart: 0,
-      dnsStart: 0,
-      dnsEnd: 0,
-      connectStart: 0,
-      connectEnd: 0,
-      tlsStart: 0,
-      requestStart: 0,
-      responseStart: 0,
-      responseEnd: 0,
+      bodySize: this.#bodySize,
+      timings: this.#timings,
     };
   }
 
@@ -814,13 +857,6 @@ export class NetworkRequest {
   }
 
   #getResponseStartedEvent(): Network.ResponseStarted {
-    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
-    assert(
-      // The response paused comes before any data for the response
-      this.#response.paused || this.#response.info,
-      'ResponseReceivedEvent is not set'
-    );
-
     return {
       method: ChromiumBidi.Network.EventNames.ResponseStarted,
       params: {
@@ -831,9 +867,6 @@ export class NetworkRequest {
   }
 
   #getResponseReceivedEvent(): Network.ResponseCompleted {
-    assert(this.#request.info, 'RequestWillBeSentEvent is not set');
-    assert(this.#response.info, 'ResponseReceivedEvent is not set');
-
     return {
       method: ChromiumBidi.Network.EventNames.ResponseCompleted,
       params: {
@@ -852,33 +885,6 @@ export class NetworkRequest {
     );
   }
 
-  #authChallenges(
-    headers: Protocol.Network.Headers
-  ): Network.AuthChallenge[] | undefined {
-    if (!(this.statusCode === 401 || this.statusCode === 407)) {
-      return undefined;
-    }
-
-    const headerName =
-      this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
-
-    const authChallenges = [];
-    for (const [header, value] of Object.entries(headers)) {
-      // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
-      // Or verify this works
-      if (
-        header.localeCompare(headerName, undefined, {sensitivity: 'base'}) === 0
-      ) {
-        authChallenges.push({
-          scheme: value.split(' ').at(0) ?? '',
-          realm: value.match(REALM_REGEX)?.at(0) ?? '',
-        });
-      }
-    }
-
-    return authChallenges;
-  }
-
   static #getInitiatorType(
     initiatorType: Protocol.Network.Initiator['type']
   ): Network.Initiator['type'] {
@@ -890,16 +896,6 @@ export class NetworkRequest {
       default:
         return 'other';
     }
-  }
-
-  static #getCookies(
-    associatedCookies: Protocol.Network.AssociatedCookie[]
-  ): Network.Cookie[] {
-    return associatedCookies
-      .filter(({blockedReasons}) => {
-        return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
-      })
-      .map(({cookie}) => cdpToBiDiCookie(cookie));
   }
 }
 
