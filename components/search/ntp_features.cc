@@ -63,11 +63,6 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
              "CustomizeChromeWallpaperSearchInspirationCard",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Forces a dark Google logo for a specific subset of Chrome Web Store themes
-// (see crbug.com/1329552). This is enabled by default to allow finch to disable
-// this NTP treatment in the case of unexpected regressions.
-BASE_FEATURE(kCwsDarkLogo, "CwsDarkLogo", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
 BASE_FEATURE(kDismissPromos,

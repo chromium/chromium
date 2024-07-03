@@ -264,8 +264,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   // installed a CWS theme with a bundled background image. The first condition
   // is necessary as a custom background image can be set while a CWS theme with
   // a bundled image is concurrently enabled (see crbug.com/1329552).
-  if (base::FeatureList::IsEnabled(ntp_features::kCwsDarkLogo) &&
-      !custom_background.has_value() && theme_has_custom_image &&
+  if (!custom_background.has_value() && theme_has_custom_image &&
       ShouldForceDarkForegroundColorsForLogo(theme_service)) {
     theme->logo_color =
         color_provider.GetColor(kColorNewTabPageLogoUnthemedDark);
