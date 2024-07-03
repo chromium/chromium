@@ -27,6 +27,7 @@
           <include name="IDR_MAKO_ORCA_TRANSLATION_BS_JS" file="resources/orca/translations/translations__bs.js" resource_path="translations/translations__bs.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_CA_JS" file="resources/orca/translations/translations__ca.js" resource_path="translations/translations__ca.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_CS_JS" file="resources/orca/translations/translations__cs.js" resource_path="translations/translations__cs.js" type="BINDATA" />
+          <include name="IDR_MAKO_ORCA_TRANSLATION_CY_JS" file="resources/orca/translations/translations__cy.js" resource_path="translations/translations__cy.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_DA_JS" file="resources/orca/translations/translations__da.js" resource_path="translations/translations__da.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_DE_JS" file="resources/orca/translations/translations__de.js" resource_path="translations/translations__de.js" type="BINDATA" />
           <include name="IDR_MAKO_ORCA_TRANSLATION_EL_JS" file="resources/orca/translations/translations__el.js" resource_path="translations/translations__el.js" type="BINDATA" />
