@@ -41,6 +41,8 @@ using HighlightLayerType = HighlightOverlay::HighlightLayerType;
 using HighlightRange = HighlightOverlay::HighlightRange;
 using HighlightEdge = HighlightOverlay::HighlightEdge;
 using HighlightDecoration = HighlightOverlay::HighlightDecoration;
+using HighlightBackground = HighlightOverlay::HighlightBackground;
+using HighlightTextShadow = HighlightOverlay::HighlightTextShadow;
 
 LineRelativeRect LineRelativeLocalRect(const FragmentItem& text_fragment,
                                        StringView text,
@@ -210,6 +212,57 @@ TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
   return text_style;
 }
 
+// A contiguous run of parts that can have ‘background-color’ or ‘text-shadow’
+// of some active overlay painted at once.
+//
+// These properties can often be painted a whole highlighted range at a time,
+// and only need to be split into parts when affected by ‘currentColor’. By
+// merging parts where possible, we avoid creating unnecessary “seams” in
+// ‘background-color’, and avoid splitting ligatures in ‘text-shadow’.
+//
+// Inner’s operator== must return true iff the two operands come from the same
+// layer and can be painted at once.
+template <typename Inner>
+struct MergedHighlightPart {
+ public:
+  struct Merged {
+   public:
+    const Inner& inner;
+    unsigned from;
+    unsigned to;
+  };
+
+  // Merge |next| and |next_part| into |merged| if possible, otherwise start a
+  // new run and return the old |merged| if any.
+  std::optional<Merged> Merge(const Inner& next,
+                              const HighlightPart& next_part) {
+    std::optional<Merged> result{};
+    if (merged.has_value()) {
+      if (merged->inner == next && merged->to == next_part.range.from) {
+        merged->to = next_part.range.to;
+        return {};
+      } else {
+        result.emplace(*merged);
+      }
+    }
+    merged.emplace(Merged{next, next_part.range.from, next_part.range.to});
+    return result;
+  }
+
+  // Take and return the last |merged| if any, leaving it empty.
+  std::optional<Merged> Take() {
+    if (!merged.has_value()) {
+      return {};
+    }
+    std::optional<Merged> result{};
+    result.emplace(*merged);
+    merged.reset();
+    return result;
+  }
+
+  std::optional<Merged> merged;
+};
+
 }  // namespace
 
 HighlightPainter::SelectionPaintState::SelectionPaintState(
@@ -346,6 +399,7 @@ HighlightPainter::HighlightPainter(
       decoration_painter_(decoration_painter),
       paint_info_(paint_info),
       cursor_(cursor),
+      root_inline_cursor_(cursor),
       fragment_item_(fragment_item),
       box_origin_(box_origin),
       originating_style_(style),
@@ -359,6 +413,8 @@ HighlightPainter::HighlightPainter(
       background_auto_dark_mode_(
           PaintAutoDarkMode(originating_style_,
                             DarkModeFilter::ElementRole::kBackground)) {
+  root_inline_cursor_.ExpandRootToContainingBlock();
+
   // Custom highlights and marker-based highlights are defined in terms of
   // DOM ranges in a Text node. Generated text either has no Text node or does
   // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
@@ -794,6 +850,17 @@ const PhysicalRect HighlightPainter::ComputeBackgroundRect(
   return fragment_item_.LocalRect(text, start_offset, end_offset) + box_origin_;
 }
 
+const PhysicalRect HighlightPainter::ComputeBackgroundRectForSelection(
+    unsigned start_offset,
+    unsigned end_offset) {
+  LayoutSelectionStatus selection_status{selection_->Status()};
+  selection_status.start = start_offset;
+  selection_status.end = end_offset;
+  return root_inline_cursor_.CurrentLocalSelectionRectForText(
+             selection_status) +
+         box_origin_;
+}
+
 void HighlightPainter::PaintHighlightOverlays(
     const TextPaintStyle& originating_text_style,
     DOMNodeId node_id,
@@ -806,11 +873,12 @@ void HighlightPainter::PaintHighlightOverlays(
   // and kSelection if necessary, but we can’t paint marker-based highlights,
   // because GetTextContentOffset requires a Text node. Markers are defined and
   // stored in terms of Text nodes anyway, so this should never be a problem.
-  const Document& document = layout_object_->GetDocument();
 
-  // For each overlay, paint its backgrounds and shadows over every highlighted
-  // range in full.
-  for (const HighlightLayer& layer : layers_) {
+  // For each overlay, paint ‘background-color’ and ‘text-shadow’ one part at a
+  // time, since both of them may vary in color when ‘color’ is ‘currentColor’.
+  for (wtf_size_t i = 0; i < layers_.size(); i++) {
+    const HighlightLayer& layer = layers_[i];
+
     if (layer.type == HighlightLayerType::kOriginating) {
       continue;
     }
@@ -820,46 +888,74 @@ void HighlightPainter::PaintHighlightOverlays(
       continue;
     }
 
-    Vector<LayoutSelectionStatus> highlights = GetHighlights(layer);
-
-    for (const auto& highlight : highlights) {
-      if (highlight.end == highlight.start) {
-        continue;
+    // Paint ‘background-color’ while trying to merge parts if possible,
+    // to avoid creating unnecessary “seams”.
+    MergedHighlightPart<HighlightBackground> merged_background{};
+    const auto& paint_background =
+        [&](const MergedHighlightPart<HighlightBackground>::Merged& merged) {
+          if (merged.inner.color.IsFullyTransparent()) {
+            return;
+          }
+          // TODO(crbug.com/40281215) ComputeBackgroundRect should use the same
+          // logic as ComputeBackgroundRectForSelection, that is, it should
+          // expand selection to the line height and extend for line breaks.
+          PhysicalRect part_rect =
+              layer.type == HighlightLayerType::kSelection
+                  ? ComputeBackgroundRectForSelection(merged.from, merged.to)
+                  : ComputeBackgroundRect(cursor_.CurrentText(), merged.from,
+                                          merged.to);
+          PaintHighlightBackground(paint_info_.context, originating_style_,
+                                   merged.inner.color, part_rect, rotation);
+        };
+    for (const HighlightPart& part : parts_) {
+      for (const HighlightBackground& background : part.backgrounds) {
+        if (background.layer_index == i) {
+          if (const auto& merged = merged_background.Merge(background, part)) {
+            paint_background(*merged);
+          }
+          break;
+        }
       }
+    }
+    if (const auto& merged = merged_background.Take()) {
+      paint_background(*merged);
+    }
 
-      const StringView text = cursor_.CurrentText();
-
-      // TODO(crbug.com/1480139) ComputeBackgroundRect should use the same logic
-      // as CurrentLocalSelectionRectForText, that is, it should expand
-      // selection to the line height and extend for line breaks.
-      const PhysicalRect& rect =
-          layer.type == HighlightLayerType::kSelection
-              ? selection_->PhysicalSelectionRect()
-              : ComputeBackgroundRect(text, highlight.start, highlight.end);
-
-      Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
-          document, originating_style_, node_,
-          layer.text_style.style.current_color, layer.PseudoId(),
-          layer.PseudoArgument());
-
-      PaintHighlightBackground(paint_info_.context, originating_style_,
-                               background_color, rect, rotation);
-
-      if (layer.text_style.style.shadow) {
-        text_painter_.Paint(
-            fragment_paint_info_.Slice(highlight.start, highlight.end),
-            layer.text_style.style, node_id, foreground_auto_dark_mode_,
-            TextPainter::kShadowsOnly);
+    // Paint ‘text-shadow’ while trying to merge parts if possible,
+    // to avoid unnecessarily splitting ligatures.
+    MergedHighlightPart<HighlightTextShadow> merged_text_shadow{};
+    const auto& paint_text_shadow =
+        [&](const MergedHighlightPart<HighlightTextShadow>::Merged& merged) {
+          if (!layer.text_style.style.shadow) {
+            return;
+          }
+          TextPaintStyle text_shadow_style{};
+          text_shadow_style.shadow = layer.text_style.style.shadow;
+          text_shadow_style.current_color = merged.inner.current_color;
+          text_painter_.Paint(
+              fragment_paint_info_.Slice(merged.from, merged.to),
+              text_shadow_style, node_id, foreground_auto_dark_mode_,
+              TextPainter::kShadowsOnly);
+        };
+    for (const HighlightPart& part : parts_) {
+      for (const HighlightTextShadow& text_shadow : part.text_shadows) {
+        if (text_shadow.layer_index == i) {
+          if (const auto& merged =
+                  merged_text_shadow.Merge(text_shadow, part)) {
+            paint_text_shadow(*merged);
+          }
+          break;
+        }
       }
+    }
+    if (const auto& merged = merged_text_shadow.Take()) {
+      paint_text_shadow(*merged);
     }
   }
 
   // For each part, paint the text proper over every highlighted range,
   for (auto& part : parts_) {
     LineRelativeRect part_rect = LineRelativeWorldRect(part.range);
-    if (part.type == HighlightLayerType::kSelection) {
-      part_rect.Unite(selection_->LineRelativeSelectionRect());
-    }
 
     PaintDecorationsExceptLineThrough(part, part_rect);
 

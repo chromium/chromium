@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
@@ -29,7 +30,6 @@ namespace blink {
 class ComputedStyle;
 class FragmentItem;
 class FrameSelection;
-class InlineCursor;
 class LayoutObject;
 class Node;
 class TextDecorationPainter;
@@ -222,6 +222,8 @@ class CORE_EXPORT HighlightPainter {
   const PhysicalRect ComputeBackgroundRect(StringView text,
                                            unsigned start_offset,
                                            unsigned end_offset);
+  const PhysicalRect ComputeBackgroundRectForSelection(unsigned start_offset,
+                                                       unsigned end_offset);
   Vector<LayoutSelectionStatus> GetHighlights(const HighlightLayer& layer);
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
@@ -270,6 +272,7 @@ class CORE_EXPORT HighlightPainter {
   TextDecorationPainter& decoration_painter_;
   const PaintInfo& paint_info_;
   const InlineCursor& cursor_;
+  InlineCursor root_inline_cursor_;
   const FragmentItem& fragment_item_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;

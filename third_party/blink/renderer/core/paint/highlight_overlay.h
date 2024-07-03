@@ -146,6 +146,34 @@ class CORE_EXPORT HighlightOverlay {
     Color highlight_override_color;
   };
 
+  struct CORE_EXPORT HighlightBackground {
+    DISALLOW_NEW();
+
+   public:
+    String ToString() const;
+
+    bool operator==(const HighlightBackground&) const;
+    bool operator!=(const HighlightBackground&) const;
+
+    HighlightLayerType type;
+    uint16_t layer_index;
+    Color color;
+  };
+
+  struct CORE_EXPORT HighlightTextShadow {
+    DISALLOW_NEW();
+
+   public:
+    String ToString() const;
+
+    bool operator==(const HighlightTextShadow&) const;
+    bool operator!=(const HighlightTextShadow&) const;
+
+    HighlightLayerType type;
+    uint16_t layer_index;
+    Color current_color;
+  };
+
   // Represents a |range| of the fragment that needs its text proper painted in
   // the style of the given topmost layer with the given |decorations|.
   //
@@ -161,8 +189,15 @@ class CORE_EXPORT HighlightOverlay {
                   HighlightRange,
                   TextPaintStyle,
                   float,
+                  Vector<HighlightDecoration>,
+                  Vector<HighlightBackground>,
+                  Vector<HighlightTextShadow>);
+    HighlightPart(HighlightLayerType,
+                  uint16_t,
+                  HighlightRange,
+                  TextPaintStyle,
+                  float,
                   Vector<HighlightDecoration>);
-    HighlightPart(HighlightLayerType, uint16_t, HighlightRange);
 
     void Trace(Visitor* visitor) const { visitor->Trace(style); }
 
@@ -177,6 +212,8 @@ class CORE_EXPORT HighlightOverlay {
     TextPaintStyle style;
     float stroke_width;
     Vector<HighlightDecoration> decorations;
+    Vector<HighlightBackground> backgrounds;
+    Vector<HighlightTextShadow> text_shadows;
   };
 
   // Given details of a fragment and how it is highlighted, returns the layers

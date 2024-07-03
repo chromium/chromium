@@ -30,6 +30,14 @@ class CORE_EXPORT HighlightStyleUtils {
   STATIC_ONLY(HighlightStyleUtils);
 
  public:
+  // A property that may need to be resolved by ResolveColorsFromPreviousLayer.
+  //
+  // Note that ‘text-shadow’ is excluded here, because we already have a way to
+  // resolve ‘currentColor’ at highlight painting time for it: TextPainter uses
+  // TextPaintStyle.current_color to resolve each StyleColor in its ShadowList,
+  // and we can wrap any ShadowList in a temporary TextPaintStyle for painting.
+  //
+  // When adding another property, update HighlightColorPropertySet below.
   enum class HighlightColorProperty : unsigned {
     kCurrentColor,
     kFillColor,
@@ -37,18 +45,19 @@ class CORE_EXPORT HighlightStyleUtils {
     kEmphasisColor,
     kSelectionDecorationColor,
     kTextDecorationColor,
-    // When adding another, update HighlightColorPropertySet below.
+    kBackgroundColor,
   };
   using HighlightColorPropertySet =
       base::EnumSet<HighlightColorProperty,
                     HighlightColorProperty::kCurrentColor,
-                    HighlightColorProperty::kTextDecorationColor>;
+                    HighlightColorProperty::kBackgroundColor>;
   struct HighlightTextPaintStyle {
     DISALLOW_NEW();
 
    public:
     TextPaintStyle style;
     Color text_decoration_color;
+    Color background_color;
     HighlightColorPropertySet properties_using_current_color;
 
     void Trace(Visitor* visitor) const { visitor->Trace(style); }

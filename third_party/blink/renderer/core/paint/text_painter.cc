@@ -334,6 +334,11 @@ void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
   if (!fragment_paint_info.shape_result) {
     return;
   }
+  // Do not try to paint kShadowsOnly without a ShadowList, because we will
+  // create an empty DrawLooper that effectively paints kTextProperOnly.
+  if (shadow_mode == ShadowMode::kShadowsOnly && !text_style.shadow) {
+    return;
+  }
   DCHECK_LE(fragment_paint_info.from, fragment_paint_info.text.length());
   DCHECK_LE(fragment_paint_info.to, fragment_paint_info.text.length());
 

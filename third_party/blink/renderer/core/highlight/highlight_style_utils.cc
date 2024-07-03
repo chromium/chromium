@@ -438,6 +438,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
     highlight_style.selection_decoration_color = Color::kBlack;
   }
   Color text_decoration_color = Color::kBlack;
+  Color background_color = Color::kTransparent;
 
   // Each highlight overlay’s shadows are completely independent of any shadows
   // specified on the originating element (or the other highlight overlays).
@@ -491,6 +492,14 @@ HighlightStyleUtils::HighlightPaintingStyle(
       colors_from_previous_layer.Put(
           HighlightColorProperty::kTextDecorationColor);
     }
+
+    maybe_color = MaybeResolveColor(document, style, pseudo_style, pseudo,
+                                    GetCSSPropertyBackgroundColor());
+    if (maybe_color) {
+      background_color = maybe_color.value();
+    } else {
+      colors_from_previous_layer.Put(HighlightColorProperty::kBackgroundColor);
+    }
   }
 
   if (pseudo_style) {
@@ -530,7 +539,8 @@ HighlightStyleUtils::HighlightPaintingStyle(
     highlight_style.shadow = nullptr;
   }
 
-  return {highlight_style, text_decoration_color, colors_from_previous_layer};
+  return {highlight_style, text_decoration_color, background_color,
+          colors_from_previous_layer};
 }
 
 void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
@@ -546,26 +556,29 @@ void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kFillColor)) {
-    text_style.style.fill_color = previous_layer_style.style.fill_color;
+    text_style.style.fill_color = previous_layer_style.style.current_color;
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kStrokeColor)) {
-    text_style.style.stroke_color = previous_layer_style.style.stroke_color;
+    text_style.style.stroke_color = previous_layer_style.style.current_color;
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kEmphasisColor)) {
     text_style.style.emphasis_mark_color =
-        previous_layer_style.style.emphasis_mark_color;
+        previous_layer_style.style.current_color;
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kSelectionDecorationColor)) {
     text_style.style.selection_decoration_color =
-        previous_layer_style.style.selection_decoration_color;
+        previous_layer_style.style.current_color;
   }
   if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kTextDecorationColor)) {
-    text_style.text_decoration_color =
-        previous_layer_style.text_decoration_color;
+    text_style.text_decoration_color = previous_layer_style.style.current_color;
+  }
+  if (text_style.properties_using_current_color.Has(
+          HighlightColorProperty::kBackgroundColor)) {
+    text_style.background_color = previous_layer_style.style.current_color;
   }
 }
 

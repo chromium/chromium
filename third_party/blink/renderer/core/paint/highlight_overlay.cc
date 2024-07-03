@@ -23,6 +23,8 @@ using HighlightLayer = HighlightOverlay::HighlightLayer;
 using HighlightRange = HighlightOverlay::HighlightRange;
 using HighlightEdge = HighlightOverlay::HighlightEdge;
 using HighlightDecoration = HighlightOverlay::HighlightDecoration;
+using HighlightBackground = HighlightOverlay::HighlightBackground;
+using HighlightTextShadow = HighlightOverlay::HighlightTextShadow;
 using HighlightPart = HighlightOverlay::HighlightPart;
 
 unsigned ClampOffset(unsigned offset, const TextFragmentPaintInfo& fragment) {
@@ -33,22 +35,22 @@ String HighlightTypeToString(HighlightLayerType type) {
   StringBuilder result{};
   switch (type) {
     case HighlightLayerType::kOriginating:
-      result.Append("ORIG");
+      result.Append("originating");
       break;
     case HighlightLayerType::kCustom:
-      result.Append("CUSTOM ");
+      result.Append("custom");
       break;
     case HighlightLayerType::kGrammar:
-      result.Append("GRAM");
+      result.Append("grammar");
       break;
     case HighlightLayerType::kSpelling:
-      result.Append("SPEL");
+      result.Append("spelling");
       break;
     case HighlightLayerType::kTargetText:
-      result.Append("TARG");
+      result.Append("target");
       break;
     case HighlightLayerType::kSelection:
-      result.Append("SELE");
+      result.Append("selection");
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -86,7 +88,11 @@ HighlightLayer::HighlightLayer(HighlightLayerType type,
 String HighlightLayer::ToString() const {
   StringBuilder result{};
   result.Append(HighlightTypeToString(type));
-  result.Append(name);
+  if (!name.IsNull()) {
+    result.Append("(");
+    result.Append(name);
+    result.Append(")");
+  }
   return result.ToString();
 }
 
@@ -176,10 +182,19 @@ String HighlightRange::ToString() const {
 
 String HighlightEdge::ToString() const {
   StringBuilder result{};
-  result.AppendNumber(Offset());
-  result.Append(edge_type == HighlightEdgeType::kStart ? "<" : ">");
-  result.Append(HighlightTypeToString(layer_type));
+  if (edge_type == HighlightEdgeType::kStart) {
+    result.Append("<");
+    result.AppendNumber(Offset());
+    result.Append(" ");
+  }
   result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(layer_type));
+  if (edge_type == HighlightEdgeType::kEnd) {
+    result.Append(" ");
+    result.AppendNumber(Offset());
+    result.Append(">");
+  }
   return result.ToString();
 }
 
@@ -231,8 +246,10 @@ HighlightDecoration::HighlightDecoration(HighlightLayerType type,
 
 String HighlightDecoration::ToString() const {
   StringBuilder result{};
-  result.Append(HighlightTypeToString(type));
   result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
   result.Append(range.ToString());
   return result.ToString();
 }
@@ -245,6 +262,61 @@ bool HighlightDecoration::operator==(const HighlightDecoration& other) const {
 bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
   return !operator==(other);
 }
+
+String HighlightBackground::ToString() const {
+  StringBuilder result{};
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
+  result.Append(color.SerializeAsCSSColor());
+  return result.ToString();
+}
+
+bool HighlightBackground::operator==(const HighlightBackground& other) const {
+  return type == other.type && layer_index == other.layer_index &&
+         color == other.color;
+}
+
+bool HighlightBackground::operator!=(const HighlightBackground& other) const {
+  return !operator==(other);
+}
+
+String HighlightTextShadow::ToString() const {
+  StringBuilder result{};
+  result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
+  result.Append(current_color.SerializeAsCSSColor());
+  return result.ToString();
+}
+
+bool HighlightTextShadow::operator==(const HighlightTextShadow& other) const {
+  return type == other.type && layer_index == other.layer_index &&
+         current_color == other.current_color;
+}
+
+bool HighlightTextShadow::operator!=(const HighlightTextShadow& other) const {
+  return !operator==(other);
+}
+
+HighlightPart::HighlightPart(HighlightLayerType type,
+                             uint16_t layer_index,
+                             HighlightRange range,
+                             TextPaintStyle style,
+                             float stroke_width,
+                             Vector<HighlightDecoration> decorations,
+                             Vector<HighlightBackground> backgrounds,
+                             Vector<HighlightTextShadow> text_shadows)
+    : type(type),
+      layer_index(layer_index),
+      range(range),
+      style(style),
+      stroke_width(stroke_width),
+      decorations(std::move(decorations)),
+      backgrounds(std::move(backgrounds)),
+      text_shadows(std::move(text_shadows)) {}
 
 HighlightPart::HighlightPart(HighlightLayerType type,
                              uint16_t layer_index,
@@ -259,31 +331,48 @@ HighlightPart::HighlightPart(HighlightLayerType type,
       stroke_width(stroke_width),
       decorations(std::move(decorations)) {}
 
-HighlightPart::HighlightPart(HighlightLayerType type,
-                             uint16_t layer_index,
-                             HighlightRange range)
-    : HighlightPart(type,
-                    layer_index,
-                    range,
-                    TextPaintStyle(),
-                    0,
-                    Vector<HighlightDecoration>{}) {}
-
 String HighlightPart::ToString() const {
   StringBuilder result{};
-  result.Append(HighlightTypeToString(type));
+  result.Append("\n");
   result.AppendNumber(layer_index);
+  result.Append(":");
+  result.Append(HighlightTypeToString(type));
+  result.Append(" ");
   result.Append(range.ToString());
-  for (const HighlightDecoration& decoration : decorations) {
-    result.Append("+");
-    result.Append(decoration.ToString());
+  // A part should contain one kOriginating decoration struct, followed by one
+  // decoration struct for each active overlay in highlight painting order,
+  // along with background and shadow structs for the active overlays only.
+  // Stringify the three vectors in a way that keeps the layers aligned.
+  if (decorations.size() >= 1) {
+    result.Append("\n    decoration ");
+    result.Append(decorations[0].ToString());
+  }
+  wtf_size_t len =
+      std::max(std::max(decorations.size(), backgrounds.size() + 1),
+               text_shadows.size() + 1) -
+      1;
+  for (wtf_size_t i = 0; i < len; i++) {
+    result.Append("\n  ");
+    if (i + 1 < decorations.size()) {
+      result.Append("  decoration ");
+      result.Append(decorations[i + 1].ToString());
+    }
+    if (i < backgrounds.size()) {
+      result.Append("  background ");
+      result.Append(backgrounds[i].ToString());
+    }
+    if (i < text_shadows.size()) {
+      result.Append("  shadow ");
+      result.Append(text_shadows[i].ToString());
+    }
   }
   return result.ToString();
 }
 
 bool HighlightPart::operator==(const HighlightPart& other) const {
   return type == other.type && layer_index == other.layer_index &&
-         range == other.range && decorations == other.decorations;
+         range == other.range && decorations == other.decorations &&
+         backgrounds == other.backgrounds && text_shadows == other.text_shadows;
 }
 
 bool HighlightPart::operator!=(const HighlightPart& other) const {
@@ -592,6 +681,12 @@ HeapVector<HighlightPart> HighlightOverlay::ComputeParts(
                                     static_cast<uint16_t>(i),
                                     {decoration_from, decoration_to},
                                     part_style.text_decoration_color});
+            part.backgrounds.push_back(
+                HighlightBackground{layers[i].type, static_cast<uint16_t>(i),
+                                    part_style.background_color});
+            part.text_shadows.push_back(
+                HighlightTextShadow{layers[i].type, static_cast<uint16_t>(i),
+                                    part_style.style.current_color});
             previous_layer_style = part_style;
           }
         }
