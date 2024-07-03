@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+
 /// View controller of the lens result page.
-@interface LensResultPageViewController : UIViewController
+@interface LensResultPageViewController
+    : UIViewController <LensResultPageConsumer>
 
 @end
 

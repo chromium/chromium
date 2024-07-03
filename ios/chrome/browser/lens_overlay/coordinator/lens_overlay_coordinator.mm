@@ -10,13 +10,18 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/web/public/web_state.h"
+#import "url/gurl.h"
 
 @interface LensOverlayCoordinator () <LensOverlayCommands,
                                       UISheetPresentationControllerDelegate>
@@ -192,9 +197,18 @@
 #pragma mark - private
 
 - (void)startResultPage {
-  _resultMediator = [[LensResultPageMediator alloc] init];
+  web::WebState::CreateParams params =
+      web::WebState::CreateParams(self.browser->GetBrowserState());
+  web::WebStateDelegate* browserWebStateDelegate =
+      WebStateDelegateBrowserAgent::FromBrowser(self.browser);
+  _resultMediator = [[LensResultPageMediator alloc]
+       initWithWebStateParams:params
+      browserWebStateDelegate:browserWebStateDelegate];
+  _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
+
+  _resultMediator.consumer = _resultViewController;
 
   UISheetPresentationController* sheet =
       _resultViewController.sheetPresentationController;
@@ -218,6 +232,7 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   _resultViewController = nil;
+  [_resultMediator disconnect];
   _resultMediator = nil;
 }
 

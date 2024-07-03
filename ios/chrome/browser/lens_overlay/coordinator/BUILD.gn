@@ -27,7 +27,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web/model:delegate",
     "//ios/chrome/browser/web_state_list/model",
     "//ios/web/public/navigation",
     "//ui/base",
@@ -36,14 +38,20 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "lens_overlay_mediator_unittest.mm" ]
+  sources = [
+    "lens_overlay_mediator_unittest.mm",
+    "lens_result_page_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/test:test_support",
     "//ios/testing:ocmock_support",
     "//ios/web/public/test",
     "//testing/gtest",
