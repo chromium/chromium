@@ -1473,7 +1473,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
               testing::ElementsAre(kAccountId2));
 }
 
-// Test the logged-out LoginStatus flow in a modal, resulting in no account
+// Test the logged-out LoginStatus flow in a modal, resulting in account
 // chooser UI if it's a returning account.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        LoginStatusLoggedOutModalForReturningAccount) {
@@ -1488,8 +1488,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowAccountsModalThroughPopupWindow(new_accounts, new_idp_data);
 
-  // The account chooser UI is skipped.
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+  // The account chooser UI is NOT skipped if user signed in from LOADING state.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
@@ -2276,6 +2276,27 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
       FedCmAccountSelectionView::AccountChooserResult::kTabClosed);
 
   {
+    // Returning user signing in via IDP sign-in pop-up when signed-out should
+    // record a sample.
+    std::vector<content::IdentityRequestAccount> new_accounts =
+        CreateAccount(LoginState::kSignIn, LoginState::kSignIn);
+    content::IdentityProviderData new_idp_data =
+        CreateIdentityProviderData(new_accounts);
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowAccountsModalThroughPopupWindow(new_accounts,
+                                                     new_idp_data);
+    // User is shown the account chooser.
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+              account_selection_view_->sheet_type_);
+    AccountSelectionViewBase::Observer* observer =
+        static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+    observer->OnAccountSelected(idp_data.accounts[0], idp_data,
+                                CreateMouseEvent());
+  }
+  CheckForSampleAndReset(
+      FedCmAccountSelectionView::AccountChooserResult::kAccountRow);
+
+  {
     // Non-returning user signing in via IDP sign-in pop-up should not record a
     // sample.
     std::vector<content::IdentityRequestAccount> new_accounts =
@@ -2293,26 +2314,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
   }
   histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
                                       0);
-
-  {
-    // Returning user signing in via IDP sign-in pop-up should not record a
-    // sample.
-    std::vector<content::IdentityRequestAccount> new_accounts =
-        CreateAccount(LoginState::kSignIn, LoginState::kSignIn);
-    content::IdentityProviderData new_idp_data =
-        CreateIdentityProviderData(new_accounts);
-    std::unique_ptr<TestFedCmAccountSelectionView> controller =
-        CreateAndShowAccountsModalThroughPopupWindow(new_accounts,
-                                                     new_idp_data);
-
-    // User is shown the verifying dialog, skipping both the account chooser and
-    // request permission dialog.
-    EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
-              account_selection_view_->sheet_type_);
-  }
-  histogram_tester_->ExpectTotalCount("Blink.FedCm.Button.AccountChooserResult",
-                                      0);
-
   {
     // Widget flow should not record a sample.
     std::unique_ptr<TestFedCmAccountSelectionView> controller =

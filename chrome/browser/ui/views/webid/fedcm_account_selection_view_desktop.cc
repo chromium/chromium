@@ -212,10 +212,14 @@ bool FedCmAccountSelectionView::Show(
       // newly signed in account.
 
       // The browser trusted login state controls whether we'd skip the next
-      // dialog.
-      bool should_skip_dialog =
-          new_account_idp_display_data_->accounts[0]
-              .browser_trusted_login_state == Account::LoginState::kSignIn;
+      // dialog. One caveat: if a user was logged out of the IdP and they just
+      // logged in with a returning account from the LOADING state, we do not
+      // skip the next UI when mediation mode is `required` because there was
+      // not user mediation acquired yet in this case.
+      bool should_skip_dialog = new_account_idp_display_data_->accounts[0]
+                                        .browser_trusted_login_state ==
+                                    Account::LoginState::kSignIn &&
+                                state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
       // if we do not skip the next dialog.
       bool should_hide_disclosure_text =
