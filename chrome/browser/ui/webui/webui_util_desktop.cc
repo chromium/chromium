@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
@@ -16,6 +19,36 @@ namespace webui {
 
 namespace {
 const ui::ThemeProvider* g_theme_provider_for_testing = nullptr;
+
+// Maps the url host to its metrics appropriate host name for metrics reporting.
+// Keep in sync with the WebUIHostname variant in
+// histograms/metadata/others.xml.
+const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
+  static const base::NoDestructor<
+      base::flat_map<std::string_view, std::string_view>>
+      webui_hostnames({
+          {chrome::kChromeUIBookmarksHost, "Bookmarks"},
+          {chrome::kChromeUIBookmarksSidePanelHost, "BookmarksSidePanel"},
+          {chrome::kChromeUICustomizeChromeSidePanelHost,
+           "CustomizeChromeSidePanel"},
+          {chrome::kChromeUIDownloadsHost, "Downloads"},
+          {chrome::kChromeUIHistoryHost, "History"},
+          {chrome::kChromeUIHistoryClustersSidePanelHost,
+           "HistoryClustersSidePanel"},
+          {chrome::kChromeUINewTabPageHost, "NewTabPage"},
+          {chrome::kChromeUINewTabPageThirdPartyHost, "NewTabPageThirdParty"},
+          {chrome::kChromeUIUntrustedReadAnythingSidePanelHost,
+           "ReadAnythingSidePanel"},
+          {chrome::kChromeUIReadLaterHost, "ReadLater"},
+          {content::kChromeUIResourcesHost, "Resources"},
+          {chrome::kChromeUISettingsHost, "Settings"},
+          {chrome::kChromeUITabSearchHost, "TabSearch"},
+          {chrome::kChromeUIThemeHost, "Theme"},
+          {chrome::kChromeUITopChromeDomain, "TopChrome"},
+      });
+  return base::FindOrNull(*webui_hostnames, webui_url.host());
+}
+
 }  // namespace
 
 ui::NativeTheme* GetNativeThemeDeprecated(content::WebContents* web_contents) {
@@ -90,6 +123,11 @@ const ui::ThemeProvider* GetThemeProviderDeprecated(
 void SetThemeProviderForTestingDeprecated(
     const ui::ThemeProvider* theme_provider) {
   g_theme_provider_for_testing = theme_provider;
+}
+
+std::string GetWebUIHostnameForCodeCacheMetrics(const GURL& webui_url) {
+  const std::string_view* hostname = GetWebUIMetricsHostname(webui_url);
+  return hostname ? std::string(*hostname) : std::string();
 }
 
 }  // namespace webui

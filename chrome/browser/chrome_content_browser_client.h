@@ -420,6 +420,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
+  std::string GetWebUIHostnameForCodeCacheMetrics(
+      const GURL& webui_url) const override;
   void AllowCertificateError(
       content::WebContents* web_contents,
       int cert_error,
