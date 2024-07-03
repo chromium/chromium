@@ -75,3 +75,29 @@ source_set("browser_tests") {
     "//content/test:test_support",
   ]
 }
+
+if (is_chromeos_device) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "bluetooth_integration_test.cc" ]
+
+    deps = [
+      ":bluetooth",
+      "//ash",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive/bluetooth:test_support",
+      "//dbus",
+      "//device/bluetooth",
+      "//testing/gtest",
+      "//ui/base:test_support",
+      "//ui/views",
+    ]
+  }
+}

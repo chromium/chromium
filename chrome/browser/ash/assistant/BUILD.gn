@@ -34,3 +34,25 @@ source_set("unit_tests") {
     "//components/language/core/browser",
   ]
 }
+
+if (is_chromeos_device) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "assistant_integration_test.cc" ]
+
+    deps = [
+      ":assistant",
+      "//ash",
+      "//ash/public/cpp",
+      "//base",
+      "//chrome/browser/ash:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chromeos/ash/services/assistant/public/cpp",
+      "//ui/base:test_support",
+      "//ui/events",
+    ]
+  }
+}

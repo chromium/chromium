@@ -1190,6 +1190,35 @@ if (is_chromeos && is_chromeos_device) {
       sources = [ "../browser/ash/accessibility/google_tts_test_support.js" ]
       outputs = [ "$root_out_dir/crosier_js_helpers/{{source_file_part}}" ]
     }
+
+    static_library("ash_integration_test_support") {
+      testonly = true
+
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      sources = [
+        # These cannot live in ":test_support" because they use
+        # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
+        "base/chromeos/crosier/ash_integration_test.cc",
+        "base/chromeos/crosier/ash_integration_test.h",
+        "base/chromeos/crosier/ash_integration_test_test.cc",
+        "base/chromeos/crosier/supervised_user_integration_base_test.cc",
+        "base/chromeos/crosier/supervised_user_integration_base_test.h",
+      ]
+
+      deps = [
+        ":test_support",
+        "//base",
+        "//build:branding_buildflags",
+        "//chrome/common:non_code_constants",
+        "//chrome/test/base/ash/interactive:test_support",
+        "//chromeos/ash/components/standalone_browser",
+        "//chromeos/ash/components/standalone_browser:test_support",
+        "//google_apis",
+        "//net:test_support",
+        "//url",
+      ]
+    }
   }
 
   test("chromeos_integration_tests") {
@@ -1214,43 +1243,15 @@ if (is_chromeos && is_chromeos_device) {
       # Note: for each test case in the below list, add a metadata file
       # in the `crosier_metadata` build rule above.
       sources += [
-        "../browser/ash/accessibility/spoken_feedback_integration_test.cc",
-        "../browser/ash/assistant/assistant_integration_test.cc",
-        "../browser/ash/bluetooth/bluetooth_integration_test.cc",
-        "../browser/ash/child_accounts/web_approvals_integration_test.cc",
-        "../browser/ash/external_metrics_integration_test.cc",
-        "../browser/ash/featured_integration_test.cc",
-        "../browser/ash/login/lock/lock_screen_integration_test.cc",
-        "../browser/ash/login/login_integration_test.cc",
-        "../browser/ash/login/supervised_user_login_integration_test.cc",
-        "../browser/ash/ml_integration_test.cc",
-        "../browser/ash/power/ml/smart_dim/smart_dim_integration_test.cc",
-        "../browser/ash/scanning/multi_page_scan_integration_test.cc",
-        "../browser/ash/scanning/scan_integration_test.cc",
-        "../browser/ash/screenshot_integration_test.cc",
-        "../browser/ash/security_files_integration_test.cc",
-        "../browser/ash/system_web_apps/apps/terminal_integration_test.cc",
-        "../browser/ash/web_handwriting_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
         "../browser/ui/webui/ash/settings/pages/printing/integration_tests/printer_settings_integration_test.cc",
         "base/chromeos/crosier/helper/test_sudo_helper_client_test.cc",
         "base/chromeos/crosier/upstart_test.cc",
-
-        # These cannot live in ":test_support" because they use
-        # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
-        "base/chromeos/crosier/ash_integration_test.cc",
-        "base/chromeos/crosier/ash_integration_test.h",
-        "base/chromeos/crosier/ash_integration_test_test.cc",
-        "base/chromeos/crosier/supervised_user_integration_base_test.cc",
-        "base/chromeos/crosier/supervised_user_integration_base_test.h",
       ]
 
-      if (is_chrome_branded && is_chromeos_ash) {
-        sources += [
-          "../browser/ash/arc/arc_integration_test.cc",
-          "base/chromeos/crosier/test_accounts_test.cc",
-        ]
+      if (is_chrome_branded) {
+        sources += [ "base/chromeos/crosier/test_accounts_test.cc" ]
       }
 
       data = [
@@ -1259,16 +1260,12 @@ if (is_chromeos && is_chromeos_device) {
       ]
 
       deps += [
+        ":ash_integration_test_support",
+        "//chrome/browser/ash:integration_tests",
         "//chrome/browser/ash:test_support",
-        "//chrome/test/base/ash/interactive:test_support",
-        "//chrome/test/base/ash/interactive/bluetooth:test_support",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
-        "//chromeos/ash/components/standalone_browser",
-        "//chromeos/ash/components/standalone_browser:test_support",
-        "//chromeos/ash/services/assistant/public/cpp",
-        "//chromeos/services/machine_learning/public/cpp",
         "//ui/events:test_support",
       ]
 

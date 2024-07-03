@@ -279,3 +279,29 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app:unit_tests",
   ]
 }
+
+if (is_chromeos_device) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "terminal_integration_test.cc" ]
+
+    deps = [
+      ":apps",
+      "//ash",
+      "//ash/constants",
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/test:ash_integration_test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/aura",
+      "//ui/base:test_support",
+      "//ui/compositor",
+      "//ui/display",
+    ]
+  }
+}

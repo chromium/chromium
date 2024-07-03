@@ -148,3 +148,11 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_web_apps/apps:unit_tests",
   ]
 }
+
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+
+    deps = [ "//chrome/browser/ash/system_web_apps/apps:integration_tests" ]
+  }
+}

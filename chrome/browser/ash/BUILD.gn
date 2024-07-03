@@ -5384,6 +5384,49 @@ group("browser_tests") {
   ]
 }
 
+if (is_chromeos_device) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "child_accounts/web_approvals_integration_test.cc",
+      "external_metrics_integration_test.cc",
+      "featured_integration_test.cc",
+      "login/lock/lock_screen_integration_test.cc",
+      "login/login_integration_test.cc",
+      "login/supervised_user_login_integration_test.cc",
+      "ml_integration_test.cc",
+      "power/ml/smart_dim/smart_dim_integration_test.cc",
+      "scanning/multi_page_scan_integration_test.cc",
+      "scanning/scan_integration_test.cc",
+      "screenshot_integration_test.cc",
+      "security_files_integration_test.cc",
+      "web_handwriting_integration_test.cc",
+    ]
+
+    if (is_chrome_branded) {
+      sources += [ "arc/arc_integration_test.cc" ]
+    }
+
+    deps = [
+      "//chrome/browser/ash:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chrome/test/base/chromeos/crosier:proto",
+      "//chrome/test/base/chromeos/crosier/helper:common",
+      "//chromeos/services/machine_learning/public/cpp",
+
+      # Gather unit tests from subdirectories.
+      "//chrome/browser/ash/accessibility:integration_tests",
+      "//chrome/browser/ash/assistant:integration_tests",
+      "//chrome/browser/ash/bluetooth:integration_tests",
+      "//chrome/browser/ash/system_web_apps:integration_tests",
+    ]
+  }
+}
+
 proto_library("app_install_events_proto") {
   proto_in_dir = "//"
   sources =
