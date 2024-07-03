@@ -42,7 +42,7 @@ bool AcceptLanguagesService::CanBeAcceptLanguage(std::string_view language) {
 
   const std::string ui_locale = base::i18n::GetConfiguredLocale();
 
-  return l10n_util::IsLanguageAccepted(ui_locale, accept_language);
+  return l10n_util::IsAcceptLanguageDisplayable(ui_locale, accept_language);
 }
 
 bool AcceptLanguagesService::IsAcceptLanguage(std::string_view language) const {

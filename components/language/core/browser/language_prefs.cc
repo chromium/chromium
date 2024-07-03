@@ -95,7 +95,9 @@ void LanguagePrefs::GetUserSelectedLanguagesList(
 
 void LanguagePrefs::SetUserSelectedLanguagesList(
     const std::vector<std::string>& languages) {
-  std::string languages_str = base::JoinString(languages, ",");
+  std::vector<std::string> filtered_languages =
+      l10n_util::KeepAcceptedLanguages(languages);
+  std::string languages_str = base::JoinString(filtered_languages, ",");
   prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);

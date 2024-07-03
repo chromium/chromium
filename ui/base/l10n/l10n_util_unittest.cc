@@ -700,14 +700,45 @@ TEST_F(L10nUtilTest, AcceptLocalesIsSorted) {
   }
 }
 
-TEST_F(L10nUtilTest, IsLanguageAccepted) {
-  EXPECT_TRUE(l10n_util::IsLanguageAccepted("en", "es-419"));
-  EXPECT_TRUE(l10n_util::IsLanguageAccepted("en", "en-GB"));
-  EXPECT_TRUE(l10n_util::IsLanguageAccepted("es", "fil"));
-  EXPECT_TRUE(l10n_util::IsLanguageAccepted("de", "zu"));
+TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en"));
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en-CA"));
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("fil"));
+  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("zu"));
+
+  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("tl"));
+  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("fr-CO"));
+  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("iw"));
+
+  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("dne"));
+}
+
+TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("en", "es-419"));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("en", "en-GB"));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("es", "fil"));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("de", "zu"));
 
   // The old code for "he" is not supported.
-  EXPECT_FALSE(l10n_util::IsLanguageAccepted("es", "iw"));
+  EXPECT_FALSE(l10n_util::IsAcceptLanguageDisplayable("es", "iw"));
+}
+
+TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
+  // All valid languages.
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "fr"}}),
+            std::vector<std::string>({"en", "es", "fr"}));
+  // Some invalid languages.
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "iw"}}),
+            std::vector<std::string>({"en", "es"}));
+  // All invalid languages.
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"iw", "ch_ZN"}}),
+            std::vector<std::string>{});
+  // Empty input.
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({}), std::vector<std::string>{});
+  // Maintain languages order.
+  EXPECT_EQ(
+      l10n_util::KeepAcceptedLanguages({{"en", "aa", "es", "iw", "fr", "xx"}}),
+      std::vector<std::string>({"en", "es", "fr"}));
 }
 
 TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {

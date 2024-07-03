@@ -424,7 +424,7 @@ TEST_F(TranslatePrefsTest, RemoveFromLanguageListRemovesRemainingUnsupported) {
   accept_languages_tester_->SetLanguagePrefs(languages);
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en,en-US,en-FOO");
   translate_prefs_->RemoveFromLanguageList("en-US");
-  accept_languages_tester_->ExpectAcceptLanguagePrefs("en,en-FOO");
+  accept_languages_tester_->ExpectAcceptLanguagePrefs("en");
   translate_prefs_->RemoveFromLanguageList("en");
   accept_languages_tester_->ExpectAcceptLanguagePrefs("");
 }

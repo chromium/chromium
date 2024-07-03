@@ -12,9 +12,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -278,11 +280,21 @@ void GetAcceptLanguagesForLocale(const std::string& display_locale,
 COMPONENT_EXPORT(UI_BASE)
 void GetAcceptLanguages(std::vector<std::string>* locale_codes);
 
-// Returns true if |locale| is in a predefined AcceptLanguageList and
+// Returns true if |locale| is in a predefined |AcceptLanguageList|.
+COMPONENT_EXPORT(UI_BASE)
+bool IsPossibleAcceptLanguage(std::string_view locale);
+
+// Returns true if |locale| is in a predefined |AcceptLanguageList| and
 // a display name for the |locale| is available in the locale |display_locale|.
 COMPONENT_EXPORT(UI_BASE)
-bool IsLanguageAccepted(const std::string& display_locale,
-                        const std::string& locale);
+bool IsAcceptLanguageDisplayable(const std::string& display_locale,
+                                 const std::string& locale);
+
+// Filters the input vector of languages. Returns only those in the
+// |AcceptLanguageList|.
+COMPONENT_EXPORT(UI_BASE)
+std::vector<std::string> KeepAcceptedLanguages(
+    base::span<const std::string> languages);
 
 // Returns the preferred size of the contents view of a window based on
 // designer given constraints which might dependent on the language used.
