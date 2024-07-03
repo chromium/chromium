@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
 #include "components/soda/soda_features.h"
 #include "components/soda/soda_installer.h"
@@ -138,6 +139,36 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert({"nb-NO", {"", LanguageCode::kNbNo}});
   available_languages.insert({"nl-NL", {"", LanguageCode::kNlNl}});
   available_languages.insert({"sv-SE", {"", LanguageCode::kSvSe}});
+
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
+      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+    available_languages["de-DE"] = {"libsoda-model-de-de-cnch24d1",
+                                    LanguageCode::kDeDe};
+    available_languages["en-US"] = {"libsoda-model-en-us-cnch24d1",
+                                    LanguageCode::kEnUs};
+    available_languages["fr-FR"] = {"libsoda-model-fr-fr-cnch24d1",
+                                    LanguageCode::kFrFr};
+    available_languages["en-AU"] = {"libsoda-model-en-au-cnch24d1",
+                                    LanguageCode::kEnAu};
+    available_languages["en-GB"] = {"libsoda-model-en-gb-cnch24d1",
+                                    LanguageCode::kEnGb};
+    available_languages["en-IE"] = {"libsoda-model-en-ie-cnch24d1",
+                                    LanguageCode::kEnIe};
+    available_languages["en-SG"] = {"libsoda-model-en-sg-cnch24d1",
+                                    LanguageCode::kEnSg};
+    available_languages["es-ES"] = {"libsoda-model-es-es-cnch24d1",
+                                    LanguageCode::kEsEs};
+    available_languages["es-US"] = {"libsoda-model-es-es-cnch24d1",
+                                    LanguageCode::kEsUs};
+    available_languages["hi-IN"] = {"libsoda-model-hi-in-cnch24d1",
+                                    LanguageCode::kHiIn};
+    available_languages["it-IT"] = {"libsoda-model-it-it-cnch24d1",
+                                    LanguageCode::kItIt};
+    available_languages["ja-JP"] = {"libsoda-model-ja-jp-cnch24d1",
+                                    LanguageCode::kJaJp};
+    available_languages["sv-SE"] = {"libsoda-model-sv-se-cnch24d1",
+                                    LanguageCode::kSvSe};
+  }
 
   // Add in from feature flags. the value is of the format:
   // "en-AU:libsoda-modelname,fr-CA:,de-CH:libsoda-pizzaface,"

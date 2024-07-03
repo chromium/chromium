@@ -4955,6 +4955,10 @@ const char kEnableCrOSSodaLanguagesDescription[] =
     "Enable language expansion for SODA on device to "
     "impact dictation and Live Captions.";
 
+const char kEnableCrOSSodaConchLanguagesName[] = "SODA Conch Languages.";
+const char kEnableCrOSSodaConchLanguagesDescription[] =
+    "Enable Conch specific SODA language models.";
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kEsbDownloadRowPromoFeatureName[] =
     "Enable ESB Download Row promotion";

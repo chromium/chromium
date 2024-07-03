@@ -2556,6 +2556,10 @@
    "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],
    "expiry_milestone": 145
   },
+  {"name": "enable-chromeos-soda-conch",
+   "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
+   "expiry_milestone": 149
+  },
   {"name": "enable-chromeos-soda-languages",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 140

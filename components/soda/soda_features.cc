@@ -11,5 +11,11 @@ namespace speech {
 BASE_FEATURE(kCrosExpandSodaLanguages,
              "CrosExpandSodaLanguages",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeatureManagementCrosSodaConchLanguages,
+             "FeatureManagementCrosSodaConchLanguages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrosSodaConchLanguages,
+             "CrosSodaConchLanguages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 }  // namespace speech

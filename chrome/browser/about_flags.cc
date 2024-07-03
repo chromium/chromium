@@ -7520,6 +7520,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCrOSSodaLanguagesName,
      flag_descriptions::kEnableCrOSSodaLanguagesDescription,
      kOsCrOS | kOsLacros, FEATURE_VALUE_TYPE(speech::kCrosExpandSodaLanguages)},
+    {"enable-chromeos-soda-conch",
+     flag_descriptions::kEnableCrOSSodaConchLanguagesName,
+     flag_descriptions::kEnableCrOSSodaLanguagesDescription,
+     kOsCrOS | kOsLacros, FEATURE_VALUE_TYPE(speech::kCrosSodaConchLanguages)},
 #endif
 
     {"read-anything-read-aloud", flag_descriptions::kReadAnythingReadAloudName,

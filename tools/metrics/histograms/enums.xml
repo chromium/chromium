@@ -18474,6 +18474,7 @@ from previous Chrome versions.
   <int value="-930168768" label="IsolatedWebAppAutomaticUpdates:disabled"/>
   <int value="-929944930"
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
+  <int value="-929290033" label="CrosSodaConchLanguages:disabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>
   <int value="-926422468" label="disable-embedded-shared-worker"/>
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
@@ -20107,6 +20108,7 @@ from previous Chrome versions.
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
   <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
   <int value="-228847300" label="OmniboxLimitKeywordModeSuggestions:disabled"/>
+  <int value="-227261557" label="CrosSodaConchLanguages:enabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-226715863" label="SHA1ServerSignature:enabled"/>
   <int value="-226542943"

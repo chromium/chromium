@@ -2888,6 +2888,9 @@ extern const char kEnableCrOSLiveTranslateDescription[];
 extern const char kEnableCrOSSodaLanguagesName[];
 extern const char kEnableCrOSSodaLanguagesDescription[];
 
+extern const char kEnableCrOSSodaConchLanguagesName[];
+extern const char kEnableCrOSSodaConchLanguagesDescription[];
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kEsbDownloadRowPromoFeatureName[];
 extern const char kEsbDownloadRowPromoFeatureDescription[];
