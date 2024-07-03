@@ -124,6 +124,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tests: Tuple[Tuple[str, str], ...] = (
              ('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
+             ('GpuCrash_GPUProcessCrashesExactlyOnce_SurfaceControlDisabled',
+              'gpu_process_crash.html'),
              ('ContextLost_WebGPUContextLostFromGPUProcessExit',
               'webgpu-context-lost.html?query=kill_after_notification'),
              ('ContextLost_WebGPUStressRequestDeviceAndRemoveLoop',
@@ -339,6 +341,21 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
     self._NavigateAndWaitForLoad(test_path)
     self._KillGPUProcess(2, True)
+    self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _GpuCrash_GPUProcessCrashesExactlyOnce_SurfaceControlDisabled(
+      self, test_path: str) -> None:
+    os_name = self.browser.platform.GetOSName()
+    if os_name != 'android':
+      logging.info('Skipping test because not running on Android')
+      return
+
+    self.RestartBrowserIfNecessaryWithArgs([
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--disable-features=AndroidSurfaceControl'
+    ])
+    self._NavigateAndWaitForLoad(test_path)
+    self._KillGPUProcess(1, True)
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGLContextLostFromGPUProcessExit(self,
