@@ -40,22 +40,16 @@ namespace {
 #if !BUILDFLAG(IS_FUCHSIA)
 // Controls if this should always use a single NV12 GMB with multiplanar path.
 bool UseSingleNV12() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Mac + Windows have used this path for an extended period so no need for
-  // kill switch.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Mac + Windows + Linux have used this path for an extended period so no need
+  // for kill switch.
   return true;
-#elif BUILDFLAG(IS_LINUX)
-  // Linux has run with the killswitch enabled for an extended period and hence
-  // now needs to gate only on multiplanarSI being used for software video
-  // decoding.
-  return media::IsMultiPlaneFormatForSoftwareVideoEnabled();
 #else
   static BASE_FEATURE(kUseSingleNV12ForSoftwareGMB,
                       "UseSingleNV12ForSoftwareGMB",
                       base::FEATURE_DISABLED_BY_DEFAULT);
 
-  return media::IsMultiPlaneFormatForSoftwareVideoEnabled() &&
-         base::FeatureList::IsEnabled(kUseSingleNV12ForSoftwareGMB);
+  return base::FeatureList::IsEnabled(kUseSingleNV12ForSoftwareGMB);
 #endif
 }
 #endif
@@ -359,10 +353,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     }
 #endif
     if (capabilities.texture_rg) {
-      if (media::IsMultiPlaneFormatForSoftwareVideoEnabled()) {
-        return OutputFormat::YV12;
-      }
-      return OutputFormat::I420;
+      return OutputFormat::YV12;
     }
     return OutputFormat::UNDEFINED;
   }

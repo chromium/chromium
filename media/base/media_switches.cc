@@ -1847,11 +1847,7 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   return true;
-#else
-  return base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo);
-#endif
 }
 
 bool IsWritePixelsYUVEnabled() {
