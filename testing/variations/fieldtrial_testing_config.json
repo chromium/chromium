@@ -21411,6 +21411,29 @@
             ]
         }
     ],
+    "SuppressesNetworkActivitiesOnSlowNetworks": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "slow_network_threshold": "208ms"
+                    },
+                    "enable_features": [
+                        "SuppressesNetworkActivitiesOnSlowNetworks"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [

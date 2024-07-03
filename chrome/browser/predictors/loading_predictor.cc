@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -40,6 +43,16 @@ BASE_FEATURE(kNoPreconnectToSearchOnWeakSignal,
 BASE_FEATURE(kNoNavigationPreconnectOnWeakSignal,
              "NoNavigationPreconnectOnWeakSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, suppresses network activities (https://crbug.com/350519234)
+BASE_FEATURE(kSuppressesNetworkActivitiesOnSlowNetwork,
+             "SuppressesNetworkActivitiesOnSlowNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kSuppressesNetworkActivitiesOnSlowNetworkThreshold{
+        &kSuppressesNetworkActivitiesOnSlowNetwork, "slow_network_threshold",
+        base::Milliseconds(208)};
 
 }  // namespace features
 
@@ -164,6 +177,21 @@ bool LoadingPredictor::PrepareForPageLoad(
     std::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
+
+  // Suppresses network activities.
+  static const bool kSuppressesNetworkActivitiesOnSlowNetworkIsEnabled =
+      base::FeatureList::IsEnabled(
+          features::kSuppressesNetworkActivitiesOnSlowNetwork);
+  static const base::TimeDelta kSlowNetworkThreshold =
+      features::kSuppressesNetworkActivitiesOnSlowNetworkThreshold.Get();
+  if (kSuppressesNetworkActivitiesOnSlowNetworkIsEnabled && g_browser_process &&
+      g_browser_process->network_quality_tracker()) {
+    base::TimeDelta last_http_rtt =
+        g_browser_process->network_quality_tracker()->GetHttpRTT();
+    if (last_http_rtt >= kSlowNetworkThreshold) {
+      return true;
+    }
+  }
 
   // Prewarm disk cache before preconnecting network.
   MaybePrewarmResources(initiator_origin, url);
