@@ -1783,79 +1783,6 @@ action("generate_licenses") {
   ]
 }
 
-action_with_pydeps("generate_javadoc") {
-  script = "//components/cronet/tools/generate_javadoc.py"
-  depfile = "$target_gen_dir/$target_name.d"
-  _zip_file = "$target_gen_dir/$target_name.zip"
-  outputs = [ _zip_file ]
-  _src_jar = "$_package_dir/cronet_api-src.jar"
-  _shared_jar = "$_package_dir/cronet_shared-src.jar"
-
-  _annotations_deps = [
-    "//third_party/androidx:androidx_annotation_annotation_experimental_java__classes",
-    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
-  ]
-
-  _build_config_deps = []
-  _build_configs = []
-
-  foreach(dep, _annotations_deps) {
-    _build_config_dep = "$dep$build_config_target_suffix"
-    _build_config_deps += [ _build_config_dep ]
-
-    _build_config = get_label_info(dep, "target_gen_dir") + "/" +
-                    get_label_info(dep, "name") + ".build_config.json"
-
-    _build_configs += [ _build_config ]
-  }
-
-  deps = [
-           ":jar_cronet_api_source",
-           ":jar_cronet_shared_source",
-         ] + _annotations_deps + _build_config_deps
-
-  inputs = [
-             _src_jar,
-             _shared_jar,
-             android_sdk_jar,
-           ] + _build_configs
-
-  _rebased_build_configs = []
-  foreach(config, _build_configs) {
-    _rebased_build_configs += [ rebase_path(config, root_build_dir) ]
-  }
-
-  args = [
-    "--output-dir",
-    rebase_path(_package_dir, root_build_dir),
-    "--input-dir",
-    rebase_path("//components/cronet", root_build_dir),
-    "--overview-file",
-    rebase_path("$_package_dir/README.md.html", root_build_dir),
-    "--readme-file",
-    rebase_path("//components/cronet/README.md", root_build_dir),
-    "--depfile",
-    rebase_path(depfile, root_build_dir),
-    "--zip-file",
-    rebase_path(_zip_file, root_build_dir),
-    "--android-sdk-jar",
-    rebase_path(android_sdk_jar, root_build_dir),
-    "--classpath-jars",
-    rebase_path(_shared_jar, root_build_dir),
-
-    # JavaDoc is generated from Cronet's API source jar.
-    "--input-src-jar",
-    rebase_path(_src_jar, root_build_dir),
-  ]
-
-  foreach(rebased_config, _rebased_build_configs) {
-    args += [
-      "--support-annotations-jars=@FileArg($rebased_config:deps_info:unprocessed_jar_path)",
-      "--classpath-jars=@FileArg($rebased_config:deps_info:javac_full_classpath)",
-    ]
-  }
-}
-
 copy("cronet_package_copy") {
   sources = [
     "$target_gen_dir/cronet_impl_native_proguard.cfg",
@@ -2131,7 +2058,6 @@ group("cronet_package_android") {
     ":cronet_combined_proguard_flags_golden_test",
     ":cronet_non_test_package",
     ":cronet_test_package",
-    ":generate_javadoc",
     ":generate_licenses",
   ]
   if (!using_sanitizer) {
