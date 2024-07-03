@@ -118,7 +118,6 @@
   E_CPONLY(kColorSysOnPrimary) \
   E_CPONLY(kColorSysPrimaryContainer) \
   E_CPONLY(kColorSysOnPrimaryContainer) \
-  E_CPONLY(kColorSysGradientPrimary) \
   /* Secondary. */ \
   E_CPONLY(kColorSysSecondary) \
   E_CPONLY(kColorSysOnSecondary) \
@@ -129,7 +128,6 @@
   E_CPONLY(kColorSysOnTertiary) \
   E_CPONLY(kColorSysTertiaryContainer) \
   E_CPONLY(kColorSysOnTertiaryContainer) \
-  E_CPONLY(kColorSysGradientTertiary) \
   /* Error. */ \
   E_CPONLY(kColorSysError) \
   E_CPONLY(kColorSysOnError) \
@@ -145,8 +143,9 @@
   E_CPONLY(kColorSysWhite) \
   /* Inverse. */ \
   E_CPONLY(kColorSysInversePrimary) \
-  E_CPONLY(kColorSysInverseSurface) \
   E_CPONLY(kColorSysInverseOnSurface) \
+  E_CPONLY(kColorSysInverseSurface) \
+  E_CPONLY(kColorSysInverseSurfacePrimary) \
   /* Surfaces. */ \
   E_CPONLY(kColorSysSurface) \
   E_CPONLY(kColorSysSurface1) \
@@ -161,6 +160,8 @@
   E_CPONLY(kColorSysOnSurfacePrimaryInactive) \
   E_CPONLY(kColorSysTonalContainer) \
   E_CPONLY(kColorSysOnTonalContainer) \
+  E_CPONLY(kColorSysBaseTonalContainer) \
+  E_CPONLY(kColorSysOnBaseTonalContainer) \
   E_CPONLY(kColorSysTonalOutline) \
   E_CPONLY(kColorSysNeutralOutline) \
   E_CPONLY(kColorSysNeutralContainer) \
@@ -183,22 +184,24 @@
   E_CPONLY(kColorSysStateRippleNeutralOnProminent) \
   E_CPONLY(kColorSysStateRippleNeutralOnSubtle) \
   E_CPONLY(kColorSysStateRipplePrimary) \
-  E_CPONLY(kColorSysStateScrim) \
   E_CPONLY(kColorSysStateFocusRing) \
-  E_CPONLY(kColorSysStateFocusHighlight) \
   E_CPONLY(kColorSysStateTextHighlight) \
   E_CPONLY(kColorSysStateOnTextHighlight) \
+  E_CPONLY(kColorSysStateFocusHighlight) \
   E_CPONLY(kColorSysStateDisabled) \
   E_CPONLY(kColorSysStateDisabledContainer) \
   E_CPONLY(kColorSysStateHoverDimBlendProtection) \
   E_CPONLY(kColorSysStateHoverBrightBlendProtection) \
+  E_CPONLY(kColorSysStateInactiveRing) \
+  E_CPONLY(kColorSysStateScrim) \
   E_CPONLY(kColorSysStateOnHeaderHover) \
   E_CPONLY(kColorSysStateHeaderHover) \
   E_CPONLY(kColorSysStateHeaderHoverInactive) \
   E_CPONLY(kColorSysStateHeaderSelect) \
-  E_CPONLY(kColorSysStateInactiveRing) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
+  E_CPONLY(kColorSysGradientPrimary) \
+  E_CPONLY(kColorSysGradientTertiary) \
   /* AI. */ \
   E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
   E_CPONLY(kColorSysAiIllustrationShapeSurface2) \
@@ -207,15 +210,9 @@
   /* Experimentation. */ \
   E_CPONLY(kColorSysOmniboxContainer) \
   /* Deprecated */ \
-  E_CPONLY(kColorSysOnBase) \
-  E_CPONLY(kColorSysOnBaseSecondary) \
-  E_CPONLY(kColorSysOnBaseBorder) \
   E_CPONLY(kColorSysStateHover) \
   E_CPONLY(kColorSysStateFocus) \
   E_CPONLY(kColorSysStatePressed) \
-  E_CPONLY(kColorSysStateDrag) \
-  E_CPONLY(kColorSysStateHoverCutout) \
-  E_CPONLY(kColorSysStateHoverInverseCutout) \
   /* Core color concepts */ \
   /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
   /* If changing the variable name, the variable name in the test needs to */ \
