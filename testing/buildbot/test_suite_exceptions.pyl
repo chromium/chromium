@@ -1910,7 +1910,7 @@
       },
       'android-14-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
