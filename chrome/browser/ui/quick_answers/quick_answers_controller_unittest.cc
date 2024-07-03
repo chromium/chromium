@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
@@ -12,8 +13,10 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -261,4 +264,46 @@ TEST_F(QuickAnswersControllerTest, ShouldNotCrashWhenContextMenuCloses) {
   // Confirm that the quick answers views are not showing.
   EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
   EXPECT_FALSE(ui_controller()->IsShowingQuickAnswersView());
+}
+
+TEST_F(QuickAnswersControllerTest, NullptrResultReceived) {
+  AcceptConsent();
+  ShowView();
+
+  controller()->OnQuickAnswerReceived(nullptr);
+
+  EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
+  EXPECT_EQ(kDefaultTitle, base::UTF16ToUTF8(ui_controller()
+                                                 ->quick_answers_view()
+                                                 ->GetResultViewForTesting()
+                                                 ->GetFirstLineText()));
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2),
+            ui_controller()
+                ->quick_answers_view()
+                ->GetResultViewForTesting()
+                ->GetSecondLineText())
+      << "Expect that no result UI is shown";
+}
+
+TEST_F(QuickAnswersControllerTest, PartialNullptrResultReceived) {
+  AcceptConsent();
+  ShowView();
+
+  std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session =
+      std::make_unique<quick_answers::QuickAnswersSession>();
+  ASSERT_FALSE(quick_answers_session->structured_result)
+      << "Test the case structured_result is nullptr";
+  controller()->OnQuickAnswerReceived(std::move(quick_answers_session));
+
+  EXPECT_TRUE(ui_controller()->IsShowingQuickAnswersView());
+  EXPECT_EQ(kDefaultTitle, base::UTF16ToUTF8(ui_controller()
+                                                 ->quick_answers_view()
+                                                 ->GetResultViewForTesting()
+                                                 ->GetFirstLineText()));
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_NO_RESULT_V2),
+            ui_controller()
+                ->quick_answers_view()
+                ->GetResultViewForTesting()
+                ->GetSecondLineText())
+      << "Expect that no result UI is shown";
 }

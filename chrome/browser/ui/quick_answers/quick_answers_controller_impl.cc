@@ -118,6 +118,23 @@ bool IsActiveUserInternal() {
   return gaia::IsGoogleInternalAccountEmail(email);
 }
 
+// Error case might return nullptr(s). Consider an error case as no result.
+// TODO(b/349920395): use std::variant<NoResult, DefinitionResult, ...> for
+// structured result.
+bool IsNoResult(
+    const quick_answers::QuickAnswersSession* quick_answers_session) {
+  if (!quick_answers_session) {
+    return true;
+  }
+
+  if (!quick_answers_session->structured_result) {
+    return true;
+  }
+
+  return quick_answers_session->structured_result->GetResultType() ==
+         ResultType::kNoResult;
+}
+
 class PerformOnConsentAccepted : public QuickAnswersStateObserver {
  public:
   explicit PerformOnConsentAccepted(base::OnceCallback<void()> action)
@@ -357,11 +374,21 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
 
   quick_answers_session_ = std::move(quick_answers_session);
 
-  if (quick_answers_session_->structured_result->GetResultType() ==
-      ResultType::kNoResult) {
+  if (IsNoResult(quick_answers_session_.get())) {
     // Fallback query to title if no result is available.
     query_ = title_;
     quick_answers_ui_controller_->SetActiveQuery(profile_, query_);
+
+    // `quick_answers_session_` can be nullptr. Create an empty result session
+    // for the case if nullptr.
+    if (!quick_answers_session_) {
+      quick_answers_session_ =
+          std::make_unique<quick_answers::QuickAnswersSession>();
+    }
+    if (!quick_answers_session_->structured_result) {
+      quick_answers_session_->structured_result =
+          std::make_unique<quick_answers::StructuredResult>();
+    }
   }
 
   quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
