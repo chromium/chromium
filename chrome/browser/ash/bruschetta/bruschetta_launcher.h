@@ -40,6 +40,8 @@ class BruschettaLauncher {
 
  private:
   class Timeout;
+  void EnsureConciergeAvailable();
+  void OnConciergeAvailable(bool service_is_available);
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  std::optional<vm_tools::concierge::StartVmResponse> response);

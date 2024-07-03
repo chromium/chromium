@@ -37,6 +37,7 @@ const char16_t* BruschettaInstallResultString(
     ENTRY(kFirmwareDlcDiskFullError);
     ENTRY(kFirmwareDlcBusyError);
     ENTRY(kFirmwareDlcUnknownError);
+    ENTRY(kConciergeUnavailableError);
   }
 #undef ENTRY
 #undef USTR

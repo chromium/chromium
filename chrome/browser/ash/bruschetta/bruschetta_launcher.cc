@@ -113,6 +113,28 @@ void BruschettaLauncher::OnMountFirmwareDlc(
     return;
   }
 
+  EnsureConciergeAvailable();
+}
+
+void BruschettaLauncher::EnsureConciergeAvailable() {
+  auto* client = ash::ConciergeClient::Get();
+  if (!client) {
+    LOG(ERROR) << "Error connecting to concierge. Client is NULL.";
+    Finish(BruschettaResult::kConciergeUnavailable);
+    return;
+  }
+
+  client->WaitForServiceToBeAvailable(base::BindOnce(
+      &BruschettaLauncher::OnConciergeAvailable, weak_factory_.GetWeakPtr()));
+}
+
+void BruschettaLauncher::OnConciergeAvailable(bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "Error connecting to concierge. Service is not available.";
+    Finish(BruschettaResult::kConciergeUnavailable);
+    return;
+  }
+
   StartVm();
 }
 

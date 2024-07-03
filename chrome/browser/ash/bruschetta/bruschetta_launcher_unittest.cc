@@ -201,6 +201,23 @@ TEST_F(BruschettaLauncherTest, LaunchStartVmSuccess) {
                                        BruschettaResult::kSuccess, 1);
 }
 
+// Try to launch, but vm_concierge is not available.
+TEST_F(BruschettaLauncherTest, WaitConciergeFails) {
+  BruschettaResult result;
+  FakeConciergeClient()->set_wait_for_service_to_be_available_response(false);
+
+  launcher_->EnsureRunning(StoreResultThenQuitRunLoop(&result));
+  run_loop_.Run();
+
+  ASSERT_EQ(result, BruschettaResult::kConciergeUnavailable);
+  histogram_tester_.ExpectUniqueSample(
+      kLaunchHistogram, BruschettaResult::kConciergeUnavailable, 1);
+
+  ASSERT_FALSE(BruschettaService::GetForProfile(&profile_)
+                   ->GetRunningVmsForTesting()
+                   .contains(kTestVmName));
+}
+
 // Multiple concurrent launch requests are batched into one request.
 TEST_F(BruschettaLauncherTest, MultipleLaunchRequestsAreBatched) {
   std::vector<BruschettaResult> results;

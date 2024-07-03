@@ -60,6 +60,7 @@ const char* BruschettaResultString(const BruschettaResult res) {
     ENTRY(kStartVmFailed);
     ENTRY(kTimeout);
     ENTRY(kForbiddenByPolicy);
+    ENTRY(kConciergeUnavailable);
   }
 #undef ENTRY
   return "unknown code";

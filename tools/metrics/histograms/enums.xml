@@ -2174,6 +2174,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="24" label="kFirmwareDlcDiskFullError"/>
   <int value="25" label="kFirmwareDlcBusyError"/>
   <int value="26" label="kFirmwareDlcUnknownError"/>
+  <int value="27" label="kConciergeUnavailableError"/>
 </enum>
 
 <enum name="BruschettaResult">
@@ -2184,6 +2185,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="kStartVmFailed"/>
   <int value="5" label="kTimeout"/>
   <int value="6" label="kForbiddenByPolicy"/>
+  <int value="7" label="kConciergeUnavailable"/>
 </enum>
 
 <enum name="CameraOpenEntryPoint">

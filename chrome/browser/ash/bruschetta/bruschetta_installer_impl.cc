@@ -370,6 +370,26 @@ void BruschettaInstallerImpl::OnOpenFds(std::unique_ptr<Fds> fds) {
 
   fds_ = std::move(fds);
 
+  EnsureConciergeAvailable();
+}
+
+void BruschettaInstallerImpl::EnsureConciergeAvailable() {
+  auto* client = ash::ConciergeClient::Get();
+  DCHECK(client) << "This code requires a ConciergeClient";
+
+  client->WaitForServiceToBeAvailable(
+      base::BindOnce(&BruschettaInstallerImpl::OnConciergeAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BruschettaInstallerImpl::OnConciergeAvailable(bool service_is_available) {
+  if (!service_is_available) {
+    install_running_ = false;
+    Error(BruschettaInstallResult::kConciergeUnavailableError);
+    LOG(ERROR) << "vm_concierge is not available";
+    return;
+  }
+
   CreateVmDisk();
 }
 

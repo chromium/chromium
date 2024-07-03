@@ -10,7 +10,9 @@
 namespace bruschetta {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. BruschettaInstallResult in
+// tools/metrics/histograms/enums.xml must be updated when making a change to
+// this enum.
 enum class BruschettaInstallResult {
   kUnknown = 0,
   kSuccess = 1,
@@ -41,7 +43,8 @@ enum class BruschettaInstallResult {
   kFirmwareDlcDiskFullError = 24,
   kFirmwareDlcBusyError = 25,
   kFirmwareDlcUnknownError = 26,
-  kMaxValue = kFirmwareDlcUnknownError
+  kConciergeUnavailableError = 27,
+  kMaxValue = kConciergeUnavailableError
 };
 
 // Returns the string name of the BruschettaResult.

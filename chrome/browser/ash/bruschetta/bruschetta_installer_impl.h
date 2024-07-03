@@ -67,6 +67,8 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void OnPflashDownloaded(base::FilePath path, std::string hash);
   void OpenFds();
   void OnOpenFds(std::unique_ptr<Fds> fds);
+  void EnsureConciergeAvailable();
+  void OnConciergeAvailable(bool service_is_available);
   void CreateVmDisk();
   void OnCreateVmDisk(
       std::optional<vm_tools::concierge::CreateDiskImageResponse> result);
