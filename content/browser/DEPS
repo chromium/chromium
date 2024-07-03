@@ -98,6 +98,7 @@ include_rules = [
   "+third_party/khronos",   # For enum definitions only
   "+third_party/libaom/av1_buildflags.h",
   "+third_party/re2",
+  "+third_party/rust/cxx",
   "+third_party/zlib",
 
   # Allow non-browser Chrome OS code to be used.

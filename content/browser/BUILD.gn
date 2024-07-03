@@ -3251,6 +3251,7 @@ source_set("browser") {
     ]
 
     deps += [
+      ":fontations_name_table_ffi",
       ":reflection_jni_headers",
       "//build/config/freetype",
       "//cc/slim",

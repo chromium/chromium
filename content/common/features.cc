@@ -262,6 +262,16 @@ BASE_FEATURE(kFontSrcLocalMatching,
              "FontSrcLocalMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether building a database of unique font names is performed
+// using the Fontations library. If off, FreeType is used instead.
+// Used as a kill switch, expected to be removed after one stable cycle
+// of using Fontations. See https://crbug.com/349952802
+BASE_FEATURE(kFontIndexingFontations,
+             "FontIndexingFontations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Feature controlling whether or not memory pressure signals will be forwarded
 // to the GPU process.
 #if !BUILDFLAG(IS_ANDROID)

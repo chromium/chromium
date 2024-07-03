@@ -63,6 +63,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFocusRenderWidgetHostViewAndroidOnActionDown);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontIndexingFontations);
+#endif
 #if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);
 #endif

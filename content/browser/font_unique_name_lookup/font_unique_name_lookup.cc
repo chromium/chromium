@@ -15,15 +15,20 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/cstring_view.h"
+#include "base/strings/string_piece_rust.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/font_unique_name_lookup/name_table_ffi.rs.h"
+#include "content/common/features.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_persistence.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 // clang-format off
 #include <ft2build.h>
@@ -37,7 +42,7 @@ namespace {
 
 // Increment this suffix when changes are needed to the cache structure, e.g.
 // counting up after the dash "-1", "-2", etc.
-const char kFingerprintSuffixForceUpdateCache[] = "-1";
+const char kFingerprintSuffixForceUpdateCache[] = "-2";
 const char kProtobufFilename[] = "font_unique_name_table.pb";
 static const char* const kAndroidFontPaths[] = {
     "/system/fonts", "/vendor/fonts", "/product/fonts"};
@@ -87,7 +92,7 @@ class ScopedFtFace {
   // |library| is the parent FT_Library instance, |font_path| the input font
   // file path, and |ttc_index| the font file index (for TrueType collections).
   ScopedFtFace(FT_Library library,
-               const std::string& font_path,
+               base::cstring_view font_path,
                int32_t ttc_index)
       : ft_face_(nullptr),
         ft_error_(
@@ -115,20 +120,20 @@ class ScopedFtFace {
 };
 
 void IndexFileFreeType(FT_Library ft_library,
-                       blink::FontUniqueNameTable* font_table,
-                       const std::string& font_file_path,
+                       blink::FontUniqueNameTable& font_table,
+                       base::cstring_view font_file_path,
                        uint32_t ttc_index) {
-  ScopedFtFace face(ft_library, font_file_path.c_str(), ttc_index);
+  ScopedFtFace face(ft_library, font_file_path, ttc_index);
 
   if (!face.IsValid() || !FT_Get_Sfnt_Name_Count(face.get()))
     return;
 
   blink::FontUniqueNameTable_UniqueFont* added_unique_font =
-      font_table->add_fonts();
-  added_unique_font->set_file_path(font_file_path);
+      font_table.add_fonts();
+  added_unique_font->set_file_path(std::string(font_file_path));
   added_unique_font->set_ttc_index(ttc_index);
 
-  int added_font_index = font_table->fonts_size() - 1;
+  int added_font_index = font_table.fonts_size() - 1;
 
   for (size_t i = 0; i < FT_Get_Sfnt_Name_Count(face.get()); ++i) {
     FT_SfntName sfnt_name;
@@ -159,32 +164,72 @@ void IndexFileFreeType(FT_Library ft_library,
     sfnt_name_unicode.toUTF8String(sfnt_name_string);
 
     blink::FontUniqueNameTable_UniqueNameToFontMapping* name_mapping =
-        font_table->add_name_map();
+        font_table.add_name_map();
     name_mapping->set_font_name(blink::IcuFoldCase(sfnt_name_string));
     name_mapping->set_font_index(added_font_index);
   }
 }
 
 int32_t NumberOfFacesInFontFileFreeType(FT_Library ft_library,
-                                        const std::string& font_filename) {
+                                        base::cstring_view font_filename) {
   // According to FreeType documentation calling FT_Open_Face with a negative
   // index value allows us to probe how many fonts can be found in a font file
   // (which can be a single font ttf or a TrueType collection (.ttc)).
-  ScopedFtFace probe_face(ft_library, font_filename.c_str(), -1);
+  ScopedFtFace probe_face(ft_library, font_filename, -1);
   if (!probe_face.IsValid())
     return 0;
   return probe_face.get()->num_faces;
 }
 
-void IndexFilesFreeType(const std::vector<std::string>& fonts_to_index,
-                        blink::FontUniqueNameTable* font_table) {
+void IndexFilesFreeType(const base::span<std::string> fonts_to_index,
+                        blink::FontUniqueNameTable& font_table) {
   ScopedFtLibrary ft_library;
   for (const auto& font_file : fonts_to_index) {
     int32_t number_of_faces =
         NumberOfFacesInFontFileFreeType(ft_library.get(), font_file);
     for (int32_t i = 0; i < number_of_faces; ++i) {
-      TRACE_EVENT0("fonts", "FontUniqueNameLookup::UpdateTable - IndexFile");
+      TRACE_EVENT0("fonts",
+                   "FontUniqueNameLookup::UpdateTable - IndexFileFreeType");
       IndexFileFreeType(ft_library.get(), font_table, font_file, i);
+    }
+  }
+}
+
+void IndexFileFontations(blink::FontUniqueNameTable& font_table,
+                         std::string_view font_file_path,
+                         uint32_t ttc_index) {
+  rust::Vec<rust::String> english_unique_font_names =
+      name_table_access::english_unique_font_names(
+          base::StringPieceToRustSlice(font_file_path), ttc_index);
+
+  if (english_unique_font_names.empty()) {
+    return;
+  }
+
+  blink::FontUniqueNameTable_UniqueFont* added_unique_font =
+      font_table.add_fonts();
+  added_unique_font->set_file_path(std::string(font_file_path));
+  added_unique_font->set_ttc_index(ttc_index);
+
+  int added_font_index = font_table.fonts_size() - 1;
+
+  for (const rust::String& entry : english_unique_font_names) {
+    blink::FontUniqueNameTable_UniqueNameToFontMapping* name_mapping =
+        font_table.add_name_map();
+    name_mapping->set_font_name(blink::IcuFoldCase(std::string(entry)));
+    name_mapping->set_font_index(added_font_index);
+  }
+}
+
+void IndexFilesFontations(const base::span<std::string>& fonts_to_index,
+                          blink::FontUniqueNameTable& font_table) {
+  for (const auto& font_file : fonts_to_index) {
+    int32_t number_of_faces = name_table_access::indexable_num_fonts(
+        base::StringPieceToRustSlice(font_file));
+    for (int32_t ttc_index = 0; ttc_index < number_of_faces; ++ttc_index) {
+      TRACE_EVENT0("fonts",
+                   "FontUniqueNameLookup::UpdateTable - IndexFileFontations");
+      IndexFileFontations(font_table, font_file, ttc_index);
     }
   }
 }
@@ -266,7 +311,11 @@ bool FontUniqueNameLookup::UpdateTable() {
   font_table.set_stored_for_platform_version_identifier(
       GetAndroidBuildFingerprint());
 
-  IndexFilesFreeType(font_files_to_index, &font_table);
+  if (base::FeatureList::IsEnabled(features::kFontIndexingFontations)) {
+    IndexFilesFontations(font_files_to_index, font_table);
+  } else {
+    IndexFilesFreeType(font_files_to_index, font_table);
+  }
 
   blink::FontTableMatcher::SortUniqueNameTableForSearch(&font_table);
 
