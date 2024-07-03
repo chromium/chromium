@@ -1,6 +1,3 @@
-# crbug.com/1515446
--org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
-
 # TODO(rnanjappan):Create separate bugs once trybot is setup for fyi
 -org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.*
 
