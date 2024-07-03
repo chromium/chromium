@@ -127,6 +127,10 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 // read correctly by `FocusModeController`. Also test that switching users will
 // load new user prefs.
 TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
+  auto& tasks_client1 = CreateFakeTasksClient(GetUser1AccountId());
+  AddFakeTaskList(tasks_client1, "default");
+  AddFakeTask(tasks_client1, "default", "task_id_1", "User1 Task");
+
   constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
   constexpr bool kDefaultDNDState = true;
   const focus_mode_util::SoundType kUser1SoundType =
@@ -182,11 +186,15 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
 
   // Switch users and verify that `FocusModeController` has loaded the new user
   // prefs.
+  auto& tasks_client2 = CreateFakeTasksClient(GetUser2AccountId());
+  AddFakeTaskList(tasks_client2, "task_list_id_2");
+  AddFakeTask(tasks_client2, "task_list_id_2", "task_id_2", "User2 Task");
   SwitchActiveUser(GetUser2AccountId());
   EXPECT_EQ(kUser2SessionDuration, controller->GetSessionDuration());
   EXPECT_EQ(kUser2DNDState, controller->turn_on_do_not_disturb());
-  EXPECT_EQ(task_list_id_2, controller->selected_task_list_id());
-  EXPECT_EQ(task_id_2, controller->selected_task_id());
+  EXPECT_EQ(task_list_id_2,
+            controller->tasks_model().selected_task()->task_id.list_id);
+  EXPECT_EQ(task_id_2, controller->tasks_model().selected_task()->task_id.id);
   EXPECT_EQ(kUser2SoundType, sounds_controller->sound_type());
 }
 
@@ -740,6 +748,7 @@ TEST_F(FocusModeControllerMultiUserTest, CheckTasksCompletedHistogram) {
 
   AddFakeTaskList(tasks_client, task.task_id.list_id);
   AddFakeTask(tasks_client, task.task_id.list_id, task.task_id.id, task.title);
+  controller->RequestTasksUpdateForTesting();
 
   controller->SetSelectedTask(task);
   controller->CompleteTask();

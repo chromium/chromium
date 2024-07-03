@@ -302,7 +302,7 @@ void TasksClientImpl::UpdateTask(const std::string& task_list_id,
                                  TasksClient::OnTaskSavedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
-  CHECK(!title.empty());
+  CHECK(!title.empty() || completed);
   CHECK(callback);
 
   auto* const request_sender = GetRequestSender();

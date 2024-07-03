@@ -317,10 +317,14 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
     if (is_network_connected) {
       // Fetch the selected task to verify if it is still in the uncompleted
       // state.
-      controller->tasks_provider().GetTask(
-          controller->selected_task_list_id(), controller->selected_task_id(),
-          base::BindOnce(&FocusModeTaskView::OnTaskFetched,
-                         weak_factory_.GetWeakPtr()));
+      const std::string& list_id = controller->selected_task_list_id();
+      const std::string& task_id = controller->selected_task_id();
+      if (!list_id.empty() && !task_id.empty()) {
+        controller->tasks_provider().GetTask(
+            list_id, task_id,
+            base::BindOnce(&FocusModeTaskView::OnTaskFetched,
+                           weak_factory_.GetWeakPtr()));
+      }
     }
   } else if (is_network_connected) {
     controller->tasks_provider().GetSortedTaskList(base::BindOnce(

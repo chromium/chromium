@@ -12,9 +12,11 @@
 #include "ash/system/focus_mode/focus_mode_delegate.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
+#include "ash/system/focus_mode/focus_mode_tasks_model.h"
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -44,7 +46,9 @@ class FocusModeSoundsController;
 // every timer tick.
 class ASH_EXPORT FocusModeController
     : public SessionObserver,
-      public FocusModeSoundsController::Observer {
+      public FocusModeSoundsController::Observer,
+      public FocusModeTasksModel::Observer,
+      public FocusModeTasksModel::Delegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -100,16 +104,18 @@ class ASH_EXPORT FocusModeController
   const std::optional<FocusModeSession>& current_session() const {
     return current_session_;
   }
-  const std::string& selected_task_list_id() const {
-    return selected_task_.task_id.list_id;
-  }
-  const std::string& selected_task_id() const {
-    return selected_task_.task_id.id;
-  }
-  const std::string& selected_task_title() const {
-    return selected_task_.title;
-  }
+
+  // These methods are DEPRECATED. Please go through the `tasks_model()` for all
+  // Task data.
+  // TODO(b/345781039): Remove these when callers are migrated.
+  const std::string& selected_task_list_id() const;
+  const std::string& selected_task_id() const;
+  const std::string& selected_task_title() const;
+
+  // TODO: REMOVE THIS
   FocusModeTasksProvider& tasks_provider() { return tasks_provider_; }
+
+  FocusModeTasksModel& tasks_model() { return tasks_model_; }
   FocusModeSoundsController* focus_mode_sounds_controller() const {
     return focus_mode_sounds_controller_.get();
   }
@@ -133,6 +139,21 @@ class ASH_EXPORT FocusModeController
   // Will close/create the media widget for an active focus session depending on
   // if there is a selected playlist or not.
   void OnSelectedPlaylistChanged() override;
+
+  // FocusModeTasksModel::Observer:
+  void OnSelectedTaskChanged(const std::optional<FocusModeTask>& task) override;
+  void OnTasksUpdated(const std::vector<FocusModeTask>& tasks) override;
+  void OnTaskCompleted(const FocusModeTask& completed_task) override;
+
+  // FocusModeTasksModel::Delegate:
+  void FetchTask(
+      const TaskId& task_id,
+      FocusModeTasksModel::Delegate::FetchTaskCallback callback) override;
+  void FetchTasks() override;
+  void AddTask(
+      const FocusModeTasksModel::TaskUpdate& update,
+      FocusModeTasksModel::Delegate::FetchTaskCallback callback) override;
+  void UpdateTask(const FocusModeTasksModel::TaskUpdate& update) override;
 
   // Extends an active focus session by ten minutes by clicking the `+10 min`
   // button.
@@ -194,6 +215,8 @@ class ASH_EXPORT FocusModeController
   // Get the request id for the media session played for Focus Sounds.
   const base::UnguessableToken& GetMediaSessionRequestId();
 
+  void RequestTasksUpdateForTesting();
+
  private:
   // Starts a focus session by updating UI elements, starting `timer_`, and
   // setting `current_session_` to the desired session duration and end time.
@@ -217,7 +240,8 @@ class ASH_EXPORT FocusModeController
 
   // Called once a session starts, and when a task is selected or deselected in
   // focus session.
-  void SaveSelectedTaskSettingsToUserPrefs();
+  void SaveSelectedTaskSettingsToUserPrefs(
+      const std::optional<FocusModeTask>& task);
 
   // Closes any open system tray bubbles. This is done whenever we start a focus
   // session.
@@ -235,8 +259,12 @@ class ASH_EXPORT FocusModeController
   void MaybeCreateMediaWidget();
   void CloseMediaWidget();
 
+  void OnTasksReceived(const std::vector<FocusModeTask>& tasks);
+
   // Gives Focus Mode access to the Google Tasks API.
   FocusModeTasksProvider tasks_provider_;
+
+  FocusModeTasksModel tasks_model_;
 
   // This is the expected duration of a Focus Mode session once it starts.
   // Depends on previous session data (from user prefs) or user input.
@@ -255,10 +283,6 @@ class ASH_EXPORT FocusModeController
   // This is used to track the current session, if any.
   std::optional<FocusModeSession> current_session_;
 
-  // This is the selected task, which can be populated from an existing task or
-  // created by the user.
-  FocusModeTask selected_task_;
-
   std::unique_ptr<FocusModeMetricsRecorder> focus_mode_metrics_recorder_;
 
   // This is used to display focus mode playlists. Playback controls will be
@@ -275,7 +299,10 @@ class ASH_EXPORT FocusModeController
 
   std::unique_ptr<FocusModeDelegate> delegate_;
 
+  base::ScopedObservation<FocusModeTasksModel, FocusModeController>
+      tasks_model_observation_{this};
   base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<FocusModeController> weak_factory_{this};
 };
 
 }  // namespace ash
