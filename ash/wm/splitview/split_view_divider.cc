@@ -369,12 +369,12 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
 }
 
 void SplitViewDivider::EnlargeOrShrinkDivider(bool should_enlarge) {
-  if (!divider_widget_ || !divider_widget_->GetNativeWindow()->IsVisible()) {
+  if (!divider_widget_ || !divider_widget_->IsVisible()) {
     return;
   }
 
   divider_widget_->SetBounds(GetDividerBoundsInScreen(should_enlarge));
-  divider_view_->RefreshDividerHandler(should_enlarge);
+  divider_view_->RefreshDividerHandler();
 }
 
 void SplitViewDivider::SetAdjustable(bool adjustable) {

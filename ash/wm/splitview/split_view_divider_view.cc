@@ -119,7 +119,7 @@ void SplitViewDividerView::Layout(PassKey) {
   }
 
   SetBoundsRect(GetLocalBounds());
-  RefreshDividerHandler(/*should_enlarge=*/false);
+  RefreshDividerHandler();
 }
 
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -322,18 +322,23 @@ void SplitViewDividerView::ResizeOnKeyEvent(bool left_or_top, bool horizontal) {
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(alert);
 }
 
-void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
+void SplitViewDividerView::RefreshDividerHandler() {
   CHECK(divider_);
 
-  const gfx::Point divider_center = bounds().CenterPoint();
+  const gfx::Rect divider_bounds = bounds();
+  const bool is_horizontal = IsLayoutHorizontal(divider_->GetRootWindow());
+  handler_view_->set_is_horizontal(is_horizontal);
+  const int divider_short_length =
+      is_horizontal ? divider_bounds.width() : divider_bounds.height();
+  const bool should_enlarge =
+      divider_short_length == kSplitviewDividerEnlargedShortSideLength;
+  const gfx::Point divider_center = divider_bounds.CenterPoint();
   const int handler_short_side = should_enlarge
                                      ? kDividerHandlerEnlargedShortSideLength
                                      : kDividerHandlerShortSideLength;
   const int handler_long_side = should_enlarge
                                     ? kDividerHandlerEnlargedLongSideLength
                                     : kDividerHandlerLongSideLength;
-  const bool is_horizontal = IsLayoutHorizontal(divider_->GetRootWindow());
-  handler_view_->set_is_horizontal(is_horizontal);
   if (is_horizontal) {
     handler_view_->SetBounds(divider_center.x() - handler_short_side / 2,
                              divider_center.y() - handler_long_side / 2,
