@@ -1949,13 +1949,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const firstHighlight = currentHighlights.item(0);
     const lastHighlight = currentHighlights.item(currentHighlights.length - 1);
     const highlightBottom = lastHighlight.getBoundingClientRect().bottom;
-    const highlightHeight =
-        highlightBottom - firstHighlight.getBoundingClientRect().top;
+    const highlightTop = firstHighlight.getBoundingClientRect().top;
+    const highlightHeight = highlightBottom - highlightTop;
     if (highlightHeight > (window.innerHeight / 2)) {
       // If the bottom of the highlight would be offscreen if we center it,
       // scroll the first highlight to the top instead of centering it.
       firstHighlight.scrollIntoView({block: 'start'});
-    } else if (highlightBottom > window.innerHeight) {
+    } else if ((highlightBottom > window.innerHeight) || (highlightTop < 0)) {
       // Otherwise center the current highlight if part of it would be cut off.
       firstHighlight.scrollIntoView({block: 'center'});
     }
