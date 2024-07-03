@@ -6035,6 +6035,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NQE.RTT.Error.Absolute" units="ms" expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Error between estimation and observation. Absolute value will be recorded
+    for both case estimation is larger than observation and observation is
+    larger than estimation. Recorded when HTTP RTT is going to be updated.
+  </summary>
+</histogram>
+
+<histogram name="NQE.RTT.Error.IsZero" enum="Boolean"
+    expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    True if estimation and observation are the same. Recorded when HTTP RTT is
+    going to be updated. computed.
+  </summary>
+</histogram>
+
+<histogram name="NQE.RTT.Error.Negative" units="ms" expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Error between estimation and observation. Only recorded if observed value is
+    smaller than estimation. Recorded when HTTP RTT is going to be updated.
+    computed.
+  </summary>
+</histogram>
+
+<histogram name="NQE.RTT.Error.Positive" units="ms" expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Error between estimation and observation. Only recorded if observed value is
+    larger than estimation. Recorded when HTTP RTT is going to be updated.
+  </summary>
+</histogram>
+
 <histogram name="NQE.RTT.ObservationSource" enum="NQEObservationSource"
     expires_after="2022-02-20">
   <owner>tbansal@chromium.org</owner>

@@ -314,6 +314,25 @@ void NetworkQualityEstimator::NotifyHeadersReceived(
   if (IsHangingRequest(observed_http_rtt))
     return;
 
+  // Metrics on estimation errors.
+  const auto& estimated_rtt = GetHttpRTT();
+  if (estimated_rtt) {
+    const base::TimeDelta estimation_error = observed_http_rtt - *estimated_rtt;
+    if (estimation_error.is_zero()) {
+      base::UmaHistogramBoolean("NQE.RTT.Error.IsZero", true);
+      base::UmaHistogramTimes("NQE.RTT.Error.Absolute", estimation_error);
+    } else {
+      base::UmaHistogramBoolean("NQE.RTT.Error.IsZero", false);
+      if (estimation_error.is_positive()) {
+        base::UmaHistogramTimes("NQE.RTT.Error.Positive", estimation_error);
+        base::UmaHistogramTimes("NQE.RTT.Error.Absolute", estimation_error);
+      } else {  // Negative.
+        base::UmaHistogramTimes("NQE.RTT.Error.Negative", -estimation_error);
+        base::UmaHistogramTimes("NQE.RTT.Error.Absolute", -estimation_error);
+      }
+    }
+  }
+
   Observation http_rtt_observation(observed_http_rtt.InMilliseconds(),
                                    tick_clock_->NowTicks(),
                                    current_network_id_.signal_strength,
