@@ -55,7 +55,16 @@
             $i18n{mv2DeprecationPanelFindAlternativeButton}
             <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
           </cr-button>
-          <cr-icon-button class="icon-more-vert header-aligned-button"
+          <cr-icon-button id="removeButton"
+              class="icon-delete-gray"
+              on-click="onRemoveButtonClick_"
+              title="$i18n{remove}"
+              aria-label$="[[getRemoveButtonLabelFor_(item.name)]]"
+              hidden$="[[!showExtensionRemoveButton_(item,
+                  mv2ExperimentStage)]]">
+          </cr-icon-button>
+          <cr-icon-button id="actionMenuButton"
+              class="icon-more-vert header-aligned-button"
               on-click="onExtensionActionMenuClick_"
               title="$i18n{moreOptions}"
               aria-label="[[getActionMenuButtonLabelFor_(item.name)]]"

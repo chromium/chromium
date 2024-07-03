@@ -141,6 +141,13 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         assertDeepEquals([recommendationsUrl], mockDelegate.getArgs('openUrl'));
       });
 
+  test('remove button is always hidden', function() {
+    const extension = getExtension();
+    const removeButton =
+        extension.querySelector<CrIconButtonElement>('#removeButton');
+    assertFalse(isVisible(removeButton));
+  });
+
   test(
       'remove action is visible if extension can be removed, and triggers' +
           'the extension removal when clicked',
@@ -148,7 +155,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         // Open the extension's action menu button.
         let extension = getExtension();
         let actionButton =
-            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
 
@@ -180,7 +187,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         // action closed the menu.
         extension = getExtension();
         actionButton =
-            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
 
@@ -197,7 +204,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         // Open the extension's action menu button.
         const extension = getExtension();
         const actionButton =
-            extension.querySelector<CrIconButtonElement>('cr-icon-button');
+            extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
 

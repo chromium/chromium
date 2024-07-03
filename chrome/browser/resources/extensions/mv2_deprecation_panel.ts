@@ -140,6 +140,18 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
+   * Returns whether the extensions remove button should be displayed.
+   */
+  private showExtensionRemoveButton_(
+      extension: chrome.developerPrivate.ExtensionInfo): boolean {
+    // Button is only visible for the disabled stage iff extension doesn't need
+    // to remain installed.
+    return this.mv2ExperimentStage ===
+        Mv2ExperimentStage.DISABLE_WITH_REENABLE &&
+        !extension.mustRemainInstalled;
+  }
+
+  /**
    * Returns whether the extensions action menu button should be displayed.
    */
   private showExtensionActionMenuButton_(): boolean {
@@ -147,6 +159,14 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
     // TODO(crbug.com/339061151): Button should also be visible for the
     // disabled stage (and have a different callback).
     return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING;
+  }
+
+  /**
+   * Returns the accessible label for the remove button corresponding to
+   * `extensionName`.
+   */
+  private getRemoveButtonLabelFor_(extensionName: string): string {
+    return this.i18n('mv2DeprecationPanelRemoveButtonAccLabel', extensionName);
   }
 
   /**
@@ -201,6 +221,20 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
+   * Triggers an extension removal when the remove button is clicked for an
+   * extension.
+   */
+  private onRemoveButtonClick_(
+      event: DomRepeatEvent<chrome.developerPrivate.ExtensionInfo>): void {
+    assert(
+        this.mv2ExperimentStage === Mv2ExperimentStage.DISABLE_WITH_REENABLE);
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Disabled.RemoveExtension');
+    this.$.actionMenu.close();
+    this.delegate.deleteItem(event.model.item.id);
+  }
+
+  /**
    * Opens the action menu for a specific extension when the action menu button
    * is clicked.
    */
@@ -212,8 +246,8 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
   }
 
   /**
-   * Triggers an extension removal when the remove button is clicked for an
-   * extension.
+   * Triggers an extension removal when the remove button in the action menu
+   * is clicked for an extension.
    */
   private onRemoveExtensionActionClicked_(): void {
     assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);

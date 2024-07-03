@@ -828,6 +828,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
           Chromium recommends that you remove it. Learn more about supported extensions
         </message>
+        <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_REMOVE_BUTTON_ACC_LABEL" desc="The (accessible) label for the button to remove an extension.">
+          Remove <ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph> from Chromium
+        </message>
       </if>
 
       <!-- Extension Safety Check Detail Page strings -->
