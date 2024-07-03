@@ -154,6 +154,17 @@
             label="$i18n{autoPinNewTabGroups}">
         </settings-toggle-button>
 
+        <div class="cr-row">
+          <div class="flex cr-padded-text" aria-hidden="true">
+            $i18n{sidePanelPosition}
+          </div>
+          <settings-dropdown-menu id="sidePanelPosition"
+              label="$i18n{sidePanelPosition}"
+              pref="{{prefs.side_panel.is_right_aligned}}"
+              menu-options="[[sidePanelOptions_]]">
+          </settings-dropdown-menu>
+        </div>
+
         <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
           <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
           <settings-toggle-button id="hoverCardMemoryUsageToggle"
@@ -180,29 +191,6 @@
             </settings-toggle-button>
           </div>
         </template>
-
-        <div class="cr-row">$i18n{sidePanel}</div>
-        <div class="list-frame">
-          <settings-radio-group
-              id="side-panel"
-              pref="{{prefs.side_panel.is_right_aligned}}"
-              group-aria-label="$i18n{sidePanel}">
-            <controlled-radio-button
-                class="list-item"
-                pref="[[prefs.side_panel.is_right_aligned]]"
-                label="$i18n{sidePanelAlignRight}"
-                name="true"
-                no-extension-indicator>
-            </controlled-radio-button>
-            <controlled-radio-button
-                class="list-item"
-                pref="[[prefs.side_panel.is_right_aligned]]"
-                label="$i18n{sidePanelAlignLeft}"
-                name="false"
-                no-extension-indicator>
-            </controlled-radio-button>
-          </settings-radio-group>
-        </div>
 
 <if expr="is_linux">
         <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
