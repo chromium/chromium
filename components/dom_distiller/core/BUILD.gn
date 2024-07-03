@@ -38,7 +38,6 @@ static_library("core") {
     "pref_names.h",
     "task_tracker.cc",
     "task_tracker.h",
-    "url_constants.cc",
     "url_constants.h",
     "url_utils.cc",
     "url_utils.h",
