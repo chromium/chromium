@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -234,6 +235,12 @@ class TemplateURLServiceSyncTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+
+  // We have two `TestingPrefServiceSimple` to initialize two
+  // `TemplateURLServiceTestUtil`.
+  TestingPrefServiceSimple local_state_a_;
+  TestingPrefServiceSimple local_state_b_;
+
   // We keep two TemplateURLServices to test syncing between them.
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_a_;
   std::unique_ptr<TemplateURLServiceTestUtil> test_util_b_;
@@ -261,14 +268,14 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
 
 void TemplateURLServiceSyncTest::SetUp() {
   DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
-  test_util_a_ = std::make_unique<TemplateURLServiceTestUtil>();
+  test_util_a_ = std::make_unique<TemplateURLServiceTestUtil>(local_state_a_);
   // Use ChangeToLoadState() instead of VerifyLoad() so we don't actually pull
   // in the prepopulate data, which the sync tests don't care about (and would
   // just foul them up).
   test_util_a_->ChangeModelToLoadState();
   test_util_a_->ResetObserverCount();
 
-  test_util_b_ = std::make_unique<TemplateURLServiceTestUtil>();
+  test_util_b_ = std::make_unique<TemplateURLServiceTestUtil>(local_state_b_);
   test_util_b_->VerifyLoad();
 }
 

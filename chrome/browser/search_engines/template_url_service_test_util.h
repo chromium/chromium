@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/template_url.h"
@@ -58,8 +59,12 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
 class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
  public:
   TemplateURLServiceTestUtil();
+
+  explicit TemplateURLServiceTestUtil(PrefService& local_state);
+
   explicit TemplateURLServiceTestUtil(
-      TestingProfile::TestingFactories testing_factories);
+      TestingProfile::TestingFactories testing_factories,
+      PrefService* local_state = nullptr);
 
   TemplateURLServiceTestUtil(const TemplateURLServiceTestUtil&) = delete;
   TemplateURLServiceTestUtil& operator=(const TemplateURLServiceTestUtil&) =
@@ -118,6 +123,15 @@ class TemplateURLServiceTestUtil : public TemplateURLServiceObserver {
   }
 
  private:
+  // Populated only if the calling test did not previously set up a
+  // local state. This object would then own the process-global local
+  // state.
+  // Don't access it directly, prefer using `local_state_` instead.
+  std::unique_ptr<ScopedTestingLocalState> owned_local_state_;
+
+  // We pass `local_state_` to the constructor in some cases where we can't
+  // or don't want to use `g_browser_process->local_state()`.
+  raw_ptr<PrefService> local_state_;
   std::unique_ptr<TestingProfile> profile_;
   int changed_count_ = 0;
   std::u16string search_term_;

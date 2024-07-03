@@ -17,6 +17,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -127,8 +129,14 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
 TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
     : TemplateURLServiceTestUtil(TestingProfile::TestingFactories()) {}
 
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(PrefService& local_state)
+    : TemplateURLServiceTestUtil(TestingProfile::TestingFactories(),
+                                 &local_state) {}
+
 TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
-    TestingProfile::TestingFactories testing_factories) {
+    TestingProfile::TestingFactories testing_factories,
+    PrefService* local_state)
+    : local_state_(local_state) {
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactories(std::move(testing_factories));
   profile_ = profile_builder.Build();
@@ -146,9 +154,20 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   web_data_service_->Init(base::NullCallback());
 
+  if (!local_state_) {
+    if (g_browser_process->local_state()) {
+      local_state_ = g_browser_process->local_state();
+    } else {
+      // `g_browser_process->local_state()` might be null in unit tests.
+      owned_local_state_ = std::make_unique<ScopedTestingLocalState>(
+          TestingBrowserProcess::GetGlobal());
+      local_state_ = owned_local_state_->Get();
+    }
+  }
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
-          *profile_->GetPrefs(), *g_browser_process->local_state());
+          *profile_->GetPrefs(), *local_state_);
 
   ResetModel(false);
 }
