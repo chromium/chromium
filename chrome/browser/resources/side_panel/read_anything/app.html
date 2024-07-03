@@ -152,18 +152,14 @@
         id="toolbar">
     </read-anything-toolbar>
   </div>
-  <div
-      id="container-parent"
-      class="sp-card sp-scroller"
+  <div id="container-parent" class="sp-card sp-scroller"
       hidden="[[!hasContent_]]">
-    <div
-        id="container"
+    <div id="container"
         class$="user-select-disabled-when-speech-active-[[speechPlayingState.isSpeechActive]]">
-  </div>
+    </div>
   </div>
   <div id="empty-state-container" hidden="[[hasContent_]]">
-    <sp-empty-state
-        image-path="[[emptyStateImagePath_]]"
+    <sp-empty-state image-path="[[emptyStateImagePath_]]"
         dark-image-path="[[emptyStateDarkImagePath_]]"
         heading="[[emptyStateHeading_]]"
         body="[[emptyStateSubheading_]]">

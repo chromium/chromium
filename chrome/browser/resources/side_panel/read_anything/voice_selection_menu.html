@@ -87,41 +87,31 @@
 
 <cr-lazy-render id="voiceSelectionMenu">
   <template>
-    <cr-action-menu
-        on-close="onClose_"
-        on-keydown="onVoiceMenuKeyDown_"
+    <cr-action-menu on-close="onClose_" on-keydown="onVoiceMenuKeyDown_"
         accessibility-label="$i18n{voiceSelectionLabel}"
         role-description="$i18n{menu}">
-      <template
-          is="dom-repeat"
-          items="[[downloadingMessages_]]"
+      <template is="dom-repeat" items="[[downloadingMessages_]]"
           initial-count="0">
         <span class="dropdown-line download-message">[[item]]</span>
       </template>
 
-      <template
-          is="dom-repeat"
-          items="[[voiceSelectionOptions_]]"
+      <template is="dom-repeat" items="[[voiceSelectionOptions_]]"
           initial-count="20">
         <span class="dropdown-line lang-group-title">[[item.language]]</span>
 
         <template is="dom-repeat" items="[[item.voices]]" initial-count="20">
-          <button
-              data-test-id$="[[item.id]]"
+          <button data-test-id$="[[item.id]]"
               class="dropdown-item dropdown-voice-selection-button"
               on-click="onVoiceSelectClick_">
             <span class="voice-name">
-              <cr-icon
-                  id="check-mark"
+              <cr-icon id="check-mark"
                   class$="item-invisible-[[!item.selected]] check-mark"
                   icon="read-anything-20:check-mark"
                   aria-label="$i18n{selected}">
               </cr-icon>
               [[item.title]]
             </span>
-            <cr-icon-button
-                id="preview-icon"
-                on-click="onVoicePreviewClick_"
+            <cr-icon-button id="preview-icon" on-click="onVoicePreviewClick_"
                 title$="[[previewLabel_(item.previewPlaying,'')]]"
                 aria-label$="[[previewAriaLabel_(item.previewPlaying,item.title)]]"
                 iron-icon="[[previewIcon_(item.previewPlaying)]]">
@@ -143,8 +133,7 @@
 
 <cr-lazy-render id="languageMenu">
   <template>
-    <language-menu
-        enabled-langs="[[enabledLangs]]"
+    <language-menu enabled-langs="[[enabledLangs]]"
         voice-pack-install-status="[[voicePackInstallStatus]]"
         locale-to-display-name="[[localeToDisplayName]]"
         last-downloaded-lang="[[lastDownloadedLang]]"

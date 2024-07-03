@@ -97,24 +97,18 @@
 <cr-dialog id="languageMenu" ignore-popstate on-close="onCloseDialog_">
   <div slot="title" class="language-menu-title-bar">
     <div class="language-menu-title">$i18n{readingModeLanguageMenuTitle}</div>
-    <cr-icon-button
-        id="close"
-        class="action-icon language-menu-close-button"
+    <cr-icon-button id="close" class="action-icon language-menu-close-button"
         iron-icon="cr:close"
         on-click="closeLanguageMenu_"
         aria-label="$i18n{readingModeLanguageMenuClose}">
     </cr-icon-button>
   </div>
   <div slot="header">
-    <cr-input
-        class="search-field"
-        type="search"
+    <cr-input class="search-field" type="search"
         placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
         value="{{languageSearchValue_}}">
       <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
-      <cr-icon-button
-          iron-icon="cr:clear"
-          hidden$="[[!languageSearchValue_]]"
+      <cr-icon-button iron-icon="cr:clear" hidden$="[[!languageSearchValue_]]"
           slot="inline-suffix"
           on-click="onClearSearchClick_"
           title="$i18n{readingModeLanguageMenuSearchClear}">
@@ -122,29 +116,22 @@
     </cr-input>
   </div>
   <div slot="body" class="language-menu-body">
-    <span
-        id="noResultsMessage"
+    <span id="noResultsMessage"
         hidden$="[[searchHasLanguages(availableLanguages_, languageSearchValue_)]]">
       $i18n{languageMenuNoResults}
     </span>
-    <template
-        is="dom-repeat"
-        initial-count="34"
-        index-as="index"
+    <template is="dom-repeat" initial-count="34" index-as="index"
         items="[[availableLanguages_]]">
       <div class="language-line dropdown-line">
         <span id$="language-name-[[index]]" class="language-name">
           [[item.readableLanguage]]
         </span>
-        <cr-toggle
-            checked="[[item.checked]]"
-            on-change="onToggleChange_"
+        <cr-toggle checked="[[item.checked]]" on-change="onToggleChange_"
             disabled$="[[item.disabled]]"
             aria-labelledby$="language-name-[[index]]">
         </cr-toggle>
       </div>
-      <span
-          id="notificationText"
+      <span id="notificationText"
           class$="notification-error-[[item.notification.isError]]"
           aria-live="polite">
         [[i18nWraper(item.notification.text)]]
