@@ -1637,6 +1637,8 @@ static_library("ui") {
       "toolbar/toolbar_pref_names.h",
       "translate/translate_bubble_factory.cc",
       "translate/translate_bubble_factory.h",
+      "translate_browser_action_listener.cc",
+      "translate_browser_action_listener.h",
       "uma_browsing_activity_observer.cc",
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",

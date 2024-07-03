@@ -185,13 +185,40 @@ void PinnedActionToolbarButton::Layout(PassKey) {
   status_indicator_->SetBoundsRect(status_rect);
 }
 
+void PinnedActionToolbarButton::UpdateIcon() {
+  const std::optional<VectorIcons>& icons = GetVectorIcons();
+  if (!icons.has_value()) {
+    return;
+  }
+
+  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
+                                    ? icons->touch_icon
+                                    : icons->icon;
+
+  if (is_icon_visible_ && action_engaged_) {
+    UpdateIconsWithColors(icon,
+                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
+                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
+                          GetColorProvider()->GetColor(ui::kColorSysPrimary),
+                          GetForegroundColor(ButtonState::STATE_DISABLED));
+  } else {
+    UpdateIconsWithColors(icon, GetForegroundColor(ButtonState::STATE_NORMAL),
+                          GetForegroundColor(ButtonState::STATE_HOVERED),
+                          GetForegroundColor(ButtonState::STATE_PRESSED),
+                          GetForegroundColor(ButtonState::STATE_DISABLED));
+  }
+}
+
+void PinnedActionToolbarButton::SetActionEngaged(bool action_engaged) {
+  action_engaged_ = action_engaged;
+}
+
 void PinnedActionToolbarButton::HideStatusIndicator() {
   status_indicator_->Hide();
 }
 
-void PinnedActionToolbarButton::UpdateStatusIndicator(
-    bool should_show_status_indicator) {
-  if (should_show_status_indicator) {
+void PinnedActionToolbarButton::UpdateStatusIndicator() {
+  if (action_engaged_ && is_icon_visible_) {
     status_indicator_->Show();
   } else {
     status_indicator_->Hide();
@@ -317,6 +344,11 @@ PinnedActionToolbarButtonActionViewInterface::
 void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
   ButtonActionViewInterface::ActionItemChangedImpl(action_item);
+
+  // Update whether the action is engaged before updating the view.
+  action_view_->SetActionEngaged(
+      action_item->GetProperty(kActionItemUnderlineIndicatorKey));
+
   OnViewChangedImpl(action_item);
   action_view_->SetIsPinnable(
       action_item->GetProperty(actions::kActionItemPinnableKey));
@@ -363,6 +395,7 @@ void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
                 IDS_PINNED_ACTION_BUTTON_ACCESSIBLE_TITLE, accessible_name)
           : accessible_name;
   action_view_->GetViewAccessibility().SetName(stateful_accessible_name);
+  action_view_->UpdateStatusIndicator();
 }
 
 BEGIN_METADATA(PinnedActionToolbarButton)

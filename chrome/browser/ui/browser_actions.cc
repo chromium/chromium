@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_actions.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/translate_browser_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
@@ -390,4 +392,10 @@ void BrowserActions::InitializeBrowserActions() {
           IDS_PAYMENT_METHOD_SUBMENU_OPTION, kCreditCardChromeRefreshIcon)
           .SetEnabled(!is_guest_session)
           .Build());
+  AddListeners();
+}
+
+void BrowserActions::AddListeners() {
+  translate_browser_action_listener_ =
+      std::make_unique<TranslateBrowserActionListener>(browser_.get());
 }

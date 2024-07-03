@@ -453,7 +453,8 @@ TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
       pinned_buttons[0]->GetStatusIndicatorForTesting();
   EXPECT_EQ(status_indicator->GetVisible(), false);
   // Make indicator visible.
-  pinned_buttons[0]->UpdateStatusIndicator(true);
+  pinned_buttons[0]->SetActionEngaged(true);
+  pinned_buttons[0]->UpdateStatusIndicator();
   EXPECT_EQ(status_indicator->GetVisible(), true);
   // Hide indicator.
   pinned_buttons[0]->HideStatusIndicator();

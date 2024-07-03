@@ -148,6 +148,13 @@ class ToolbarButton : public views::LabelButton,
   bool GetVectorIconsHasValueForTesting() { return vector_icons_.has_value(); }
 
  protected:
+  struct VectorIcons {
+    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
+    // global), so there is no benefit to using a raw_ptr, only cost.
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
+  };
+
   // Returns if menu should be shown. Override this to change default behavior.
   virtual bool ShouldShowMenu();
 
@@ -192,6 +199,10 @@ class ToolbarButton : public views::LabelButton,
   // Virtual method to explicitly set the highlighted border color instead of
   // the default behavior of the HighlightColorAnimation.
   virtual std::optional<SkColor> GetHighlightBorderColor() const;
+
+  const std::optional<VectorIcons>& GetVectorIcons() const {
+    return vector_icons_;
+  }
 
   // Sets the spacing on the outer side of the label (not the side where the
   // image is). The spacing is applied only when the label is non-empty.
@@ -268,13 +279,6 @@ class ToolbarButton : public views::LabelButton,
     // background) when it becomes non-empty and hiding it when it becomes empty
     // again.
     gfx::SlideAnimation highlight_color_animation_;
-  };
-
-  struct VectorIcons {
-    // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a
-    // global), so there is no benefit to using a raw_ptr, only cost.
-    RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
-    RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
   };
 
   void TouchUiChanged();

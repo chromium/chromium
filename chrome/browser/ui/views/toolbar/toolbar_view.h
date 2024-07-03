@@ -360,4 +360,6 @@ class ToolbarView : public views::AccessiblePaneView,
   base::CallbackListSubscription active_state_subscription_;
 };
 
+extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;
+
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_

@@ -46,6 +46,8 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void SetShouldShowEphemerallyInToolbar(bool should_show_in_toolbar) {
     should_show_in_toolbar_ = should_show_in_toolbar;
   }
+  void SetActionEngaged(bool action_engaged);
+  void UpdateIcon() override;
   bool ShouldShowEphemerallyInToolbar() { return should_show_in_toolbar_; }
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
@@ -62,7 +64,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void Layout(PassKey) override;
 
   void UpdatePinnedStateForContextMenu();
-  void UpdateStatusIndicator(bool should_show_status_indicator);
+  void UpdateStatusIndicator();
   void HideStatusIndicator();
   PinnedToolbarButtonStatusIndicator* GetStatusIndicatorForTesting() {
     return status_indicator_;
@@ -95,6 +97,8 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool needs_delayed_destruction_ = false;
   bool is_pinnable_ = false;
   bool is_icon_visible_ = true;
+  bool action_engaged_ = false;
+
   // Set when a button should be shown in the toolbar regardless of whether it
   // is pinned or active. This is used in cases like when the recent download
   // button should be visible after a download.

@@ -10,7 +10,6 @@
 
 #include "base/no_destructor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-
 namespace actions {
 
 namespace {
@@ -352,6 +351,10 @@ void ActionItem::SetAccelerator(ui::Accelerator accelerator) {
     return;
   }
   accelerator_ = accelerator;
+  ActionItemChanged();
+}
+
+void ActionItem::AfterPropertyChange(const void* key, int64_t old_value) {
   ActionItemChanged();
 }
 

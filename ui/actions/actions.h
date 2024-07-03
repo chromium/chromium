@@ -276,6 +276,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   // ActionChanged callbacks for each state change.
   [[nodiscard]] ScopedActionUpdate BeginUpdate();
 
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
+
   // Invoke an action.
   void InvokeAction(
       ActionInvocationContext context = ActionInvocationContext());
