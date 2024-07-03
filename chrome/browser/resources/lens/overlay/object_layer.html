@@ -13,15 +13,6 @@
     display: none;
   }
 
-  :host(:not([precise-highlight])) #hiddenCanvas {
-    display: none;
-  }
-
-  #hiddenCanvas {
-    opacity: 0;
-  }
-
-  #hiddenCanvas,
   #objectSelectionCanvas {
     top: 0;
     left: 0;
@@ -32,13 +23,9 @@
 <canvas id="objectSelectionCanvas" height="[[canvasPhysicalHeight]]"
   width="[[canvasPhysicalWidth]]"
   style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
-<canvas id="hiddenCanvas" height="[[canvasPhysicalHeight]]"
-  width="[[canvasPhysicalWidth]]"
-  style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
 <template id="objectsContainer" is="dom-repeat" items="[[renderedObjects]]">
   <div style$="[[getObjectStyle(item)]]" class="object"
-    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave"
-    on-pointermove="handlePointerMove">
+    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   </div>
 </template>
 <!-- Provides image source for canvas; element is not displayed. -->

@@ -24,7 +24,7 @@ import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {Vertex} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {CursorData} from './selection_overlay.js';
-import {CursorType, focusShimmerOnRegion, type GestureEvent, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import {CursorType, focusShimmerOnRegion, type GestureEvent, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
 
 // The percent of the selection layer width and height the object needs to take
@@ -150,7 +150,6 @@ function toCssPolygonVertex(object: OverlayObject, vertex: Vertex): string {
 
 export interface ObjectLayerElement {
   $: {
-    hiddenCanvas: HTMLCanvasElement,
     highlightImg: HTMLImageElement,
     objectsContainer: DomRepeat,
     objectSelectionCanvas: HTMLCanvasElement,
@@ -184,11 +183,6 @@ export class ObjectLayerElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('enableDebuggingMode'),
         reflectToAttribute: true,
       },
-      preciseHighlight: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enablePreciseHighlight'),
-        reflectToAttribute: true,
-      },
       theme: {
         type: Object,
         value: getFallbackTheme,
@@ -202,10 +196,7 @@ export class ObjectLayerElement extends PolymerElement {
   private canvasWidth: number;
   private canvasPhysicalHeight: number;
   private canvasPhysicalWidth: number;
-  // Whether canvas is currently blank.
-  private canvasIsBlank: boolean = true;
   private context: CanvasRenderingContext2D;
-  private hiddenContext?: CanvasRenderingContext2D;
   // The data URI of the current overlay screenshot.
   private screenshotDataUri: string;
   // The objects rendered in this layer.
@@ -213,8 +204,6 @@ export class ObjectLayerElement extends PolymerElement {
   // The last post selection made. Updated by events from the post selection
   // layer.
   private lastPostSelection: PostSelectionBoundingBox|null = null;
-  // Whether precise object highlighting is enabled.
-  private preciseHighlight: boolean;
   // The overlay theme.
   private theme: OverlayTheme;
   private fadeOutAnimations: Animation[] = [];
@@ -230,9 +219,6 @@ export class ObjectLayerElement extends PolymerElement {
     super.ready();
 
     this.context = this.$.objectSelectionCanvas.getContext('2d')!;
-    if (this.preciseHighlight) {
-      this.hiddenContext = this.$.hiddenCanvas.getContext('2d')!;
-    }
   }
 
   override connectedCallback() {
@@ -286,7 +272,18 @@ export class ObjectLayerElement extends PolymerElement {
     return true;
   }
 
-  private onSegmentationHovered(object: OverlayObject) {
+  private handlePointerEnter(event: PointerEvent) {
+    assertInstanceof(event.target, HTMLElement);
+
+    // Only continue if we have an object that has a segmentation mask and is
+    // not already selected.
+    const object = this.$.objectsContainer.itemForElement(event.target);
+    if (object === null || !hasSegmentationMask(object) ||
+        this.isRegionAlreadySelected(
+            this.getPostSelectionRegion(object.geometry!.boundingBox))) {
+      return;
+    }
+
     this.clearAndCancelAnimation();
     this.drawObject(this.context, object);
     this.focusShimmer(object);
@@ -305,13 +302,25 @@ export class ObjectLayerElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
-    // Only show the pointer if the object has a segmentation mask.
-    if (hasSegmentationMask(object)) {
-      this.style.cursor = 'pointer';
-    }
+    this.style.cursor = 'pointer';
   }
 
-  private onSegmentationUnhovered() {
+  private isRegionAlreadySelected(boundingBox: PostSelectionBoundingBox):
+      boolean {
+    if (this.lastPostSelection === null) {
+      return false;
+    }
+    return Math.abs(boundingBox.top - this.lastPostSelection.top) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.left - this.lastPostSelection.left) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.width - this.lastPostSelection.width) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.height - this.lastPostSelection.height) <=
+        this.postSelectionComparisonThreshold;
+  }
+
+  private handlePointerLeave() {
     this.fadeOutAnimations.push(
         this.$.objectSelectionCanvas.animate({opacity: 0}, {
           duration: CURSOR_FADE_OUT_TRANSITION_DURATION,
@@ -339,81 +348,6 @@ export class ObjectLayerElement extends PolymerElement {
     this.style.cursor = 'unset';
   }
 
-  private handlePointerEnter(event: PointerEvent) {
-    assertInstanceof(event.target, HTMLElement);
-
-    // If the object being hovered is already selected, exit early.
-    const object = this.$.objectsContainer.itemForElement(event.target);
-    if (object &&
-        this.isRegionAlreadySelected(
-            this.getPostSelectionRegion(object.geometry!.boundingBox))) {
-      return;
-    }
-
-    if (this.preciseHighlight) {
-      // Draw the object in the hidden canvas which is used to highlight the
-      // object in the visible canvas when the pointer is inside the object.
-      this.drawObject(this.hiddenContext!, object);
-    } else {
-      this.onSegmentationHovered(object);
-    }
-  }
-
-  private isRegionAlreadySelected(boundingBox: PostSelectionBoundingBox):
-      boolean {
-    if (this.lastPostSelection === null) {
-      return false;
-    }
-    return Math.abs(boundingBox.top - this.lastPostSelection.top) <=
-        this.postSelectionComparisonThreshold &&
-        Math.abs(boundingBox.left - this.lastPostSelection.left) <=
-        this.postSelectionComparisonThreshold &&
-        Math.abs(boundingBox.width - this.lastPostSelection.width) <=
-        this.postSelectionComparisonThreshold &&
-        Math.abs(boundingBox.height - this.lastPostSelection.height) <=
-        this.postSelectionComparisonThreshold;
-  }
-
-  private handlePointerLeave() {
-    if (this.preciseHighlight) {
-      // Clear the hidden canvas and reset state.
-      this.clearCanvas(this.hiddenContext!);
-      this.canvasIsBlank = true;
-    }
-    this.onSegmentationUnhovered();
-  }
-
-  private handlePointerMove(event: MouseEvent) {
-    if (!this.preciseHighlight) {
-      return;
-    }
-
-    // Convert the mouse position to be relative to the canvas instead of the
-    // viewport.
-    const relativeCoord = getRelativeCoordinate(
-        {x: event.clientX, y: event.clientY}, this.getBoundingClientRect());
-
-    assertInstanceof(event.target, HTMLElement);
-    if (this.hiddenContext!.isPointInPath(
-            relativeCoord.x * window.devicePixelRatio,
-            relativeCoord.y * window.devicePixelRatio)) {
-      // Ensure the object is drawn only once.
-      if (!this.canvasIsBlank) {
-        return;
-      }
-      this.canvasIsBlank = false;
-      const object = this.$.objectsContainer.itemForElement(event.target);
-      this.onSegmentationHovered(object);
-    } else {
-      // Ensure the canvas is cleared only once.
-      if (this.canvasIsBlank) {
-        return;
-      }
-      this.canvasIsBlank = true;
-      this.onSegmentationUnhovered();
-    }
-  }
-
   setCanvasSizeTo(width: number, height: number) {
     // Resetting the canvas width and height also clears the canvas.
     this.canvasWidth = width;
@@ -422,10 +356,6 @@ export class ObjectLayerElement extends PolymerElement {
     this.canvasPhysicalHeight = height * window.devicePixelRatio;
     this.context.setTransform(
         window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    if (this.preciseHighlight) {
-      this.hiddenContext!.setTransform(
-          window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    }
   }
 
   private drawObject(context: CanvasRenderingContext2D, object: OverlayObject) {
