@@ -47,13 +47,7 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
   // Load permission strings.
   InstallPromptPermissions prompt_permissions;
   std::unique_ptr<const PermissionSet> permissions_to_display =
-      util::GetInstallPromptPermissionSetForExtension(
-          &extension, profile,
-          // Matches behavior of regular extension install prompt because this
-          // prompt is never used for delegated permissions, which is the only
-          // time optional permissions are shown.
-          false /* include_optional_permissions */
-      );
+      util::GetInstallPromptPermissionSetForExtension(&extension, profile);
   prompt_permissions.LoadFromPermissionSet(permissions_to_display.get(),
                                            extension.GetType());
   const size_t permissions_count = prompt_permissions.permissions.size();

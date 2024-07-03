@@ -113,38 +113,6 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
   EXPECT_EQ(1u, install_prompt->GetPermissionCount());
 }
 
-TEST_F(ExtensionInstallPromptUnitTest,
-       DelegatedPromptShowsOptionalPermissions) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder()
-          .SetManifest(base::Value::Dict()
-                           .Set("name", "foo")
-                           .Set("version", "1.0")
-                           .Set("manifest_version", 2)
-                           .Set("description", "Random Ext")
-                           .Set("permissions",
-                                base::Value::List().Append("clipboardRead"))
-                           .Set("optional_permissions",
-                                base::Value::List().Append("tabs")))
-          .Build();
-
-  content::TestWebContentsFactory factory;
-  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
-  ShowDialogTestFuture show_dialog_future;
-
-  std::unique_ptr<ExtensionInstallPrompt::Prompt> sub_prompt(
-      new ExtensionInstallPrompt::Prompt(
-          ExtensionInstallPrompt::DELEGATED_PERMISSIONS_PROMPT));
-  sub_prompt->set_delegated_username("Username");
-  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
-                    nullptr, std::move(sub_prompt),
-                    show_dialog_future.GetRepeatingCallback());
-
-  auto [params, done_callback, install_prompt] = show_dialog_future.Take();
-  ASSERT_TRUE(install_prompt.get());
-  EXPECT_EQ(2u, install_prompt->GetPermissionCount());
-}
-
 using ExtensionInstallPromptTestWithService = ExtensionServiceTestWithInstall;
 
 TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {

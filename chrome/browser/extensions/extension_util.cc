@@ -37,7 +37,6 @@
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
-#include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 
@@ -293,23 +292,13 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
-    Profile* profile,
-    bool include_optional_permissions) {
+    Profile* profile) {
   // Initialize permissions if they have not already been set so that
   // any transformations are correctly reflected in the install prompt.
   PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension);
 
-  std::unique_ptr<const PermissionSet> permissions_to_display =
-      extension->permissions_data()->active_permissions().Clone();
-
-  if (include_optional_permissions) {
-    const PermissionSet& optional_permissions =
-        PermissionsParser::GetOptionalPermissions(extension);
-    permissions_to_display = PermissionSet::CreateUnion(*permissions_to_display,
-                                                        optional_permissions);
-  }
-  return permissions_to_display;
+  return extension->permissions_data()->active_permissions().Clone();
 }
 
 std::vector<content::BrowserContext*> GetAllRelatedProfiles(

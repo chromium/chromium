@@ -5192,9 +5192,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_EXTENSION_CONFIRM_PERMISSIONS" desc="Titlebar of the extension or app permissions prompt window">
         Confirm Permissions
       </message>
-      <message name="IDS_EXTENSION_DELEGATED_INSTALL_PROMPT_TITLE" desc="Titlebar of the app delegated installation prompt window">
-        Add "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" for <ph name="USER_NAME">$2<ex>Wallace</ex></ph>?
-      </message>
       <message name="IDS_EXTENSION_INSTALL_PROMPT_TITLE" desc="Titlebar of the extension or app installation prompt. Asks the user if they want to install a particular extension or app.">
         Add "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"?
       </message>
@@ -6177,9 +6174,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSION_PROMPT_INSTALL_FRICTION_WARNING_TEXT" desc="The warning text displayed in the install friction dialog">
         This extension is not trusted by Enhanced Safe Browsing.
-      </message>
-      <message name="IDS_EXTENSION_PROMPT_INSTALL_BUTTON" desc="Text for the install button on the extension install prompt">
-        Add
       </message>
       <message name="IDS_EXTENSION_INSTALL_PROMPT_ACCEPT_BUTTON_EXTENSION" desc="Text for the install button on the extension install prompt, for an extension (i.e. not app or theme).">
         Add extension

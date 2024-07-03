@@ -827,12 +827,7 @@ void ParentPermissionDialogView::InitializeExtensionData(
   // Load Permissions.
   std::unique_ptr<const extensions::PermissionSet> permissions_to_display =
       extensions::util::GetInstallPromptPermissionSetForExtension(
-          extension.get(), params_->profile,
-          // Matches behavior of regular extension install prompt because this
-          // prompt is never used for delegated permissions, which the only
-          // time optional permissions are shown.
-          false /* include_optional_permissions */
-      );
+          extension.get(), params_->profile);
   extensions::Manifest::Type type = extension->GetType();
   prompt_permissions_.LoadFromPermissionSet(permissions_to_display.get(), type);
 

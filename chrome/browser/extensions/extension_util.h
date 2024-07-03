@@ -66,8 +66,7 @@ base::Value::Dict GetExtensionInfo(const Extension* extension);
 // displayed in an extension installation prompt for the specified |extension|.
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     const Extension* extension,
-    Profile* profile,
-    bool include_optional_permissions);
+    Profile* profile);
 
 // Returns all profiles affected by permissions of an extension running in
 // "spanning" (rather than "split) mode.
