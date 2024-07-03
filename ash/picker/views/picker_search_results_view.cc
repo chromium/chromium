@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -46,7 +47,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kNoResultsViewLabelMargin = gfx::Insets::VH(32, 16);
+constexpr gfx::Insets kNoResultsViewInsets(24);
+constexpr int kNoResultsIllustrationAndDescriptionSpacing = 16;
+constexpr gfx::Size kNoResultsIllustrationSize(200, 100);
 
 constexpr int kMaxIndexForMetrics = 10;
 
@@ -65,14 +68,25 @@ PickerSearchResultsView::PickerSearchResultsView(
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, submenu_controller));
   no_results_view_ = AddChildView(
-      views::Builder<views::Label>(
-          bubble_utils::CreateLabel(
-              TypographyToken::kCrosBody2,
-              l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT),
-              cros_tokens::kCrosSysOnSurfaceVariant))
+      views::Builder<views::BoxLayoutView>()
           .SetVisible(false)
-          .SetProperty(views::kMarginsKey, kNoResultsViewLabelMargin)
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetInsideBorderInsets(kNoResultsViewInsets)
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetBetweenChildSpacing(kNoResultsIllustrationAndDescriptionSpacing)
+          .AddChildren(
+              views::Builder<views::ImageView>()
+                  .CopyAddressTo(&no_results_illustration_)
+                  .SetVisible(false)
+                  .SetImageSize(kNoResultsIllustrationSize),
+              views::Builder<views::Label>(
+                  bubble_utils::CreateLabel(
+                      TypographyToken::kCrosBody2,
+                      l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT),
+                      cros_tokens::kCrosSysOnSurfaceVariant))
+                  .CopyAddressTo(&no_results_label_)
+                  .SetHorizontalAlignment(gfx::ALIGN_CENTER))
           .Build());
 
   skeleton_loader_view_ = AddChildView(
@@ -171,11 +185,15 @@ void PickerSearchResultsView::AppendSearchResults(
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
 }
 
-bool PickerSearchResultsView::SearchStopped() {
+bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
+                                            std::u16string description) {
   StopLoadingAnimation();
   if (!section_views_.empty()) {
     return false;
   }
+  no_results_illustration_->SetVisible(!illustration.IsEmpty());
+  no_results_illustration_->SetImage(std::move(illustration));
+  no_results_label_->SetText(std::move(description));
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
   return true;

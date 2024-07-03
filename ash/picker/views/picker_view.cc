@@ -31,6 +31,7 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -160,6 +161,34 @@ std::u16string GetSearchFieldPlaceholderText() {
   return l10n_util::GetStringUTF16(
       IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetNoResultsFoundDescription(PickerCategory category) {
+  switch (category) {
+    case PickerCategory::kLinks:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT);
+    case PickerCategory::kClipboard:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT);
+    case PickerCategory::kDriveFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT);
+    case PickerCategory::kLocalFiles:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT);
+    case PickerCategory::kEditorWrite:
+    case PickerCategory::kEditorRewrite:
+    case PickerCategory::kExpressions:
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
+      NOTREACHED_NORETURN();
+  }
+}
+
+const gfx::VectorIcon& GetNoResultsFoundIllustration(PickerCategory category) {
+  // TODO: b/348067874 - Add illustrations.
+  return kClipboardEmptyIcon;
 }
 
 }  // namespace
@@ -415,7 +444,9 @@ void PickerView::PublishSearchResults(
   }
 
   if (results.empty()) {
-    bool no_results_found_shown = search_results_view_->SearchStopped();
+    bool no_results_found_shown = search_results_view_->SearchStopped(
+        /*illustration=*/{},
+        l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
     if (no_results_found_shown) {
       performance_metrics_.MarkSearchResultsUpdated(
           PickerPerformanceMetrics::SearchResultsUpdate::kNoResultsFound);
@@ -507,22 +538,28 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     category_results_view_->ShowLoadingAnimation();
     SetActivePage(category_results_view_);
     delegate_->GetResultsForCategory(
-        category, base::BindRepeating(&PickerView::PublishCategoryResults,
-                                      weak_ptr_factory_.GetWeakPtr()));
+        category,
+        base::BindRepeating(&PickerView::PublishCategoryResults,
+                            weak_ptr_factory_.GetWeakPtr(), category));
   } else {
     StartSearch(std::u16string(query));
   }
 }
 
 void PickerView::PublishCategoryResults(
+    PickerCategory category,
     std::vector<PickerSearchResultsSection> results) {
   category_results_view_->ClearSearchResults();
+
   for (PickerSearchResultsSection& section : results) {
-    category_results_view_->AppendSearchResults(std::move(section));
+    if (!section.results().empty()) {
+      category_results_view_->AppendSearchResults(std::move(section));
+    }
   }
-  // We are not interested in whether the "no results found" screen was shown as
-  // we do not have performance metrics for category results.
-  (void)category_results_view_->SearchStopped();
+
+  category_results_view_->SearchStopped(
+      ui::ImageModel::FromVectorIcon(GetNoResultsFoundIllustration(category)),
+      GetNoResultsFoundDescription(category));
 }
 
 void PickerView::AddMainContainerView(PickerLayoutType layout_type) {

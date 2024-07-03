@@ -15,8 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 
 namespace views {
+class ImageView;
+class Label;
 class View;
 }
 
@@ -67,7 +70,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Marks that no more search results will be appended until a
   // `ClearSearchResults()` call.
   // Returns whether the "no more results" screen was shown.
-  bool SearchStopped();
+  // `illustration` is shown in the center, with `description` shown below it.
+  // If `illustration` is empty, then only the description is shown.
+  bool SearchStopped(ui::ImageModel illustration, std::u16string description);
 
   void ShowLoadingAnimation();
 
@@ -84,6 +89,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   }
 
   views::View* no_results_view_for_testing() { return no_results_view_; }
+  views::ImageView& no_results_illustration_for_testing() {
+    return *no_results_illustration_;
+  }
+  views::Label& no_results_label_for_testing() { return *no_results_label_; }
 
   PickerSkeletonLoaderView& skeleton_loader_view_for_testing() {
     return *skeleton_loader_view_;
@@ -117,6 +126,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // A view for when there are no results.
   raw_ptr<views::View> no_results_view_ = nullptr;
+  raw_ptr<views::ImageView> no_results_illustration_ = nullptr;
+  raw_ptr<views::Label> no_results_label_ = nullptr;
 
   // The skeleton loader view, shown when the results are pending.
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;

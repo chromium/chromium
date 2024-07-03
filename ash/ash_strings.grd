@@ -7419,6 +7419,18 @@ New install
       <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to open a search result.">
         Open <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
       </message>
+      <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for browsing history.">
+        No browsing history
+      </message>
+      <message name="IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for clipboard.">
+        No items copied to your Clipboard
+      </message>
+      <message name="IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for Drive files.">
+        No Google Drive files
+      </message>
+      <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for local files.">
+        No images in Files
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

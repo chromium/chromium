@@ -57,6 +57,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -723,6 +724,34 @@ TEST_F(PickerViewTest, ShowsNoResultsAfterTimeout) {
   EXPECT_TRUE(picker_view->search_results_view_for_testing()
                   .no_results_view_for_testing()
                   ->GetVisible());
+}
+
+TEST_F(PickerViewTest, ShowsNoResultsWithNoIllustration) {
+  base::test::TestFuture<FakePickerViewDelegate::SearchResultsCallback> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue(std::move(callback));
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  task_environment()->FastForwardBy(PickerView::kClearResultsTimeout);
+  future.Take().Run({});
+
+  EXPECT_TRUE(picker_view->search_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing()
+                   .no_results_illustration_for_testing()
+                   .GetVisible());
+  EXPECT_EQ(picker_view->search_results_view_for_testing()
+                .no_results_label_for_testing()
+                .GetText(),
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
 }
 
 TEST_F(PickerViewTest, DoesNotClearResultsBeforeTimeout) {
@@ -1630,7 +1659,7 @@ TEST_F(PickerViewTest,
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 }
 
-TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {
+TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPageWithNoIllustration) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},
@@ -1653,6 +1682,37 @@ TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {
   EXPECT_TRUE(picker_view->search_results_view_for_testing()
                   .no_results_view_for_testing()
                   ->GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing()
+                   .no_results_illustration_for_testing()
+                   .GetVisible());
+  EXPECT_EQ(picker_view->search_results_view_for_testing()
+                .no_results_label_for_testing()
+                .GetText(),
+            l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
+}
+
+TEST_F(PickerViewTest, CategoryZeroStateShowsNoResultsPageWithIllustration) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  EXPECT_TRUE(picker_view->category_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+  EXPECT_TRUE(picker_view->category_results_view_for_testing()
+                  .no_results_illustration_for_testing()
+                  .GetVisible());
+  EXPECT_EQ(picker_view->category_results_view_for_testing()
+                .no_results_label_for_testing()
+                .GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT));
 }
 
 TEST_F(PickerViewTest,

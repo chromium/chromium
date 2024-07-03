@@ -159,7 +159,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                                std::u16string_view query);
 
   // Displays `results` in the category view.
-  void PublishCategoryResults(std::vector<PickerSearchResultsSection> results);
+  void PublishCategoryResults(PickerCategory category,
+                              std::vector<PickerSearchResultsSection> results);
 
   // Adds the main container, which includes the search field and contents
   // pages.

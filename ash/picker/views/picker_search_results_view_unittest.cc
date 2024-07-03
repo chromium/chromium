@@ -33,6 +33,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
@@ -392,17 +393,40 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   LeftClickOn(*trailing_link);
 }
 
-TEST_F(PickerSearchResultsViewTest, SearchStoppedShowsNoResultsView) {
+TEST_F(PickerSearchResultsViewTest,
+       SearchStoppedShowsNoResultsViewWithNoIllustration) {
   MockSearchResultsViewDelegate mock_delegate;
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
 
-  EXPECT_TRUE(view.SearchStopped());
+  EXPECT_TRUE(view.SearchStopped(/*illustration=*/{}, u"no results"));
 
   EXPECT_FALSE(view.section_list_view_for_testing()->GetVisible());
   EXPECT_TRUE(view.no_results_view_for_testing()->GetVisible());
+  EXPECT_FALSE(view.no_results_illustration_for_testing().GetVisible());
+  EXPECT_TRUE(view.no_results_label_for_testing().GetVisible());
+  EXPECT_EQ(view.no_results_label_for_testing().GetText(), u"no results");
+}
+
+TEST_F(PickerSearchResultsViewTest,
+       SearchStoppedShowsNoResultsViewWithIllustration) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSubmenuController submenu_controller;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
+                               &submenu_controller);
+
+  EXPECT_TRUE(view.SearchStopped(
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(1)),
+      u"no results"));
+
+  EXPECT_FALSE(view.section_list_view_for_testing()->GetVisible());
+  EXPECT_TRUE(view.no_results_view_for_testing()->GetVisible());
+  EXPECT_TRUE(view.no_results_illustration_for_testing().GetVisible());
+  EXPECT_TRUE(view.no_results_label_for_testing().GetVisible());
+  EXPECT_EQ(view.no_results_label_for_testing().GetText(), u"no results");
 }
 
 TEST_F(PickerSearchResultsViewTest,
@@ -415,7 +439,7 @@ TEST_F(PickerSearchResultsViewTest,
 
   view.AppendSearchResults(PickerSearchResultsSection(
       PickerSectionType::kGifs, {}, /*has_more_results=*/true));
-  EXPECT_FALSE(view.SearchStopped());
+  EXPECT_FALSE(view.SearchStopped({}, u""));
 
   EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());
   EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
@@ -429,7 +453,7 @@ TEST_F(PickerSearchResultsViewTest, SearchStoppedHidesLoaderView) {
                                &submenu_controller);
 
   view.ShowLoadingAnimation();
-  ASSERT_TRUE(view.SearchStopped());
+  ASSERT_TRUE(view.SearchStopped({}, u""));
 
   EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
 }
@@ -440,7 +464,7 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
   PickerSubmenuController submenu_controller;
   PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher,
                                &submenu_controller);
-  ASSERT_TRUE(view.SearchStopped());
+  ASSERT_TRUE(view.SearchStopped({}, u""));
 
   view.ClearSearchResults();
 
