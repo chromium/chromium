@@ -1053,6 +1053,9 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
                 "When enabled, the cookie header will be included in the request headers"
                         + " for shouldInterceptRequest"),
+        Flag.baseFeature(
+                VizFeatures.RENDER_PASS_DRAWN_RECT,
+                "Enable optimization for tracking damage in a drawn rect for each render pass."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
