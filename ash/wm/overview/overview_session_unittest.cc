@@ -273,7 +273,8 @@ class OverviewSessionTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDesksTemplates, DeskTemplatesOn()},
-         {features::kSnapGroup, true}});
+         {features::kSnapGroup, true},
+         {features::kDeskBarWindowOcclusionOptimization, true}});
 
     OverviewTestBase::SetUp();
     Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
@@ -6249,7 +6250,8 @@ class ContinuousOverviewAnimationTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
-                              features::kDeskButton},
+                              features::kDeskButton,
+                              features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 
@@ -7123,7 +7125,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
   SplitViewOverviewSessionTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+                              features::kOsSettingsRevampWayfinding,
+                              features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
   }
 
@@ -11219,7 +11222,8 @@ class OakTest : public OverviewTestBase {
   OakTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kForestFeature, features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+                              features::kOsSettingsRevampWayfinding,
+                              features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
   }
   OakTest(const OakTest&) = delete;

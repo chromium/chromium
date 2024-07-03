@@ -47,7 +47,8 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDesksTemplates, AreDeskTemplatesEnabled()},
          {features::kOverviewNewFocus, true},
-         {features::kSnapGroup, true}});
+         {features::kSnapGroup, true},
+         {features::kDeskBarWindowOcclusionOptimization, true}});
     OverviewTestBase::SetUp();
   }
 

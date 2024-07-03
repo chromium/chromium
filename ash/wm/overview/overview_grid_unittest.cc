@@ -383,7 +383,8 @@ class OverviewGridForestTest : public OverviewTestBase {
   OverviewGridForestTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOsSettingsRevampWayfinding,
-                              features::kForestFeature},
+                              features::kForestFeature,
+                              features::kDeskBarWindowOcclusionOptimization},
         /*disabled_features=*/{});
   }
   OverviewGridForestTest(const OverviewGridForestTest&) = delete;
