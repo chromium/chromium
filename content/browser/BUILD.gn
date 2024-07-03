@@ -30,6 +30,22 @@ if (is_mac) {
 }
 if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
+
+  rust_static_library("fontations_name_table_ffi") {
+    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    crate_root = "font_unique_name_lookup/name_table_ffi.rs"
+    sources = [ "font_unique_name_lookup/name_table_ffi.rs" ]
+    cxx_bindings = [ "font_unique_name_lookup/name_table_ffi.rs" ]
+    visibility = [
+      ":browser",
+      "//content/test:*",
+    ]
+    deps = [
+      "//third_party/rust/font_types/v0_5:lib",
+      "//third_party/rust/read_fonts/v0_19:lib",
+      "//third_party/rust/skrifa/v0_19:lib",
+    ]
+  }
 }
 
 source_set("browser") {

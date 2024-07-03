@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
+#include "content/browser/font_unique_name_lookup/name_table_ffi.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 
@@ -226,25 +227,20 @@ TEST_F(FontUniqueNameLookupTest, DontMatchOtherNames) {
 }
 
 namespace {
-size_t GetNumTables(base::File& font_file) {
-  font_file.Seek(base::File::FROM_BEGIN, 5);
-  uint8_t num_tables_bytes[2] = {};
-  font_file.ReadAtCurrentPos(reinterpret_cast<char*>(num_tables_bytes),
-                             std::size(num_tables_bytes));
-  uint16_t num_tables =
-      static_cast<uint16_t>(num_tables_bytes[0] + (num_tables_bytes[1] << 8));
-  return num_tables;
+int64_t GetOffsetFirstTable(base::File& font_file) {
+  std::vector<uint8_t> bytes;
+  bytes.resize(font_file.GetLength());
+  CHECK(font_file.ReadAndCheck(0, bytes));
+  rust::Slice<const uint8_t> bytes_slice(bytes.data(), bytes.size());
+  return name_table_access::offset_first_table(bytes_slice);
 }
-
-const size_t kOffsetTableRecords = 13;
-const size_t kSizeOneTableRecord = 16;
 
 }  // namespace
 
 // Creates a temp directory and copies Android font files to this
 // directory. Provides two methods to inject faults into the font files 1)
-// ZeroOutTableRecords writes a sequence of 0 to where the font table offset
-// should be stored in the font file. 2) ZeroAfterTableIndex writes 0 from after
+// ZeroOutHeader removes the font's or font collection's header
+// 2) ZeroAfterHeader writes 0 from after
 // the table records until the end of the file.
 class FontFileCorruptor {
  public:
@@ -254,35 +250,24 @@ class FontFileCorruptor {
   }
 
   // Overwrite the list of table records with 0.
-  void ZeroOutTableRecords() {
+  void ZeroHeader() {
     ForEachCopiedFontFile([](base::File& font_file) {
-      // Read number of font tables, then zero out the table record structure.
-      // https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
-      size_t num_tables = GetNumTables(font_file);
-      CHECK_GT(num_tables, 0u);
-      char garbage[kSizeOneTableRecord] = {0};
-      for (size_t i = 0; i < num_tables; ++i) {
-        CHECK_EQ(static_cast<int>(kSizeOneTableRecord),
-                 font_file.Write(kOffsetTableRecords + i * kSizeOneTableRecord,
-                                 garbage, std::size(garbage)));
-      }
+      const size_t offset_first_table = GetOffsetFirstTable(font_file);
+
+      std::vector<uint8_t> zeroes;
+      zeroes.resize(offset_first_table, 0);
+      CHECK(font_file.WriteAndCheck(0, zeroes));
     });
   }
 
   // Overwrite the data in the font file with zeroes from after the table
   // records until the end of the file.
-  void ZeroAfterTableIndex() {
+  void ZeroAfterHeader() {
     ForEachCopiedFontFile([](base::File& font_file) {
-      size_t num_tables = GetNumTables(font_file);
-      CHECK_GT(num_tables, 0u);
-      const size_t offset_after_table_records =
-          kOffsetTableRecords + num_tables * kSizeOneTableRecord;
-      std::vector<char> zeroes;
-      zeroes.resize(font_file.GetLength() - offset_after_table_records);
-      std::fill(zeroes.begin(), zeroes.end(), 0);
-      CHECK_EQ(static_cast<int>(zeroes.size()),
-               font_file.Write(offset_after_table_records, zeroes.data(),
-                               zeroes.size()));
+      const size_t offset_first_table = GetOffsetFirstTable(font_file);
+      std::vector<uint8_t> zeroes;
+      zeroes.resize(font_file.GetLength() - offset_first_table, 0);
+      CHECK(font_file.WriteAndCheck(offset_first_table, zeroes));
     });
   }
 
@@ -305,8 +290,9 @@ class FontFileCorruptor {
       base::FilePath source_path(font_file);
       base::FilePath destination_path(temp_dir_.GetPath());
       destination_path = destination_path.Append(source_path.BaseName());
-      if (base::CopyFile(source_path, destination_path))
+      if (base::CopyFile(source_path, destination_path)) {
         copied_files_.push_back(destination_path.value());
+      }
     }
   }
   base::ScopedTempDir temp_dir_;
@@ -329,15 +315,15 @@ class FaultInjectingFontUniqueNameLookupTest : public ::testing::Test {
 };
 
 TEST_F(FaultInjectingFontUniqueNameLookupTest, TestZeroedTableContents) {
-  font_file_corruptor_.ZeroAfterTableIndex();
+  font_file_corruptor_.ZeroAfterHeader();
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher_after_update(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());
   ASSERT_EQ(matcher_after_update.AvailableFonts(), 0u);
 }
 
-TEST_F(FaultInjectingFontUniqueNameLookupTest, TestZeroedTableIndex) {
-  font_file_corruptor_.ZeroOutTableRecords();
+TEST_F(FaultInjectingFontUniqueNameLookupTest, TestZeroedHeader) {
+  font_file_corruptor_.ZeroHeader();
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher_after_update(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());

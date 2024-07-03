@@ -3341,6 +3341,7 @@ test("content_unittests") {
       "//build/config/freetype",
       "//cc/slim",
       "//components/download/internal/common:internal_java",
+      "//content/browser:fontations_name_table_ffi",
       "//content/public/android:content_java",
       "//gin:v8_snapshot_assets",
       "//gpu/command_buffer/service:android_texture_owner_test_support",
