@@ -284,8 +284,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
             settingsAction.previousAuthorizationStatus = previousAuthStatus;
             settingsAction.currentAuthorizationStatus =
                 settings.authorizationStatus;
-            config.settingsAction =
-                [[ContentNotificationSettingsAction alloc] init];
+            config.settingsAction = settingsAction;
             ContentNotificationService* contentNotificationService =
                 ContentNotificationServiceFactory::GetForBrowserState(
                     browserState);
