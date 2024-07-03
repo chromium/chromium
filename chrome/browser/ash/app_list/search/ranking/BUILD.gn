@@ -10,3 +10,36 @@ assert(is_chromeos_ash)
 proto_library("proto") {
   sources = [ "removed_results.proto" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "answer_ranker_unittest.cc",
+    "best_match_ranker_unittest.cc",
+    "filtering_ranker_unittest.cc",
+    "ftrl_ranker_unittest.cc",
+    "keyword_ranker_unittest.cc",
+    "mrfu_ranker_unittest.cc",
+    "query_highlighter_unittest.cc",
+    "removed_results_proto_unittest.cc",
+    "removed_results_ranker_unittest.cc",
+    "score_normalizing_ranker_unittest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search/ranking:proto",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

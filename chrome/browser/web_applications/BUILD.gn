@@ -965,6 +965,7 @@ source_set("web_applications_unit_tests") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/common/chromeos/extensions",

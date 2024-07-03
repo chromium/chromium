@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_service_app_model_builder_unittest.cc",
+    "app_service_promise_app_model_builder_unittest.cc",
+    "app_service_shortcut_model_builder_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ash/plugin_vm:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/settings",
+    "//chromeos/constants",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp/shortcut",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/display:test_support",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+  ]
+}

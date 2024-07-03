@@ -14,3 +14,24 @@ proto_library("proto") {
     "score_normalizer.proto",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "ftrl_optimizer_unittest.cc",
+    "keyword_cache_unittest.cc",
+    "mrfu_cache_unittest.cc",
+    "score_normalizer_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/app_list/search/util:proto",
+    "//chrome/browser/ui",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

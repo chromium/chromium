@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "system_info_answer_result_unittest.cc",
+    "system_info_card_provider_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/components/arc/session",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:channel_info",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/launcher_search",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/version_info",
+    "//components/version_info:version_string",
+    "//content/test:test_support",
+    "//skia:skia_core_public_headers",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx:gfx_skia",
+  ]
+}

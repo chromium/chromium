@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "diacritics_checker_unittest.cc",
+    "file_result_unittest.cc",
+    "file_search_provider_unittest.cc",
+    "justifications_unittest.cc",
+    "zero_state_drive_provider_unittest.cc",
+    "zero_state_file_provider_unittest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list/search/ranking:proto",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/ui/base",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+    "//ui/gfx:gfx_skia",
+    "//ui/gfx:test_support",
+  ]
+}

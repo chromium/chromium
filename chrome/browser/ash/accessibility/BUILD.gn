@@ -187,6 +187,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/base",
     "//chrome/test:test_support",
     "//components/live_caption:constants",

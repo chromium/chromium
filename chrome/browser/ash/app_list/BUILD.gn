@@ -1,0 +1,139 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("app_list") {
+  sources = [
+    "app_list_survey_handler.cc",
+    "app_list_survey_handler.h",
+    "apps_collections_util.cc",
+    "apps_collections_util.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/profiles:profile",
+    "//components/sync/model",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//ash/app_list",
+    "//ash/webui/mall:app_id",
+    "//ash/webui/projector_app/public/cpp",
+    "//build:branding_buildflags",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chromeos/constants",
+    "//components/app_constants",
+    "//extensions/common",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "app_list_test_util.cc",
+    "app_list_test_util.h",
+  ]
+
+  public_deps = [
+    "//chrome/test:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
+  ]
+
+  deps = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:non_code_constants",
+    "//components/crx_file",
+    "//extensions/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_context_menu_unittest.cc",
+    "app_list_sort_unittest.cc",
+    "app_list_syncable_service_unittest.cc",
+    "app_list_test_util.cc",
+    "app_list_test_util.h",
+    "chrome_app_list_item_manager_unittest.cc",
+    "md_icon_normalizer_unittest.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
+  ]
+
+  deps = [
+    "//ash/app_list/model:app_list_model",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//cc/base",
+    "//chrome/browser/apps/app_preload_service",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/app_service:unit_tests",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/app_list/arc:unit_tests",
+    "//chrome/browser/ash/app_list/reorder:unit_tests",
+    "//chrome/browser/ash/app_list/search:unit_tests",
+    "//chrome/browser/ash/app_list/search/arc:unit_tests",
+    "//chrome/browser/ash/app_list/search/common:unit_tests",
+    "//chrome/browser/ash/app_list/search/essential_search:unit_tests",
+    "//chrome/browser/ash/app_list/search/files:unit_tests",
+    "//chrome/browser/ash/app_list/search/games:unit_tests",
+    "//chrome/browser/ash/app_list/search/local_image_search:unit_tests",
+    "//chrome/browser/ash/app_list/search/omnibox:unit_tests",
+    "//chrome/browser/ash/app_list/search/ranking:unit_tests",
+    "//chrome/browser/ash/app_list/search/system_info:unit_tests",
+    "//chrome/browser/ash/app_list/search/test:unit_tests",
+    "//chrome/browser/ash/app_list/search/util:unit_tests",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/app_list/test:unit_tests",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/standalone_browser",
+    "//components/app_constants",
+    "//components/crx_file",
+    "//components/keyed_service/core",
+    "//components/sync:test_support",
+    "//components/user_manager",
+    "//extensions/common",
+    "//services/data_decoder/public/cpp:test_support",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:features",
+    "//ui/display:test_support",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}

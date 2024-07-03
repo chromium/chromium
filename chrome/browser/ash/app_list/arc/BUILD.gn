@@ -1,0 +1,129 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_app_metrics_data_unittest.cc",
+    "arc_app_metrics_util_unittest.cc",
+    "arc_app_sync_metrics_helper_unittest.cc",
+    "arc_app_test.cc",
+    "arc_app_test.h",
+    "arc_app_unittest.cc",
+    "arc_app_utils_unittest.cc",
+    "arc_default_app_list_unittest.cc",
+    "arc_package_install_priority_handler_unittest.cc",
+    "arc_vpn_provider_unittest.cc",
+    "intent_unittest.cc",
+    "mock_arc_app_list_prefs_observer.cc",
+    "mock_arc_app_list_prefs_observer.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ui",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_features",
+    "//ash/components/arc:arc_metrics_constants",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/arc",
+    "//components/arc:arc_test_support",
+    "//components/services/app_service/public/cpp:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/display/types",
+    "//ui/events:event_constants",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry:geometry_skia",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "arc_app_test.cc",
+    "arc_app_test.h",
+    "mock_arc_app_list_prefs_observer.cc",
+    "mock_arc_app_list_prefs_observer.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ui",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/arc",
+    "//components/arc:arc_test_support",
+    "//testing/gtest",
+  ]
+}

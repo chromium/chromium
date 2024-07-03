@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "game_provider_unittest.cc",
+    "game_result_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:gfx_skia",
+    "//url",
+  ]
+}
