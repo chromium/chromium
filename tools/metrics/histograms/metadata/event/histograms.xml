@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
     expires_after="2024-12-01">
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     A frame is deemed janky if an irregular jump in screen displacement occured
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
     units="ratio * 100" expires_after="2024-12-08">
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     This metric is the ratio between a larger screen displacement divided by a
@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -495,7 +495,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Event.ScrollJank.DelayedFramesPercentage.PerScroll{Length}"
     units="%" expires_after="2024-12-08">
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     A frame is deemed janky during a scroll if there was no presented frame in
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Event.ScrollJank.MissedVsyncs.PerFrame" units="counts"
     expires_after="2024-12-08">
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     A frame is deemed janky during a scroll if there was no presented frame in
@@ -539,7 +539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.ScrollJank.MissedVsyncsPercentage.FixedWindow" units="%"
     expires_after="2024-11-24">
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     NOTE: This metric is experimental, for performance analysis, please use
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Event.ScrollJank.MissedVsyncsPercentage.PerScroll{Length}"
     units="%" expires_after="2024-11-24">
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     A vsync is deemed janky during a scroll if there was no presented frame in
@@ -587,7 +587,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow"
     units="counts" expires_after="2024-11-24">
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     A frame is deemed janky during a scroll if there was no presented frame in
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow2"
     units="counts" expires_after="2024-12-08">
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     NOTE: This metric is experimental, for performance analysis, please use
@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.PerScroll{Length}"
     units="counts" expires_after="2024-11-24">
   <owner>kartarsingh@google.com</owner>
-  <owner>mekk@google.com</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
     A frame is deemed janky during a scroll if there was no presented frame in
