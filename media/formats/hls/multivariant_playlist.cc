@@ -61,8 +61,7 @@ Playlist::Kind MultivariantPlaylist::GetKind() const {
 ParseStatus::Or<scoped_refptr<MultivariantPlaylist>>
 MultivariantPlaylist::Parse(std::string_view source,
                             GURL uri,
-                            types::DecimalInteger version,
-                            TagRecorder* tag_recorder) {
+                            types::DecimalInteger version) {
   DCHECK(version != 0);
   if (version < Playlist::kMinSupportedVersion ||
       version > Playlist::kMaxSupportedVersion) {
@@ -115,9 +114,6 @@ MultivariantPlaylist::Parse(std::string_view source,
       }
 
       if (!tag->GetName().has_value()) {
-        if (tag_recorder) {
-          tag_recorder->SetMetric(TagRecorder::Metric::kUnknownTag);
-        }
         HandleUnknownTag(*tag);
         continue;
       }
@@ -139,9 +135,6 @@ MultivariantPlaylist::Parse(std::string_view source,
 
       switch (static_cast<MultivariantPlaylistTagName>(*tag->GetName())) {
         case MultivariantPlaylistTagName::kXContentSteering: {
-          if (tag_recorder) {
-            tag_recorder->SetMetric(TagRecorder::Metric::kContentSteering);
-          }
           // TODO(crbug.com/40057824): Implement the EXT-X-CONTENT-STEERING tag
           break;
         }
@@ -190,9 +183,6 @@ MultivariantPlaylist::Parse(std::string_view source,
           break;
         }
         case MultivariantPlaylistTagName::kXSessionKey: {
-          if (tag_recorder) {
-            tag_recorder->SetMetric(TagRecorder::Metric::kSessionKey);
-          }
           // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-KEY tag
           break;
         }

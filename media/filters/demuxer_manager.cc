@@ -499,12 +499,6 @@ void DemuxerManager::DurationChanged() {
   // TODO(b/338277331): Record histograms about the manifest content if this
   // is a MediaUrlDemuxer, as the duration change event signifies that
   // MediaPlayer was able to successfully start a playback.
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (media_player_hls_tag_recorder_) {
-    media_player_hls_tag_recorder_->AllowRecording();
-  }
-#endif
 }
 
 bool DemuxerManager::WouldTaintOrigin() const {
@@ -640,16 +634,6 @@ DemuxerManager::CreateHlsDemuxer() {
 std::unique_ptr<Demuxer> DemuxerManager::CreateMediaUrlDemuxer(
     bool expect_hls_content,
     base::flat_map<std::string, std::string> headers) {
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (base::FeatureList::IsEnabled(kMediaPlayerHlsStatistics)) {
-    media_player_hls_tag_recorder_ =
-        std::make_unique<HlsMediaPlayerTagRecorder>(
-            std::make_unique<HlsNetworkAccessImpl>(
-                client_->GetHlsDataSourceProvider()));
-    media_player_hls_tag_recorder_->Start(loaded_url_);
-  }
-#endif
-
   std::unique_ptr<MediaUrlDemuxer> media_url_demuxer =
       std::make_unique<MediaUrlDemuxer>(
           media_task_runner_, loaded_url_, site_for_cookies_, top_frame_origin_,

@@ -3942,18 +3942,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HLS.AdvancedFeatureTags" enum="AdvancedFeatureTagType"
-    expires_after="2024-09-11">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs an enum representing the presence of specific HLS tags which are used
-    to trigger features of the demuxer, including gaps, discontinuities, and
-    encryption, among others. Recorded whenever MediaPlayer successfully plays
-    HLS media using one of the advanced features in the enum.
-  </summary>
-</histogram>
-
 <histogram name="Media.HLS.CrossOriginContent" enum="Boolean"
     expires_after="2024-09-11">
   <owner>tmathmeyer@chromium.org</owner>
@@ -3961,29 +3949,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs whether HLS playback uses cross-origin content. Recorded once per
     player.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.EncryptionMode" enum="HLSEncryptionMode"
-    expires_after="2024-09-11">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the encryption mode used if a playlist has the #EXT-X-KEY or
-    #EXT-X-SESSION-KEY tags present. Recorded whenever MediaPlayer successfully
-    plays encrypted HLS media.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.InvalidRenditions" units="count"
-    expires_after="2024-09-11">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs whether there are no selectable renditions in a multivariant playlist.
-    Recorded only when a multivariant playlist contains no valid selection.
-    Recorded whenever MediaPlayer successfully plays multivariant HLS media that
-    the built-in player would not be able to play.
   </summary>
 </histogram>
 
@@ -4004,29 +3969,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs whether HLS playback uses a multivariant (as opposed to plain media)
     playlist. Recorded once per player.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.PlaylistSegmentExtension" enum="PlaylistSegmentType"
-    expires_after="2024-09-11">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the type of extension for segments in a top-level-media playlist. This
-    histogram is _not_ recorded when the top level manifest is a multivariant
-    playlist. Recorded whenever MediaPlayer successfully plays HLS media.
-  </summary>
-</histogram>
-
-<histogram name="Media.HLS.UnparsableManifest" units="sparse"
-    expires_after="2024-09-11">
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Logs the root cause failure reason for a playlist which cannot be parsed by
-    the built-in parser, but was successfully played by AndroidMediaPlayer.
-    Recorded whenever MediaPlayer successfully plays HLS media from a manifest
-    that the builtin parser would fail to parse.
   </summary>
 </histogram>
 

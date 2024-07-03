@@ -33,18 +33,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kNetworkDowngrade"/>
 </enum>
 
-<enum name="AdvancedFeatureTagType">
-  <int value="0" label="kContentSteering"/>
-  <int value="1" label="kDiscontinuity"/>
-  <int value="2" label="kDiscontinuitySequence"/>
-  <int value="3" label="kGap"/>
-  <int value="4" label="kKey"/>
-  <int value="5" label="kPart"/>
-  <int value="6" label="kSessionKey"/>
-  <int value="7" label="kSkip"/>
-  <int value="8" label="kXNonStandard"/>
-</enum>
-
 <enum name="ApplySubCaptureTargetResult">
   <int value="0" label="Ok"/>
   <int value="1" label="TimedOut"/>
@@ -1043,13 +1031,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
 </enum>
 
-<enum name="HLSEncryptionMode">
-  <int value="0" label="None"/>
-  <int value="1" label="AES128"/>
-  <int value="2" label="SampleAES"/>
-  <int value="3" label="SampleAESCTR"/>
-</enum>
-
 <enum name="ImageCaptureOutcome">
   <int value="0" label="Succeeded using video stream"/>
   <int value="1" label="Succeeded using photo stream"/>
@@ -1665,13 +1646,6 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="kHardwareDecoderWithMojoVideoDecoderAndThenSoftwareDecoder"/>
   <int value="5" label="kSoftwareDecoderOnly"/>
-</enum>
-
-<enum name="PlaylistSegmentType">
-  <int value="0" label="kTS"/>
-  <int value="1" label="kMP4"/>
-  <int value="2" label="kAAC"/>
-  <int value="3" label="kUnexpected"/>
 </enum>
 
 <enum name="PresentationUrlBySink">

@@ -228,8 +228,6 @@ source_set("formats") {
     "hls/source_string.h",
     "hls/tag_name.cc",
     "hls/tag_name.h",
-    "hls/tag_recorder.cc",
-    "hls/tag_recorder.h",
     "hls/tags.cc",
     "hls/tags.h",
     "hls/types.cc",

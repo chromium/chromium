@@ -212,26 +212,6 @@ class MockDataSourceFactory
   std::vector<std::tuple<size_t, size_t, int>> read_expectations_;
 };
 
-class MockHlsNetworkAccess : public HlsNetworkAccess {
- public:
-  ~MockHlsNetworkAccess() override;
-  MockHlsNetworkAccess();
-  MOCK_METHOD(void,
-              ReadManifest,
-              (const GURL& uri, HlsDataSourceProvider::ReadCb cb));
-  MOCK_METHOD(void,
-              ReadMediaSegment,
-              (const hls::MediaSegment& segment,
-               bool read_chunked,
-               bool include_init_segment,
-               HlsDataSourceProvider::ReadCb cb));
-  MOCK_METHOD(void,
-              ReadStream,
-              (std::unique_ptr<HlsDataSourceStream> stream,
-               HlsDataSourceProvider::ReadCb cb));
-  MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure cb));
-};
-
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_HLS_TEST_HELPERS_H_

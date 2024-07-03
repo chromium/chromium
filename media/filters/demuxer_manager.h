@@ -21,7 +21,6 @@
 #include "media/base/pipeline.h"
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
-#include "media/filters/hls_media_player_tag_recorder.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -250,9 +249,6 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Holds whichever demuxer implementation is being used.
   std::unique_ptr<Demuxer> demuxer_;
-
-  // Records stats about HLS playbacks in MediaPlayer.
-  std::unique_ptr<HlsMediaPlayerTagRecorder> media_player_hls_tag_recorder_;
 
   // Refers to the owned object that can query information about a data source.
   // For most playbacks, this is a raw ptr to `data_source_`, and so it is safe,

@@ -67,7 +67,6 @@ std::string_view ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kRenditionGroupHasMultipleDefaultRenditions);
     PARSE_STATUS_CODE_CASE(kRenditionGroupHasDuplicateRenditionNames);
     PARSE_STATUS_CODE_CASE(kRenditionGroupDoesNotExist);
-    PARSE_STATUS_CODE_CASE(kUnsupportedEncryptionMethod);
   }
 
   NOTREACHED_NORETURN();
