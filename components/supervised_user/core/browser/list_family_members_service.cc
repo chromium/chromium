@@ -133,12 +133,29 @@ void ListFamilyMembersService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   signin::PrimaryAccountChangeEvent::Type event_type =
       event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
-  if (event_type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    StopFetch();
-    // Notify consumers that family member information is cleared following a
-    // sign-out event.
-    kidsmanagement::ListMembersResponse empty_response;
-    successful_fetch_repeating_consumers_.Notify(empty_response);
+
+  kidsmanagement::ListMembersResponse empty_response;
+  AccountInfo account_info;
+  switch (event_type) {
+    case (signin::PrimaryAccountChangeEvent::Type::kCleared):
+      StopFetch();
+      // Notify consumers that family member information is cleared following a
+      // sign-out event.
+      successful_fetch_repeating_consumers_.Notify(empty_response);
+      break;
+    case (signin::PrimaryAccountChangeEvent::Type::kSet):
+      account_info = identity_manager_->FindExtendedAccountInfo(
+          event_details.GetCurrentState().primary_account);
+      // `OnPrimaryAccountChanged` might be called after the calls to
+      // `OnExtendedAccountInfoUpdated` for the same account, for
+      // example in the profile take over case from the content area.
+      // In this case, re-trigger `OnExtendedAccountInfoUpdated`.
+      if (!account_info.IsEmpty()) {
+        OnExtendedAccountInfoUpdated(account_info);
+      }
+      break;
+    case (signin::PrimaryAccountChangeEvent::Type::kNone):
+      break;
   }
 }
 

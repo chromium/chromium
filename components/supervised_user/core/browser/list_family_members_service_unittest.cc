@@ -289,6 +289,60 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
   test_list_family_members_service_->Shutdown();
 }
 
+// Tests that the Family Info is correctly fetched if the supervised account
+// is made primary after the extended account info has been fetched.
+// Prevents regressions to b/350715351.
+TEST_F(ListFamilyMembersServiceTest,
+       ListFamilyFetcherOnMakingSupervisedUserAccountPrimary) {
+  // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
+  // list family response from fetches. We check if the response is correct at
+  // the last step with `hoh_username`.
+  std::string response_hoh_username;
+  const std::string child_email = "username@gmail.com";
+  auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
+      [&](const kidsmanagement::ListMembersResponse& response) {
+        ASSERT_FALSE(response.members().empty());
+        response_hoh_username =
+            response.members().at(0).profile().display_name();
+      });
+
+  // Subscribe to the mock method and start the service.
+  base::CallbackListSubscription subscription =
+      test_list_family_members_service_->SubscribeToSuccessfulFetches(
+          extract_hoh_display_name_from_response);
+  test_list_family_members_service_->Init();
+
+  // Make non-primary account available. No requests are triggered for this
+  // account.
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable(child_email);
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+
+  // Set the supervised user capability after the service has been started for
+  // the current (non-primary) account.
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  mutator.set_can_fetch_family_member_info(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+  // No requests made for ineligible account.
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+
+  // Make the account primary.
+  identity_test_env_.SetPrimaryAccount(child_email,
+                                       signin::ConsentLevel::kSignin);
+
+  // Perform the sequence of obtaining an access token, simulating response and
+  // verifying the result.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  SimulateResponseForPendingRequest("username_hoh");
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(response_hoh_username, "username_hoh");
+
+  test_list_family_members_service_->Shutdown();
+}
+
 // Sign-out test is not supported for ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
