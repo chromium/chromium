@@ -40,8 +40,7 @@ enum class SearchPrefetchStatus {
   // The request can be served to the navigation stack, but may still encounter
   // errors and move to |kRequestFailed| or it may complete and move to
   // |kComplete|. It may also move to |kCanBeServedAndUserClicked| when the user
-  // navigates to the result in omnibox or |kRequestCancelled| if the user
-  // closes omnibox.
+  // navigates to the result in omnibox.
   kCanBeServed = 2,
   // The request can be served to the navigation stack, and is marked as being
   // clicked by the user. At this point, it may move to |kComplete| or
@@ -52,9 +51,7 @@ enum class SearchPrefetchStatus {
   kComplete = 4,
   // The request hit an error and cannot be served.
   kRequestFailed = 5,
-  // The request was cancelled before completion. This is a terminal state.
-  kRequestCancelled = 6,
-  // The request was served to the navigation stack. This is a terminal state.
+  // kRequestCancelled = 6,  // No longer used.
   kPrefetchServedForRealNavigation = 7,
   // The request was served to the prerender navigation stack. It may move to
   // |kPrerenderedAndClicked| when the user navigates to the result in omnibox
@@ -100,13 +97,6 @@ class SearchPrefetchRequest {
   // |false| if the request is not started (i.e., it would be deferred by
   // throttles).
   bool StartPrefetchRequest(Profile* profile);
-
-  // Returns true if this request should be canceled when the Autocomplete
-  // suggestion no longer lists this search prefetch.
-  bool ShouldBeCancelledOnResultChanges() const;
-
-  // Marks a prefetch as canceled and stops any ongoing fetch.
-  void CancelPrefetch();
 
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.

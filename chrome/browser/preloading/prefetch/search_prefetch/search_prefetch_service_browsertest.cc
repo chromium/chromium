@@ -3859,8 +3859,7 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
   }
 }
 
-// Test suite to check that prefetches are not cancelled when
-// |kSearchPrefetchSkipsCancel| is enabled.
+// Test suite to check that prefetches are not cancelled.
 class SearchNavigationPrefetchNoCancelBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
@@ -3870,7 +3869,6 @@ class SearchNavigationPrefetchNoCancelBrowserTest
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
           {"device_memory_threshold_MB", "0"}}},
-        {kSearchPrefetchSkipsCancel, {}},
         {kSearchNavigationPrefetch, {{}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
 

@@ -102,8 +102,6 @@ const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
       return "CanBeServedAndUserClicked";
     case SearchPrefetchStatus::kComplete:
       return "Complete";
-    case SearchPrefetchStatus::kRequestCancelled:
-      return "RequestCancelled";
     case SearchPrefetchStatus::kRequestFailed:
       return "RequestFailed";
     case SearchPrefetchStatus::kPrerendered:
@@ -310,25 +308,6 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   return true;
 }
 
-bool SearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
-  if (SearchPrefetchSkipsCancel()) {
-    return false;
-  }
-  static constexpr auto CancelableStatus =
-      base::MakeFixedFlatSet<SearchPrefetchStatus>({
-          SearchPrefetchStatus::kInFlight,
-          SearchPrefetchStatus::kCanBeServed,
-          SearchPrefetchStatus::kPrerendered,
-      });
-  return base::Contains(CancelableStatus, current_status_);
-}
-
-void SearchPrefetchRequest::CancelPrefetch() {
-  SetSearchPrefetchStatus(SearchPrefetchStatus::kRequestCancelled);
-  StopPrefetch();
-  StopPrerender();
-}
-
 void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     PrerenderManager& prerender_manager,
     const GURL& prerender_url,
@@ -354,7 +333,6 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     case SearchPrefetchStatus::kCanBeServedAndUserClicked:
     case SearchPrefetchStatus::kComplete:
       break;
-    case SearchPrefetchStatus::kRequestCancelled:
     case SearchPrefetchStatus::kRequestFailed:
       // Case N: The prefetch request failed, or has failed. Prerender cannot
       // reuse the response and will fail for sure, so this does not start
@@ -558,14 +536,12 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
 
           {SearchPrefetchStatus::kInFlight,
            {SearchPrefetchStatus::kCanBeServed,
-            SearchPrefetchStatus::kRequestCancelled,
             SearchPrefetchStatus::kRequestFailed}},
 
           {SearchPrefetchStatus::kCanBeServed,
            {SearchPrefetchStatus::kCanBeServedAndUserClicked,
             SearchPrefetchStatus::kComplete,
             SearchPrefetchStatus::kRequestFailed,
-            SearchPrefetchStatus::kRequestCancelled,
             SearchPrefetchStatus::kPrerendered,
             SearchPrefetchStatus::kPrefetchServedForRealNavigation}},
 
@@ -585,7 +561,6 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
 
           {SearchPrefetchStatus::kPrerendered,
            {SearchPrefetchStatus::kPrerenderedAndClicked,
-            SearchPrefetchStatus::kRequestCancelled,
             SearchPrefetchStatus::kPrerenderActivated}},
 
           {SearchPrefetchStatus::kPrerenderedAndClicked,
@@ -594,9 +569,6 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
           {SearchPrefetchStatus::kPrerenderActivated, {}},
 
           {SearchPrefetchStatus::kRequestFailed, {}},
-
-          {SearchPrefetchStatus::kRequestCancelled, {}},
-
       }));
   DCHECK_STATE_TRANSITION(allowed_transitions,
                           /*old_state=*/current_status_,
@@ -627,10 +599,9 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
       // Don't update the TriggeringOutcome here as we have already set the
       // TriggeringOutcome when the status was updated to kCanServed.
       return;
-    case SearchPrefetchStatus::kRequestCancelled:
     case SearchPrefetchStatus::kRequestFailed:
-      // Since we are cancelling prefetch when either request failed or
-      // cancelled we consider it as a failure with PreloadingTriggeringOutcome.
+      // Since we are cancelling prefetch when the request failed, we consider
+      // it as a failure with PreloadingTriggeringOutcome.
       SetPrefetchAttemptTriggeringOutcome(
           content::PreloadingTriggeringOutcome::kFailure);
       return;

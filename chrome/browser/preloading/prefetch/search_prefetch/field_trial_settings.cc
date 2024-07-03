@@ -18,10 +18,6 @@ BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
              "SearchPrefetchBlockBeforeHeaders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchPrefetchSkipsCancel,
-             "SearchPrefetchSkipsCancel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
   return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
 }
@@ -75,10 +71,6 @@ const base::FeatureParam<std::string> kNavigationPrefetchParam{
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
-}
-
-bool SearchPrefetchSkipsCancel() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchSkipsCancel);
 }
 
 bool IsUpOrDownArrowPrefetchEnabled() {

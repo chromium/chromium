@@ -100,8 +100,7 @@ enum class SearchPrefetchServingReason {
   kNoPrefetch = 4,
   // The prefetch for the search terms was for a different origin than the DSE.
   kPrefetchWasForDifferentOrigin = 5,
-  // The request was canceled before completion.
-  kRequestWasCancelled = 6,
+  // kRequestWasCancelled = 6,  // No longer used.
   // The request failed due to some network/service error.
   kRequestFailed = 7,
   // The request wasn't served unexpectantly.

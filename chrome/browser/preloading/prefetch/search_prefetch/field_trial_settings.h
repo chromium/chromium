@@ -13,8 +13,6 @@ BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
-BASE_DECLARE_FEATURE(kSearchPrefetchSkipsCancel);
-
 BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 
 // Whether matching prefetches can block navigation until they are determined to
@@ -54,10 +52,6 @@ extern const base::FeatureParam<std::string> kNavigationPrefetchParam;
 // An experimental feature to measure if starting search prefetches during
 // navigation events provides benefit over the typical navigation flow.
 bool IsSearchNavigationPrefetchEnabled();
-
-// An experimental feature that skips the cancellation logic in search prefetch
-// service.
-bool SearchPrefetchSkipsCancel();
 
 // A flavor of navigation prefetch that triggers when the user changes the
 // selected index in omnibox to a search suggestion via arrow buttons. This is

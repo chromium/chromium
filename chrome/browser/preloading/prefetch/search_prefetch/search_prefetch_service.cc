@@ -639,8 +639,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
        prerender_utils::SearchPreloadShareableCacheIsEnabled() &&
        (status == SearchPrefetchStatus::kPrerendered ||
         status == SearchPrefetchStatus::kPrerenderedAndClicked)) ||
-      (SearchPrefetchSkipsCancel() &&
-       status == SearchPrefetchStatus::kCanBeServed);
+      status == SearchPrefetchStatus::kCanBeServed;
 
   if (!is_servable) {
     recorder.reason_ = SearchPrefetchServingReason::kNotServedOtherReason;
@@ -720,43 +719,15 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   // Lazily observe Template URL Service.
   ObserveTemplateURLService(template_url_service);
 
-  // Cancel Unneeded prefetch requests. Since we limit the number of prefetches
-  // in the map, this should be fast despite the two loops.
+  // Don't cancel unneeded prefetch requests, but reset all pending prerenders.
+  // It will be set soon if service still wants clients to prerender a
+  // SearchTerms.
+  // TODO(crbug.com/40214220): Unlike prefetch, which does not discard completed
+  // response to avoid wasting, prerender would like to cancel itself given the
+  // cost of a prerender. For now prenderer is canceled when the prerender hints
+  // changed, we need to revisit this decision.
   for (const auto& kv_pair : prefetches_) {
-    const auto& canonical_search_url = kv_pair.first;
     auto& prefetch_request = kv_pair.second;
-
-    if (!prefetch_request->ShouldBeCancelledOnResultChanges()) {
-      // Reset all pending prerenders. It will be set soon if service still
-      // wants clients to prerender a SearchTerms.
-      // TODO(crbug.com/40214220): Unlike prefetch, which does not
-      // discard completed response to avoid wasting, prerender would like
-      // to cancel itself given the cost of a prerender. For now prenderer is
-      // canceled when the prerender hints changed, we need to revisit this
-      // decision.
-      prefetch_request->ResetPrerenderUpgrader();
-      continue;
-    }
-    bool should_cancel_request = true;
-    for (const auto& match : result) {
-      GURL match_canonical_search_url;
-      default_search->KeepSearchTermsInURL(
-          match.destination_url, template_url_service->search_terms_data(),
-          true, true, &match_canonical_search_url);
-
-      if (canonical_search_url == match_canonical_search_url) {
-        should_cancel_request = false;
-        break;
-      }
-    }
-
-    // Cancel the inflight request and mark it as canceled.
-    if (should_cancel_request) {
-      prefetch_request->CancelPrefetch();
-    }
-
-    // Reset all pending prerenders. It will be set soon if service still wants
-    // clients to prerender a SearchTerms.
     prefetch_request->ResetPrerenderUpgrader();
   }
 
@@ -1252,12 +1223,6 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   }
 
   switch (iter->second->current_status()) {
-    case SearchPrefetchStatus::kRequestCancelled:
-      recorder.reason_ = SearchPrefetchServingReason::kRequestWasCancelled;
-      // Set the corresponding failure reason.
-      iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
-          SearchPrefetchServingReason::kRequestWasCancelled));
-      break;
     case SearchPrefetchStatus::kRequestFailed:
       recorder.reason_ = SearchPrefetchServingReason::kRequestFailed;
       // Set the corresponding failure reason.

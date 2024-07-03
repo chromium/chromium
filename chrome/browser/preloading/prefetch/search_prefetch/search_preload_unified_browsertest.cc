@@ -1578,7 +1578,6 @@ class NoCancelSearchPreloadUnifiedBrowserTest
         {
             {features::kSupportSearchSuggestionForPrerender2,
              {{"shareable_cache", "disabled"}}},
-            {kSearchPrefetchSkipsCancel, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
@@ -2362,7 +2361,6 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
         {
             {features::kSupportSearchSuggestionForPrerender2,
              {{"shareable_cache", "enabled"}}},
-            {kSearchPrefetchSkipsCancel, {}},
             {kSearchPrefetchServicePrefetching,
              {{"max_attempts_per_caching_duration", "3"},
               {"cache_size", "4"},
