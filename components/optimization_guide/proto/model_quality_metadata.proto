@@ -28,6 +28,17 @@ message LoggingMetadata {
   // different ID every day. It should only be used for model quality logging,
   // and should not be linked to any other data sources.
   int64 client_id = 3;
+
+  // Field id 4 is intentionally reserved for internal use.
+  reserved 4;
+
+  // Whether this Chrome installation (most likely) has a Google-managed dogfood
+  // account. Note that this will be `true` whenever at least one Chrome profile
+  // is signed into an @google.com account, regardless of whether that profile
+  // is currently active. Precisely, the reported value matches the return value
+  // of `VariationsService::IsLikelyDogfoodClient()`:
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/variations/service/variations_service.h?q=symbol:%5Cbvariations::VariationsService::IsLikelyDogfoodClient%5Cb
+  bool is_likely_dogfood_client = 5;
 }
 
 message OnDeviceSystemProfile {

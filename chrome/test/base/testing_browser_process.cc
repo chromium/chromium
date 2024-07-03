@@ -272,12 +272,17 @@ void TestingBrowserProcess::SetProfileManager(
   profile_manager_ = std::move(profile_manager);
 }
 
+void TestingBrowserProcess::SetVariationsService(
+    variations::VariationsService* variations_service) {
+  variations_service_ = variations_service;
+}
+
 PrefService* TestingBrowserProcess::local_state() {
   return local_state_;
 }
 
 variations::VariationsService* TestingBrowserProcess::variations_service() {
-  return nullptr;
+  return variations_service_;
 }
 
 StartupData* TestingBrowserProcess::startup_data() {

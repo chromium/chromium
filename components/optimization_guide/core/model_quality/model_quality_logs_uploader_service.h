@@ -45,8 +45,8 @@ class ModelQualityLogsUploaderService {
   // the logs.
   virtual bool CanUploadLogs(UserVisibleFeatureKey feature);
 
-  // Sets system profile proto corresponding to the logging_metadata.
-  virtual void SetSystemProfileProto(proto::LoggingMetadata* logging_metadata);
+  // Sets system metadata, including the UMA system profile.
+  virtual void SetSystemMetadata(proto::LoggingMetadata* logging_metadata);
 
   // Returns the WeakPtr for uploading logs during model qualtiy logs
   // destruction.

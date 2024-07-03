@@ -188,6 +188,8 @@ static_library("test_support") {
   sources = [
     "scoped_variations_ids_provider.cc",
     "scoped_variations_ids_provider.h",
+    "service/test_variations_service.cc",
+    "service/test_variations_service.h",
     "variations_params_manager.cc",
     "variations_params_manager.h",
     "variations_test_utils.cc",
@@ -205,6 +207,10 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs:prefs",
+    "//components/variations/service",
+    "//components/web_resource:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
     "//third_party/zlib/google:compression_utils",
   ]
 }

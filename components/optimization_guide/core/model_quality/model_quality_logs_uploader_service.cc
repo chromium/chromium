@@ -202,7 +202,7 @@ bool ModelQualityLogsUploaderService::CanUploadLogs(
   return false;
 }
 
-void ModelQualityLogsUploaderService::SetSystemProfileProto(
+void ModelQualityLogsUploaderService::SetSystemMetadata(
     proto::LoggingMetadata* logging_metadata) {}
 
 void ModelQualityLogsUploaderService::SetUrlLoaderFactoryForTesting(
@@ -237,7 +237,7 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
     logging_metadata->set_client_id(client_id);
   }
 
-  SetSystemProfileProto(logging_metadata);
+  SetSystemMetadata(logging_metadata);
 
   proto::PerformanceClass perf_class = GetPerformanceClass(pref_service_);
   if (perf_class != proto::PERFORMANCE_CLASS_UNSPECIFIED) {
