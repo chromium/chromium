@@ -4784,6 +4784,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.AreAuthTokensAvailable"
     enum="BooleanSuccess" expires_after="2024-12-24">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     The result of a call to `IpProtectionConfigCache::AreAuthTokensAvailable()`
@@ -4797,6 +4799,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.EmptyTokenCache"
     enum="IpProtectionProxyLayer" expires_after="2024-10-28">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Records which token cache (if any) was empty when calling
@@ -4807,6 +4811,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
     enum="BooleanSuccess" expires_after="2024-11-17">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     The result of a call to `IpProtectionConfigCache::GetAuthToken()`, which
@@ -4881,6 +4887,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime"
     units="ms" expires_after="2024-09-15">
   <owner>aakallam@chromium.org</owner>
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Records the time it takes to update the NetworkServiceProxyAllowList with
@@ -4892,6 +4900,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateSuccess"
     enum="BooleanSuccess" expires_after="2024-11-17">
   <owner>aakallam@chromium.org</owner>
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Records the result of an attempt to update the NetworkServiceProxyAllowList
@@ -4903,6 +4913,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.ProxyChainFallback"
     enum="IpProtectionProxyChainId" expires_after="2024-11-17">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Logged when a proxy chain failure is detected in the proxy delegate's
@@ -5010,6 +5022,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenExpirationRate"
     units="tokens" expires_after="2024-12-05">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Number of auth tokens for {ProxyLayer} that expired before they were used,
@@ -5025,6 +5039,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenSpendRate"
     units="tokens" expires_after="2024-12-05">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Number of auth tokens spent for {ProxyLayer}, as a rate per hour, up to

@@ -1827,6 +1827,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent"
     units="bytes" expires_after="2025-01-02">
   <owner>abhijithnair@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Total bytes sent over the network for an HttpJob request that would be
@@ -1859,6 +1860,7 @@ chromium-metrics-reviews@google.com.
     name="Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net"
     units="bytes" expires_after="2025-01-02">
   <owner>abhijithnair@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Total prefilter (e.g., before decompression) bytes read for an HttpJob
@@ -1874,6 +1876,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpJob.IpProtection.BytesSent" units="bytes"
     expires_after="2024-11-17">
   <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Total bytes sent over the network for an HttpJob request that is covered by
@@ -1886,6 +1890,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net" units="bytes"
     expires_after="2024-11-17">
   <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Total prefilter (e.g., before decompression) bytes read for an HttpJob
@@ -1899,6 +1905,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached" units="ms"
     expires_after="2024-11-17">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Time it takes to complete an HttpJob that is covered by IP Protection, from
@@ -1912,6 +1920,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached.{Chain}"
     units="ms" expires_after="2024-11-03">
   <owner>djmitche@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Similar to Net.HttpJob.IpProtection.TotalTimeNotCached, but only chains with
