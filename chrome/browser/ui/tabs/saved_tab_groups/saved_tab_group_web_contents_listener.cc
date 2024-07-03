@@ -86,6 +86,17 @@ bool IsUserTriggeredMainFrameNavigation(
   return true;
 }
 
+// Returns whether URL is in a redirect chain.
+bool IsURLInRedirectChain(const GURL& url,
+                          const std::vector<GURL>& redirect_chain) {
+  for (const auto& redirect_url : redirect_chain) {
+    if (redirect_url.GetWithoutRef().spec() == url.GetWithoutRef().spec()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
@@ -128,8 +139,13 @@ SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
 }
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
-  if (web_contents_->GetURL().GetWithoutRef().spec() ==
-      url.GetWithoutRef().spec()) {
+  if (!url.is_valid()) {
+    return;
+  }
+
+  // If the URL is inside current tab URL's redirect chain, there is no need to
+  // navigate as the navigation will end up with the current tab URL.
+  if (IsURLInRedirectChain(url, tab_redirect_chain_)) {
     return;
   }
 
@@ -148,6 +164,8 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
 
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  UpdateTabRedirectChain(navigation_handle);
+
   // If the navigation was the result of a sync update we don't want to update
   // the SavedTabGroupModel.
   if (navigation_handle == handle_from_sync_update_) {
@@ -216,6 +234,18 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetFavicon(image);
   service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
+}
+
+void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
+    content::NavigationHandle* navigation_handle) {
+  if (!ui::PageTransitionIsMainFrame(navigation_handle->GetPageTransition())) {
+    return;
+  }
+
+  tab_redirect_chain_.clear();
+  for (const auto& url : navigation_handle->GetRedirectChain()) {
+    tab_redirect_chain_.emplace_back(url);
+  }
 }
 
 }  // namespace tab_groups
