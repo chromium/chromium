@@ -2561,6 +2561,9 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/trusted-types/trusted-types-reporting.html [ Skip Timeout ]
+[ Win11-arm64 ] virtual/async-script-scheduling-finished-parsing/wpt_internal/async-script-scheduling/execution-order.sub.html?reload [ Timeout ]
+[ Win11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/revoke-service-workers.https.html [ Timeout ]
 crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-043.html [ Failure ]
 crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-044.html [ Failure ]
 crbug.com/350770746 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-042.html [ Failure ]
