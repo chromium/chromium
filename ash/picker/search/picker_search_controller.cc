@@ -59,8 +59,7 @@ void PickerSearchController::StartSearch(
     std::optional<PickerCategory> category,
     base::span<const PickerCategory> available_categories,
     PickerViewDelegate::SearchResultsCallback callback) {
-  search_request_.reset();
-  aggregator_.reset();
+  StopSearch();
   aggregator_ = std::make_unique<PickerSearchAggregator>(burn_in_period_,
                                                          std::move(callback));
 
@@ -72,6 +71,13 @@ void PickerSearchController::StartSearch(
       base::BindOnce(&PickerSearchAggregator::HandleNoMoreResults,
                      aggregator_->GetWeakPtr()),
       &client_.get(), available_categories);
+}
+
+void PickerSearchController::StopSearch() {
+  // The search request must be reset first so it can let the aggregator know
+  // that it has been interrupted.
+  search_request_.reset();
+  aggregator_.reset();
 }
 
 void PickerSearchController::StartEmojiSearch(
