@@ -17,10 +17,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -30,7 +31,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
-class HelpBubbleFactoryRegistryInteractiveUitest : public InProcessBrowserTest {
+class HelpBubbleFactoryRegistryInteractiveUitest
+    : public InteractiveBrowserTest {
  public:
   HelpBubbleFactoryRegistryInteractiveUitest() = default;
   ~HelpBubbleFactoryRegistryInteractiveUitest() override = default;
@@ -47,10 +49,6 @@ class HelpBubbleFactoryRegistryInteractiveUitest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  ui::ElementContext GetContext() {
-    return browser()->window()->GetElementContext();
-  }
-
   user_education::HelpBubbleFactoryRegistry* GetRegistry() {
     return GetBrowserView()
         ->GetFeaturePromoController()
@@ -59,100 +57,99 @@ class HelpBubbleFactoryRegistryInteractiveUitest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
-                       AnchorToViewsMenuItem) {
-  const ui::ElementContext context = GetContext();
+                       AnchorHelpBubbleToViewsMenuItem) {
+  std::unique_ptr<user_education::HelpBubble> bubble;
 
-  // Demonstrate that we can find the app button without having to pick through
-  // the BrowserView hierarcny.
-  auto* const app_menu_button =
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          kToolbarAppMenuButtonElementId, context);
-  ASSERT_NE(nullptr, app_menu_button);
-  InteractionTestUtilBrowser test_util;
-  ASSERT_EQ(ui::test::ActionResult::kSucceeded,
-            test_util.PressButton(app_menu_button));
-
-  // Verify that the history menu item is visible.
-  ui::TrackedElement* const element =
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          AppMenuModel::kHistoryMenuItem, context);
-  auto bubble = GetRegistry()->CreateHelpBubble(element, GetBubbleParams());
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(bubble->is_open());
-  EXPECT_TRUE(GetBrowserView()->GetWidget()->IsActive());
-  bubble->Close();
+  RunTestSequence(
+      PressButton(kToolbarAppMenuButtonElementId),
+      // Show and verify the bubble.
+      WithElement(AppMenuModel::kHistoryMenuItem,
+                  [this, &bubble](ui::TrackedElement* item) {
+                    bubble = GetRegistry()->CreateHelpBubble(item,
+                                                             GetBubbleParams());
+                  }),
+      Check([&bubble]() { return bubble != nullptr; },
+            "Check bubble is not null."),
+      Check([&bubble]() { return bubble->is_open(); },
+            "Check bubble registers as open."),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      // Ensure that focus is not taken by the bubble.
+      Check([this]() { return GetBrowserView()->GetWidget()->IsActive(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
-                       AnchorToContextMenuItem) {
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+                       AnchorHelpBubbleToContextMenuItem) {
+  std::unique_ptr<user_education::HelpBubble> bubble;
 
-  Tab* const tab = GetBrowserView()->tabstrip()->tab_at(0);
+  RunTestSequence(
+      // To detect race conditions, ensure that nothing is waiting to execute in
+      // the background before the test starts. See discussion on
+      // https://crbug.com/347282481 for why clearing the message queue can
+      // unearth specific bugs.
+      FlushEvents(),
 
-  // Because context menus run synchronously on Mac we will use an
-  // InteractionSequence in order to show the context menu, respond immediately
-  // when the menu is shown, and then tear down the menu (by closing the
-  // browser) when we're done.
-  //
-  // Interaction sequences let us respond synchronously to events as well as
-  // queue up sequences of actions in response to UI changes in a way that
-  // would be far more complicated trying to use RunLoops, tasks, and events.
-
-  auto open_context_menu = base::BindLambdaForTesting([&]() {
-    tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                         ui::MenuSourceType::MENU_SOURCE_MOUSE);
-  });
-
-  auto set_up = base::BindLambdaForTesting(
-      [&](ui::InteractionSequence*, ui::TrackedElement*) {
-#if BUILDFLAG(IS_MAC)
+      // Trigger the context menu.
+      Do([this]() {
         // Have to defer opening because this call is blocking on Mac;
         // subsequent steps will be called from within the run loop of the
         // context menu.
+        //
+        // On Mac, this works like:
+        //  Test Loop -> Post Task -> Register for menu item shown callback
+        //            -> Show context menu -> Callback called ->
+        //                                      Bubble Shown, Bubble verified,
+        //                                      Context menu closed
+        //
+        // On other platforms, this kicks off a normal event sequence where we
+        // wait for each element to appear and then do the next step.
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(open_context_menu));
-#else
-        // Conversely, on other platforms, this is already an async call and
-        // weirdness sometimes results from doing this from a callback, so
-        // we'll call it directly instead.
-        open_context_menu.Run();
+            FROM_HERE, base::BindLambdaForTesting([this]() {
+              auto* tab = GetBrowserView()->tabstrip()->tab_at(0);
+              tab->ShowContextMenu(tab->bounds().CenterPoint(),
+                                   ui::MenuSourceType::MENU_SOURCE_MOUSE);
+            }));
+      }),
+
+      // This step should still trigger even inside the Mac context menu loop
+      // because it runs immediately on the callback from the menu item being
+      // created (see ElementTrackerMac for code paths).
+      //
+      // Because Kombucha is currently synchronous, the subsequent steps will
+      // execute immediately as well, as long as the FlushEvents() below aren't
+      // run.
+      WaitForShow(TabMenuModel::kAddToNewGroupItemIdentifier),
+
+  // On non-Mac platforms, ensure that the menu has fully finished being
+  // shown before continuing. On Mac, this has to be done immediately since
+  // the context menu has seized control of the message pump.
+#if !BUILDFLAG(IS_MAC)
+      FlushEvents(),
 #endif
-      });
 
-  auto show_bubble_on_menu_item = base::BindLambdaForTesting(
-      [&](ui::InteractionSequence*, ui::TrackedElement* element) {
-        auto bubble =
-            GetRegistry()->CreateHelpBubble(element, GetBubbleParams());
-        EXPECT_TRUE(bubble);
-        EXPECT_TRUE(bubble->is_open());
-        bubble->Close();
-      });
+      // Create and wait for the help bubble.
+      WithElement(TabMenuModel::kAddToNewGroupItemIdentifier,
+                  [this, &bubble](ui::TrackedElement* el) {
+                    bubble =
+                        GetRegistry()->CreateHelpBubble(el, GetBubbleParams());
+                  }),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
 
-  auto tear_down = base::BindLambdaForTesting([&](ui::TrackedElement*) {
-    // For platforms where context menus run synchronously, if we don't close
-    // the menu, we will get stuck in the inner message pump and can never
-    // finish the test.
-    static_cast<BrowserTabStripController*>(
-        GetBrowserView()->tabstrip()->controller())
-        ->CloseContextMenuForTesting();
-  });
+  // On non-Mac platforms, ensure that the bubble has rendered before
+  // continuing. On Mac, this has to be done immediately since the context
+  // menu still has control of the message pump.
+#if !BUILDFLAG(IS_MAC)
+      FlushEvents(),
+#endif
 
-  auto sequence =
-      ui::InteractionSequence::Builder()
-          .SetCompletedCallback(completed.Get())
-          .SetAbortedCallback(aborted.Get())
-          .AddStep(ui::InteractionSequence::WithInitialElement(
-              views::ElementTrackerViews::GetInstance()->GetElementForView(
-                  tab, /* assign_temporary_id =*/true),
-              set_up))
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(TabMenuModel::kAddToNewGroupItemIdentifier)
-                       .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetStartCallback(show_bubble_on_menu_item)
-                       .SetEndCallback(tear_down)
-                       .Build())
-          .Build();
-
-  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+      // For platforms where context menus run synchronously, if we don't close
+      // the menu, we will get stuck in the inner message pump and can never
+      // finish the test. On other platforms, this is harmless and will clean
+      // up all of the secondary UI.
+      Do([this]() {
+        static_cast<BrowserTabStripController*>(
+            GetBrowserView()->tabstrip()->controller())
+            ->CloseContextMenuForTesting();
+      }));
 }
