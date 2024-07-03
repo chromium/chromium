@@ -166,13 +166,11 @@ class StringHasher {
   }
 
   static unsigned HashMemory(const void* data, unsigned length) {
-    // FIXME: Why does this function use the version of the hash that drops the
-    // top 8 bits?  We want that for all string hashing so we can use those
-    // bits in StringImpl and hash strings consistently, but I don't see why
-    // we'd want that for general memory hashing.
     DCHECK(!(length % 2));
-    return ComputeHashAndMaskTop8Bits_internal<UChar>(
-        static_cast<const unsigned char*>(data), length / sizeof(UChar));
+    StringHasher hasher;
+    hasher.AddCharactersAssumingAligned(static_cast<const UChar*>(data),
+                                        length / 2);
+    return hasher.GetHash();
   }
 
   template <size_t length>
