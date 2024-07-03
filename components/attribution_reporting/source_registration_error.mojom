@@ -55,7 +55,7 @@ enum SourceRegistrationError {
 
   kTopLevelTriggerDataAndTriggerSpecs = 37,
 
-  kSummaryWindowOperatorValueInvalid = 38,
+  kSummaryOperatorValueInvalid = 38,
 
   kSummaryBucketsListInvalid = 39,
   kSummaryBucketsValueInvalid = 40,

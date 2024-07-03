@@ -21,14 +21,14 @@
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "components/attribution_reporting/summary_window_operator.mojom.h"
+#include "components/attribution_reporting/summary_operator.mojom.h"
 
 namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-using ::attribution_reporting::mojom::SummaryWindowOperator;
+using ::attribution_reporting::mojom::SummaryOperator;
 
 bool AreSummaryBucketsValid(const base::flat_set<uint32_t>& starts) {
   return !starts.empty() &&
@@ -39,34 +39,34 @@ bool AreSummaryBucketsValid(const base::flat_set<uint32_t>& starts) {
 
 }  // namespace
 
-base::expected<SummaryWindowOperator, SourceRegistrationError>
-ParseSummaryWindowOperator(const base::Value::Dict& dict) {
-  const base::Value* value = dict.Find(kSummaryWindowOperator);
+base::expected<SummaryOperator, SourceRegistrationError> ParseSummaryOperator(
+    const base::Value::Dict& dict) {
+  const base::Value* value = dict.Find(kSummaryOperator);
   if (!value) {
-    return SummaryWindowOperator::kCount;
+    return SummaryOperator::kCount;
   }
 
   const std::string* str = value->GetIfString();
   if (!str) {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorValueInvalid);
-  } else if (*str == kSummaryWindowOperatorCount) {
-    return SummaryWindowOperator::kCount;
-  } else if (*str == kSummaryWindowOperatorValueSum) {
-    return SummaryWindowOperator::kValueSum;
+        SourceRegistrationError::kSummaryOperatorValueInvalid);
+  } else if (*str == kSummaryOperatorCount) {
+    return SummaryOperator::kCount;
+  } else if (*str == kSummaryOperatorValueSum) {
+    return SummaryOperator::kValueSum;
   } else {
     return base::unexpected(
-        SourceRegistrationError::kSummaryWindowOperatorValueInvalid);
+        SourceRegistrationError::kSummaryOperatorValueInvalid);
   }
 }
 
-void Serialize(SummaryWindowOperator op, base::Value::Dict& dict) {
+void Serialize(SummaryOperator op, base::Value::Dict& dict) {
   switch (op) {
-    case SummaryWindowOperator::kCount:
-      dict.Set(kSummaryWindowOperator, kSummaryWindowOperatorCount);
+    case SummaryOperator::kCount:
+      dict.Set(kSummaryOperator, kSummaryOperatorCount);
       break;
-    case SummaryWindowOperator::kValueSum:
-      dict.Set(kSummaryWindowOperator, kSummaryWindowOperatorValueSum);
+    case SummaryOperator::kValueSum:
+      dict.Set(kSummaryOperator, kSummaryOperatorValueSum);
       break;
   }
 }

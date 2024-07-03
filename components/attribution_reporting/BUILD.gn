@@ -13,7 +13,7 @@ mojom("mojom") {
     "registration_eligibility.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
-    "summary_window_operator.mojom",
+    "summary_operator.mojom",
     "trigger_data_matching.mojom",
     "trigger_registration_error.mojom",
   ]

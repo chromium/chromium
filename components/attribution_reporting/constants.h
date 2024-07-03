@@ -46,8 +46,8 @@ inline constexpr size_t kMaxTriggerContextIdLength = 64;
 inline constexpr char kTriggerDataMatchingExact[] = "exact";
 inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
 
-inline constexpr char kSummaryWindowOperatorCount[] = "count";
-inline constexpr char kSummaryWindowOperatorValueSum[] = "value_sum";
+inline constexpr char kSummaryOperatorCount[] = "count";
+inline constexpr char kSummaryOperatorValueSum[] = "value_sum";
 
 inline constexpr char kAggregatableFilteringIdsMaxBytes[] =
     "aggregatable_filtering_id_max_bytes";
@@ -68,7 +68,7 @@ inline constexpr char kPriority[] = "priority";
 inline constexpr char kSourceEventId[] = "source_event_id";
 inline constexpr char kStartTime[] = "start_time";
 inline constexpr char kSummaryBuckets[] = "summary_buckets";
-inline constexpr char kSummaryWindowOperator[] = "summary_window_operator";
+inline constexpr char kSummaryOperator[] = "summary_operator";
 inline constexpr char kTriggerData[] = "trigger_data";
 inline constexpr char kTriggerDataMatching[] = "trigger_data_matching";
 inline constexpr char kTriggerSpecs[] = "trigger_specs";

@@ -3571,7 +3571,7 @@ Called by update_net_error_codes.py.-->
   <int value="36" label="invalid trigger data for matching mode"/>
   <int value="37"
       label="top-level trigger_data and specs are mutually exclusive"/>
-  <int value="38" label="summary_window_operator value is invalid"/>
+  <int value="38" label="summary_operator value is invalid"/>
   <int value="39" label="summary_buckets not a valid list"/>
   <int value="40" label="summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>

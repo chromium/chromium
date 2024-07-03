@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
-#include "components/attribution_reporting/summary_window_operator.mojom.h"
+#include "components/attribution_reporting/summary_operator.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,47 +24,46 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-using ::attribution_reporting::mojom::SummaryWindowOperator;
+using ::attribution_reporting::mojom::SummaryOperator;
 using ::base::test::ErrorIs;
 using ::base::test::IsJson;
 using ::base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::Property;
 
-TEST(SummaryWindowOperatorTest, Parse) {
+TEST(SummaryOperatorTest, Parse) {
   const struct {
     const char* desc;
     const char* json;
-    ::testing::Matcher<
-        base::expected<SummaryWindowOperator, SourceRegistrationError>>
+    ::testing::Matcher<base::expected<SummaryOperator, SourceRegistrationError>>
         matches;
   } kTestCases[] = {
       {
           .desc = "missing",
           .json = R"json({})json",
-          .matches = ValueIs(SummaryWindowOperator::kCount),
+          .matches = ValueIs(SummaryOperator::kCount),
       },
       {
           .desc = "wrong_type",
-          .json = R"json({"summary_window_operator": 1})json",
-          .matches = ErrorIs(
-              SourceRegistrationError::kSummaryWindowOperatorValueInvalid),
+          .json = R"json({"summary_operator": 1})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryOperatorValueInvalid),
       },
       {
           .desc = "invalid_value",
-          .json = R"json({"summary_window_operator": "COUNT"})json",
-          .matches = ErrorIs(
-              SourceRegistrationError::kSummaryWindowOperatorValueInvalid),
+          .json = R"json({"summary_operator": "COUNT"})json",
+          .matches =
+              ErrorIs(SourceRegistrationError::kSummaryOperatorValueInvalid),
       },
       {
           .desc = "valid_count",
-          .json = R"json({"summary_window_operator": "count"})json",
-          .matches = ValueIs(SummaryWindowOperator::kCount),
+          .json = R"json({"summary_operator": "count"})json",
+          .matches = ValueIs(SummaryOperator::kCount),
       },
       {
           .desc = "valid_value_sum",
-          .json = R"json({"summary_window_operator": "value_sum"})json",
-          .matches = ValueIs(SummaryWindowOperator::kValueSum),
+          .json = R"json({"summary_operator": "value_sum"})json",
+          .matches = ValueIs(SummaryOperator::kValueSum),
       },
   };
 
@@ -73,22 +72,21 @@ TEST(SummaryWindowOperatorTest, Parse) {
 
     const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
 
-    EXPECT_THAT(ParseSummaryWindowOperator(dict), test_case.matches);
+    EXPECT_THAT(ParseSummaryOperator(dict), test_case.matches);
   }
 }
 
-TEST(SummaryWindowOperatorTest, Serialize) {
+TEST(SummaryOperatorTest, Serialize) {
   {
     base::Value::Dict out;
-    Serialize(SummaryWindowOperator::kCount, out);
-    EXPECT_THAT(out, IsJson(R"json({"summary_window_operator": "count"})json"));
+    Serialize(SummaryOperator::kCount, out);
+    EXPECT_THAT(out, IsJson(R"json({"summary_operator": "count"})json"));
   }
 
   {
     base::Value::Dict out;
-    Serialize(SummaryWindowOperator::kValueSum, out);
-    EXPECT_THAT(out,
-                IsJson(R"json({"summary_window_operator": "value_sum"})json"));
+    Serialize(SummaryOperator::kValueSum, out);
+    EXPECT_THAT(out, IsJson(R"json({"summary_operator": "value_sum"})json"));
   }
 }
 
