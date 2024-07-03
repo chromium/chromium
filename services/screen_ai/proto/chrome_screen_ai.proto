@@ -61,6 +61,9 @@ message LineBox {
   // Line bounding box relative to the original image with bottom edge
   // representing estimated baseline of text.
   Rect baseline_box = 9;
+
+  // Confidence as computed by the OCR engine. The value is in range [0, 1].
+  float confidence = 10;
 }
 
 // Word with associated bounding box.
@@ -112,6 +115,9 @@ message WordBox {
 
   // Detected orientation of the text.
   Orientation orientation = 14;
+
+  // Confidence as computed by the OCR engine.
+  float confidence = 15;
 }
 
 // Symbol with associated bounding box.
@@ -122,6 +128,9 @@ message SymbolBox {
 
   // Symbol in UTF8 format.
   string utf8_string = 2;
+
+  // Confidence as computed by the OCR engine.
+  float confidence = 3;
 }
 
 // Copied from google3/ocr/photo/proto/image.proto.
@@ -139,13 +148,17 @@ enum ContentType {
   CONTENT_TYPE_HANDWRITTEN_TEXT = 1;
   CONTENT_TYPE_IMAGE = 2;
   CONTENT_TYPE_LINE_DRAWING = 3;
+
   // E.g. a dividing line.
   CONTENT_TYPE_SEPARATOR = 4;
   CONTENT_TYPE_UNREADABLE_TEXT = 5;
+
   // Formula: a mathematical or chemical formula.
   CONTENT_TYPE_FORMULA = 6;
+
   // Same as FORMULA, but handwritten.
   CONTENT_TYPE_HANDWRITTEN_FORMULA = 7;
+
   // Signature or intitals.
   CONTENT_TYPE_SIGNATURE = 8;
 }
@@ -153,5 +166,6 @@ enum ContentType {
 message VisualAnnotation {
   // `ui_component` deprecated in Chrome M128.
   reserved 1;
+
   repeated LineBox lines = 2;
 }

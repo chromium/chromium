@@ -629,6 +629,7 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
     line_box->order_within_block = line.order_within_block();
     line_box->bounding_box = ProtoToMojo(line.bounding_box());
     line_box->bounding_box_angle = line.bounding_box().angle();
+    line_box->confidence = line.confidence();
 
     // `baseline_box` is not available in ChromeScreenAI library prior to
     // version 122.1.
@@ -648,6 +649,7 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
       word_box->bounding_box_angle = word.bounding_box().angle();
       word_box->direction = ProtoToMojo(word.direction());
       word_box->has_space_after = word.has_space_after();
+      word_box->confidence = word.confidence();
       line_box->words.push_back(std::move(word_box));
     }
     annotation->lines.push_back(std::move(line_box));

@@ -67,6 +67,9 @@ struct LineBox {
   // Rotation angle (in degrees, clockwise) of the line baseline box about its
   // top-left corner.
   float baseline_box_angle;
+
+  // Confidence as computed by the OCR engine. The value is in range [0, 1].
+  float confidence;
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -94,6 +97,9 @@ struct WordBox {
 
   // The direction of the script contained in the word.
   Direction direction;
+
+  // Confidence as computed by the OCR engine. The value is in range [0, 1].
+  float confidence;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI
