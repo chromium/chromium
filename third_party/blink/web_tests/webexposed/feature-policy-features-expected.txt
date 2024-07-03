@@ -74,7 +74,6 @@ storage-access
 sync-xhr
 unload
 usb
-usb-unrestricted
 vertical-scroll
 window-management
 xr-spatial-tracking
