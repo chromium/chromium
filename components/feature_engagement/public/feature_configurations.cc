@@ -1749,6 +1749,51 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_IOS)
+  if (kIPHiOSContextualPanelPriceInsightsFeature.name == feature->name) {
+    // The contextual panel's price insights entrypoint IPH config to control
+    // the impressions of the IPH for this infoblock. Shows the IPH 2 times
+    // every 6 months (max 1 per day), for a maximum of 4 times lifetime. Stops
+    // showing the IPH if the entrypoint was used.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig(
+        feature_engagement::events::
+            kIOSContextualPanelPriceInsightsEntrypointUsed,
+        Comparator(LESS_THAN, 1), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    config->trigger = EventConfig(
+        "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
+        Comparator(LESS_THAN, 2), 182, feature_engagement::kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
+        Comparator(LESS_THAN, 1), 1, feature_engagement::kMaxStoragePeriod));
+    config->event_configs.insert(EventConfig(
+        "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
+        Comparator(LESS_THAN, 4), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+
+    // This IPH is blocked by the overflow menu's price tracking IPH
+    // (kIPHPriceNotificationsWhileBrowsingFeature) if shown in the same
+    // session (approximated by checking for an event with a 1 day lookback
+    // window). Done through an event config since session rate is ignored.
+    config->event_configs.insert(EventConfig("price_notifications_trigger",
+                                             Comparator(LESS_THAN, 1), 1, 1));
+
+    // This IPH blocks the overflow menu's price tracking IPH
+    // (kIPHPriceNotificationsWhileBrowsingFeature) if shown in the same
+    // session.
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
+    std::vector<std::string> affected_features;
+    affected_features.push_back("IPH_PriceNotificationsWhileBrowsing");
+    session_rate_impact.affected_features = affected_features;
+    config->session_rate_impact = session_rate_impact;
+
+    return config;
+  }
+
   if (kIPHiOSContextualPanelSampleModelFeature.name == feature->name) {
     // The contextual panel's sample model entrypoint IPH config to control the
     // impressions of the IPH for this infoblock. Shows the IPH up to 3 times
@@ -1810,6 +1855,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // trackable product once per session for up to three sessions or until the
     // user has clicked on the Price Tracking entry point. There will be a
     // window of one week between impressions.
+
+    // This IPH is blocked by the Contextual Panel's price insights entrypoint
+    // IPH (kIPHiOSContextualPanelPriceInsightsFeature) via explicit session
+    // rate blocking.
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);

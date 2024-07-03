@@ -155,6 +155,8 @@ const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[] =
     "default_browser_promo_trigger_criteria_conditions_met";
 const char kIOSContextualPanelSampleModelEntrypointUsed[] =
     "ios_contextual_panel_sample_model_entrypoint_used";
+const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =
+    "ios_contextual_panel_price_insights_entrypoint_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

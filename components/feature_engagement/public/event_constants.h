@@ -304,6 +304,10 @@ extern const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[];
 // sample model info.
 extern const char kIOSContextualPanelSampleModelEntrypointUsed[];
 
+// The user has tapped the contextual panel entrypoint when it was branded with
+// price insights infoblock.
+extern const char kIOSContextualPanelPriceInsightsEntrypointUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

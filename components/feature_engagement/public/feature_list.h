@@ -271,6 +271,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSSavedTabGroupClosed,
                        "IPH_iOSSavedTabGroupClosed");
 DEFINE_VARIATION_PARAM(kIPHiOSContextualPanelSampleModelFeature,
                        "IPH_iOSContextualPanelSampleModel");
+DEFINE_VARIATION_PARAM(kIPHiOSContextualPanelPriceInsightsFeature,
+                       "IPH_iOSContextualPanelPriceInsights");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -627,6 +629,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSOverflowMenuCustomizationFeature),
         VARIATION_ENTRY(kIPHiOSSavedTabGroupClosed),
         VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
+        VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),
