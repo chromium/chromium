@@ -883,18 +883,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.IhnrActionButtonEvent"
-    enum="NotificationSchedulerActionButtonEvent" expires_after="2022-12-31">
-<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records events for inline helpful/unhelpful action buttons on the
-    notification when the buttons are shown or clicked.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Scheduler.NotificationLifeCycleEvent"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
     expires_after="2023-03-05">
@@ -905,17 +893,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records life cycle events for a scheduled notification, when notification is
     scheduled, shown or encountering any error.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.UserAction"
-    enum="NotificationSchedulerUserActionType" expires_after="2022-12-31">
-<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
-
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Records the type of user action when the user interacts with notification
-    sent from notification scheduler system.
   </summary>
 </histogram>
 

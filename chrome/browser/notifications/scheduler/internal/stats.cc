@@ -15,9 +15,6 @@ namespace notifications {
 namespace stats {
 namespace {
 
-const char kIhnrActionButtonEventHistogram[] =
-    "Notifications.Scheduler.IhnrActionButtonEvent";
-
 // Returns the histogram suffix for a client type. Should match suffix
 // NotificationSchedulerClientType in histograms.xml.
 std::string ToHistogramSuffix(SchedulerClientType client_type) {
@@ -54,22 +51,13 @@ void LogHistogramEnumWithSuffix(const std::string& name,
 }  // namespace
 
 void LogUserAction(const UserActionData& action_data) {
-  // Logs action type.
-  LogHistogramEnumWithSuffix("Notifications.Scheduler.UserAction",
-                             action_data.action_type, action_data.client_type);
 
   // Logs inline helpful/unhelpful buttons clicks.
   if (action_data.button_click_info.has_value()) {
     switch (action_data.button_click_info->type) {
       case ActionButtonType::kHelpful:
-        LogHistogramEnumWithSuffix(kIhnrActionButtonEventHistogram,
-                                   ActionButtonEvent::kHelpfulClick,
-                                   action_data.client_type);
         break;
       case ActionButtonType::kUnhelpful:
-        LogHistogramEnumWithSuffix(kIhnrActionButtonEventHistogram,
-                                   ActionButtonEvent::kUnhelpfulClick,
-                                   action_data.client_type);
         break;
       case ActionButtonType::kUnknownAction:
         break;
@@ -85,20 +73,6 @@ void LogBackgroundTaskNotificationShown(int shown_count) {
 
 void LogNotificationShow(const NotificationData& notification_data,
                          SchedulerClientType client_type) {
-  bool has_ihnr_button = false;
-  for (const auto& button : notification_data.buttons) {
-    if (button.type == ActionButtonType::kHelpful ||
-        button.type == ActionButtonType::kUnhelpful) {
-      has_ihnr_button = true;
-      break;
-    }
-  }
-
-  if (has_ihnr_button) {
-    LogHistogramEnumWithSuffix(kIhnrActionButtonEventHistogram,
-                               ActionButtonEvent::kShown, client_type);
-  }
-
   LogNotificationLifeCycleEvent(NotificationLifeCycleEvent::kShown,
                                 client_type);
 }

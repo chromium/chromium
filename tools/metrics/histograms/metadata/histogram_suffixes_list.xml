@@ -2118,10 +2118,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="ReadingList" label=""/>
   <suffix name="Unknown" label=""/>
   <suffix name="WebUI" label=""/>
-  <affected-histogram name="Notifications.Scheduler.IhnrActionButtonEvent"/>
   <affected-histogram
       name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
-  <affected-histogram name="Notifications.Scheduler.UserAction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OfflinePagesNamespace" separator=".">

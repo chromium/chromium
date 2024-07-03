@@ -12,24 +12,10 @@ namespace notifications {
 namespace stats {
 namespace {
 
-const char kIhnrActionButtonEventHistogram[] =
-    "Notifications.Scheduler.IhnrActionButtonEvent";
-
-const char kIhnrActionButtonEventTestHistogram[] =
-    "Notifications.Scheduler.IhnrActionButtonEvent.__Test__";
-
 void TestLogUserAction(const UserActionData& user_action_data,
                        ActionButtonEvent action_button_event) {
   base::HistogramTester histograms;
   LogUserAction(user_action_data);
-  histograms.ExpectBucketCount("Notifications.Scheduler.UserAction",
-                               user_action_data.action_type, 1);
-  histograms.ExpectBucketCount("Notifications.Scheduler.UserAction.__Test__",
-                               user_action_data.action_type, 1);
-  histograms.ExpectBucketCount(kIhnrActionButtonEventHistogram,
-                               action_button_event, 1);
-  histograms.ExpectBucketCount(kIhnrActionButtonEventTestHistogram,
-                               action_button_event, 1);
 }
 
 void TestNotificationShow(const NotificationData& notification_data,
@@ -38,16 +24,6 @@ void TestNotificationShow(const NotificationData& notification_data,
                           bool expect_life_cycle_histogram) {
   base::HistogramTester histograms;
   LogNotificationShow(notification_data, client_type);
-  if (expect_ihnr_histogram) {
-    histograms.ExpectBucketCount(kIhnrActionButtonEventHistogram,
-                                 ActionButtonEvent::kShown, 1);
-    histograms.ExpectBucketCount(kIhnrActionButtonEventTestHistogram,
-                                 ActionButtonEvent::kShown, 1);
-  } else {
-    histograms.ExpectTotalCount(kIhnrActionButtonEventHistogram, 0);
-    histograms.ExpectTotalCount(kIhnrActionButtonEventTestHistogram, 0);
-  }
-
   if (expect_life_cycle_histogram) {
     histograms.ExpectBucketCount(
         "Notifications.Scheduler.NotificationLifeCycleEvent",
