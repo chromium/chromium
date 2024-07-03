@@ -4532,7 +4532,6 @@ if (!is_android) {
         "../browser/apps/app_service/webapk/webapk_policy_browsertest.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
-        "../browser/ash/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ash/app_list/app_list_sort_browsertest.cc",
         "../browser/ash/app_list/app_service/app_service_app_item_browsertest.cc",

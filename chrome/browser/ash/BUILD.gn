@@ -5106,6 +5106,7 @@ source_set("browser_tests") {
 
     # Gather browser tests from subdirectories.
     "//chrome/browser/ash/accessibility:browser_tests",
+    "//chrome/browser/ash/account_manager:browser_tests",
     "//chrome/browser/ash/annotator:browser_tests",
     "//chrome/browser/ash/app_mode:browser_tests",
     "//chrome/browser/ash/app_restore:browser_tests",

@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("account_manager") {
+static_library("account_manager") {
   sources = [
     "account_apps_availability.cc",
     "account_apps_availability.h",
@@ -79,6 +79,30 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//services/network:test_support",
     "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "account_manager_policy_controller_browsertest.cc" ]
+
+  deps = [
+    ":account_manager",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/account_manager_core",
+    "//components/user_manager",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }
