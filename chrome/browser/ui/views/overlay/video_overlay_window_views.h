@@ -37,12 +37,11 @@ class ToggleCameraButton;
 
 // The Chrome desktop implementation of VideoOverlayWindow. This will only be
 // implemented in views, which will support all desktop platforms.
-class VideoOverlayWindowViews
-    : public content::VideoOverlayWindow,
-      public views::Widget,
-      public display::DisplayObserver,
-      public views::ViewObserver,
-      public AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver {
+class VideoOverlayWindowViews : public content::VideoOverlayWindow,
+                                public views::Widget,
+                                public display::DisplayObserver,
+                                public views::ViewObserver,
+                                public AutoPipSettingOverlayView::Delegate {
  public:
   using GetOverlayViewCb =
       base::RepeatingCallback<std::unique_ptr<AutoPipSettingOverlayView>()>;
@@ -106,7 +105,7 @@ class VideoOverlayWindowViews
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
 
-  // AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver:
+  // AutoPipSettingOverlayView::Delegate:
   void OnAutoPipSettingOverlayViewHidden() override;
 
   bool ControlsHitTestContainsPoint(const gfx::Point& point);
@@ -395,13 +394,6 @@ class VideoOverlayWindowViews
   // Callback to get / create an overlay view.  This is a callback to let tests
   // provide alternate implementations.
   GetOverlayViewCb get_overlay_view_cb_;
-
-  // Auto pip setting overlay view observation. Used to observe the overlay view
-  // and receive notifications when it is hidden.
-  base::ScopedObservation<
-      AutoPipSettingOverlayView,
-      AutoPipSettingOverlayView::AutoPipSettingOverlayViewObserver>
-      auto_pip_setting_overlay_view_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_

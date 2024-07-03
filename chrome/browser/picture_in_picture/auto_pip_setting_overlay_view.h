@@ -66,16 +66,18 @@ class AutoPipSettingOverlayView : public views::View,
 
   AutoPipSettingView* get_view_for_testing() { return auto_pip_setting_view_; }
 
-  class AutoPipSettingOverlayViewObserver : public base::CheckedObserver {
+  class Delegate {
    public:
+    virtual ~Delegate() {}
     virtual void OnAutoPipSettingOverlayViewHidden() = 0;
   };
 
-  void AddObserver(AutoPipSettingOverlayViewObserver* observer) {
-    observers_.AddObserver(observer);
-  }
-  void RemoveObserver(AutoPipSettingOverlayViewObserver* observer) {
-    observers_.RemoveObserver(observer);
+  void set_delegate(Delegate* delegate) {
+    // This should only ever be called to set the initial delegate (i.e.
+    // `delegate_` is null and `delegate` is not null) or to clear the delegate
+    // (i.e. `delegate_` is not null and `delegate` is null).
+    CHECK(!!delegate != !!delegate_);
+    delegate_ = delegate;
   }
 
   // Ignore events on `web_contents` until the user takes an action that hides
@@ -93,10 +95,6 @@ class AutoPipSettingOverlayView : public views::View,
   // Returns true if |show_timer_| is currently running.
   bool IsShowTimerRunning();
 
-  // Called whenever the AutoPipSettingOverlayView is hidden, in order to notify
-  // observers.
-  void NotifyAutoPipSettingOverlayViewHidden();
-
   // We temporarily own the setting view during init, but usually this is null.
   // Keep it separate so one doesn't accidentally use it.  It's likely that you
   // really want `auto_pip_setting_view_`, outside this struct.
@@ -109,7 +107,7 @@ class AutoPipSettingOverlayView : public views::View,
   raw_ptr<views::Widget> widget_ = nullptr;
   gfx::Size bubble_size_;
   std::unique_ptr<base::OneShotTimer> show_timer_;
-  base::ObserverList<AutoPipSettingOverlayViewObserver> observers_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Optional closure to re-enable input events, to be run when the user
   // dismisses the UI via any button.  Only used for document pip.

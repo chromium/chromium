@@ -367,6 +367,9 @@ VideoOverlayWindowViews::VideoOverlayWindowViews(
 }
 
 VideoOverlayWindowViews::~VideoOverlayWindowViews() {
+  if (overlay_view_) {
+    overlay_view_->RemoveObserver(this);
+  }
   display::Screen::GetScreen()->RemoveObserver(this);
 }
 
@@ -1305,7 +1308,7 @@ void VideoOverlayWindowViews::ShowInactive() {
   if (overlay_view) {
     overlay_view_ = GetContentsView()->AddChildView(std::move(overlay_view));
     overlay_view_->views::View::AddObserver(this);
-    auto_pip_setting_overlay_view_observation_.Observe(overlay_view_);
+    overlay_view_->set_delegate(this);
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
@@ -1691,11 +1694,10 @@ bool VideoOverlayWindowViews::IsOverlayViewShown() const {
 
 void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
   if (overlay_view_) {
-    auto_pip_setting_overlay_view_observation_.Reset();
     // Remove and delete the outgoing view.  Note the trailing `T` on the method
     // name -- this removes `overlay_view_` and returns a unique_ptr to it which
     // we then discard.  Without the `T`, it returns nothing and frees nothing.
-    overlay_view_->views::View::RemoveObserver(this);
+    overlay_view_->RemoveObserver(this);
     GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
     OnSizeConstraintsChanged();
   }
