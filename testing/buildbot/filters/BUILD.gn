@@ -442,7 +442,10 @@ source_set("webview_cts_tests_filters") {
 source_set("webview_instrumentation_test_apk_filters") {
   testonly = true
 
-  data = [ "//testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_14.webview_instrumentation_test_apk.filter",
+  ]
 }
 
 source_set("gwp_asan_unittests_filters") {
