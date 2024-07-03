@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -179,6 +180,11 @@ void IsolatedWebAppUpdateManager::Start() {
     if (!url_info.has_value()) {
       LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
                  << web_app.start_url();
+
+      web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+          "WebApp.Isolated.Update",
+          base::unexpected(
+              IsolatedWebAppUpdateError::kCantCalculateIsolatedWebAppUrlInfo));
       continue;
     }
 
@@ -486,6 +492,8 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  TrackResultOfUpdateDiscoveryTask(status);
+
   if (status.has_value() && *status ==
                                 IsolatedWebAppUpdateDiscoveryTask::Success::
                                     kUpdateFoundAndSavedInDatabase) {
@@ -493,6 +501,15 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
   }
 
   task_queue_.MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::TrackResultOfUpdateDiscoveryTask(
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const {
+  if (!status.has_value()) {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update",
+        base::unexpected(FromDiscoveryTaskError(status.error())));
+  }
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
@@ -513,6 +530,8 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
 void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  TrackResultOfUpdateApplyTask(status);
+
   auto callbacks_it =
       on_update_finished_callbacks_.find(task->url_info().app_id());
   if (callbacks_it != on_update_finished_callbacks_.end()) {
@@ -523,6 +542,18 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
   }
 
   task_queue_.MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::TrackResultOfUpdateApplyTask(
+    IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
+  if (status.has_value()) {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update", base::ok());
+  } else {
+    web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
+        "WebApp.Isolated.Update",
+        base::unexpected(IsolatedWebAppUpdateError::kUpdateApplyFailed));
+  }
 }
 
 void IsolatedWebAppUpdateManager::OnLocalUpdateDiscovered(
@@ -794,6 +825,31 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
   }
 
   update_manager_->OnUpdateApplyTaskCompleted(std::move(task), status);
+}
+
+IsolatedWebAppUpdateError IsolatedWebAppUpdateManager::FromDiscoveryTaskError(
+    const IsolatedWebAppUpdateDiscoveryTask::Error& error) const {
+  switch (error) {
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestDownloadFailed:
+      return IsolatedWebAppUpdateError::kUpdateManifestDownloadFailed;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson:
+      return IsolatedWebAppUpdateError::kUpdateManifestInvalidJson;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestInvalidManifest:
+      return IsolatedWebAppUpdateError::kUpdateManifestInvalidManifest;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::
+        kUpdateManifestNoApplicableVersion:
+      return IsolatedWebAppUpdateError::kUpdateManifestNoApplicableVersion;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kIwaNotInstalled:
+      return IsolatedWebAppUpdateError::kIwaNotInstalled;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kDownloadPathCreationFailed:
+      return IsolatedWebAppUpdateError::kDownloadPathCreationFailed;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kBundleDownloadError:
+      return IsolatedWebAppUpdateError::kBundleDownloadError;
+    case IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateDryRunFailed:
+      return IsolatedWebAppUpdateError::kUpdateDryRunFailed;
+  }
 }
 
 }  // namespace web_app

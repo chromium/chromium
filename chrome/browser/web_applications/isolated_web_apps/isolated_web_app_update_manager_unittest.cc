@@ -21,11 +21,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -1224,4 +1227,65 @@ INSTANTIATE_TEST_SUITE_P(
         ));
 
 }  // namespace
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskSuccess) {
+  base::HistogramTester histogram_tester;
+  IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status =
+      IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound;
+
+  update_manager().TrackResultOfUpdateDiscoveryTaskForTesting(status);
+
+  // When the discovery task is successful, no UMA metric should be recorded.
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateSuccess", 0);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError", 0);
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskFails) {
+  base::HistogramTester histogram_tester;
+  IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status = base::unexpected(
+      IsolatedWebAppUpdateDiscoveryTask::Error::kUpdateManifestInvalidJson);
+
+  update_manager().TrackResultOfUpdateDiscoveryTaskForTesting(status);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Isolated.UpdateSuccess"),
+      AllOf(SizeIs(1), BucketsAre(base::Bucket(/*update_success=*/false, 1))));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Isolated.UpdateError"),
+      AllOf(SizeIs(1),
+            BucketsAre(base::Bucket(
+                IsolatedWebAppUpdateError::kUpdateManifestInvalidJson, 1))));
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskSuccess) {
+  base::HistogramTester histogram_tester;
+  IsolatedWebAppUpdateApplyTask::CompletionStatus status = base::ok();
+
+  update_manager().TrackResultOfUpdateApplyTaskForTesting(status);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Isolated.UpdateSuccess"),
+      AllOf(SizeIs(1), BucketsAre(base::Bucket(/*update_success=*/true, 1))));
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError", 0);
+}
+
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskFails) {
+  base::HistogramTester histogram_tester;
+  IsolatedWebAppUpdateApplyTask::CompletionStatus status =
+      base::unexpected<IsolatedWebAppApplyUpdateCommandError>(
+          {"error message"});
+
+  update_manager().TrackResultOfUpdateApplyTaskForTesting(status);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Isolated.UpdateSuccess"),
+      AllOf(SizeIs(1), BucketsAre(base::Bucket(/*update_success=*/false, 1))));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.Isolated.UpdateError"),
+      AllOf(SizeIs(1), BucketsAre(base::Bucket(
+                           IsolatedWebAppUpdateError::kUpdateApplyFailed, 1))));
+}
+
 }  // namespace web_app

@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
@@ -46,6 +47,27 @@ class WebAppProvider;
 namespace {
 constexpr base::TimeDelta kDefaultUpdateDiscoveryFrequency = base::Hours(5);
 }
+
+// This enum lists the error types that can occur during the update of an
+// isolated web apps.
+//
+// These values are persisted to logs and the values match the entries of
+// `enum IsolatedWebAppUpdateError` in
+// `tools/metrics/histograms/metadata/webapps/enums.xml`.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IsolatedWebAppUpdateError {
+  kCantCalculateIsolatedWebAppUrlInfo = 1,
+  kUpdateManifestDownloadFailed = 2,
+  kUpdateManifestInvalidJson = 3,
+  kUpdateManifestInvalidManifest = 4,
+  kUpdateManifestNoApplicableVersion = 5,
+  kIwaNotInstalled = 6,
+  kDownloadPathCreationFailed = 7,
+  kBundleDownloadError = 8,
+  kUpdateDryRunFailed = 9,
+  kUpdateApplyFailed = 10,
+  kMaxValue = kUpdateApplyFailed
+};
 
 // The `IsolatedWebAppUpdateManager` is responsible for discovery, download, and
 // installation of Isolated Web App updates. Currently, it is only updating
@@ -132,6 +154,16 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   std::optional<base::TimeTicks> GetNextUpdateDiscoveryTimeForTesting() const {
     return next_update_discovery_check_.GetScheduledTime();
+  }
+
+  void TrackResultOfUpdateDiscoveryTaskForTesting(
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const {
+    TrackResultOfUpdateDiscoveryTask(status);
+  }
+
+  void TrackResultOfUpdateApplyTaskForTesting(
+      IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
+    TrackResultOfUpdateApplyTask(status);
   }
 
  private:
@@ -318,6 +350,15 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
       local_dev_mode_update_discoverer_;
 
   base::WeakPtrFactory<IsolatedWebAppUpdateManager> weak_factory_{this};
+
+  IsolatedWebAppUpdateError FromDiscoveryTaskError(
+      const IsolatedWebAppUpdateDiscoveryTask::Error& error) const;
+
+  void TrackResultOfUpdateDiscoveryTask(
+      IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const;
+
+  void TrackResultOfUpdateApplyTask(
+      IsolatedWebAppUpdateApplyTask::CompletionStatus status) const;
 };
 
 }  // namespace web_app

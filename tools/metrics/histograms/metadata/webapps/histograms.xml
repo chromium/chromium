@@ -1111,6 +1111,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.UpdateError" enum="IsolatedWebAppUpdateError"
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <summary>
+    Records the exact error that occured during the update of an Isolated Web
+    App. The update process happens at 2 different times: browser launch and
+    every 5 hours. Admin installed IWAs are also checked everytime the policy
+    value changes. Additional details can be found at go/iwa-managed-updates.
+    The error is logged together with WebApp.Isolated.UpdateSuccess in case an
+    error occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.UpdateSuccess" enum="BooleanSuccess"
+    expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <summary>
+    Records whether the the update of an Isolated Web App was successful or
+    resulted in an error. The update process happens at 2 different times:
+    browser launch and every 5 hours. Admin installed IWAs are also checked
+    everytime the policy value changes. Additional details can be found at
+    go/iwa-managed-updates.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
     expires_after="2024-11-03">
   <owner>phillis@chromium.org</owner>

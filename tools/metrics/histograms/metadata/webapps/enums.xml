@@ -221,6 +221,19 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Metadata validation error"/>
 </enum>
 
+<enum name="IsolatedWebAppUpdateError">
+  <int value="1" label="Cannot calculate IsolatedWebAppUrlInfo"/>
+  <int value="2" label="Update manifest download failed"/>
+  <int value="3" label="Update manifest invalid json"/>
+  <int value="4" label="Invalid update manifest"/>
+  <int value="5" label="Update manifest no applicable version"/>
+  <int value="6" label="IWA not installed"/>
+  <int value="7" label="Download path creation failed"/>
+  <int value="8" label="Bundle download error"/>
+  <int value="9" label="Update dry run failed"/>
+  <int value="10" label="Update apply failed"/>
+</enum>
+
 <enum name="LaunchedAppType">
   <int value="0" label="DIY app launched"/>
   <int value="1" label="Crafted app launched"/>
