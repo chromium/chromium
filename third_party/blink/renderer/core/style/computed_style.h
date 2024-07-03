@@ -2242,10 +2242,12 @@ class ComputedStyle final : public ComputedStyleBase {
       return false;
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
-      return ScrollMarkers() == EScrollMarkers::kBefore && IsScrollContainer();
+      return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore &&
+             IsScrollContainer();
     }
     if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
-      return ScrollMarkers() == EScrollMarkers::kAfter && IsScrollContainer();
+      return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
+             IsScrollContainer();
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
@@ -2259,20 +2261,20 @@ class ComputedStyle final : public ComputedStyleBase {
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
   }
 
-  bool HasScrollMarkersBefore() const {
-    return ScrollMarkers() == EScrollMarkers::kBefore;
+  bool HasScrollMarkerGroupBefore() const {
+    return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore;
   }
 
-  bool HasScrollMarkersAfter() const {
-    return ScrollMarkers() == EScrollMarkers::kAfter;
+  bool HasScrollMarkerGroupAfter() const {
+    return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter;
   }
 
-  bool ScrollMarkersNone() const {
-    return ScrollMarkers() == EScrollMarkers::kNone;
+  bool ScrollMarkerGroupNone() const {
+    return ScrollMarkerGroup() == EScrollMarkerGroup::kNone;
   }
 
-  bool ScrollMarkersEqual(const ComputedStyle& other) const {
-    return ScrollMarkers() == other.ScrollMarkers();
+  bool ScrollMarkerGroupEqual(const ComputedStyle& other) const {
+    return ScrollMarkerGroup() == other.ScrollMarkerGroup();
   }
 
   // Returns true if the element is rendered in the top layer. That is the case

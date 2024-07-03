@@ -26684,7 +26684,7 @@ Called by update_use_counter_css.py.-->
   <int value="790" label="types"/>
   <int value="791" label="line-clamp"/>
   <int value="792" label="font-variant-emoji"/>
-  <int value="793" label="scroll-markers"/>
+  <int value="793" label="scroll-marker-group"/>
   <int value="794" label="anchor-scope"/>
   <int value="795" label="ruby-align"/>
   <int value="796" label="box-decoration-break"/>

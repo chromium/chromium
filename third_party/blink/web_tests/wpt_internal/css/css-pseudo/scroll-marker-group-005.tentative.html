@@ -3,19 +3,19 @@
 
 <head>
     <meta charset="utf-8">
-    <title>CSS Test: scroll-markers dynamic change</title>
+    <title>CSS Test: scroll-marker-group dynamic change</title>
     <link rel="author" href="mailto:sakhapov@chromium.org">
     <link rel="match" href="scroll-marker-group-005-ref.tentative.html">
     <link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
     <style>
-        div.scroll-markers-before {
+        div.scroll-marker-group-before {
             overflow: auto;
-            scroll-markers: before;
+            scroll-marker-group: before;
         }
 
-        div.scroll-markers-after {
+        div.scroll-marker-group-after {
             overflow: auto;
-            scroll-markers: after;
+            scroll-marker-group: after;
         }
 
         div::before {
@@ -52,14 +52,14 @@
 </body>
 <script>
     document.documentElement.offsetTop;
-    target.className = "scroll-markers-before";
+    target.className = "scroll-marker-group-before";
     document.documentElement.offsetTop;
-    target.className = "scroll-markers-after";
+    target.className = "scroll-marker-group-after";
     document.documentElement.offsetTop;
     target.className = "";
     document.documentElement.offsetTop;
-    target.className = "scroll-markers-before";
-    target.className = "scroll-markers-after";
+    target.className = "scroll-marker-group-before";
+    target.className = "scroll-marker-group-after";
 </script>
 
 </html>

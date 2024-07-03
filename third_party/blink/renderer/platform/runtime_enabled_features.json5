@@ -1005,7 +1005,7 @@
       status: "test",
     },
     {
-      // For scroll-markers pseudo elements for Carousel.
+      // For ::scroll-marker and ::scroll-marker-group pseudo elements for Carousel.
       // https://github.com/flackr/carousel/tree/main/scroll-marker
       name: "CSSPseudoScrollMarkers",
       status: "experimental",

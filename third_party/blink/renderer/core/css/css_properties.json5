@@ -4702,7 +4702,7 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "scroll-markers",
+      name: "scroll-marker-group",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",

@@ -467,7 +467,7 @@ static CSSPropertyValueSet* UniversalOverlayUserAgentDeclaration() {
 // UA rule: ::scroll-marker-group { contain: size !important; }
 // The generation of ::scroll-marker pseudo-elements
 // cannot invalidate layout outside of this pseudo-element.
-static CSSPropertyValueSet* ScrollMarkersGroupUserAgentDeclaration() {
+static CSSPropertyValueSet* ScrollMarkerGroupUserAgentDeclaration() {
   DEFINE_STATIC_LOCAL(
       Persistent<MutableCSSPropertyValueSet>, decl,
       (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
@@ -1463,7 +1463,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
     if (element->IsScrollMarkerGroupPseudoElement()) {
       cascade.MutableMatchResult().AddMatchedProperties(
-          ScrollMarkersGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
+          ScrollMarkerGroupUserAgentDeclaration(), CascadeOrigin::kUserAgent);
     }
 
     // This adds a CSSInitialColorValue to the cascade for the document

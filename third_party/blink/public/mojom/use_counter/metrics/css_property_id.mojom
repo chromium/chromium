@@ -846,7 +846,7 @@ enum CSSSampleId {
     kTypes = 790,
     kLineClamp = 791,
     kFontVariantEmoji = 792,
-    kScrollMarkers = 793,
+    kScrollMarkerGroup = 793,
     kAnchorScope = 794,
     kRubyAlign = 795,
     kBoxDecorationBreak = 796,

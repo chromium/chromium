@@ -338,7 +338,7 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-margin-left
     scroll-margin-right
     scroll-margin-top
-    scroll-markers
+    scroll-marker-group
     scroll-padding-block-end
     scroll-padding-block-start
     scroll-padding-bottom

@@ -318,7 +318,7 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
     return false;
   }
   const ComputedStyle* style = current.GetComputedStyle();
-  if (style && !style->ScrollMarkersNone()) {
+  if (style && !style->ScrollMarkerGroupNone()) {
     return false;
   }
   if (!sibling) {
@@ -328,7 +328,7 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
     return false;
   }
   const ComputedStyle* sibling_style = sibling->GetComputedStyle();
-  if (sibling_style && !sibling_style->ScrollMarkersNone()) {
+  if (sibling_style && !sibling_style->ScrollMarkerGroupNone()) {
     return false;
   }
   return true;
@@ -344,8 +344,8 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
 // OE - originating element
 // PS - previous sibling of OE
 // NS - next sibling of OE
-// SMGB - ::scroll-marker-group of OE with scroll-markers: before
-// SMGA - ::scroll-marker-group of OE with scroll-markers: after
+// SMGB - ::scroll-marker-group of OE with scroll-marker-group: before
+// SMGA - ::scroll-marker-group of OE with scroll-marker-group: after
 // B - ::before of OE
 // A - ::after of OE
 // Node tree:
@@ -359,7 +359,7 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   }
   // From PS to OE with SMGB, return SMGB.
   if (next && next->GetComputedStyle() &&
-      next->GetComputedStyle()->HasScrollMarkersBefore()) {
+      next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
     if (Element* pseudo = To<Element>(next)->GetPseudoElement(
             kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
@@ -371,7 +371,7 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
   }
   // From OE with SMGA to NS, return SMGA.
   if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkersAfter()) {
+      node.GetComputedStyle()->HasScrollMarkerGroupAfter()) {
     if (Element* pseudo = To<Element>(node).GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
@@ -386,7 +386,7 @@ static Node* NextLayoutSiblingInBoxTreeOrder(const Node& node) {
     Node* originating_next = LayoutTreeBuilderTraversal::NextSibling(
         *To<PseudoElement>(node).OriginatingElement());
     if (originating_next && originating_next->GetComputedStyle() &&
-        originating_next->GetComputedStyle()->HasScrollMarkersBefore()) {
+        originating_next->GetComputedStyle()->HasScrollMarkerGroupBefore()) {
       if (Element* pseudo =
               To<Element>(originating_next)
                   ->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
@@ -442,7 +442,7 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
     return previous;
   }
   if (previous && previous->GetComputedStyle() &&
-      previous->GetComputedStyle()->HasScrollMarkersAfter()) {
+      previous->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
     if (Element* pseudo = To<Element>(previous)->GetPseudoElement(
             kPseudoIdScrollMarkerGroupAfter)) {
       return pseudo;
@@ -452,7 +452,7 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
     return LayoutTreeBuilderTraversal::PreviousSibling(*previous);
   }
   if (node.GetComputedStyle() &&
-      node.GetComputedStyle()->HasScrollMarkersBefore()) {
+      node.GetComputedStyle()->HasScrollMarkerGroupBefore()) {
     if (Element* pseudo = To<Element>(node).GetPseudoElement(
             kPseudoIdScrollMarkerGroupBefore)) {
       return pseudo;
@@ -465,7 +465,7 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
     Node* originating_prev = LayoutTreeBuilderTraversal::PreviousSibling(
         *To<PseudoElement>(node).OriginatingElement());
     if (originating_prev && originating_prev->GetComputedStyle() &&
-        originating_prev->GetComputedStyle()->HasScrollMarkersAfter()) {
+        originating_prev->GetComputedStyle()->HasScrollMarkerGroupAfter()) {
       if (Element* pseudo =
               To<Element>(originating_prev)
                   ->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {

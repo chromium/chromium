@@ -512,7 +512,7 @@ TEST_F(WhitespaceAttacherTest, CreateSpaceForScrollMarkerGroup) {
   GetDocument().body()->setInnerHTML(
       "<span>x</span> <span id=test></span> <span>y</span>"
       "<style>"
-      "#test { scroll-markers: before; overflow: auto; }"
+      "#test { scroll-marker-group: before; overflow: auto; }"
       "#test::scroll-marker-group { background: green; display: inline-flex; "
       "width: 100px; height: 100px; }"
       "</style>");
@@ -544,7 +544,7 @@ TEST_F(WhitespaceAttacherTest, RemoveSpaceForScrollMarkerGroup) {
   GetDocument().body()->setInnerHTML(
       "<span>x</span> <span id=test></span> <span>y</span>"
       "<style>"
-      "#test { scroll-markers: after; overflow: auto; }"
+      "#test { scroll-marker-group: after; overflow: auto; }"
       "#test::scroll-marker-group { background: green; display: inline-flex; "
       "width: 100px; height: 100px; }"
       "</style>");
