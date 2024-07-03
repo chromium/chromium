@@ -118,7 +118,7 @@ void DesktopCloudPolicyStore::LoadImmediately() {
   PolicyLoadResult result =
       LoadAndFilterPolicyFromDisk(policy_path_, key_path_, policy_load_filter_);
   // ...and install it, reporting success/failure to any observers.
-  PolicyLoaded(false, result);
+  OnPolicyLoaded(result);
 }
 
 void DesktopCloudPolicyStore::Clear() {
@@ -148,8 +148,8 @@ void DesktopCloudPolicyStore::Load() {
       FROM_HERE,
       base::BindOnce(&DesktopCloudPolicyStore::LoadAndFilterPolicyFromDisk,
                      policy_path_, key_path_, policy_load_filter_),
-      base::BindOnce(&DesktopCloudPolicyStore::PolicyLoaded,
-                     weak_factory_.GetWeakPtr(), true));
+      base::BindOnce(&DesktopCloudPolicyStore::OnPolicyLoaded,
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -200,8 +200,7 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
   return result;
 }
 
-void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
-                                           PolicyLoadResult result) {
+void DesktopCloudPolicyStore::OnPolicyLoaded(PolicyLoadResult result) {
   switch (result.status) {
     case LOAD_RESULT_LOAD_ERROR:
       status_ = STATUS_LOAD_ERROR;
@@ -230,7 +229,7 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         DLOG(WARNING) << "Verification key rotation detected";
       }
 
-      Validate(std::move(cloud_policy), std::move(key), validate_in_background,
+      Validate(std::move(cloud_policy), std::move(key),
                base::BindRepeating(
                    &DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation,
                    weak_factory_.GetWeakPtr(), doing_key_rotation,
@@ -340,7 +339,7 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
   std::unique_ptr<em::PolicyFetchResponse> policy_copy(
       new em::PolicyFetchResponse(policy));
   Validate(
-      std::move(policy_copy), std::unique_ptr<em::PolicySigningKey>(), true,
+      std::move(policy_copy), std::unique_ptr<em::PolicySigningKey>(),
       base::BindRepeating(&DesktopCloudPolicyStore::OnPolicyToStoreValidated,
                           weak_factory_.GetWeakPtr()));
 }
@@ -404,7 +403,6 @@ void UserCloudPolicyStore::SetSigninAccountId(const AccountId& account_id) {
 void UserCloudPolicyStore::Validate(
     std::unique_ptr<em::PolicyFetchResponse> policy,
     std::unique_ptr<em::PolicySigningKey> cached_key,
-    bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
   // Configure the validator.
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
@@ -430,15 +428,9 @@ void UserCloudPolicyStore::Validate(
 
   ValidateKeyAndSignature(validator.get(), cached_key.get(), owning_domain);
 
-  if (validate_in_background) {
-    // Start validation in the background.
-    UserCloudPolicyValidator::StartValidation(std::move(validator),
-                                              std::move(callback));
-  } else {
-    // Run validation immediately and invoke the callback with the results.
-    validator->RunValidation();
-    std::move(callback).Run(validator.get());
-  }
+  // Run validation immediately and invoke the callback with the results.
+  validator->RunValidation();
+  std::move(callback).Run(validator.get());
 }
 
 }  // namespace policy

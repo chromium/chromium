@@ -56,7 +56,6 @@ class POLICY_EXPORT ProfileCloudPolicyStore : public DesktopCloudPolicyStore {
   void Validate(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       std::unique_ptr<enterprise_management::PolicySigningKey> key,
-      bool validate_in_background,
       UserCloudPolicyValidator::CompletionCallback callback) override;
 
   bool is_dasherless_;

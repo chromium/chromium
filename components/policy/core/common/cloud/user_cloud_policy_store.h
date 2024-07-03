@@ -94,20 +94,15 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
   static PolicyLoadResult LoadPolicyFromDisk(const base::FilePath& policy_path,
                                              const base::FilePath& key_path);
 
-  // Callback invoked when a new policy has been loaded from disk. If
-  // |validate_in_background| is true, then policy is validated via a background
-  // thread.
-  void PolicyLoaded(bool validate_in_background,
-                    PolicyLoadResult policy_load_result);
+  // Handles policy load completion.
+  void OnPolicyLoaded(PolicyLoadResult policy_load_result);
 
   // Starts policy blob validation. |callback| is invoked once validation is
-  // complete. If |validate_in_background| is true, then the validation work
-  // occurs on a background thread (results are sent back to the calling
-  // thread).
+  // complete.
+  // TODO(b/312457052): Return validation result instead of callback.
   virtual void Validate(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       std::unique_ptr<enterprise_management::PolicySigningKey> key,
-      bool validate_in_background,
       UserCloudPolicyValidator::CompletionCallback callback) = 0;
 
   // Validate the |cached_key| with the |owning_domain|.
@@ -192,7 +187,6 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
   void Validate(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       std::unique_ptr<enterprise_management::PolicySigningKey> key,
-      bool validate_in_background,
       UserCloudPolicyValidator::CompletionCallback callback) override;
 
   // The account id from signin for validation of the policy.
