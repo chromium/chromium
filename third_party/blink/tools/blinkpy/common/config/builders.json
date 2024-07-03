@@ -281,5 +281,27 @@
         },
         "is_try_builder": true,
         "is_cq_builder":true
+    },
+    "android-chrome-13-x64-wpt-android-specific": {
+        "main": "tryserver.chromium.android",
+        "port_name": "android",
+        "specifiers": ["Android", "Release"],
+        "steps": {
+            "android_blink_wpt_tests": {
+                "product": "android"
+            }
+        },
+        "is_try_builder": true
+    },
+    "android-webview-13-x64-wpt-android-specific": {
+        "main": "tryserver.chromium.android",
+        "port_name": "webview",
+        "specifiers": ["Webview", "Release"],
+        "steps": {
+            "webview_blink_wpt_tests": {
+                "product": "webview"
+            }
+        },
+        "is_try_builder": true
     }
 }

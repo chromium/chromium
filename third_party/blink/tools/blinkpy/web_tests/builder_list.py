@@ -106,8 +106,7 @@ class BuilderList:
     def builders_for_rebaselining(self) -> Set[str]:
         try_builders = {
             builder
-            for builder in self.filter_builders(is_try=True,
-                                                exclude_specifiers={'android'})
+            for builder in self.filter_builders(is_try=True)
         }
         return try_builders
 

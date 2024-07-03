@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] mouse click target during capture
-  assert_equals: An element should only receive click when it is the first common ancestor of pointerdown and pointerup targets expected "pointerdown@green,gotpointercapture@blue,pointerup@blue,click@blue,lostpointercapture@blue" but got "pointerdown@green,gotpointercapture@blue,pointerup@blue,click@grey,lostpointercapture@blue"
-Harness: the test ran to completion.
