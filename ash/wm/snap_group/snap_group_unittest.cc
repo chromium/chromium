@@ -5525,6 +5525,35 @@ TEST_F(SnapGroupOverviewTest, HideBubbleTransientInOverview) {
   EXPECT_TRUE(w1_transient->IsVisible());
 }
 
+// Test that duplicate group items are not created when one of the windows in
+// Snap Group has an activatable transient window. Regression test for
+// http://b/349482229.
+TEST_F(SnapGroupOverviewTest, NoDuplicateGroupItemsWithActivatableTransient) {
+  UpdateDisplay("900x600");
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+
+  // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
+  // `w1` is interactable.
+  auto w1_transient =
+      CreateTransientChildWindow(w1.get(), gfx::Rect(600, 200, 200, 200));
+  w1_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  wm::SetModalParent(w1_transient.get(), w1.get());
+
+  wm::ActivateWindow(w0.get());
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+
+  // Verify that there will be only one Overview item in the list.
+  EXPECT_EQ(1u, overview_grid->window_list().size());
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDesksTest:
 using SnapGroupDesksTest = SnapGroupTest;

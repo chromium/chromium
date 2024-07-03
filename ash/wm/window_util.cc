@@ -439,13 +439,25 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
     return true;
   }
 
-  // 2. The window is not the most recently used (MRU) window within its snap
-  // group. i.e. the corresponding overview item representation for the snap
-  // group has been created.
+  // 2. The given `window` or its transient parent is not the most recently used
+  // (MRU) window within its snap group i.e. the corresponding Overview item
+  // representation for the snap group has been created. Note that the
+  // activatable transient window is included in the window cycle list
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return window != snap_group->GetTopMostWindowInGroup();
+    SnapGroup* snap_group =
+        snap_group_controller->GetSnapGroupForGivenWindow(window);
+    const aura::Window* transient_parent = wm::GetTransientParent(window);
+    if (!snap_group) {
+      snap_group =
+          snap_group_controller->GetSnapGroupForGivenWindow(transient_parent);
+    }
+
+    if (snap_group) {
+      const aura::Window* top_most_window_in_snap_group =
+          snap_group->GetTopMostWindowInGroup();
+      return window != top_most_window_in_snap_group &&
+             (!transient_parent ||
+              transient_parent != top_most_window_in_snap_group);
     }
   }
 
