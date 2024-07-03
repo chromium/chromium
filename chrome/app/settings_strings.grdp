@@ -398,6 +398,9 @@
   <message name="IDS_SETTINGS_SIDE_PANEL_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the side panel is displayed on.">
     Side panel position
   </message>
+  <message name="IDS_SETTINGS_TAB_SEARCH_POSITION" desc="Title for the tab search section. Allows the user to toggle which side the side panel is displayed on.">
+    Tab search position
+  </message>
   <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_LEFT" desc="Label for the button that configures a feature to appear on the left side of the browser. Translate this verbatim, do not localize for RTL languages.">
     Show on left
   </message>

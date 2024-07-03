@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/browser/ssl/generated_https_first_mode_pref.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -195,6 +196,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[bookmarks::prefs::kShowTabGroupsInBookmarkBar] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kSidePanelHorizontalAlignment] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[::prefs::kTabSearchRightAligned] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[tab_groups::prefs::kAutoPinNewTabGroups] =
       settings_api::PrefType::kBoolean;

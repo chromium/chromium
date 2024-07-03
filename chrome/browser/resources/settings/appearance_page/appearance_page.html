@@ -26,6 +26,11 @@
       .hover-card-toggles settings-toggle-button {
         padding-inline-start: 0;
       }
+
+      #tabSearchPositionRestart {
+        margin-inline-end: 20px;
+      }
+
     </style>
     <settings-animated-pages id="pages" section="appearance"
         focus-config="[[focusConfig_]]">
@@ -153,7 +158,25 @@
             pref="{{prefs.auto_pin_new_tab_groups}}"
             label="$i18n{autoPinNewTabGroups}">
         </settings-toggle-button>
-
+        <template is="dom-if" if="[[showTabSearchPositionSettings_]]" restamp>
+          <div class="cr-row" id="tabSearchPositionRow">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              $i18n{tabSearchPosition}
+            </div>
+            <template is="dom-if" if="[[showTabSearchPositionRestartButton_]]"
+                restamp>
+              <cr-button id="tabSearchPositionRestart"
+                on-click="onTabSearchPositionRestartClick_">
+                $i18n{restart}
+              </cr-button>
+            </template>
+            <settings-dropdown-menu id="tabSearchPositionDropdown"
+                label="$i18n{tabSearchPosition}"
+                pref="{{prefs.tab_search.is_right_aligned}}"
+                menu-options="[[tabSearchOptions_]]">
+            </settings-dropdown-menu>
+          </div>
+        </template>
         <div class="cr-row">
           <div class="flex cr-padded-text" aria-hidden="true">
             $i18n{sidePanelPosition}
@@ -164,7 +187,6 @@
               menu-options="[[sidePanelOptions_]]">
           </settings-dropdown-menu>
         </div>
-
         <template is="dom-if" if="[[!showHoverCardImagesOption_]]">
           <div class="hr" hidden="[[!pageVisibility.hoverCard]]"></div>
           <settings-toggle-button id="hoverCardMemoryUsageToggle"
