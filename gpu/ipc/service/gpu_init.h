@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_SERVICE_GPU_INIT_H_
 #define GPU_IPC_SERVICE_GPU_INIT_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
