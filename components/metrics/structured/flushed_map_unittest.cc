@@ -205,8 +205,7 @@ TEST_F(FlushedMapTest, UniqueFlushes) {
   EXPECT_NE(key1.path, key2.path);
 }
 
-// TODO(crbug.com/350806170): Re-enable this test
-TEST_F(FlushedMapTest, DISABLED_DeleteKey) {
+TEST_F(FlushedMapTest, DeleteKey) {
   FlushedMap map = BuildFlushedMap();
   Wait();
 
@@ -219,7 +218,7 @@ TEST_F(FlushedMapTest, DISABLED_DeleteKey) {
   Wait();
 
   const std::vector<FlushedKey>& keys = map.keys();
-  const auto& key = map.keys().front();
+  auto key = map.keys().front();
   EXPECT_EQ(keys.size(), 1ul);
   EXPECT_TRUE(base::PathExists(key.path));
 
