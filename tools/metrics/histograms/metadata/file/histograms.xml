@@ -1474,7 +1474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.QuickView.DialogType" enum="FileDialogType"
-    expires_after="2024-11-03">
+    expires_after="2025-07-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1483,28 +1483,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.QuickView.FileType" enum="ViewFileType"
-    expires_after="2024-11-03">
+    expires_after="2025-07-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>File types that were tried to be opened with quick view.</summary>
 </histogram>
 
 <histogram name="FileBrowser.QuickView.FileTypeOnLaunch" enum="ViewFileType"
-    expires_after="M128">
+    expires_after="2025-07-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>File types that were selected when quick view is launched.</summary>
 </histogram>
 
 <histogram name="FileBrowser.QuickView.VolumeType" enum="FileManagerVolumeType"
-    expires_after="2024-11-03">
+    expires_after="2025-07-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>The volume type where quick view is opened.</summary>
 </histogram>
 
 <histogram name="FileBrowser.QuickView.WayToOpen"
-    enum="FileManagerQuickViewWayToOpen" expires_after="M128">
+    enum="FileManagerQuickViewWayToOpen" expires_after="2025-07-03">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>How quick view was opened.</summary>
