@@ -5,7 +5,13 @@
     flex-direction: column;
     height: auto;
     justify-content: center;
+  }
+
+  #innerContainer {
+    display: flex;
+    flex-direction: column;
     transition: height 300ms cubic-bezier(0, 0, 0, 1);
+    width: 100%;
   }
 
   #queryInput {
@@ -59,32 +65,34 @@
       type="text"
       value="{{textValue_}}">
   </cr-input>
-  <template is="dom-if" if="[[shouldShowSuggestions_]]"
-      on-dom-change="onSeaPenSuggestionsDomChanged_">
-    <sea-pen-suggestions class="fade-in-200ms"
-        on-sea-pen-suggestion-selected="onSuggestionSelected_">
-    </sea-pen-suggestions>
-  </template>
-  <div id="searchButtons">
-    <template is="dom-if" if="[[thumbnailsLoading_]]">
-      <span id="thumbnailsLoadingText" aria-description="{{textValue_}}" aria-live="polite">
-        [[i18n('seaPenThumbnailsLoading')]]
-      </span>
+  <div id="innerContainer">
+    <template is="dom-if" if="[[shouldShowSuggestions_]]"
+        on-dom-change="onSeaPenSuggestionsDomChanged_">
+      <sea-pen-suggestions class="fade-in-200ms"
+          on-sea-pen-suggestion-selected="onSuggestionSelected_">
+      </sea-pen-suggestions>
     </template>
-    <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
-      <a id="promptingGuide"
-          href="chrome://help-app/help/sub/3399710/id/1251809"
-          target="_blank">
-        Prompting guide
-      </a>
-      <cr-button
-          id="searchButton"
-          class="action-button"
-          on-click="onClickInputQuerySearchButton_">
-        <iron-icon icon$="[[searchButtonIcon_]]" slot="prefix-icon">
-        </iron-icon>
-        <p>[[searchButtonText_]]</p>
-      </cr-button>
-    </template>
+    <div id="searchButtons">
+      <template is="dom-if" if="[[thumbnailsLoading_]]">
+        <span id="thumbnailsLoadingText" aria-description="{{textValue_}}" aria-live="polite">
+          [[i18n('seaPenThumbnailsLoading')]]
+        </span>
+      </template>
+      <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+        <a id="promptingGuide"
+            href="chrome://help-app/help/sub/3399710/id/1251809"
+            target="_blank">
+          Prompting guide
+        </a>
+        <cr-button
+            id="searchButton"
+            class="action-button"
+            on-click="onClickInputQuerySearchButton_">
+          <iron-icon icon$="[[searchButtonIcon_]]" slot="prefix-icon">
+          </iron-icon>
+          <p>[[searchButtonText_]]</p>
+        </cr-button>
+      </template>
+    </div>
   </div>
 </div>

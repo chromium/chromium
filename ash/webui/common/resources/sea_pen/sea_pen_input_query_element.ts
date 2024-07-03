@@ -37,7 +37,7 @@ import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {
   $: {
-    container: HTMLDivElement,
+    innerContainer: HTMLDivElement,
     queryInput: CrInputElement,
     searchButton: HTMLElement,
   };
@@ -104,7 +104,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private searchButtonText_: string|null;
   private searchButtonIcon_: string;
   private shouldShowSuggestions_: boolean;
-  private containerOriginalHeight_: number;
+  private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
 
   override connectedCallback() {
@@ -124,8 +124,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
-      this.containerOriginalHeight_ = this.$.container.scrollHeight;
-      this.$.container.style.height = `${this.containerOriginalHeight_}px`;
+      this.innerContainerOriginalHeight_ = this.$.innerContainer.scrollHeight;
+      this.$.innerContainer.style.height =
+          `${this.innerContainerOriginalHeight_}px`;
     });
   }
 
@@ -150,8 +151,8 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         this.shadowRoot!.querySelector('sea-pen-suggestions');
     const suggestionsContainerHeight =
         suggestionsContainer ? suggestionsContainer.scrollHeight : 0;
-    this.$.container.style.height =
-        `${this.containerOriginalHeight_ + suggestionsContainerHeight}px`;
+    this.$.innerContainer.style.height =
+        `${this.innerContainerOriginalHeight_ + suggestionsContainerHeight}px`;
   }
 
   private onSeaPenQueryChanged_(seaPenQuery: SeaPenQuery|null) {
