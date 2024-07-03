@@ -260,14 +260,7 @@ class SyncConfirmationUIWindowPixelTest
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
-// TODO(crbug.com/40261456): Enable once `VerifyUi()` is non-flaky.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(SyncConfirmationUIWindowPixelTest,
-                       MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUIWindowPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
