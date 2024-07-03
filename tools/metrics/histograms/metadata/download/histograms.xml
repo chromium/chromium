@@ -295,6 +295,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.DangerousDownloadInterstitial.Action"
+    enum="DangerousDownloadInterstitialAction" expires_after="2024-12-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records user action while attempting to recover a blocked download from
+    chrome://downloads. This is logged when the user interacts with the
+    dangerous download interstitial.
+  </summary>
+</histogram>
+
 <histogram name="Download.Database.IsAvailable" enum="BooleanAvailable"
     expires_after="never">
 <!-- expires-never: Helpful to track download database issue. -->

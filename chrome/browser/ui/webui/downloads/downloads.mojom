@@ -141,6 +141,12 @@ interface PageHandler {
   RecordOpenBypassWarningDialog(string id);
 
   // Called when "Download dangerous file" is clicked from the
+  // chrome://downloads overflow menu to open the warning bypass interstitial,
+  // for dangerous files. Only records the opening of the warning bypass
+  // interstitial.
+  RecordOpenBypassWarningInterstitial(string id);
+
+  // Called when "Download dangerous file" is clicked from the
   // chrome://downloads warning dialog, for dangerous files.
   SaveDangerousFromDialogRequiringGesture(string id);
 

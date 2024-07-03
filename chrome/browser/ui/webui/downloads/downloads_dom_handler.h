@@ -45,6 +45,21 @@ enum class SafeBrowsingEsbDownloadRowPromoOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingEsbDownloadRowPromoOutcome)
 
+// Represents the possible actions a user can take on chrome://downloads from
+// the dangerous download interstitial.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DangerousDownloadInterstitialAction)
+enum class DangerousDownloadInterstitialAction {
+  kOpenInterstitial = 0,
+  kCancelInterstitial = 1,
+  kOpenSurvey = 2,
+  kSaveDangerous = 3,
+  kMaxValue = kSaveDangerous
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadInterstitialAction)
+
 // The handler for Javascript messages related to the "downloads" view,
 // also observes changes to the download manager.
 // TODO(calamity): Remove WebUIMessageHandler.
@@ -72,6 +87,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void Drag(const std::string& id) override;
   void SaveSuspiciousRequiringGesture(const std::string& id) override;
   void RecordOpenBypassWarningDialog(const std::string& id) override;
+  void RecordOpenBypassWarningInterstitial(const std::string& id) override;
   void SaveDangerousFromDialogRequiringGesture(const std::string& id) override;
   void RecordCancelBypassWarningDialog(const std::string& id) override;
   void DiscardDangerous(const std::string& id) override;

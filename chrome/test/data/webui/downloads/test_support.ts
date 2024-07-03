@@ -32,6 +32,7 @@ class FakePageHandler implements PageHandlerInterface {
     'openEsbSettings',
     'recordCancelBypassWarningDialog',
     'recordOpenBypassWarningDialog',
+    'recordOpenBypassWarningInterstitial',
     'remove',
     'saveDangerousFromDialogRequiringGesture',
     'saveSuspiciousRequiringGesture',
@@ -51,6 +52,10 @@ class FakePageHandler implements PageHandlerInterface {
 
   recordOpenBypassWarningDialog(id: string) {
     this.callTracker_.methodCalled('recordOpenBypassWarningDialog', id);
+  }
+
+  recordOpenBypassWarningInterstitial(id: string) {
+    this.callTracker_.methodCalled('recordOpenBypassWarningInterstitial', id);
   }
 
   async remove(id: string) {

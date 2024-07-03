@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -425,6 +426,46 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTest,
   handler.RecordCancelBypassWarningDialog("1");
 
   // Verify no cancel report is sent, since it's not a terminal action.
+  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
+                  ->serialized_download_report()
+                  .empty());
+}
+
+class DownloadsDOMHandlerTestDangerousDownloadInterstitial
+    : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
+ public:
+  DownloadsDOMHandlerTestDangerousDownloadInterstitial() = default;
+
+  void SetUp() override {
+    DownloadsDOMHandlerWithFakeSafeBrowsingTest::SetUp();
+    SetUpDangerousDownload();
+    handler_ = std::make_unique<TestDownloadsDOMHandler>(
+        page_.BindAndGetRemote(), manager(), web_ui());
+  }
+
+  void TearDown() override {
+    DownloadsDOMHandlerWithFakeSafeBrowsingTest::TearDown();
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<TestDownloadsDOMHandler> handler_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      safe_browsing::kDangerousDownloadInterstitial};
+};
+
+TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
+       RecordOpenBypassWarningInterstitial) {
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler_->RecordOpenBypassWarningInterstitial("1");
+
+  histogram_tester_.ExpectUniqueSample(
+      "Download.DangerousDownloadInterstitial.Action",
+      DangerousDownloadInterstitialAction::kOpenInterstitial, 1);
+
+  // Verify no report is sent, since it's not a terminal action.
   EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
                   ->serialized_download_report()
                   .empty());

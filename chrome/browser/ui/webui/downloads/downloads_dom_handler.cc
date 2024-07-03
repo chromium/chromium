@@ -114,6 +114,12 @@ bool CanLogWarningMetrics(download::DownloadItem* file) {
   return file && file->IsDangerous() && !file->IsDone();
 }
 
+void RecordDangerousDownloadInterstitialActionHistogram(
+    DangerousDownloadInterstitialAction action) {
+  base::UmaHistogramEnumeration("Download.DangerousDownloadInterstitial.Action",
+                                action);
+}
+
 void PromptForScanningInBubble(content::WebContents* web_contents,
                                download::DownloadItem* download) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
@@ -331,6 +337,25 @@ void DownloadsDOMHandler::RecordOpenBypassWarningDialog(const std::string& id) {
   if (!CanLogWarningMetrics(file)) {
     return;
   }
+
+  RecordDownloadDangerPromptHistogram("Shown", *file);
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
+                          WarningAction::KEEP);
+}
+
+void DownloadsDOMHandler::RecordOpenBypassWarningInterstitial(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kDangerousDownloadInterstitial));
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!CanLogWarningMetrics(file)) {
+    return;
+  }
+
+  RecordDangerousDownloadInterstitialActionHistogram(
+      DangerousDownloadInterstitialAction::kOpenInterstitial);
 
   RecordDownloadDangerPromptHistogram("Shown", *file);
 
