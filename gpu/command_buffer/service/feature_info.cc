@@ -446,8 +446,6 @@ void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
     const gfx::ExtensionSet& extensions) {
   if (!feature_flags_.angle_instanced_arrays) {
     if (gfx::HasExtension(extensions, "GL_ANGLE_instanced_arrays") ||
-        (gfx::HasExtension(extensions, "GL_ARB_instanced_arrays") &&
-         gfx::HasExtension(extensions, "GL_ARB_draw_instanced")) ||
         gl_version_info_->is_es3) {
       AddExtensionString("GL_ANGLE_instanced_arrays");
       feature_flags_.angle_instanced_arrays = true;
@@ -492,7 +490,6 @@ void FeatureInfo::InitializeFeatures() {
   // extension is still advertised.
   bool has_pixel_buffers =
       gl_version_info_->is_es3 ||
-      gfx::HasExtension(extensions, "GL_ARB_pixel_buffer_object") ||
       gfx::HasExtension(extensions, "GL_NV_pixel_buffer_object");
 
   // If ES3 or pixel buffer objects are enabled by the driver, we have to assume
@@ -607,9 +604,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   bool have_bptc =
-      gfx::HasExtension(extensions, "GL_EXT_texture_compression_bptc") ||
-      gl_version_info_->IsAtLeastGL(4, 2) ||
-      gfx::HasExtension(extensions, "GL_ARB_texture_compression_bptc");
+      gfx::HasExtension(extensions, "GL_EXT_texture_compression_bptc");
   if (have_bptc) {
     feature_flags_.ext_texture_compression_bptc = true;
     AddExtensionString("GL_EXT_texture_compression_bptc");
@@ -632,9 +627,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   bool have_rgtc =
-      gfx::HasExtension(extensions, "GL_EXT_texture_compression_rgtc") ||
-      gl_version_info_->IsAtLeastGL(3, 0) ||
-      gfx::HasExtension(extensions, "GL_ARB_texture_compression_rgtc");
+      gfx::HasExtension(extensions, "GL_EXT_texture_compression_rgtc");
   if (have_rgtc) {
     feature_flags_.ext_texture_compression_rgtc = true;
     AddExtensionString("GL_EXT_texture_compression_rgtc");
@@ -712,8 +705,6 @@ void FeatureInfo::InitializeFeatures() {
   // GL_GOOGLE_depth_texture / GL_CHROMIUM_depth_texture.
   //
   // NOTE: GL_OES_depth_texture requires support for depth cubemaps.
-  // GL_ARB_depth_texture requires other features that
-  // GL_OES_packed_depth_stencil does not provide.
   //
   // Therefore we made up GL_GOOGLE_depth_texture / GL_CHROMIUM_depth_texture.
   //
@@ -723,8 +714,7 @@ void FeatureInfo::InitializeFeatures() {
   bool enable_depth_texture = false;
   GLenum depth_texture_format = GL_NONE;
   if (!workarounds_.disable_depth_texture &&
-      (gfx::HasExtension(extensions, "GL_ARB_depth_texture") ||
-       gfx::HasExtension(extensions, "GL_OES_depth_texture") ||
+      (gfx::HasExtension(extensions, "GL_OES_depth_texture") ||
        gfx::HasExtension(extensions, "GL_ANGLE_depth_texture"))) {
     // Note that we don't expose depth_texture extenion on top of ES3 if
     // the depth_texture extension isn't exposed by the ES3 driver.
@@ -781,9 +771,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   if (gl_version_info_->is_es3 ||
-      gfx::HasExtension(extensions, "GL_OES_vertex_array_object") ||
-      gfx::HasExtension(extensions, "GL_ARB_vertex_array_object") ||
-      gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object")) {
+      gfx::HasExtension(extensions, "GL_OES_vertex_array_object")) {
     feature_flags_.native_vertex_array_object = true;
   }
 
@@ -808,7 +796,7 @@ void FeatureInfo::InitializeFeatures() {
     }
   }
 
-  if (gl_version_info_->IsAtLeastGL(3, 0) || gl_version_info_->is_es3 ||
+  if (gl_version_info_->is_es3 ||
       gfx::HasExtension(extensions, "GL_OES_fbo_render_mipmap") ||
       gfx::HasExtension(extensions, "GL_EXT_framebuffer_object")) {
     if (!disallowed_features_.oes_fbo_render_mipmap) {
@@ -845,9 +833,7 @@ void FeatureInfo::InitializeFeatures() {
 
   if (has_srgb_framebuffer_support) {
     // GL_FRAMEBUFFER_SRGB_EXT is exposed by the GLES extension
-    // GL_EXT_sRGB_write_control (which is not part of the core, even in GLES3),
-    // and the desktop extension GL_ARB_framebuffer_sRGB (part of the core in
-    // 3.0).
+    // GL_EXT_sRGB_write_control (which is not part of the core, even in GLES3).
     if (gfx::HasExtension(extensions, "GL_EXT_sRGB_write_control")) {
       feature_flags_.ext_srgb_write_control = true;
 
@@ -866,26 +852,12 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_parameter.AddValue(GL_TEXTURE_SRGB_DECODE_EXT);
   }
 
-  bool have_s3tc_srgb = false;
-  if (gl_version_info_->is_es) {
-    // On mobile, the only extension that supports S3TC+sRGB is NV_sRGB_formats.
-    // The draft extension EXT_texture_compression_s3tc_srgb also supports it
-    // and is used if available (e.g. if ANGLE exposes it).
-    have_s3tc_srgb =
-        gfx::HasExtension(extensions, "GL_NV_sRGB_formats") ||
-        gfx::HasExtension(extensions, "GL_EXT_texture_compression_s3tc_srgb");
-  } else {
-    // On desktop, strictly-speaking, S3TC+sRGB is only available if both
-    // EXT_texture_sRGB and EXT_texture_compression_s3tc_srgb are available.
-    //
-    // However, on macOS, S3TC+sRGB is supported on OpenGL 4.1 with only
-    // EXT_texture_compression_s3tc_srgb, so we allow that as well.
-    if (gfx::HasExtension(extensions, "GL_EXT_texture_sRGB") ||
-        gl_version_info_->IsAtLeastGL(4, 1)) {
-      have_s3tc_srgb =
-          gfx::HasExtension(extensions, "GL_EXT_texture_compression_s3tc");
-    }
-  }
+  // On mobile, the only extension that supports S3TC+sRGB is NV_sRGB_formats.
+  // The draft extension EXT_texture_compression_s3tc_srgb also supports it
+  // and is used if available (e.g. if ANGLE exposes it).
+  bool have_s3tc_srgb =
+      gfx::HasExtension(extensions, "GL_NV_sRGB_formats") ||
+      gfx::HasExtension(extensions, "GL_EXT_texture_compression_s3tc_srgb");
 
   if (have_s3tc_srgb) {
     AddExtensionString("GL_EXT_texture_compression_s3tc_srgb");
@@ -927,17 +899,13 @@ void FeatureInfo::InitializeFeatures() {
       gfx::HasExtension(extensions, "GL_APPLE_texture_format_BGRA8888");
   bool has_ext_bgra =
       gfx::HasExtension(extensions, "GL_EXT_texture_format_BGRA8888");
-  bool enable_texture_format_bgra8888 =
-      has_ext_bgra || has_apple_bgra || !gl_version_info_->is_es;
+  bool enable_texture_format_bgra8888 = has_ext_bgra || has_apple_bgra;
 
   bool has_ext_texture_storage =
       gfx::HasExtension(extensions, "GL_EXT_texture_storage");
-  bool has_arb_texture_storage =
-      gfx::HasExtension(extensions, "GL_ARB_texture_storage");
   bool has_texture_storage =
       !workarounds_.disable_texture_storage &&
-      (has_ext_texture_storage || has_arb_texture_storage ||
-       gl_version_info_->is_es3 || gl_version_info_->IsAtLeastGL(4, 2));
+      (has_ext_texture_storage || gl_version_info_->is_es3);
 
   bool enable_texture_storage = has_texture_storage;
 
@@ -1003,9 +971,9 @@ void FeatureInfo::InitializeFeatures() {
   bool enable_render_buffer_bgra =
 #if BUILDFLAG(IS_IOS)
       // BGRA is not supported on iOS with ANGLE + GL.
-      gl_version_info_->is_angle_metal || !gl_version_info_->is_es;
+      gl_version_info_->is_angle_metal;
 #else
-      gl_version_info_->is_angle || !gl_version_info_->is_es;
+      gl_version_info_->is_angle;
 #endif  // BUILDFLAG(IS_IOS)
 
   if (enable_render_buffer_bgra) {
@@ -1018,8 +986,7 @@ void FeatureInfo::InitializeFeatures() {
   // require. On ES, support is indicated by the GL_EXT_read_format_bgra
   // extension.
   bool enable_read_format_bgra =
-      gfx::HasExtension(extensions, "GL_EXT_read_format_bgra") ||
-      !gl_version_info_->is_es;
+      gfx::HasExtension(extensions, "GL_EXT_read_format_bgra");
 
   if (enable_read_format_bgra) {
     feature_flags_.ext_read_format_bgra = true;
@@ -1050,7 +1017,6 @@ void FeatureInfo::InitializeFeatures() {
   // Check if we should allow GL_OES_texture_npot
   if (!disallowed_features_.npot_support &&
       (gl_version_info_->is_es3 ||
-       gfx::HasExtension(extensions, "GL_ARB_texture_non_power_of_two") ||
        gfx::HasExtension(extensions, "GL_OES_texture_npot"))) {
     AddExtensionString("GL_OES_texture_npot");
     feature_flags_.npot_ok = true;
@@ -1061,7 +1027,6 @@ void FeatureInfo::InitializeFeatures() {
   // Check for multisample support
   if (!workarounds_.disable_chromium_framebuffer_multisample) {
     bool ext_has_multisample =
-        gfx::HasExtension(extensions, "GL_ARB_framebuffer_object") ||
         (gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample") &&
          gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit")) ||
         gl_version_info_->is_es3;
@@ -1095,8 +1060,7 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_EXT_multisampled_render_to_texture");
   }
 
-  if (!gl_version_info_->is_es ||
-      gfx::HasExtension(extensions, "GL_EXT_multisample_compatibility")) {
+  if (gfx::HasExtension(extensions, "GL_EXT_multisample_compatibility")) {
     AddExtensionString("GL_EXT_multisample_compatibility");
     feature_flags_.ext_multisample_compatibility = true;
     validators_.capability.AddValue(GL_MULTISAMPLE_EXT);
@@ -1207,8 +1171,7 @@ void FeatureInfo::InitializeFeatures() {
   // IOSurface backed textures. We don't want applications to start using it;
   // they should use ordinary non-power-of-two textures. However, for unit
   // testing purposes we expose it on all supported platforms.
-  if (gfx::HasExtension(extensions, "GL_ARB_texture_rectangle") ||
-      gfx::HasExtension(extensions, "GL_ANGLE_texture_rectangle")) {
+  if (gfx::HasExtension(extensions, "GL_ANGLE_texture_rectangle")) {
     AddExtensionString("GL_ARB_texture_rectangle");
     feature_flags_.arb_texture_rectangle = true;
     // Rectangle textures are used as samplers via glBindTexture, framebuffer
@@ -1236,7 +1199,6 @@ void FeatureInfo::InitializeFeatures() {
   // XB30 support was introduced in GLES 3.0/ OpenGL 3.3, before that it was
   // signalled via a specific extension.
   feature_flags_.chromium_image_ab30 =
-      gl_version_info_->IsAtLeastGL(3, 3) ||
       gl_version_info_->IsAtLeastGLES(3, 0) ||
       gfx::HasExtension(extensions, "GL_EXT_texture_type_2_10_10_10_REV");
 #endif
@@ -1306,7 +1268,6 @@ void FeatureInfo::InitializeFeatures() {
   EnableANGLEInstancedArrayIfPossible(extensions);
 
   bool have_es2_draw_buffers_vendor_agnostic =
-      gfx::HasExtension(extensions, "GL_ARB_draw_buffers") ||
       gfx::HasExtension(extensions, "GL_EXT_draw_buffers");
   bool can_emulate_es2_draw_buffers_on_es3_nv =
       gl_version_info_->is_es3 &&
@@ -1383,7 +1344,6 @@ void FeatureInfo::InitializeFeatures() {
 
   feature_flags_.map_buffer_range =
       gl_version_info_->is_es3 ||
-      gfx::HasExtension(extensions, "GL_ARB_map_buffer_range") ||
       gfx::HasExtension(extensions, "GL_EXT_map_buffer_range");
 
   // We will use either glMapBuffer() or glMapBufferRange() for async readbacks.
@@ -1392,8 +1352,7 @@ void FeatureInfo::InitializeFeatures() {
     feature_flags_.use_async_readpixels = true;
   }
 
-  if (gl_version_info_->is_es3 ||
-      gfx::HasExtension(extensions, "GL_ARB_sampler_objects")) {
+  if (gl_version_info_->is_es3) {
     feature_flags_.enable_samplers = true;
     // TODO(dsinclair): Add AddExtensionString("GL_CHROMIUM_sampler_objects")
     // when available.
@@ -1442,8 +1401,7 @@ void FeatureInfo::InitializeFeatures() {
   }
 
   if ((gl_version_info_->is_es3 ||
-       gfx::HasExtension(extensions, "GL_EXT_texture_rg") ||
-       gfx::HasExtension(extensions, "GL_ARB_texture_rg")) &&
+       gfx::HasExtension(extensions, "GL_EXT_texture_rg")) &&
       IsGL_REDSupportedOnFBOs()) {
     feature_flags_.ext_texture_rg = true;
     AddExtensionString("GL_EXT_texture_rg");
@@ -1474,9 +1432,7 @@ void FeatureInfo::InitializeFeatures() {
 
   const bool is_texture_norm16_supported_for_webgl2_or_es3 =
       IsWebGL2OrES3OrHigherContext() &&
-      ((gl_version_info_->IsAtLeastGL(2, 1) &&
-        gfx::HasExtension(extensions, "GL_ARB_texture_rg")) ||
-       gfx::HasExtension(extensions, "GL_EXT_texture_norm16"));
+      gfx::HasExtension(extensions, "GL_EXT_texture_norm16");
   const bool is_texture_norm16_supported_for_angle_es2 =
       is_passthrough_cmd_decoder_ && context_type_ == CONTEXT_TYPE_OPENGLES2 &&
       gfx::HasExtension(extensions, "GL_EXT_texture_norm16");
@@ -1543,15 +1499,8 @@ void FeatureInfo::InitializeFeatures() {
     validators_.indexed_g_l_state.AddValue(GL_WINDOW_RECTANGLE_EXT);
   }
 
-  bool has_opengl_dual_source_blending =
-      gl_version_info_->IsAtLeastGL(3, 3) ||
-      (gl_version_info_->IsAtLeastGL(3, 2) &&
-       gfx::HasExtension(extensions, "GL_ARB_blend_func_extended"));
-  if (!disable_shader_translator_ &&
-      ((gl_version_info_->IsAtLeastGL(3, 2) &&
-        has_opengl_dual_source_blending) ||
-       (gl_version_info_->IsAtLeastGLES(3, 0) &&
-        gfx::HasExtension(extensions, "GL_EXT_blend_func_extended")))) {
+  if (!disable_shader_translator_ && gl_version_info_->IsAtLeastGLES(3, 0) &&
+      gfx::HasExtension(extensions, "GL_EXT_blend_func_extended")) {
     // Note: to simplify the code, we do not expose EXT_blend_func_extended
     // unless the service context supports ES 3.0. This means the theoretical ES
     // 2.0 implementation with EXT_blend_func_extended is not sufficient.
@@ -1573,18 +1522,10 @@ void FeatureInfo::InitializeFeatures() {
     validators_.g_l_state.AddValue(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT);
   }
 
-  if (gl_version_info_->IsLowerThanGL(4, 3)) {
-    // crbug.com/481184.
-    // GL_PRIMITIVE_RESTART_FIXED_INDEX is only available on Desktop GL 4.3+,
-    // but we emulate ES 3.0 on top of Desktop GL 4.2+.
-    feature_flags_.emulate_primitive_restart_fixed_index = true;
-  }
-
   feature_flags_.angle_robust_client_memory =
       gfx::HasExtension(extensions, "GL_ANGLE_robust_client_memory");
 
-  feature_flags_.khr_debug = gl_version_info_->IsAtLeastGL(4, 3) ||
-                             gl_version_info_->IsAtLeastGLES(3, 2) ||
+  feature_flags_.khr_debug = gl_version_info_->IsAtLeastGLES(3, 2) ||
                              gfx::HasExtension(extensions, "GL_KHR_debug");
 
   feature_flags_.chromium_gpu_fence = gl::GLFence::IsGpuFenceSupported();
@@ -1603,7 +1544,6 @@ void FeatureInfo::InitializeFeatures() {
   feature_flags_.angle_request_extension =
       gfx::HasExtension(extensions, "GL_ANGLE_request_extension");
   feature_flags_.ext_pixel_buffer_object =
-      gfx::HasExtension(extensions, "GL_ARB_pixel_buffer_object") ||
       gfx::HasExtension(extensions, "GL_NV_pixel_buffer_object");
   feature_flags_.ext_unpack_subimage =
       gfx::HasExtension(extensions, "GL_EXT_unpack_subimage");
@@ -1829,35 +1769,27 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
     enable_ext_color_buffer_half_float = true;
   }
 
-  if (gfx::HasExtension(extensions, "GL_ARB_texture_float")) {
+  // GLES3 adds support for Float type by default but it doesn't support all
+  // formats as GL_OES_texture_float(i.e.LUMINANCE_ALPHA,LUMINANCE and Alpha)
+  if (gfx::HasExtension(extensions, "GL_OES_texture_float")) {
     enable_texture_float = true;
+    if (enable_ext_color_buffer_float) {
+      may_enable_chromium_color_buffer_float = true;
+    }
+  }
+
+  if (gfx::HasExtension(extensions, "GL_OES_texture_float_linear")) {
     enable_texture_float_linear = true;
+  }
+
+  // TODO(dshwang): GLES3 supports half float by default but GL_HALF_FLOAT_OES
+  // isn't equal to GL_HALF_FLOAT.
+  if (gfx::HasExtension(extensions, "GL_OES_texture_half_float")) {
     enable_texture_half_float = true;
+  }
+
+  if (gfx::HasExtension(extensions, "GL_OES_texture_half_float_linear")) {
     enable_texture_half_float_linear = true;
-    may_enable_chromium_color_buffer_float = true;
-  } else {
-    // GLES3 adds support for Float type by default but it doesn't support all
-    // formats as GL_OES_texture_float(i.e.LUMINANCE_ALPHA,LUMINANCE and Alpha)
-    if (gfx::HasExtension(extensions, "GL_OES_texture_float")) {
-      enable_texture_float = true;
-      if (enable_ext_color_buffer_float) {
-        may_enable_chromium_color_buffer_float = true;
-      }
-    }
-
-    if (gfx::HasExtension(extensions, "GL_OES_texture_float_linear")) {
-      enable_texture_float_linear = true;
-    }
-
-    // TODO(dshwang): GLES3 supports half float by default but GL_HALF_FLOAT_OES
-    // isn't equal to GL_HALF_FLOAT.
-    if (gfx::HasExtension(extensions, "GL_OES_texture_half_float")) {
-      enable_texture_half_float = true;
-    }
-
-    if (gfx::HasExtension(extensions, "GL_OES_texture_half_float_linear")) {
-      enable_texture_half_float_linear = true;
-    }
   }
 
   if (enable_texture_float) {
@@ -1902,9 +1834,8 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
     }
   }
 
-  // Assume all desktop (!gl_version_info_->is_es) supports float blend.
   // Floating-point format blending is core of ES 3.2.
-  if (!gl_version_info_->is_es || gl_version_info_->IsAtLeastGLES(3, 2) ||
+  if (gl_version_info_->IsAtLeastGLES(3, 2) ||
       gfx::HasExtension(extensions, "GL_EXT_float_blend")) {
     if (!disallowed_features_.ext_float_blend) {
       EnableEXTFloatBlend();
@@ -1917,10 +1848,6 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
         workarounds_.force_enable_color_buffer_float_except_rgb32f) {
       if (enable_es3)
         enable_ext_color_buffer_float = true;
-      if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
-          gl_version_info_->IsAtLeastGL(3, 0)) {
-        enable_ext_color_buffer_half_float = true;
-      }
       feature_flags_.chromium_color_buffer_float_rgba = true;
       if (!disallowed_features_.chromium_color_buffer_float_rgba)
         EnableCHROMIUMColorBufferFloatRGBA();
@@ -1988,8 +1915,7 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
       // Likewise for EXT_color_buffer_half_float on ES2 contexts. On desktop,
       // require at least GL 3.0, to ensure that all formats are defined.
       if (IsWebGL1OrES2Context() && !enable_ext_color_buffer_half_float &&
-          (gl_version_info_->IsAtLeastGLES(3, 0) ||
-           gl_version_info_->IsAtLeastGL(3, 0))) {
+          gl_version_info_->IsAtLeastGLES(3, 0)) {
         // EXT_color_buffer_half_float requires at least one of the formats is
         // supported to be color-renderable. WebGL's extension requires RGBA16F
         // to be the supported effective format. Here we only expose the

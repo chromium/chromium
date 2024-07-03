@@ -42,13 +42,7 @@ const char kGLRendererStringANGLE[] = "ANGLE (some renderer)";
 
 enum MockedGLVersionKind {
   ES2_on_Version3_0,
-  ES2_on_Version3_2Compatibility,
   ES3_on_Version3_0,
-  ES3_on_Version3_2Compatibility,
-
-  // Currently, nothing cares about both ES version and passthrough, so just
-  // create one representative passthrough case.
-  ES2_on_Version3_0_Passthrough
 };
 
 class FeatureInfoTest
@@ -63,16 +57,8 @@ class FeatureInfoTest
     // OpenGL compatibility profile.
     switch (GetParam()) {
       case ES2_on_Version3_0:
-      case ES2_on_Version3_0_Passthrough:
       case ES3_on_Version3_0:
         SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "", "3.0");
-        break;
-      case ES2_on_Version3_2Compatibility:
-      case ES3_on_Version3_2Compatibility:
-        if (!base::Contains(extensions_str, "GL_ARB_compatibility")) {
-          extensions_str += " GL_ARB_compatibility";
-        }
-        SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "", "3.2");
         break;
       default:
         NOTREACHED_IN_MIGRATION();
@@ -83,30 +69,12 @@ class FeatureInfoTest
   ContextType GetContextType() {
     switch (GetParam()) {
       case ES2_on_Version3_0:
-      case ES2_on_Version3_0_Passthrough:
-      case ES2_on_Version3_2Compatibility:
         return CONTEXT_TYPE_OPENGLES2;
       case ES3_on_Version3_0:
-      case ES3_on_Version3_2Compatibility:
         return CONTEXT_TYPE_OPENGLES3;
       default:
         NOTREACHED_IN_MIGRATION();
         return CONTEXT_TYPE_OPENGLES2;
-    }
-  }
-
-  bool IsPassthroughCmdDecoder() {
-    switch (GetParam()) {
-      case ES2_on_Version3_0_Passthrough:
-        return true;
-      case ES2_on_Version3_0:
-      case ES2_on_Version3_2Compatibility:
-      case ES3_on_Version3_0:
-      case ES3_on_Version3_2Compatibility:
-        return false;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
     }
   }
 
@@ -116,8 +84,7 @@ class FeatureInfoTest
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         gl_.get(), extensions, renderer, version, GetContextType());
     info_ = new FeatureInfo();
-    info_->Initialize(GetContextType(), IsPassthroughCmdDecoder(),
-                      DisallowedFeatures());
+    info_->Initialize(GetContextType(), false, DisallowedFeatures());
   }
 
   void SetupInitExpectationsWithGLVersionAndDisallowedFeatures(
@@ -129,8 +96,7 @@ class FeatureInfoTest
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         gl_.get(), extensions, renderer, version, GetContextType());
     info_ = new FeatureInfo();
-    info_->Initialize(GetContextType(), IsPassthroughCmdDecoder(),
-                      disallowed_features);
+    info_->Initialize(GetContextType(), false, disallowed_features);
   }
 
   void SetupWithWorkarounds(const gpu::GpuDriverBugWorkarounds& workarounds) {
@@ -141,12 +107,11 @@ class FeatureInfoTest
   void SetupInitExpectationsWithWorkarounds(
       const char* extensions,
       const gpu::GpuDriverBugWorkarounds& workarounds) {
-    GpuServiceTest::SetUpWithGLVersion("2.0", extensions);
+    GpuServiceTest::SetUpWithGLVersion("OpenGL ES 3.0", extensions);
     TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         gl_.get(), extensions, "", "", GetContextType());
     info_ = new FeatureInfo(workarounds, GpuFeatureInfo());
-    info_->Initialize(GetContextType(), IsPassthroughCmdDecoder(),
-                      DisallowedFeatures());
+    info_->Initialize(GetContextType(), false, DisallowedFeatures());
   }
 
   void SetupWithoutInit() {
@@ -169,9 +134,7 @@ class FeatureInfoTest
 
 static const MockedGLVersionKind kGLVersionKinds[] = {
   ES2_on_Version3_0,
-  ES2_on_Version3_2Compatibility,
   ES3_on_Version3_0,
-  ES3_on_Version3_2Compatibility
 };
 
 INSTANTIATE_TEST_SUITE_P(Service,
@@ -370,12 +333,6 @@ TEST_P(FeatureInfoTest, InitializeNPOTExtensionGLES) {
   EXPECT_TRUE(info_->feature_flags().npot_ok);
 }
 
-TEST_P(FeatureInfoTest, InitializeNPOTExtensionGL) {
-  SetupInitExpectations("GL_ARB_texture_non_power_of_two");
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_OES_texture_npot"));
-  EXPECT_TRUE(info_->feature_flags().npot_ok);
-}
-
 TEST_P(FeatureInfoTest, InitializeDXTExtensionGLES2) {
   SetupInitExpectations("GL_ANGLE_texture_compression_dxt1");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
@@ -411,20 +368,6 @@ TEST_P(FeatureInfoTest, InitializeDXTExtensionGL) {
 TEST_P(FeatureInfoTest, InitializeEXT_texture_compression_s3tc_srgb) {
   SetupInitExpectationsWithGLVersion("GL_NV_sRGB_formats", "",
                                      "OpenGL ES 2.0");
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_EXT_texture_compression_s3tc_srgb"));
-  EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
-      GL_COMPRESSED_SRGB_S3TC_DXT1_EXT));
-  EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT));
-  EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT));
-  EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
-      GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeEXT_texture_compression_s3tc_srgbGL) {
-  SetupInitExpectations("GL_EXT_texture_sRGB GL_EXT_texture_compression_s3tc");
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
                                 "GL_EXT_texture_compression_s3tc_srgb"));
   EXPECT_TRUE(info_->validators()->compressed_texture_format.IsValid(
@@ -504,16 +447,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888GLES2) {
   EXPECT_FALSE(info_->feature_flags().ext_read_format_bgra);
 }
 
-TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888GL) {
-  SetupInitExpectationsWithGLVersion("", "", "OpenGL 2.0");
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_EXT_texture_format_BGRA8888"));
-  EXPECT_TRUE(info_->validators()->texture_format.IsValid(
-      GL_BGRA_EXT));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-      GL_BGRA_EXT));
-}
-
 TEST_P(FeatureInfoTest, InitializeEXT_texture_format_BGRA8888Apple) {
   SetupInitExpectationsWithGLVersion("GL_APPLE_texture_format_BGRA8888", "",
                                      "OpenGL ES 2.0");
@@ -559,15 +492,6 @@ TEST_P(FeatureInfoTest, InitializeGLES2EXT_read_format_bgra) {
   EXPECT_FALSE(info_->validators()->texture_format.IsValid(GL_BGRA_EXT));
   EXPECT_FALSE(
       info_->validators()->texture_internal_format.IsValid(GL_BGRA_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeGLEXT_read_format_bgra) {
-  SetupInitExpectationsWithGLVersion("", "", "OpenGL 2.0");
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_EXT_read_format_bgra"));
-  EXPECT_TRUE(info_->feature_flags().ext_read_format_bgra);
-  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(
-      GL_BGRA_EXT));
 }
 
 TEST_P(FeatureInfoTest, InitializeGLES_no_EXT_read_format_bgra) {
@@ -646,7 +570,7 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage) {
   EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_texture_storage"));
   EXPECT_TRUE(info_->validators()->texture_parameter.IsValid(
       GL_TEXTURE_IMMUTABLE_FORMAT_EXT));
-  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
+  EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_BGRA8_EXT));
   EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_RGBA32F_EXT));
@@ -668,36 +592,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage) {
       GL_LUMINANCE16F_EXT));
   EXPECT_FALSE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA16F_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeARB_texture_storage) {
-  SetupInitExpectations("GL_ARB_texture_storage");
-  EXPECT_TRUE(info_->feature_flags().ext_texture_storage);
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_texture_storage"));
-  EXPECT_TRUE(info_->validators()->texture_parameter.IsValid(
-      GL_TEXTURE_IMMUTABLE_FORMAT_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_BGRA) {
-  SetupInitExpectationsWithGLVersion("GL_EXT_texture_storage", "",
-                                     "OpenGL 2.0");
-  EXPECT_TRUE(info_->feature_flags().ext_texture_storage);
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_texture_storage"));
-  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
-      GL_BGRA8_EXT));
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_EXT_texture_format_BGRA8888"));
-}
-
-TEST_P(FeatureInfoTest, InitializeARB_texture_storage_BGRA) {
-  SetupInitExpectationsWithGLVersion("GL_ARB_texture_storage", "",
-                                     "OpenGL 2.0");
-  EXPECT_TRUE(info_->feature_flags().ext_texture_storage);
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(), "GL_EXT_texture_storage"));
-  EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
-      GL_BGRA8_EXT));
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_EXT_texture_format_BGRA8888"));
 }
 
 TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_BGRA8888) {
@@ -744,17 +638,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_storage_half_float) {
       GL_LUMINANCE16F_EXT));
   EXPECT_TRUE(info_->validators()->texture_internal_format_storage.IsValid(
       GL_LUMINANCE_ALPHA16F_EXT));
-}
-
-// Check that desktop (unlike ES, handled below) always supports BGRA render
-// buffers.
-TEST_P(FeatureInfoTest, InitializeGL_renderbuffer_format_BGRA8888) {
-  SetupInitExpectationsWithGLVersion("", "", "OpenGL 2.0");
-
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_renderbuffer_format_BGRA8888"));
-  EXPECT_TRUE(info_->feature_flags().ext_render_buffer_format_bgra8888);
-  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_BGRA8_EXT));
 }
 
 // Check how to handle ES, texture_storage and BGRA combination; 10 tests.
@@ -876,42 +759,6 @@ TEST_P(FeatureInfoTest,
                                  "GL_CHROMIUM_renderbuffer_format_BGRA8888"));
 }
 
-TEST_P(FeatureInfoTest, InitializeARB_texture_float) {
-  DisallowedFeatures disallowed_features;
-  disallowed_features.chromium_color_buffer_float_rgb = true;
-  disallowed_features.chromium_color_buffer_float_rgba = true;
-  SetupInitExpectationsWithGLVersionAndDisallowedFeatures(
-      "GL_ARB_texture_float", "", "3.0", disallowed_features);
-  EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_CHROMIUM_color_buffer_float_rgb"));
-  EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_CHROMIUM_color_buffer_float_rgba"));
-  EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGBA32F));
-  EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGB32F));
-
-  info_->EnableCHROMIUMColorBufferFloatRGBA();
-  EXPECT_FALSE(gfx::HasExtension(info_->extensions(),
-                                 "GL_CHROMIUM_color_buffer_float_rgb"));
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_color_buffer_float_rgba"));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGBA32F));
-  EXPECT_FALSE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGB32F));
-
-  info_->EnableCHROMIUMColorBufferFloatRGB();
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_color_buffer_float_rgb"));
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_color_buffer_float_rgba"));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGBA32F));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-      GL_RGB32F));
-}
-
 TEST_P(FeatureInfoTest, Initialize_texture_floatGLES3) {
   SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 3.0");
   EXPECT_FALSE(gfx::HasExtension(info_->extensions(), "GL_OES_texture_float"));
@@ -1018,23 +865,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_framebuffer_multisample) {
       GL_RENDERBUFFER_SAMPLES_EXT));
 }
 
-TEST_P(FeatureInfoTest, InitializeARB_framebuffer_multisample) {
-  SetupInitExpectations("GL_ARB_framebuffer_object");
-  EXPECT_TRUE(info_->feature_flags().chromium_framebuffer_multisample);
-  EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                "GL_CHROMIUM_framebuffer_multisample"));
-  EXPECT_TRUE(info_->validators()->framebuffer_target.IsValid(
-      GL_READ_FRAMEBUFFER_EXT));
-  EXPECT_TRUE(info_->validators()->framebuffer_target.IsValid(
-      GL_DRAW_FRAMEBUFFER_EXT));
-  EXPECT_TRUE(info_->validators()->g_l_state.IsValid(
-      GL_READ_FRAMEBUFFER_BINDING_EXT));
-  EXPECT_TRUE(info_->validators()->g_l_state.IsValid(
-      GL_MAX_SAMPLES_EXT));
-  EXPECT_TRUE(info_->validators()->render_buffer_parameter.IsValid(
-      GL_RENDERBUFFER_SAMPLES_EXT));
-}
-
 TEST_P(FeatureInfoTest, InitializeANGLE_framebuffer_multisample) {
   SetupInitExpectationsWithGLVersion(
       "GL_ANGLE_framebuffer_multisample", kGLRendererStringANGLE, "");
@@ -1115,21 +945,7 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_filter_anisotropic) {
       GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
 }
 
-TEST_P(FeatureInfoTest, InitializeEXT_ARB_depth_texture) {
-  SetupInitExpectations("GL_ARB_depth_texture");
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_GOOGLE_depth_texture"));
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_CHROMIUM_depth_texture"));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(
-      GL_DEPTH_COMPONENT));
-  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_DEPTH_COMPONENT));
-  EXPECT_FALSE(info_->validators()->texture_format.IsValid(GL_DEPTH_STENCIL));
-  EXPECT_TRUE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_SHORT));
-  EXPECT_TRUE(info_->validators()->pixel_type.IsValid(GL_UNSIGNED_INT));
-}
-
-TEST_P(FeatureInfoTest, InitializeOES_ARB_depth_texture) {
+TEST_P(FeatureInfoTest, InitializeOES_depth_texture) {
   SetupInitExpectations("GL_OES_depth_texture");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_GOOGLE_depth_texture"));
@@ -1193,8 +1009,8 @@ TEST_P(FeatureInfoTest, InitializeOES_packed_depth_stencil) {
 }
 
 TEST_P(FeatureInfoTest,
-       InitializeOES_packed_depth_stencil_and_GL_ARB_depth_texture) {
-  SetupInitExpectations("GL_OES_packed_depth_stencil GL_ARB_depth_texture");
+       InitializeOES_packed_depth_stencil_and_GL_OES_depth_texture) {
+  SetupInitExpectations("GL_OES_packed_depth_stencil GL_OES_depth_texture");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_OES_packed_depth_stencil"));
   EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(
@@ -1314,32 +1130,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_occlusion_query_boolean) {
       ).use_arb_occlusion_query_for_occlusion_query_boolean);
 }
 
-TEST_P(FeatureInfoTest, InitializeARB_occlusion_query) {
-  SetupInitExpectations("GL_ARB_occlusion_query");
-  if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
-    EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                  "GL_EXT_occlusion_query_boolean"));
-  }
-  EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-  EXPECT_TRUE(info_->feature_flags(
-      ).use_arb_occlusion_query_for_occlusion_query_boolean);
-}
-
-TEST_P(FeatureInfoTest, InitializeARB_occlusion_query2) {
-  SetupInitExpectations("GL_ARB_occlusion_query2 GL_ARB_occlusion_query2");
-  if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
-    EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                  "GL_EXT_occlusion_query_boolean"));
-  }
-  EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_TRUE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query_for_occlusion_query_boolean);
-}
-
 TEST_P(FeatureInfoTest, InitializeGLES3_occlusion_query_boolean) {
   SetupInitExpectationsWithGLVersion("", "", "OpenGL ES 3.0");
   if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
@@ -1351,20 +1141,6 @@ TEST_P(FeatureInfoTest, InitializeGLES3_occlusion_query_boolean) {
 
 TEST_P(FeatureInfoTest, InitializeOES_vertex_array_object) {
   SetupInitExpectations("GL_OES_vertex_array_object");
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_OES_vertex_array_object"));
-  EXPECT_TRUE(info_->feature_flags().native_vertex_array_object);
-}
-
-TEST_P(FeatureInfoTest, InitializeARB_vertex_array_object) {
-  SetupInitExpectations("GL_ARB_vertex_array_object");
-  EXPECT_TRUE(
-      gfx::HasExtension(info_->extensions(), "GL_OES_vertex_array_object"));
-  EXPECT_TRUE(info_->feature_flags().native_vertex_array_object);
-}
-
-TEST_P(FeatureInfoTest, InitializeAPPLE_vertex_array_object) {
-  SetupInitExpectations("GL_APPLE_vertex_array_object");
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_OES_vertex_array_object"));
   EXPECT_TRUE(info_->feature_flags().native_vertex_array_object);
@@ -1412,12 +1188,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_discard_framebuffer) {
   EXPECT_TRUE(info_->feature_flags().ext_discard_framebuffer);
   EXPECT_TRUE(
       gfx::HasExtension(info_->extensions(), "GL_EXT_discard_framebuffer"));
-}
-
-TEST_P(FeatureInfoTest, InitializeSamplersWithARBSamplerObjects) {
-  SetupInitExpectationsWithGLVersion(
-      "GL_ARB_sampler_objects", "", "3.0");
-  EXPECT_TRUE(info_->feature_flags().enable_samplers);
 }
 
 TEST_P(FeatureInfoTest, InitializeWithES3) {
@@ -1576,20 +1346,6 @@ TEST_P(FeatureInfoTest, InitializeKHR_blend_equations_advanced_coherent) {
 TEST_P(FeatureInfoTest, InitializeEXT_texture_rgWithFloat) {
   SetupInitExpectations(
       "GL_EXT_texture_rg GL_OES_texture_float GL_OES_texture_half_float");
-  EXPECT_TRUE(info_->feature_flags().ext_texture_rg);
-
-  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RED_EXT));
-  EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RG_EXT));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(GL_RED_EXT));
-  EXPECT_TRUE(info_->validators()->texture_internal_format.IsValid(GL_RG_EXT));
-  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_RED_EXT));
-  EXPECT_TRUE(info_->validators()->read_pixel_format.IsValid(GL_RG_EXT));
-  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_R8_EXT));
-  EXPECT_TRUE(info_->validators()->render_buffer_format.IsValid(GL_RG8_EXT));
-}
-
-TEST_P(FeatureInfoTest, InitializeARB_texture_rgNoFloat) {
-  SetupInitExpectations("GL_ARB_texture_rg");
   EXPECT_TRUE(info_->feature_flags().ext_texture_rg);
 
   EXPECT_TRUE(info_->validators()->texture_format.IsValid(GL_RED_EXT));

@@ -3035,7 +3035,7 @@ TEST_P(GLES2DecoderTest, CanChangeSurface) {
   decoder_->SetSurface(other_surface);
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateSuccceeds) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTImmediateSucceeds) {
   const GLsizei count = 1;
   const GLenum bufs[] = {GL_COLOR_ATTACHMENT0};
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
@@ -3060,7 +3060,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateFails) {
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
   const GLsizei count = 1;
   const GLenum bufs[] = {GL_BACK};
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
@@ -3079,7 +3079,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTImmediateBackbuffer) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
+TEST_P(GLES3DecoderTest, DrawBuffersEXTMainFramebuffer) {
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
   {
     const GLenum bufs[] = {GL_BACK};
@@ -3109,7 +3109,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
 
     EXPECT_CALL(*gl_, DrawBuffersARB(_, _)).Times(0).RetiresOnSaturation();
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(bufs)));
-    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+    EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
   }
 }
 
@@ -3455,7 +3455,7 @@ TEST_P(GLES2DecoderManualInitTest,
   EXPECT_FALSE(framebuffer_manager->IsComplete(framebuffer));
 }
 
-TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
+TEST_P(GLES3DecoderTest, ImplementationReadColorFormatAndType) {
   ClearSharedMemory();
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
   DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -3479,6 +3479,9 @@ TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
       .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, _))
+      .WillOnce(SetArgPointee<1>(GL_RGBA))
+      .RetiresOnSaturation();
   cmd.Init(GL_IMPLEMENTATION_COLOR_READ_FORMAT,
            shared_memory_id_,
            shared_memory_offset_);
@@ -3490,6 +3493,9 @@ TEST_P(GLES2DecoderTest, ImplementationReadColorFormatAndType) {
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, _))
+      .WillOnce(SetArgPointee<1>(GL_UNSIGNED_BYTE))
       .RetiresOnSaturation();
   cmd.Init(GL_IMPLEMENTATION_COLOR_READ_TYPE,
            shared_memory_id_,

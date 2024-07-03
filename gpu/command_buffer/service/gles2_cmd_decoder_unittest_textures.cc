@@ -711,12 +711,12 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormatES3) {
     GLenum sized;
   };
   UnsizedSizedInternalFormat kUnsizedInternalFormats[] = {
-    // GL_RED and GL_RG should not work.
-    {GL_RGB, GL_RGB8},
-    {GL_RGBA, GL_RGBA8},
-    {GL_BGRA_EXT, GL_RGBA8},
-    {GL_LUMINANCE, GL_RGB8},
-    {GL_LUMINANCE_ALPHA, GL_RGBA8},
+      // GL_RED and GL_RG should not work.
+      {GL_RGB, GL_RGB8},
+      {GL_RGBA, GL_RGBA8},
+      {GL_BGRA_EXT, GL_RGBA8},
+      {GL_LUMINANCE, GL_RGB8},
+      {GL_LUMINANCE_ALPHA, GL_RGBA8},
   };
   GLenum target = GL_TEXTURE_2D;
   GLint level = 0;
@@ -2450,7 +2450,7 @@ TEST_P(GLES2DecoderManualInitTest, NoDefaultTexSubImage2D) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleBindTexture) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
   EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_RECTANGLE_ARB, kNewServiceId));
@@ -2467,7 +2467,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleBindTexture) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleGetBinding) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindTexture(
@@ -2497,7 +2497,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleGetBinding) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureDefaults) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindTexture(
@@ -2513,7 +2513,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureDefaults) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureParam) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
 
@@ -2561,7 +2561,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureParam) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureParamInvalid) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
 
@@ -2593,7 +2593,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTextureParamInvalid) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTexImage2D) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
 
@@ -2619,7 +2619,7 @@ TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTexImage2D) {
 
 TEST_P(GLES2DecoderManualInitTest, ARBTextureRectangleTexImage2DInvalid) {
   InitState init;
-  init.extensions = "GL_ARB_texture_rectangle";
+  init.extensions = "GL_ANGLE_texture_rectangle";
   init.bind_generates_resource = true;
   InitDecoder(init);
 
@@ -3545,8 +3545,24 @@ TEST_P(GLES2DecoderManualInitTest, GetNoCompressedTextureFormats) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+TEST_P(GLES2DecoderManualInitTest, TexStorageInvalidLevels) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.extensions = "GL_ANGLE_texture_rectangle GL_EXT_texture_storage";
+  init.bind_generates_resource = true;
+  InitDecoder(init);
+  DoBindTexture(GL_TEXTURE_RECTANGLE_ARB, client_texture_id_,
+                kServiceTextureId);
+  cmds::TexStorage2DEXT cmd;
+  cmd.Init(GL_TEXTURE_RECTANGLE_ARB, 2, GL_RGBA8, 4, 4);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
 TEST_P(GLES2DecoderManualInitTest, TexStorageInvalidSize) {
   InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.extensions = "GL_EXT_texture_storage";
   init.bind_generates_resource = true;
   InitDecoder(init);
   DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);

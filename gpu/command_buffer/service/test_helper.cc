@@ -229,14 +229,14 @@ void TestHelper::SetupTextureManagerInitExpectations(
 
   bool ext_image_external =
       gfx::HasExtension(extensions, "GL_OES_EGL_image_external");
-  bool arb_texture_rectangle =
-      gfx::HasExtension(extensions, "GL_ARB_texture_rectangle");
+  bool angle_texture_rectangle =
+      gfx::HasExtension(extensions, "GL_ANGLE_texture_rectangle");
 
   if (ext_image_external) {
     SetupTextureInitializationExpectations(
         gl, GL_TEXTURE_EXTERNAL_OES, use_default_textures);
   }
-  if (arb_texture_rectangle) {
+  if (angle_texture_rectangle) {
     SetupTextureInitializationExpectations(
         gl, GL_TEXTURE_RECTANGLE_ARB, use_default_textures);
   }
@@ -406,7 +406,7 @@ void TestHelper::SetupContextGroupInitExpectations(
         .WillOnce(SetArgPointee<1>(kMaxArrayTextureLayers))
         .RetiresOnSaturation();
   }
-  if (gfx::HasExtension(extension_set, "GL_ARB_texture_rectangle")) {
+  if (gfx::HasExtension(extension_set, "GL_ANGLE_texture_rectangle")) {
     EXPECT_CALL(*gl, GetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, _))
         .WillOnce(SetArgPointee<1>(kMaxRectangleTextureSize))
         .RetiresOnSaturation();

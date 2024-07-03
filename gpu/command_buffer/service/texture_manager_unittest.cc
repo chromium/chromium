@@ -2317,16 +2317,6 @@ TEST_F(TextureFormatTypeValidationTest, ES2WithAppleTextureFormatBGRA8888) {
   ExpectValid(true, GL_BGRA_EXT, GL_UNSIGNED_BYTE, GL_BGRA_EXT);
 }
 
-TEST_F(TextureFormatTypeValidationTest, ES2WithArbDepth) {
-  SetupFeatureInfo("GL_ARB_depth_texture", "OpenGL ES 2.0",
-                   CONTEXT_TYPE_OPENGLES2);
-
-  ExpectValid(true, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, GL_DEPTH_COMPONENT);
-  ExpectValid(true, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_DEPTH_COMPONENT);
-  ExpectInvalidEnum(
-      true, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_DEPTH_STENCIL);
-}
-
 TEST_F(TextureFormatTypeValidationTest, ES2WithOesDepth) {
   SetupFeatureInfo("GL_OES_depth_texture", "OpenGL ES 2.0",
                    CONTEXT_TYPE_OPENGLES2);
@@ -2348,7 +2338,7 @@ TEST_F(TextureFormatTypeValidationTest, ES2WithAngleDepth) {
 }
 
 TEST_F(TextureFormatTypeValidationTest, ES2WithExtPackedDepthStencil) {
-  SetupFeatureInfo("GL_EXT_packed_depth_stencil GL_ARB_depth_texture",
+  SetupFeatureInfo("GL_EXT_packed_depth_stencil GL_OES_depth_texture",
                    "OpenGL ES 2.0", CONTEXT_TYPE_OPENGLES2);
 
   ExpectValid(true, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, GL_DEPTH_COMPONENT);
@@ -2373,7 +2363,7 @@ TEST_F(TextureFormatTypeValidationTest, ES2WithRGWithFloat) {
 }
 
 TEST_F(TextureFormatTypeValidationTest, ES2WithRGNoFloat) {
-  SetupFeatureInfo("GL_ARB_texture_rg", "OpenGL ES 2.0",
+  SetupFeatureInfo("GL_EXT_texture_rg", "OpenGL ES 2.0",
                    CONTEXT_TYPE_OPENGLES2);
 
   ExpectValid(true, GL_RED_EXT, GL_UNSIGNED_BYTE, GL_RED_EXT);
