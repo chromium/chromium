@@ -2,9 +2,9 @@ Name: log
 URL: https://crates.io/crates/log
 Description: A lightweight logging facade for Rust
 
-Version: 0.4.21
+Version: 0.4.22
 Security Critical: no
 Shipped: no
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/log-0.4.21/LICENSE-APACHE
-Revision: 3ccdc286fef3076747fe18a2a93658ea4d4ae012
+License File: //third_party/rust/chromium_crates_io/vendor/log-0.4.22/LICENSE-APACHE
+Revision: d5ba2cfee9b3b4ca1fcad911b7f59dc79eeee022

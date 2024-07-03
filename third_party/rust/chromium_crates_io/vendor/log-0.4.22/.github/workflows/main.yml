@@ -41,7 +41,7 @@ jobs:
         rustup default ${{ matrix.rust }}
     - run: cargo test --verbose
     - run: cargo test --verbose --no-default-features
-    - run: cargo test --verbose --all-features
+    - run: cargo test --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
     - run: cargo test --verbose --features serde
     - run: cargo test --verbose --features std
     - run: cargo test --verbose --features kv
@@ -92,7 +92,7 @@ jobs:
         rustup default stable
         rustup component add rust-docs
     - name: Run rustdoc
-      run: RUSTDOCFLAGS="-D warnings" cargo doc --verbose --all-features
+      run: RUSTDOCFLAGS="-D warnings" cargo doc --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
 
   features:
     name: Feature check

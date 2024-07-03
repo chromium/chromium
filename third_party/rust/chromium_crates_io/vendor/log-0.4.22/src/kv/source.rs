@@ -406,8 +406,6 @@ mod std_support {
 
     #[cfg(test)]
     mod tests {
-        use std::collections::{BTreeMap, HashMap};
-
         use crate::kv::value;
 
         use super::*;

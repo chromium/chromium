@@ -62,6 +62,7 @@ There are many available implementations to choose from, here are some options:
 
 * Simple minimal loggers:
     * [`env_logger`](https://docs.rs/env_logger/*/env_logger/)
+    * [`colog`](https://docs.rs/colog/*/colog/)
     * [`simple_logger`](https://docs.rs/simple_logger/*/simple_logger/)
     * [`simplelog`](https://docs.rs/simplelog/*/simplelog/)
     * [`pretty_env_logger`](https://docs.rs/pretty_env_logger/*/pretty_env_logger/)

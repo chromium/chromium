@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+## [0.4.22] - 2024-06-27
+
+## What's Changed
+* Add some clarifications to the library docs by @KodrAus in https://github.com/rust-lang/log/pull/620
+* Add links to `colog` crate by @chrivers in https://github.com/rust-lang/log/pull/621
+* adding line_number test + updating some testing infrastructure by @DIvkov575 in https://github.com/rust-lang/log/pull/619
+* Clarify the actual set of functions that can race in _racy variants by @KodrAus in https://github.com/rust-lang/log/pull/623
+* Replace deprecated std::sync::atomic::spin_loop_hint() by @Catamantaloedis in https://github.com/rust-lang/log/pull/625
+* Check usage of max_level features by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/627
+* Remove unneeded import by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/628
+* Loosen orderings for logger initialization in https://github.com/rust-lang/log/pull/632. Originally by @pwoolcoc in https://github.com/rust-lang/log/pull/599
+* Use Location::caller() for file and line info in https://github.com/rust-lang/log/pull/633. Originally by @Cassy343 in https://github.com/rust-lang/log/pull/520
+
+## New Contributors
+* @chrivers made their first contribution in https://github.com/rust-lang/log/pull/621
+* @DIvkov575 made their first contribution in https://github.com/rust-lang/log/pull/619
+* @Catamantaloedis made their first contribution in https://github.com/rust-lang/log/pull/625
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.21...0.4.22
+
 ## [0.4.21] - 2024-02-27
 
 ## What's Changed

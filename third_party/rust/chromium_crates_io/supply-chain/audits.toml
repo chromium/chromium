@@ -794,6 +794,11 @@ I grepped for \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits.  I al
 through the 0.4.20 => 0.4.21 delta and there was no new crypto-related code AFAICT.
 """
 
+[[audits.log]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.4.21 -> 0.4.22"
+
 [[audits.memchr]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
 criteria = "does-not-implement-crypto"
