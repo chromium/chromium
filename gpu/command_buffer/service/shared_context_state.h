@@ -405,7 +405,7 @@ class GPU_GLES2_EXPORT SharedContextState
   raw_ptr<gl::ProgressReporter, DanglingUntriaged> progress_reporter_ = nullptr;
   sk_sp<GrDirectContext> owned_gr_context_;
   std::unique_ptr<ServiceTransferCache> transfer_cache_;
-  uint64_t skia_gr_cache_size_ = 0;
+  uint64_t skia_resource_cache_size_ = 0;
   std::vector<uint8_t> scratch_deserialization_buffer_;
   raw_ptr<gpu::raster::GrShaderCache, DanglingUntriaged> gr_shader_cache_ =
       nullptr;

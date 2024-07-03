@@ -330,13 +330,20 @@ SharedContextState::~SharedContextState() {
   // and also when using Graphite.
   DCHECK(!owned_gr_context_ || owned_gr_context_->unique());
 
-  // GPU memory allocations except skia_gr_cache_size_ tracked by this
+  // GPU memory allocations except skia_resource_cache_size_ tracked by this
   // memory_tracker_observer_ should have been released.
-  DCHECK_EQ(skia_gr_cache_size_, memory_tracker_observer_.GetMemoryUsage());
+  DCHECK_EQ(skia_resource_cache_size_,
+            memory_tracker_observer_.GetMemoryUsage());
   // gr_context_ and all resources owned by it will be released soon, so set it
-  // to null, and UpdateSkiaOwnedMemorySize() will update skia memory usage to
-  // 0, to ensure that PeakGpuMemoryMonitor sees 0 allocated memory.
+  // to null.
   gr_context_ = nullptr;
+
+  // Null out `graphite_context_` as well to ensure that the below call clears
+  // memory usage.
+  graphite_context_ = nullptr;
+
+  // UpdateSkiaOwnedMemorySize() will update skia memory usage to 0, to ensure
+  // that PeakGpuMemoryMonitor sees 0 allocated memory.
   UpdateSkiaOwnedMemorySize();
 
   // Delete the GrContext. This will either do cleanup if the context is
@@ -1015,20 +1022,32 @@ uint64_t SharedContextState::GetMemoryUsage() {
 }
 
 void SharedContextState::UpdateSkiaOwnedMemorySize() {
-  if (!gr_context_) {
-    memory_tracker_observer_.OnMemoryAllocatedChange(CommandBufferId(),
-                                                     skia_gr_cache_size_, 0u);
-    skia_gr_cache_size_ = 0u;
+  // NOTE: If `graphite_context_` is null, then either (a) it was not
+  // successfully created or (b) this instance is being destroyed. In the former
+  // case, the Graphite GPU main recorder will also not have been created, while
+  // in the latter case, it will imminently be destroyed.
+  if (!gr_context_ && !graphite_context_) {
+    memory_tracker_observer_.OnMemoryAllocatedChange(
+        CommandBufferId(), skia_resource_cache_size_, 0u);
+    skia_resource_cache_size_ = 0u;
     return;
   }
   size_t new_size;
-  gr_context_->getResourceCacheUsage(nullptr /* resourceCount */, &new_size);
+  if (gr_context_) {
+    gr_context_->getResourceCacheUsage(nullptr /* resourceCount */, &new_size);
+  } else {
+    // NOTE: If `graphite_context_` is non-null, the GPU main recorder is
+    // guaranteed to be non-null as well.
+    new_size = graphite_context_->currentBudgetedBytes() +
+               gpu_main_graphite_recorder_->currentBudgetedBytes();
+  }
   // Skia does not have a CommandBufferId. PeakMemoryMonitor currently does not
   // use CommandBufferId to identify source, so use zero here to separate
   // prevent confusion.
   memory_tracker_observer_.OnMemoryAllocatedChange(
-      CommandBufferId(), skia_gr_cache_size_, static_cast<uint64_t>(new_size));
-  skia_gr_cache_size_ = static_cast<uint64_t>(new_size);
+      CommandBufferId(), skia_resource_cache_size_,
+      static_cast<uint64_t>(new_size));
+  skia_resource_cache_size_ = static_cast<uint64_t>(new_size);
 }
 
 void SharedContextState::PessimisticallyResetGrContext() const {
