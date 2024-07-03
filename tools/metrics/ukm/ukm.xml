@@ -5460,6 +5460,42 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.SVGImage" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics to measure the SVGImage::DataChanged() performance per document
+    while loading the outermost main frame document. This is recorded at the
+    frequency of 0.001.
+  </summary>
+  <metric name="Count">
+    <summary>
+      Measures the call count of SVGImage::DataChanged().
+      ukm::GetExponentialBucketMinForCounts1000() is applied.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TotalTime">
+    <summary>
+      Measures the total elapsed time it takes to run SVGImage::DataChanged(),
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Blink.UpdateTime">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>

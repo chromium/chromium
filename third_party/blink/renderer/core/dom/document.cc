@@ -7541,6 +7541,12 @@ void Document::FinishedParsing() {
               data_->accumulated_shape_text_elapsed_time_.InMicroseconds())
           .SetMaxTime(data_->max_shape_text_elapsed_time_.InMicroseconds())
           .Record(UkmRecorder());
+      ukm::builders::Blink_SVGImage(UkmSourceID())
+          .SetCount(ukm::GetExponentialBucketMinForCounts1000(
+              data_->svg_image_processed_count_))
+          .SetTotalTime(
+              data_->accumulated_svg_image_elapsed_time_.InMicroseconds())
+          .Record(UkmRecorder());
     }
   }
 }
