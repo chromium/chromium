@@ -53,6 +53,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//components/viz/common",
     "//components/viz/test:test_support",
+    "//gpu:test_support",
     "//gpu/command_buffer/client",
     "//gpu/config",
     "//media:test_support",

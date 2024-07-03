@@ -6,6 +6,11 @@
 
 #include <utility>
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <fuchsia/sysmem/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
+#endif
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -13,9 +18,16 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
+#include "base/fuchsia/process_context.h"
+#endif
 
 namespace gpu {
 
@@ -59,6 +71,64 @@ gfx::GpuMemoryBufferHandle CreateGMBHandle(
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_FUCHSIA)
+class TestBufferCollection {
+ public:
+  TestBufferCollection(zx::eventpair handle, zx::channel collection_token)
+      : handle_(std::move(handle)) {
+    sysmem_allocator_ = base::ComponentContextForProcess()
+                            ->svc()
+                            ->Connect<fuchsia::sysmem::Allocator>();
+    sysmem_allocator_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(FATAL, status)
+          << "The fuchsia.sysmem.Allocator channel was terminated.";
+    });
+    sysmem_allocator_->SetDebugClientInfo("CrTestBufferCollection",
+                                          base::GetCurrentProcId());
+
+    sysmem_allocator_->BindSharedCollection(
+        fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>(
+            std::move(collection_token)),
+        buffers_collection_.NewRequest());
+
+    fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
+    buffer_constraints.usage.cpu = fuchsia::sysmem::cpuUsageRead;
+    zx_status_t status = buffers_collection_->SetConstraints(
+        /*has_constraints=*/true, std::move(buffer_constraints));
+    ZX_CHECK(status == ZX_OK, status) << "BufferCollection::SetConstraints()";
+  }
+
+  TestBufferCollection(const TestBufferCollection&) = delete;
+  TestBufferCollection& operator=(const TestBufferCollection&) = delete;
+
+  ~TestBufferCollection() { buffers_collection_->Close(); }
+
+  size_t GetNumBuffers() {
+    if (!buffer_collection_info_) {
+      zx_status_t wait_status;
+      fuchsia::sysmem::BufferCollectionInfo_2 info;
+      zx_status_t status =
+          buffers_collection_->WaitForBuffersAllocated(&wait_status, &info);
+      ZX_CHECK(status == ZX_OK, status)
+          << "BufferCollection::WaitForBuffersAllocated()";
+      ZX_CHECK(wait_status == ZX_OK, wait_status)
+          << "BufferCollection::WaitForBuffersAllocated()";
+      buffer_collection_info_ = std::move(info);
+    }
+    return buffer_collection_info_->buffer_count;
+  }
+
+ private:
+  zx::eventpair handle_;
+
+  fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
+  fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
+
+  std::optional<fuchsia::sysmem::BufferCollectionInfo_2>
+      buffer_collection_info_;
+};
+#endif
 
 TestSharedImageInterface::TestSharedImageInterface() = default;
 TestSharedImageInterface::~TestSharedImageInterface() = default;
@@ -161,6 +231,22 @@ TestSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   SyncToken sync_token = GenUnverifiedSyncToken();
   base::AutoLock locked(lock_);
+#if BUILDFLAG(IS_FUCHSIA)
+  if (buffer_handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    zx_koid_t id =
+        base::GetRelatedKoid(
+            buffer_handle.native_pixmap_handle.buffer_collection_handle)
+            .value();
+    auto collection_it = sysmem_buffer_collections_.find(id);
+
+    // NOTE: Not all unittests invoke RegisterSysmemBufferCollection(), but
+    // the below CHECK should hold for those that do.
+    if (collection_it != sysmem_buffer_collections_.end()) {
+      CHECK_LT(buffer_handle.native_pixmap_handle.buffer_index,
+               collection_it->second->GetNumBuffers());
+    }
+  }
+#endif
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
@@ -281,7 +367,14 @@ void TestSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED_IN_MIGRATION();
+  EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
+  EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
+  zx_koid_t id = base::GetKoid(service_handle).value();
+  std::unique_ptr<TestBufferCollection>& collection =
+      sysmem_buffer_collections_[id];
+  EXPECT_FALSE(collection);
+  collection = std::make_unique<TestBufferCollection>(std::move(service_handle),
+                                                      std::move(sysmem_token));
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

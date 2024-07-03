@@ -139,6 +139,12 @@ static_library("test_support") {
     "//ui/gl:test_support",
   ]
 
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
   if (use_static_angle) {
     deps += [ "//third_party/angle:translator" ]
   } else {

@@ -17,6 +17,8 @@
 
 namespace gpu {
 
+class TestBufferCollection;
+
 class TestSharedImageInterface : public SharedImageInterface {
  public:
   TestSharedImageInterface();
@@ -137,6 +139,10 @@ class TestSharedImageInterface : public SharedImageInterface {
   base::flat_set<Mailbox> shared_images_;
   bool emulate_client_provided_native_buffer_ = false;
 
+#if BUILDFLAG(IS_FUCHSIA)
+  base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
+      sysmem_buffer_collections_;
+#endif
   SharedImageCapabilities shared_image_capabilities_;
   bool fail_shared_image_creation_with_buffer_usage_ = false;
 
