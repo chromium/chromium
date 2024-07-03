@@ -557,14 +557,6 @@ crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functiona
 
 crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
 crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/327026290 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/327026292 [ angle-metal intel passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
 ## Metal Apple Silicon ##
@@ -575,7 +567,6 @@ crbug.com/1465035 [ mac passthrough angle-metal apple mac-arm64 ] deqp/functiona
 
 crbug.com/327026292 [ angle-metal apple passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
-crbug.com/343889872 [ mac apple-angle-metal-renderer:-apple-m2 ] conformance/ogles/GL/swizzlers/swizzlers_017_to_024.html [ RetryOnFailure ]
 
 ## Metal Graphite ##
 
@@ -600,7 +591,6 @@ crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompletenes
 crbug.com/630800 [ nvidia mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1289803 [ angle-opengl mac mac-x86_64 oop-c ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 
-crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 ## Mac Retina NVIDIA ##
 
@@ -615,7 +605,6 @@ crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/can
 crbug.com/1475765 [ bigsur nvidia-0xfe9 angle-opengl ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1475765 [ angle-opengl bigsur nvidia-0xfe9 nvidia_lt_31.0.15.4601 ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1488444 [ mac-x86_64 nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
-crbug.com/339041262 [ bigsur nvidia-0xfe9 angle-opengl graphite-disabled passthrough ] conformance/textures/canvas_sub_rectangle/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 
 ## Mac AMD ##
 
