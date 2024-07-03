@@ -1639,6 +1639,8 @@ static_library("ui") {
       "tabs/tab_strip_model_observer.h",
       "tabs/tab_strip_model_stats_recorder.cc",
       "tabs/tab_strip_model_stats_recorder.h",
+      "tabs/tab_strip_prefs.cc",
+      "tabs/tab_strip_prefs.h",
       "tabs/tab_strip_scrubbing_metrics.cc",
       "tabs/tab_strip_scrubbing_metrics.h",
       "tabs/tab_strip_user_gesture_details.h",
