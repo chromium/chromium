@@ -122,8 +122,8 @@ suite('ExtensionsActivityLogTest', function() {
 
     // One activity is recorded and should appear in the stream.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
+    flush();
 
-    await microtasksFinished();
     boundTestVisible('activity-log-stream', true);
     assertEquals(1, getStreamItems().length);
 
@@ -133,11 +133,13 @@ suite('ExtensionsActivityLogTest', function() {
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
     await microtasksFinished();
+    flush();
     boundTestVisible('activity-log-history', true);
 
     // Another activity is recorded, but should not appear in the stream as
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
+    flush();
 
     activityLog.$.tabs.selected = 1;
     await microtasksFinished();
