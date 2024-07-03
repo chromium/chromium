@@ -6,7 +6,12 @@ module attribution_reporting.mojom;
 
 // Indicates whether to include source registration time in the aggregatable
 // report.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SourceRegistrationTimeConfig)
 enum SourceRegistrationTimeConfig {
   kInclude = 0,
   kExclude = 1,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:SourceRegistrationTimeConfig)

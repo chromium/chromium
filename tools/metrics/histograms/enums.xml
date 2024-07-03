@@ -32320,6 +32320,15 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Used, relocked"/>
 </enum>
 
+<!-- LINT.IfChange(SourceRegistrationTimeConfig) -->
+
+<enum name="SourceRegistrationTimeConfig">
+  <int value="0" label="include"/>
+  <int value="1" label="exclude"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/source_registration_time_config.mojom:SourceRegistrationTimeConfig) -->
+
 <enum name="SpecialLocalePromoAction">
   <int value="0" label="Use Sogou"/>
   <int value="1" label="Keep Google"/>

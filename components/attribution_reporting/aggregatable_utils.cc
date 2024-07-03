@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/constants.h"
@@ -63,6 +64,8 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
                     kNullReportsRateIncludeSourceRegistrationTime >
                 kNullReportsRateExcludeSourceRegistrationTime);
 
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationTimeConfig",
+                                source_registration_time_config);
   switch (source_registration_time_config) {
     case mojom::SourceRegistrationTimeConfig::kInclude: {
       std::optional<base::Time> rounded_attributed_source_time;

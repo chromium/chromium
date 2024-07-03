@@ -1143,6 +1143,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.SourceRegistrationTimeConfig"
+    enum="SourceRegistrationTimeConfig" expires_after="2025-05-30">
+  <owner>csharrison@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the aggregatable source registration time configuration associated
+    with a trigger registration. Recorded for all successful triggers that
+    invoke null report generation logic. See
+    https://wicg.github.io/attribution-reporting-api/#aggregatable-source-registration-time-configuration.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SourcesPerSourceOrigin2.{Position}"
     units="sources" expires_after="2024-11-03">
   <owner>anthonygarant@chromium.org</owner>
