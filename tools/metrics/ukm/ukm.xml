@@ -17591,6 +17591,68 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NavigationRequestBreakDown" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics to measure the main frame navigation timings by tracking
+    NavigationRequest in the browser process. This is recorded at the frequency
+    of 0.001.
+  </summary>
+  <metric name="BeginNavigationToLoaderStart">
+    <summary>
+      Measures the duration from BeginNavigation to LoaderStart, in
+      milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="LoaderStartToReceiveResponse">
+    <summary>
+      Measures the duration from LoaderStart to ReceiveResponse, in
+      milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="NavigationStartToBeginNavigation">
+    <summary>
+      Measures the duration from NavigationStart to BeginNavigation, in
+      milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ReceiveResponseToCommitNavigation">
+    <summary>
+      Measures the duration from ReceiveResponse to CommitNavigation, in
+      milliseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="NavigationThrottleDeferredTime">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
