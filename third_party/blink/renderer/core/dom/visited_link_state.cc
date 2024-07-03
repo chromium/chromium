@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -183,16 +184,23 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
   // visited. It is useful to check this explicitly so that visited
   // links can be tested in platform independent manner, without
   // explicit support in the test harness.
-  if (attribute.empty())
+  if (attribute.empty()) {
+    base::UmaHistogramBoolean(
+        "Blink.History.VisitedLinks.IsLinkStyledAsVisited", true);
     return EInsideLink::kInsideVisitedLink;
+  }
 
   if (LinkHash hash = LinkHashForElement(element, attribute)) {
     links_checked_for_visited_state_.insert(hash);
     if (Platform::Current()->IsLinkVisited(hash)) {
+      base::UmaHistogramBoolean(
+          "Blink.History.VisitedLinks.IsLinkStyledAsVisited", true);
       return EInsideLink::kInsideVisitedLink;
     }
   }
 
+  base::UmaHistogramBoolean("Blink.History.VisitedLinks.IsLinkStyledAsVisited",
+                            false);
   return EInsideLink::kInsideUnvisitedLink;
 }
 

@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
     Records the duration of a ChromeBrowsingDataRemoverDelegate task for {Task}
     deletion.
   </summary>
-<!--LINT.IfChange(History.ClearBrowsingData.Duration.ChromeTask.{Task}) -->
+<!-- LINT.IfChange(History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
   <token key="Task">
     <variant name="AccountPasswords" summary="AccountPasswords"/>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration of a BrowsingDataRemoverImpl task for {Task} deletion.
   </summary>
-<!--LINT.IfChange(History.ClearBrowsingData.Duration.Task.{Task}) -->
+<!-- LINT.IfChange(History.ClearBrowsingData.Duration.Task.Task) -->
 
   <token key="Task">
     <variant name="AuthCache" summary="AuthCache"/>
@@ -2392,6 +2392,20 @@ chromium-metrics-reviews@google.com.
     When a new URL fingerprint is added to the VisitedLink hashtable, this
     metric logs value for used_items_ (the number of entries in the hashtable
     containing an actual fingerprint value rather than a placeholder).
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.NumSaltsForNavigationsDuringBuild"
+    units="salts" expires_after="2025-06-24">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    After the partitioned hashtable has completed building on the DB thread, we
+    return to the main thread and determine the per-origin salts corresponding
+    to each navigation that took place during the build. The VisitedLinkUpdater
+    then sends those salts to their corresponding VisitedLinkReader instance.
+    Each time a VisitedLinkUpdater sends per-origin salts, this histogram
+    records how many salts were in the map.
   </summary>
 </histogram>
 

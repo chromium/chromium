@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -92,8 +92,8 @@ void VisitedLinkReader::UpdateUnpartitionedVisitedLinks(
   hash_table_ = const_cast<Fingerprint*>(reinterpret_cast<const Fingerprint*>(
       static_cast<const SharedHeader*>(table_mapping_.memory()) + 1));
   table_length_ = table_len;
-  UMA_HISTOGRAM_COUNTS_10M("History.VisitedLinks.HashTableLengthOnReaderInit",
-                           table_length_);
+  base::UmaHistogramCounts10M(
+      "History.VisitedLinks.HashTableLengthOnReaderInit", table_length_);
 }
 
 void VisitedLinkReader::UpdatePartitionedVisitedLinks(
@@ -124,6 +124,8 @@ void VisitedLinkReader::UpdatePartitionedVisitedLinks(
       static_cast<const PartitionedSharedHeader*>(table_mapping_.memory()) +
       1));
   table_length_ = table_len;
+  base::UmaHistogramCounts10M(
+      "History.VisitedLinks.HashTableLengthOnReaderInit", table_length_);
 }
 
 void VisitedLinkReader::AddVisitedLinks(
@@ -139,6 +141,8 @@ void VisitedLinkReader::ResetVisitedLinks(bool invalidate_hashes) {
 void VisitedLinkReader::UpdateOriginSalts(
     const base::flat_map<url::Origin, uint64_t>& origin_salts) {
   for (const auto& [origin, salt] : origin_salts) {
+    base::UmaHistogramBoolean(
+        "Blink.History.VisitedLinks.IsSaltFromNavigationThrottle", false);
     AddOrUpdateSalt(origin, salt);
   }
 }

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
@@ -130,6 +131,9 @@ class VisitedLinkUpdater {
   // salt> pairs.
   void UpdateOriginSalts(
       const base::flat_map<url::Origin, uint64_t>& updated_salts) {
+    base::UmaHistogramCounts1M(
+        "History.VisitedLinks.NumSaltsForNavigationsDuringBuild",
+        updated_salts.size());
     if (updated_salts.empty()) {
       return;
     }

@@ -14,7 +14,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -1489,6 +1488,8 @@ bool ChromeContentRendererClient::IsLinkVisited(uint64_t link_hash) {
 void ChromeContentRendererClient::AddOrUpdateVisitedLinkSalt(
     const url::Origin& origin,
     uint64_t salt) {
+  base::UmaHistogramBoolean(
+      "Blink.History.VisitedLinks.IsSaltFromNavigationThrottle", true);
   return chrome_observer_->visited_link_reader()->AddOrUpdateSalt(origin, salt);
 }
 

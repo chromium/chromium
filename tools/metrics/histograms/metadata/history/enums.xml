@@ -26,11 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- NOTE: Please also keep in line with components/visitedlink/browser/visitedlink_writer.cc:AddFingerprint. -->
+
+<!-- LINT.IfChange(AddFingerprint) -->
+
 <enum name="AddFingerprint">
   <int value="0" label="NewVisit"/>
   <int value="1" label="AlreadyVisited"/>
   <int value="2" label="TableError"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/visitedlink/browser/partitioned_visitedlink_writer.cc:AddFingerprint) -->
 
 <enum name="BooleanQueried">
   <int value="0" label="Not Queried"/>
@@ -59,7 +65,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="kSharedDictionary"/>
 </enum>
 
-<!--LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.{Task}) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.Task) -->
 
 <!-- LINT.IfChange(ChromeBrowsingDataRemoverTasks) -->
 
@@ -114,7 +120,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="kDisableAutoSigninForAccountPasswords"/>
 </enum>
 
-<!--LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.{Task}) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
 <enum name="ClearBrowsingDataTab">
   <int value="0" label="Basic"/>
