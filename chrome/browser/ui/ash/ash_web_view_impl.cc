@@ -194,6 +194,15 @@ bool AshWebViewImpl::CheckMediaAccessPermission(
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 
+std::string AshWebViewImpl::GetTitleForMediaControls(
+    content::WebContents* web_contents) {
+  if (!params_.source_title.empty()) {
+    return params_.source_title;
+  }
+
+  return content::WebContentsDelegate::GetTitleForMediaControls(web_contents);
+}
+
 void AshWebViewImpl::DidStopLoading() {
   for (auto& observer : observers_) {
     observer.DidStopLoading();

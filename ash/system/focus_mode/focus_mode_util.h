@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -27,6 +28,21 @@ enum class SoundType {
   kNone = 0,
   kSoundscape = 1,
   kYouTubeMusic = 2,
+};
+
+struct ASH_EXPORT SelectedPlaylist {
+  SelectedPlaylist();
+  SelectedPlaylist(const SelectedPlaylist& other);
+  SelectedPlaylist& operator=(const SelectedPlaylist& other);
+  ~SelectedPlaylist();
+
+  bool empty() const { return id.empty(); }
+
+  std::string id;
+  std::string title;
+  gfx::ImageSkia thumbnail;
+  focus_mode_util::SoundType type = focus_mode_util::SoundType::kNone;
+  focus_mode_util::SoundState state = focus_mode_util::SoundState::kNone;
 };
 
 // Values for the "ash.focus_mode.focus_mode_sounds_enabled" policy.
@@ -84,6 +100,11 @@ ASH_EXPORT int GetTimerTextfieldInputInMinutes(
 // Returns a string of `end_time` formatted for the "Until" end time label. For
 // example: "Until 1:00 PM".
 ASH_EXPORT std::u16string GetFormattedEndTimeString(const base::Time end_time);
+
+// Returns the desired source title string to be shown in the media controls for
+// the provided playlist.
+ASH_EXPORT std::string GetSourceTitleForMediaControls(
+    const SelectedPlaylist& playlist);
 
 }  // namespace focus_mode_util
 

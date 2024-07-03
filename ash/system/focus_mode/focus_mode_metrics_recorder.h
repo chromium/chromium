@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
-#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "base/time/time.h"
 #include "ui/message_center/message_center_observer.h"
 
@@ -30,7 +30,7 @@ class ASH_EXPORT FocusModeMetricsRecorder
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
   void SetHasSelectedSoundType(
-      const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
+      const focus_mode_util::SelectedPlaylist& selected_playlist);
 
   void RecordHistogramsOnStart(focus_mode_histogram_names::ToggleSource source,
                                const TaskId& selected_task_id);

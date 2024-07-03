@@ -244,7 +244,7 @@ void FocusModeMetricsRecorder::OnQuietModeChanged(bool in_quiet_mode) {
 }
 
 void FocusModeMetricsRecorder::SetHasSelectedSoundType(
-    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   if (selected_playlist.empty()) {
     return;
   }

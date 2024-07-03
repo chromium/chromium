@@ -53,21 +53,6 @@ class ASH_EXPORT FocusModeSoundsController
     gfx::ImageSkia thumbnail;
   };
 
-  struct SelectedPlaylist {
-    SelectedPlaylist();
-    SelectedPlaylist(const SelectedPlaylist& other);
-    SelectedPlaylist& operator=(const SelectedPlaylist& other);
-    ~SelectedPlaylist();
-
-    bool empty() const { return id.empty(); }
-
-    std::string id;
-    std::string title;
-    gfx::ImageSkia thumbnail;
-    focus_mode_util::SoundType type = focus_mode_util::SoundType::kNone;
-    focus_mode_util::SoundState state = focus_mode_util::SoundState::kNone;
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when a playlist is toggled by the user on the focus panel.
@@ -101,7 +86,7 @@ class ASH_EXPORT FocusModeSoundsController
     return youtube_music_playlists_;
   }
 
-  const SelectedPlaylist& selected_playlist() const {
+  const focus_mode_util::SelectedPlaylist& selected_playlist() const {
     return selected_playlist_;
   }
 
@@ -132,7 +117,7 @@ class ASH_EXPORT FocusModeSoundsController
 
   // Toggles a playlist with the same id as the `playlist_data` to select or
   // deselect based on its previous state.
-  void TogglePlaylist(const SelectedPlaylist& playlist_data);
+  void TogglePlaylist(const focus_mode_util::SelectedPlaylist& playlist_data);
 
   // Download images by providing urls. `update_sounds_view_callback` will be
   // called only when finishing downloading all non-empty thumbnails for the
@@ -153,7 +138,7 @@ class ASH_EXPORT FocusModeSoundsController
  private:
   void SaveUserPref();
   void ResetSelectedPlaylist();
-  void SelectPlaylist(const SelectedPlaylist& playlist_data);
+  void SelectPlaylist(const focus_mode_util::SelectedPlaylist& playlist_data);
 
   void OnAllThumbnailsDownloaded(
       bool is_soundscape_type,
@@ -166,7 +151,7 @@ class ASH_EXPORT FocusModeSoundsController
   std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
 
-  SelectedPlaylist selected_playlist_;
+  focus_mode_util::SelectedPlaylist selected_playlist_;
   focus_mode_util::SoundType sound_type_ =
       focus_mode_util::SoundType::kSoundscape;
 

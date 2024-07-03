@@ -239,7 +239,7 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
 }
 
 void FocusModeSoundsView::UpdateStateForSelectedPlaylist(
-    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   soundscape_container_->UpdateStateForSelectedPlaylist(selected_playlist);
   youtube_music_container_->UpdateStateForSelectedPlaylist(selected_playlist);
 }

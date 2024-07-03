@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
-#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -24,7 +23,7 @@ class ASH_EXPORT PlaylistView : public views::BoxLayoutView {
 
  public:
   using TogglePlaylistCallback = base::RepeatingCallback<void(
-      const FocusModeSoundsController::SelectedPlaylist& playlist_data)>;
+      const focus_mode_util::SelectedPlaylist& playlist_data)>;
 
   PlaylistView(focus_mode_util::SoundType type,
                TogglePlaylistCallback toggle_playlist_callback);
@@ -32,7 +31,7 @@ class ASH_EXPORT PlaylistView : public views::BoxLayoutView {
   PlaylistView& operator=(const PlaylistView&) = delete;
   ~PlaylistView() override;
 
-  const FocusModeSoundsController::SelectedPlaylist& playlist_data() {
+  const focus_mode_util::SelectedPlaylist& playlist_data() {
     return playlist_data_;
   }
 
@@ -45,7 +44,7 @@ class ASH_EXPORT PlaylistView : public views::BoxLayoutView {
 
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<PlaylistImageButton> playlist_image_button_ = nullptr;
-  FocusModeSoundsController::SelectedPlaylist playlist_data_;
+  focus_mode_util::SelectedPlaylist playlist_data_;
 
   TogglePlaylistCallback toggle_playlist_callback_;
 };

@@ -3975,6 +3975,7 @@ test("ash_unittests") {
     "system/focus_mode/focus_mode_task_test_utils.h",
     "system/focus_mode/focus_mode_tasks_model_unittest.cc",
     "system/focus_mode/focus_mode_tray_unittest.cc",
+    "system/focus_mode/focus_mode_util_unittest.cc",
     "system/focus_mode/sounds/focus_mode_soundscape_delegate_unittest.cc",
     "system/focus_mode/sounds/soundscape/soundscape_types_unittest.cc",
     "system/focus_mode/sounds/soundscape/soundscapes_downloader_unittest.cc",

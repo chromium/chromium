@@ -13,6 +13,15 @@ namespace ash {
 AshWebView::AshWebView() = default;
 AshWebView::~AshWebView() = default;
 
+AshWebView::InitParams::InitParams() = default;
+AshWebView::InitParams::InitParams(const InitParams&) = default;
+AshWebView::InitParams& AshWebView::InitParams::operator=(const InitParams&) =
+    default;
+AshWebView::InitParams::InitParams(InitParams&&) = default;
+AshWebView::InitParams& AshWebView::InitParams::operator=(InitParams&&) =
+    default;
+AshWebView::InitParams::~InitParams() = default;
+
 BEGIN_METADATA(AshWebView)
 END_METADATA
 

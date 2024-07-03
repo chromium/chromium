@@ -204,7 +204,7 @@ TEST_F(FocusModeControllerMultiUserTest, TogglePlaylistToChangeUserPref) {
       FocusModeController::Get()->focus_mode_sounds_controller();
   EXPECT_EQ(kUser1SoundType, sounds_controller->sound_type());
 
-  FocusModeSoundsController::SelectedPlaylist selected_playlist;
+  focus_mode_util::SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
   selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
   selected_playlist.state = focus_mode_util::SoundState::kNone;

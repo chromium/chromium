@@ -74,8 +74,11 @@ void RemoteMaintenanceCurtainView::AddWallpaper() {
 void RemoteMaintenanceCurtainView::AddCurtainWebView() {
   DCHECK(!curtain_view_);
 
-  curtain_view_ = AddChildView(AshWebViewFactory::Get()->Create(
-      {.rounded_corners = gfx::RoundedCornersF(util().GetCornerRadius())}));
+  AshWebView::InitParams web_view_params;
+  web_view_params.rounded_corners =
+      gfx::RoundedCornersF(util().GetCornerRadius());
+  curtain_view_ = AddChildView(
+      AshWebViewFactory::Get()->Create(std::move(web_view_params)));
 
   curtain_view_->SetID(kRemoteMaintenanceCurtainAshWebViewId);
   layout_->SetVerticalAlignmentForView(curtain_view_,

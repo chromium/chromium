@@ -802,6 +802,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON" desc="The text on the label slider button used for showing personalized YouTube music playlists to help users relax and focus.">
         YouTube Music
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_MEDIA_CONTROLS_SOURCE_TITLE" desc="The source title shown in the media controls if a focus mode playlist is selected and playing.">
+        <ph name="PLAYLIST_TYPE">$1<ex>Focus sounds</ex></ph> ᐧ <ph name="PLAYLIST_TITLE">$2<ex>Nature</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_NON_PREMIUM_LABEL" desc="The text on the label used for showing a text to mention the user without a premium account for YouTube Music.">
         For personalized playlists and more focus music, try YouTube Music Premium
       </message>

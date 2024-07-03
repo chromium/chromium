@@ -42,7 +42,7 @@ class ASH_EXPORT FocusModeSoundsView
   // Updates the playback state for all of the playlists under
   // `soundscape_container_` and `youtube_music_container_`.
   void UpdateStateForSelectedPlaylist(
-      const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
+      const focus_mode_util::SelectedPlaylist& selected_playlist);
 
   // Creates `soundscape_button_` and `youtube_music_button_`.
   void CreateTabSliderButtons(bool is_network_connected);

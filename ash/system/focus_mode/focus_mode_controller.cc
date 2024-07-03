@@ -683,6 +683,9 @@ void FocusModeController::MaybeCreateMediaWidget() {
   AshWebView::InitParams web_view_params;
   web_view_params.suppress_navigation = true;
   web_view_params.enable_wake_locks = false;
+  web_view_params.source_title =
+      focus_mode_util::GetSourceTitleForMediaControls(
+          focus_mode_sounds_controller_->selected_playlist());
   focus_mode_media_view_ = media_widget_->SetContentsView(
       AshWebViewFactory::Get()->Create(web_view_params));
   focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));

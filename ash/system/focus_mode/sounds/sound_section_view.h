@@ -48,7 +48,7 @@ class ASH_EXPORT SoundSectionView : public views::View {
   // Updates the state of `PlaylistView` for the newly `selected_playlist` and
   // reset the state of `PlaylistView` for unselected playlists.
   void UpdateStateForSelectedPlaylist(
-      const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
+      const focus_mode_util::SelectedPlaylist& selected_playlist);
 
   // Updates the state of `PlaylistView` for the existing selected playlist.
   void UpdateSelectedPlaylistForNewState(focus_mode_util::SoundState new_state);

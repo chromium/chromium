@@ -79,7 +79,7 @@ void SoundSectionView::SetAlternateView(
 }
 
 void SoundSectionView::UpdateStateForSelectedPlaylist(
-    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   for (auto* playlist_view : playlist_view_list_) {
     if (!selected_playlist.empty() && selected_playlist.type == type_ &&
         selected_playlist.id == playlist_view->playlist_data().id) {

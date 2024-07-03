@@ -182,7 +182,7 @@ base::flat_set<focus_mode_util::SoundType> ReadSoundSectionPolicy(
 // couldn't be found in this list), or if the selected playlist is found in the
 // `playlists_fetched`.
 bool MayContainsSelectedPlaylist(
-    const FocusModeSoundsController::SelectedPlaylist& selected_playlist,
+    const focus_mode_util::SelectedPlaylist& selected_playlist,
     bool is_soundscape_type,
     const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
         playlists_fetched) {
@@ -204,17 +204,6 @@ bool HasAudioFocus(const base::UnguessableToken& focus_mode_request_id,
 }
 
 }  // namespace
-
-FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist() = default;
-
-FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist(
-    const SelectedPlaylist&) = default;
-
-FocusModeSoundsController::SelectedPlaylist&
-FocusModeSoundsController::SelectedPlaylist::operator=(
-    const SelectedPlaylist& other) = default;
-
-FocusModeSoundsController::SelectedPlaylist::~SelectedPlaylist() = default;
 
 FocusModeSoundsController::FocusModeSoundsController()
     : soundscape_delegate_(FocusModeSoundscapeDelegate::Create("en-US")),
@@ -379,7 +368,7 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
 }
 
 void FocusModeSoundsController::TogglePlaylist(
-    const SelectedPlaylist& playlist_data) {
+    const focus_mode_util::SelectedPlaylist& playlist_data) {
   if (playlist_data.state != focus_mode_util::SoundState::kNone) {
     // When the user toggles a selected playlist, we will deselect it.
     ResetSelectedPlaylist();
@@ -462,7 +451,7 @@ void FocusModeSoundsController::ResetSelectedPlaylist() {
 }
 
 void FocusModeSoundsController::SelectPlaylist(
-    const SelectedPlaylist& playlist_data) {
+    const focus_mode_util::SelectedPlaylist& playlist_data) {
   selected_playlist_ = playlist_data;
 
   // TODO(b/337063849): Update the sound state when the media stream
