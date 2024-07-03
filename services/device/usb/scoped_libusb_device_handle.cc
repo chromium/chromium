@@ -11,18 +11,36 @@ namespace device {
 
 ScopedLibusbDeviceHandle::ScopedLibusbDeviceHandle(
     libusb_device_handle* handle,
-    scoped_refptr<UsbContext> context)
-    : handle_(handle), context_(std::move(context)) {}
+    scoped_refptr<UsbContext> context,
+    ScopedLibusbDeviceRef device)
+    : handle_(handle),
+      context_(std::move(context)),
+      device_(std::move(device)) {}
 
 ScopedLibusbDeviceHandle::ScopedLibusbDeviceHandle(
-    ScopedLibusbDeviceHandle&& other)
-    : handle_(other.handle_), context_(std::move(other.context_)) {
+    ScopedLibusbDeviceHandle&& other) {
+  *this = std::move(other);
+}
+
+ScopedLibusbDeviceHandle& ScopedLibusbDeviceHandle::operator=(
+    ScopedLibusbDeviceHandle&& other) {
+  if (this == &other) {
+    return *this;
+  }
+  Reset();
+  handle_ = other.handle_;
+  context_ = std::move(other.context_);
+  device_ = std::move(other.device_);
   other.handle_ = nullptr;
+  return *this;
 }
 
 ScopedLibusbDeviceHandle::~ScopedLibusbDeviceHandle() {
+  Reset();
+}
+
+void ScopedLibusbDeviceHandle::Reset() {
   libusb_close(handle_.ExtractAsDangling());
-  context_.reset();
 }
 
 bool ScopedLibusbDeviceHandle::IsValid() const {

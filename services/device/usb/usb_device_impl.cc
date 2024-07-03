@@ -115,8 +115,8 @@ void UsbDeviceImpl::OpenOnBlockingThread(
   libusb_device_handle* handle = nullptr;
   const int rv = libusb_open(platform_device(), &handle);
   if (LIBUSB_SUCCESS == rv) {
-    ScopedLibusbDeviceHandle scoped_handle(handle,
-                                           platform_device_.GetContext());
+    ScopedLibusbDeviceHandle scoped_handle(
+        handle, platform_device_.GetContext(), platform_device_);
     task_runner->PostTask(
         FROM_HERE,
         base::BindOnce(&UsbDeviceImpl::Opened, this, std::move(scoped_handle),
