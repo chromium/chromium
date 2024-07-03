@@ -169,9 +169,6 @@ class CORE_EXPORT PerformanceTimingForReporting final
   uint64_t ParseBlockedOnScriptExecutionDuration() const;
   uint64_t ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
 
-  // The time of the first paint after a portal activation.
-  std::optional<base::TimeTicks> LastPortalActivatedPaint() const;
-
   // The start time of the prerender activation navigation.
   std::optional<base::TimeDelta> PrerenderActivationStart() const;
 

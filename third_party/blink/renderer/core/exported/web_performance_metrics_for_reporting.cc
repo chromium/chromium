@@ -245,11 +245,6 @@ double WebPerformanceMetricsForReporting::
       .InSecondsF();
 }
 
-std::optional<base::TimeTicks>
-WebPerformanceMetricsForReporting::LastPortalActivatedPaint() const {
-  return private_->timingForReporting()->LastPortalActivatedPaint();
-}
-
 std::optional<base::TimeDelta>
 WebPerformanceMetricsForReporting::PrerenderActivationStart() const {
   return private_->timingForReporting()->PrerenderActivationStart();

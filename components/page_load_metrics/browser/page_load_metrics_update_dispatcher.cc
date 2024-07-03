@@ -334,8 +334,6 @@ class PageLoadTimingMerger {
           new_paint_timing.experimental_largest_contentful_paint.Clone();
       target_paint_timing->first_input_or_scroll_notified_timestamp =
           new_paint_timing.first_input_or_scroll_notified_timestamp;
-      target_paint_timing->portal_activated_paint =
-          new_paint_timing.portal_activated_paint;
     }
   }
 

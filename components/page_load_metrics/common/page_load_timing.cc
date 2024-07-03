@@ -12,11 +12,10 @@ mojom::PageLoadTimingPtr CreatePageLoadTiming() {
   return mojom::PageLoadTiming::New(
       base::Time(), std::optional<base::TimeDelta>(),
       mojom::DocumentTiming::New(), mojom::InteractiveTiming::New(),
-      mojom::PaintTiming::New(std::nullopt, std::nullopt, std::nullopt,
-                              std::nullopt,
-                              CreateLargestContentfulPaintTiming(),
-                              CreateLargestContentfulPaintTiming(),
-                              std::nullopt, std::nullopt, std::nullopt),
+      mojom::PaintTiming::New(
+          std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+          CreateLargestContentfulPaintTiming(),
+          CreateLargestContentfulPaintTiming(), std::nullopt, std::nullopt),
       mojom::ParseTiming::New(),
       std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>{},
       std::optional<base::TimeDelta>(), std::optional<base::TimeDelta>(),

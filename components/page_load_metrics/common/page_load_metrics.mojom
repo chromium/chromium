@@ -99,9 +99,6 @@ struct PaintTiming {
   // (Experimental) Time when first input or scroll is received, causing the
   // largest contentful paint algorithm to stop.
   mojo_base.mojom.TimeDelta? first_input_or_scroll_notified_timestamp;
-
-  // Time when the first paint happens after a portal activation.
-  mojo_base.mojom.TimeTicks? portal_activated_paint;
 };
 
 // TimeDeltas below represent durations of time during the page load.

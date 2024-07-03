@@ -930,10 +930,6 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         base::Seconds(
             perf.ParseBlockedOnScriptExecutionFromDocumentWriteDuration());
   }
-  if (perf.LastPortalActivatedPaint().has_value()) {
-    timing->paint_timing->portal_activated_paint =
-        *perf.LastPortalActivatedPaint();
-  }
   if (perf.PrerenderActivationStart().has_value()) {
     timing->activation_start = perf.PrerenderActivationStart();
   }

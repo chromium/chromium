@@ -214,17 +214,6 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
     GetFrame()->OnFirstPaint(text_painted, image_painted);
 }
 
-void PaintTiming::OnPortalActivate() {
-  last_portal_activated_presentation_ = base::TimeTicks();
-  RegisterNotifyPresentationTime(PaintEvent::kPortalActivatedPaint);
-}
-
-void PaintTiming::SetPortalActivatedPaint(base::TimeTicks stamp) {
-  DCHECK(last_portal_activated_presentation_.is_null());
-  last_portal_activated_presentation_ = stamp;
-  NotifyPaintTimingChanged();
-}
-
 void PaintTiming::SetTickClockForTesting(const base::TickClock* clock) {
   clock_ = clock;
 }
@@ -338,9 +327,6 @@ void PaintTiming::ReportPresentationTime(
       return;
     case PaintEvent::kFirstImagePaint:
       SetFirstImagePaintPresentation(timestamp);
-      return;
-    case PaintEvent::kPortalActivatedPaint:
-      SetPortalActivatedPaint(timestamp);
       return;
     default:
       NOTREACHED_NORETURN();
