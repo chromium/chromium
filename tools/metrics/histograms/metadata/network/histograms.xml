@@ -4711,7 +4711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.AwIpProtection.TokenBatchRequestTime"
-    units="ms" expires_after="2024-09-29">
+    units="ms" expires_after="2025-01-02">
   <owner>ciaramcmullin@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -4727,7 +4727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.AwIpProtection.TryGetAuthTokensResult"
-    enum="AwIpProtectionTokenBatchRequestResult" expires_after="2024-09-15">
+    enum="AwIpProtectionTokenBatchRequestResult" expires_after="2025-01-02">
   <owner>ciaramcmullin@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -4912,7 +4912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.ProxyListRefreshTime" units="ms"
-    expires_after="2024-07-29">
+    expires_after="2025-01-02">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
