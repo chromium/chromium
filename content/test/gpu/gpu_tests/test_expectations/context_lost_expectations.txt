@@ -175,11 +175,6 @@ crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 # since Windows 8 is no longer tested.
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
-# Too difficult to make this test work on Mac and Android for now. Disabling
-# GLES3 support at the GL bindings level doesn't work there yet.
-crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
-crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
