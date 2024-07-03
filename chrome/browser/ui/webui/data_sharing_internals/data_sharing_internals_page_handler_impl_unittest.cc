@@ -14,6 +14,7 @@
 #include "components/data_sharing/public/data_sharing_network_loader.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,69 +57,6 @@ class MockPage : public data_sharing_internals::mojom::Page {
   mojo::Receiver<data_sharing_internals::mojom::Page> receiver_{this};
 };
 
-// TODO(crbug.com/328265318): reuse mock from
-// components/data_sharing/test_support.
-class MockDataSharingService : public data_sharing::DataSharingService {
- public:
-  MockDataSharingService() = default;
-  ~MockDataSharingService() override = default;
-
-  // Disallow copy/assign.
-  MockDataSharingService(const MockDataSharingService&) = delete;
-  MockDataSharingService& operator=(const MockDataSharingService&) = delete;
-
-  // DataSharingNetworkLoader Impl.
-  MOCK_METHOD(bool, IsEmptyService, (), (override));
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(data_sharing::DataSharingNetworkLoader*,
-              GetDataSharingNetworkLoader,
-              (),
-              (override));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
-              GetCollaborationGroupControllerDelegate,
-              (),
-              (override));
-  MOCK_METHOD(void,
-              ReadAllGroups,
-              (base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>),
-              (override));
-  MOCK_METHOD(void,
-              ReadGroup,
-              (const data_sharing::GroupId&,
-               base::OnceCallback<void(const GroupDataOrFailureOutcome&)>),
-              (override));
-  MOCK_METHOD(void,
-              CreateGroup,
-              (const std::string&,
-               base::OnceCallback<void(const GroupDataOrFailureOutcome&)>),
-              (override));
-  MOCK_METHOD(void,
-              DeleteGroup,
-              (const data_sharing::GroupId&,
-               base::OnceCallback<void(PeopleGroupActionOutcome)>),
-              (override));
-  MOCK_METHOD(void,
-              InviteMember,
-              (const data_sharing::GroupId&,
-               const std::string&,
-               base::OnceCallback<void(PeopleGroupActionOutcome)>),
-              (override));
-  MOCK_METHOD(void,
-              RemoveMember,
-              (const data_sharing::GroupId&,
-               const std::string&,
-               base::OnceCallback<void(PeopleGroupActionOutcome)>),
-              (override));
-  MOCK_METHOD(bool,
-              ShouldInterceptNavigationForShareURL,
-              (const GURL&),
-              (override));
-  MOCK_METHOD(void,
-              HandleShareURLNavigationIntercepted,
-              (const GURL&),
-              (override));
-};
 }  // namespace
 
 class DataSharingInternalsPageHandlerImplTest : public testing::Test {
@@ -132,7 +70,7 @@ class DataSharingInternalsPageHandlerImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockDataSharingService data_sharing_service_;
+  data_sharing::MockDataSharingService data_sharing_service_;
   testing::NiceMock<MockPage> mock_client_;
   std::unique_ptr<DataSharingInternalsPageHandlerImpl> handler_;
 };
