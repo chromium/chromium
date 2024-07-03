@@ -60,6 +60,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                               constraintEqualToConstant:kModuleMaxHeight] ]];
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  _collectionView.clipsToBounds = [self shouldHaveWideLayout];
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -82,7 +87,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 - (void)moduleWidthDidUpdate {
   if (_collectionView) {
-    _collectionView.clipsToBounds = [self shouldHaveWideLayout];
     [self snapToNearestMagicStackModule];
   }
 }
@@ -319,7 +323,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
                intoSectionWithIdentifier:kMagicStackEditSectionIdentifier];
   }
 
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  [self.diffableDataSource applySnapshot:snapshot
+                    animatingDifferences:!isPlaceholder];
 }
 
 // Determines the final page offset given the scroll `offset` and the `velocity`

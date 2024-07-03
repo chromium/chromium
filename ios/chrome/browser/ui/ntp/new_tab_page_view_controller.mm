@@ -726,7 +726,6 @@ const CGFloat kModuleMinMargin = 16;
     _moduleLayoutGuide = [[UILayoutGuide alloc] init];
     UIView* view = self.view;
     [view addLayoutGuide:_moduleLayoutGuide];
-    [self updateModuleWidth];
     [NSLayoutConstraint activateConstraints:@[
       [_moduleLayoutGuide.centerXAnchor
           constraintEqualToAnchor:view.centerXAnchor],
@@ -1711,9 +1710,9 @@ const CGFloat kModuleMinMargin = 16;
   }
   if (width != oldWidth) {
     [self.view layoutIfNeeded];
-  }
-  if (existingConstraintUpdated) {
-    [self.magicStackCollectionView moduleWidthDidUpdate];
+    if (existingConstraintUpdated) {
+      [self.magicStackCollectionView moduleWidthDidUpdate];
+    }
   }
 }
 
