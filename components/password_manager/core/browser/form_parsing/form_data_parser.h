@@ -55,22 +55,17 @@ struct ProcessedField {
   AutocompleteFlag autocomplete_flag = AutocompleteFlag::kNone;
 
   // True if field->form_control_type ==
-  // autofill::FormControlType::kInputPassword.
+  // autofill::FormControlType::kInputPassword (this is also true for fields
+  // that have been password field at some point of time).
   bool is_password = false;
 
   // True if field is predicted to be a password.
   bool is_predicted_as_password = false;
 
-  // True if the server predicts that this field is a credit card field (e.g.
-  // CVC field).
-  bool server_hints_credit_card_field = false;
-
-  // True if the server predicts that this field is not a password field (credit
-  // cards fields don't set this field).
-  bool server_hints_not_password = false;
-
-  // True if the server predicts that this field is not a username field.
-  bool server_hints_not_username = false;
+  // True if the server predicts that this field is a non-credential field
+  // (either credit card related field or `NOT_PASSWORD`, `NOT_USERNAME`
+  // override).
+  bool server_hints_non_credential_field = false;
 
   // True if the field accepts WebAuthn credentials, false otherwise.
   bool accepts_webauthn_credentials = false;

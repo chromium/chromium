@@ -516,25 +516,19 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     result->confirmation_password = nullptr;
   }
 
-  // For the use of basic heuristics, also mark CVC fields and NOT_PASSWORD
-  // fields as such.
-  // TODO(crbug.com/40948526): Treat non-password related fields as not password
-  // and not username fields.
+  // Fields with non credential fields predictions do not participate in
+  // filling/saving.
   for (const PasswordFieldPrediction& prediction : predictions.fields) {
     ProcessedField* current_field = FindField(processed_fields, prediction);
     if (!current_field) {
       continue;
     }
-    if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
-        prediction.type == autofill::CREDIT_CARD_NUMBER) {
-      current_field->server_hints_credit_card_field = true;
-    } else if (prediction.type == autofill::ONE_TIME_CODE) {
-      current_field->server_hints_not_password = true;
-      current_field->server_hints_not_username = true;
-    } else if (prediction.type == autofill::NOT_PASSWORD) {
-      current_field->server_hints_not_password = true;
-    } else if (prediction.type == autofill::NOT_USERNAME) {
-      current_field->server_hints_not_username = true;
+    if (prediction.type == autofill::ONE_TIME_CODE ||
+        prediction.type == autofill::NOT_PASSWORD ||
+        prediction.type == autofill::NOT_USERNAME ||
+        prediction.type == autofill::CREDIT_CARD_NUMBER ||
+        prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE) {
+      current_field->server_hints_non_credential_field = true;
     }
   }
 }
@@ -1122,8 +1116,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
   // `NOT_USERNAME`, and `NOT_PASSWORD` must not be considered in base
   // heuristics parsing or parsing using autocomplete attributes.
   std::erase_if(processed_fields, [](ProcessedField field) {
-    return field.server_hints_credit_card_field ||
-           field.server_hints_not_password || field.server_hints_not_username;
+    return field.server_hints_non_credential_field;
   });
 
   // (2) If that failed, try to parse with autocomplete attributes.
