@@ -24,6 +24,10 @@
     color: var(--color-side-panel-entry-icon);
   }
 
+  #spinner {
+    margin: 4px 8px;
+  }
+
   .audio-background-when-active-false {
     --audio-controls-background: transparent;
     --audio-controls-right-margin: 2px;
@@ -129,23 +133,27 @@
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
     <span id="audio-controls" class$="audio-background-when-active-[[isSpeechActive]]">
       <span hidden="[[hideSpinner]]">
-        <picture class="spinner toolbar-button audio-controls">
+        <picture id="spinner" class="spinner toolbar-button audio-controls">
           <source media="(prefers-color-scheme: dark)"
               srcset="//resources/images/throbber_small_dark.svg">
           <img srcset="//resources/images/throbber_small.svg" alt="">
         </picture>
       </span>
 
-      <cr-icon-button class="toolbar-button audio-controls" id="play-pause"
-          disabled="[[!isReadAloudPlayable]]"
-          title$="[[playPauseButtonTitle_(isSpeechActive)]]"
-          aria-label$="[[playPauseButtonAriaLabel_(isSpeechActive)]]"
-          aria-keyshortcuts="k"
-          aria-description="$i18n{playDescription}"
-          iron-icon$="[[playPauseButtonIronIcon_(isSpeechActive)]]"
-          tabindex="0"
-          on-click="onPlayPauseClick_">
-      </cr-icon-button>
+      <span id="speech-control" hidden="[[!hideSpinner]]">
+        <cr-icon-button
+            class="toolbar-button audio-controls"
+            id="play-pause"
+            disabled="[[!isReadAloudPlayable]]"
+            title$="[[playPauseButtonTitle_(isSpeechActive)]]"
+            aria-label$="[[playPauseButtonAriaLabel_(isSpeechActive)]]"
+            aria-keyshortcuts="k"
+            aria-description="$i18n{playDescription}"
+            iron-icon$="[[playPauseButtonIronIcon_(isSpeechActive)]]"
+            tabindex="0"
+            on-click="onPlayPauseClick_">
+        </cr-icon-button>
+      </span>
       <span id="granularity-container" hidden="[[!isSpeechActive]]">
         <cr-icon-button id="previousGranularity"
             class="toolbar-button audio-controls"
