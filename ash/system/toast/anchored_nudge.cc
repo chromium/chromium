@@ -14,6 +14,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/toast/nudge_constants.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
@@ -34,8 +35,6 @@
 namespace ash {
 
 namespace {
-
-constexpr gfx::Insets kBubbleBorderInsets = gfx::Insets(8);
 
 // Offsets the bottom of work area to account for the current hotseat state.
 void AdjustWorkAreaBoundsForHotseatState(const HotseatWidget* hotseat_widget,
@@ -75,6 +74,31 @@ bool CalculateIsCornerAnchored(views::BubbleBorder::Arrow arrow) {
   }
 }
 
+gfx::Point GetAnchorPoint(views::Widget* anchor_widget,
+                          views::BubbleBorder::Arrow corner) {
+  const bool is_rtl = base::i18n::IsRTL();
+  auto bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  const gfx::Point bottom_left =
+      gfx::Point(bounds.x() + kBubbleBorderInsets.left(),
+                 bounds.bottom() - kBubbleBorderInsets.bottom());
+  const gfx::Point bottom_right =
+      gfx::Point(bounds.right() - kBubbleBorderInsets.right(),
+                 bounds.bottom() - kBubbleBorderInsets.bottom());
+
+  // Only support corners at the bottom of the widget.
+  switch (corner) {
+    case views::BubbleBorder::Arrow::BOTTOM_LEFT:
+    case views::BubbleBorder::Arrow::LEFT_BOTTOM:
+      return is_rtl ? bottom_right : bottom_left;
+    case views::BubbleBorder::Arrow::BOTTOM_RIGHT:
+    case views::BubbleBorder::Arrow::RIGHT_BOTTOM:
+      return is_rtl ? bottom_left : bottom_right;
+    default:
+      return is_rtl ? bottom_right : bottom_left;
+  }
+}
+
 }  // namespace
 
 AnchoredNudge::AnchoredNudge(
@@ -89,6 +113,8 @@ AnchoredNudge::AnchoredNudge(
       anchored_to_shelf_(nudge_data.anchored_to_shelf),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
       set_anchor_view_as_parent_(nudge_data.set_anchor_view_as_parent),
+      anchor_widget_(nudge_data.anchor_widget),
+      anchor_widget_corner_(nudge_data.arrow),
       click_callback_(std::move(nudge_data.click_callback)),
       dismiss_callback_(std::move(nudge_data.dismiss_callback)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -122,6 +148,8 @@ AnchoredNudge::~AnchoredNudge() {
   if (anchored_to_shelf_ || !GetAnchorView()) {
     Shell::Get()->RemoveShellObserver(this);
   }
+
+  anchor_widget_ = nullptr;
 }
 
 gfx::Rect AnchoredNudge::GetBubbleBounds() {
@@ -132,6 +160,11 @@ gfx::Rect AnchoredNudge::GetBubbleBounds() {
     return gfx::Rect();
   }
 
+  gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
+  if (anchor_widget_) {
+    return bubble_bounds;
+  }
+
   gfx::Rect work_area_bounds =
       WorkAreaInsets::ForWindow(root_window)->user_work_area_bounds();
 
@@ -140,8 +173,6 @@ gfx::Rect AnchoredNudge::GetBubbleBounds() {
   if (hotseat_widget) {
     AdjustWorkAreaBoundsForHotseatState(hotseat_widget, work_area_bounds);
   }
-
-  gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
   bubble_bounds.AdjustToFit(work_area_bounds);
 
   return bubble_bounds;
@@ -152,6 +183,11 @@ void AnchoredNudge::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
   if (set_anchor_view_as_parent_ && GetAnchorView() &&
       GetAnchorView()->GetWidget()) {
     params->parent = GetAnchorView()->GetWidget()->GetNativeView();
+    return;
+  }
+
+  if (anchor_widget_) {
+    params->parent = anchor_widget_->GetNativeView();
     return;
   }
 
@@ -191,6 +227,18 @@ void AnchoredNudge::AddedToWidget() {
     SetArrowFromShelf(shelf);
     disable_shelf_auto_hide_ =
         std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
+    return;
+  }
+
+  if (anchor_widget_) {
+    // Setting an `anchor_widget_` assumes that there is no anchor view, because
+    // widget anchoring is used when an anchor view cannot be set.
+    CHECK(!GetAnchorView());
+
+    anchor_widget_scoped_observation_.Observe(anchor_widget_);
+    gfx::Point anchor_point =
+        GetAnchorPoint(anchor_widget_, anchor_widget_corner_);
+    SetAnchorRect(gfx::Rect(anchor_point, gfx::Size(0, 0)));
     return;
   }
 
@@ -273,6 +321,26 @@ void AnchoredNudge::OnDisplayMetricsChanged(const display::Display& display,
   }
 }
 
+void AnchoredNudge::OnWidgetDestroying(views::Widget* widget) {
+  if (widget != anchor_widget_) {
+    return;
+  }
+
+  anchor_widget_ = nullptr;
+  anchor_widget_scoped_observation_.Reset();
+}
+
+void AnchoredNudge::OnWidgetBoundsChanged(views::Widget* widget,
+                                          const gfx::Rect& new_bounds) {
+  if (widget != anchor_widget_) {
+    return;
+  }
+
+  gfx::Point anchor_point =
+      GetAnchorPoint(anchor_widget_, anchor_widget_corner_);
+  SetAnchorRect(gfx::Rect(anchor_point, gfx::Size(0, 0)));
+}
+
 void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
   if (is_corner_anchored_) {
     SetArrow(shelf->SelectValueForShelfAlignment(
@@ -286,6 +354,12 @@ void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
 }
 
 void AnchoredNudge::SetDefaultAnchorRect() {
+  if (anchor_widget_) {
+    // The anchor position will be set by tracking the bounds of
+    // `anchor_widget_` and update when the widget bounds changed.
+    return;
+  }
+
   if (!GetWidget() || !GetWidget()->GetNativeWindow()) {
     return;
   }

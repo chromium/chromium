@@ -16,6 +16,8 @@ constexpr int kNudgeLabelWidth_TextOnlyNudge = 246;
 constexpr int kNudgeLabelWidth_NudgeWithoutLeadingImage = 280;
 constexpr int kNudgeLabelWidth_NudgeWithLeadingImage = 250;
 
+inline constexpr gfx::Insets kBubbleBorderInsets = gfx::Insets(8);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TOAST_NUDGE_CONSTANTS_H_

@@ -21,7 +21,8 @@
 
 namespace views {
 class View;
-}
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -121,6 +122,13 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // If true, set the `anchor_view` as parent.
   bool set_anchor_view_as_parent = false;
+
+  // If not null, the nudge will anchor inside the `anchor_widget`, which is a
+  // `views::Widget`. Used together with the `views::BubbleBorder::Arrow`, but
+  // currently only support anchoring to the bottom corners of the
+  // `anchor_widget`. NOTE: This is a new type of anchoring, which is different
+  // than the `anchor_view`. At most only one of them can be set.
+  raw_ptr<views::Widget> anchor_widget = nullptr;
 
   // Nudge action custom callbacks.
   HoverChangedCallback hover_changed_callback;

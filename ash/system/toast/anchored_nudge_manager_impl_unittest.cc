@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_toast_style.h"
 #include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/nudge_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -25,6 +26,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -1343,6 +1345,183 @@ TEST_F(AnchoredNudgeManagerImplTest, FocusTraversable) {
 
   GetAnchoredNudgeManager()->Cancel(id);
   EXPECT_EQ(widget->GetFocusManager()->GetFocusedView(), view2);
+}
+
+// Tests that a nudge is anchored at the bottom left corner of its anchor
+// widget.
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomLeft) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->SetBounds(
+      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+
+  // Set up nudge data contents.
+  const std::string id("id");
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  nudge_data.anchor_widget = anchor_widget.get();
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
+
+  // `anchor_widget` exists, will anchor inside the widget.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  auto* nudge = GetShownNudge(id);
+  EXPECT_TRUE(nudge);
+
+  auto* nudge_widget = nudge->GetWidget();
+  EXPECT_TRUE(nudge_widget);
+
+  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  // Compare the bounds alignment with the `kBubbleBorderInsets`.
+  EXPECT_EQ(nudge_bounds.bottom_left(),
+            anchor_widget_bounds.bottom_left() +
+                gfx::Vector2d(kBubbleBorderInsets.left(),
+                              -kBubbleBorderInsets.bottom()));
+}
+
+// Tests that a nudge is anchored at the bottom right corner of its anchor
+// widget.
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomRight) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->SetBounds(
+      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+
+  // Set up nudge data contents.
+  const std::string id("id");
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  nudge_data.anchor_widget = anchor_widget.get();
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_RIGHT;
+
+  // `anchor_widget` exists, will anchor inside the widget.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  auto* nudge = GetShownNudge(id);
+  EXPECT_TRUE(nudge);
+
+  auto* nudge_widget = nudge->GetWidget();
+  EXPECT_TRUE(nudge_widget);
+
+  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  // Compare the bounds alignment with the `kBubbleBorderInsets`.
+  EXPECT_EQ(nudge_bounds.bottom_right(),
+            anchor_widget_bounds.bottom_right() +
+                gfx::Vector2d(-kBubbleBorderInsets.right(),
+                              -kBubbleBorderInsets.bottom()));
+}
+
+// Tests that a nudge with an anchor widget is placed on the right on RTL.
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_WithRTL) {
+  // Turn on RTL mode.
+  base::i18n::SetRTLForTesting(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::i18n::IsRTL());
+
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->SetBounds(
+      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+
+  // Set up nudge data contents.
+  const std::string id("id");
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  nudge_data.anchor_widget = anchor_widget.get();
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
+
+  // `anchor_widget` exists, will anchor inside the widget.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  auto* nudge = GetShownNudge(id);
+  EXPECT_TRUE(nudge);
+
+  auto* nudge_widget = nudge->GetWidget();
+  EXPECT_TRUE(nudge_widget);
+
+  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  // Compare the bounds alignment with the `kBubbleBorderInsets`.
+  // The nudge should be shown on the leading bottom corner of the
+  // `anchor_widget`, which for RTL languages is the bottom-right.
+  EXPECT_EQ(nudge_bounds.bottom_right(),
+            anchor_widget_bounds.bottom_right() +
+                gfx::Vector2d(-kBubbleBorderInsets.right(),
+                              -kBubbleBorderInsets.bottom()));
+
+  // Turn off RTL mode.
+  base::i18n::SetRTLForTesting(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(base::i18n::IsRTL());
+}
+
+// Tests that a nudge is anchored at the bottom left corner of its anchor
+// widget in the tablet mode.
+TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_TabletMode) {
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->SetBounds(
+      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+
+  // Set up nudge data contents.
+  const std::string id("id");
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  nudge_data.anchor_widget = anchor_widget.get();
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
+
+  // `anchor_widget` exists, will anchor inside the widget.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  auto* nudge = GetShownNudge(id);
+  EXPECT_TRUE(nudge);
+
+  auto* nudge_widget = nudge->GetWidget();
+  EXPECT_TRUE(nudge_widget);
+
+  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  // Compare the bounds alignment with the `kBubbleBorderInsets`.
+  EXPECT_EQ(nudge_bounds.bottom_left(),
+            anchor_widget_bounds.bottom_left() +
+                gfx::Vector2d(kBubbleBorderInsets.left(),
+                              -kBubbleBorderInsets.bottom()));
+}
+
+// Tests that the nudge is closed when the anchor widget is closed.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeClosedWhenAnchorWidgetClosed) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->SetBounds(
+      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+
+  // Set up nudge data contents.
+  const std::string id("id");
+  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+  nudge_data.anchor_widget = anchor_widget.get();
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
+
+  // `anchor_widget` exists, will anchor inside the widget.
+  GetAnchoredNudgeManager()->Show(nudge_data);
+  auto* nudge = GetShownNudge(id);
+  EXPECT_TRUE(nudge);
+
+  auto* nudge_widget = nudge->GetWidget();
+  EXPECT_TRUE(nudge_widget);
+
+  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+
+  // Compare the bounds alignment with the `kBubbleBorderInsets`.
+  EXPECT_EQ(nudge_bounds.bottom_left(),
+            anchor_widget_bounds.bottom_left() +
+                gfx::Vector2d(kBubbleBorderInsets.left(),
+                              -kBubbleBorderInsets.bottom()));
+
+  // Close the `anchor_widget` should close the nudge as well.
+  anchor_widget->CloseNow();
+  nudge = GetShownNudge(id);
+  EXPECT_FALSE(nudge);
 }
 
 }  // namespace ash
