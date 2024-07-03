@@ -208,7 +208,6 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
-      "//chrome/browser/ash/extended_updates/test:test_support",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app",
       "//chrome/browser/ash/system_web_apps/apps/personalization_app:test_support",
