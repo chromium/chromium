@@ -173,11 +173,10 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     PickerSearchSource source,
     std::vector<PickerSearchResult> results,
     bool has_more_results) {
+  const PickerSectionType section_type = SectionTypeFromSearchSource(source);
   // Suggested results have multiple sources, which we store in any order and
   // explicitly do not append if post-burn-in.
-  if (source == PickerSearchSource::kDate ||
-      source == PickerSearchSource::kMath ||
-      source == PickerSearchSource::kClipboard) {
+  if (section_type == PickerSectionType::kSuggestions) {
     // Suggested results cannot have more results, since it's not a proper
     // category.
     CHECK(!has_more_results);
@@ -191,16 +190,14 @@ void PickerSearchAggregator::HandleSearchSourceResultsImpl(
     // Publish post-burn-in results and skip assignment.
     if (!results.empty()) {
       std::vector<PickerSearchResultsSection> sections;
-      sections.emplace_back(SectionTypeFromSearchSource(source),
-                            std::move(results), has_more_results);
+      sections.emplace_back(section_type, std::move(results), has_more_results);
       current_callback_.Run(std::move(sections));
     }
     return;
   }
 
   const auto& [unused, inserted] = results_.emplace(
-      SectionTypeFromSearchSource(source),
-      PickerSearchResults(std::move(results), has_more_results));
+      section_type, PickerSearchResults(std::move(results), has_more_results));
   CHECK(inserted);
 }
 
