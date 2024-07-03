@@ -1290,8 +1290,9 @@ void ResourceLoader::RequestSynchronously() {
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
     // be handled here.
-    auto [result, response, data] =
-        network_utils::ParseDataURL(resource_->Url(), request.HttpMethod());
+    auto [result, response, data] = network_utils::ParseDataURL(
+        resource_->Url(), request.HttpMethod(), request.GetUkmSourceId(),
+        fetcher_->UkmRecorder());
     if (result != net::OK) {
       error_out = WebURLError(result, resource_->Url());
     } else {
@@ -1521,7 +1522,9 @@ void ResourceLoader::HandleDataUrl() {
   // CanHandleDataURLRequestLocally() has already checked if the data url can be
   // handled here.
   auto [result, response, data] = network_utils::ParseDataURL(
-      resource_->Url(), resource_->GetResourceRequest().HttpMethod());
+      resource_->Url(), resource_->GetResourceRequest().HttpMethod(),
+      resource_->GetResourceRequest().GetUkmSourceId(),
+      fetcher_->UkmRecorder());
   if (result != net::OK) {
     HandleError(ResourceError(result, resource_->Url(), std::nullopt));
     return;

@@ -17657,6 +17657,30 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Network.DataUrls">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Recorded per resource request when parsing for a data URL is completed.
+  </summary>
+  <metric name="IsImage" enum="Boolean">
+    <summary>
+      If the data URL is for an image resource.
+    </summary>
+  </metric>
+  <metric name="ParseTime">
+    <summary>
+      The time taken (ms) to parse the data URL. This includes base64 decoding
+      and building the response.
+    </summary>
+  </metric>
+  <metric name="UrlLength">
+    <summary>
+      The length of the data URL, indicating the size of the resource.
+    </summary>
+  </metric>
+</event>
+
 <event name="NewTabPage.HistoryClusters">
   <owner>sophiechang@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>

@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -36,7 +37,10 @@ PLATFORM_EXPORT WTF::String GetDomainAndRegistry(const WTF::String& host,
 // was successful. The result is returned as net error code. It returns net::OK
 // if decoding succeeds, otherwise it failed.
 PLATFORM_EXPORT std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>>
-ParseDataURL(const KURL&, const WTF::String& method);
+ParseDataURL(const KURL&,
+             const WTF::String& method,
+             ukm::SourceId source_id = ukm::kInvalidSourceId,
+             ukm::UkmRecorder* recorder = nullptr);
 
 // Returns true if the URL is a data URL and its MIME type is in the list of
 // supported/recognized MIME types.

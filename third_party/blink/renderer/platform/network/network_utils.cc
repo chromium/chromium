@@ -13,6 +13,8 @@
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -64,7 +66,9 @@ String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
 
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
     const KURL& url,
-    const String& method) {
+    const String& method,
+    ukm::SourceId source_id,
+    ukm::UkmRecorder* recorder) {
   base::ElapsedTimer timer;
 
   std::string utf8_mime_type;
@@ -129,6 +133,13 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
       base::UmaHistogramMicrosecondsTimes(
           "Blink.Network.ParseDataURLTime.Image.Over100000Char", elapsed);
     }
+  }
+  if (source_id != ukm::kInvalidSourceId && recorder) {
+    ukm::builders::Network_DataUrls builder(source_id);
+    builder.SetUrlLength(ukm::GetExponentialBucketMinForCounts1000(length));
+    builder.SetParseTime(elapsed.InMicroseconds());
+    builder.SetIsImage(is_image);
+    builder.Record(recorder);
   }
 
   return std::make_tuple(net::OK, std::move(response), std::move(buffer));

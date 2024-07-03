@@ -991,7 +991,8 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
   } else if (url.ProtocolIsData()) {
     int result;
     std::tie(result, response, data) = network_utils::ParseDataURL(
-        url, params.GetResourceRequest().HttpMethod());
+        url, params.GetResourceRequest().HttpMethod(),
+        params.GetResourceRequest().GetUkmSourceId(), UkmRecorder());
     if (result != net::OK) {
       return nullptr;
     }
