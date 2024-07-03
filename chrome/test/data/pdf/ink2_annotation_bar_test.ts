@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import type {AnnotationBrushParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {AnnotationBrushType, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createMockPdfPluginForTest} from './test_util.js';
+import {createMockPdfPluginForTest, finishInkStroke, getAnnotationsBar} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
@@ -44,30 +44,6 @@ function assertAnnotationBrush(
   mockPlugin.clearMessages();
 }
 
-/**
- * Helper to always got a non-null annotation bar. The annotation bar must
- * exist.
- * @returns The annotation bar.
- */
-function getAnnotationsBar() {
-  const annotationsBar =
-      viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar');
-  assert(annotationsBar);
-  return annotationsBar;
-}
-
-/**
- * Helper to simulate the PDF content sending a message to the PDF extension
- * to indicate that a new ink stroke has been drawn.
- */
-function finishInkStroke() {
-  const eventTarget = controller.getEventTarget();
-  const message = {type: 'finishInkStroke'};
-
-  eventTarget.dispatchEvent(new CustomEvent(
-      PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
-}
-
 chrome.test.runTests([
   // Test that the annotations bar is shown when annotation mode is enabled and
   // hidden when annotation mode is disabled.
@@ -76,7 +52,7 @@ chrome.test.runTests([
 
     viewerToolbar.toggleAnnotation();
     await waitAfterNextRender(viewerToolbar);
-    const annotationsBar = getAnnotationsBar();
+    const annotationsBar = getAnnotationsBar(viewerToolbar);
 
     // Annotations bar should be visible when annotation mode is enabled.
     chrome.test.assertTrue(viewerToolbar.annotationMode);
@@ -97,7 +73,7 @@ chrome.test.runTests([
     await waitAfterNextRender(viewerToolbar);
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
-    const annotationBar = getAnnotationsBar();
+    const annotationBar = getAnnotationsBar(viewerToolbar);
 
     // Default to pen.
     assertAnnotationBrush(
@@ -129,7 +105,7 @@ chrome.test.runTests([
   },
   // Test that the eraser can be selected.
   function testSelectEraser() {
-    const annotationBar = getAnnotationsBar();
+    const annotationBar = getAnnotationsBar(viewerToolbar);
 
     // Switch to eraser. It shouldn't have any params.
     annotationBar.$.eraser.click();
@@ -140,7 +116,7 @@ chrome.test.runTests([
   // Test that the pen can be selected again, and should have the same settings
   // as last set in `testSelectPen()`.
   function testGoBackToPenWithPreviousSettings() {
-    const annotationBar = getAnnotationsBar();
+    const annotationBar = getAnnotationsBar(viewerToolbar);
 
     // Switch back to pen. It should have the previous settings.
     annotationBar.$.pen.click();
@@ -153,7 +129,7 @@ chrome.test.runTests([
   // Test that the highlighter can be selected. Test that the dropdown menu can
   // be opened to select a color. Test that the size can be selected.
   function testSelectHighlighterWithDropdownColor() {
-    const annotationBar = getAnnotationsBar();
+    const annotationBar = getAnnotationsBar(viewerToolbar);
 
     // Switch to highlighter.
     const highlighter = annotationBar.$.highlighter;
@@ -203,7 +179,7 @@ chrome.test.runTests([
   },
   // Test the behavior of the undo and redo buttons.
   function testUndoRedo() {
-    const annotationBar = getAnnotationsBar();
+    const annotationBar = getAnnotationsBar(viewerToolbar);
     const undoButton = annotationBar.$.undo;
     const redoButton = annotationBar.$.redo;
 
@@ -212,7 +188,7 @@ chrome.test.runTests([
     chrome.test.assertTrue(redoButton.disabled);
 
     // Draw a stroke. The undo button should be enabled.
-    finishInkStroke();
+    finishInkStroke(controller);
 
     chrome.test.assertTrue(
         mockPlugin.findMessage('annotationUndo') === undefined);
@@ -239,7 +215,7 @@ chrome.test.runTests([
     // After redo, draw a stroke and undo it after. The undo button and redo
     // button should both be enabled.
     mockPlugin.clearMessages();
-    finishInkStroke();
+    finishInkStroke(controller);
     undoButton.click();
 
     chrome.test.assertTrue(
@@ -249,7 +225,7 @@ chrome.test.runTests([
 
     // Draw another stroke, overriding the stroke that could've been redone. The
     // undo button should be enabled.
-    finishInkStroke();
+    finishInkStroke(controller);
 
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);

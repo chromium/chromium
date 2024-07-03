@@ -6,6 +6,10 @@
 
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+// <if expr="enable_pdf_ink2">
+import type {PluginController, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+// </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -337,3 +341,29 @@ export function enterFullscreenWithUserGesture(): Promise<void> {
     });
   });
 }
+
+// <if expr="enable_pdf_ink2">
+/**
+ * Helper to simulate the PDF content sending a message to the PDF extension
+ * to indicate that a new ink stroke has been drawn.
+ */
+export function finishInkStroke(controller: PluginController) {
+  const eventTarget = controller.getEventTarget();
+  const message = {type: 'finishInkStroke'};
+
+  eventTarget.dispatchEvent(new CustomEvent(
+      PluginControllerEventType.PLUGIN_MESSAGE, {detail: message}));
+}
+
+/**
+ * Helper to always get a non-null annotation bar. The annotation bar must
+ * exist.
+ * @returns The annotation bar.
+ */
+export function getAnnotationsBar(viewerToolbar: ViewerToolbarElement) {
+  const annotationsBar =
+      viewerToolbar.shadowRoot!.querySelector('viewer-annotations-bar');
+  assert(annotationsBar);
+  return annotationsBar;
+}
+// </if>

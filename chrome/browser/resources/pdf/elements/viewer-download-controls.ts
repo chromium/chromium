@@ -40,6 +40,10 @@ export class ViewerDownloadControlsElement extends PolymerElement {
 
       hasEnteredAnnotationMode: Boolean,
 
+      // <if expr="enable_pdf_ink2">
+      hasInk2Edits: Boolean,
+      // </if>
+
       isFormFieldFocused: {
         type: Boolean,
         observer: 'onFormFieldFocusedChanged_',
@@ -47,8 +51,14 @@ export class ViewerDownloadControlsElement extends PolymerElement {
 
       downloadHasPopup_: {
         type: String,
+        // <if expr="enable_pdf_ink2">
+        computed: 'computeDownloadHasPopup_(hasEdits,' +
+            'hasEnteredAnnotationMode, hasInk2Edits)',
+        // </if>
+        // <if expr="not enable_pdf_ink2">
         computed: 'computeDownloadHasPopup_(hasEdits,' +
             'hasEnteredAnnotationMode)',
+        // </if>
       },
 
       menuOpen_: {
@@ -61,6 +71,9 @@ export class ViewerDownloadControlsElement extends PolymerElement {
 
   hasEdits: boolean;
   hasEnteredAnnotationMode: boolean;
+  // <if expr="enable_pdf_ink2">
+  hasInk2Edits: boolean;
+  // </if>
   isFormFieldFocused: boolean;
   private downloadHasPopup_: string;
   private menuOpen_: boolean;
@@ -79,7 +92,12 @@ export class ViewerDownloadControlsElement extends PolymerElement {
   }
 
   private hasEditsToSave_(): boolean {
+    // <if expr="enable_pdf_ink2">
+    return this.hasEnteredAnnotationMode || this.hasEdits || this.hasInk2Edits;
+    // </if>
+    // <if expr="not enable_pdf_ink2">
     return this.hasEnteredAnnotationMode || this.hasEdits;
+    // </if>
   }
 
   /**

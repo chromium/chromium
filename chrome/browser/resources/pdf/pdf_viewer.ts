@@ -198,6 +198,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         value: false,
       },
 
+      // <if expr="enable_pdf_ink2">
+      hasInk2Edits_: {
+        type: Boolean,
+        value: false,
+      },
+      // </if>
+
       isFormFieldFocused_: {
         type: Boolean,
         value: false,
@@ -275,6 +282,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private hadPassword_: boolean;
   private hasEdits_: boolean;
   private hasEnteredAnnotationMode_: boolean;
+  // <if expr="enable_pdf_ink2">
+  private hasInk2Edits_: boolean;
+  // </if>
   private isFormFieldFocused_: boolean;
   private loadProgress_: number;
   private navigator_: PdfNavigator|null = null;
@@ -845,6 +855,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
       // <if expr="enable_pdf_ink2">
       case 'finishInkStroke':
+        this.hasInk2Edits_ = true;
         this.pluginController_!.getEventTarget().dispatchEvent(
             new CustomEvent(PluginControllerEventType.FINISH_INK_STROKE));
         return;
@@ -1089,6 +1100,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         (this.sidenavCollapsed_ ? 1 : 0).toString());
   }
 
+  // <if expr="enable_pdf_ink2">
+  private onCanUndoChanged_(e: CustomEvent<boolean>) {
+    this.hasInk2Edits_ = e.detail;
+  }
+  // </if>
+
   /**
    * Saves the current PDF document to disk.
    */
@@ -1105,7 +1122,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // TODO(dstockwell): Report an error to user if this fails.
     let result: {fileName: string, dataToSave: ArrayBuffer}|null = null;
     assert(this.currentController);
-    if (requestType !== SaveRequestType.ORIGINAL || !this.annotationMode_) {
+    // <if expr="enable_pdf_ink2">
+    const shouldSaveWithPluginController = this.pdfInk2Enabled_;
+    // </if>
+    // <if expr="not enable_pdf_ink2">
+    const shouldSaveWithPluginController =
+        requestType !== SaveRequestType.ORIGINAL || !this.annotationMode_;
+    // </if>
+    if (shouldSaveWithPluginController) {
       result = await this.currentController.save(requestType);
     } else {
       // <if expr="enable_ink">
@@ -1153,6 +1177,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             // </if>
           });
         });
+
+    // <if expr="enable_pdf_ink2">
+    // Ink2 doesn't need to exit annotation mode after save.
+    if (this.pdfInk2Enabled_) {
+      return;
+    }
+    // </if>
 
     // <if expr="enable_ink">
     // Saving in Annotation mode is destructive: crbug.com/919364

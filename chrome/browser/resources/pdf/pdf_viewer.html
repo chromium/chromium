@@ -133,6 +133,9 @@
     embedded-viewer="[[embedded_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
+<if expr="enable_pdf_ink2">
+    has-ink2-edits="[[hasInk2Edits_]]"
+</if>
     printing-enabled="[[printingEnabled_]]"
     rotated="[[isRotated_(clockwiseRotations_)]]"
     is-form-field-focused="[[isFormFieldFocused_]]"
@@ -159,7 +162,11 @@
 <if expr="enable_ink or enable_pdf_ink2">
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
-    on-print="onPrint_" on-save="onToolbarSave_" hidden>
+    on-print="onPrint_" on-save="onToolbarSave_"
+<if expr="enable_pdf_ink2">
+    on-can-undo-changed="onCanUndoChanged_"
+</if>
+    hidden>
 </viewer-toolbar>
 
 <div id="container">

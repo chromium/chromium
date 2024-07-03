@@ -71,6 +71,9 @@ export class ViewerToolbarElement extends PolymerElement {
       embeddedViewer: Boolean,
       hasEdits: Boolean,
       hasEnteredAnnotationMode: Boolean,
+      // <if expr="enable_pdf_ink2">
+      hasInk2Edits: Boolean,
+      // </if>
       isFormFieldFocused: Boolean,
 
       loadProgress: {
@@ -148,6 +151,9 @@ export class ViewerToolbarElement extends PolymerElement {
   embeddedViewer: boolean;
   hasEdits: boolean;
   hasEnteredAnnotationMode: boolean;
+  // <if expr="enable_pdf_ink2">
+  hasInk2Edits: boolean;
+  // </if>
   isFormFieldFocused: boolean;
   loadProgress: number;
   pageNo: number;

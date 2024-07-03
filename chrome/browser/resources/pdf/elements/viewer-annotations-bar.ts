@@ -142,7 +142,13 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       assert(this.currentStroke > 0);
       this.pluginController_.undo();
       this.currentStroke--;
+
       this.canUndoAnnotation_ = this.currentStroke > 0;
+      if (!this.canUndoAnnotation_) {
+        this.dispatchEvent(new CustomEvent(
+            'can-undo-changed',
+            {detail: false, bubbles: true, composed: true}));
+      }
       this.canRedoAnnotation_ = true;
       return;
     }
@@ -159,7 +165,12 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       assert(this.currentStroke < this.mostRecentStroke);
       this.pluginController_.redo();
       this.currentStroke++;
-      this.canUndoAnnotation_ = true;
+
+      if (!this.canUndoAnnotation_) {
+        this.canUndoAnnotation_ = true;
+        this.dispatchEvent(new CustomEvent(
+            'can-undo-changed', {detail: true, bubbles: true, composed: true}));
+      }
       this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
       return;
     }
