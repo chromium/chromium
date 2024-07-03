@@ -640,6 +640,22 @@ TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
   EXPECT_THAT(show_editor_future.Get(), FieldsAre("preset", "freeform"));
 }
 
+TEST_F(PickerControllerTest, GetResultsForCategoryReturnsEmptyForEmptyResults) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  base::test::TestFuture<std::vector<PickerSearchResultsSection>> future;
+  EXPECT_CALL(client, GetSuggestedLinkResults)
+      .WillRepeatedly([](TestPickerClient::SuggestedLinksCallback callback) {
+        std::move(callback).Run({});
+      });
+
+  controller.ToggleWidget();
+  controller.GetResultsForCategory(PickerCategory::kLinks,
+                                   future.GetRepeatingCallback());
+
+  EXPECT_THAT(future.Take(), IsEmpty());
+}
+
 TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();

@@ -203,6 +203,9 @@ InsertionContent GetInsertionContentForResult(
 
 std::vector<PickerSearchResultsSection> CreateSingleSectionForCategoryResults(
     std::vector<PickerSearchResult> results) {
+  if (results.empty()) {
+    return {};
+  }
   return {PickerSearchResultsSection(PickerSectionType::kNone,
                                      std::move(results),
                                      /*has_more_results*/ false)};
