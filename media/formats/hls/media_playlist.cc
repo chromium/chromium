@@ -57,7 +57,8 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     std::string_view source,
     GURL uri,
     types::DecimalInteger version,
-    const MultivariantPlaylist* parent_playlist) {
+    const MultivariantPlaylist* parent_playlist,
+    TagRecorder* tag_recorder) {
   DCHECK(version != 0);
   if (version < Playlist::kMinSupportedVersion ||
       version > Playlist::kMaxSupportedVersion) {
@@ -127,6 +128,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
     // Handle tags
     if (auto* tag = absl::get_if<TagItem>(&item)) {
       if (!tag->GetName().has_value()) {
+        if (tag_recorder) {
+          tag_recorder->SetMetric(TagRecorder::Metric::kUnknownTag);
+        }
         HandleUnknownTag(*tag);
         continue;
       }
@@ -175,6 +179,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXDiscontinuity: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kDiscontinuity);
+          }
           // Multiple occurrences of `EXT-X-DISCONTINUITY` per media segment are
           // allowed, and each increments the segment's discontinuity sequence
           // number by 1. The spec doesn't explicitly forbid this, and this
@@ -191,6 +198,10 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXDiscontinuitySequence: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(
+                TagRecorder::Metric::kDiscontinuitySequence);
+          }
           auto error = ParseUniqueTag(*tag, discontinuity_sequence_tag);
           if (error.has_value()) {
             return std::move(error).value();
@@ -217,6 +228,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXGap: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kGap);
+          }
           auto error = ParseUniqueTag(*tag, gap_tag);
           if (error.has_value()) {
             return std::move(error).value();
@@ -231,6 +245,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXKey: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kKey);
+          }
           auto result =
               XKeyTag::Parse(*tag, common_state.variable_dict, sub_buffer);
           if (!result.has_value()) {
@@ -238,6 +255,31 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           }
           auto value = std::move(result).value();
 
+          if (tag_recorder) {
+            TagRecorder::Metric crypto;
+            switch (value.method) {
+              case XKeyTagMethod::kNone:
+                crypto = TagRecorder::Metric::kNoCrypto;
+                break;
+              case XKeyTagMethod::kAES128:
+              case XKeyTagMethod::kAES256:
+                crypto = TagRecorder::Metric::kSegmentAES;
+                break;
+              case XKeyTagMethod::kSampleAES:
+                crypto = TagRecorder::Metric::kSample;
+                break;
+              case XKeyTagMethod::kSampleAESCTR:
+                crypto = TagRecorder::Metric::kAESCTR;
+                break;
+              case XKeyTagMethod::kSampleAESCENC:
+                crypto = TagRecorder::Metric::kAESCENC;
+                break;
+              case XKeyTagMethod::kISO230017:
+                crypto = TagRecorder::Metric::kISO230017;
+                break;
+            }
+            tag_recorder->SetMetric(crypto);
+          }
           if (value.method == XKeyTagMethod::kNone) {
             if (encryption_data != nullptr) {
               new_encryption_data = true;
@@ -301,6 +343,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXPart: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kPart);
+          }
           // TODO(crbug.com/40057824): Integrate the EXT-X-PART tag.
           break;
         }
@@ -339,6 +384,9 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXSkip: {
+          if (tag_recorder) {
+            tag_recorder->SetMetric(TagRecorder::Metric::kSkip);
+          }
           // TODO(crbug.com/40057824): Implement the EXT-X-SKIP tag.
           // Since the appearance of the EXT-X-SKIP tag implies that this is a
           // playlist delta update, we cannot parse this playlist.
@@ -366,6 +414,19 @@ ParseStatus::Or<scoped_refptr<MediaPlaylist>> MediaPlaylist::Parse(
       return std::move(segment_uri_result).error();
     }
     auto segment_uri = std::move(segment_uri_result).value();
+
+    if (tag_recorder) {
+      const auto filename = segment_uri.ExtractFileName();
+      if (filename.ends_with(".ts")) {
+        tag_recorder->SetMetric(TagRecorder::Metric::kSegmentTS);
+      } else if (filename.ends_with(".mp4")) {
+        tag_recorder->SetMetric(TagRecorder::Metric::kSegmentMP4);
+      } else if (filename.ends_with(".aac")) {
+        tag_recorder->SetMetric(TagRecorder::Metric::kSegmentAAC);
+      } else {
+        tag_recorder->SetMetric(TagRecorder::Metric::kSegmentOther);
+      }
+    }
 
     // For this to be a valid media segment, we must have parsed an Inf tag
     // since the last segment.

@@ -14,6 +14,7 @@
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
+#include "media/formats/hls/tag_recorder.h"
 #include "media/formats/hls/tags.h"
 #include "url/gurl.h"
 
@@ -139,11 +140,13 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // order to support persistent properties and imported variables. Otherwise,
   // it should be `nullptr`. If `source` is invalid, this returns an error.
   // Otherwise, the parsed playlist is returned.
+  // `tag_recorder` is an optional metrics collection helper.
   static ParseStatus::Or<scoped_refptr<MediaPlaylist>> Parse(
       std::string_view source,
       GURL uri,
       types::DecimalInteger version,
-      const MultivariantPlaylist* parent_playlist);
+      const MultivariantPlaylist* parent_playlist,
+      TagRecorder* tag_recorder = nullptr);
 
  private:
   ~MediaPlaylist() override;
