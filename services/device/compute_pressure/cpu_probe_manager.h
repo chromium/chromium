@@ -72,7 +72,8 @@ class CpuProbeManager {
 
  private:
   friend class PressureManagerImpl;
-  FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerTest, CalculateStateValueTooLarge);
+  FRIEND_TEST_ALL_PREFIXES(CpuProbeManagerDeathTest,
+                           CalculateStateValueTooLarge);
 
   CpuProbeManager(std::unique_ptr<system_cpu::CpuProbe> system_cpu_probe,
                   base::TimeDelta,
