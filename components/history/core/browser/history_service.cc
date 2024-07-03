@@ -1307,11 +1307,11 @@ base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToURL(
       std::move(callback));
 }
 
-base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToHost(
-    const GURL& host,
+base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToOrigin(
+    const url::Origin& origin,
     base::Time begin_time,
     base::Time end_time,
-    GetDailyVisitsToHostCallback callback,
+    GetDailyVisitsToOriginCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1319,7 +1319,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToHost(
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetDailyVisitsToHost, history_backend_,
-                     host, begin_time, end_time),
+                     origin.GetURL(), begin_time, end_time),
       std::move(callback));
 }
 

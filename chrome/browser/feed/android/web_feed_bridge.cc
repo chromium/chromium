@@ -35,6 +35,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/android/gurl_android.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feed/android/jni_headers/WebFeedBridge_jni.h"
@@ -374,9 +375,9 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
   auto begin_time =
       base::Time::Now() -
       base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
-  history_service->GetDailyVisitsToHost(
-      url::GURLAndroid::ToNativeGURL(env, j_url), begin_time, end_time,
-      std::move(callback), &TaskTracker());
+  history_service->GetDailyVisitsToOrigin(
+      url::Origin::Create(url::GURLAndroid::ToNativeGURL(env, j_url)),
+      begin_time, end_time, std::move(callback), &TaskTracker());
 }
 
 static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(

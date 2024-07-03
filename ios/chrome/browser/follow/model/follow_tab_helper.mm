@@ -40,6 +40,7 @@
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -223,8 +224,8 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   const base::Time begin_time = page_load_time - GetVisitHistoryDuration();
 
   // Get daily visit count for `url` from the history service.
-  history_service->GetDailyVisitsToHost(
-      url, begin_time, end_time,
+  history_service->GetDailyVisitsToOrigin(
+      url::Origin::Create(url), begin_time, end_time,
       base::BindOnce(&FollowTabHelper::OnDailyVisitQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), page_load_time,
                      recommended_url),
