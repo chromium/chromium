@@ -80,14 +80,14 @@
     </activity>  # DIFF-ANCHOR: 76686af9
     <activity  # DIFF-ANCHOR: dc170161
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: dc170161
     <activity  # DIFF-ANCHOR: 766e66bd
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:label="@string/edit_bookmark"
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
@@ -95,7 +95,7 @@
     </activity>  # DIFF-ANCHOR: 766e66bd
     <activity  # DIFF-ANCHOR: 002f9e99
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderPickerActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:label="@string/bookmark_choose_folder"
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
@@ -103,28 +103,28 @@
     </activity>  # DIFF-ANCHOR: 002f9e99
     <activity  # DIFF-ANCHOR: 9bfe10ab
         android:name="org.chromium.chrome.browser.app.creator.CreatorActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 9bfe10ab
     <activity  # DIFF-ANCHOR: 8f3f76d9
         android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 8f3f76d9
     <activity  # DIFF-ANCHOR: 3d32d400
         android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Settings"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 3d32d400
     <activity  # DIFF-ANCHOR: 98c8c9be
         android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Settings"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
@@ -199,7 +199,7 @@
     </activity>  # DIFF-ANCHOR: 4d923622
     <activity  # DIFF-ANCHOR: 6ad7b5dd
         android:name="org.chromium.chrome.browser.device_lock.DeviceLockActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.DialogWhenLarge">
     </activity>  # DIFF-ANCHOR: 6ad7b5dd
@@ -228,7 +228,7 @@
     <activity  # DIFF-ANCHOR: 2121eb0d
         android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
         android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleTop"
@@ -238,7 +238,7 @@
     <activity  # DIFF-ANCHOR: 67932092
         android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
         android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleInstance"
@@ -248,7 +248,7 @@
     <activity  # DIFF-ANCHOR: bb612a34
         android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
         android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleTop"
@@ -257,7 +257,7 @@
     </activity>  # DIFF-ANCHOR: bb612a34
     <activity  # DIFF-ANCHOR: 05911131
         android:name="org.chromium.chrome.browser.history.HistoryActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
@@ -337,7 +337,7 @@
     <activity  # DIFF-ANCHOR: 7468a722
         android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
         android:clearTaskOnLaunch="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:excludeFromRecents="true"
         android:exported="false"
         android:hardwareAccelerated="false"
@@ -356,13 +356,13 @@
     </activity>  # DIFF-ANCHOR: d32b85df
     <activity  # DIFF-ANCHOR: 74e09449
         android:name="org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.SigninAndHistoryOptInActivity">
     </activity>  # DIFF-ANCHOR: 74e09449
     <activity  # DIFF-ANCHOR: fbf1ba15
         android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:theme="@style/Theme.Chromium.DialogWhenLarge">
     </activity>  # DIFF-ANCHOR: fbf1ba15
