@@ -58,9 +58,9 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   // default browser state.
   std::string GetLastUsedBrowserStateName() const;
 
-  // Load ChromeBrowserState at `path` and invoke `callback` when the load
+  // Load ChromeBrowserState with `name` and invoke `callback` when the load
   // is complete.
-  void LoadBrowserState(const base::FilePath& path,
+  void LoadBrowserState(const std::string& name,
                         BrowserStateLoadedCallback callback);
 
   // Final initialization of the browser state.

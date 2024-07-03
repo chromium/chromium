@@ -37,8 +37,7 @@
   _viewController = [[SwitchProfileSettingsTableViewController alloc] init];
   _viewController.delegate = _mediator;
   _viewController.activeBrowserStateName =
-      base::SysUTF8ToNSString(_browserState->GetDebugName());
-
+      base::SysUTF8ToNSString(_browserState->GetBrowserStateName());
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

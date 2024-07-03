@@ -22,7 +22,9 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     ChromeBrowserState* original_chrome_browser_state,
     const base::FilePath& otr_path)
-    : ChromeBrowserState(otr_path, std::move(io_task_runner)),
+    : ChromeBrowserState(otr_path,
+                         /*browser_state_name=*/std::string(),
+                         std::move(io_task_runner)),
       original_chrome_browser_state_(original_chrome_browser_state),
       start_time_(base::Time::Now()),
       prefs_(CreateIncognitoBrowserStatePrefs(

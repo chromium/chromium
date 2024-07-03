@@ -112,6 +112,7 @@ base::FilePath GetCachePath(const base::FilePath& base) {
 // static
 std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
     const base::FilePath& path,
+    const std::string& browser_state_name,
     CreationMode creation_mode,
     Delegate* delegate) {
   // Get sequenced task runner for making sure that file operations of
@@ -121,19 +122,23 @@ std::unique_ptr<ChromeBrowserState> ChromeBrowserState::CreateBrowserState(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
-  return base::WrapUnique(new ChromeBrowserStateImpl(path, io_task_runner,
-                                                     creation_mode, delegate));
+  return base::WrapUnique(new ChromeBrowserStateImpl(
+      path, browser_state_name, io_task_runner, creation_mode, delegate));
 }
 
 ChromeBrowserStateImpl::ChromeBrowserStateImpl(
     const base::FilePath& state_path,
+    const std::string& browser_state_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     CreationMode creation_mode,
     Delegate* delegate)
-    : ChromeBrowserState(state_path, std::move(io_task_runner)),
+    : ChromeBrowserState(state_path,
+                         browser_state_name,
+                         std::move(io_task_runner)),
       delegate_(delegate),
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ChromeBrowserStateImplIOData::Handle(this)) {
+  DCHECK(!browser_state_name.empty());
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
 

@@ -30,8 +30,11 @@ const char kBrowserStateIsChromeBrowserState[] = "IsChromeBrowserState";
 
 ChromeBrowserState::ChromeBrowserState(
     const base::FilePath& state_path,
+    const std::string& browser_state_name,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : state_path_(state_path), io_task_runner_(std::move(io_task_runner)) {
+    : state_path_(state_path),
+      browser_state_name_(browser_state_name),
+      io_task_runner_(std::move(io_task_runner)) {
   DCHECK(io_task_runner_);
   DCHECK(!state_path_.empty());
   SetUserData(kBrowserStateIsChromeBrowserState,
@@ -59,15 +62,8 @@ ChromeBrowserState* ChromeBrowserState::FromWebUIIOS(web::WebUIIOS* web_ui) {
   return FromBrowserState(web_ui->GetWebState()->GetBrowserState());
 }
 
-std::string ChromeBrowserState::GetDebugName() {
-  // The debug name is based on the state path of the original browser state
-  // to keep in sync with the meaning on other platforms.
-  std::string name =
-      GetOriginalChromeBrowserState()->GetStatePath().BaseName().MaybeAsASCII();
-  if (name.empty()) {
-    name = "UnknownBrowserState";
-  }
-  return name;
+const std::string& ChromeBrowserState::GetBrowserStateName() const {
+  return browser_state_name_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> ChromeBrowserState::GetIOTaskRunner() {

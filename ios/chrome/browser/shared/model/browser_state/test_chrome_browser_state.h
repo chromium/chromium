@@ -176,6 +176,11 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     // data.
     Builder& SetPath(const base::FilePath& path);
 
+    // Sets the name of the ChromeBrowserState. If not set, then will be
+    // derived from the path passed to `SetPath()` or use an arbitrary
+    // value if `SetPath()` is not called.
+    Builder& SetName(const std::string& name);
+
     // Sets the PrefService to be used by the ChromeBrowserState.
     Builder& SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
@@ -197,6 +202,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
     // Various staging variables where values are held until Build() is invoked.
     base::FilePath state_path_;
+    std::string browser_state_name_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
@@ -211,6 +217,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   // Used to create the principal TestChromeBrowserState.
   TestChromeBrowserState(
       const base::FilePath& state_path,
+      const std::string& browser_state_name,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
       std::unique_ptr<BrowserStatePolicyConnector> policy_connector,

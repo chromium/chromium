@@ -85,7 +85,9 @@ TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
     TestChromeBrowserState* original_browser_state,
     TestingFactories testing_factories)
-    : ChromeBrowserState(state_path, original_browser_state->GetIOTaskRunner()),
+    : ChromeBrowserState(state_path,
+                         /*browser_state_name=*/std::string(),
+                         original_browser_state->GetIOTaskRunner()),
       testing_prefs_(nullptr),
       otr_browser_state_(nullptr),
       original_browser_state_(original_browser_state) {
@@ -102,12 +104,14 @@ TestChromeBrowserState::TestChromeBrowserState(
 
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
+    const std::string& browser_state_name,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
     : ChromeBrowserState(
           state_path,
+          browser_state_name,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       prefs_(std::move(prefs)),
@@ -116,6 +120,8 @@ TestChromeBrowserState::TestChromeBrowserState(
       policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
+  DCHECK(!browser_state_name.empty());
+
   AssignTestingFactories(this, std::move(testing_factories));
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
@@ -341,6 +347,13 @@ TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetPath(
   return *this;
 }
 
+TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetName(
+    const std::string& name) {
+  DCHECK(!build_called_);
+  browser_state_name_ = name;
+  return *this;
+}
+
 TestChromeBrowserState::Builder&
 TestChromeBrowserState::Builder::SetPrefService(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
@@ -369,13 +382,25 @@ TestChromeBrowserState::Builder::Build() {
   DCHECK(!build_called_);
   build_called_ = true;
 
-  // Ensure that `state_path_` is not empty, creating a new temporary
-  // directory if needed.
+  // Ensure that both `state_path_` and `browser_state_name_` are not empty.
+  // If set by the user, then use the provided values, otherwise ensure that
+  // the name is equal to `state_path_` basename.
   if (state_path_.empty()) {
-    state_path_ = base::CreateUniqueTempDirectoryScopedToTest();
+    if (browser_state_name_.empty()) {
+      browser_state_name_ = "Test";
+    }
+
+    state_path_ = base::CreateUniqueTempDirectoryScopedToTest().Append(
+        browser_state_name_);
+  } else if (browser_state_name_.empty()) {
+    browser_state_name_ = state_path_.BaseName().AsUTF8Unsafe();
   }
 
+  DCHECK(!state_path_.empty());
+  DCHECK(!browser_state_name_.empty());
+
   return base::WrapUnique(new TestChromeBrowserState(
-      state_path_, std::move(pref_service_), std::move(testing_factories_),
-      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
+      state_path_, browser_state_name_, std::move(pref_service_),
+      std::move(testing_factories_), std::move(policy_connector_),
+      std::move(user_cloud_policy_manager_)));
 }

@@ -199,9 +199,8 @@ void ChromeBrowserStateManagerImpl::LoadBrowserStates() {
     }
   }
 
-  for (std::string browser_state_dir : last_active_browser_states_set) {
-    LoadBrowserState(GetUserDataDir().AppendASCII(browser_state_dir),
-                     base::DoNothing());
+  for (const std::string& browser_state_name : last_active_browser_states_set) {
+    LoadBrowserState(browser_state_name, base::DoNothing());
   }
 }
 
@@ -221,13 +220,15 @@ void ChromeBrowserStateManagerImpl::OnChromeBrowserStateCreationFinished(
 }
 
 void ChromeBrowserStateManagerImpl::LoadBrowserState(
-    const base::FilePath& path,
+    const std::string& browser_state_name,
     BrowserStateLoadedCallback callback) {
+  const base::FilePath path = GetUserDataDir().Append(browser_state_name);
   DCHECK(!base::Contains(browser_states_, path));
 
   auto [iter, inserted] = browser_states_.insert(std::make_pair(
       path, ChromeBrowserState::CreateBrowserState(
-                path, ChromeBrowserState::CreationMode::kSynchronous, this)));
+                path, browser_state_name,
+                ChromeBrowserState::CreationMode::kSynchronous, this)));
   DCHECK(inserted);
   DCHECK(iter != browser_states_.end());
 
