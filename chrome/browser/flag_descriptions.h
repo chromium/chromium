@@ -2015,6 +2015,12 @@ extern const char kTabHoverCardImagesDescription[];
 extern const char kTabSearchFuzzySearchName[];
 extern const char kTabSearchFuzzySearchDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kTabSearchPositionSettingId[];
+extern const char kTabSearchPositionSettingName[];
+extern const char kTabSearchPositionSettingDescription[];
+#endif
+
 extern const char kTearOffWebAppAppTabOpensWebAppWindowName[];
 extern const char kTearOffWebAppAppTabOpensWebAppWindowDescription[];
 

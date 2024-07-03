@@ -3445,6 +3445,13 @@ const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kTabSearchPositionSettingId[] = "tab-search-position-setting";
+const char kTabSearchPositionSettingName[] = "Tab Search Position Setting";
+const char kTabSearchPositionSettingDescription[] =
+    "Whether to show the tab search position options in the settings page.";
+#endif
+
 const char kTearOffWebAppAppTabOpensWebAppWindowName[] = "Tear Off Web App Tab";
 const char kTearOffWebAppAppTabOpensWebAppWindowDescription[] =
     "Open Web App window when tearing off a tab that's displaying a url "

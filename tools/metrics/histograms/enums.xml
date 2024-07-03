@@ -15410,6 +15410,7 @@ from previous Chrome versions.
   <int value="-2143681040" label="ViewsCastDialog:enabled"/>
   <int value="-2143328006"
       label="enable-fill-on-account-select-no-highlighting"/>
+  <int value="-2143163156" label="TabSearchPositionSetting:disabled"/>
   <int value="-2143113994" label="enable-ephemeral-apps-in-webstore"/>
   <int value="-2142729205"
       label="PriceTrackingSubscriptionServiceLocaleKey:disabled"/>
@@ -17190,6 +17191,7 @@ from previous Chrome versions.
       label="AutofillShowManualFallbackInContextMenu:enabled"/>
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1398085246" label="FedCmExemptIdpWithThirdPartyCookies:enabled"/>
+  <int value="-1398026794" label="TabSearchPositionSetting:enabled"/>
   <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
   <int value="-1396906019" label="EarlyExitOnNoopClassOrStyleChange:disabled"/>

@@ -8383,6 +8383,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "tab-search-position-setting",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "tab-strip-group-collapse-android",
     "owners": [ "nemco@google.com", "zheliooo@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 135
