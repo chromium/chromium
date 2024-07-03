@@ -2448,18 +2448,12 @@ TEST_F(CaptureModeCameraTest, RecordNumberOfConnectedCamerasHistogramTest) {
   histogram_tester.ExpectBucketCount(histogram_name, 2, 2);
 }
 
-// Flaky on LSAN / ASAN: https://crbug.com/331316079.
-#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_RecordCameraReconnectDurationHistogramTest \
-  DISABLED_RecordCameraReconnectDurationHistogramTest
-#else
-#define MAYBE_RecordCameraReconnectDurationHistogramTest \
-  RecordCameraReconnectDurationHistogramTest
-#endif
+// TODO(crbug.com/331316079): Flaky on LSAN / ASAN.
+// TODO(crbug.com/350946974): Flaky in general.
 // Tests that the duration for disconnected camera to become available again is
 // recorded correctly both in clamshell and tablet mode.
 TEST_F(CaptureModeCameraTest,
-       MAYBE_RecordCameraReconnectDurationHistogramTest) {
+       DISABLED_RecordCameraReconnectDurationHistogramTest) {
   constexpr char kHistogramNameBase[] = "CameraReconnectDuration";
   base::HistogramTester histogram_tester;
 
