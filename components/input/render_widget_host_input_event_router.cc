@@ -248,6 +248,9 @@ bool RenderWidgetHostInputEventRouter::TouchscreenPinchState::
 
 void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     DidStartBubblingToRoot() {
+  // TODO(350383805): Cleanup this and other related trace events after
+  // investigating crash bug.
+  TRACE_EVENT("input", "TouchscreenPinchState::DidStartBubblingToRoot");
   switch (state_) {
     case PinchState::NONE:
       state_ = PinchState::EXISTING_BUBBLING_TO_ROOT;
@@ -264,18 +267,21 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
 
 void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     DidStopBubblingToRoot() {
+  TRACE_EVENT("input", "TouchscreenPinchState::DidStopBubblingToRoot");
   DCHECK_EQ(PinchState::EXISTING_BUBBLING_TO_ROOT, state_);
   state_ = PinchState::NONE;
 }
 
 void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     DidStartPinchInRoot() {
+  TRACE_EVENT("input", "TouchscreenPinchState::DidStartPinchInRoot");
   DCHECK_EQ(PinchState::NONE, state_);
   state_ = PinchState::PINCH_WITH_ROOT_GESTURE_TARGET;
 }
 
 void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     DidStartPinchInChild() {
+  TRACE_EVENT("input", "TouchscreenPinchState::DidStartPinchInChild");
   switch (state_) {
     case PinchState::NONE:
       state_ = PinchState::PINCH_DURING_CHILD_GESTURE;
@@ -286,11 +292,14 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     case PinchState::PINCH_WITH_ROOT_GESTURE_TARGET:
     case PinchState::PINCH_WHILE_BUBBLING_TO_ROOT:
     case PinchState::PINCH_DURING_CHILD_GESTURE:
+      TRACE_EVENT_INSTANT(
+          "input", "DUMP_WILL_BE_NOTREACHED called from DidStartPinchInChild");
       DUMP_WILL_BE_NOTREACHED();
   }
 }
 
 void RenderWidgetHostInputEventRouter::TouchscreenPinchState::DidStopPinch() {
+  TRACE_EVENT("input", "TouchscreenPinchState::DidStopPinch");
   switch (state_) {
     case PinchState::PINCH_WITH_ROOT_GESTURE_TARGET:
       state_ = PinchState::NONE;
