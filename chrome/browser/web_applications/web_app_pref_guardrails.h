@@ -166,6 +166,18 @@ class WebAppPrefGuardrails {
   std::optional<int> max_days_to_store_guardrails_;
 };
 
+// ----------------------PWA Install IPH guardrails----------------------------
+// In Product Help (IPH) notifications are limited by guardrails to avoid
+// becoming a nuisance to users. This is an overview of how they work:
+// - Accepting the IPH bubble will not decrease further prompts, and resets
+// existing guardrails. Otherwise:
+// - IPH is limited globally to one every:
+//   - 14 days if prompt is ignored.
+// - A specific site will show the IPH for installation after:
+//   - 90 days if prompt is ignored.
+// - For a specific site, the IPH is shown 3 times at max, and then it gets
+// blocked.
+// - Globally, the IPH is shown 4 times at max.
 inline constexpr GuardrailData kIphGuardrails{
     // Number of times IPH can be ignored for this app before it's muted.
     .app_specific_not_accept_count = 3,
@@ -189,6 +201,29 @@ inline constexpr GuardrailPrefNames kIphPrefNames{
 };
 
 // ----------------------ML guardrails----------------------------
+// Machine Learning (ML) triggered install prompts are limited by guardrails to
+// avoid becoming a nuisance to users. This is an overview of how they work:
+// - Accepting and installing an app from a prompt will not decrease further
+// prompts and resets all guardrails. Otherwise:
+// - Prompt is limited globally to one every:
+//   - 1 day if prompt is ignored.
+//   - 7 days if prompt is dismissed.
+// - A specific site will only be suggested again after:
+//   - 2 days for an ignored prompt.
+//   - 14 days for a dismissed prompt.
+// - For a specific site, the prompt is shown 3 times at max, and then it gets
+// blocked.
+// - Globally, the prompt is shown 5 times at max.
+// - The guardrails are reset every 60 days (this value is Finch configurable).
+// - Example scenarios for triggering guardrails:
+//   - Multi site scenario: Visiting at least two ML promotable web-apps daily
+//   and ignoring the prompts. The prompt is then seen on days 0, 1, 2, 3 and 4,
+//   after which they are blocked.
+//   - Single site scenario: Visiting one ML promotable web-app daily and
+//   ignoring the prompts. The prompt is then seen on for the same app on day 0,
+//   2, and 4, after which they are blocked.
+//   - In both cases, the user is blocked for 60 days, after which the
+//   guardrails are cleared.
 inline constexpr GuardrailData kMlPromoGuardrails{
     // Number of times ML triggered install dialog can be ignored for this app
     // before it's muted.
@@ -220,6 +255,17 @@ inline constexpr GuardrailPrefNames kMlPromoPrefNames{
 };
 
 // -----------------------IPH Link Capturing guardrails-------------------
+// Link capturing In Product Help (IPH) is limited by guardrails to avoid
+// becoming a nuisance to users. This is an overview of how they work:
+// - Accepting the IPH bubble will not decrease further prompts, and resets
+// existing guardrails. All values are measured globally and not per app.
+// - The IPH bubble is limited to 1 per day.
+// - The IPH bubble shows up 6 times at max, after which it does not show up
+// again.
+// - Example scenarios for triggering guardrails:
+//   - User launches a site in an installed app with link capturing enabled and
+//   dismisses the IPH prompt. The prompt is then seen on days 0, 1, 2, 3, 4 and
+//   5, after which the user never sees the IPH prompt again.
 inline constexpr GuardrailData kIPHLinkCapturingGuardrails{
     // Number of times IPH bubble can show up for any apps launched via link
     // capturing before it's muted.
