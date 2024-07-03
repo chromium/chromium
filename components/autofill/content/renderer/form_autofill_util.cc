@@ -2329,6 +2329,7 @@ std::vector<WebFormControlElement> GetOwnedAutofillableFormControls(
 }
 
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
+  CHECK(form_control);
   // When `kAutofillIncludeFormElementsInShadowDom` is enabled, the owning form
   // is the furthest ancestor form element, if there is one.
   if (base::FeatureList::IsEnabled(
