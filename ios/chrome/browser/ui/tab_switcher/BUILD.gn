@@ -74,3 +74,18 @@ source_set("utils") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_utils_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
