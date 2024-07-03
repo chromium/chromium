@@ -21,13 +21,6 @@ extern const char kLinkPreviewMetricsSuffix[];
 
 bool IsSearchSuggestionPrerenderEnabled();
 
-// Whether supporting shareable search prefetch cache. By enabling this feature,
-// prerender won't take the prefetched response away. Instead, it turns to read
-// the response stored in StreamingSearchPrefetchURLLoader.
-// Always return false if `SearchPrefetchUpgradeToPrerenderIsEnabled` returns
-// false.
-bool SearchPreloadShareableCacheIsEnabled();
-
 }  // namespace prerender_utils
 
 #endif  // CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_UTILS_H_

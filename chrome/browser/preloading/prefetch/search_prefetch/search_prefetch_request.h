@@ -123,14 +123,6 @@ class SearchPrefetchRequest {
   // stack of a real navigation request.
   void MarkPrefetchAsServed();
 
-  // Updates the status when the request is served to a prerendering navigation
-  // stack. Note that after this point, this request cannot be served to a real
-  // navigation anymore.
-  void MarkPrefetchAsPrerendered();
-
-  // Updates the status when the prerendering page it is serving was activated.
-  void MarkPrefetchAsPrerenderActivated();
-
   // Called when AutocompleteMatches changes. It resets PrerenderUpgrader.
   // And if the AutocompleteMatches suggests to prerender a search result,
   // `MaybeStartPrerenderSearchResult` will be called soon.

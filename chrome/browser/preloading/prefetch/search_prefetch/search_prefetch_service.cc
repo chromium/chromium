@@ -537,50 +537,12 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
     return;
   }
   AddCacheEntry(navigation_url, request_it->second->prefetch_url());
-  if (!prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-    // For the shareable cases, it is possible that a response is used for two
-    // real navigations. So do not use the prefetch request to track the final
-    // status.
-    request_it->second->MarkPrefetchAsPrerenderActivated();
-  }
   DeletePrefetch(canonical_search_url);
-}
-
-SearchPrefetchURLLoader::RequestHandler
-SearchPrefetchService::TakePrerenderFromMemoryCache(
-    const network::ResourceRequest& tentative_resource_request) {
-  DCHECK(!prerender_utils::SearchPreloadShareableCacheIsEnabled());
-  SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
-  auto iter =
-      RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
-  if (iter == prefetches_.end()) {
-    // TODO(crbug.com/40255935): Recorder's state should not be
-    // kPrerendered, but it happened unexpectedly due to
-    // restarting/serviceworker interception within prerender navigation stack
-    // on ChromeOS.
-    return {};
-  }
-
-  // TODO(crbug.com/40214220): Do not use the prefetched response if it
-  // is about to expire.
-  DCHECK_NE(iter->second->current_status(),
-            SearchPrefetchStatus::kRequestFailed);
-  recorder.reason_ = SearchPrefetchServingReason::kServed;
-
-  iter->second->MarkPrefetchAsPrerendered();
-  scoped_refptr<StreamingSearchPrefetchURLLoader> loader =
-      iter->second->TakeSearchPrefetchURLLoader();
-  return StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
-      std::move(loader));
-  // Do not remove the corresponding entry from `prefetches_` for now, to avoid
-  // prefetching the same response over again. The entry will be removed on
-  // prerendering activation or other cases.
 }
 
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::MaybeCreateResponseReader(
     const network::ResourceRequest& tentative_resource_request) {
-  DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
@@ -636,7 +598,6 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
       status == SearchPrefetchStatus::kComplete ||
       status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
       (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-       prerender_utils::SearchPreloadShareableCacheIsEnabled() &&
        (status == SearchPrefetchStatus::kPrerendered ||
         status == SearchPrefetchStatus::kPrerenderedAndClicked)) ||
       status == SearchPrefetchStatus::kCanBeServed;

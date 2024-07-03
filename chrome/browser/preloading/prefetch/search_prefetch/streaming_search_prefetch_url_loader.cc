@@ -466,7 +466,6 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
-  DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   count_prerender_serving_times_++;
   response_reader_for_prerender_ = std::make_unique<ResponseReader>(
       std::move(receiver), std::move(forwarding_client),
@@ -481,7 +480,6 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
 
 void StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect(
     ResponseReader* reader) {
-  DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   if (reader != response_reader_for_prerender_.get()) {
     return;
   }

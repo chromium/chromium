@@ -122,15 +122,6 @@ BASE_DECLARE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlocked);
 BASE_DECLARE_FEATURE(kSandboxExternalProtocolBlockedWarning);
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-// Indicates whether to make search prefetch response shareable to prerender.
-// When allowing this, prerender can only copy the cache but cannot take over
-// the ownership.
-enum class SearchPreloadShareableCacheType {
-  kEnabled,
-  kDisabled,
-};
-extern const base::FeatureParam<SearchPreloadShareableCacheType>
-    kSearchPreloadShareableCacheTypeParam;
 
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 

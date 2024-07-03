@@ -26,13 +26,4 @@ bool IsSearchSuggestionPrerenderEnabled() {
       features::kSupportSearchSuggestionForPrerender2);
 }
 
-bool SearchPreloadShareableCacheIsEnabled() {
-  switch (features::kSearchPreloadShareableCacheTypeParam.Get()) {
-    case features::SearchPreloadShareableCacheType::kEnabled:
-      return true;
-    case features::SearchPreloadShareableCacheType::kDisabled:
-      return false;
-  }
-}
-
 }  // namespace prerender_utils

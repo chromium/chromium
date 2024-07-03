@@ -166,15 +166,6 @@ class SearchPrefetchService : public KeyedService,
   void OnPrerenderedRequestUsed(const GURL& canonical_search_url,
                                 const GURL& navigation_url);
 
-  // A prefetch hint can be upgraded to prerender hint. Once the upgrade
-  // happens, prerendering navigation requests reuse the prefetched response.
-  // Differing from TakePrefetchResponseFromMemoryCache, this shares a copy of
-  // the prefetched response without removing the response from MemoryCache, to
-  // stop this from starting another prefetch attempt after prerender takes the
-  // response away.
-  SearchPrefetchURLLoader::RequestHandler TakePrerenderFromMemoryCache(
-      const network::ResourceRequest& tentative_resource_request);
-
   // Creates a response reader if this instance has prefetched a response for
   // the given `tentative_resource_request`, and the caller can read the
   // response with the returned value. Returns an empty callback if the response

@@ -119,14 +119,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
     if (!prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
       return {};
     }
-    // Note, if SearchPreloadShareableCacheIsEnabled() is true, prerender
-    // cannot take the prefetch response away, and it can only make a copy of
-    // the response. In this case, TakePrerenderFromMemoryCache cannot be
-    // called, and no URLLoader would be returned, so we stop at this point.
-    if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-      return service->MaybeCreateResponseReader(tentative_resource_request);
-    }
-    return service->TakePrerenderFromMemoryCache(tentative_resource_request);
+    return service->MaybeCreateResponseReader(tentative_resource_request);
   }
 
   DCHECK(is_primary_main_frame_navigation);
