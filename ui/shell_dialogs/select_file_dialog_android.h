@@ -44,6 +44,8 @@ class SelectFileDialogImpl : public SelectFileDialog {
   // From SelectFileDialog
   bool IsRunning(gfx::NativeWindow) const override;
   void ListenerDestroyed() override;
+  void SetAcceptTypes(std::vector<std::u16string> types) override;
+  void SetUseMediaCapture(bool use_media_capture) override;
 
   // Called when it is time to display the file picker.
   // params is expected to be a vector<string16> with accept_types first and
@@ -66,6 +68,9 @@ class SelectFileDialogImpl : public SelectFileDialog {
                        std::unique_ptr<SelectFilePolicy> policy);
 
   bool HasMultipleFileTypeChoicesImpl() override;
+
+  std::vector<std::u16string> accept_types_;
+  bool use_media_capture_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

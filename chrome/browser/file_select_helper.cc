@@ -712,12 +712,8 @@ void FileSelectHelper::RunFileChooserOnUIThread(
       platform_util::GetTopLevel(web_contents_->GetNativeView());
 
 #if BUILDFLAG(IS_ANDROID)
-  // Android needs the original MIME types and an additional capture value.
-  std::pair<std::vector<std::u16string>, bool> accept_types =
-      std::make_pair(params->accept_types, params->use_media_capture);
-  void* accept_types_ptr = &accept_types;
-#else
-  void* accept_types_ptr = nullptr;
+  select_file_dialog_->SetAcceptTypes(params->accept_types);
+  select_file_dialog_->SetUseMediaCapture(params->use_media_capture);
 #endif
 
   // Never consider the current scope as hung. The hang watching deadline (if
@@ -729,13 +725,16 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   int file_type_index =
       select_file_types_ && !select_file_types_->extensions.empty() ? 1 : 0;
 
+  // TODO(https://crbug.com/340178601): this might go out of scope before
+  // SelectFile() finishes - isn't this a potential UAF? is it ever actually
+  // used?
   const GURL* caller =
       &render_frame_host_->GetMainFrame()->GetLastCommittedURL();
 
   select_file_dialog_->SelectFile(dialog_type_, params->title,
                                   default_file_path, select_file_types_.get(),
                                   file_type_index, base::FilePath::StringType(),
-                                  owning_window, accept_types_ptr, caller);
+                                  owning_window, nullptr, caller);
 
   select_file_types_.reset();
 }

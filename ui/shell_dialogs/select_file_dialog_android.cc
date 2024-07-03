@@ -108,6 +108,14 @@ void SelectFileDialogImpl::ListenerDestroyed() {
   listener_ = nullptr;
 }
 
+void SelectFileDialogImpl::SetAcceptTypes(std::vector<std::u16string> types) {
+  accept_types_ = std::move(types);
+}
+
+void SelectFileDialogImpl::SetUseMediaCapture(bool use_media_capture) {
+  use_media_capture_ = use_media_capture;
+}
+
 void SelectFileDialogImpl::SelectFileImpl(
     SelectFileDialog::Type type,
     const std::u16string& title,
@@ -120,22 +128,13 @@ void SelectFileDialogImpl::SelectFileImpl(
     const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  // The first element in the pair is a list of accepted types, the second
-  // indicates whether the device's capture capabilities should be used.
-  typedef std::pair<std::vector<std::u16string>, bool> AcceptTypes;
-  AcceptTypes accept_types =
-      std::make_pair(std::vector<std::u16string>(), false);
-
-  if (params)
-    accept_types = *(reinterpret_cast<AcceptTypes*>(params));
-
   ScopedJavaLocalRef<jobjectArray> accept_types_java =
-      base::android::ToJavaArrayOfStrings(env, accept_types.first);
+      base::android::ToJavaArrayOfStrings(env, accept_types_);
 
   bool accept_multiple_files = SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
 
   Java_SelectFileDialog_selectFile(env, java_object_, accept_types_java,
-                                   accept_types.second, accept_multiple_files,
+                                   use_media_capture_, accept_multiple_files,
                                    owning_window->GetJavaObject());
 }
 
