@@ -166,6 +166,7 @@ TEST_F(CastMediaSinkServiceTest, DiscoveryDelayed) {
   media_sink_service_->Initialize(base::DoNothing(), nullptr);
 }
 
+#if !BUILDFLAG(IS_WIN)
 // TODO: crbug.com/345056325 - Remove this test after the
 // kDelayMediaSinkDiscovery feature is enabled by default.
 TEST_F(CastMediaSinkServiceTest, DiscoveryOnStartup) {
@@ -178,5 +179,6 @@ TEST_F(CastMediaSinkServiceTest, DiscoveryOnStartup) {
   EXPECT_CALL(*media_sink_service_, StartMdnsDiscovery);
   media_sink_service_->Initialize(base::DoNothing(), nullptr);
 }
+#endif
 
 }  // namespace media_router

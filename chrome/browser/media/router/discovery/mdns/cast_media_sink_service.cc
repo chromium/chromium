@@ -57,7 +57,14 @@ void CastMediaSinkService::Initialize(
       FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::Start,
                                 base::Unretained(impl_.get())));
 
-  if (base::FeatureList::IsEnabled(media_router::kDelayMediaSinkDiscovery)) {
+#if BUILDFLAG(IS_WIN)
+  bool should_delay_discovery = true;
+#else
+  bool should_delay_discovery =
+      base::FeatureList::IsEnabled(media_router::kDelayMediaSinkDiscovery);
+#endif
+
+  if (should_delay_discovery) {
     LoggerList::GetInstance()->Log(
         LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
         kLoggerComponent,
@@ -67,7 +74,9 @@ void CastMediaSinkService::Initialize(
   } else {
     LoggerList::GetInstance()->Log(
         LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
-        kLoggerComponent, "The sink service is initialized.", "", "", "");
+        kLoggerComponent,
+        "The sink service is initialized. Device discovery is starting soon.",
+        "", "", "");
     StartMdnsDiscovery();
   }
 }
