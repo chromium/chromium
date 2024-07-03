@@ -66,3 +66,45 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "video_conference_app_service_client_browsertest.cc",
+    "video_conference_ash_feature_client_browsertest.cc",
+    "video_conference_integration_browsertest.cc",
+  ]
+
+  deps = [
+    ":video_conference",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:webrtc_browser_tests_base",
+    "//chromeos/ash/components/audio",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views:test_support",
+  ]
+}
