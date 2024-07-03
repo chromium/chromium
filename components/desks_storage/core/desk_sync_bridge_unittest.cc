@@ -788,9 +788,9 @@ class DeskSyncBridgeTest : public testing::Test {
 
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
 
-  std::unique_ptr<DeskSyncBridge> bridge_;
-
   testing::NiceMock<MockDeskModelObserver> mock_observer_;
+
+  std::unique_ptr<DeskSyncBridge> bridge_;
 
   std::unique_ptr<apps::AppRegistryCache> cache_;
 
