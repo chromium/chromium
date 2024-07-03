@@ -9,6 +9,8 @@ This is a wdspec test.
   setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
 [ERROR] test_prompt[capabilities0-False]
   setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
+[ERROR] test_beforeunload[capabilities0-True]
+  setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
 [ERROR] test_beforeunload[capabilities0-False]
   setup error: webdriver.error.InvalidArgumentException: invalid argument (400): invalid argument: cannot parse capability: unhandledPromptBehavior
 [ERROR] test_two_top_level_contexts[capabilities0-tab]

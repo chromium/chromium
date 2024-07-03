@@ -1,0 +1,12 @@
+This is a wdspec test.
+[FAIL] test_accept[capabilities0]
+  AssertionError: Key set should be present: {'handler'}
+[FAIL] test_accept_and_notify[capabilities0]
+  AssertionError: Key set should be present: {'handler'}
+[FAIL] test_dismiss[capabilities0]
+  AssertionError: Key set should be present: {'handler'}
+[FAIL] test_dismiss_and_notify[capabilities0]
+  AssertionError: Key set should be present: {'handler'}
+[FAIL] test_ignore[capabilities0]
+  AssertionError: Key set should be present: {'handler'}
+Harness: the test ran to completion.
