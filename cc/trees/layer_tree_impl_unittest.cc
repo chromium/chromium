@@ -2477,26 +2477,10 @@ TEST_F(LayerTreeImplTest, TrackPictureLayersWithPaintWorklets) {
   EXPECT_EQ(layers.size(), 0u);
 }
 
-namespace {
-class CommitToPendingTreeLayerTreeImplTestSettings : public LayerListSettings {
- public:
-  CommitToPendingTreeLayerTreeImplTestSettings() {
-    commit_to_active_tree = false;
-  }
-};
-
-class CommitToPendingTreeLayerTreeImplTest : public LayerTreeImplTest {
- public:
-  CommitToPendingTreeLayerTreeImplTest()
-      : LayerTreeImplTest(CommitToPendingTreeLayerTreeImplTestSettings()) {}
-};
-}  // namespace
-
-TEST_F(CommitToPendingTreeLayerTreeImplTest,
-       ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
+TEST_F(LayerTreeImplTest, ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
-  ASSERT_FALSE(host_impl().CommitToActiveTree());
+  ASSERT_FALSE(host_impl().CommitsToActiveTree());
 
   // When we have a pending tree (e.g. commit_to_active_tree is false), the
   // various ElementId to animation maps should not track anything for the
@@ -2587,12 +2571,19 @@ TEST_F(CommitToPendingTreeLayerTreeImplTest,
   EXPECT_EQ(recycle_filter_map.size(), 2u);
 }
 
-TEST_F(LayerTreeImplTest, ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
+class CommitToActiveTreeLayerTreeImplTest : public LayerTreeImplTest {
+ public:
+  CommitToActiveTreeLayerTreeImplTest()
+      : LayerTreeImplTest(CommitToActiveTreeLayerListSettings()) {}
+};
+
+TEST_F(CommitToActiveTreeLayerTreeImplTest,
+       ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
   // The kNoPreserveLastMutation feature makes this test obsolete.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
 
-  ASSERT_TRUE(host_impl().CommitToActiveTree());
+  ASSERT_TRUE(host_impl().CommitsToActiveTree());
 
   // When we are commiting directly to the active tree, the various ElementId to
   // animation maps should track on the active tree (as it is the sync tree, and
@@ -2664,12 +2655,11 @@ TEST_F(LayerTreeImplTest, CheckRenderSurfaceIsFastRoundedCorner) {
   EXPECT_TRUE(shared_quad_state->is_fast_rounded_corner);
 }
 
-class LayerTreeImplOcclusionSettings : public LayerListSettings {
- public:
-  LayerTreeImplOcclusionSettings() {
-    minimum_occlusion_tracking_size = gfx::Size(1, 1);
-  }
-};
+LayerTreeSettings LayerTreeImplOcclusionSettings() {
+  LayerTreeSettings settings = CommitToPendingTreeLayerListSettings();
+  settings.minimum_occlusion_tracking_size = gfx::Size(1, 1);
+  return settings;
+}
 
 class LayerTreeImplOcclusionTest : public LayerTreeImplTest {
  public:

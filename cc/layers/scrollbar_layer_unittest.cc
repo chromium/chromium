@@ -102,9 +102,10 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
 
 class BaseScrollbarLayerTest : public testing::Test {
  public:
-  explicit BaseScrollbarLayerTest(
-      LayerTreeSettings::ScrollbarAnimator animator,
-      bool enable_fluent_overlay_scrollbar = false) {
+  explicit BaseScrollbarLayerTest(LayerTreeSettings::ScrollbarAnimator animator,
+                                  bool enable_fluent_overlay_scrollbar = false,
+                                  bool commit_to_active_tree = false) {
+    layer_tree_settings_.commit_to_active_tree = commit_to_active_tree;
     layer_tree_settings_.single_thread_proxy_scheduler = false;
     layer_tree_settings_.use_zero_copy = true;
     layer_tree_settings_.scrollbar_animator = animator;
@@ -146,6 +147,14 @@ class BaseScrollbarLayerTest : public testing::Test {
   LayerTreeSettings layer_tree_settings_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;
+};
+
+class CommitToActiveTreeScrollbarLayerTest : public BaseScrollbarLayerTest {
+ public:
+  CommitToActiveTreeScrollbarLayerTest()
+      : BaseScrollbarLayerTest(LayerTreeSettings::ANDROID_OVERLAY,
+                               /*enable_fluent_overlay_scrollbar=*/false,
+                               /*commit_to_active_tree=*/true) {}
 };
 
 class ScrollbarLayerTest : public BaseScrollbarLayerTest {
@@ -310,7 +319,8 @@ class FakeNinePatchScrollbar : public FakeScrollbar {
   ~FakeNinePatchScrollbar() override = default;
 };
 
-TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest,
+       ScrollElementIdPushedAcrossCommit) {
   scoped_refptr<Layer> layer_tree_root = Layer::Create();
   scoped_refptr<Layer> layer_a = Layer::Create();
   scoped_refptr<Layer> layer_b = Layer::Create();
@@ -337,8 +347,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   layer_tree_root->AddChild(solid_color_scrollbar_layer);
 
   layer_tree_host_->UpdateLayers();
-  LayerImpl* layer_impl_tree_root =
-      layer_tree_host_->CommitAndCreateLayerImplTree();
+  LayerImpl* layer_impl_tree_root = layer_tree_host_->CommitToActiveTree();
 
   ScrollbarLayerImplBase* painted_scrollbar_layer_impl =
       static_cast<ScrollbarLayerImplBase*>(
@@ -393,7 +402,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
             layer_b->element_id());
 }
 
-TEST_F(ScrollbarLayerTest, ScrollOffsetSynchronization) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest, ScrollOffsetSynchronization) {
   scoped_refptr<Layer> layer_tree_root = Layer::Create();
   scoped_refptr<Layer> scroll_layer = Layer::Create();
   scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
@@ -415,8 +424,7 @@ TEST_F(ScrollbarLayerTest, ScrollOffsetSynchronization) {
   layer_tree_root->AddChild(scrollbar_layer);
 
   layer_tree_host_->UpdateLayers();
-  LayerImpl* layer_impl_tree_root =
-      layer_tree_host_->CommitAndCreateLayerImplTree();
+  LayerImpl* layer_impl_tree_root = layer_tree_host_->CommitToActiveTree();
 
   ScrollbarLayerImplBase* cc_scrollbar_layer =
       static_cast<PaintedScrollbarLayerImpl*>(
@@ -435,7 +443,7 @@ TEST_F(ScrollbarLayerTest, ScrollOffsetSynchronization) {
   content_layer->SetBounds(gfx::Size(1000, 2000));
 
   layer_tree_host_->UpdateLayers();
-  layer_impl_tree_root = layer_tree_host_->CommitAndCreateLayerImplTree();
+  layer_impl_tree_root = layer_tree_host_->CommitToActiveTree();
   layer_impl_tree_root->layer_tree_impl()->UpdateScrollbarGeometries();
 
   EXPECT_EQ(100.f, cc_scrollbar_layer->current_pos());
@@ -456,13 +464,14 @@ TEST_F(ScrollbarLayerTest, ScrollOffsetSynchronization) {
   do {                                                                         \
     scrollbar_layer->UpdateInternalContentScale();                             \
     scrollbar_layer->UpdateThumbAndTrackGeometry();                            \
-    root_layer_impl = layer_tree_host_->CommitAndCreateLayerImplTree();        \
+    root_layer_impl = layer_tree_host_->CommitToActiveTree();                  \
     root_layer_impl->layer_tree_impl()->UpdateScrollbarGeometries();           \
     scrollbar_layer_impl = static_cast<PaintedScrollbarLayerImpl*>(            \
         root_layer_impl->layer_tree_impl()->LayerById(scrollbar_layer->id())); \
   } while (false)
 
-TEST_F(ScrollbarLayerTest, UpdatePropertiesOfScrollBarWhenThumbRemoved) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest,
+       UpdatePropertiesOfScrollBarWhenThumbRemoved) {
   scoped_refptr<Layer> root_layer = Layer::Create();
   scoped_refptr<Layer> scroll_layer = Layer::Create();
   scoped_refptr<Layer> content_layer = Layer::Create();
@@ -502,7 +511,7 @@ TEST_F(ScrollbarLayerTest, UpdatePropertiesOfScrollBarWhenThumbRemoved) {
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 }
 
-TEST_F(ScrollbarLayerTest, ThumbRect) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest, ThumbRect) {
   scoped_refptr<Layer> root_layer = Layer::Create();
   scoped_refptr<Layer> scroll_layer = Layer::Create();
   scroll_layer->SetElementId(LayerIdToElementIdForTesting(scroll_layer->id()));
@@ -579,7 +588,8 @@ TEST_F(ScrollbarLayerTest, ThumbRect) {
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 }
 
-TEST_F(ScrollbarLayerTest, ThumbRectForOverlayLeftSideVerticalScrollbar) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest,
+       ThumbRectForOverlayLeftSideVerticalScrollbar) {
   scoped_refptr<Layer> root_layer = Layer::Create();
   scoped_refptr<Layer> scroll_layer = Layer::Create();
   // Create an overlay left side vertical scrollbar.
@@ -626,7 +636,7 @@ TEST_F(ScrollbarLayerTest, ThumbRectForOverlayLeftSideVerticalScrollbar) {
             scrollbar_layer_impl->ComputeThumbQuadRect().ToString());
 }
 
-TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest, SolidColorDrawQuads) {
   const int kThumbThickness = 3;
   const int kTrackStart = 1;
   const int kTrackLength = 100;
@@ -642,7 +652,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
     root->AddChild(scrollbar_layer);
     layer_tree_host_->SetRootLayer(root);
     layer_tree_host_->BuildPropertyTreesForTesting();
-    auto* root_impl = layer_tree_host_->CommitAndCreateLayerImplTree();
+    auto* root_impl = layer_tree_host_->CommitToActiveTree();
     scrollbar_layer_impl = static_cast<SolidColorScrollbarLayerImpl*>(
         root_impl->layer_tree_impl()->LayerById(scrollbar_layer->id()));
   }
@@ -695,7 +705,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
   }
 }
 
-TEST_F(ScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
+TEST_F(CommitToActiveTreeScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
   const int kThumbThickness = 3;
   const int kTrackStart = 0;
   const int kTrackLength = 10;
@@ -722,8 +732,7 @@ TEST_F(ScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
 
   layer_tree_host_->UpdateLayers();
 
-  LayerImpl* layer_impl_tree_root =
-      layer_tree_host_->CommitAndCreateLayerImplTree();
+  LayerImpl* layer_impl_tree_root = layer_tree_host_->CommitToActiveTree();
   LayerImpl* scroll_layer_impl =
       layer_impl_tree_root->layer_tree_impl()->LayerById(scroll_layer->id());
 
@@ -792,8 +801,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
   // the pending tree and then onto the active tree.
   LayerTreeHostImpl* host_impl = layer_tree_host_->host_impl();
   host_impl->CreatePendingTree();
-  LayerImpl* layer_impl_tree_root =
-      layer_tree_host_->CommitAndCreatePendingTree();
+  LayerImpl* layer_impl_tree_root = layer_tree_host_->CommitToPendingTree();
   LayerTreeImpl* layer_tree_impl = layer_impl_tree_root->layer_tree_impl();
   EXPECT_TRUE(layer_tree_impl->IsPendingTree());
   node = layer_tree_impl->property_trees()->effect_tree().Node(
@@ -811,7 +819,7 @@ TEST_F(ScrollbarLayerTest, ScrollbarLayerOpacity) {
           layer_tree_impl->LayerById(scrollbar_layer->id()));
   scrollbar_layer_impl->SetOverlayScrollbarLayerOpacityAnimated(0.25f);
   host_impl->CreatePendingTree();
-  layer_impl_tree_root = layer_tree_host_->CommitAndCreatePendingTree();
+  layer_impl_tree_root = layer_tree_host_->CommitToPendingTree();
   layer_tree_impl = layer_impl_tree_root->layer_tree_impl();
   EXPECT_TRUE(layer_tree_impl->IsPendingTree());
   node = layer_tree_impl->property_trees()->effect_tree().Node(
@@ -853,7 +861,7 @@ TEST_P(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   layer_tree_host_->UpdateLayers();
   LayerTreeHostImpl* host_impl = layer_tree_host_->host_impl();
   host_impl->CreatePendingTree();
-  layer_tree_host_->CommitAndCreatePendingTree();
+  layer_tree_host_->CommitToPendingTree();
   host_impl->ActivateSyncTree();
   EXPECT_TRUE(host_impl->ScrollbarAnimationControllerForElementId(
       scroll_layer->element_id()));
@@ -862,7 +870,7 @@ TEST_P(AuraScrollbarLayerTest, ScrollbarLayerPushProperties) {
   scroll_layer->SetForceRenderSurfaceForTesting(true);
   layer_tree_host_->UpdateLayers();
   host_impl->CreatePendingTree();
-  layer_tree_host_->CommitAndCreatePendingTree();
+  layer_tree_host_->CommitToPendingTree();
   host_impl->ActivateSyncTree();
   const EffectNode* node =
       host_impl->active_tree()->property_trees()->effect_tree().Node(
@@ -1028,7 +1036,7 @@ TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
   layer_tree_host_->UpdateLayers();
   LayerTreeHostImpl* host_impl = layer_tree_host_->host_impl();
   host_impl->CreatePendingTree();
-  layer_tree_host_->CommitAndCreatePendingTree();
+  layer_tree_host_->CommitToPendingTree();
   host_impl->ActivateSyncTree();
 
   scoped_refptr<SolidColorScrollbarLayer> scrollbar_layer =
@@ -1040,7 +1048,7 @@ TEST_P(AuraScrollbarLayerTest, ScrollbarLayerCreateAfterSetScrollable) {
 
   layer_tree_host_->UpdateLayers();
   host_impl->CreatePendingTree();
-  layer_tree_host_->CommitAndCreatePendingTree();
+  layer_tree_host_->CommitToPendingTree();
   host_impl->ActivateSyncTree();
 
   EXPECT_TRUE(host_impl->ScrollbarAnimationControllerForElementId(

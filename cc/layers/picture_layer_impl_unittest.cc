@@ -215,9 +215,9 @@ class PictureLayerImplTest : public TestLayerTreeHostBase {
     layer->draw_properties().screen_space_transform_is_animating = true;
   }
 
-  void SetContentsScaleOnBothLayers(float contents_scale,
-                                    float device_scale_factor,
-                                    float page_scale_factor) {
+  void SetContentsScaleOnPendingLayer(float contents_scale,
+                                      float device_scale_factor,
+                                      float page_scale_factor) {
     // Sets arbitrary animation scale to ensure it's not used in any way.
     constexpr float kArbitraryScale = 12345.0f;
     SetMaximumAnimationToScreenScale(pending_layer(), kArbitraryScale, false);
@@ -225,11 +225,27 @@ class PictureLayerImplTest : public TestLayerTreeHostBase {
         false;
     SetupDrawPropertiesAndUpdateTiles(pending_layer(), contents_scale,
                                       device_scale_factor, page_scale_factor);
+  }
+
+  void SetContentsScaleOnActiveLayer(float contents_scale,
+                                     float device_scale_factor,
+                                     float page_scale_factor) {
+    // Sets arbitrary animation scale to ensure it's not used in any way.
+    constexpr float kArbitraryScale = 34567.0f;
     SetMaximumAnimationToScreenScale(active_layer(), kArbitraryScale, false);
     active_layer()->draw_properties().screen_space_transform_is_animating =
         false;
     SetupDrawPropertiesAndUpdateTiles(active_layer(), contents_scale,
                                       device_scale_factor, page_scale_factor);
+  }
+
+  void SetContentsScaleOnBothLayers(float contents_scale,
+                                    float device_scale_factor,
+                                    float page_scale_factor) {
+    SetContentsScaleOnPendingLayer(contents_scale, device_scale_factor,
+                                   page_scale_factor);
+    SetContentsScaleOnActiveLayer(contents_scale, device_scale_factor,
+                                  page_scale_factor);
   }
 
   void SetContentsAndAnimationScalesOnBothLayers(
@@ -2171,9 +2187,9 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 
   recorded_bounds = gfx::Rect(30, 30, 150, 150);
-  active_layer()->SetRasterSource(
-      FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds),
-      Region());
+  SetupPendingTree(
+      FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds));
+  ActivateTree();
 
   render_pass = viz::CompositorRenderPass::Create();
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
@@ -2645,9 +2661,8 @@ TEST_F(LegacySWPictureLayerImplTest,
   EXPECT_TRUE(active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
 
   // Now, set the bounds to be 1x1, so that minimum contents scale becomes 1.
-  active_layer()->SetBounds(gfx::Size(1, 1));
-  active_layer()->SetRasterSource(
-      FakeRasterSource::CreateFilled(gfx::Size(1, 1)), Region());
+  SetupPendingTree(FakeRasterSource::CreateFilled(gfx::Size(1, 1)));
+  ActivateTree();
   active_layer()->AddLastAppendQuadsTilingForTesting(
       active_layer()->tilings()->FindTilingWithScaleKey(1.0f));
   active_layer()->UpdateTiles();
@@ -2676,12 +2691,10 @@ TEST_F(LegacySWPictureLayerImplTest, LowResTilingWithoutGpuRasterization) {
   EXPECT_EQ(2u, active_layer()->tilings()->num_tilings());
 }
 
-TEST_F(CommitToActiveTreePictureLayerImplTest,
-       NoLowResTilingWithGpuRasterization) {
+TEST_F(PictureLayerImplTest, NoLowResTilingWithGpuRasterization) {
   gfx::Size default_tile_size(host_impl()->settings().default_tile_size);
   gfx::Size layer_bounds(default_tile_size.width() * 4,
                          default_tile_size.height() * 4);
-  host_impl()->CommitComplete();
 
   SetupDefaultTrees(layer_bounds);
   EXPECT_TRUE(host_impl()->use_gpu_rasterization());
@@ -2692,10 +2705,7 @@ TEST_F(CommitToActiveTreePictureLayerImplTest,
   EXPECT_EQ(1u, active_layer()->tilings()->num_tilings());
 }
 
-TEST_F(CommitToActiveTreePictureLayerImplTest,
-       RequiredTilesWithGpuRasterization) {
-  host_impl()->CommitComplete();
-
+TEST_F(PictureLayerImplTest, RequiredTilesWithGpuRasterization) {
   gfx::Size viewport_size(1000, 1000);
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(viewport_size));
 
@@ -2729,9 +2739,9 @@ TEST_F(CommitToActiveTreePictureLayerImplTest,
   SetupDefaultTrees(layer_bounds);
   EXPECT_TRUE(host_impl()->use_gpu_rasterization());
 
-  SetContentsScaleOnBothLayers(dsf /* contents_scale */,
-                               dsf /* device_scale_factor */,
-                               1.0f /* page_scale_factor */);
+  SetContentsScaleOnActiveLayer(dsf /* contents_scale */,
+                                dsf /* device_scale_factor */,
+                                1.0f /* page_scale_factor */);
 
   active_layer()->HighResTiling()->UpdateAllRequiredStateForTesting();
 
@@ -6654,6 +6664,13 @@ class LCDTextTest : public PictureLayerImplTest,
     CopyProperties(layer_, descendant_);
     CreateTransformNode(descendant_);
     CreateEffectNode(descendant_);
+  }
+
+  void TearDown() override {
+    descendant_ = nullptr;
+    layer_ = nullptr;
+    tree_ = nullptr;
+    PictureLayerImplTest::TearDown();
   }
 
   void CheckCanUseLCDText(LCDTextDisallowedReason expected_disallowed_reason,

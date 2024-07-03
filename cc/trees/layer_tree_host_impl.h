@@ -677,7 +677,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   const LayerTreeImpl* recycle_tree() const { return recycle_tree_.get(); }
   // Returns the tree LTH synchronizes with.
   LayerTreeImpl* sync_tree() const {
-    return CommitToActiveTree() ? active_tree_.get() : pending_tree_.get();
+    return CommitsToActiveTree() ? active_tree_.get() : pending_tree_.get();
   }
   virtual void CreatePendingTree();
   virtual void ActivateSyncTree();
@@ -807,7 +807,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Only valid for synchronous (non-scheduled) single-threaded case.
   void SynchronouslyInitializeAllTiles();
 
-  bool CommitToActiveTree() const;
+  bool CommitsToActiveTree() const;
 
   // Virtual so tests can inject their own.
   virtual std::unique_ptr<RasterBufferProvider> CreateRasterBufferProvider();

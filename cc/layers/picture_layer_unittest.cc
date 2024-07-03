@@ -65,8 +65,9 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
 
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink =
       FakeLayerTreeFrameSink::CreateSoftware();
-  FakeLayerTreeHostImpl host_impl(
-      LayerTreeSettings(), &impl_task_runner_provider, &task_graph_runner);
+  FakeLayerTreeHostImpl host_impl(CommitToPendingTreeLayerTreeSettings(),
+                                  &impl_task_runner_provider,
+                                  &task_graph_runner);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
   host_impl.CreatePendingTree();
   std::unique_ptr<FakePictureLayerImpl> layer_impl =
@@ -108,9 +109,9 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d());
-  LayerTreeSettings layer_tree_settings = LayerTreeSettings();
-  FakeLayerTreeHostImpl host_impl(
-      layer_tree_settings, &impl_task_runner_provider, &task_graph_runner);
+  FakeLayerTreeHostImpl host_impl(CommitToPendingTreeLayerTreeSettings(),
+                                  &impl_task_runner_provider,
+                                  &task_graph_runner);
   host_impl.SetVisible(true);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
   host_impl.CreatePendingTree();
@@ -148,9 +149,9 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d());
-  LayerTreeSettings layer_tree_settings = LayerTreeSettings();
-  FakeLayerTreeHostImpl host_impl(
-      layer_tree_settings, &impl_task_runner_provider, &task_graph_runner);
+  FakeLayerTreeHostImpl host_impl(CommitToPendingTreeLayerTreeSettings(),
+                                  &impl_task_runner_provider,
+                                  &task_graph_runner);
   host_impl.SetVisible(true);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
   host_impl.CreatePendingTree();
@@ -195,8 +196,9 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d());
-  FakeLayerTreeHostImpl host_impl(
-      LayerListSettings(), &impl_task_runner_provider, &task_graph_runner);
+  FakeLayerTreeHostImpl host_impl(CommitToPendingTreeLayerListSettings(),
+                                  &impl_task_runner_provider,
+                                  &task_graph_runner);
   host_impl.SetVisible(true);
   EXPECT_TRUE(host_impl.InitializeFrameSink(layer_tree_frame_sink.get()));
 

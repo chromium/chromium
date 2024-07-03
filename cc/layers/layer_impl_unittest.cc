@@ -300,7 +300,8 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
 
 class LayerImplScrollTest : public LayerImplTest {
  public:
-  LayerImplScrollTest() : LayerImplScrollTest(LayerListSettings()) {}
+  LayerImplScrollTest()
+      : LayerImplScrollTest(CommitToPendingTreeLayerListSettings()) {}
 
   explicit LayerImplScrollTest(const LayerTreeSettings& settings)
       : LayerImplTest(settings) {
@@ -331,18 +332,13 @@ class LayerImplScrollTest : public LayerImplTest {
   raw_ptr<LayerImpl> layer_;
 };
 
-class CommitToPendingTreeLayerImplScrollTest : public LayerImplScrollTest {
+class CommitToActiveTreeLayerImplScrollTest : public LayerImplScrollTest {
  public:
-  CommitToPendingTreeLayerImplScrollTest() : LayerImplScrollTest(settings()) {}
-
-  LayerTreeSettings settings() {
-    LayerListSettings settings;
-    settings.commit_to_active_tree = false;
-    return settings;
-  }
+  CommitToActiveTreeLayerImplScrollTest()
+      : LayerImplScrollTest(CommitToActiveTreeLayerListSettings()) {}
 };
 
-TEST_F(LayerImplScrollTest, ScrollByWithZeroOffset) {
+TEST_F(CommitToActiveTreeLayerImplScrollTest, ScrollByWithZeroOffset) {
   // Test that LayerImpl::ScrollBy only affects ScrollDelta and total scroll
   // offset is bounded by the range [0, max scroll offset].
 
@@ -371,7 +367,7 @@ TEST_F(LayerImplScrollTest, ScrollByWithZeroOffset) {
                        layer()->element_id()));
 }
 
-TEST_F(LayerImplScrollTest, ScrollByWithNonZeroOffset) {
+TEST_F(CommitToActiveTreeLayerImplScrollTest, ScrollByWithNonZeroOffset) {
   gfx::PointF scroll_offset(10, 5);
   scroll_tree(layer())->UpdateScrollOffsetBaseForTesting(layer()->element_id(),
                                                          scroll_offset);
@@ -401,7 +397,7 @@ TEST_F(LayerImplScrollTest, ScrollByWithNonZeroOffset) {
                        layer()->element_id()));
 }
 
-TEST_F(LayerImplScrollTest, ApplySentScrollsNoListener) {
+TEST_F(CommitToActiveTreeLayerImplScrollTest, ApplySentScrollsNoListener) {
   gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(20.5f, 8.5f);
   gfx::Vector2d sent_scroll_delta(12, -3);
@@ -428,7 +424,7 @@ TEST_F(LayerImplScrollTest, ApplySentScrollsNoListener) {
                        layer()->element_id()));
 }
 
-TEST_F(LayerImplScrollTest, ScrollUserUnscrollableLayer) {
+TEST_F(CommitToActiveTreeLayerImplScrollTest, ScrollUserUnscrollableLayer) {
   gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(20.5f, 8.5f);
 
@@ -469,8 +465,7 @@ TEST_F(LayerImplScrollTest, TouchActionRegionCacheInvalidation) {
   EXPECT_EQ(layer()->GetAllTouchActionRegions(), region.GetAllRegions());
 }
 
-TEST_F(CommitToPendingTreeLayerImplScrollTest,
-       PushPropertiesToMirrorsCurrentScrollOffset) {
+TEST_F(LayerImplScrollTest, PushPropertiesToMirrorsCurrentScrollOffset) {
   gfx::PointF scroll_offset(10, 5);
   gfx::Vector2dF scroll_delta(12, 18);
 

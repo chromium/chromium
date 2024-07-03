@@ -647,8 +647,9 @@ void LayerTreeHostImpl::BeginCommit(int source_frame_number,
                                     uint64_t trace_id) {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BeginCommit");
 
-  if (!CommitToActiveTree())
+  if (!CommitsToActiveTree()) {
     CreatePendingTree();
+  }
   sync_tree()->set_source_frame_number(source_frame_number);
   sync_tree()->set_trace_id(trace_id);
 }
@@ -730,7 +731,7 @@ void LayerTreeHostImpl::CommitComplete() {
   if (input_delegate_)
     input_delegate_->DidCommit();
 
-  if (CommitToActiveTree()) {
+  if (CommitsToActiveTree()) {
     active_tree_->HandleScrollbarShowRequests();
 
     // We have to activate animations here or "IsActive()" is true on the layers
@@ -752,10 +753,11 @@ void LayerTreeHostImpl::CommitComplete() {
   // change the results. When doing commit to the active tree, this must happen
   // after ActivateAnimations() in order for this ticking to be propagated
   // to layers on the active tree.
-  if (CommitToActiveTree())
+  if (CommitsToActiveTree()) {
     Animate();
-  else
+  } else {
     AnimatePendingTreeAfterCommit();
+  }
 
   UpdateSyncTreeAfterCommitOrImplSideInvalidation();
   micro_benchmark_controller_.DidCompleteCommit();
@@ -844,8 +846,9 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // is because new tiles on the active tree depend on tree specific state
   // cached in these components, which must be pushed to active before preparing
   // tiles for the updated active tree.
-  if (CommitToActiveTree())
+  if (CommitsToActiveTree()) {
     ActivateStateForImages();
+  }
 
   if (!paint_worklet_painter_) {
     // Blink should not send us any PaintWorklet inputs until we have a painter
@@ -972,7 +975,7 @@ void LayerTreeHostImpl::NotifyPendingTreeFullyPainted() {
     // is important for SingleThreadProxy and impl-side painting case. For
     // STP, we commit to active tree and RequiresHighResToDraw, and set
     // Scheduler to wait for ReadyToDraw signal to avoid Checkerboard.
-    if (CommitToActiveTree() ||
+    if (CommitsToActiveTree() ||
         settings_.wait_for_all_pipeline_stages_before_draw) {
       NotifyReadyToDraw();
     }
@@ -1454,12 +1457,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         append_quads_data.has_shared_element_resources;
   }
 
-  // If CommitToActiveTree() is true, then we wait to draw until
+  // If CommitsToActiveTree() is true, then we wait to draw until
   // NotifyReadyToDraw. That means we're in as good shape as is possible now,
   // so there's no reason to stop the draw now (and this is not supported by
   // SingleThreadProxy).
-  if (have_missing_animated_tiles && !CommitToActiveTree())
+  if (have_missing_animated_tiles && !CommitsToActiveTree()) {
     draw_result = DrawResult::kAbortedCheckerboardAnimations;
+  }
 
   // When we require high res to draw, abort the draw (almost) always. This does
   // not cause the scheduler to do a main frame, instead it will continue to try
@@ -1567,7 +1571,7 @@ void LayerTreeHostImpl::InvalidateContentOnImplSide() {
   DCHECK(impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME ||
          settings_.using_synchronous_renderer_compositor);
 
-  if (!CommitToActiveTree()) {
+  if (!CommitsToActiveTree()) {
     CreatePendingTree();
     AnimatePendingTreeAfterCommit();
   }
@@ -2876,7 +2880,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         active_tree()->TakeForceSendMetadataRequest());
   }
 
-  if (!CommitToActiveTree() && !metadata.latency_info.empty()) {
+  if (!CommitsToActiveTree() && !metadata.latency_info.empty()) {
     base::TimeTicks draw_time = base::TimeTicks::Now();
 
     ApplyFirstScrollTracking(metadata.latency_info.front(),
@@ -3430,6 +3434,7 @@ void LayerTreeHostImpl::SetExternalPinchGestureActive(bool active) {
 }
 
 void LayerTreeHostImpl::CreatePendingTree() {
+  CHECK(!CommitsToActiveTree());
   CHECK(!pending_tree_);
   if (recycle_tree_) {
     recycle_tree_.swap(pending_tree_);
@@ -5336,7 +5341,7 @@ void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
   }
 }
 
-bool LayerTreeHostImpl::CommitToActiveTree() const {
+bool LayerTreeHostImpl::CommitsToActiveTree() const {
   return settings_.commit_to_active_tree;
 }
 

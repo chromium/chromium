@@ -31,13 +31,18 @@ void TestLayerTreeHostBase::SetUp() {
 }
 
 void TestLayerTreeHostBase::TearDown() {
+  ClearLayersAndHost();
+}
+
+void TestLayerTreeHostBase::ClearLayersAndHost() {
   pending_layer_ = nullptr;
   active_layer_ = nullptr;
   old_pending_layer_ = nullptr;
+  host_impl_ = nullptr;
 }
 
 LayerTreeSettings TestLayerTreeHostBase::CreateSettings() {
-  return LayerListSettings();
+  return CommitToPendingTreeLayerListSettings();
 }
 
 std::unique_ptr<LayerTreeFrameSink>
@@ -87,75 +92,88 @@ void TestLayerTreeHostBase::SetupDefaultTrees(const gfx::Size& layer_bounds) {
 void TestLayerTreeHostBase::SetupTrees(
     scoped_refptr<RasterSource> pending_raster_source,
     scoped_refptr<RasterSource> active_raster_source) {
-  SetupPendingTree(std::move(active_raster_source));
-  ActivateTree();
-  SetupPendingTree(std::move(pending_raster_source));
+  SetupSyncTree(std::move(active_raster_source));
+  if (!host_impl()->CommitsToActiveTree()) {
+    ActivateTree();
+    SetupSyncTree(std::move(pending_raster_source));
+  }
 }
 
-void TestLayerTreeHostBase::SetupPendingTree(
-    scoped_refptr<RasterSource> raster_source) {
-  SetupPendingTree(std::move(raster_source), gfx::Size(), Region());
-}
-
-void TestLayerTreeHostBase::SetupPendingTree(
+void TestLayerTreeHostBase::SetupSyncTree(
     scoped_refptr<RasterSource> raster_source,
     const gfx::Size& tile_size,
     const Region& invalidation) {
-  host_impl()->CreatePendingTree();
-  host_impl()->pending_tree()->PushPageScaleFromMainThread(1.f, 0.00001f,
-                                                           100000.f);
-  LayerTreeImpl* pending_tree = host_impl()->pending_tree();
-  pending_tree->SetDeviceViewportRect(
-      host_impl()->active_tree()->GetDeviceViewport());
-  pending_tree->SetDeviceScaleFactor(
-      host_impl()->active_tree()->device_scale_factor());
-
-  // Steal from the recycled tree if possible.
-  LayerImpl* pending_root = pending_tree->root_layer();
-  DCHECK(!pending_layer_);
-  DCHECK(!pending_root || pending_root->id() == root_id_);
-
-  if (!pending_root) {
-    pending_tree->SetRootLayerForTesting(
-        LayerImpl::Create(pending_tree, root_id_));
-    pending_root = pending_tree->root_layer();
-
-    auto* page_scale_layer = AddLayer<LayerImpl>(pending_tree);
-    pending_layer_ = AddLayer<FakePictureLayerImpl>(pending_tree);
-    pending_layer_->SetDrawsContent(true);
-
-    pending_tree->SetElementIdsForTesting();
-    SetupRootProperties(pending_root);
-    CopyProperties(pending_root, page_scale_layer);
-    CreateTransformNode(page_scale_layer).in_subtree_of_page_scale_layer = true;
-    CopyProperties(page_scale_layer, pending_layer_);
-    CreateTransformNode(pending_layer_);
-    CreateScrollNode(pending_layer_, gfx::Size(1, 1));
-
-    auto viewport_property_ids = pending_tree->ViewportPropertyIdsForTesting();
-    viewport_property_ids.page_scale_transform =
-        page_scale_layer->transform_tree_index();
-    pending_tree->SetViewportPropertyIds(viewport_property_ids);
+  if (host_impl()->CommitsToActiveTree()) {
+    host_impl()->active_tree()->PushPageScaleFromMainThread(1.f, 0.00001f,
+                                                            100000.f);
   } else {
-    pending_layer_ = old_pending_layer_;
-    old_pending_layer_ = nullptr;
+    host_impl()->CreatePendingTree();
+    host_impl()->pending_tree()->PushPageScaleFromMainThread(1.f, 0.00001f,
+                                                             100000.f);
+    host_impl()->pending_tree()->SetDeviceViewportRect(
+        host_impl()->active_tree()->GetDeviceViewport());
+    host_impl()->pending_tree()->SetDeviceScaleFactor(
+        host_impl()->active_tree()->device_scale_factor());
   }
 
-  if (!tile_size.IsEmpty())
-    pending_layer_->set_fixed_tile_size(tile_size);
+  LayerTreeImpl* sync_tree = host_impl()->sync_tree();
+  LayerImpl* sync_root = sync_tree->root_layer();
+  CHECK(!pending_layer_);
+  CHECK(!sync_root || sync_root->id() == root_id_);
+  FakePictureLayerImpl* sync_layer = nullptr;
+
+  if (!sync_root) {
+    sync_tree->SetRootLayerForTesting(LayerImpl::Create(sync_tree, root_id_));
+    sync_root = sync_tree->root_layer();
+
+    auto* page_scale_layer = AddLayer<LayerImpl>(sync_tree);
+    sync_layer = AddLayer<FakePictureLayerImpl>(sync_tree);
+    sync_layer->SetDrawsContent(true);
+
+    sync_tree->SetElementIdsForTesting();
+    SetupRootProperties(sync_root);
+    CopyProperties(sync_root, page_scale_layer);
+    CreateTransformNode(page_scale_layer).in_subtree_of_page_scale_layer = true;
+    CopyProperties(page_scale_layer, sync_layer);
+    CreateTransformNode(sync_layer);
+    CreateScrollNode(sync_layer, gfx::Size(1, 1));
+
+    auto viewport_property_ids = sync_tree->ViewportPropertyIdsForTesting();
+    viewport_property_ids.page_scale_transform =
+        page_scale_layer->transform_tree_index();
+    sync_tree->SetViewportPropertyIds(viewport_property_ids);
+
+    if (host_impl()->CommitsToActiveTree()) {
+      active_layer_ = sync_layer;
+    } else {
+      pending_layer_ = sync_layer;
+    }
+  } else if (host_impl()->CommitsToActiveTree()) {
+    sync_layer = active_layer_;
+  } else {
+    // Steal from the recycled tree if possible.
+    pending_layer_ = old_pending_layer_;
+    old_pending_layer_ = nullptr;
+    sync_layer = pending_layer_;
+  }
+
+  if (!tile_size.IsEmpty()) {
+    sync_layer->set_fixed_tile_size(tile_size);
+  }
 
   // The bounds() just mirror the raster source size.
   if (raster_source) {
-    pending_layer_->SetBounds(raster_source->size());
-    pending_layer_->SetRasterSource(raster_source, invalidation);
+    sync_layer->SetBounds(raster_source->size());
+    sync_layer->SetRasterSource(raster_source, invalidation);
   }
-  pending_layer_->SetNeedsPushProperties();
+  sync_layer->SetNeedsPushProperties();
 
-  host_impl()->pending_tree()->set_needs_update_draw_properties();
-  UpdateDrawProperties(host_impl()->pending_tree());
+  sync_tree->set_needs_update_draw_properties();
+  UpdateDrawProperties(sync_tree);
 }
 
 void TestLayerTreeHostBase::ActivateTree() {
+  CHECK(!host_impl()->CommitsToActiveTree());
   UpdateDrawProperties(host_impl()->pending_tree());
 
   host_impl()->ActivateSyncTree();

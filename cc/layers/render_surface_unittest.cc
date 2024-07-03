@@ -86,7 +86,7 @@ TEST(RenderSurfaceTest, VerifySurfaceChangesAreTrackedProperly) {
   // This test checks that SurfacePropertyChanged() has the correct behavior.
   //
 
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   LayerImpl* root = impl.root_layer();
   LayerTreeImpl* active_tree = impl.host_impl()->active_tree();
 
@@ -134,7 +134,7 @@ TEST(RenderSurfaceTest, VerifySurfaceChangesAreTrackedProperly) {
 }
 
 TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   LayerImpl* root = impl.root_layer();
 
   LayerImpl* layer = impl.AddLayerInActiveTree<LayerImpl>();
@@ -178,7 +178,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
 }
 
 TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   LayerImpl* root = impl.root_layer();
   LayerImpl* layer = impl.AddLayerInActiveTree<LayerImpl>();
   impl.SetElementIdsForTesting();
@@ -208,7 +208,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
 }
 
 TEST(RenderSurfaceTest, SanityCheckSurfaceIgnoreMaskLayerOcclusion) {
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   LayerImpl* root = impl.root_layer();
   // Set a big enough viewport to show the entire render pass.
   impl.host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(1000, 1000));

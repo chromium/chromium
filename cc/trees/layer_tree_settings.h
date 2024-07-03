@@ -241,11 +241,6 @@ class CC_EXPORT LayerTreeSettings {
   bool enable_variable_refresh_rate = false;
 };
 
-class CC_EXPORT LayerListSettings : public LayerTreeSettings {
- public:
-  LayerListSettings() { use_layer_lists = true; }
-};
-
 }  // namespace cc
 
 #endif  // CC_TREES_LAYER_TREE_SETTINGS_H_

@@ -720,6 +720,7 @@ PictureLayerImpl* PictureLayerImpl::GetPendingOrActiveTwinLayer() const {
 void PictureLayerImpl::UpdateRasterSource(
     scoped_refptr<RasterSource> raster_source,
     Region* new_invalidation) {
+  CHECK(layer_tree_impl()->IsSyncTree());
   UpdateRasterSourceInternal(
       std::move(raster_source), new_invalidation,
       // These pointers being null indicates we are committing.
@@ -836,6 +837,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
 }
 
 void PictureLayerImpl::RegenerateDiscardableImageMap() {
+  CHECK(layer_tree_impl()->IsSyncTree());
   UnregisterAnimatedImages();
   if (const auto* display_list = raster_source_->GetDisplayItemList().get()) {
     scoped_refptr<DiscardableImageMap> image_map =

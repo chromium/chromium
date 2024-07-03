@@ -1707,13 +1707,11 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
   FakePictureLayerTilingClient tiling_client;
   tiling_client.SetTileSize(size);
 
-  std::unique_ptr<PictureLayerImpl> layer_impl =
-      PictureLayerImpl::Create(host_impl()->active_tree(), 1);
-  layer_impl->set_contributes_to_drawn_render_surface(true);
-  layer_impl->SetBounds(layer_bounds);
-  Region invalidation;
-  layer_impl->UpdateRasterSource(raster_source, &invalidation);
-  PictureLayerTilingSet* tiling_set = layer_impl->picture_layer_tiling_set();
+  SetupTrees(raster_source, raster_source);
+  pending_layer_->set_contributes_to_drawn_render_surface(true);
+  PictureLayerTilingSet* tiling_set =
+      pending_layer_->picture_layer_tiling_set();
+  tiling_set->RemoveAllTilings();
 
   PictureLayerTiling* tiling =
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
@@ -1813,6 +1811,15 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
 
 class TileManagerTest : public TestLayerTreeHostBase {
  public:
+  LayerTreeSettings CreateSettings() override {
+    LayerTreeSettings settings = TestLayerTreeHostBase::CreateSettings();
+    CHECK(!settings.commit_to_active_tree);
+    // This is required in commit-to-pending-tree mode to call
+    // NotifyReadyToDraw().
+    settings.wait_for_all_pipeline_stages_before_draw = true;
+    return settings;
+  }
+
   // MockLayerTreeHostImpl allows us to intercept tile manager callbacks.
   class MockLayerTreeHostImpl : public FakeLayerTreeHostImpl {
    public:
@@ -1952,7 +1959,7 @@ TEST_F(TileManagerTest, ActivateAndDrawWhenOOM) {
 class TileManagerOcclusionTest : public TileManagerTest {
  public:
   LayerTreeSettings CreateSettings() override {
-    auto settings = TestLayerTreeHostBase::CreateSettings();
+    auto settings = TileManagerTest::CreateSettings();
     settings.create_low_res_tiling = true;
     settings.use_occlusion_for_tile_prioritization = true;
     return settings;
@@ -2051,11 +2058,6 @@ TEST_F(TileManagerOcclusionTest, OccludedTileEvictedForVisibleTile) {
 
 class PixelInspectTileManagerTest : public TileManagerTest {
  public:
-  ~PixelInspectTileManagerTest() override {
-    // Ensure that the host impl doesn't outlive |raster_buffer_provider_|.
-    TakeHostImpl();
-  }
-
   void SetUp() override {
     TileManagerTest::SetUp();
     // Use a RasterBufferProvider that will let us inspect pixels.
@@ -2070,6 +2072,7 @@ class PixelInspectTileManagerTest : public TileManagerTest {
 TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
   gfx::Size size(10, 12);
   TileResolution resolutions[] = {HIGH_RESOLUTION, LOW_RESOLUTION};
+  host_impl()->CreatePendingTree();
 
   for (size_t i = 0; i < std::size(resolutions); ++i) {
     SCOPED_TRACE(resolutions[i]);
@@ -2090,11 +2093,9 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
     recording_source.add_draw_image(std::move(blue_image), gfx::Point());
     recording_source.Rerecord();
     scoped_refptr<RasterSource> raster = recording_source.CreateRasterSource();
-    raster->GetDisplayItemList()->GenerateDiscardableImageMap(
-        ScrollOffsetMap());
 
     std::unique_ptr<PictureLayerImpl> layer =
-        PictureLayerImpl::Create(host_impl()->active_tree(), 1);
+        PictureLayerImpl::Create(host_impl()->pending_tree(), 1);
     layer->SetBounds(size);
     Region invalidation;
     layer->UpdateRasterSource(raster, &invalidation);
@@ -2280,7 +2281,7 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
 
   // Free our host_impl_ before the tile_task_manager we passed it, as it
   // will use that class in clean up.
-  TakeHostImpl();
+  ClearLayersAndHost();
 }
 
 // FakeRasterBufferProviderImpl that verifies the resource content ID of raster
@@ -2539,15 +2540,12 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
   FakePictureLayerTilingClient tiling_client;
   tiling_client.SetTileSize(size);
 
-  std::unique_ptr<PictureLayerImpl> layer =
-      PictureLayerImpl::Create(host_impl()->active_tree(), 1);
-  layer->set_contributes_to_drawn_render_surface(true);
-  layer->SetBounds(size);
-
   auto raster = FakeRasterSource::CreateFilled(size);
-  Region invalidation;
-  layer->UpdateRasterSource(raster, &invalidation);
-  auto* tiling = layer->picture_layer_tiling_set()->AddTiling(
+  SetupTrees(raster, raster);
+  active_layer()->set_contributes_to_drawn_render_surface(true);
+
+  active_layer()->picture_layer_tiling_set()->RemoveAllTilings();
+  auto* tiling = active_layer()->picture_layer_tiling_set()->AddTiling(
       gfx::AxisTransform2d(), std::move(raster));
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
@@ -2570,8 +2568,7 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
   EXPECT_EQ(TileDrawInfo::OOM_MODE, tile->draw_info().mode());
 
   // Ensure that the host impl doesn't outlive |raster_buffer_provider|.
-  layer = nullptr;
-  TakeHostImpl();
+  ClearLayersAndHost();
 }
 
 // FakeRasterBufferProviderImpl that allows us to mock ready to draw
@@ -2610,11 +2607,6 @@ class MockReadyToDrawRasterBufferProviderImpl
 
 class TileManagerReadyToDrawTest : public TileManagerTest {
  public:
-  ~TileManagerReadyToDrawTest() override {
-    // Ensure that the host impl doesn't outlive |raster_buffer_provider_|.
-    TakeHostImpl();
-  }
-
   void SetUp() override {
     TileManagerTest::SetUp();
     host_impl()->tile_manager()->SetRasterBufferProviderForTesting(
@@ -3210,7 +3202,6 @@ class CheckerImagingTileManagerTest : public TestLayerTreeHostBase {
 
   LayerTreeSettings CreateSettings() override {
     auto settings = TestLayerTreeHostBase::CreateSettings();
-    settings.commit_to_active_tree = false;
     settings.enable_checker_imaging = true;
     settings.min_image_bytes_to_checker = 512 * 1024;
     return settings;
@@ -3808,9 +3799,8 @@ TEST_F(SynchronousRasterTileManagerTest, AlwaysUseImageCache) {
   host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
   static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())->RunUntilIdle();
 
-  pending_layer_ = old_pending_layer_ = active_layer_ = nullptr;
   // Destroy the LTHI since it accesses the RasterBufferProvider during cleanup.
-  TakeHostImpl();
+  ClearLayersAndHost();
 }
 
 class DecodedImageTrackerTileManagerTest : public TestLayerTreeHostBase {
@@ -4042,10 +4032,7 @@ class TileManagerCheckRasterQueriesTest : public TileManagerTest {
   TileManagerCheckRasterQueriesTest()
       : pending_raster_queries_(
             viz::TestContextProvider::CreateWorker().get()) {}
-  ~TileManagerCheckRasterQueriesTest() override {
-    // Ensure that the host impl doesn't outlive |raster_buffer_provider_|.
-    TakeHostImpl();
-  }
+
   void SetUp() override {
     TileManagerTest::SetUp();
     host_impl()->tile_manager()->SetPendingRasterQueriesForTesting(
@@ -4078,8 +4065,6 @@ TEST_F(TileManagerCheckRasterQueriesTest,
 
 class TileManagerTileReclaimTest : public TileManagerTest {
  public:
-  ~TileManagerTileReclaimTest() override { TakeHostImpl(); }
-
   void SetUp() override {
     TileManagerTest::SetUp();
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();

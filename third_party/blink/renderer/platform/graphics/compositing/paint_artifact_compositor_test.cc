@@ -3997,6 +3997,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   cc::TestTaskGraphRunner task_graph_runner_;
   cc::FakeLayerTreeHostImpl host_impl(&task_runner_provider_,
                                       &task_graph_runner_);
+  host_impl.EnsureSyncTree();
 
   // The layer's painting is initially not clipped.
   auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 20, 300, 400));
@@ -4028,7 +4029,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
   layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.active_tree()).get(),
+      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
       *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
            .pending_commit_state(),
       const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
@@ -4055,7 +4056,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
           .Build();
   // Simluate commit to the compositor thread.
   layer->PushPropertiesTo(
-      layer->CreateLayerImpl(host_impl.active_tree()).get(),
+      layer->CreateLayerImpl(host_impl.sync_tree()).get(),
       *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
            .pending_commit_state(),
       const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())

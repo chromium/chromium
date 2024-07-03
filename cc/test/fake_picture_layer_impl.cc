@@ -21,9 +21,10 @@ FakePictureLayerImpl::FakePictureLayerImpl(
     scoped_refptr<RasterSource> raster_source)
     : PictureLayerImpl(tree_impl, id) {
   if (raster_source) {
+    CHECK(tree_impl->IsSyncTree());
     SetBounds(raster_source->size());
     SetRasterSource(raster_source, Region());
-  } else {
+  } else if (tree_impl->IsSyncTree()) {
     // Just to avoid crash on null RasterSource when updating tilings.
     SetRasterSource(FakeRasterSource::CreateEmpty(gfx::Size()), Region());
   }

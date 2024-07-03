@@ -132,7 +132,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   float vertical_adjust_;
   bool has_find_in_page_tickmarks_;
 
-  FRIEND_TEST_ALL_PREFIXES(ScrollbarLayerTest,
+  FRIEND_TEST_ALL_PREFIXES(CommitToActiveTreeScrollbarLayerTest,
                            ScrollElementIdPushedAcrossCommit);
 };
 

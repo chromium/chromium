@@ -95,8 +95,8 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
     return thread_unsafe_commit_state();
   }
 
-  LayerImpl* CommitAndCreateLayerImplTree();
-  LayerImpl* CommitAndCreatePendingTree();
+  LayerImpl* CommitToActiveTree();
+  LayerImpl* CommitToPendingTree();
 
   FakeLayerTreeHostImpl* host_impl() { return host_impl_; }
   LayerTreeImpl* active_tree() {

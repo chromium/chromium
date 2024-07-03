@@ -37,7 +37,7 @@ class AnimationHostPerfTest : public testing::Test {
     root_layer_ = Layer::Create();
     layer_tree_host_->SetRootLayer(root_layer_);
 
-    root_layer_impl_ = layer_tree_host_->CommitAndCreateLayerImplTree();
+    root_layer_impl_ = layer_tree_host_->CommitToActiveTree();
   }
 
   void TearDown() override {
@@ -76,7 +76,7 @@ class AnimationHostPerfTest : public testing::Test {
     }
 
     // Create impl animations.
-    layer_tree_host_->CommitAndCreateLayerImplTree();
+    layer_tree_host_->CommitToActiveTree();
 
     // Check impl instances created.
     scoped_refptr<AnimationTimeline> timeline_impl =
@@ -98,7 +98,7 @@ class AnimationHostPerfTest : public testing::Test {
     }
 
     // Create impl timelines.
-    layer_tree_host_->CommitAndCreateLayerImplTree();
+    layer_tree_host_->CommitToActiveTree();
 
     // Check impl instances created.
     for (int i = first_timeline_id_; i < last_timeline_id_; ++i)

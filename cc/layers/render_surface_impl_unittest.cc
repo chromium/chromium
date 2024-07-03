@@ -75,7 +75,7 @@ static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
   scoped_refptr<FakeRasterSource> raster_source =
       FakeRasterSource::CreateFilledSolidColor(layer_size);
 
-  LayerTreeImplTestBase impl;
+  LayerTreeImplTestBase impl(CommitToActiveTreeLayerListSettings());
   auto* root = impl.root_layer();
 
   auto* surface = impl.AddLayerInActiveTree<LayerImpl>();

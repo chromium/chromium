@@ -36,8 +36,9 @@ int GenerateNextDisplayTreeId() {
   return next_id++;
 }
 
-cc::LayerListSettings GetDisplayTreeSettings() {
-  cc::LayerListSettings settings;
+cc::LayerTreeSettings GetDisplayTreeSettings() {
+  cc::LayerTreeSettings settings;
+  settings.use_layer_lists = true;
   settings.is_display_tree = true;
   return settings;
 }

@@ -29,7 +29,8 @@ namespace {
 class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
                                 public testing::Test {
  public:
-  PropertyTreeBuilderTest() : LayerTreeImplTestBase(LayerTreeSettings()) {}
+  PropertyTreeBuilderTest()
+      : LayerTreeImplTestBase(CommitToPendingTreeLayerTreeSettings()) {}
 
   void UpdateMainDrawProperties(float device_scale_factor = 1.0f) {
     SetDeviceScaleAndUpdateViewportRect(host(), device_scale_factor);
@@ -52,7 +53,7 @@ class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
     UpdateMainDrawProperties(device_scale_factor);
     if (!host_impl()->pending_tree())
       host_impl()->CreatePendingTree();
-    host()->CommitAndCreatePendingTree();
+    host()->CommitToPendingTree();
     // TODO(crbug.com/40617417) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.

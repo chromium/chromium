@@ -22,11 +22,11 @@
 namespace cc {
 
 LayerTreeImplTestBase::LayerTreeImplTestBase()
-    : LayerTreeImplTestBase(LayerListSettings()) {}
+    : LayerTreeImplTestBase(CommitToPendingTreeLayerListSettings()) {}
 
 LayerTreeImplTestBase::LayerTreeImplTestBase(
     std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink)
-    : LayerTreeImplTestBase(LayerListSettings(),
+    : LayerTreeImplTestBase(CommitToPendingTreeLayerListSettings(),
                             std::move(layer_tree_frame_sink)) {}
 
 LayerTreeImplTestBase::LayerTreeImplTestBase(const LayerTreeSettings& settings)

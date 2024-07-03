@@ -139,6 +139,9 @@ void SetCopyRequest(LayerImpl* root) {
 
 class DamageTrackerTest : public LayerTreeImplTestBase, public testing::Test {
  public:
+  DamageTrackerTest()
+      : LayerTreeImplTestBase(CommitToActiveTreeLayerListSettings()) {}
+
   LayerImpl* CreateTestTreeWithOneSurface(int number_of_children) {
     ClearLayersAndProperties();
 

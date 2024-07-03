@@ -98,7 +98,8 @@ void FakeLayerTreeHost::CreateFakeLayerTreeHostImpl() {
   host_impl_ = owned_host_impl_.get();
 }
 
-LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
+LayerImpl* FakeLayerTreeHost::CommitToActiveTree() {
+  CHECK(host_impl_->CommitsToActiveTree());
   // TODO(pdr): Update the LayerTreeImpl lifecycle states here so lifecycle
   // violations can be caught.
   // When doing a full commit, we would call
@@ -125,7 +126,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   return active_tree()->root_layer();
 }
 
-LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
+LayerImpl* FakeLayerTreeHost::CommitToPendingTree() {
+  CHECK(!host_impl_->CommitsToActiveTree());
   // pending_commit_state() is used here because this is a phony commit that
   // doesn't actually call WillCommit() or ActivateCommitState().
   pending_tree()->set_source_frame_number(SourceFrameNumber());

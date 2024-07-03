@@ -57,8 +57,8 @@ bool LayerSubtreeHasCopyRequest(Layer* layer) {
 
 class DrawPropertiesTestBase : public LayerTreeImplTestBase {
  public:
-  DrawPropertiesTestBase() = default;
-  explicit DrawPropertiesTestBase(const LayerTreeSettings& settings)
+  explicit DrawPropertiesTestBase(const LayerTreeSettings& settings =
+                                      CommitToPendingTreeLayerListSettings())
       : LayerTreeImplTestBase(settings) {}
 
   static void SetScrollOffsetDelta(LayerImpl* layer_impl,
@@ -104,7 +104,7 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     UpdateMainDrawProperties(device_scale_factor);
     if (!host_impl()->pending_tree())
       host_impl()->CreatePendingTree();
-    host()->CommitAndCreatePendingTree();
+    host()->CommitToPendingTree();
     // TODO(crbug.com/40617417) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
@@ -154,7 +154,7 @@ class DrawPropertiesTestWithLayerTree : public DrawPropertiesTestBase,
                                         public testing::Test {
  public:
   DrawPropertiesTestWithLayerTree()
-      : DrawPropertiesTestBase(LayerTreeSettings()) {}
+      : DrawPropertiesTestBase(CommitToPendingTreeLayerTreeSettings()) {}
 };
 
 class DrawPropertiesDrawRectsTest : public DrawPropertiesTest {
@@ -3776,8 +3776,7 @@ class BackfaceVisibilityInteropTest : public DrawPropertiesTestBase,
 
  protected:
   LayerTreeSettings BackfaceVisibilityInteropSettings() {
-    LayerListSettings settings;
-
+    LayerTreeSettings settings = CommitToPendingTreeLayerListSettings();
     settings.enable_backface_visibility_interop = true;
     return settings;
   }
@@ -4959,7 +4958,7 @@ class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
   void CommitAndUpdateImplPointers() {
     UpdateMainDrawProperties();
     host_impl()->CreatePendingTree();
-    host()->CommitAndCreatePendingTree();
+    host()->CommitToPendingTree();
     host_impl()->ActivateSyncTree();
     LayerTreeImpl* layer_tree_impl = host_impl()->active_tree();
     root_impl_ = layer_tree_impl->LayerById(root_->id());
@@ -5696,7 +5695,7 @@ class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
   void Commit() {
     UpdateMainDrawProperties();
     host_impl()->CreatePendingTree();
-    host()->CommitAndCreatePendingTree();
+    host()->CommitToPendingTree();
     host_impl()->ActivateSyncTree();
   }
 
@@ -7911,7 +7910,7 @@ class DrawPropertiesTestDoubleBlurCheck : public DrawPropertiesTestBase,
 
  private:
   static LayerTreeSettings GetTestLayerTreeSettings() {
-    LayerTreeSettings s;
+    LayerTreeSettings s = CommitToPendingTreeLayerTreeSettings();
     s.log_on_ui_double_background_blur = true;
     return s;
   }
