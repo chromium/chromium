@@ -214,6 +214,44 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
   }
 }
 
+std::vector<LocalTabGroupID> IOSTabGroupSyncDelegate::GetLocalTabGroupIds() {
+  std::vector<LocalTabGroupID> local_tab_group_ids;
+  for (Browser* browser : browser_list_->AllRegularBrowsers()) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    for (const TabGroup* group : web_state_list->GetGroups()) {
+      local_tab_group_ids.emplace_back(group->tab_group_id());
+    }
+  }
+
+  return local_tab_group_ids;
+}
+
+std::vector<LocalTabID> IOSTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  std::vector<LocalTabID> local_tab_ids;
+
+  LocalTabGroupInfo tab_group_info =
+      GetLocalTabGroupInfo(browser_list_, local_tab_group_id);
+  if (!tab_group_info.tab_group) {
+    // The group is closed locally.
+    return local_tab_ids;
+  }
+
+  for (int i : tab_group_info.tab_group->range()) {
+    LocalTabID local_tab_id = tab_group_info.web_state_list->GetWebStateAt(i)
+                                  ->GetUniqueIdentifier()
+                                  .identifier();
+    local_tab_ids.emplace_back(local_tab_id);
+  }
+
+  return local_tab_ids;
+}
+
+void IOSTabGroupSyncDelegate::CreateRemoteTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  // TODO(crbug.com/329640035): Implement this.
+}
+
 Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {
   std::set<Browser*> all_browsers = browser_list_->AllRegularBrowsers();
 

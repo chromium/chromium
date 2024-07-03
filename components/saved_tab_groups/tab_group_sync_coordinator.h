@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/startup_helper.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
 
@@ -53,6 +54,9 @@ class TabGroupSyncCoordinator final : public TabGroupSyncService::Observer {
 
   // The service which represents remote from the point of view of this class.
   const raw_ptr<TabGroupSyncService> service_;
+
+  // To help with the startup logic.
+  StartupHelper startup_helper_;
 };
 
 }  // namespace tab_groups

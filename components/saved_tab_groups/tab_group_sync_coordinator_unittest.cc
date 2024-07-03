@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 
 #include "base/uuid.h"
+#include "components/saved_tab_groups/mock_tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
@@ -21,19 +22,6 @@ MATCHER_P(UuidEq, uuid, "") {
 }
 
 }  // namespace
-
-class MockTabGroupSyncDelegate : public TabGroupSyncDelegate {
- public:
-  MockTabGroupSyncDelegate() = default;
-  ~MockTabGroupSyncDelegate() override = default;
-
-  MOCK_METHOD(void,
-              HandleOpenTabGroupRequest,
-              (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
-  MOCK_METHOD(void, CreateLocalTabGroup, (const SavedTabGroup&));
-  MOCK_METHOD(void, UpdateLocalTabGroup, (const SavedTabGroup&));
-  MOCK_METHOD(void, CloseLocalTabGroup, (const LocalTabGroupID&));
-};
 
 class TabGroupSyncCoordinatorTest : public testing::Test {
  public:

@@ -38,6 +38,21 @@ class TabGroupSyncDelegate {
 
   // Called to update a given tab group to match its sync representation.
   virtual void UpdateLocalTabGroup(const SavedTabGroup& group) = 0;
+
+  // Called to get all the local tab group IDs across all local tab models.
+  virtual std::vector<LocalTabGroupID> GetLocalTabGroupIds() = 0;
+
+  // Called to get the local tab IDs associated with a given tab group.
+  virtual std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
+      const LocalTabGroupID& local_tab_group_id) = 0;
+
+  // Local To Remote mutation methods.
+
+  // Called to create a remote tab group for the given local tab group ID.
+  // Called on startup for any unsynced local tab groups and as well as meant to
+  // be called from the local tab model observer when a new group is created.
+  virtual void CreateRemoteTabGroup(
+      const LocalTabGroupID& local_tab_group_id) = 0;
 };
 
 }  // namespace tab_groups

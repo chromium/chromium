@@ -30,6 +30,10 @@ class EmptyTabGroupSyncDelegate : public TabGroupSyncDelegate {
   void CreateLocalTabGroup(const SavedTabGroup& tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_id) override;
   void UpdateLocalTabGroup(const SavedTabGroup& group) override;
+  std::vector<LocalTabGroupID> GetLocalTabGroupIds() override;
+  std::vector<LocalTabID> GetLocalTabIdsForTabGroup(
+      const LocalTabGroupID& local_tab_group_id) override;
+  void CreateRemoteTabGroup(const LocalTabGroupID& local_tab_group_id) override;
 };
 
 }  // namespace tab_groups

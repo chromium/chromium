@@ -35,4 +35,21 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
   // TODO(b/346871861): Implement.
 }
 
+std::vector<LocalTabGroupID>
+TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
+  // TODO(b/346871861): Implement.
+  return std::vector<LocalTabGroupID>();
+}
+
+std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  // TODO(b/346871861): Implement.
+  return std::vector<LocalTabID>();
+}
+
+void TabGroupSyncDelegateDesktop::CreateRemoteTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  // TODO(b/346871861): Implement.
+}
+
 }  // namespace tab_groups

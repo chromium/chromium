@@ -14,7 +14,9 @@ namespace tab_groups {
 TabGroupSyncCoordinator::TabGroupSyncCoordinator(
     std::unique_ptr<TabGroupSyncDelegate> delegate,
     TabGroupSyncService* service)
-    : platform_delegate_(std::move(delegate)), service_(service) {
+    : platform_delegate_(std::move(delegate)),
+      service_(service),
+      startup_helper_(platform_delegate_.get(), service_) {
   CHECK(platform_delegate_);
   CHECK(service_);
 
@@ -26,7 +28,7 @@ TabGroupSyncCoordinator::~TabGroupSyncCoordinator() {
 }
 
 void TabGroupSyncCoordinator::OnInitialized() {
-  // TODO(shaktisahu): Implement startup helper.
+  startup_helper_.InitializeTabGroupSync();
 }
 
 void TabGroupSyncCoordinator::HandleOpenTabGroupRequest(

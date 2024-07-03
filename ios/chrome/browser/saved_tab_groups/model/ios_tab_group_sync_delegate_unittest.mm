@@ -431,4 +431,29 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   EXPECT_EQ(2, tab_group->range().count());
 }
 
+TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabGroupIds) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a [0 b* c ] d [1 e ]", browser_->GetBrowserState()));
+  auto local_group_ids = delegate_->GetLocalTabGroupIds();
+  EXPECT_EQ(2u, local_group_ids.size());
+}
+
+TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabIdsForTabGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a [0 b* c ] d [1 e ]", browser_->GetBrowserState()));
+
+  LocalTabGroupID local_id_group_0 =
+      builder.GetTabGroupForIdentifier('0')->tab_group_id();
+  auto local_tab_ids = delegate_->GetLocalTabIdsForTabGroup(local_id_group_0);
+  EXPECT_EQ(2u, local_tab_ids.size());
+
+  LocalTabGroupID local_id_group_2 = TabGroupId::GenerateNew();
+  local_tab_ids = delegate_->GetLocalTabIdsForTabGroup(local_id_group_2);
+  EXPECT_EQ(0u, local_tab_ids.size());
+}
+
 }  // namespace tab_groups

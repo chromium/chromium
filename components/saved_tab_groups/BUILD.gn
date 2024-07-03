@@ -14,6 +14,8 @@ source_set("core") {
     "empty_tab_group_store_delegate.h",
     "empty_tab_group_sync_delegate.cc",
     "empty_tab_group_sync_delegate.h",
+    "startup_helper.cc",
+    "startup_helper.h",
     "tab_group_store.cc",
     "tab_group_store.h",
     "tab_group_store_delegate.h",
@@ -209,6 +211,7 @@ source_set("unit_tests") {
     "saved_tab_group_sync_bridge_unittest.cc",
     "saved_tab_group_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
+    "startup_helper_unittest.cc",
     "string_utils_unittest.cc",
     "tab_group_store_unittest.cc",
     "tab_group_sync_bridge_mediator_unittest.cc",
@@ -252,6 +255,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_tab_group_sync_delegate.cc",
+    "mock_tab_group_sync_delegate.h",
     "mock_tab_group_sync_service.cc",
     "mock_tab_group_sync_service.h",
     "saved_tab_group_test_utils.cc",

@@ -27,4 +27,16 @@ void EmptyTabGroupSyncDelegate::CloseLocalTabGroup(
 void EmptyTabGroupSyncDelegate::UpdateLocalTabGroup(
     const SavedTabGroup& group) {}
 
+std::vector<LocalTabGroupID> EmptyTabGroupSyncDelegate::GetLocalTabGroupIds() {
+  return std::vector<LocalTabGroupID>();
+}
+
+std::vector<LocalTabID> EmptyTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  return std::vector<LocalTabID>();
+}
+
+void EmptyTabGroupSyncDelegate::CreateRemoteTabGroup(
+    const LocalTabGroupID& local_tab_group_id) {}
+
 }  // namespace tab_groups
