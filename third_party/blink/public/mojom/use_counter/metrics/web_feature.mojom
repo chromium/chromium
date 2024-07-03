@@ -4395,6 +4395,8 @@ enum WebFeature {
   kCSSMixins = 5026,
   kDurationFormat = 5027,
   kSharedStorageAPI_AddModule_CrossOriginScript = 5028,
+  kCrossOriginOpenerPolicyNoopenerAllowPopups = 5029,
+  kCrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly = 5030,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

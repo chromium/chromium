@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: noopener-allow-popups/restrict-properties
+  step_wait_func: Opener popup.window becomes null Timed out waiting on condition
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: restrict-properties/noopener-allow-popups
+  assert_false: Opener is null expected false got true
+Harness: the test ran to completion.
+

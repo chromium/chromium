@@ -6755,6 +6755,73 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
             coop_instance);
 }
 
+// Verify that the `noopener-allow-popups COOP header value triggers isolation,
+// and that this behaves sanely with window.open().
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, NoopenerAllowPopups) {
+  if (AreAllSitesIsolatedForTesting()) {
+    return;
+  }
+
+  // Navigate to a coop.com URL with no COOP.
+  GURL coop_url = https_server()->GetURL(
+      "coop.com", "/set-header?Cross-Origin-Opener-Policy: unsafe-none");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(
+      web_contents()->GetPrimaryMainFrame()->cross_origin_opener_policy().value,
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
+  // The coop.com unsafe-none COOP page should not trigger the isolation
+  // heuristic and not require a dedicated process locked to coop.com.
+  EXPECT_FALSE(coop_instance->RequiresDedicatedProcess());
+
+  auto lock = coop_instance->GetProcess()->GetProcessLock();
+  EXPECT_FALSE(lock.is_locked_to_site());
+
+  // Open a noopener-allow-popups COOP same-site URL in a popup, which should
+  // swap a BrowsingInstance because of noopener-allow-popups.  Verify that the
+  // popup ends up in a different SiteInstance from the opener.
+  GURL popup_url(https_server()->GetURL(
+      "coop.com",
+      "/set-header?Cross-Origin-Opener-Policy: noopener-allow-popups"));
+  Shell* popup = OpenPopup(shell(), popup_url, "");
+  RenderFrameHostImpl* popup_rfh = static_cast<RenderFrameHostImpl*>(
+      popup->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(popup_rfh->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
+  // TODO(https://crbug.com/344963946): Update the test values.
+  EXPECT_EQ(popup_rfh->GetSiteInstance(), coop_instance);
+  EXPECT_EQ(popup_rfh->GetSiteInstance()->GetProcess(),
+            coop_instance->GetProcess());
+
+  // Navigate the popup to another non-isolated site, staying in the same
+  // BrowsingInstance, and verify that it swaps to a new non-isolated
+  // SiteInstance.  The non-isolated site has a child which is same-origin with
+  // the COOP page; verify that it's placed in the same SiteInstance as the
+  // COOP page, as they are allowed to synchronously script each other.
+  GURL a_url(https_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a.com(coop.com)"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, a_url));
+  SiteInstanceImpl* new_instance = static_cast<SiteInstanceImpl*>(
+      popup->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
+  EXPECT_FALSE(new_instance->RequiresDedicatedProcess());
+  EXPECT_EQ(new_instance, coop_instance);
+  FrameTreeNode* popup_child =
+      static_cast<WebContentsImpl*>(popup->web_contents())
+          ->GetPrimaryFrameTree()
+          .root()
+          ->child_at(0);
+  EXPECT_EQ(popup_child->current_frame_host()->GetSiteInstance(),
+            coop_instance);
+
+  // Navigate the popup to coop.com again, staying in the same
+  // BrowsingInstance, and verify that it goes back to the opener's
+  // SiteInstance.
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, popup_url));
+  EXPECT_EQ(popup->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+            coop_instance);
+}
+
 // Verify that COOP isolation applies at a site (and not origin) granularity.
 //
 // Isolating sites rather than origins may seem counterintuitive, considering

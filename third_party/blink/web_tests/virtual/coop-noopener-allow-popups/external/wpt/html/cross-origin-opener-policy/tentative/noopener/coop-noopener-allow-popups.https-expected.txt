@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: noopener-allow-popups/unsafe-none
+  step_wait_func: Opener popup.window becomes null Timed out waiting on condition
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: noopener-allow-popups/noopener-allow-popups
+  step_wait_func: Opener popup.window becomes null Timed out waiting on condition
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: noopener-allow-popups/same-origin
+  step_wait_func: Opener popup.window becomes null Timed out waiting on condition
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: noopener-allow-popups/same-origin-allow-popups
+  step_wait_func: Opener popup.window becomes null Timed out waiting on condition
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, but further popups with no COOP can access their opener: same-origin-allow-popups/noopener-allow-popups
+  assert_false: Opener is null expected false got true
+[FAIL] noopener-allow-popups ensures that the opener cannot script the openee, even after a navigation: unsafe-none
+  assert_equals: expected null but got object "[object Window]"
+Harness: the test ran to completion.
+

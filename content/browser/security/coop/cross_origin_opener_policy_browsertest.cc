@@ -216,8 +216,10 @@ class CrossOriginOpenerPolicyBrowserTest
             base::Unretained(this))),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // Enable COOP/COEP:
-    feature_list_.InitAndEnableFeature(
-        network::features::kCrossOriginOpenerPolicy);
+    feature_list_.InitWithFeatures(
+        {network::features::kCrossOriginOpenerPolicy,
+         network::features::kCoopNoopenerAllowPopups},
+        {});
 
     // Enable RenderDocument:
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
@@ -8710,6 +8712,120 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
       EXPECT_NE(group_2, group_3);  // url_a <- url_b.
     } else {
       EXPECT_EQ(group_1, group_2);  // url_a -> url_b.
+      EXPECT_EQ(group_2, group_3);  // url_b <- url_b.
+    }
+  }
+}
+
+// Navigate in between two documents. Check the virtual browsing context group
+// is properly updated.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NavigationVirtualBrowsingContextGroupNoopener) {
+  // TODO(https://crbug.com/344963946): Update the test values.
+  const struct {
+    GURL url_a;
+    GURL url_b;
+    bool expect_different_group_a_to_b;
+    bool expect_different_group_b_to_a;
+  } kTestCases[] = {
+      {
+          // unsafe-none, noopener => no change
+          https_server()->GetURL("a.test",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
+          false,
+          false,
+      },
+      {
+          // Same origin, noopener => change
+          https_server()->GetURL("a.test",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
+          true,
+          true,
+      },
+      {
+          // Same origin allow popups, noopener => change
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: noopener-allow-popups"),
+          true,
+          true,
+      },
+      {
+          // unsafe-none, noopener => no change
+          https_server()->GetURL("a.test",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: unsafe-none"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: noopener-allow-popups"),
+          false,
+          false,
+      },
+      {
+          // Same origin, noopener => change
+          https_server()->GetURL("a.test",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: noopener-allow-popups"),
+          true,
+          true,
+      },
+      {
+          // Same origin allow popups, noopener => change
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: same-origin-allow-popups"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: noopener-allow-popups"),
+          true,
+          true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << std::endl
+                 << "url_a = " << test_case.url_a << std::endl
+                 << "url_b = " << test_case.url_b << std::endl);
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_a));
+    int group_1 = VirtualBrowsingContextGroup(web_contents());
+
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_b));
+    int group_2 = VirtualBrowsingContextGroup(web_contents());
+
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_a));
+    int group_3 = VirtualBrowsingContextGroup(web_contents());
+
+    if (test_case.expect_different_group_a_to_b) {
+      EXPECT_NE(group_1, group_2);  // url_a -> url_b.
+    } else {
+      EXPECT_EQ(group_1, group_2);  // url_a -> url_b.
+    }
+    if (test_case.expect_different_group_b_to_a) {
+      EXPECT_NE(group_2, group_3);  // url_a <- url_b.
+    } else {
       EXPECT_EQ(group_2, group_3);  // url_b <- url_b.
     }
   }

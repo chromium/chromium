@@ -200,7 +200,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-paint-api",
               "http/tests/csspaint",
-	      "http/tests/inspector-protocol/paint-worklet"],
+              "http/tests/inspector-protocol/paint-worklet"],
     "exclusive_tests": ["http/tests/inspector-protocol/paint-worklet"],
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=OffMainThreadCSSPaint",
@@ -1871,6 +1871,18 @@
     "bases": [ "external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties" ],
     "args": ["--enable-features=CoopRestrictProperties"],
     "expires": "Jul 1, 2024"
+  },
+  {
+    "prefix": "coop-noopener-allow-popups",
+    "owners": ["yoavweiss@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/cross-origin-opener-policy/tentative/noopener/",
+      "external/wpt/html/cross-origin-opener-policy/reporting/tentative/"
+    ],
+    "args": ["--enable-features=CoopNoopenerAllowPopups"],
+    "exclusive_tests": "ALL",
+    "expires": "Mar 1, 2025"
   },
 
   "These tests require the experimental speculative prefetch feature, and",

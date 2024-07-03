@@ -11160,6 +11160,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5026" label="CSSMixins"/>
   <int value="5027" label="DurationFormat"/>
   <int value="5028" label="SharedStorageAPI_AddModule_CrossOriginScript"/>
+  <int value="5029" label="CrossOriginOpenerPolicyNoopenerAllowPopups"/>
+  <int value="5030"
+      label="CrossOriginOpenerPolicyNoopenerAllowPopupsReportOnly"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
