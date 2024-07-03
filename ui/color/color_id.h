@@ -153,6 +153,7 @@
   E_CPONLY(kColorSysSurface3) \
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
+  E_CPONLY(kColorSysSurfaceNumberedForeground) \
   /* General. */ \
   E_CPONLY(kColorSysOnSurfaceSecondary) \
   E_CPONLY(kColorSysOnSurfaceSubtle) \
