@@ -5141,8 +5141,8 @@ bool ChromeContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
 
 bool ChromeContentBrowserClient::ShouldUseSkiaFontManager(
     const GURL& site_url) {
-  return (base::FeatureList::IsEnabled(features::kSkiaFontService) &&
-          IsTopChromeWebUIURL(site_url));
+  return IsTopChromeWebUIURL(site_url) &&
+         base::FeatureList::IsEnabled(features::kSkiaFontService);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
