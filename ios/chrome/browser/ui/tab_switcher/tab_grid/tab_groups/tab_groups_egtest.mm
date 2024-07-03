@@ -288,6 +288,13 @@ void DeleteGroupAtIndex(int group_cell_index) {
       performAction:grey_tap()];
 }
 
+// Matcher for the pinned cell at the given `index`.
+id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
+  return grey_allOf(
+      grey_accessibilityLabel([NSString stringWithFormat:@"Pinned, %@", title]),
+      grey_kindOfClassName(@"PinnedCell"), grey_sufficientlyVisible(), nil);
+}
+
 }  // namespace
 
 // Test Tab Groups feature.
@@ -1132,6 +1139,45 @@ void DeleteGroupAtIndex(int group_cell_index) {
   OpenTabGroupAtIndex(1);
   [[EarlGrey selectElementWithMatcher:TabWithTitle(versionTabTitle)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Ensures to create a group from a pinned tab and the tab is no longer pinned.
+- (void)testCreateGroupFromPinnedTab {
+  // This test is not relevant on iPads because there is no pinned tabs in iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
+  }
+
+  CreatePinnedTabs(1, self.testServer);
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a group from the pinned tab.
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  SetTabGroupCreationName(kGroup1Name);
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+
+  // Ensure the pinned area and the pinned tab disappeared and the group cell
+  // appeared.
+  [[EarlGrey selectElementWithMatcher:TabGroupGridCellMatcher(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:GetMatcherForPinnedCellWithTitle(@"PinnedTab0")]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              @"PinnedViewIdentifier"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
