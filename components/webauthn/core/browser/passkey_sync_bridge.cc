@@ -265,10 +265,6 @@ bool PasskeySyncBridge::IsReady() const {
   return ready_;
 }
 
-bool PasskeySyncBridge::IsEmpty() const {
-  return data_.empty();
-}
-
 base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   std::vector<std::string> sync_ids;
   base::ranges::transform(data_, std::back_inserter(sync_ids),

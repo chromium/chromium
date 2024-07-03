@@ -42,10 +42,6 @@ bool TestPasskeyModel::IsReady() const {
   return true;
 }
 
-bool TestPasskeyModel::IsEmpty() const {
-  return credentials_.empty();
-}
-
 base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
   base::flat_set<std::string> ids;
   for (const auto& credential : credentials_) {

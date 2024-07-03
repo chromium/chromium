@@ -527,8 +527,6 @@ if (is_mac) {
   static_library("icloud_keychain_test_support") {
     testonly = true
     sources = [
-      "mac/fake_icloud_keychain.h",
-      "mac/fake_icloud_keychain.mm",
       "mac/fake_icloud_keychain_sys.h",
       "mac/fake_icloud_keychain_sys.mm",
       "mac/scoped_icloud_keychain_test_environment.h",
