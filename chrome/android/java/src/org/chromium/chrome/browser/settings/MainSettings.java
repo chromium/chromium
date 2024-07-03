@@ -219,6 +219,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
 
+        updateGoogleServicePreference();
         cachePreferences();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
@@ -309,7 +310,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         updateManageSyncPreference();
-        updateGoogleServicePreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
@@ -362,9 +362,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         if (preference != null) getPreferenceScreen().removePreference(preference);
     }
 
-    // Update the icon of the google services preference. Must be called after each theme change
-    // to ensure the correct color is set for SurfaceColorDrawable.
-    // See https://crbug.com/349112129.
     private void updateGoogleServicePreference() {
         ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
         if (ChromeFeatureList.isEnabled(
