@@ -189,8 +189,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                       const gfx::Size& excluded_margin) override;
   void FlashFrame(bool flash_frame) override;
-  void RunShellDrag(View* view,
-                    std::unique_ptr<ui::OSExchangeData> data,
+  void RunShellDrag(std::unique_ptr<ui::OSExchangeData> data,
                     const gfx::Point& location,
                     int operation,
                     ui::mojom::DragEventSource source) override;

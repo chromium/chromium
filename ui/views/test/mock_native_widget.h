@@ -127,8 +127,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, FlashFrame, (bool flash), (override));
   MOCK_METHOD(void,
               RunShellDrag,
-              (View * view,
-               std::unique_ptr<ui::OSExchangeData> data,
+              (std::unique_ptr<ui::OSExchangeData> data,
                const gfx::Point& location,
                int operation,
                ui::mojom::DragEventSource source),

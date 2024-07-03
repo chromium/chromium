@@ -871,8 +871,7 @@ void NativeWidgetAura::FlashFrame(bool flash) {
     window_->SetProperty(aura::client::kDrawAttentionKey, flash);
 }
 
-void NativeWidgetAura::RunShellDrag(View* view,
-                                    std::unique_ptr<ui::OSExchangeData> data,
+void NativeWidgetAura::RunShellDrag(std::unique_ptr<ui::OSExchangeData> data,
                                     const gfx::Point& location,
                                     int operation,
                                     ui::mojom::DragEventSource source) {

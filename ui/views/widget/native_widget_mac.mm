@@ -794,14 +794,13 @@ void NativeWidgetMac::FlashFrame(bool flash_frame) {
   NOTIMPLEMENTED();
 }
 
-void NativeWidgetMac::RunShellDrag(View* view,
-                                   std::unique_ptr<ui::OSExchangeData> data,
+void NativeWidgetMac::RunShellDrag(std::unique_ptr<ui::OSExchangeData> data,
                                    const gfx::Point& location,
                                    int operation,
                                    ui::mojom::DragEventSource source) {
   if (!ns_window_host_)
     return;
-  ns_window_host_->drag_drop_client()->StartDragAndDrop(view, std::move(data),
+  ns_window_host_->drag_drop_client()->StartDragAndDrop(std::move(data),
                                                         operation, source);
 }
 

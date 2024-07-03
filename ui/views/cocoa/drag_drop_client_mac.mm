@@ -28,7 +28,6 @@ DragDropClientMac::DragDropClientMac(
 DragDropClientMac::~DragDropClientMac() = default;
 
 void DragDropClientMac::StartDragAndDrop(
-    View* view,
     std::unique_ptr<ui::OSExchangeData> data,
     int operation,
     ui::mojom::DragEventSource source) {

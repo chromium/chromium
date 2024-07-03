@@ -1127,8 +1127,7 @@ void Widget::RunShellDrag(View* view,
     // tasks need to run. Only views:: and ui::EventDispatcher stacks are
     // present, which expect this re-entrancy.
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
-    native_widget_->RunShellDrag(view, std::move(data), location, operation,
-                                 source);
+    native_widget_->RunShellDrag(std::move(data), location, operation, source);
   }
 
   // The widget may be destroyed during the drag operation.

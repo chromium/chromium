@@ -1053,7 +1053,6 @@ void DesktopNativeWidgetAura::FlashFrame(bool flash_frame) {
 }
 
 void DesktopNativeWidgetAura::RunShellDrag(
-    View* view,
     std::unique_ptr<ui::OSExchangeData> data,
     const gfx::Point& location,
     int operation,
