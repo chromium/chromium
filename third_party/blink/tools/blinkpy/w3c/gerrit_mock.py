@@ -16,13 +16,23 @@ from blinkpy.w3c.gerrit import (
 
 
 class MockGerritAPI:
-    def __init__(self, raise_error=False):
+
+    def __init__(self, host=None, raise_error=False):
+        self.host = host or MockHost()
         self.exportable_cls = []
         self.request_posted = []
-        self.cl = ''
+        self.cl = MockGerritCL(
+            {
+                'change_id': 'I01234abc',
+                'revisions': {
+                    'abc01234': {
+                        '_number': 1,
+                        'kind': 'REWORK',
+                    },
+                },
+            }, self)
         self.cls_queried = []
         self.raise_error = raise_error
-        self.host = MockHost()
         self.project_config = self.host.project_config
 
     def query_exportable_cls(self):

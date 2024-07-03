@@ -16,6 +16,7 @@ from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_testing import LoggingTestCase
 
+from blinkpy.w3c.gerrit_mock import MockGerritAPI
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_manifest import (
     WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME)
@@ -27,6 +28,7 @@ from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
+@mock.patch('blinkpy.tool.commands.build_resolver.GerritAPI', MockGerritAPI)
 class WPTExpectationsUpdaterTest(LoggingTestCase):
     def mock_host(self):
         """Returns a mock host with fake values set up for testing."""

@@ -25,6 +25,7 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
+from blinkpy.w3c.gerrit_mock import MockGerritAPI
 from blinkpy.web_tests.builder_list import BuilderList
 
 
@@ -33,6 +34,7 @@ from blinkpy.web_tests.builder_list import BuilderList
 # Do not re-request try build information to check for interrupted steps.
 @mock.patch(
     'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: [])
+@mock.patch('blinkpy.tool.commands.build_resolver.GerritAPI', MockGerritAPI)
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     command_constructor = lambda self: RebaselineCL(MockBlinkTool())
@@ -246,7 +248,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 5 tests.\n',
@@ -268,7 +270,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 4 tests.\n',
@@ -314,7 +316,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(test_name_file=test_name_file), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Reading list of tests to rebaseline from %s\n' %
@@ -338,7 +340,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'WARNING: Skipping rebaselining for 1 test missing from the local '
@@ -384,7 +386,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: No finished builds.\n',
             'INFO: Scheduled or started builds:\n',
             'INFO:   BUILDER                       NUMBER  STATUS    BUCKET\n',
@@ -419,7 +421,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(trigger_jobs=False), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             "ERROR: Aborted: no try jobs and '--no-trigger-jobs' or "
             "'--dry-run' passed.\n",
         ])
@@ -427,7 +429,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             "ERROR: Aborted: no try jobs and '--no-trigger-jobs' or "
             "'--dry-run' passed.\n",
         ])
@@ -442,7 +444,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
@@ -483,7 +485,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
             'INFO:   BUILDER                       NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Linux (CQ duplicate) 7000    FAILURE   try   \n',
@@ -519,7 +521,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 1 suite.\n',
             'INFO: Rebaselining 5 tests.\n',
@@ -561,7 +563,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 3 suites.\n',
             'INFO: No tests to rebaseline.\n',
@@ -577,7 +579,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(trigger_jobs=False), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: Finished builds:\n',
             'INFO:   BUILDER              NUMBER  STATUS    BUCKET\n',
             'INFO:   MOCK Try Mac         4000    FAILURE   try   \n',
@@ -602,7 +604,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(only_changed_tests=True), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 2 tests.\n',
@@ -626,7 +628,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -643,7 +645,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'WARNING: No retry summary available for ("MOCK Try Win", "blink_web_tests").\n',
@@ -740,7 +742,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'WARNING: Some builds have incomplete results:\n',
             'WARNING:   "MOCK Try Win" build 5000\n',
             'WARNING: Examples of incomplete results include:\n',
@@ -769,7 +771,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          ['one/flaky-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'WARNING: Some builds have incomplete results:\n',
             'WARNING:   "MOCK Try Win" build 5000\n',
             'WARNING: Examples of incomplete results include:\n',
@@ -800,7 +802,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             ['two/image-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 1 build from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 1 build from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 1 suite.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -834,7 +836,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          ['one/flaky-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -868,7 +870,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          ['one/flaky-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 4 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 4 suites.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -921,7 +923,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 ['two/image-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 1 build from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 1 build from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 1 suite.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -969,7 +971,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 ['two/image-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 1 build from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 1 build from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 1 suite.\n',
             'INFO: Rebaselining 1 test.\n',
@@ -1131,7 +1133,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         options = self.command_options(builders=builders)
         exit_code = self.command.execute(options, [], self.tool)
         self.assertLog([
-            'INFO: Fetching status for 2 builds from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 2 builds from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 2 suites.\n',
             'INFO: Rebaselining 5 tests.\n',
@@ -1172,7 +1174,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: Fetching status for 1 build from https://crrev.com/c/1234.\n',
+            'INFO: Fetching status for 1 build from https://crrev.com/c/1234/1.\n',
             'INFO: All builds finished.\n',
             'INFO: Fetching test results for 1 suite.\n',
             'INFO: Rebaselining 1 test.\n',

@@ -11,6 +11,7 @@ from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.commands.build_resolver import Build, BuildResolver
+from blinkpy.w3c.gerrit_mock import MockGerritAPI, MockGerritCL
 
 
 class BuildResolverTest(LoggingTestCase):
@@ -27,7 +28,10 @@ class BuildResolverTest(LoggingTestCase):
         # A CL should only be required for try builders without explicit build
         # numbers.
         self.git_cl = MockGitCL(self.host, issue_number='None')
-        self.resolver = BuildResolver(self.host.web, self.git_cl)
+        self.gerrit = MockGerritAPI()
+        self.resolver = BuildResolver(self.host,
+                                      self.git_cl,
+                                      gerrit=self.gerrit)
 
     def test_resolve_last_failing_ci_build(self):
         self.host.web.append_prpc_response({
@@ -257,3 +261,33 @@ class BuildResolverTest(LoggingTestCase):
         self.assertEqual(build_statuses, {
             Build('linux-rel', 1, '1'): BuildStatus.INFRA_FAILURE,
         })
+
+    def test_latest_nontrivial_patchset(self):
+        self.gerrit.cl = MockGerritCL(
+            {
+                'change_id': 'I01234abc',
+                'revisions': {
+                    '0123': {
+                        '_number': 1,
+                        'kind': 'REWORK',
+                    },
+                    '4567': {
+                        '_number': 2,
+                        'kind': 'TRIVIAL_REBASE',
+                    },
+                    '89ab': {
+                        '_number': 3,
+                        'kind': 'REWORK',
+                    },
+                    'cdef': {
+                        '_number': 4,
+                        'kind': 'TRIVIAL_REBASE_WITH_MESSAGE_UPDATE',
+                    },
+                    '01ab': {
+                        '_number': 5,
+                        'kind': 'NO_CODE_CHANGE',
+                    },
+                },
+            }, self.gerrit)
+        self.assertEqual(self.resolver.latest_nontrivial_patchset(999), 3)
+        self.assertEqual(self.gerrit.cls_queried, ['999'])
