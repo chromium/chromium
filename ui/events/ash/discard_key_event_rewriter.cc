@@ -47,6 +47,14 @@ EventDispatchDetails DiscardKeyEventRewriter::RewriteEvent(
       const int rewritten_flags = event.flags() & ~EF_FUNCTION_DOWN;
       if (event.flags() != rewritten_flags) {
         rewritten_event = event.Clone();
+
+        // SetNativeEvent must be called explicitly as native events are not
+        // copied on ChromeOS by default. This is because `PlatformEvent` is a
+        // pointer by default, so its lifetime can not be guaranteed in general.
+        // In this case, the lifetime of  `rewritten_event` is guaranteed to be
+        // less than the original `event`.
+        SetNativeEvent(*rewritten_event, event.native_event());
+
         rewritten_event->SetFlags(rewritten_flags);
       }
       break;

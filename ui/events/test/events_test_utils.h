@@ -10,6 +10,7 @@
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_target.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/platform_event.h"
 
 namespace ui {
 
@@ -30,6 +31,13 @@ class EventTestApi {
 
   void set_source_device_id(int source_device_id) {
     event_->source_device_id_ = source_device_id;
+  }
+
+  // PlatformEvents on most platforms are not copyable by default. The standard
+  // `SetNativeEvent` API in the event object is a no-op on most platforms. This
+  // API is exposed to set the PlatformEvent explicitly in tests.
+  void set_native_event(PlatformEvent native_event) {
+    event_->native_event_ = native_event;
   }
 
  private:

@@ -139,7 +139,10 @@ class TestEventSink : public ui::EventSink {
 
   // ui::EventSink:
   ui::EventDispatchDetails OnEventFromSource(ui::Event* event) override {
-    events_.emplace_back(event->Clone());
+    auto cloned_event = event->Clone();
+    ui::EventTestApi(cloned_event.get())
+        .set_native_event(event->native_event());
+    events_.emplace_back(std::move(cloned_event));
     return ui::EventDispatchDetails();
   }
 
@@ -4018,6 +4021,41 @@ TEST_P(EventRewriterTest, MouseWheelEventModifiersRewritten) {
       EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
       EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
     }
+  }
+}
+
+TEST_P(EventRewriterTest, MouseEventMaintainNativeEvent) {
+  if (!features::IsKeyboardRewriterFixEnabled()) {
+    GTEST_SKIP() << "Test is only valid with keyboard rewriter fix enabled";
+  }
+
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+
+  gfx::Point location(0, 0);
+  ui::MouseEvent native_event(ui::ET_MOUSE_MOVED, location, location,
+                              /*time_stamp=*/{}, ui::EF_CONTROL_DOWN,
+                              ui::EF_NONE);
+  ui::MouseEvent mouse_event(&native_event);
+  // Remap Control to Alt.
+  IntegerPrefMember control;
+  InitModifierKeyPref(&control, ::prefs::kLanguageRemapControlKeyTo,
+                      ui::mojom::ModifierKey::kControl,
+                      ui::mojom::ModifierKey::kAlt);
+
+  SendKeyEvent(KeyLControl::Pressed());
+
+  // Sends the same events once again and expect that it will be rewritten to
+  // ALT_DOWN in older implementation, or not rewritten (as Control is held)
+  // in the new implementation.
+  ui::EventDispatchDetails details = source().Send(&mouse_event);
+  ASSERT_FALSE(details.dispatcher_destroyed);
+  {
+    auto events = TakeEvents();
+    ASSERT_EQ(1u, events.size());
+    EXPECT_TRUE(events[0]->IsMouseEvent());
+    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+    EXPECT_TRUE(events[0]->flags() & ui::EF_ALT_DOWN);
+    EXPECT_TRUE(events[0]->HasNativeEvent());
   }
 }
 
