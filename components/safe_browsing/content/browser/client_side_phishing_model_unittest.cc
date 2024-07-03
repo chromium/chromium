@@ -84,6 +84,11 @@ class ClientSidePhishingModelObserverTracker
     }
   }
 
+  void SendEmptyModelInfoUpdate(
+      optimization_guide::proto::OptimizationTarget optimization_target) {
+    model_observer_->OnModelUpdated(optimization_target, std::nullopt);
+  }
+
  private:
   // The observer that is registered to receive model validation optimzation
   // target events.
@@ -110,6 +115,12 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
     client_side_phishing_model_.reset();
     model_observer_tracker_.reset();
+  }
+
+  void SendEmptyModelInfoUpdate(
+      optimization_guide::proto::OptimizationTarget optimization_target) {
+    model_observer_tracker_->SendEmptyModelInfoUpdate(optimization_target);
+    task_environment()->RunUntilIdle();
   }
 
   void ValidateModel(
@@ -180,14 +191,12 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   additional_files_path = additional_files_path.AppendASCII("components")
                               .AppendASCII("test")
                               .AppendASCII("data")
-                              .AppendASCII("safe_browsing");
+                              .AppendASCII("safe_browsing")
 
 #if BUILDFLAG(IS_ANDROID)
-  additional_files_path =
-      additional_files_path.AppendASCII("visual_model_android.tflite");
+                              .AppendASCII("visual_model_android.tflite");
 #else
-  additional_files_path =
-      additional_files_path.AppendASCII("visual_model_desktop.tflite");
+                              .AppendASCII("visual_model_desktop.tflite");
 #endif
   service()->SetModelTypeForTesting(CSDModelType::kFlatbuffer);
   ValidateModel(model_file_path, {additional_files_path});
@@ -221,20 +230,128 @@ TEST_F(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
   additional_files_path = additional_files_path.AppendASCII("components")
                               .AppendASCII("test")
                               .AppendASCII("data")
-                              .AppendASCII("safe_browsing");
+                              .AppendASCII("safe_browsing")
 
 #if BUILDFLAG(IS_ANDROID)
-  additional_files_path =
-      additional_files_path.AppendASCII("visual_model_android.tflite");
+                              .AppendASCII("visual_model_android.tflite");
 #else
-  additional_files_path =
-      additional_files_path.AppendASCII("visual_model_desktop.tflite");
+                              .AppendASCII("visual_model_desktop.tflite");
 #endif
 
   ValidateModel(model_file_path, {additional_files_path});
 
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess", false, 1);
+  EXPECT_FALSE(service()->IsEnabled());
+}
+
+TEST_F(ClientSidePhishingModelTest, InvalidModelDueToNonexistentPath) {
+  base::ScopedTempDir model_dir;
+  EXPECT_TRUE(model_dir.CreateUniqueTempDir());
+  base::FilePath weird_model_file_path =
+      model_dir.GetPath().AppendASCII("non_existent_directory/");
+
+  base::FilePath additional_files_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
+  additional_files_path = additional_files_path.AppendASCII("components")
+                              .AppendASCII("test")
+                              .AppendASCII("data")
+                              .AppendASCII("safe_browsing")
+#if BUILDFLAG(IS_ANDROID)
+                              .AppendASCII("visual_model_android.tflite");
+#else
+                              .AppendASCII("visual_model_desktop.tflite");
+#endif
+
+  ValidateModel(weird_model_file_path, {additional_files_path});
+
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess", false, 1);
+  EXPECT_FALSE(service()->IsEnabled());
+}
+
+TEST_F(ClientSidePhishingModelTest,
+       InvalidModelDueToValidPathButMultipleAdditionalFilesPath) {
+  base::ScopedTempDir model_dir;
+  EXPECT_TRUE(model_dir.CreateUniqueTempDir());
+  base::FilePath model_file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
+  model_file_path = model_file_path.AppendASCII("components")
+                        .AppendASCII("test")
+                        .AppendASCII("data")
+                        .AppendASCII("safe_browsing")
+                        .AppendASCII("client_model.pb");
+
+  base::FilePath additional_files_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
+  additional_files_path = additional_files_path.AppendASCII("components")
+                              .AppendASCII("test")
+                              .AppendASCII("data")
+                              .AppendASCII("safe_browsing")
+#if BUILDFLAG(IS_ANDROID)
+                              .AppendASCII("visual_model_android.tflite");
+#else
+                              .AppendASCII("visual_model_desktop.tflite");
+#endif
+
+  // It has to be different file name at the end for the set to count them
+  // differently.
+  base::FilePath additional_files_path2;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path2);
+  additional_files_path2 = additional_files_path2.AppendASCII("components2")
+                               .AppendASCII("test2")
+                               .AppendASCII("data2")
+                               .AppendASCII("safe_browsing2")
+
+#if BUILDFLAG(IS_ANDROID)
+                               .AppendASCII("visual_model_android2.tflite");
+#else
+                               .AppendASCII("visual_model_desktop2.tflite");
+#endif
+
+  ValidateModel(model_file_path,
+                {additional_files_path, additional_files_path2});
+
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess", false, 1);
+  EXPECT_FALSE(service()->IsEnabled());
+}
+
+TEST_F(ClientSidePhishingModelTest,
+       EmptyOptimizationGuideModelInfoDisablesService) {
+  base::FilePath model_file_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
+  model_file_path = model_file_path.AppendASCII("components")
+                        .AppendASCII("test")
+                        .AppendASCII("data")
+                        .AppendASCII("safe_browsing")
+                        .AppendASCII("client_model.pb");
+
+  base::FilePath additional_files_path;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &additional_files_path);
+  additional_files_path = additional_files_path.AppendASCII("components")
+                              .AppendASCII("test")
+                              .AppendASCII("data")
+                              .AppendASCII("safe_browsing")
+
+#if BUILDFLAG(IS_ANDROID)
+                              .AppendASCII("visual_model_android.tflite");
+#else
+                              .AppendASCII("visual_model_desktop.tflite");
+#endif
+  service()->SetModelTypeForTesting(CSDModelType::kFlatbuffer);
+  ValidateModel(model_file_path, {additional_files_path});
+
+  histogram_tester().ExpectUniqueSample(
+      "SBClientPhishing.ModelDynamicUpdateSuccess", true, 1);
+  EXPECT_TRUE(service()->IsEnabled());
+
+  // It is enabled now, but we will send an empty model info update to the model
+  // class, which should remove the model from the class, and notifying the
+  // service class will make it disabled.
+  SendEmptyModelInfoUpdate(
+      optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING);
+
   EXPECT_FALSE(service()->IsEnabled());
 }
 
