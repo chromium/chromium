@@ -79,27 +79,25 @@ CreateReportResult::CreateReportResult(
                 AggregatableResult::kProhibitedByBrowserPolicy);
   }
 
-  DCHECK_EQ(
-      limits.rate_limits_max_attributions.has_value(),
-      event_level_status_ == EventLevelResult::kExcessiveAttributions ||
-          aggregatable_status_ == AggregatableResult::kExcessiveAttributions);
+  DCHECK((event_level_status_ != EventLevelResult::kExcessiveAttributions &&
+          aggregatable_status_ != AggregatableResult::kExcessiveAttributions) ||
+         limits.rate_limits_max_attributions.has_value());
 
-  DCHECK_EQ(limits.max_aggregatable_reports_per_source.has_value(),
-            aggregatable_status_ == AggregatableResult::kExcessiveReports);
+  DCHECK(aggregatable_status_ != AggregatableResult::kExcessiveReports ||
+         limits.max_aggregatable_reports_per_source.has_value());
 
-  DCHECK_EQ(
-      limits.rate_limits_max_attribution_reporting_origins.has_value(),
-      event_level_status_ == EventLevelResult::kExcessiveReportingOrigins ||
-          aggregatable_status_ ==
-              AggregatableResult::kExcessiveReportingOrigins);
+  DCHECK((event_level_status_ != EventLevelResult::kExcessiveReportingOrigins &&
+          aggregatable_status_ !=
+              AggregatableResult::kExcessiveReportingOrigins) ||
+         limits.rate_limits_max_attribution_reporting_origins.has_value());
 
-  DCHECK_EQ(limits.max_event_level_reports_per_destination.has_value(),
-            event_level_status_ ==
-                EventLevelResult::kNoCapacityForConversionDestination);
+  DCHECK(event_level_status_ !=
+             EventLevelResult::kNoCapacityForConversionDestination ||
+         limits.max_event_level_reports_per_destination.has_value());
 
-  DCHECK_EQ(limits.max_aggregatable_reports_per_destination.has_value(),
-            aggregatable_status_ ==
-                AggregatableResult::kNoCapacityForConversionDestination);
+  DCHECK(aggregatable_status_ !=
+             AggregatableResult::kNoCapacityForConversionDestination ||
+         limits.max_aggregatable_reports_per_destination.has_value());
 
   DCHECK_EQ(dropped_event_level_report_.has_value(),
             event_level_status_ == EventLevelResult::kPriorityTooLow ||
