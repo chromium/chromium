@@ -25,5 +25,11 @@ static_library("region_search") {
     "//components/search_engines:search_engines",
     "//content/public/browser",
     "//ui/views",
+
+    # TODO(crbug.com/346690052): use //chrome/browser/ui after fixing cyclic
+    # dependency.
+    "//chrome/common:mojo_bindings",
+    "//components/paint_preview/buildflags",
+    "//components/translate/content/common",
   ]
 }
