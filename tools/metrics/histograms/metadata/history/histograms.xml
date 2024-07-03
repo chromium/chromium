@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDeselectedNum"
-    units="units" expires_after="2024-05-04">
+    units="units" expires_after="2024-10-04">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDeselectedPercent"
-    units="%/5" expires_after="2024-05-04">
+    units="%/5" expires_after="2024-10-04">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.NumImportant" units="units"
-    expires_after="2024-05-04">
+    expires_after="2024-10-04">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>1456716</component>
