@@ -178,15 +178,6 @@ void NotifyUserEducationAboutAcceptedSuggestion(
         browser_context,
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
   }
-  if (suggestion.type == SuggestionType::kComposeSavedStateNotification ||
-      suggestion.type == SuggestionType::kComposeResumeNudge) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
-        browser_context, compose::features::kEnableComposeSavedStateNudge);
-  }
-  if (suggestion.type == SuggestionType::kComposeProactiveNudge) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
-        browser_context, compose::features::kEnableComposeProactiveNudge);
-  }
 
   // Notifications for the new badge system.
   if (suggestion.feature_for_new_badge) {

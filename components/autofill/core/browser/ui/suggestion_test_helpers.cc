@@ -28,11 +28,19 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
   return AllOf(EqualsSuggestion(id, main_text), Field(&Suggestion::icon, icon));
 }
 
-::testing::Matcher<Suggestion> EqualsSuggestion(
-    SuggestionType id,
+Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType type,
     const std::u16string& main_text,
     Suggestion::Icon icon,
-    const Suggestion::Payload& payload) {
+    const std::vector<std::vector<Suggestion::Text>>& labels) {
+  return AllOf(EqualsSuggestion(type, main_text, icon),
+               Field(&Suggestion::labels, labels));
+}
+
+Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
+                                     const std::u16string& main_text,
+                                     Suggestion::Icon icon,
+                                     const Suggestion::Payload& payload) {
   return AllOf(EqualsSuggestion(id, main_text, icon),
                Field(&Suggestion::payload, payload));
 }

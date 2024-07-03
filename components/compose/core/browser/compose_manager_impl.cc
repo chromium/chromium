@@ -177,7 +177,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
   std::u16string suggestion_text;
   std::u16string label_text;
-  SuggestionType type;
+  Suggestion suggestion;
   // State is saved as a `ComposeSession` in the `ComposeClient`. A user can
   // resume where they left off in a field if the `ComposeClient` has a
   // `ComposeSession` for that field.
@@ -185,22 +185,25 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   if (has_session) {
     // The nudge text indicates that the user can resume where they left off in
     // the Compose dialog.
-    suggestion_text =
-        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
+    suggestion.main_text = Suggestion::Text(
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT),
+        Suggestion::Text::IsPrimary(true));
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
-    type = trigger_source ==
-                   AutofillSuggestionTriggerSource::kComposeDialogLostFocus
-               ? SuggestionType::kComposeSavedStateNotification
-               : SuggestionType::kComposeResumeNudge;
+    suggestion.type =
+        trigger_source ==
+                AutofillSuggestionTriggerSource::kComposeDialogLostFocus
+            ? SuggestionType::kComposeSavedStateNotification
+            : SuggestionType::kComposeResumeNudge;
+    suggestion.feature_for_new_badge = &features::kEnableComposeSavedStateNudge;
   } else {
     // Text for a new Compose session.
-    suggestion_text =
-        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
+    suggestion.main_text = Suggestion::Text(
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT),
+        Suggestion::Text::IsPrimary(true));
     label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL);
-    type = SuggestionType::kComposeProactiveNudge;
+    suggestion.type = SuggestionType::kComposeProactiveNudge;
+    suggestion.feature_for_new_badge = &features::kEnableComposeProactiveNudge;
   }
-  Suggestion suggestion(std::move(suggestion_text));
-  suggestion.type = type;
   suggestion.icon = Suggestion::Icon::kPenSpark;
   // Add footer label if not using compact ui.
   if (!GetComposeConfig().proactive_nudge_compact_ui) {

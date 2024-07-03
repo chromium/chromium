@@ -466,12 +466,14 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
 
 std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
     const Suggestion& suggestion,
-    user_education::DisplayNewBadge show_new_badge) {
+    std::optional<user_education::DisplayNewBadge> show_new_badge) {
   auto view = std::make_unique<PopupRowContentView>();
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
       suggestion.main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_BODY_3_MEDIUM);
-  main_text_label->SetDisplayNewBadge(show_new_badge);
+  if (show_new_badge.has_value()) {
+    main_text_label->SetDisplayNewBadge(show_new_badge.value());
+  }
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label),
       /*minor_text_label=*/nullptr,
@@ -625,26 +627,14 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
                                             favicon_loader));
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeSavedStateNotification: {
-      // TODO: crbug.com/350873603 - Migrate Compose to use the Suggestion
-      // field.
-      const auto should_show_new_badge =
-          UserEducationService::MaybeShowNewBadge(
-              controller->GetWebContents()->GetBrowserContext(),
-              compose::features::kEnableComposeSavedStateNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateComposePopupRowContentView(suggestion, should_show_new_badge));
+          CreateComposePopupRowContentView(suggestion, show_new_badge));
     }
     case SuggestionType::kComposeProactiveNudge: {
-      // TODO: crbug.com/350873603 - Migrate Compose to use the Suggestion
-      // field.
-      const auto should_show_new_badge =
-          UserEducationService::MaybeShowNewBadge(
-              controller->GetWebContents()->GetBrowserContext(),
-              compose::features::kEnableComposeProactiveNudge);
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreateComposePopupRowContentView(suggestion, should_show_new_badge));
+          CreateComposePopupRowContentView(suggestion, show_new_badge));
     }
     default:
       return std::make_unique<PopupRowView>(
