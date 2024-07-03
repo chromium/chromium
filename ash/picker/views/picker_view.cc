@@ -417,12 +417,14 @@ void PickerView::StartSearch(const std::u16string& query) {
         query, selected_category_,
         base::BindRepeating(&PickerView::PublishSearchResults,
                             weak_ptr_factory_.GetWeakPtr()));
-  } else if (selected_category_.has_value()) {
-    SetActivePage(category_results_view_);
   } else {
+    if (selected_category_.has_value()) {
+      SetActivePage(category_results_view_);
+    } else {
+      SetActivePage(zero_state_view_);
+    }
     search_results_view_->ClearSearchResults();
     ResetEmojiBarToZeroState();
-    SetActivePage(zero_state_view_);
   }
 }
 
