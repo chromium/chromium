@@ -90,9 +90,13 @@ void DelayHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   if (!IsInitialized()) {
     return;
   }
-
-  DCHECK_LE(frames_to_process, render_quantum_frames_);
-  float values[render_quantum_frames_];
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
+  CHECK_EQ(render_quantum_frames_, render_quantum_frames_expected);
+  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
+  float values[render_quantum_frames_expected];
   delay_time_->CalculateSampleAccurateValues(values, frames_to_process);
 }
 

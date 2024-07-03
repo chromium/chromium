@@ -91,8 +91,15 @@ void StereoPannerHandler::Process(uint32_t frames_to_process) {
 }
 
 void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
-  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
+  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
+           render_quantum_frames_expected);
+
+  float values[render_quantum_frames_expected];
+  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
 
   pan_->CalculateSampleAccurateValues(values, frames_to_process);
 }

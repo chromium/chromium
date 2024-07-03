@@ -104,10 +104,15 @@ bool BiquadDSPKernel::HasConstantValuesForTesting(float* values,
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
-    float cutoff_frequency[RenderQuantumFrames()];
-    float q[RenderQuantumFrames()];
-    float gain[RenderQuantumFrames()];
-    float detune[RenderQuantumFrames()];  // in Cents
+    // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+    // longer be hardcoded as 128. At that point, we'll need to switch from
+    // stack allocation to heap allocation.
+    constexpr unsigned render_quantum_frames_expected = 128;
+    CHECK_EQ(RenderQuantumFrames(), render_quantum_frames_expected);
+    float cutoff_frequency[render_quantum_frames_expected];
+    float q[render_quantum_frames_expected];
+    float gain[render_quantum_frames_expected];
+    float detune[render_quantum_frames_expected];  // in Cents
 
     SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
                    RenderQuantumFrames());

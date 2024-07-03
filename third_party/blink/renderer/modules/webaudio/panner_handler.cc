@@ -217,20 +217,24 @@ void PannerHandler::Process(uint32_t frames_to_process) {
 void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
                                                 const AudioBus* source,
                                                 uint32_t frames_to_process) {
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
   const unsigned render_quantum_frames =
       GetDeferredTaskHandler().RenderQuantumFrames();
+  CHECK_EQ(render_quantum_frames, render_quantum_frames_expected);
+  CHECK_LE(frames_to_process, render_quantum_frames_expected);
 
-  CHECK_LE(frames_to_process, render_quantum_frames);
-
-  float panner_x[render_quantum_frames];
-  float panner_y[render_quantum_frames];
-  float panner_z[render_quantum_frames];
-  float orientation_x[render_quantum_frames];
-  float orientation_y[render_quantum_frames];
-  float orientation_z[render_quantum_frames];
-  double azimuth[render_quantum_frames];
-  double elevation[render_quantum_frames];
-  float total_gain[render_quantum_frames];
+  float panner_x[render_quantum_frames_expected];
+  float panner_y[render_quantum_frames_expected];
+  float panner_z[render_quantum_frames_expected];
+  float orientation_x[render_quantum_frames_expected];
+  float orientation_y[render_quantum_frames_expected];
+  float orientation_z[render_quantum_frames_expected];
+  double azimuth[render_quantum_frames_expected];
+  double elevation[render_quantum_frames_expected];
+  float total_gain[render_quantum_frames_expected];
 
   position_x_->CalculateSampleAccurateValues(panner_x, frames_to_process);
   position_y_->CalculateSampleAccurateValues(panner_y, frames_to_process);
@@ -292,7 +296,13 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
 }
 
 void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
+  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
+           render_quantum_frames_expected);
+  float values[render_quantum_frames_expected];
 
   DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
