@@ -723,6 +723,16 @@ void AppShimManager::OnShimLaunchRequested(
     DCHECK(found_app != apps_.end());
     AppState* app_state = found_app->second.get();
     if (app_state->IsMultiProfile()) {
+      // It is possible for `profiles` to be empty if the profile was closed
+      // while an initial launch attempt took place (and then failed, triggering
+      // a second launch attempt). In that case, simply fail the second launch
+      // as well.
+      if (app_state->profiles.empty()) {
+        LOG(ERROR)
+            << "Attempting to launch shim for which no profiles are loaded.";
+        std::move(terminated_callback).Run();
+        return;
+      }
       DCHECK(!app_state->profiles.empty());
       profile = app_state->profiles.begin()->first;
     } else {

@@ -2180,6 +2180,50 @@ TEST_F(AppShimManagerTest,
 }
 
 TEST_F(AppShimManagerTest,
+       AppShimFailToConnectForNotificationPermissionAfterBrowserClosed) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(&profile_a_));
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kBackground));
+
+  // Capture the terminated callback so we can simulate the app shim failing
+  // to launch.
+  ShimTerminatedCallback terminated_callback;
+  delegate_->SetCaptureShimTerminatedCallback(&terminated_callback);
+
+  // Trigger a notification permission request.
+  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
+      result;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result.GetCallback());
+
+  EXPECT_TRUE(host_aa_->test_app_shim_
+                  ->request_notification_permission_callback_.Wait());
+
+  // Pretend the last browser for this app/profile was just closed, and the
+  // profile has been unloaded as a result of that.
+  manager_->OnAppDeactivated(&profile_a_, kTestAppIdA);
+  EXPECT_CALL(*manager_, ProfileForPath(profile_path_a_))
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(*delegate_, AppIsInstalled(nullptr, kTestAppIdA))
+      .WillRepeatedly(Return(false));
+
+  // Report that the process terminated.
+  ASSERT_TRUE(terminated_callback);
+  std::move(terminated_callback).Run();
+}
+
+TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithAppShimFailingToLaunch) {
   scoped_feature_list_.InitWithFeatures(
       {features::kAppShimNotificationAttribution}, {});
