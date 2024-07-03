@@ -96,7 +96,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @DisableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testFlatBufferCleanup() throws IOException, TimeoutException, ExecutionException {
         List<File> flatBufferFiles = new ArrayList<>();
         List<File> legacyHandWrittenFiles = new ArrayList<>();
@@ -157,7 +157,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testFlatBufferMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getTestFile(1, false);
@@ -174,7 +174,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testLegacyHandWrittenMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getLegacyTestFile(1, false);
@@ -191,7 +191,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testCorruptTabStateFile() throws ExecutionException, IOException {
         File legacyFile = getLegacyTestFile(1, false);
         FileOutputStream legacyOutputStream = new FileOutputStream(legacyFile);
@@ -213,7 +213,7 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLATBUFFER)
+    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testFlatBufferFormatIncognito() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ true);
         TabStateFileManager.saveStateInternal(

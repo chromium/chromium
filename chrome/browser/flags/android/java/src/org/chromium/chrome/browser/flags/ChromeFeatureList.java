@@ -484,7 +484,7 @@ public abstract class ChromeFeatureList {
     public static final String TABLET_TAB_SWITCHER_LONG_PRESS_MENU =
             "TabletTabSwitcherLongPressMenu";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
-    public static final String TAB_STATE_FLATBUFFER = "TabStateFlatBuffer";
+    public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING =
             "TabWindowManagerIndexReassignmentActivityFinishing";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK =
@@ -675,7 +675,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(TAB_GROUP_PARITY_ANDROID, false);
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
-    public static final CachedFlag sTabStateFlatBuffer = newCachedFlag(TAB_STATE_FLATBUFFER, false);
+    public static final CachedFlag sTabStateFlatBuffer =
+            newCachedFlag(TAB_STATE_FLAT_BUFFER, false);
     public static final CachedFlag sTabStripLayoutOptimization =
             newCachedFlag(TAB_STRIP_LAYOUT_OPTIMIZATION, false);
     public static final CachedFlag sTabStripStartupRefactoring =

@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.MigrateTabTask;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
@@ -506,7 +505,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
@@ -614,7 +613,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
@@ -656,7 +655,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
@@ -703,7 +702,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
@@ -735,7 +734,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
@@ -852,7 +851,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLAT_BUFFER + "<Study"})
     @CommandLineFlags.Add({
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"

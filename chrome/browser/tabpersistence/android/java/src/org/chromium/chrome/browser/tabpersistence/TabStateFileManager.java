@@ -84,7 +84,7 @@ public class TabStateFileManager {
 
     public static final BooleanCachedFieldTrialParameter MIGRATE_STALE_TABS_CACHED_PARAM =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STATE_FLATBUFFER, "migrate_stale_tabs", false);
+                    ChromeFeatureList.TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", false);
 
     /** Enum representing the exception that occurred during {@link restoreTabState}. */
     @IntDef({
