@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_UKM_MANAGER_H_
-#define CC_TREES_UKM_MANAGER_H_
+#ifndef CC_METRICS_UKM_MANAGER_H_
+#define CC_METRICS_UKM_MANAGER_H_
 
 #include <memory>
 #include <vector>
@@ -66,4 +66,4 @@ class CC_EXPORT UkmManager {
 
 }  // namespace cc
 
-#endif  // CC_TREES_UKM_MANAGER_H_
+#endif  // CC_METRICS_UKM_MANAGER_H_

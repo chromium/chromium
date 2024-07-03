@@ -68,7 +68,6 @@
 #include "cc/trees/swap_promise_manager.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
-#include "cc/trees/ukm_manager.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"

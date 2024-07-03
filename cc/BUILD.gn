@@ -214,6 +214,8 @@ cc_component("cc") {
     "metrics/submit_info.h",
     "metrics/total_frame_counter.cc",
     "metrics/total_frame_counter.h",
+    "metrics/ukm_manager.cc",
+    "metrics/ukm_manager.h",
     "metrics/ukm_smoothness_data.cc",
     "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
@@ -443,8 +445,6 @@ cc_component("cc") {
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
     "trees/tree_synchronizer.h",
-    "trees/ukm_manager.cc",
-    "trees/ukm_manager.h",
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
     "trees/viewport_property_ids.h",
@@ -783,6 +783,7 @@ cc_test("cc_unittests") {
     "metrics/scroll_jank_dropped_frame_tracker_unittest.cc",
     "metrics/scroll_jank_ukm_reporter_unittest.cc",
     "metrics/total_frame_counter_unittest.cc",
+    "metrics/ukm_manager_unittest.cc",
     "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
     "paint/clear_for_opaque_raster_unittest.cc",
@@ -873,7 +874,6 @@ cc_test("cc_unittests") {
     "trees/swap_promise_manager_unittest.cc",
     "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
-    "trees/ukm_manager_unittest.cc",
     "view_transition/view_transition_request_unittest.cc",
 
     # Animation test files.

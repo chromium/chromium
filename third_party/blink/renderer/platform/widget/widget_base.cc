@@ -19,7 +19,6 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "cc/trees/ukm_manager.h"
 #include "components/viz/common/features.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"

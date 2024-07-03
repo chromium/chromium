@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/rand_util.h"
-#include "cc/trees/ukm_manager.h"
+#include "cc/metrics/ukm_manager.h"
 
 namespace cc {
 

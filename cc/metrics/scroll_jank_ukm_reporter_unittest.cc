@@ -10,7 +10,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
-#include "cc/trees/ukm_manager.h"
+#include "cc/metrics/ukm_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
