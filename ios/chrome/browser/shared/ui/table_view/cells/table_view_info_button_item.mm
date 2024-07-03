@@ -42,7 +42,7 @@
   if (self.accessibilityHint) {
     cell.customizedAccessibilityHint = self.accessibilityHint;
   }
-  if (self.accessibilityDelegate) {
+  if (self.accessibilityDelegate && !self.infoButtonIsHidden) {
     cell.accessibilityCustomActions = [self createAccessibilityActions];
   }
   cell.isButtonSelectedForVoiceOver = self.accessibilityActivationPointOnButton;
