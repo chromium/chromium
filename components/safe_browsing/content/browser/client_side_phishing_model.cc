@@ -675,7 +675,7 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
       break;
     }
     case CSDModelType::kNone:
-      VLOG(2) << "Model type should have been a flatbuffer";
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

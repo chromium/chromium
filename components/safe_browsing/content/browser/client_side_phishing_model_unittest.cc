@@ -348,19 +348,42 @@ TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
+
+  base::test::ScopedCommandLine command_line;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath nonexistent_path =
+      temp_dir.GetPath().AppendASCII("nonexistent");
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      "csd-model-override-path", nonexistent_path);
+
+  // Try overriding without setting anything in file path initially.
+  service()->MaybeOverrideModel();
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kNone);
+
+  const base::FilePath empty_path;
+
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      "csd-model-override-path", empty_path);
+
+  // Try overriding now with just an empty file path.
+  service()->MaybeOverrideModel();
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kNone);
+
   const base::FilePath file_path = temp_dir.GetPath();
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      "csd-model-override-path", file_path);
+
+  // Try overriding now with just a valid file path, but no files.
+  service()->MaybeOverrideModel();
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kNone);
+
   base::File file(file_path.AppendASCII("client_model.pb"),
                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                       base::File::FLAG_WRITE);
 
   const std::string file_contents = CreateFlatBufferString();
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
-
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchPath(
-      "csd-model-override-path", file_path);
 
   base::RunLoop run_loop;
   bool called = false;
@@ -372,6 +395,8 @@ TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
           },
           run_loop.QuitClosure(), &called));
 
+  // We now have everything, so we can expect the subscription to properly run
+  // and the model will be set.
   service()->MaybeOverrideModel();
 
   run_loop.Run();
@@ -381,7 +406,6 @@ TEST_F(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
       service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
   EXPECT_EQ(model_str_from_shared_mem, file_contents);
   EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
-
   EXPECT_TRUE(called);
 }
 
