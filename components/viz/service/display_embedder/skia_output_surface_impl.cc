@@ -516,7 +516,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
-  TRACE_EVENT0("viz", "SkiaOutputSurfaceImpl::MakePromiseSkImage");
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
+               "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
   ImageContextImpl* image_context_impl =
       static_cast<ImageContextImpl*>(image_context);
