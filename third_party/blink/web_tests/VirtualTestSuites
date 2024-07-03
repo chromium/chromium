@@ -208,7 +208,7 @@
              "--enable-accelerated-2d-canvas",
              "--disable-features=CanvasOopRasterization"],
     "owners": ["ikilpatrick@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
 
   "This never expires because it tests a shipping configuration",
