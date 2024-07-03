@@ -68,6 +68,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Accepted tapped"/>
 </enum>
 
+<enum name="ContentNotificationSettingsAction">
+  <int value="0" label="Enabled Content Notifications Toggle."/>
+  <int value="1" label="Disabled Content Notifications Toggle."/>
+  <int value="2" label="Enabled Sports Notifications Toggle."/>
+  <int value="3" label="Disabled Sports Notifications Toggle."/>
+</enum>
+
 <enum name="ContentNotificationSetUpListPromoAction">
   <int value="0" label="Accept"/>
   <int value="1" label="Cancel"/>

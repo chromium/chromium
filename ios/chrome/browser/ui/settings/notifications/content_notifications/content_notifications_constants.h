@@ -7,6 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
+// The action that has occurred from the settings toggle for Content
+// Notifications.
+// LINT.IfChange
+enum class ContentNotificationSettingsToggleAction {
+  kEnabledContent = 0,
+  kDisabledContent = 1,
+  kEnabledSports = 2,
+  kDisabledSports = 3,
+  kMaxValue = kDisabledSports,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
 // The accessibility identifier of the Content Notifications setting table view.
 extern NSString* const kContentNotificationsTableViewId;
 

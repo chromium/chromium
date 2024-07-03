@@ -287,6 +287,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.Settings.Action"
+    enum="ContentNotificationSettingsAction" expires_after="2024-12-20">
+  <owner>guiperez@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The action taken by the user in the content notification settings view.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
     enum="PermissionType" expires_after="2025-07-10">
