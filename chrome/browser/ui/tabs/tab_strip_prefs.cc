@@ -11,6 +11,12 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
+namespace {
+
+std::optional<bool> g_tab_search_right_aligned_at_startup = std::nullopt;
+
+}
+
 namespace tabs {
 
 bool GetDefaultTabSearchRightAligned() {
@@ -28,12 +34,19 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 bool GetTabSearchRightAligned(const Profile* profile) {
-  // If the setting isn't enabled, just use the default behavior.
-  if (!CanShowTabSearchPositionSetting()) {
-    return GetDefaultTabSearchRightAligned();
+  // If this pref has already been read, we need to return the same value.
+  if (!g_tab_search_right_aligned_at_startup.has_value()) {
+    g_tab_search_right_aligned_at_startup =
+        profile && CanShowTabSearchPositionSetting()
+            ? profile->GetPrefs()->GetBoolean(prefs::kTabSearchRightAligned)
+            : GetDefaultTabSearchRightAligned();
   }
 
-  return profile->GetPrefs()->GetBoolean(prefs::kTabSearchRightAligned);
+  return g_tab_search_right_aligned_at_startup.value();
+}
+
+void SetTabSearchRightAlignedForTesting(bool is_right_aligned) {
+  g_tab_search_right_aligned_at_startup = is_right_aligned;
 }
 
 }  // namespace tabs

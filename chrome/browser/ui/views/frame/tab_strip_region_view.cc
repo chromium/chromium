@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
@@ -88,8 +89,9 @@ bool ShouldShowNewTabButton(const Browser* browser) {
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
-    : render_tab_search_before_tab_strip_(
-          TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip()) {
+    : render_tab_search_before_tab_strip_(!tabs::GetTabSearchRightAligned(
+          tab_strip->GetBrowser() ? tab_strip->GetBrowser()->profile()
+                                  : nullptr)) {
   views::SetCascadingColorProviderColor(
       this, views::kCascadingBackgroundColor,
       kColorTabBackgroundInactiveFrameInactive);

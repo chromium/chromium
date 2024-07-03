@@ -22,6 +22,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // Return the value of the preference for TabSearchPosition.
 bool GetTabSearchRightAligned(const Profile* profile);
 
+void SetTabSearchRightAlignedForTesting(bool is_right_aligned);
+
 }  // namespace tabs
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_PREFS_H_

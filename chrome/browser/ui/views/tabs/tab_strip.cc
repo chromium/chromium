@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -1707,6 +1708,10 @@ bool TabStrip::IsTabFirst(const Tab* tab) const {
 
 bool TabStrip::IsFocusInTabs() const {
   return GetFocusManager() && Contains(GetFocusManager()->GetFocusedView());
+}
+
+bool TabStrip::ShouldCompactLeadingEdge() const {
+  return tabs::GetTabSearchRightAligned(controller_->GetProfile());
 }
 
 void TabStrip::MaybeStartDrag(
