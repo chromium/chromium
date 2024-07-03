@@ -13,6 +13,8 @@ source_set("top_chrome") {
     "profile_preload_candidate_selector.h",
     "top_chrome_web_ui_controller.cc",
     "top_chrome_web_ui_controller.h",
+    "top_chrome_webui_config.cc",
+    "top_chrome_webui_config.h",
     "untrusted_top_chrome_web_ui_controller.cc",
     "untrusted_top_chrome_web_ui_controller.h",
   ]
