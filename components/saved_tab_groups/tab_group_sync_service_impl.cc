@@ -64,6 +64,9 @@ void TabGroupSyncServiceImpl::SetCoordinator(
     std::unique_ptr<TabGroupSyncCoordinator> coordinator) {
   CHECK(!coordinator_);
   coordinator_ = std::move(coordinator);
+  if (IsTabGroupSyncCoordinatorEnabled()) {
+    AddObserver(coordinator_.get());
+  }
 }
 
 void TabGroupSyncServiceImpl::AddObserver(

@@ -41,6 +41,8 @@ extern bool IsTabGroupsSaveUIUpdateEnabled();
 
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
+extern bool IsTabGroupSyncCoordinatorEnabled();
+
 extern bool IsMigrationFromJavaSharedPrefsEnabled();
 
 extern bool AlwaysAcceptServerDataInModel();

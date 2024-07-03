@@ -19,12 +19,9 @@ TabGroupSyncCoordinator::TabGroupSyncCoordinator(
       startup_helper_(platform_delegate_.get(), service_) {
   CHECK(platform_delegate_);
   CHECK(service_);
-
-  service_->AddObserver(this);
 }
 
 TabGroupSyncCoordinator::~TabGroupSyncCoordinator() {
-  service_->RemoveObserver(this);
 }
 
 void TabGroupSyncCoordinator::OnInitialized() {

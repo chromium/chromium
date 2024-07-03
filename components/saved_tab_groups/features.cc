@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace tab_groups {
 // Core feature flag for tab group sync on Android.
@@ -95,6 +96,14 @@ bool IsTabGroupsSaveUIUpdateEnabled() {
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);
+}
+
+bool IsTabGroupSyncCoordinatorEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return true;
+#endif
 }
 
 bool IsMigrationFromJavaSharedPrefsEnabled() {
