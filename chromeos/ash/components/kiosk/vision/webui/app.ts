@@ -5,7 +5,11 @@
 import './strings.m.js';
 
 import { BrowserProxy } from './browser_proxy.js';
-import { Status, type State } from './kiosk_vision_internals.mojom-webui.js';
+import {
+  Status,
+  type State,
+  type Box,
+} from './kiosk_vision_internals.mojom-webui.js';
 import {
   PolymerElement,
 } from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -97,8 +101,8 @@ function draw(state: State, overlay: HTMLCanvasElement) {
 
   ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-  // TODO(crbug.com/345457885): Fix coordinates based on `overlay` size.
-  for (const { x, y, width, height } of state.boxes) {
+  for (const box of state.boxes) {
+    const { x, y, width, height } = toCanvasCoordinates(overlay, box);
     ctx.beginPath();
     ctx.rect(x, y, width, height);
     ctx.lineWidth = 1;
@@ -115,4 +119,20 @@ function getCameraStream(): Promise<MediaStream | null> {
     console.error('Failed to get camera stream:', error);
     return null;
   });
+}
+
+// Chrome emits Box dimensions on a 569x320 grid. This maps dimensions to
+// `canvas.width` x `canvas.height` sizes.
+function toCanvasCoordinates(canvas: HTMLCanvasElement, box: Box): Box {
+  const FRAME_WIDTH = 569;
+  const FRAME_HEIGHT = 320;
+  box.x = scaleCoordinate(box.x, FRAME_WIDTH, canvas.width);
+  box.y = scaleCoordinate(box.y, FRAME_HEIGHT, canvas.height);
+  box.width = scaleCoordinate(box.width, FRAME_WIDTH, canvas.width);
+  box.height = scaleCoordinate(box.height, FRAME_HEIGHT, canvas.height);
+  return box;
+}
+
+function scaleCoordinate(x: number, currentMax: number, newMax: number) {
+  return x / currentMax * newMax;
 }
