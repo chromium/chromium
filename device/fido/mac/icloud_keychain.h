@@ -6,6 +6,8 @@
 #define DEVICE_FIDO_MAC_ICLOUD_KEYCHAIN_H_
 
 #include <memory>
+#include <optional>
+
 #include "base/component_export.h"
 
 namespace device {
@@ -33,6 +35,11 @@ COMPONENT_EXPORT(DEVICE_FIDO) bool IsSupported();
 // created synchronously after getting the `BrowserWindow` of a `WebContents`.)
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window);
+
+// Returns true if the user has granted passkey enumeration permission, false if
+// they have denied it, and `nullopt` if the user hasn't made a choice.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::optional<bool> HasPermission();
 
 }  // namespace fido::icloud_keychain
 }  // namespace device

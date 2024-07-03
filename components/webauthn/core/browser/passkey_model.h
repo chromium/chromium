@@ -87,6 +87,9 @@ class PasskeyModel : public KeyedService {
   // to sync.
   virtual bool IsReady() const = 0;
 
+  // Returns true if there are no passkeys in the account.
+  virtual bool IsEmpty() const = 0;
+
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
 
   // Returns the list of all passkeys, including those that are shadowed.

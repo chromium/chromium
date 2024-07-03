@@ -493,4 +493,18 @@ std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
   NOTREACHED_NORETURN();
 }
 
+std::optional<bool> HasPermission() {
+  if (@available(macOS 13.5, *)) {
+    switch (GetSystemInterface()->GetAuthState()) {
+      case SystemInterface::kAuthNotAuthorized:
+        return std::nullopt;
+      case SystemInterface::kAuthDenied:
+        return false;
+      case SystemInterface::kAuthAuthorized:
+        return true;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace device::fido::icloud_keychain
