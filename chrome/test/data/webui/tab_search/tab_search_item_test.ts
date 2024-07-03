@@ -4,7 +4,8 @@
 
 import type {RecentlyClosedTab, Tab, TabGroup, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabAlertState, TabData, TabGroupColor, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertNotReached} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTab, sampleToken} from './tab_search_test_data.js';
 
@@ -136,5 +137,35 @@ suite('TabSearchItemTest', () => {
         tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#mediaAlert');
     assertNotEquals(null, recordingMediaAlert);
     assertEquals('media-recording', recordingMediaAlert!.getAttribute('class'));
+  });
+
+  // Regression test for crbug.com/344481686.
+  test('RerendersWithoutErrorWhenDataChanges', async () => {
+    function createTabInTabGroup(title: string): TabData {
+      const tabGroup: TabGroup = {
+        id: sampleToken(1n, 1n),
+        color: TabGroupColor.kBlue,
+        title,
+      };
+
+      const tabData = new TabData(
+          createTab({groupId: tabGroup.id}), TabItemType.OPEN_TAB, title);
+      tabData.tabGroup = tabGroup;
+
+      return tabData;
+    }
+
+    setupTest(createTabInTabGroup('Group1'));
+    await microtasksFinished();
+
+    tabSearchItem.data = createTabInTabGroup('Group2');
+    try {
+      await tabSearchItem.updateComplete;
+    } catch (e) {
+      // Ensure that the following error is not thrown anymore.
+      // TypeError: Cannot set properties of null (setting 'data')"
+      assertNotReached(
+          `Should not have thrown error: '${(e as Error).message}`);
+    }
   });
 });

@@ -27,7 +27,7 @@ export function getHtml(this: TabSearchItemElement) {
       <circle id= "groupDot" cx="0" cy="0" r="4">
     </svg>
     ${this.hasTabGroupWithTitle_() ? html`
-      <div id="groupTitle">${this.data.tabGroup!.title}</div>
+      <div id="groupTitle"></div>
       <div class="separator">•</div>
     ` : ''}
     <div id="secondaryText"></div>
