@@ -70,8 +70,9 @@ std::optional<syncer::ModelError>
 PlusAddressSettingSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // Since PLUS_ADDRESS_SETTING is read-only, merging local and sync data is the
-  // same as applying changes from sync locally.
+  // Since the local storage is cleared when the data type is disabled in
+  // `ApplyDisableSyncChanges()`, no local data exists during
+  // `MergeFullSyncData()`.
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
 }
@@ -119,8 +120,14 @@ void PlusAddressSettingSyncBridge::ApplyDisableSyncChanges(
 
 std::unique_ptr<syncer::DataBatch>
 PlusAddressSettingSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
-  // PLUS_ADDRESS_SETTING is read-only, so `GetDataForCommit()` is not needed.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const std::string& key : storage_keys) {
+    if (auto setting = GetSetting(key)) {
+      batch->Put(key, CreateEntityData(*setting));
+    }
+  }
+  return batch;
 }
 
 std::unique_ptr<syncer::DataBatch>

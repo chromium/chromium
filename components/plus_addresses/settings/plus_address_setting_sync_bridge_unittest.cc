@@ -29,6 +29,7 @@ namespace {
 
 using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
 using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 
 // Matchers for `SettingSpecifics` args with given name and values.
 MATCHER_P2(HasBoolSetting, name, value, "") {
@@ -47,6 +48,19 @@ syncer::EntityData EntityFromSpecifics(const SettingSpecifics& specifics) {
   syncer::EntityData entity;
   *entity.specifics.mutable_plus_address_setting() = specifics;
   return entity;
+}
+
+// Assumes that `batch` only contains entities with `SettingSpecifics` and
+// extracts them into a vector.
+std::vector<SettingSpecifics> ExtractSpecificsFromBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<SettingSpecifics> specifics;
+  while (batch->HasNext()) {
+    std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
+    CHECK(entity->specifics.has_plus_address_setting());
+    specifics.push_back(entity->specifics.plus_address_setting());
+  }
+  return specifics;
 }
 
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
@@ -211,22 +225,23 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ApplyDisableSyncChanges) {
   EXPECT_FALSE(bridge().GetSetting("name"));
 }
 
+TEST_F(PlusAddressSettingSyncBridgeTest, GetDataForCommit) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
+                                  CreateSettingSpecifics("name2", true)}));
+  EXPECT_THAT(ExtractSpecificsFromBatch(bridge().GetDataForCommit({"name1"})),
+              UnorderedElementsAre(HasStringSetting("name1", "string")));
+}
+
 TEST_F(PlusAddressSettingSyncBridgeTest, GetAllDataForDebugging) {
   ASSERT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name1", "string"),
                                   CreateSettingSpecifics("name2", true),
                                   CreateSettingSpecifics("name3", 123)}));
-  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
-  std::vector<SettingSpecifics> specifics;
-  while (batch->HasNext()) {
-    std::unique_ptr<syncer::EntityData> entity = batch->Next().second;
-    ASSERT_TRUE(entity->specifics.has_plus_address_setting());
-    specifics.push_back(entity->specifics.plus_address_setting());
-  }
-  EXPECT_THAT(specifics,
-              testing::UnorderedElementsAre(HasStringSetting("name1", "string"),
-                                            HasBoolSetting("name2", true),
-                                            HasIntSetting("name3", 123)));
+  EXPECT_THAT(ExtractSpecificsFromBatch(bridge().GetAllDataForDebugging()),
+              UnorderedElementsAre(HasStringSetting("name1", "string"),
+                                   HasBoolSetting("name2", true),
+                                   HasIntSetting("name3", 123)));
 }
 
 }  // namespace
