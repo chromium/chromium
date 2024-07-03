@@ -93,6 +93,11 @@ StreamingSearchPrefetchURLLoader::ResponseReader::ResponseReader(
       base::BindOnce(&StreamingSearchPrefetchURLLoader::ResponseReader::
                          OnForwardingDisconnection,
                      base::Unretained(this)));
+  if (url_loader_completion_status_) {
+    // The prefetch request is completed before serving to the prerender
+    // navigation, so mark the completion time as now.
+    url_loader_completion_status_->completion_time = base::TimeTicks::Now();
+  }
 }
 
 StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() {
