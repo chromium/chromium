@@ -175,6 +175,8 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 OmniboxPopupViewViews::~OmniboxPopupViewViews() {
@@ -254,7 +256,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       }
       popup_->CloseAnimated();  // This will eventually delete the popup.
       popup_.reset();
-      NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+      UpdateExpandedCollapsedAccessibleState();
       // The active descendant should be cleared when the popup closes.
       FireAXEventsForNewActiveDescendant(nullptr);
     }
@@ -345,7 +347,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     popup_->ShowAnimated();
 
     // Popup is now expanded and first item will be selected.
-    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+    UpdateExpandedCollapsedAccessibleState();
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
       FireAXEventsForNewActiveDescendant(result_view);
@@ -380,7 +382,7 @@ void OmniboxPopupViewViews::OnDragCanceled() {
 
 void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  return GetAccessibleNodeData(node_data);
+  return GetViewAccessibility().GetAccessibleNodeData(node_data);
 }
 
 void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
@@ -612,16 +614,21 @@ void OmniboxPopupViewViews::SetSuggestionGroupVisibility(
 
 void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
-  if (IsOpen()) {
-    node_data->AddState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kCollapsed);
+  if (!IsOpen()) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }
 
   if (omnibox_view_) {
     int32_t view_id = omnibox_view_->GetViewAccessibility().GetUniqueId();
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, view_id);
+  }
+}
+
+void OmniboxPopupViewViews::UpdateExpandedCollapsedAccessibleState() const {
+  if (IsOpen()) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
   }
 }
 

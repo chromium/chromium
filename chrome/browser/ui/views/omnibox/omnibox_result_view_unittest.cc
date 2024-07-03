@@ -299,7 +299,7 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
 
   // Check accessibility of list box.
   ui::AXNodeData popup_node_data;
-  popup_view()->GetAccessibleNodeData(&popup_node_data);
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
   EXPECT_EQ(popup_node_data.role, ax::mojom::Role::kListBox);
   EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kCollapsed));

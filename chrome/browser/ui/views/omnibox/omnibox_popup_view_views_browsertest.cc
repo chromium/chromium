@@ -545,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Check accessibility of list box while it's open.
   ui::AXNodeData popup_node_data_while_open;
-  popup_view()->GetAccessibleNodeData(&popup_node_data_while_open);
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &popup_node_data_while_open);
   EXPECT_EQ(popup_node_data_while_open.role, ax::mojom::Role::kListBox);
   EXPECT_TRUE(popup_node_data_while_open.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(
@@ -554,6 +555,17 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       popup_node_data_while_open.HasState(ax::mojom::State::kInvisible));
   EXPECT_TRUE(popup_node_data_while_open.HasIntAttribute(
       ax::mojom::IntAttribute::kPopupForId));
+
+  // Check accessibility of list box while it's closed.
+  controller()->autocomplete_controller()->Stop(true);
+  popup_view()->UpdatePopupAppearance();
+  popup_node_data_while_open = ui::AXNodeData();
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &popup_node_data_while_open);
+  EXPECT_FALSE(
+      popup_node_data_while_open.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(
+      popup_node_data_while_open.HasState(ax::mojom::State::kCollapsed));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
