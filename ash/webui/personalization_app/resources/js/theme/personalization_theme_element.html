@@ -90,7 +90,8 @@
   <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0"
-      selected-item="{{selectedButton_}}" role="radiogroup">
+      selected-item="{{selectedButton_}}" role="radiogroup"
+      selectable="cr-button">
     <cr-button id="lightMode" data-color-mode="LIGHT"
         on-click="onClickColorModeButton_"
         aria-checked$="[[getLightAriaChecked_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
@@ -112,17 +113,20 @@
         on-click="onClickAutoModeButton_"
         on-keypress="onClickAutoModeButton_" tabindex="-1"
         aria-checked$="[[getAutoAriaChecked_(colorModeAutoScheduleEnabled_)]]"
-        aria-description="$i18n{ariaLabelEnableAutoColorMode}"
+        aria-describedby="autoColorModeDescription hiddenSeparator locationDeniedInfoIcon"
+        aria-label="$i18n{autoColorMode}"
         title="$i18n{tooltipAutoColorMode}"
         role="radio">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
       <div class="text" aria-hidden="true">$i18n{autoColorMode}</div>
+      <p hidden id="autoColorModeDescription">$i18n{tooltipAutoColorMode}</p>
+      <p hidden id="hiddenSeparator">.</p>
     </cr-button>
     <template is="dom-if"
         if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
         restamp>
-      <cr-tooltip-icon tabindex="-1"
-          id="infoIcon"
+      <cr-tooltip-icon
+          id="locationDeniedInfoIcon"
           icon-class="cr:error"
           tooltip-text="$i18n{errorTooltipAutoColorMode}"
           icon-aria-label="$i18n{errorTooltipAutoColorMode}"
