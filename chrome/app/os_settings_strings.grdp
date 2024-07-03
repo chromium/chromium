@@ -6632,12 +6632,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_REVAMP_ENABLE_SUGGESTED_CONTENT_DESCRIPTION" desc="The description of the checkbox to enable/disable Suggested Content in ChromeOS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
   See suggestions for new apps and web content in Launcher and search results. Sends statistics to improve suggestions only if you have chosen to send crash reports and diagnostics and usage data to ChromeOS.
   </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_MAHI" desc="The label of the checkbox to enable/disable Mahi in ChromeOS settings." translateable="false">
-    Mahi
-  </message>
-  <message name="IDS_OS_SETTINGS_ENABLE_MAHI_DESCRIPTION" desc="The description of the checkbox to enable/disable Mahi in ChromeOS settings." translateable="false">
-    Use Mahi in ChromeOS.
-  </message>
   <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">
     Enable Verified Access
   </message>

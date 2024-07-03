@@ -304,8 +304,6 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kLocalizedStrings[] = {
       {"enableMagicBoost", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST},
       {"enableMagicBoostDesc", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION},
-      {"enableMahi", IDS_OS_SETTINGS_ENABLE_MAHI},
-      {"enableMahiDesc", IDS_OS_SETTINGS_ENABLE_MAHI_DESCRIPTION},
       {"enableHelpMeRead", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ},
       {"enableHelpMeReadDesc", IDS_OS_SETTINGS_ENABLE_HELP_ME_READ_DESCRIPTION},
       {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
