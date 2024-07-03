@@ -59,6 +59,9 @@ PlusAddressSettingServiceImpl::GetSyncControllerDelegate() {
 }
 
 bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name) const {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+    return false;
+  }
   if (auto setting = sync_bridge_->GetSetting(name)) {
     CHECK(setting->has_bool_value());
     return setting->bool_value();
