@@ -3537,8 +3537,14 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
 // TODO(crbug.com/346982005): The test is showing flakiness.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Submission DISABLED_Submission
+#else
+#define MAYBE_Submission Submission
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       Submission) {
+                       MAYBE_Submission) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3556,8 +3562,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ProbableSubmission DISABLED_ProbableSubmission
+#else
+#define MAYBE_ProbableSubmission ProbableSubmission
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       ProbableSubmission) {
+                       MAYBE_ProbableSubmission) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3578,8 +3590,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a same document navigation can trigger a form submission.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SameDocumentNavigation DISABLED_SameDocumentNavigation
+#else
+#define MAYBE_SameDocumentNavigation SameDocumentNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       SameDocumentNavigation) {
+                       MAYBE_SameDocumentNavigation) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3611,8 +3629,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that an XHR request can indicate a form submission.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_XhrSucceededAndHideForm DISABLED_XhrSucceededAndHideForm
+#else
+#define MAYBE_XhrSucceededAndHideForm XhrSucceededAndHideForm
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       XhrSucceededAndHideForm) {
+                       MAYBE_XhrSucceededAndHideForm) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3679,8 +3703,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that a DOM mutation after an XHR can indicate a form submission.
 // TODO(crbug.com/346982005): The test is showing flakiness.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DomMutationAfterXhr DISABLED_DomMutationAfterXhr
+#else
+#define MAYBE_DomMutationAfterXhr DomMutationAfterXhr
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       DomMutationAfterXhr) {
+                       MAYBE_DomMutationAfterXhr) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3714,8 +3744,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // Tests that FormFieldData::user_input has the text that the user typed into
 // the field. This is needed in order to show the save-card dialog when the
 // page replaces the <input> value with '***'.
+// Flaky on Win; crbug.com/334206428
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RememberUserInput DISABLED_RememberUserInput
+#else
+#define MAYBE_RememberUserInput RememberUserInput
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       RememberUserInput) {
+                       MAYBE_RememberUserInput) {
   const std::vector<NameValueUserInput> kExpectedSubmittedValues{
       {u"name", u"JS Modified Name", u"Sarah"},
       {u"address", u"JS Modified Address", u"123 Main Road"},
