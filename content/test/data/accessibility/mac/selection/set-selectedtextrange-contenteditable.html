@@ -2,19 +2,19 @@
 @SCRIPT:
   // select 1st word
   ce.AXSelectedTextRange = {loc: 0, len: 3}
-  wait for AXSelectedTextChanged on AXTextArea
+  wait for AXSelectedTextChanged on AXGroup
   ce.AXSelectedText
 
 @SCRIPT:
   // select text inside span
   ce.AXSelectedTextRange = {loc: 22, len: 4}
-  wait for AXSelectedTextChanged on AXTextArea
+  wait for AXSelectedTextChanged on AXGroup
   ce.AXSelectedText
 
 @SCRIPT:
   // select text that starts in the <span> and ends in the <em>
   ce.AXSelectedTextRange = {loc: 24, len: 15}
-  wait for AXSelectedTextChanged on AXTextArea
+  wait for AXSelectedTextChanged on AXGroup
   ce.AXSelectedText
 -->
 <!DOCTYPE html>
