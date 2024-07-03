@@ -670,3 +670,70 @@ source_set("unit_tests") {
     "//ui/display:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "browser_data_back_migrator_browsertest.cc",
+    "browser_data_migrator_browsertest.cc",
+    "file_change_service_bridge_ash_browsertest.cc",
+    "magic_boost_ash_browsertest.cc",
+    "mahi_ash_browsertest.cc",
+    "media_ui_ash_browsertest.cc",
+    "network_settings_service_ash_browsertest.cc",
+    "power_ash_apitest.cc",
+    "print_preview_ash_browsertest.cc",
+    "screen_manager_ash_browsertest.cc",
+    "suggestion_service_ash_browsertest.cc",
+    "task_manager_ash_browsertest.cc",
+    "video_conference_ash_browsertest.cc",
+    "vpn_extension_observer_ash_browsertest.cc",
+    "web_app_provider_bridge_browsertest.cc",
+  ]
+
+  if (!is_official_build) {
+    sources += [ "sharesheet_ash_browsertest.cc" ]
+  }
+
+  deps = [
+    ":crosapi",
+    ":test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/ash/mahi",
+    "//chrome/browser/ash/net",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ash/video_conference",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/printing:test_support",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/account_id",
+    "//components/exo",
+    "//components/global_media_controls:test_support",
+    "//components/user_manager",
+    "//components/webapps/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/base/idle:test_support",
+  ]
+}

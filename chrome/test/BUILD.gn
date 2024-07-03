@@ -315,6 +315,10 @@ static_library("test_support") {
       "../browser/extensions/extension_service_test_with_install.h",
       "../browser/extensions/extension_service_user_test_base.cc",
       "../browser/extensions/extension_service_user_test_base.h",
+      "../browser/task_manager/task_manager_browsertest_util.cc",
+      "../browser/task_manager/task_manager_browsertest_util.h",
+      "../browser/task_manager/task_manager_tester.cc",
+      "../browser/task_manager/task_manager_tester.h",
       "../browser/ui/webui/extensions/extension_settings_test_base.cc",
       "../browser/ui/webui/extensions/extension_settings_test_base.h",
     ]
@@ -324,6 +328,7 @@ static_library("test_support") {
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
       "//extensions/renderer",
+      "//extensions/strings",
     ]
   }
 
@@ -2831,10 +2836,6 @@ if (!is_android) {
       "../browser/task_manager/providers/web_contents/web_app_tag_browsertest.cc",
       "../browser/task_manager/providers/worker_task_provider_browsertest.cc",
       "../browser/task_manager/task_manager_browsertest.cc",
-      "../browser/task_manager/task_manager_browsertest_util.cc",
-      "../browser/task_manager/task_manager_browsertest_util.h",
-      "../browser/task_manager/task_manager_tester.cc",
-      "../browser/task_manager/task_manager_tester.h",
       "../browser/themes/theme_service_browsertest.cc",
       "../browser/top_level_storage_access_api/request_storage_access_for_browsertest.cc",
       "../browser/tpcd/experiment/eligibility_service_browsertest.cc",
@@ -4522,40 +4523,6 @@ if (!is_android) {
           [ "//chrome/browser/internal/resources/signin/test_accounts.json" ]
     }
 
-    # Browser tests for functionality that is only intended to be present in
-    # ash-chrome, not lacros-chrome.
-    if (is_chromeos_ash) {
-      sources += [
-        "../browser/ash/crosapi/browser_data_back_migrator_browsertest.cc",
-        "../browser/ash/crosapi/browser_data_migrator_browsertest.cc",
-        "../browser/ash/crosapi/file_change_service_bridge_ash_browsertest.cc",
-        "../browser/ash/crosapi/magic_boost_ash_browsertest.cc",
-        "../browser/ash/crosapi/mahi_ash_browsertest.cc",
-        "../browser/ash/crosapi/media_ui_ash_browsertest.cc",
-        "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
-        "../browser/ash/crosapi/power_ash_apitest.cc",
-        "../browser/ash/crosapi/print_preview_ash_browsertest.cc",
-        "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
-        "../browser/ash/crosapi/suggestion_service_ash_browsertest.cc",
-        "../browser/ash/crosapi/task_manager_ash_browsertest.cc",
-        "../browser/ash/crosapi/video_conference_ash_browsertest.cc",
-        "../browser/ash/crosapi/vpn_extension_observer_ash_browsertest.cc",
-        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
-      ]
-      deps += [
-        "//chrome/browser/ash/magic_boost",
-        "//chrome/browser/ash/mahi",
-        "//chrome/browser/ash/net",
-        "//chrome/browser/ash/notifications",
-        "//chromeos/printing:test_support",
-        "//components/global_media_controls:test_support",
-      ]
-
-      if (!is_official_build) {
-        sources += [ "../browser/ash/crosapi/sharesheet_ash_browsertest.cc" ]
-      }
-    }
-
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
@@ -4600,7 +4567,6 @@ if (!is_android) {
         "../browser/ash/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/ash/child_accounts/screen_time_controller_browsertest.cc",
         "../browser/ash/child_accounts/time_limits/app_time_browsertest.cc",
-        "../browser/ash/crosapi/web_app_provider_bridge_browsertest.cc",
         "../browser/ash/crostini/crostini_browser_test_util.cc",
         "../browser/ash/crostini/crostini_browser_test_util.h",
         "../browser/ash/crostini/crostini_browsertest.cc",
@@ -4635,12 +4601,8 @@ if (!is_android) {
         "../browser/ash/login/app_mode/test/chome_app_kiosk_lacros_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_accelerator_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_accelerator_lacros_browsertest.cc",
-        "../browser/ash/login/app_mode/test/kiosk_apps_mixin.cc",
-        "../browser/ash/login/app_mode/test/kiosk_apps_mixin.h",
         "../browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.cc",
         "../browser/ash/login/app_mode/test/kiosk_ash_browser_test_starter.h",
-        "../browser/ash/login/app_mode/test/kiosk_base_test.cc",
-        "../browser/ash/login/app_mode/test/kiosk_base_test.h",
         "../browser/ash/login/app_mode/test/kiosk_device_owned_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_browsertest.cc",
         "../browser/ash/login/app_mode/test/kiosk_enterprise_input_api_browsertest.cc",
@@ -4923,6 +4885,7 @@ if (!is_android) {
         "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc",
         "../browser/extensions/extension_keeplist_ash_browsertest.cc",
         "../browser/feedback/show_feedback_page_browsertest.cc",
+        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/metrics/chromeos_family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
         "../browser/metrics/family_user_metrics_provider_browsertest.cc",
@@ -5234,6 +5197,8 @@ if (!is_android) {
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
+        "//chrome/browser/ash/net",
+        "//chrome/browser/ash/notifications",
         "//chrome/browser/ash/os_feedback",
         "//chrome/browser/ash/ownership",
         "//chrome/browser/ash/platform_keys",
@@ -5371,6 +5336,7 @@ if (!is_android) {
         "//components/feedback/content:factory",
         "//components/feedback/redaction_tool",
         "//components/global_media_controls:global_media_controls",
+        "//components/global_media_controls:test_support",
         "//components/live_caption:constants",
         "//components/manta",
         "//components/onc",
