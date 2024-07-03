@@ -5567,9 +5567,8 @@ void GraphImplDml::OnCompilationComplete(
                        std::move(initialization_command_recorder)),
         base::BindOnce(
             &GraphImplDml::OnInitializationComplete, std::move(adapter),
-            std::move(context), std::move(inference_command_recorder),
-            std::move(persistent_resource), std::move(compiled_operator),
-            std::move(compute_resource_info),
+            std::move(context), std::move(persistent_resource),
+            std::move(compiled_operator), std::move(compute_resource_info),
             std::move(graph_buffer_binding_info), std::move(callback)));
     return;
   }
@@ -5581,19 +5580,21 @@ void GraphImplDml::OnCompilationComplete(
     return;
   }
 
+  // Since the initialization command recorder has given all of the resources
+  // needed for graph initialization to the command queue to hold onto until
+  // they're no longer needed, it won't need to be passed to
+  // `OnInitializationComplete()`.
   adapter->command_queue()->WaitAsync(base::BindOnce(
       &GraphImplDml::OnInitializationComplete, std::move(adapter),
-      std::move(context), std::move(initialization_command_recorder),
-      std::move(persistent_resource), std::move(compiled_operator),
-      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
-      std::move(callback)));
+      std::move(context), std::move(persistent_resource),
+      std::move(compiled_operator), std::move(compute_resource_info),
+      std::move(graph_buffer_binding_info), std::move(callback)));
 }
 
 // static
 void GraphImplDml::OnInitializationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
-    std::unique_ptr<CommandRecorder> command_recorder,
     std::unique_ptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
@@ -5642,14 +5643,24 @@ void GraphImplDml::OnInitializationComplete(
     return;
   }
 
-  scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
+  // Create a new command recorder and pass it to `GraphImplDml` for
+  // `dispatch()`. For `compute()`, a separate command recorder is created by
+  // `AllocateComputeResources()` and stored in `compute_resources`.
+  std::unique_ptr<CommandRecorder> command_recorder_for_dispatch =
+      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
+  if (!command_recorder_for_dispatch) {
+    HandleGraphCreationFailure(
+        "Failed to create the command recorder for dispatch.",
+        std::move(callback));
+    return;
+  }
+
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::WrapUnique(new GraphImplDml(
-      std::move(adapter), context.get(), std::move(command_recorder),
-      std::move(persistent_resource), std::move(compiled_operator),
-      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
-      std::move(compute_resources))));
-  command_queue->ReleaseCompletedResources();
+      std::move(adapter), context.get(),
+      std::move(command_recorder_for_dispatch), std::move(persistent_resource),
+      std::move(compiled_operator), std::move(compute_resource_info),
+      std::move(graph_buffer_binding_info), std::move(compute_resources))));
 }
 
 // static

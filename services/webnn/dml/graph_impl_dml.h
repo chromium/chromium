@@ -258,7 +258,6 @@ class GraphImplDml final : public WebNNGraphImpl {
   static void OnInitializationComplete(
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
-      std::unique_ptr<CommandRecorder> command_recorder,
       std::unique_ptr<PersistentResource> persistent_resource,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       ComputeResourceInfo compute_resource_info,
@@ -320,7 +319,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   // Adapter used to create the built graph.
   scoped_refptr<Adapter> adapter_;
 
-  // The command_recorder is created for the graph initialization and recycled
+  // The command_recorder is created for the graph execution and recycled
   // after graph execution has completed. It avoids the resource allocation
   // overhead for the first execution and following executions when it is
   // available. A graph execution takes its ownership during the execution and
