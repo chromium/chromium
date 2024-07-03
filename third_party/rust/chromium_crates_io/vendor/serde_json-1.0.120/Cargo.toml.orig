@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.117"
+version = "1.0.120"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -12,7 +12,7 @@ repository = "https://github.com/serde-rs/json"
 rust-version = "1.56"
 
 [dependencies]
-indexmap = { version = "2.2.1", optional = true }
+indexmap = { version = "2.2.3", optional = true }
 itoa = "1.0"
 ryu = "1.0"
 serde = { version = "1.0.194", default-features = false }
@@ -34,7 +34,7 @@ doc-scrape-examples = false
 [package.metadata.docs.rs]
 features = ["preserve_order", "raw_value", "unbounded_depth"]
 targets = ["x86_64-unknown-linux-gnu"]
-rustdoc-args = ["--cfg", "docsrs", "--generate-link-to-definition"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
 features = ["raw_value"]

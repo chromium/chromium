@@ -206,8 +206,6 @@ pub trait Float: Number {
 
     // MASKS
 
-    /// Bitmask for the sign bit.
-    const SIGN_MASK: Self::Unsigned;
     /// Bitmask for the exponent, including the hidden bit.
     const EXPONENT_MASK: Self::Unsigned;
     /// Bitmask for the hidden bit in exponent, which is an implicit 1 in the fraction.
@@ -219,8 +217,6 @@ pub trait Float: Number {
 
     /// Positive infinity as bits.
     const INFINITY_BITS: Self::Unsigned;
-    /// Positive infinity as bits.
-    const NEGATIVE_INFINITY_BITS: Self::Unsigned;
     /// Size of the significand (mantissa) without hidden bit.
     const MANTISSA_SIZE: i32;
     /// Bias of the exponent
@@ -315,12 +311,10 @@ impl Float for f32 {
 
     const ZERO: f32 = 0.0;
     const MAX_DIGITS: usize = 114;
-    const SIGN_MASK: u32 = 0x80000000;
     const EXPONENT_MASK: u32 = 0x7F800000;
     const HIDDEN_BIT_MASK: u32 = 0x00800000;
     const MANTISSA_MASK: u32 = 0x007FFFFF;
     const INFINITY_BITS: u32 = 0x7F800000;
-    const NEGATIVE_INFINITY_BITS: u32 = Self::INFINITY_BITS | Self::SIGN_MASK;
     const MANTISSA_SIZE: i32 = 23;
     const EXPONENT_BIAS: i32 = 127 + Self::MANTISSA_SIZE;
     const DENORMAL_EXPONENT: i32 = 1 - Self::EXPONENT_BIAS;
@@ -374,12 +368,10 @@ impl Float for f64 {
 
     const ZERO: f64 = 0.0;
     const MAX_DIGITS: usize = 769;
-    const SIGN_MASK: u64 = 0x8000000000000000;
     const EXPONENT_MASK: u64 = 0x7FF0000000000000;
     const HIDDEN_BIT_MASK: u64 = 0x0010000000000000;
     const MANTISSA_MASK: u64 = 0x000FFFFFFFFFFFFF;
     const INFINITY_BITS: u64 = 0x7FF0000000000000;
-    const NEGATIVE_INFINITY_BITS: u64 = Self::INFINITY_BITS | Self::SIGN_MASK;
     const MANTISSA_SIZE: i32 = 52;
     const EXPONENT_BIAS: i32 = 1023 + Self::MANTISSA_SIZE;
     const DENORMAL_EXPONENT: i32 = 1 - Self::EXPONENT_BIAS;

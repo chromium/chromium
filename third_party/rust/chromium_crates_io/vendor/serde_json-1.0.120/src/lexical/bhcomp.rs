@@ -75,13 +75,13 @@ where
 
 // FLOAT OPS
 
-/// Calculate `b` from a a representation of `b` as a float.
+/// Calculate `b` from a representation of `b` as a float.
 #[inline]
 pub(super) fn b_extended<F: Float>(f: F) -> ExtendedFloat {
     ExtendedFloat::from_float(f)
 }
 
-/// Calculate `b+h` from a a representation of `b` as a float.
+/// Calculate `b+h` from a representation of `b` as a float.
 #[inline]
 pub(super) fn bh_extended<F: Float>(f: F) -> ExtendedFloat {
     // None of these can overflow.

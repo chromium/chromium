@@ -1361,6 +1361,11 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.116 -> 1.0.117"
 
+[[audits.serde_json]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.117 -> 1.0.120"
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

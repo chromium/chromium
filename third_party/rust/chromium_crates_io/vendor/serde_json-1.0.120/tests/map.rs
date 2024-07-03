@@ -16,6 +16,17 @@ fn test_preserve_order() {
 }
 
 #[test]
+#[cfg(feature = "preserve_order")]
+fn test_shift_insert() {
+    let mut v: Value = from_str(r#"{"b":null,"a":null,"c":null}"#).unwrap();
+    let val = v.as_object_mut().unwrap();
+    val.shift_insert(0, "d".to_string(), Value::Null);
+
+    let keys: Vec<_> = val.keys().collect();
+    assert_eq!(keys, &["d", "b", "a", "c"]);
+}
+
+#[test]
 fn test_append() {
     // Sorted order
     #[cfg(not(feature = "preserve_order"))]

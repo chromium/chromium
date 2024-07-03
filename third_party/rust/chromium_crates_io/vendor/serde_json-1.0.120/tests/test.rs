@@ -1,4 +1,3 @@
-#![cfg(not(feature = "preserve_order"))]
 #![allow(
     clippy::assertions_on_result_states,
     clippy::cast_precision_loss,
@@ -7,6 +6,7 @@
     clippy::float_cmp,
     clippy::incompatible_msrv, // https://github.com/rust-lang/rust-clippy/issues/12257
     clippy::items_after_statements,
+    clippy::large_digit_groups,
     clippy::let_underscore_untyped,
     clippy::shadow_unrelated,
     clippy::too_many_lines,
@@ -2311,9 +2311,9 @@ fn test_borrowed_raw_value() {
     let array_from_str: Vec<&RawValue> =
         serde_json::from_str(r#"["a", 42, {"foo": "bar"}, null]"#).unwrap();
     assert_eq!(r#""a""#, array_from_str[0].get());
-    assert_eq!(r#"42"#, array_from_str[1].get());
+    assert_eq!("42", array_from_str[1].get());
     assert_eq!(r#"{"foo": "bar"}"#, array_from_str[2].get());
-    assert_eq!(r#"null"#, array_from_str[3].get());
+    assert_eq!("null", array_from_str[3].get());
 
     let array_to_string = serde_json::to_string(&array_from_str).unwrap();
     assert_eq!(r#"["a",42,{"foo": "bar"},null]"#, array_to_string);
@@ -2390,16 +2390,16 @@ fn test_boxed_raw_value() {
     let array_from_str: Vec<Box<RawValue>> =
         serde_json::from_str(r#"["a", 42, {"foo": "bar"}, null]"#).unwrap();
     assert_eq!(r#""a""#, array_from_str[0].get());
-    assert_eq!(r#"42"#, array_from_str[1].get());
+    assert_eq!("42", array_from_str[1].get());
     assert_eq!(r#"{"foo": "bar"}"#, array_from_str[2].get());
-    assert_eq!(r#"null"#, array_from_str[3].get());
+    assert_eq!("null", array_from_str[3].get());
 
     let array_from_reader: Vec<Box<RawValue>> =
         serde_json::from_reader(br#"["a", 42, {"foo": "bar"}, null]"#.as_ref()).unwrap();
     assert_eq!(r#""a""#, array_from_reader[0].get());
-    assert_eq!(r#"42"#, array_from_reader[1].get());
+    assert_eq!("42", array_from_reader[1].get());
     assert_eq!(r#"{"foo": "bar"}"#, array_from_reader[2].get());
-    assert_eq!(r#"null"#, array_from_reader[3].get());
+    assert_eq!("null", array_from_reader[3].get());
 
     let array_to_string = serde_json::to_string(&array_from_str).unwrap();
     assert_eq!(r#"["a",42,{"foo": "bar"},null]"#, array_to_string);

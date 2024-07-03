@@ -8,9 +8,11 @@
 
 use crate::value::Value;
 use alloc::string::String;
+#[cfg(feature = "preserve_order")]
+use alloc::vec::Vec;
 use core::borrow::Borrow;
 use core::fmt::{self, Debug};
-use core::hash::Hash;
+use core::hash::{Hash, Hasher};
 use core::iter::FusedIterator;
 #[cfg(feature = "preserve_order")]
 use core::mem;
@@ -123,6 +125,19 @@ impl Map<String, Value> {
     #[inline]
     pub fn insert(&mut self, k: String, v: Value) -> Option<Value> {
         self.map.insert(k, v)
+    }
+
+    /// Insert a key-value pair in the map at the given index.
+    ///
+    /// If the map did not have this key present, `None` is returned.
+    ///
+    /// If the map did have this key present, the key is moved to the new
+    /// position, the value is updated, and the old value is returned.
+    #[cfg(feature = "preserve_order")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "preserve_order")))]
+    #[inline]
+    pub fn shift_insert(&mut self, index: usize, k: String, v: Value) -> Option<Value> {
+        self.map.shift_insert(index, k, v)
     }
 
     /// Removes a key from the map, returning the value at the key if the key
@@ -367,6 +382,22 @@ impl PartialEq for Map<String, Value> {
 }
 
 impl Eq for Map<String, Value> {}
+
+impl Hash for Map<String, Value> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        #[cfg(not(feature = "preserve_order"))]
+        {
+            self.map.hash(state);
+        }
+
+        #[cfg(feature = "preserve_order")]
+        {
+            let mut kv = Vec::from_iter(&self.map);
+            kv.sort_unstable_by(|a, b| a.0.cmp(b.0));
+            kv.hash(state);
+        }
+    }
+}
 
 /// Access an element of this map. Panics if the given key is not present in the
 /// map.

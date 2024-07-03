@@ -1,4 +1,3 @@
-#![cfg(not(feature = "preserve_order"))]
 #![allow(clippy::assertions_on_result_states)]
 
 use serde_json::{json, Deserializer, Value};
