@@ -148,6 +148,10 @@ BASE_FEATURE(kFetchListFamilyMembersWithCapability,
              "FetchListFamilyMembersWithCapability",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
+             "UseFamilyMemberRolePrefsForFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);
 }

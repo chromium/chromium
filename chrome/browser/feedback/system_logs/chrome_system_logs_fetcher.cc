@@ -78,7 +78,8 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   // Identity manager is not available for Guest profile in ChromeOS ash.
   if (identity_manager) {
     fetcher->AddSource(std::make_unique<FamilyInfoLogSource>(
-        identity_manager, profile->GetURLLoaderFactory()));
+        identity_manager, profile->GetURLLoaderFactory(),
+        *profile->GetPrefs()));
   }
 #endif
 

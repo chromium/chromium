@@ -100,6 +100,10 @@ BASE_DECLARE_FEATURE(
 // accounts.
 BASE_DECLARE_FEATURE(kFetchListFamilyMembersWithCapability);
 
+// Uses `prefs::kFamilyLinkUserMemberRole` to populate the family member role
+// for feedback if it is available.
+BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 // Local web approvals are only available when refreshed version of web

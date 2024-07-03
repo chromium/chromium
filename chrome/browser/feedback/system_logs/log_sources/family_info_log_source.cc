@@ -6,10 +6,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -17,10 +20,12 @@ namespace system_logs {
 
 FamilyInfoLogSource::FamilyInfoLogSource(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    PrefService& user_prefs)
     : SystemLogsSource("FamilyInfo"),
       identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      user_prefs_(user_prefs) {}
 
 FamilyInfoLogSource::~FamilyInfoLogSource() = default;
 
@@ -30,6 +35,22 @@ void FamilyInfoLogSource::Fetch(SysLogsSourceCallback callback) {
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::move(callback).Run(std::make_unique<SystemLogsResponse>());
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kUseFamilyMemberRolePrefsForFeedback) &&
+      !user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole).empty()) {
+    auto logs_response = std::make_unique<SystemLogsResponse>();
+    const std::string& family_link_role =
+        user_prefs_->GetString(prefs::kFamilyLinkUserMemberRole);
+    if (family_link_role != supervised_user::kDefaultEmptyFamilyMemberRole) {
+      logs_response->emplace(supervised_user::kFamilyMemberRoleFeedbackTag,
+                             family_link_role);
+    }
+    RecordFetchUma(FamilyInfoLogSource::FetchStatus::kOk, base::Seconds(0),
+                   /*immediately_available=*/true);
+    std::move(callback).Run(std::move(logs_response));
     return;
   }
 
@@ -60,11 +81,11 @@ void FamilyInfoLogSource::OnListMembersResponse(
   auto logs_response = std::make_unique<SystemLogsResponse>();
   if (status.IsOk()) {
     RecordFetchUma(FamilyInfoLogSource::FetchStatus::kOk,
-                   fetch_timer_.Elapsed());
+                   fetch_timer_.Elapsed(), /*immediately_available=*/false);
     AppendFamilyMemberRoleForPrimaryAccount(*response, logs_response.get());
   } else {
     RecordFetchUma(FamilyInfoLogSource::FetchStatus::kFailureResponse,
-                   fetch_timer_.Elapsed());
+                   fetch_timer_.Elapsed(), /*immediately_available=*/false);
   }
 
   std::move(callback).Run(std::move(logs_response));
@@ -74,7 +95,7 @@ void FamilyInfoLogSource::OnListMembersResponseTimeout(
     SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   RecordFetchUma(FamilyInfoLogSource::FetchStatus::kTimeout,
-                 fetch_timer_.Elapsed());
+                 fetch_timer_.Elapsed(), /*immediately_available=*/false);
   fetcher_.reset();
 
   std::move(callback).Run(std::make_unique<SystemLogsResponse>());
@@ -104,9 +125,12 @@ void FamilyInfoLogSource::AppendFamilyMemberRoleForPrimaryAccount(
 
 void FamilyInfoLogSource::RecordFetchUma(
     FamilyInfoLogSource::FetchStatus status,
-    base::TimeDelta duration) {
+    base::TimeDelta duration,
+    bool immediately_available) {
   base::UmaHistogramEnumeration(kFamilyInfoLogSourceFetchStatusUma, status);
   base::UmaHistogramTimes(kFamilyInfoLogSourceFetchLatencyUma, duration);
+  base::UmaHistogramBoolean(kFamilyInfoLogSourceImmediatelyAvailableUma,
+                            immediately_available);
 }
 
 }  // namespace system_logs
