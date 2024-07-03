@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/scoped_iph_feature_list.h"
+#import "components/feature_engagement/test/test_tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
+#import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -145,7 +149,21 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
     }
   }
 
+  base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig()
+      override {
+    return !configs_.empty() ? configs_[0]->weak_ptr_factory.GetWeakPtr()
+                             : nullptr;
+  }
+
+  // Helper to add configs to the front of the Fake tab helper cached
+  // `configs_`.
+  void AddToCachedConfigs(
+      std::unique_ptr<SamplePanelItemConfiguration> configuration) {
+    configs_.insert(configs_.begin(), std::move(configuration));
+  }
+
   base::ObserverList<ContextualPanelTabHelperObserver, true> observers_;
+  std::vector<std::unique_ptr<ContextualPanelItemConfiguration>> configs_;
 };
 
 class ContextualPanelEntrypointMediatorTest : public PlatformTest {
@@ -164,8 +182,15 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
     mocked_contextual_sheet_handler_ =
         OCMStrictProtocolMock(@protocol(ContextualSheetCommands));
 
+    feature_engagement::test::ScopedIphFeatureList list;
+    list.InitAndEnableFeatures(
+        {feature_engagement::kIPHiOSContextualPanelSampleModelFeature});
+
+    tracker_ = feature_engagement::CreateTestTracker();
+
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
           initWithWebStateList:&web_state_list_
+             engagementTracker:tracker_.get()
         contextualSheetHandler:mocked_contextual_sheet_handler_
          entrypointHelpHandler:mocked_entrypoint_help_handler_];
 
@@ -179,6 +204,7 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   ContextualPanelEntrypointMediator* mediator_;
@@ -272,18 +298,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestDisconnect) {
   EXPECT_TRUE(tab_helper->observers_.empty());
 }
 
-// TODO(crbug.com/335470692): Update this test to re-include entrypoint checks
-// when impression management is implemented (i.e. the entrypoint will be shown
-// after the IPH has been shown a couple times, temporarily only the IPH is ever
-// shown).
 TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:NO];
 
-  ContextualPanelItemConfiguration configuration(
-      ContextualPanelItemType::SamplePanelItem);
-  configuration.relevance = ContextualPanelItemConfiguration::high_relevance;
-  configuration.entrypoint_message = "test";
+  std::unique_ptr<SamplePanelItemConfiguration> configuration =
+      std::make_unique<SamplePanelItemConfiguration>();
+  configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
+  configuration->entrypoint_message = "test";
 
   delegate_.canShowLargeContextualPanelEntrypoint = YES;
 
@@ -294,9 +316,83 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
 
   std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
       item_configurations;
-  item_configurations.push_back(configuration.weak_ptr_factory.GetWeakPtr());
+  item_configurations.push_back(configuration->weak_ptr_factory.GetWeakPtr());
+  tab_helper->AddToCachedConfigs(std::move(configuration));
 
   tab_helper->CallContextualPanelHasNewData(item_configurations);
+
+  // At first, the small entrypoint should be displayed.
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+
+  // Advance time so that the large entrypoint is displayed.
+  task_environment_.FastForwardBy(
+      base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsLarge);
+
+  // Advance time until the large entrypoint transitions back to small.
+  task_environment_.FastForwardBy(
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+
+  [mocked_entrypoint_help_handler_ verify];
+}
+
+TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
+  const base::Feature& testFeature =
+      feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
+  OCMStub([mocked_entrypoint_help_handler_
+              maybeShowContextualPanelEntrypointIPHWithText:@"test"
+                                                anchorPoint:CGPointMake(0, 0)
+                                            isBottomOmnibox:NO
+                                                    feature:testFeature])
+      .andReturn(YES);
+
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:NO];
+
+  std::unique_ptr<SamplePanelItemConfiguration> configuration =
+      std::make_unique<SamplePanelItemConfiguration>();
+  configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
+  configuration->entrypoint_message = "test";
+  configuration->iph_entrypoint_used_event_name = "testEvent";
+  configuration->iph_feature =
+      &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
+
+  delegate_.canShowLargeContextualPanelEntrypoint = YES;
+
+  FakeContextualPanelTabHelper* tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(
+              web_state_list_.GetActiveWebState()));
+
+  std::vector<base::WeakPtr<ContextualPanelItemConfiguration>>
+      item_configurations;
+  item_configurations.push_back(configuration->weak_ptr_factory.GetWeakPtr());
+  tab_helper->AddToCachedConfigs(std::move(configuration));
+
+  tab_helper->CallContextualPanelHasNewData(item_configurations);
+
+  // At first, the small entrypoint should be displayed.
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+
+  // Advance time so that the IPH entrypoint is displayed.
+  task_environment_.FastForwardBy(
+      base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+
+  [[mocked_entrypoint_help_handler_ expect]
+      dismissContextualPanelEntrypointIPHAnimated:YES];
+
+  // Advance time until the IPH is dismissed.
+  task_environment_.FastForwardBy(
+      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
   [mocked_entrypoint_help_handler_ verify];
 }

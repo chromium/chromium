@@ -1610,6 +1610,24 @@ enum class ToolbarKind {
   return webStateList ? webStateList->GetActiveWebState() : nullptr;
 }
 
+// TODO(crbug.com/343734676): Add metrics per dismissal reason type.
+- (void)contextualPanelEntrypointIPHDidDismissWithFeature:
+            (const base::Feature&)feature
+                                          dismissalReason:
+                                              (IPHDismissalReasonType)
+                                                  IPHDismissalReasonType {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+
+  if (!engagementTracker || !_contextualPanelEntrypointHelpPresenter) {
+    return;
+  }
+
+  engagementTracker->Dismissed(feature);
+  _contextualPanelEntrypointHelpPresenter = nil;
+}
+
 #pragma mark - ActivityServiceCommands
 
 - (void)stopAndStartSharingCoordinator {
@@ -2114,9 +2132,28 @@ enum class ToolbarKind {
 
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
-- (void)showContextualPanelEntrypointIPHWithText:(NSString*)text
-                                     anchorPoint:(CGPoint)anchorPoint
-                                 isBottomOmnibox:(BOOL)isBottomOmnibox {
+- (BOOL)maybeShowContextualPanelEntrypointIPHWithText:(NSString*)text
+                                          anchorPoint:(CGPoint)anchorPoint
+                                      isBottomOmnibox:(BOOL)isBottomOmnibox
+                                              feature:(const base::Feature&)
+                                                          feature {
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  if (!engagementTracker) {
+    return NO;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [weakSelf contextualPanelEntrypointIPHDidDismissWithFeature:feature
+                                                    dismissalReason:
+                                                        IPHDismissalReasonType];
+      };
+
   _contextualPanelEntrypointHelpPresenter =
       [[BubbleViewControllerPresenter alloc]
           initDefaultBubbleWithText:text
@@ -2124,24 +2161,31 @@ enum class ToolbarKind {
                                                     : BubbleArrowDirectionUp
                           alignment:BubbleAlignmentTopOrLeading
                isLongDurationBubble:YES
-                  dismissalCallback:nil];
+                  dismissalCallback:dismissalCallback];
 
   _contextualPanelEntrypointHelpPresenter.voiceOverAnnouncement = text;
   _contextualPanelEntrypointHelpPresenter.ignoreWebContentAreaInteractions =
       YES;
 
-  // Early return if the bubble doesn't fit in the view as it is currently
-  // shown.
+  // Early return if the bubble wouldn't fit in its parent view.
   if (![_contextualPanelEntrypointHelpPresenter
           canPresentInView:self.viewController.view
                anchorPoint:anchorPoint]) {
     _contextualPanelEntrypointHelpPresenter = nil;
-    return;
+    return NO;
+  }
+
+  // Do this check last as the FET needs to know the IPH can be shown.
+  if (!engagementTracker->ShouldTriggerHelpUI(feature)) {
+    _contextualPanelEntrypointHelpPresenter = nil;
+    return NO;
   }
 
   [_contextualPanelEntrypointHelpPresenter
       presentInViewController:self.viewController
                   anchorPoint:anchorPoint];
+
+  return YES;
 }
 
 - (void)dismissContextualPanelEntrypointIPHAnimated:(BOOL)animated {

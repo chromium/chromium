@@ -46,7 +46,8 @@ class ContextualPanelTabHelper
 
   // Gets the first config in the cached list of sorted Contextual Panel model
   // configs.
-  base::WeakPtr<ContextualPanelItemConfiguration> GetFirstCachedConfig();
+  virtual base::WeakPtr<ContextualPanelItemConfiguration>
+  GetFirstCachedConfig();
 
   // Set the contextual sheet handler, used to display the contextual sheet UI.
   void SetContextualSheetHandler(id<ContextualSheetCommands> handler);
@@ -57,9 +58,10 @@ class ContextualPanelTabHelper
   void OpenContextualPanel();
   void CloseContextualPanel();
 
-  // Getter and setter for large_entrypoint_shown_for_curent_page_navigation_.
-  bool WasLargeEntrypointShown();
-  void SetLargeEntrypointShown(bool shown);
+  // Getter and setter for
+  // loud_moment_entrypoint_shown_for_curent_page_navigation_.
+  bool WasLoudMomentEntrypointShown();
+  void SetLoudMomentEntrypointShown(bool shown);
 
   // Returns whether the given navigation should cause the panel's data to be
   // updated.
@@ -124,9 +126,9 @@ class ContextualPanelTabHelper
   // Whether the Contextual Panel is currently opened for the current tab.
   bool is_contextual_panel_currently_opened_ = false;
 
-  // Whether the large Contextual Panel entrypoint has been shown for the
-  // current navigation.
-  bool large_entrypoint_shown_for_curent_page_navigation_ = false;
+  // Whether a loud moment (large entrypoint or IPH) for the Contextual Panel
+  // entrypoint has been shown for the current navigation.
+  bool loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
 
 #import "base/test/task_environment.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -51,6 +52,10 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
   EXPECT_EQ("Large entrypoint", config->entrypoint_message);
   EXPECT_EQ("chrome_product", config->entrypoint_image_name);
   EXPECT_EQ("Sample entrypoint", config->accessibility_label);
+  EXPECT_EQ("ios_contextual_panel_sample_model_entrypoint_used",
+            config->iph_entrypoint_used_event_name);
+  EXPECT_EQ(&feature_engagement::kIPHiOSContextualPanelSampleModelFeature,
+            config->iph_feature);
   EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
             config->relevance);
   EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,

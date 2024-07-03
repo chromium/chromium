@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
 
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/web/public/web_state.h"
@@ -30,6 +32,10 @@ void SamplePanelModel::FetchConfigurationForWebState(
   item_configuration->accessibility_label = "Sample entrypoint";
   item_configuration->entrypoint_message = "Large entrypoint";
   item_configuration->entrypoint_image_name = "chrome_product";
+  item_configuration->iph_feature =
+      &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
+  item_configuration->iph_entrypoint_used_event_name =
+      feature_engagement::events::kIOSContextualPanelSampleModelEntrypointUsed;
   item_configuration->image_type =
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   item_configuration->relevance =

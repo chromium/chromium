@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
@@ -30,6 +31,9 @@
 
   // The command handler for entrypoint in-product help commands.
   __weak id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
+
+  // The engagement tracker for the current browser.
+  feature_engagement::Tracker* _engagementTracker;
 
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;
@@ -59,6 +63,7 @@
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker
     contextualSheetHandler:(id<ContextualSheetCommands>)contextualSheetHandler
      entrypointHelpHandler:
          (id<ContextualPanelEntrypointIPHCommands>)entrypointHelpHandler {
@@ -67,6 +72,7 @@
     _webStateList = webStateList;
     _contextualSheetHandler = contextualSheetHandler;
     _entrypointHelpHandler = entrypointHelpHandler;
+    _engagementTracker = engagementTracker;
 
     // Set up web state list observation.
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -116,6 +122,13 @@
   } else {
     [_contextualSheetHandler openContextualSheet];
   }
+
+  base::WeakPtr<ContextualPanelItemConfiguration> config =
+      contextualPanelTabHelper->GetFirstCachedConfig();
+  if (!config || config->iph_entrypoint_used_event_name.empty()) {
+    return;
+  }
+  _engagementTracker->NotifyEvent(config->iph_entrypoint_used_event_name);
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
@@ -195,14 +208,14 @@
           contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()];
 
   // Special case for first entrypoint appearances where an IPH is shown
-  // instead of the large entrypoint.
-  if ([self canShowLoudEntrypointMomentWithConfig:config]) {
+  // instead of the large entrypoint. If showing the IPH fails, will fallback to
+  // showing the large entrypoint.
+  if ([self canShowEntrypointIPHWithConfig:config]) {
     [self startEntrypointIPHTimers];
     return;
   }
 
-  if ([self canShowLoudEntrypointMomentWithConfig:config]) {
-    // Start timers since the large entrypoint can be shown.
+  if ([self canShowLargeEntrypointWithConfig:config]) {
     [self startLargeEntrypointTimers];
   }
 }
@@ -210,15 +223,20 @@
 // Changes the UI to the large entrypoint variation and starts the timers to
 // transition back to the small variation.
 - (void)setupAndTransitionToLargeEntrypoint {
-  if (![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
-    return;
-  }
-
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
+  base::WeakPtr<ContextualPanelItemConfiguration> config =
+      contextualPanelTabHelper->GetFirstCachedConfig();
 
-  contextualPanelTabHelper->SetLargeEntrypointShown(true);
+  if (![self canShowLargeEntrypointWithConfig:config] ||
+      ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
+    // Enable fullscreen in case it was disabled when trying to show the IPH.
+    [self.delegate enableFullscreen];
+    return;
+  }
+
+  contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
   [self.delegate disableFullscreen];
   [self.consumer transitionToLargeEntrypoint];
 
@@ -257,15 +275,29 @@
   base::WeakPtr<ContextualPanelItemConfiguration> config =
       contextualPanelTabHelper->GetFirstCachedConfig();
 
-  if (!config || ![self canShowLoudEntrypointMomentWithConfig:config]) {
+  if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
     return;
   }
 
+  // Show the large entrypoint instead if the IPH can't be shown.
+  if (!_engagementTracker->WouldTriggerHelpUI(*config->iph_feature)) {
+    [self setupAndTransitionToLargeEntrypoint];
+    return;
+  }
+
+  [self.delegate disableFullscreen];
   NSString* text = base::SysUTF8ToNSString(config->entrypoint_message);
 
-  contextualPanelTabHelper->SetLargeEntrypointShown(true);
-  [self.delegate disableFullscreen];
-  [self showEntrypointIPHWithText:text];
+  // Try to show the entrypoint's IPH and capture the result.
+  BOOL success = [self attemptShowingEntrypointIPHWithText:text config:config];
+
+  // Show the large entrypoint if showing the IPH was not successful.
+  if (!success) {
+    [self setupAndTransitionToLargeEntrypoint];
+    return;
+  }
+
+  contextualPanelTabHelper->SetLoudMomentEntrypointShown(true);
 
   __weak ContextualPanelEntrypointMediator* weakSelf = self;
   _transitionToDefaultEntrypointTimer = std::make_unique<base::OneShotTimer>();
@@ -289,31 +321,53 @@
       }));
 }
 
-- (void)showEntrypointIPHWithText:(NSString*)text {
+// Tries to show the entrypoint's IPH with the config text, and returns whether
+// it was shown successfully. Also passes the current config's entrypoint FET
+// feature, which controls whether the IPH can be shown.
+- (BOOL)attemptShowingEntrypointIPHWithText:(NSString*)text
+                                     config:
+                                         (base::WeakPtr<
+                                             ContextualPanelItemConfiguration>)
+                                             config {
   BOOL isBottomOmnibox = [self.delegate isBottomOmniboxActive];
 
   CGPoint anchorPoint =
       [self.delegate helpAnchorUsingBottomOmnibox:isBottomOmnibox];
 
-  [_entrypointHelpHandler
-      showContextualPanelEntrypointIPHWithText:text
-                                   anchorPoint:anchorPoint
-                               isBottomOmnibox:isBottomOmnibox];
+  return [_entrypointHelpHandler
+      maybeShowContextualPanelEntrypointIPHWithText:text
+                                        anchorPoint:anchorPoint
+                                    isBottomOmnibox:isBottomOmnibox
+                                            feature:*config->iph_feature];
 }
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
   [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
 }
 
-- (BOOL)canShowLoudEntrypointMomentWithConfig:
+- (BOOL)canShowLargeEntrypointWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
 
   return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
-         !contextualPanelTabHelper->WasLargeEntrypointShown() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() && config &&
          !config->entrypoint_message.empty() &&
+         config->relevance >= config->high_relevance &&
+         [self.delegate canShowLargeContextualPanelEntrypoint:self];
+}
+
+- (BOOL)canShowEntrypointIPHWithConfig:
+    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+  ContextualPanelTabHelper* contextualPanelTabHelper =
+      ContextualPanelTabHelper::FromWebState(
+          _webStateList->GetActiveWebState());
+
+  return !contextualPanelTabHelper->IsContextualPanelCurrentlyOpened() &&
+         !contextualPanelTabHelper->WasLoudMomentEntrypointShown() && config &&
+         config->iph_feature &&
+         !config->iph_entrypoint_used_event_name.empty() &&
          config->relevance >= config->high_relevance &&
          [self.delegate canShowLargeContextualPanelEntrypoint:self];
 }

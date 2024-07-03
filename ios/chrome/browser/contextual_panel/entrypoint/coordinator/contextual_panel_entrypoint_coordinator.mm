@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator.h"
 
 #import "base/check.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_coordinator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -49,8 +51,13 @@
   id<ContextualPanelEntrypointIPHCommands> entrypointHelpHandler =
       HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
 
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   _mediator = [[ContextualPanelEntrypointMediator alloc]
         initWithWebStateList:webStateList
+           engagementTracker:engagementTracker
       contextualSheetHandler:contextualSheetHandler
        entrypointHelpHandler:entrypointHelpHandler];
   _mediator.delegate = self;

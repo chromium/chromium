@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 
+namespace feature_engagement {
+class Tracker;
+}
+
 @protocol ContextualPanelEntrypointConsumer;
 @protocol ContextualPanelEntrypointMediatorDelegate;
 @protocol ContextualSheetCommands;
@@ -23,6 +27,7 @@ class WebStateList;
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker
     contextualSheetHandler:(id<ContextualSheetCommands>)contextualSheetHandler
      entrypointHelpHandler:
          (id<ContextualPanelEntrypointIPHCommands>)entrypointHelpHandler

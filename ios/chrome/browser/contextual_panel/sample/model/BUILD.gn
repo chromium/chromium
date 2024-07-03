@@ -12,6 +12,7 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/contextual_panel/model:public",
@@ -28,6 +29,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

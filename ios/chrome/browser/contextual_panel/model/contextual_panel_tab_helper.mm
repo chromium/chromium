@@ -83,12 +83,12 @@ void ContextualPanelTabHelper::CloseContextualPanel() {
   }
 }
 
-bool ContextualPanelTabHelper::WasLargeEntrypointShown() {
-  return large_entrypoint_shown_for_curent_page_navigation_;
+bool ContextualPanelTabHelper::WasLoudMomentEntrypointShown() {
+  return loud_moment_entrypoint_shown_for_curent_page_navigation_;
 }
 
-void ContextualPanelTabHelper::SetLargeEntrypointShown(bool shown) {
-  large_entrypoint_shown_for_curent_page_navigation_ = shown;
+void ContextualPanelTabHelper::SetLoudMomentEntrypointShown(bool shown) {
+  loud_moment_entrypoint_shown_for_curent_page_navigation_ = shown;
 }
 
 bool ContextualPanelTabHelper::ShouldRefreshData(
@@ -119,7 +119,7 @@ void ContextualPanelTabHelper::DidStartNavigation(
   }
 
   is_contextual_panel_currently_opened_ = false;
-  large_entrypoint_shown_for_curent_page_navigation_ = false;
+  loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
 
   // Clear the configs and notify the observers.
   sorted_weak_configurations_.clear();

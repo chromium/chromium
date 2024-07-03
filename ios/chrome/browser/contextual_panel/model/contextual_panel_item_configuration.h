@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 
 enum class ContextualPanelItemType;
@@ -58,6 +59,20 @@ struct ContextualPanelItemConfiguration {
   // the user. Individual panel models can use one of the provided constants or
   // set their own value.
   int relevance;
+
+  // Optional. The FET feature controlling the impressions for the item's
+  // entrypoint IPH. The entrypoint will try to show the IPH, but if the FET
+  // config decides it shouldn't be shown, the large entrypoint will be shown.
+  // If nothing is set here, the IPH will never be shown.
+  raw_ptr<const base::Feature> iph_feature;
+
+  // Optional (required if `iph_feature` is non-nil). The FET event name the
+  // entrypoint should use when firing an event because the entrypoint was used
+  // with the current infoblock model (the `used` key of the FET config). This
+  // is the only event the entrypoint will fire for the infoblock, but any
+  // number of events can be used in conjunction with the FET config to control
+  // the IPH impressions.
+  std::string iph_entrypoint_used_event_name;
 
   base::WeakPtrFactory<ContextualPanelItemConfiguration> weak_ptr_factory{this};
 };
