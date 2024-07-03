@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -87,7 +86,7 @@ public class TabModelUtils {
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found
      */
     public static Tab getTabById(TabList model, int tabId) {
-        if (ChromeFeatureList.sTabIdMap.isEnabled() && model instanceof TabModel tabModel) {
+        if (model instanceof TabModel tabModel) {
             return tabModel.getTabById(tabId);
         } else {
             int index = getTabIndexById(model, tabId);

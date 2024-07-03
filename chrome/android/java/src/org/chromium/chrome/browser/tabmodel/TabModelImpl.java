@@ -17,7 +17,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -675,11 +674,7 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     private boolean containsTab(Tab tab) {
-        if (ChromeFeatureList.sTabIdMap.isEnabled()) {
-            return mTabIdToTabs.containsKey(tab.getId());
-        } else {
-            return mTabs.contains(tab);
-        }
+        return mTabIdToTabs.containsKey(tab.getId());
     }
 
     @Override
