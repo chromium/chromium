@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -138,6 +139,7 @@ using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
 using UkmFieldInfoAfterSubmissionType =
     ukm::builders::Autofill2_FieldInfoAfterSubmission;
 using UkmFormSummaryType = ukm::builders::Autofill2_FormSummary;
+using UkmFocusedComplexFormType = ukm::builders::Autofill2_FocusedComplexForm;
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
@@ -7431,6 +7433,444 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 6, 1);
 #endif
+}
+
+// The following code tests that Autofill2.FocusedComplexForm events are emitted
+// correctly. These metrics are reported for forms that are classified as
+// FormTypeNameForLogging::kPostalAddress and
+// FormTypeNameForLogging::kCreditCard.
+struct LogFocusedComplexFormAtFormRemoveTestCase {
+  std::string test_name;
+  test::FormDescription form;
+  // Simulate focus by tab key, focus on page load, or focus by click/tap.
+  // For click/tap, also `step_1_click` should be true. The first field
+  // of the form is focused.
+  bool step_0_focus = false;
+  // Simulate clicking on field, which triggers a query for autofill. This
+  // should always come after `step_0_focus`. The first field of the form is
+  // clicked.
+  bool step_1_click = false;
+  // Simulate that the user modifies the content of the first field.
+  bool step_2_typing = false;
+  // Simulate triggering autofill on the first field.
+  bool step_3_autofill = false;
+  // Simulate that the user edited the first field.
+  bool step_4_edit_after_autofill = false;
+  // Simlate that the form was submitted.
+  bool step_5_submit = false;
+
+  // Key: UKM Metric Name, Value: recorded metric.
+  // If this is empty, we assume that no UKM metrics are recorded.
+  std::map<std::string, int64_t> expected_metrics;
+};
+
+class LogFocusedComplexFormAtFormRemoveTest
+    : public AutofillMetricsBaseTest,
+      public testing::TestWithParam<LogFocusedComplexFormAtFormRemoveTestCase> {
+ public:
+  LogFocusedComplexFormAtFormRemoveTest() {
+    base::FieldTrialParams feature_parameters{
+        {features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name, "100"},
+    };
+    scoped_features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::
+                                   kAutofillLogUKMEventsWithSamplingOnSession,
+                               feature_parameters},
+                              {features::kAutofillParsingPatternProvider, {}}},
+        /*disabled_features=*/{});
+  }
+  ~LogFocusedComplexFormAtFormRemoveTest() override = default;
+
+  void SetUp() override { SetUpHelper(); }
+  void TearDown() override { TearDownHelper(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+namespace {
+// These are just constants to make the code below easier to understand.
+constexpr int kFormType_Address =
+    1 << base::to_underlying(FormType::kAddressForm);
+constexpr int kFormType_CreditCard =
+    1 << base::to_underlying(FormType::kCreditCardForm);
+constexpr int kFormTypeNameForLogging_AddressForm_or_PostalAddressForm =
+    (1 << base::to_underlying(FormTypeNameForLogging::kAddressForm)) |
+    (1 << base::to_underlying(FormTypeNameForLogging::kPostalAddressForm));
+constexpr int kFormTypeNameForLogging_CreditCardForm =
+    1 << base::to_underlying(FormTypeNameForLogging::kCreditCardForm);
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillMetricsFromLogEventsTest,
+    LogFocusedComplexFormAtFormRemoveTest,
+    testing::Values(
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // This form is neither a credit card form nor a postal address
+            // form. Therefore, no Autofill2.FocusedComplexForm event should be
+            // emitted despite plenty of interactions.
+            .test_name = "neither_postal_address_nor_credit_card",
+            .form = test::FormDescription{.fields = {{.role = NAME_LAST},
+                                                     {.role = NAME_FIRST},
+                                                     {.role = EMAIL_ADDRESS}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = true,
+            .step_5_submit = true,
+            // Despite the typing, no metrics are recorded because the form is
+            // not eligible for reporting.
+            .expected_metrics = {}},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // This form is a postal address form but not focused by the user.
+            // Therefore, no Autofill2.FocusedComplexForm event should be
+            // emitted.
+            .test_name = "not_focused",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_STREET_ADDRESS,
+                                .autocomplete_attribute = "street-address"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .expected_metrics = {}},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user focuses a field of a postal address form. An
+            // Autofill2.FocusedComplexForm event should be emitted.
+            .test_name = "focused_autofillable_field",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName, 0},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName, 0},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     0},
+                    {UkmFocusedComplexFormType::kUserModifiedName, 0},
+                    // No kMillisecondsFromFirstInteractionUntilSubmissionName
+                    // because the user did not edit anything.
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName, 0},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user focuses a field of a postal address form. An
+            // Autofill2.FocusedComplexForm event should be emitted.
+            // Test that the absence of a submission is correctly reported.
+            .test_name = "focused_autofillable_field_no_submission",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_5_submit = false,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName, 0},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName, 0},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     0},
+                    {UkmFocusedComplexFormType::kUserModifiedName, 0},
+                    // No kMillisecondsFromFirstInteractionUntilSubmissionName
+                    // because the user did not edit anything.
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName, 0},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 0},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user types and then submitts this postal address form. An
+            // Autofill2.FocusedComplexForm event should be emitted.
+            .test_name = "focused_and_typed_into_autofillable_field",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName, 0},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     1000},
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // The user types into a field that is not part of the
+            // address section of the form. In this case don't consider the
+            // form interacted for the purpose of this metric.
+            .test_name = "typed_into_non-autofillable_field",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = UNKNOWN_TYPE,
+                                .autocomplete_attribute = "unknown-type"},
+                               {.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = true,
+            .step_5_submit = true},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // This form is an autofilled and then submitted postal address
+            // form. An Autofill2.FocusedComplexForm event should be emitted.
+            .test_name = "autofilled",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = false,
+            .step_3_autofill = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName, 0},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     1000},
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // This form is an autofilled and then submitted postal address
+            // form. An Autofill2.FocusedComplexForm event should be emitted.
+            .test_name = "autofilled_then_edited",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = false,
+            .step_3_autofill = true,
+            .step_4_edit_after_autofill = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     2000},
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName,
+                     kFormType_Address},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }},
+        LogFocusedComplexFormAtFormRemoveTestCase{
+            // This form consists of a credit card section followed by a
+            // postal address section. Only the credit card section is filled
+            // and edited. The address part is not touched but should still
+            // be reported in the form types.
+            .test_name = "autofilled_then_edited_cc_from_followed_by_address",
+            .form =
+                test::FormDescription{
+                    .fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                .autocomplete_attribute = "cc-name"},
+                               {.role = CREDIT_CARD_NUMBER,
+                                .autocomplete_attribute = "cc-number"},
+                               {.role = CREDIT_CARD_VERIFICATION_CODE,
+                                .autocomplete_attribute = "cc-csc"},
+                               {.role = ADDRESS_HOME_LINE1,
+                                .autocomplete_attribute = "address-line1"},
+                               {.role = ADDRESS_HOME_CITY,
+                                .autocomplete_attribute = "address-level2"},
+                               {.role = ADDRESS_HOME_STATE,
+                                .autocomplete_attribute = "address-level1"}}},
+            .step_0_focus = true,
+            .step_1_click = true,
+            .step_2_typing = false,
+            .step_3_autofill = true,
+            .step_4_edit_after_autofill = true,
+            .step_5_submit = true,
+            .expected_metrics =
+                {
+                    {UkmFocusedComplexFormType::kAutofilledName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::kEditedAfterAutofillName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::kAutofillDataQueriedName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::kFormTypesName,
+                     kFormTypeNameForLogging_AddressForm_or_PostalAddressForm |
+                         kFormTypeNameForLogging_CreditCardForm},
+                    {UkmFocusedComplexFormType::
+                         kHadNonEmptyValueAtSubmissionName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::kUserModifiedName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::
+                         kMillisecondsFromFirstInteractionUntilSubmissionName,
+                     2000},
+                    {UkmFocusedComplexFormType::kSuggestionsAvailableName,
+                     kFormType_CreditCard},
+                    {UkmFocusedComplexFormType::kWasSubmittedName, 1},
+                }}),
+    [](const testing::TestParamInfo<
+        LogFocusedComplexFormAtFormRemoveTest::ParamType>& info) {
+      std::string name = info.param.test_name;
+      base::ranges::replace_if(
+          name, [](char c) { return !std::isalnum(c); }, '_');
+      return name;
+    });
+
+// Test if we have recorded Autofill2.FocusedComplexForm UKM metrics correctly.
+TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
+  CreateCreditCards(
+      /*include_local_credit_card=*/true,
+      /*include_masked_server_credit_card=*/false,
+      /*masked_card_is_enrolled_for_virtual_card=*/false);
+
+  FormData form = test::GetFormData(GetParam().form);
+  const FormFieldData& first_field = form.fields()[0];
+
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(base::Milliseconds(37000));
+  SeeForm(form);
+
+  if (GetParam().step_0_focus) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    autofill_manager().OnFocusOnFormFieldImpl(form, first_field.global_id());
+  }
+  if (GetParam().step_1_click) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    autofill_manager().OnAskForValuesToFillTest(
+        form, first_field.global_id(),
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  }
+
+  if (GetParam().step_2_typing) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+  }
+  if (GetParam().step_3_autofill) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    ASSERT_TRUE(first_field.parsed_autocomplete());
+    HtmlFieldType autocomplete = first_field.parsed_autocomplete()->field_type;
+    if (GroupTypeOfHtmlFieldType(autocomplete) == FieldTypeGroup::kAddress) {
+      // This simulates the call to the renderer
+      // (AutofillManager::FillOrPreviewProfileForm).
+      FillTestProfile(form);
+    } else if (GroupTypeOfHtmlFieldType(autocomplete) ==
+               FieldTypeGroup::kCreditCard) {
+      autofill_manager().AuthenticateThenFillCreditCardForm(
+          form, first_field,
+          *personal_data().payments_data_manager().GetCreditCardByGUID(
+              "10000000-0000-0000-0000-000000000001"),
+          {.trigger_source = AutofillTriggerSource::kPopup});
+    } else {
+      // Autofill should not be simulated on a field that is not autofillable.
+      ASSERT_TRUE(false);
+    }
+    // This simulates the callback from the renderer
+    // (AutofillManager::OnDidFillAutofillFormData).
+    FillAutofillFormData(form, base::TimeTicks::Now());
+  }
+  if (GetParam().step_4_edit_after_autofill) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    SimulateUserChangedTextField(form, first_field, base::TimeTicks::Now());
+  }
+  if (GetParam().step_5_submit) {
+    task_environment_.FastForwardBy(base::Milliseconds(1000));
+    SubmitForm(form);
+  }
+  // Record Autofill2.FocusedComplexForm UKM event at autofill manager / reset.
+  autofill_manager().Reset();
+
+  // Verify UKM event for the form.
+  auto interacted_entries = test_ukm_recorder().GetEntriesByName(
+      UkmFocusedComplexFormType::kEntryName);
+  const std::map<std::string, int64_t>& expected = GetParam().expected_metrics;
+  if (expected.empty()) {
+    EXPECT_THAT(interacted_entries, testing::IsEmpty());
+    return;
+  }
+  ASSERT_EQ(1u, interacted_entries.size());
+  const auto* const entry = interacted_entries[0].get();
+
+  // +2 because the kFormSessionIdentifierName and kFormSignatureName are
+  // computed dynamically.
+  EXPECT_EQ(expected.size() + 2, entry->metrics.size());
+  test_ukm_recorder().ExpectEntryMetric(
+      entry, UkmFocusedComplexFormType::kFormSessionIdentifierName,
+      AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()));
+  test_ukm_recorder().ExpectEntryMetric(
+      entry, UkmFocusedComplexFormType::kFormSignatureName,
+      Collapse(CalculateFormSignature(form)).value());
+  for (const auto& [metric, value] : expected) {
+    test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+  }
 }
 
 }  // namespace autofill::autofill_metrics

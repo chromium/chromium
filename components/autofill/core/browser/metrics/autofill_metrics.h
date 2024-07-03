@@ -697,6 +697,11 @@ class AutofillMetrics {
         FormEventSet form_events,
         base::TimeTicks initial_interaction_timestamp,
         base::TimeTicks form_submitted_timestamp);
+    void LogFocusedComplexFormAtFormRemove(
+        const FormStructure& form_structure,
+        FormEventSet form_events,
+        base::TimeTicks initial_interaction_timestamp,
+        base::TimeTicks form_submitted_timestamp);
     void LogKeyMetrics(const DenseSet<FormTypeNameForLogging>& form_types,
                        bool data_to_fill_available,
                        bool suggestions_shown,

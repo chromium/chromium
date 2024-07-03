@@ -3072,11 +3072,6 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
           form_structure, *autofill_field,
           AutofillMetrics::AutocompleteStateForSubmittedField(*autofill_field));
     }
-
-    // Clear log events.
-    // Not conditions on kAutofillLogUKMEventsWithSamplingOnSession because
-    // there may be other reasons to log events.
-    autofill_field->ClearLogEvents();
   }
 
   // Log FormSummary UKM event.
@@ -3089,6 +3084,16 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     form_interactions_ukm_logger()->LogAutofillFormSummaryAtFormRemove(
         form_structure, form_events, initial_interaction_timestamp_,
         form_submitted_timestamp_);
+    form_interactions_ukm_logger()->LogFocusedComplexFormAtFormRemove(
+        form_structure, form_events, initial_interaction_timestamp_,
+        form_submitted_timestamp_);
+  }
+
+  for (const auto& autofill_field : form_structure) {
+    // Clear log events.
+    // Not conditioned on kAutofillLogUKMEventsWithSamplingOnSession because
+    // there may be other reasons to log events.
+    autofill_field->ClearLogEvents();
   }
 }
 

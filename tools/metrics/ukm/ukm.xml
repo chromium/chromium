@@ -3017,9 +3017,9 @@ be describing additional metrics about the same event.
   <metric name="DeveloperEngagement"/>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="FormTypes">
@@ -3045,16 +3045,16 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldSignature">
     <summary>
-      The signature of the field. This is the hash identifier used to denote
-      this field for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="OverallType" enum="AutofillFieldType">
@@ -3072,16 +3072,16 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldSignature">
     <summary>
-      The signature of the field. This is the hash identifier used to denote
-      this field for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="IsAutofilled">
@@ -3275,9 +3275,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldSignature">
     <summary>
-      The signature of the field. This is the hash identifier used to denote
-      this field for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="FieldTypeGroup">
@@ -3287,9 +3287,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="HeuristicType">
@@ -3463,9 +3463,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldSignature">
     <summary>
-      The signature of the field. This is the hash identifier used to denote
-      this field for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="FieldTypeGroup">
@@ -3475,9 +3475,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form for query and voting purposes. See
-      components/autofill/core/common/signatures_util.cc for more details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form for query and voting purposes. See
+      components/autofill/core/common/signatures.cc for more details.
     </summary>
   </metric>
   <metric name="HeuristicType">
@@ -3750,7 +3750,7 @@ be describing additional metrics about the same event.
       field is focusable, the second means whether the field was focused....
       These autofill statuses will not be stored in UKM individually. We create
       functions to read the individual autofill status from a bit vector in
-      queries.
+      queries. go/zmwtc
     </summary>
   </metric>
   <metric name="FieldLogEventCount">
@@ -4076,6 +4076,103 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill2.FocusedComplexForm">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Tracks metrics of forms of type FormTypeNameForLogging::kPostalAddress and
+    FormTypeNameForLogging::kCreditCard - if at least one field was focused
+    whose type did not belong to FormType::kUnknownFormType. Autofocus on page
+    load, focus-by-pressing-the-tab-key and focus-by-tapping/clicking count as
+    focus events. The event name contains the term &quot;complex forms&quot;
+    because only forms of type FormTypeNameForLogging::kPostalAddress and
+    FormTypeNameForLogging::kCreditCard are logged (to save space and
+    bandwidth). The event is recorded when the form object is deallocated.
+  </summary>
+  <metric name="AutofillDataQueried">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that at least one field of the `FormType` was focused via a tap or click
+      such that the field was eligible for an autofill if data existed.
+    </summary>
+  </metric>
+  <metric name="Autofilled">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that at least one field of type `FormType` was autofilled at least once
+      (if the autofill is reverted or modified, this is ignored).
+    </summary>
+  </metric>
+  <metric name="EditedAfterAutofill">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that at least one field of type `FormType` was autofilled and later
+      modified by the user.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields in this form in
+      Autofill2.FieldInfo and more details in Autofill2.FormSummary.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form. See components/autofill/core/common/signatures.cc for
+      more details.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Bit vector with the following bits from FormTypeNameForLogging: -
+      kUnknownFormType (1&lt;&lt;0), - kAddressForm (1&lt;&lt;1), -
+      kCreditCardForm (1&lt;&lt;2) (A form with any field classified as a CC
+      field), - kPasswordForm (1&lt;&lt;3), - kStandaloneCvcForm (1&lt;&lt;4), -
+      kEmailOnlyForm (1&lt;&lt;5), - kPostalAddressForm (1&lt;&lt;6), Note that
+      a form needs to be a kCreditCardForm or kPostalAddressForm to be logged.
+    </summary>
+  </metric>
+  <metric name="HadNonEmptyValueAtSubmission">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that at least one field of type `FormType` was non-empty at submission
+      time.
+    </summary>
+  </metric>
+  <metric name="MillisecondsFromFirstInteractionUntilSubmission">
+    <summary>
+      The time interval from first interaction on the form to form submission in
+      ms in buckets from |GetSemanticBucketMinForAutofillDurationTiming()|. An
+      interaction is defined as modifying the value of any field in the form.
+    </summary>
+  </metric>
+  <metric name="SuggestionsAvailable">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that for at least one field of type `FormType` a suggestion was queried
+      and available for the user. A bit is unset if no suggestions were queried
+      for a form type.
+    </summary>
+  </metric>
+  <metric name="UserModified">
+    <summary>
+      A bit-vector with bits set according to `FormType`. A set bit indicates
+      that at least one field of the `FormType` was modified by the user (typed
+      text, pasted text or autofilled).
+    </summary>
+  </metric>
+  <metric name="WasSubmitted" enum="Boolean">
+    <summary>
+      Whether the form was submitted.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill2.FormSummary">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -4136,6 +4233,7 @@ be describing additional metrics about the same event.
     <summary>
       The time interval from first interaction on the form to form submission in
       ms in exponential buckets from |GetSemanticBucketMinForDurationTiming()|.
+      An interaction is defined as modifying the value of any field in the form.
     </summary>
   </metric>
   <metric name="MillisecondsFromFormParsedUntilSubmission">
@@ -8490,16 +8588,16 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldSignature">
     <summary>
-      The signature of the field. This is the hash identifier used to denote
-      this field. See components/autofill/core/common/signatures_util.cc for
+      The signature of the field (mod 1021). This is the hash identifier used to
+      denote this field. See components/autofill/core/common/signatures.cc for
       more details.
     </summary>
   </metric>
   <metric name="FormSignature">
     <summary>
-      The signature of the form. This is the hash identifier used to denote this
-      form. See components/autofill/core/common/signatures_util.cc for more
-      details.
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form. See components/autofill/core/common/signatures.cc for
+      more details.
     </summary>
   </metric>
   <metric name="IsAutofillFieldType" enum="Boolean">

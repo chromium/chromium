@@ -2657,6 +2657,133 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::
+    LogFocusedComplexFormAtFormRemove(
+        const FormStructure& form_structure,
+        FormEventSet form_events,
+        base::TimeTicks initial_interaction_timestamp,
+        base::TimeTicks form_submitted_timestamp) {
+  if (!CanLog()) {
+    return;
+  }
+
+  DenseSet<FormTypeNameForLogging> form_type_names_for_logging =
+      autofill_metrics::GetFormTypesForLogging(form_structure);
+
+  // To save bandwidth, only forms are reported that are a
+  // kPostalAddressForm or a kCreditCardForm.
+  if (!form_type_names_for_logging.contains_any(
+          {FormTypeNameForLogging::kPostalAddressForm,
+           FormTypeNameForLogging::kCreditCardForm})) {
+    return;
+  }
+
+  // Whether a field whose type group was not FormType::kUnknownFormType
+  // was focused.
+  bool some_classified_field_was_focused = false;
+
+  // The set of form types of fields that were focused via a tap or click and
+  // therefore eligible for autofill.
+  DenseSet<FormType> autofill_data_queried;
+  // The set of form types of fields for which suggestions were shown.
+  DenseSet<FormType> suggestions_available;
+  // The set of form types of fields that the user modified (filled, pasted,
+  // edited).
+  DenseSet<FormType> user_modified;
+  // The set of form types of fields that were autofilled (at some point).
+  DenseSet<FormType> autofilled;
+  // The set of form types of fields that were edited after they were
+  // autofilled.
+  DenseSet<FormType> edited_after_autofill;
+  // The set of form types of fields that were non-empty at submission time.
+  DenseSet<FormType> had_non_empty_value_at_submission;
+
+  for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
+    FormType form_type = FieldTypeGroupToFormType(field->Type().group());
+    if (form_type == FormType::kUnknownFormType) {
+      continue;
+    }
+
+    some_classified_field_was_focused |= field->was_focused();
+
+    OptionalBoolean had_value_after_filling = OptionalBoolean::kUndefined;
+    OptionalBoolean has_value_after_typing = OptionalBoolean::kUndefined;
+
+    const std::vector<AutofillField::FieldLogEventType>& field_log_events =
+        field->field_log_events();
+
+    bool current_field_was_autofilled = false;
+    for (const AutofillField::FieldLogEventType& log_event : field_log_events) {
+      if (auto* event =
+              absl::get_if<AskForValuesToFillFieldLogEvent>(&log_event)) {
+        autofill_data_queried.insert(form_type);
+        if (event->has_suggestion == OptionalBoolean::kTrue) {
+          suggestions_available.insert(form_type);
+        }
+      }
+
+      if (auto* event = absl::get_if<FillFieldLogEvent>(&log_event)) {
+        if (event->filling_prevented_by_iframe_security_policy ==
+            OptionalBoolean::kFalse) {
+          user_modified.insert(form_type);
+          autofilled.insert(form_type);
+          current_field_was_autofilled = true;
+          had_value_after_filling = event->had_value_after_filling;
+        }
+      }
+
+      if (auto* event = absl::get_if<TypingFieldLogEvent>(&log_event)) {
+        user_modified.insert(form_type);
+        if (current_field_was_autofilled) {
+          edited_after_autofill.insert(form_type);
+        }
+        has_value_after_typing = event->has_value_after_typing;
+      }
+    }
+
+    if (had_value_after_filling == OptionalBoolean::kTrue ||
+        has_value_after_typing == OptionalBoolean::kTrue) {
+      had_non_empty_value_at_submission.insert(form_type);
+    }
+  }
+
+  // TODO(crbug.com/348362142): DayInAblationWindow
+  // TODO(crbug.com/348362142): AblationStatus
+  // TODO(crbug.com/348362142): DataAvailability
+
+  // Don't log anything if the user did not interact with address or credit
+  // card fields (or other fields that are not FormType::kUnknownFormType).
+  if (!some_classified_field_was_focused) {
+    return;
+  }
+
+  ukm::builders::Autofill2_FocusedComplexForm builder(GetSourceId());
+  builder
+      .SetFormSessionIdentifier(
+          AutofillMetrics::FormGlobalIdToHash64Bit(form_structure.global_id()))
+      .SetFormSignature(HashFormSignature(form_structure.form_signature()))
+      .SetWasSubmitted(!form_submitted_timestamp.is_null())
+      .SetAutofillDataQueried(autofill_data_queried.data()[0])
+      .SetUserModified(user_modified.data()[0])
+      .SetAutofilled(autofilled.data()[0])
+      .SetEditedAfterAutofill(edited_after_autofill.data()[0])
+      .SetSuggestionsAvailable(suggestions_available.data()[0])
+      .SetHadNonEmptyValueAtSubmission(
+          had_non_empty_value_at_submission.data()[0])
+      .SetFormTypes(form_type_names_for_logging.data()[0]);
+
+  if (!form_submitted_timestamp.is_null() &&
+      !initial_interaction_timestamp.is_null() &&
+      form_submitted_timestamp > initial_interaction_timestamp) {
+    builder.SetMillisecondsFromFirstInteractionUntilSubmission(
+        GetSemanticBucketMinForAutofillDurationTiming(
+            (form_submitted_timestamp - initial_interaction_timestamp)
+                .InMilliseconds()));
+  }
+
+  builder.Record(ukm_recorder_);
+}
+
+void AutofillMetrics::FormInteractionsUkmLogger::
     LogHiddenRepresentationalFieldSkipDecision(const FormStructure& form,
                                                const AutofillField& field,
                                                bool is_skipped) {
