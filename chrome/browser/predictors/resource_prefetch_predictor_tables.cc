@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -22,7 +23,6 @@ const char kMetadataTableName[] = "resource_prefetch_predictor_metadata";
 const char kHostRedirectTableName[] =
     "resource_prefetch_predictor_host_redirect";
 const char kOriginTableName[] = "resource_prefetch_predictor_origin";
-const char kLcppTableName[] = "lcp_critical_path_predictor";
 
 const char kCreateGlobalMetadataStatementTemplate[] =
     "CREATE TABLE %s ( "
@@ -91,8 +91,6 @@ ResourcePrefetchPredictorTables::ResourcePrefetchPredictorTables(
           kHostRedirectTableName);
   origin_table_ = std::make_unique<sqlite_proto::KeyValueTable<OriginData>>(
       kOriginTableName);
-  lcpp_table_ =
-      std::make_unique<sqlite_proto::KeyValueTable<LcppData>>(kLcppTableName);
 }
 
 ResourcePrefetchPredictorTables::~ResourcePrefetchPredictorTables() = default;
@@ -131,10 +129,6 @@ sqlite_proto::KeyValueTable<OriginData>*
 ResourcePrefetchPredictorTables::origin_table() {
   return origin_table_.get();
 }
-sqlite_proto::KeyValueTable<LcppData>*
-ResourcePrefetchPredictorTables::lcpp_table() {
-  return lcpp_table_.get();
-}
 
 // static
 bool ResourcePrefetchPredictorTables::DropTablesIfOutdated(sql::Database* db) {
@@ -160,8 +154,7 @@ bool ResourcePrefetchPredictorTables::DropTablesIfOutdated(sql::Database* db) {
     for (const char* table_name :
          {kMetadataTableName, kUrlResourceTableName, kHostResourceTableName,
           kUrlRedirectTableName, kHostRedirectTableName, kManifestTableName,
-          kUrlMetadataTableName, kHostMetadataTableName, kOriginTableName,
-          kLcppTableName}) {
+          kUrlMetadataTableName, kHostMetadataTableName, kOriginTableName}) {
       success = success && db->Execute(base::StringPrintf(
                                "DROP TABLE IF EXISTS %s", table_name));
     }
@@ -214,12 +207,12 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
   bool success = transaction.Begin();
   success = success && DropTablesIfOutdated(db);
 
-  for (const char* table_name :
-       {kHostRedirectTableName, kOriginTableName, kLcppTableName}) {
+  for (const char* table_name : {kHostRedirectTableName, kOriginTableName}) {
     success = success && (db->DoesTableExist(table_name) ||
                           db->Execute(base::StringPrintf(
                               kCreateProtoTableStatementTemplate, table_name)));
   }
+  success &= LcppDataMap::CreateOrClearTablesIfNecessary(db);
 
   if (success) {
     success = transaction.Commit();

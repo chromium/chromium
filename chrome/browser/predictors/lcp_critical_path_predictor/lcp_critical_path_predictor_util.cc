@@ -8,14 +8,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace predictors {
 
 namespace {
+constexpr std::string_view kLcppTableName = "lcp_critical_path_predictor";
+const char kCreateProtoTableStatementTemplate[] =
+    "CREATE TABLE %s ( "
+    "key TEXT, "
+    "proto BLOB, "
+    "PRIMARY KEY(key))";
 
 // Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
 // The result is sorted with frequency (from high to low).
@@ -636,6 +644,37 @@ bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
   return base::Contains(*excluded_hosts, url.host());
 }
 
+class FakeLoadingPredictorKeyValueTable
+    : public sqlite_proto::KeyValueTable<LcppData> {
+ public:
+  FakeLoadingPredictorKeyValueTable()
+      : sqlite_proto::KeyValueTable<LcppData>("") {}
+  void GetAllData(std::map<std::string, LcppData>* data_map,
+                  sql::Database* db) const override {
+    *data_map = data_;
+  }
+  void UpdateData(const std::string& key,
+                  const LcppData& data,
+                  sql::Database* db) override {
+    data_[key] = data;
+  }
+  void DeleteData(const std::vector<std::string>& keys,
+                  sql::Database* db) override {
+    for (const auto& key : keys) {
+      data_.erase(key);
+    }
+  }
+  void DeleteAllData(sql::Database* db) override { data_.clear(); }
+
+  std::map<std::string, LcppData> data_;
+};
+
+bool EnsureTable(sql::Database* db, const std::string_view& table_name) {
+  return (db->DoesTableExist(table_name) ||
+          db->Execute(base::StringPrintf(kCreateProtoTableStatementTemplate,
+                                         std::string(table_name).c_str())));
+}
+
 }  // namespace
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -921,13 +960,28 @@ std::string GetFirstLevelPath(const GURL& url) {
   return url.path().substr(0, first_level_path_length);
 }
 
-LcppDataMap::LcppDataMap(ResourcePrefetchPredictorTables& tables,
+LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
                          const LoadingPredictorConfig& config)
+    : LcppDataMap(std::move(manager),
+                  config,
+                  std::make_unique<DataTable>(std::string(kLcppTableName))) {}
+
+LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
+                         const LoadingPredictorConfig& config,
+                         std::unique_ptr<DataTable> data_table)
     : config_(config),
-      data_map_(&tables,
-                tables.lcpp_table(),
+      data_table_(std::move(data_table)),
+      data_map_(manager,
+                data_table_.get(),
                 config.max_hosts_to_track_for_lcpp,
                 base::Seconds(config.flush_data_to_disk_delay_seconds)) {}
+
+std::unique_ptr<LcppDataMap> LcppDataMap::CreateWithMockTableForTesting(
+    scoped_refptr<sqlite_proto::TableManager> manager,
+    const LoadingPredictorConfig& config) {
+  return base::WrapUnique(new LcppDataMap(
+      manager, config, std::make_unique<FakeLoadingPredictorKeyValueTable>()));
+}
 
 LcppDataMap::~LcppDataMap() = default;
 
@@ -1033,6 +1087,10 @@ void LcppDataMap::DeleteAllData() {
 
 const std::map<std::string, LcppData>& LcppDataMap::GetAllCachedForTesting() {
   return data_map_.GetAllCached();
+}
+
+bool LcppDataMap::CreateOrClearTablesIfNecessary(sql::Database* db) {
+  return EnsureTable(db, kLcppTableName);
 }
 
 }  // namespace predictors

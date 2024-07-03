@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.pb.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/table_manager.h"
@@ -37,7 +36,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
 
   virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
   virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
-  virtual sqlite_proto::KeyValueTable<LcppData>* lcpp_table();
 
   // Removes the redirects with more than |max_consecutive_misses| consecutive
   // misses from |data|.
@@ -87,7 +85,6 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
   std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
-  std::unique_ptr<sqlite_proto::KeyValueTable<LcppData>> lcpp_table_;
 };
 
 }  // namespace predictors

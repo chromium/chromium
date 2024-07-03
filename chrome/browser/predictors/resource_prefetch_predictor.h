@@ -324,8 +324,10 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   void ConnectToHistoryService();
 
   // Used for testing to inject mock tables.
-  void set_mock_tables(scoped_refptr<ResourcePrefetchPredictorTables> tables) {
+  void set_mock_tables_for_testing(
+      scoped_refptr<ResourcePrefetchPredictorTables> tables) {
     tables_ = tables;
+    use_lcpp_mock_table_for_testing_ = true;
   }
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -338,6 +340,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   std::unique_ptr<RedirectDataMap> host_redirect_data_;
   std::unique_ptr<OriginDataMap> origin_data_;
   std::unique_ptr<LcppDataMap> lcpp_data_;
+  bool use_lcpp_mock_table_for_testing_ = false;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -10,6 +10,7 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.pb.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "components/sqlite_proto/key_value_data.h"
+#include "components/sqlite_proto/key_value_table.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace url {
@@ -17,8 +18,6 @@ class Origin;
 }  // namespace url
 
 namespace predictors {
-class ResourcePrefetchPredictorTables;
-
 namespace lcpp {
 struct LastVisitTimeCompare {
   template <typename T>
@@ -161,13 +160,16 @@ std::string GetFirstLevelPath(const GURL& url);
 
 class LcppDataMap {
  public:
+  using DataTable = sqlite_proto::KeyValueTable<LcppData>;
   using DataMap =
       sqlite_proto::KeyValueData<LcppData, lcpp::LastVisitTimeCompare>;
 
-  LcppDataMap(ResourcePrefetchPredictorTables& tables,
+  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
               const LoadingPredictorConfig& config);
   ~LcppDataMap();
   LcppDataMap(const LcppDataMap&) = delete;
+
+  static bool CreateOrClearTablesIfNecessary(sql::Database* db);
 
   void InitializeOnDBSequence();
 
@@ -187,11 +189,20 @@ class LcppDataMap {
 
   void DeleteAllData();
 
+  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
+              const LoadingPredictorConfig& config,
+              std::unique_ptr<DataTable> data_table_);
+  static std::unique_ptr<LcppDataMap> CreateWithMockTableForTesting(
+
+      scoped_refptr<sqlite_proto::TableManager> manager,
+      const LoadingPredictorConfig& config);
+
  private:
-  friend class ResourcePrefetchPredictorTest;
+  friend class LcppDataMapTest;
   const std::map<std::string, LcppData>& GetAllCachedForTesting();
 
   const LoadingPredictorConfig config_;
+  std::unique_ptr<DataTable> data_table_;
   DataMap data_map_;
 };
 
