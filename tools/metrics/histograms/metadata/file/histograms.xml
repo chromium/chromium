@@ -1208,6 +1208,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.WebUrlFormat" enum="WebUrlFormat"
+    expires_after="2025-05-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: the format of webUrl in a OneDrive item returned by
+    the Graph API. Emitted by ODFS.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.CloudProvider"
     enum="CloudProvider" expires_after="2025-05-01">
   <owner>simmonsjosh@google.com</owner>

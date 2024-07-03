@@ -855,6 +855,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Picker"/>
 </enum>
 
+<enum name="WebUrlFormat">
+  <int value="0" label="Missing"/>
+  <int value="1" label="Empty"/>
+  <int value="2" label="1drv.ms"/>
+  <int value="3" label="onedrive.live.com"/>
+  <int value="4" label="sharepoint.com"/>
+  <int value="5" label="Unknown"/>
+</enum>
+
 <enum name="ZipFileCreator.Result">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
