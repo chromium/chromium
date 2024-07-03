@@ -9,7 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
-#include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom-shared.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -46,24 +46,6 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
  private:
   bool hmr_enabled_ = false;
   HMRConsentStatus hmr_consent_status_ = HMRConsentStatus::kUnset;
-};
-
-class MockEditorPanelManager : public input_method::EditorPanelManager {
- public:
-  MockEditorPanelManager()
-      : input_method::EditorPanelManager(/*delegate=*/nullptr) {}
-  MockEditorPanelManager(const MockEditorPanelManager&) = delete;
-  MockEditorPanelManager& operator=(const MockEditorPanelManager&) = delete;
-  ~MockEditorPanelManager() override = default;
-
-  // input_method::EditorPanelManager:
-  MOCK_METHOD(void,
-              GetEditorPanelContext,
-              (base::OnceCallback<void(crosapi::mojom::EditorPanelContextPtr)>),
-              (override));
-  MOCK_METHOD(void, OnPromoCardDeclined, (), (override));
-  MOCK_METHOD(void, OnConsentApproved, (), (override));
-  MOCK_METHOD(void, OnConsentRejected, (), (override));
 };
 
 }  // namespace

@@ -30,6 +30,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "mock_editor_panel_manager.cc",
+    "mock_editor_panel_manager.h",
     "mock_magic_boost_state.cc",
     "mock_magic_boost_state.h",
   ]
@@ -37,6 +39,7 @@ static_library("test_support") {
   deps = [
     ":magic_boost",
     "//base",
+    "//chrome/browser/ash",
     "//testing/gmock",
   ]
 }
@@ -56,7 +59,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
     "//chromeos/components/magic_boost/public/cpp",
     "//components/sync_preferences:test_support",
     "//testing/gmock",

@@ -8,6 +8,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,6 +38,8 @@ class MagicBoostControllerAshTest : public AshTestBase {
     AshTestBase::SetUp();
 
     mock_magic_boost_state_ = std::make_unique<MockMagicBoostState>();
+    mock_magic_boost_state_->set_editor_panel_manager_for_test(
+        &mock_editor_panel_manager_);
   }
 
   void TearDown() override {
@@ -44,17 +47,23 @@ class MagicBoostControllerAshTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void OnDisclaimerAcceptButtonPressed() {
-    controller.OnDisclaimerAcceptButtonPressed(
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+  void OnDisclaimerAcceptButtonPressed(
+      crosapi::mojom::MagicBoostController::TransitionAction
+          transition_action) {
+    controller.OnDisclaimerAcceptButtonPressed(transition_action);
   }
 
   void OnDisclaimerDeclineButtonPressed() {
     controller.OnDisclaimerDeclineButtonPressed();
   }
 
+  MockEditorPanelManager& mock_editor_panel_manager() {
+    return mock_editor_panel_manager_;
+  }
+
  protected:
   std::unique_ptr<MockMagicBoostState> mock_magic_boost_state_;
+  testing::NiceMock<MockEditorPanelManager> mock_editor_panel_manager_;
   MagicBoostControllerAsh controller;
 };
 
@@ -87,7 +96,8 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
   EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature).Times(0);
   EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
 
-  OnDisclaimerAcceptButtonPressed();
+  OnDisclaimerAcceptButtonPressed(
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
@@ -112,13 +122,45 @@ TEST_F(MagicBoostControllerAshTest,
   EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature);
   EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
 
-  OnDisclaimerAcceptButtonPressed();
+  OnDisclaimerAcceptButtonPressed(
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
   EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
 
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
+}
+
+TEST_F(MagicBoostControllerAshTest,
+       OnDisclaimerAcceptButtonPressedIncludeOrcaAndTriggerEditorUI) {
+  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+
+  mock_magic_boost_state_->set_editor_panel_manager_for_test(
+      &mock_editor_panel_manager_);
+
+  controller.ShowDisclaimerUi(
+      /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+
+  EXPECT_TRUE(controller.disclaimer_widget_for_test());
+
+  EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature);
+  EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
+  EXPECT_CALL(mock_editor_panel_manager(), StartEditingFlow);
+
+  OnDisclaimerAcceptButtonPressed(
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+
+  EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
+            mock_magic_boost_state_->hmr_consent_status());
+  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
+
+  EXPECT_FALSE(controller.disclaimer_widget_for_test());
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_panel_manager());
 }
 
 TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {

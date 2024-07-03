@@ -6,6 +6,7 @@
 
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -65,8 +66,7 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
           case TransitionAction::kDoNothing:
             break;
           case TransitionAction::kShowEditorPanel:
-            // TODO(b/349152608): Show Editor Panel when opt-in flow is
-            // completed.
+            magic_boost_state->GetEditorPanelManager()->StartEditingFlow();
             break;
         }
       },
