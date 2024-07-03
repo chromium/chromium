@@ -192,9 +192,10 @@ static bool BlockHeightConstrained(const LayoutBlock* block) {
   // the content is already overflowing before autosizing kicks in.
   for (; block; block = block->ContainingBlock()) {
     const ComputedStyle& style = block->StyleRef();
-    if (style.OverflowY() != EOverflow::kVisible
-        && style.OverflowY() != EOverflow::kHidden)
+    if (style.OverflowY() != EOverflow::kVisible &&
+        style.OverflowY() != EOverflow::kHidden) {
       return false;
+    }
     if (style.Height().IsSpecified() || style.MaxHeight().IsSpecified() ||
         block->IsOutOfFlowPositioned()) {
       // Some sites (e.g. wikipedia) set their html and/or body elements to
@@ -876,9 +877,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
   if (layout_object->IsTableCell())
     data.column_ = layout_object->GetNode()->NodeIndex();
 
-  return StringHasher::ComputeHash<UChar>(
-      static_cast<const UChar*>(static_cast<const void*>(&data)),
-      sizeof data / sizeof(UChar));
+  return StringHasher::HashMemory(&data, sizeof(data));
 }
 
 TextAutosizer::Cluster* TextAutosizer::MaybeCreateCluster(LayoutBlock* block) {
