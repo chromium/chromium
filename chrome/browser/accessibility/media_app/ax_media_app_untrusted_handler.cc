@@ -45,9 +45,9 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/strings/grit/auto_image_annotation_strings.h"
 
 #if defined(USE_AURA)
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -134,6 +134,8 @@ bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
 
 void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   if (!successful) {
+    ocr_status_ = OcrStatus::kInitializationFailed;
+    ShowOcrServiceFailedToInitializeMessage();
     return;
   }
   if (!dirty_page_ids_.empty()) {
@@ -406,7 +408,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     }
     // Only one page goes through OCR at a time, so start the process here.
     OcrNextDirtyPageIfAny();
-    UpdateDocumentTree();
+    GenerateDocumentTree();
   }
 
   // Update all page numbers and rects.
@@ -444,7 +446,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
       page_info.page_num = 0;
     }
   }
-  UpdateDocumentTree();
+  GenerateDocumentTree();
 }
 
 void AXMediaAppUntrustedHandler::PageContentsUpdated(
@@ -548,7 +550,6 @@ AXMediaAppUntrustedHandler::CreateStatusNodesWithLandmark() const {
                                  "additions text");
   static_text.AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
                                  "polite");
-  static_text.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "div");
   static_text.AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic,
                                true);
   static_text.AddBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveBusy,
@@ -565,29 +566,29 @@ AXMediaAppUntrustedHandler::CreateStatusNodesWithLandmark() const {
   inline_text_box.relative_bounds.bounds = gfx::RectF(0, 0, 1, 1);
   inline_text_box.relative_bounds.offset_container_id = static_text.id;
   inline_text_box.SetTextAlign(ax::mojom::TextAlign::kLeft);
-  inline_text_box.AddIntAttribute(
-      ax::mojom::IntAttribute::kNameFrom,
-      static_cast<int32_t>(ax::mojom::NameFrom::kContents));
   static_text.child_ids = {inline_text_box.id};
 
-  if (pages_.size() == page_metadata_.size()) {
-    if (text_extracted_) {
-      static_text.SetNameChecked(
-          l10n_util::GetStringUTF8(IDS_PDF_OCR_COMPLETED));
-      inline_text_box.SetNameChecked(
-          l10n_util::GetStringUTF8(IDS_PDF_OCR_COMPLETED));
-    } else {
-      static_text.SetNameChecked(
-          l10n_util::GetStringUTF8(IDS_PDF_OCR_NO_RESULT));
-      inline_text_box.SetNameChecked(
-          l10n_util::GetStringUTF8(IDS_PDF_OCR_NO_RESULT));
-    }
-  } else {
-    static_text.SetNameChecked(
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_IN_PROGRESS));
-    inline_text_box.SetNameChecked(
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_IN_PROGRESS));
+  std::string message;
+  switch (ocr_status_) {
+    case OcrStatus::kUninitialized:
+      return {};
+    case OcrStatus::kInitializationFailed:
+      message = l10n_util::GetStringUTF8(IDS_PDF_OCR_FEATURE_ALERT);
+      break;
+    case OcrStatus::kInProgressWithNoTextExtractedYet:
+    case OcrStatus::kInProgressWithTextExtracted:
+      message = l10n_util::GetStringUTF8(IDS_PDF_OCR_IN_PROGRESS);
+      break;
+    case OcrStatus::kCompletedWithNoTextExtracted:
+      message = l10n_util::GetStringUTF8(IDS_PDF_OCR_NO_RESULT);
+      break;
+    case OcrStatus::kCompletedWithTextExtracted:
+      message = l10n_util::GetStringUTF8(IDS_PDF_OCR_COMPLETED);
+      break;
   }
+
+  static_text.SetNameChecked(message);
+  inline_text_box.SetNameChecked(message);
 
   return {banner, status, static_text, inline_text_box};
 }
@@ -705,13 +706,31 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
   ui::AXTreeUpdate location_update;
   location_update.root_id = tree->root()->id();
   location_update.nodes = {root_data};
+  ui::AXNode* image = tree->root()->GetFirstUnignoredChild();
+  if (image && image->GetRole() == ax::mojom::Role::kImage) {
+    // We auto-generate an unlabeled image if the OCR Service has returned no
+    // results for a particular page.
+    ui::AXNodeData image_data = image->data();
+    image_data.relative_bounds.bounds = page_location;
+    image_data.relative_bounds.bounds.set_origin({0, 0});
+    location_update.nodes.push_back(image_data);
+  }
   if (!tree->Unserialize(location_update)) {
     mojo::ReportBadMessage(tree->error());
     return;
   }
 }
 
-void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
+void AXMediaAppUntrustedHandler::ShowOcrServiceFailedToInitializeMessage() {
+  DCHECK_EQ(ocr_status_, OcrStatus::kInitializationFailed);
+  ui::AXTreeUpdate document_update;
+  document_update.nodes = CreateStatusNodesWithLandmark();
+  DCHECK_GT(document_update.nodes.size(), 0u);
+  document_update.root_id = document_update.nodes[0].id;
+  UpdateDocumentTree(document_update);
+}
+
+void AXMediaAppUntrustedHandler::GenerateDocumentTree() {
   ui::AXNodeData document_root_data;
   document_root_data.id = kDocumentRootNodeId;
   document_root_data.role = ax::mojom::Role::kPdfRoot;
@@ -823,7 +842,11 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
                                  std::begin(postamble_page_nodes),
                                  std::end(postamble_page_nodes));
   }
+  UpdateDocumentTree(document_update);
+}
 
+void AXMediaAppUntrustedHandler::UpdateDocumentTree(
+    ui::AXTreeUpdate& document_update) {
   // It wouldn't make sense to send an update with only a root node in it.
   if (document_update.nodes.size() <= 1u) {
     return;
@@ -895,15 +918,24 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
   if (!IsOcrServiceEnabled()) {
     return;
   }
+  CHECK_NE(ocr_status_, OcrStatus::kInitializationFailed);
+  if (ocr_status_ == OcrStatus::kUninitialized) {
+    ocr_status_ = OcrStatus::kInProgressWithNoTextExtractedYet;
+  }
   if (pages_ocred_on_initial_load_ == page_metadata_.size()) {
     has_postamble_page_ = false;
+    if (ocr_status_ == OcrStatus::kInProgressWithNoTextExtractedYet) {
+      ocr_status_ = OcrStatus::kCompletedWithNoTextExtracted;
+    } else if (ocr_status_ == OcrStatus::kInProgressWithTextExtracted) {
+      ocr_status_ = OcrStatus::kCompletedWithTextExtracted;
+    }
   }
   // If there are no more dirty pages, we can assume all pages have up-to-date
   // page locations. Update the document tree information to reflect that.
   if (dirty_page_ids_.empty() ||
       (pages_ocred_on_initial_load_ &&
        pages_ocred_on_initial_load_ % ComputePagesPerBatch() == 0u)) {
-    UpdateDocumentTree();
+    GenerateDocumentTree();
     if (dirty_page_ids_.empty()) {
       return;
     }
@@ -958,17 +990,35 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   }
   ui::AXTreeUpdate complete_tree_update = tree_update;
   if (!tree_update.nodes.empty()) {
-    text_extracted_ = true;
+    ocr_status_ = OcrStatus::kInProgressWithTextExtracted;
     screen_ai::RecordMostDetectedLanguageInOcrData(
         "Accessibility.PdfOcr.MediaApp.MostDetectedLanguageInOcrData",
         tree_update);
   } else {
-    // We can't pass an empty update to `AXTree`s constructor, so we add an
-    // empty root node instead.
-    complete_tree_update.root_id = 1;
-    ui::AXNodeData dummy_root;
-    dummy_root.id = 1;
-    complete_tree_update.nodes.push_back(dummy_root);
+    // The most meaningful result to present to the user is that there is an
+    // unlabeled image.
+    ui::AXNodeData paragraph;
+    paragraph.id = 1;
+    paragraph.role = ax::mojom::Role::kParagraph;
+    // The paragraph's bounds are set by `GenerateDocumentTree`, so no need to
+    // set them here.
+    paragraph.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+
+    ui::AXNodeData unlabeled_image;
+    unlabeled_image.id = 2;
+    unlabeled_image.role = ax::mojom::Role::kImage;
+    unlabeled_image.relative_bounds.bounds =
+        page_metadata_.at(dirty_page_id).rect;
+    unlabeled_image.relative_bounds.bounds.set_origin({0, 0});
+    unlabeled_image.relative_bounds.offset_container_id = paragraph.id;
+    unlabeled_image.SetRestriction(ax::mojom::Restriction::kReadOnly);
+    unlabeled_image.SetNameChecked(
+        l10n_util::GetStringUTF8(IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION));
+    paragraph.child_ids = {unlabeled_image.id};
+
+    complete_tree_update.root_id = paragraph.id;
+    complete_tree_update.nodes = {paragraph, unlabeled_image};
   }
   complete_tree_update.has_tree_data = true;
   complete_tree_update.tree_data.parent_tree_id = document_tree_id_;

@@ -88,6 +88,15 @@ class AXMediaAppUntrustedHandler
                                               ui::AXTreeData*,
                                               ui::AXNodeData>;
 
+  enum class OcrStatus {
+    kUninitialized,
+    kInitializationFailed,
+    kInProgressWithNoTextExtractedYet,
+    kInProgressWithTextExtracted,
+    kCompletedWithNoTextExtracted,
+    kCompletedWithTextExtracted,
+  };
+
   AXMediaAppUntrustedHandler(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
@@ -154,7 +163,9 @@ class AXMediaAppUntrustedHandler
   std::vector<ui::AXNodeData> CreatePostamblePage() const;
   void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
                                         TreeSerializer& serializer);
-  void UpdateDocumentTree();
+  void ShowOcrServiceFailedToInitializeMessage();
+  void GenerateDocumentTree();
+  void UpdateDocumentTree(ui::AXTreeUpdate& document_update);
   void UpdatePageLocation(const std::string& page_id,
                           const gfx::RectF& page_location);
   // A callback which is run after the Media App sends the bitmap of the page
@@ -185,7 +196,7 @@ class AXMediaAppUntrustedHandler
   gfx::RectF viewport_box_;
   float scale_factor_ = 0.0f;
   base::circular_deque<std::string> dirty_page_ids_;
-  bool text_extracted_ = false;
+  OcrStatus ocr_status_ = OcrStatus::kUninitialized;
   ui::AXTreeID document_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
   SEQUENCE_CHECKER(sequence_checker_);
   std::optional<mojo::ReportBadMessageCallback> bad_message_callback_ =
