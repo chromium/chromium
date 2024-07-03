@@ -63,7 +63,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gfx::BufferPlane plane,
       const SharedImageInfo& si_info) override;
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;

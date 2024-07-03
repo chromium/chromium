@@ -225,7 +225,6 @@ class GPU_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gfx::BufferPlane plane,
       const SharedImageInfo& si_info) = 0;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on

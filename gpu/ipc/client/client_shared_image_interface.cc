@@ -242,8 +242,8 @@ ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    gfx::BufferPlane plane,
     const SharedImageInfo& si_info) {
+  auto plane = gfx::BufferPlane::DEFAULT;
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage)) << si_info.meta.usage;
   auto buffer_format = gpu_memory_buffer->GetFormat();
   CHECK(gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format));

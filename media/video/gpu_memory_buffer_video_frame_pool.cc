@@ -1377,7 +1377,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       } else {
         plane_resource.shared_image = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
-            gfx::BufferPlane::DEFAULT,
             {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
              si_usage_, kDebugLabel});
       }

@@ -148,7 +148,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      gfx::BufferPlane plane,
       const gpu::SharedImageInfo& si_info) override {
     auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
     mailboxes_.insert(result);
