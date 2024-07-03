@@ -446,7 +446,7 @@ TEST_F(DownloadRequestMakerTest,
   run_loop.Run();
 
   ASSERT_NE(request, nullptr);
-  EXPECT_EQ(request->tailored_info().version(), 4);
+  EXPECT_EQ(request->tailored_info().version(), 5);
 }
 
 TEST_F(DownloadRequestMakerTest, PopulatesFileBasename) {

@@ -1011,6 +1011,8 @@ message ClientDownloadRequest {
     // Supported in M120.
     // Version 4: Client supports tailored warnings on downloads page. Client
     // sends download reports without explicit user decision. Supported in M125.
+    // Version 5: Fixed the issue that cookie theft warnings are not bypassable.
+    // See https://crbug.com/350780005.
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
