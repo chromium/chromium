@@ -4,8 +4,10 @@
 
 #include "media/capture/video/video_capture_device.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
-#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/string_util.h"
@@ -130,19 +132,21 @@ void VideoCaptureDevice::TakePhoto(TakePhotoCallback callback) {}
 // static
 PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
   const std::string current_country = base::CountryCodeForCurrentTimezone();
-  if (current_country.empty())
+  if (current_country.empty()) {
     return PowerLineFrequency::kDefault;
+  }
+
   // Sorted out list of countries with 60Hz power line frequency, from
   // http://en.wikipedia.org/wiki/Mains_electricity_by_country
-  const char* countries_using_60Hz[] = {
-      "AI", "AO", "AS", "AW", "AZ", "BM", "BR", "BS", "BZ", "CA", "CO",
-      "CR", "CU", "DO", "EC", "FM", "GT", "GU", "GY", "HN", "HT", "JP",
-      "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",
-      "PW", "SA", "SR", "SV", "TT", "TW", "UM", "US", "VG", "VI", "VE"};
-  if (!base::Contains(countries_using_60Hz, current_country)) {
-    return PowerLineFrequency::k50Hz;
+  constexpr auto kCountriesUsing60Hz = base::MakeFixedFlatSet<std::string_view>(
+      {"AI", "AO", "AS", "AW", "AZ", "BM", "BR", "BS", "BZ", "CA", "CO",
+       "CR", "CU", "DO", "EC", "FM", "GT", "GU", "GY", "HN", "HT", "JP",
+       "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",
+       "PW", "SA", "SR", "SV", "TT", "TW", "UM", "US", "VG", "VI", "VE"});
+  if (kCountriesUsing60Hz.contains(current_country)) {
+    return PowerLineFrequency::k60Hz;
   }
-  return PowerLineFrequency::k60Hz;
+  return PowerLineFrequency::k50Hz;
 }
 
 // static

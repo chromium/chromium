@@ -18,11 +18,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -121,46 +123,51 @@ static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
               "BlockedCameraNames enum");
 
 // Use this list only for USB webcams.
-const char* const kModelIdsBlockedForMediaFoundation[] = {
-    // Devices using Empia 2860 or 2820 chips, see https://crbug.com/849636.
-    "eb1a:2860", "eb1a:2820", "1ce6:2820",
-    // Elgato HD60 Pro
-    "12ab:0380",
-    // Sensoray 2253
-    "1943:2253",
-    // Dell E5440
-    "0c45:64d0", "0c45:64d2",
-    // Dell E7440
-    "1bcf:2985",
-    // Lenovo Thinkpad Model 20CG0006FMZ front and rear cameras, see
-    // also https://crbug.com/924528.
-    "04ca:7047", "04ca:7048",
-    // HP Elitebook 840 G1
-    "04f2:b3ed", "04f2:b3ca", "05c8:035d", "05c8:0369",
-    // HP HD Camera. See https://crbug.com/1011888.
-    "04ca:7095",
-    // RBG/IR camera for Windows Hello Face Auth. See https://crbug.com/984864.
-    "13d3:5257",
-    // Acer Aspire f5-573g. See https://crbug.com/1034644.
-    "0bda:57f2",
-    // Elgato Camlink 4k
-    "0fd9:0066",
-    // ACER Aspire VN7-571G. See https://crbug.com/1327948.
-    "04f2:b469",
-    // Hauppauge USB-Live2. See https://crbug.com/1447113.
-    "2040:c200"};
+constexpr auto kModelIdsBlockedForMediaFoundation =
+    base::MakeFixedFlatSet<std::string_view>(
+        {// Devices using Empia 2860 or 2820 chips, see
+         // https://crbug.com/849636.
+         "eb1a:2860", "eb1a:2820", "1ce6:2820",
+         // Elgato HD60 Pro
+         "12ab:0380",
+         // Sensoray 2253
+         "1943:2253",
+         // Dell E5440
+         "0c45:64d0", "0c45:64d2",
+         // Dell E7440
+         "1bcf:2985",
+         // Lenovo Thinkpad Model 20CG0006FMZ front and rear cameras, see
+         // also https://crbug.com/924528.
+         "04ca:7047", "04ca:7048",
+         // HP Elitebook 840 G1
+         "04f2:b3ed", "04f2:b3ca", "05c8:035d", "05c8:0369",
+         // HP HD Camera. See https://crbug.com/1011888.
+         "04ca:7095",
+         // RBG/IR camera for Windows Hello Face Auth. See
+         // https://crbug.com/984864.
+         "13d3:5257",
+         // Acer Aspire f5-573g. See https://crbug.com/1034644.
+         "0bda:57f2",
+         // Elgato Camlink 4k
+         "0fd9:0066",
+         // ACER Aspire VN7-571G. See https://crbug.com/1327948.
+         "04f2:b469",
+         // Hauppauge USB-Live2. See https://crbug.com/1447113.
+         "2040:c200"});
 
 // Use this list only for USB webcams.
-const char* const kModelIdsBlockedForMediaFoundationD3D11VideoCapture[] = {
-    // D3D11 calls on textures produced by these cameras take so much time
-    // that MFCaptureEngine fails with E_MF_SAMPLEALLOCATOREMPTY error
-    "05a3:9331", "04f2:b6bf"};
+constexpr auto kModelIdsBlockedForMediaFoundationD3D11VideoCapture =
+    base::MakeFixedFlatSet<std::string_view>(
+        {// D3D11 calls on textures produced by these cameras take so much time
+         // that MFCaptureEngine fails with E_MF_SAMPLEALLOCATOREMPTY error
+         "05a3:9331", "04f2:b6bf"});
 
 // Use this list only for non-USB webcams.
-const char* const kDisplayNamesBlockedForMediaFoundation[] = {
-    // VMware Virtual Webcams cause hangs when there is no physical Webcam.
-    // See https://crbug.com/1044974.
-    "VMware Virtual Webcam"};
+constexpr auto kDisplayNamesBlockedForMediaFoundation =
+    base::MakeFixedFlatSet<std::string_view>(
+        {// VMware Virtual Webcams cause hangs when there is no physical Webcam.
+         // See https://crbug.com/1044974.
+         "VMware Virtual Webcam"});
 
 const std::vector<
     std::pair<VideoCaptureApi, std::vector<std::pair<GUID, GUID>>>>&
@@ -198,20 +205,19 @@ bool IsDeviceBlockedForQueryingDetailedFrameRates(
 }
 
 bool IsDeviceBlockedForMediaFoundationByModelId(const std::string& model_id) {
-  return base::Contains(kModelIdsBlockedForMediaFoundation, model_id);
+  return kModelIdsBlockedForMediaFoundation.contains(model_id);
 }
 
 bool IsDeviceBlockedForMediaFoundationD3D11ByModelId(
     const std::string& model_id) {
   return base::FeatureList::IsEnabled(
              kMediaFoundationD3D11VideoCaptureBlocklist) &&
-         base::Contains(kModelIdsBlockedForMediaFoundationD3D11VideoCapture,
-                        model_id);
+         kModelIdsBlockedForMediaFoundationD3D11VideoCapture.contains(model_id);
 }
 
 bool IsDeviceBlockedForMediaFoundationByDisplayName(
     const std::string& display_name) {
-  return base::Contains(kDisplayNamesBlockedForMediaFoundation, display_name);
+  return kDisplayNamesBlockedForMediaFoundation.contains(display_name);
 }
 
 HMODULE ExpandEnvironmentStringsAndLoadLibrary(base::wcstring_view path) {
