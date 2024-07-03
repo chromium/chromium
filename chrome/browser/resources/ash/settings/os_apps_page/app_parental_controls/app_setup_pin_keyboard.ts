@@ -52,6 +52,14 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
   static get properties() {
     return {
       /**
+       * Whether the PIN placeholder should be visible in the PIN input field.
+       */
+      enablePlaceholder: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Whether clicking the submit button takes you to the next step.
        */
       enableSubmit: {
@@ -101,6 +109,7 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     };
   }
 
+  enablePlaceholder: boolean;
   enableSubmit: boolean;
   isConfirmStep: boolean;
 

@@ -45,6 +45,14 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   static get properties() {
     return {
       /**
+       * Whether the PIN placeholder should be visible in the PIN input field.
+       */
+      enablePlacehodler: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Whether verification of the entered PIN is in progress.
        * If true, the PIN keyboard input and confirm button should be disabled.
        */
@@ -70,6 +78,8 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
       },
     };
   }
+
+  enablePlaceholder: boolean;
 
   private isVerificationPending_: boolean;
   private pinValue_: string;

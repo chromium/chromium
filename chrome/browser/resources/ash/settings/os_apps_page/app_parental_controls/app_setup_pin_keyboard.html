@@ -24,7 +24,8 @@
     on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
     disabled="[[isSetPinCallPending_]]"
     aria-label="[[ariaLabel]]"
-    has-error="[[hasError_(problemMessage_)]]">
+    has-error="[[hasError_(problemMessage_)]]"
+    enable-placeholder="[[enablePlaceholder]]">
   <div id="problemDiv" invisible$="[[!problemMessage_]]"
        class$="[[getErrorClass_(problemMessage_)]]">
     <span aria-live="assertive">
