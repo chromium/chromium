@@ -77,20 +77,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.CollectSourcePositions" units="microseconds"
-    expires_after="M85">
-  <owner>delphick@chromium.org</owner>
-  <summary>
-    Time spent collecting source positions to generate stack traces.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="V8.CompileBackgroundMicroSeconds.Cumulative.Interactive"
     units="microseconds" expires_after="2024-12-08">
   <owner>marja@chromium.org</owner>
