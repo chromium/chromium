@@ -12,8 +12,7 @@
 
 namespace autofill {
 
-// Depending on `kAutofillModelPredictions` and
-// `kAutofillParsingPatternProvider`, the active and non active heuristic
+// Depending on `kAutofillModelPredictions`, the active and non active heuristic
 // sources will differ.
 //
 // Currently, the available heuristic sources are the ML model and

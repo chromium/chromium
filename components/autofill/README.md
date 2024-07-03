@@ -265,9 +265,8 @@ may sacrifice a little bit of correctness in favor of simplicity.
   * We perform local heuristics even for smaller forms but only for promo codes
     and IBANs (see `ParseSingleFieldForms`).
   * Regular expressions for parsing are provided via
-    `components/autofill/core/common/autofill_regex_constants.h` or
-    `components/autofill/core/browser/form_parsing/regex_patterns.h` if
-    `features::kAutofillParsingPatternProvider` is enabled.
+    `components/autofill/core/browser/form_parsing/regex_patterns.h` and
+    `components/autofill/core/browser/form_parsing/*/*regex_patterns.json`.
 * Crowd sourcing
   * `AutofillCrowdsourcingManager` is responsible for downloading field
     classifications and uploading type votes.

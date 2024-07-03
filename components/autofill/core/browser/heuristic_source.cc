@@ -42,8 +42,7 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
       break;
     case HeuristicSource::kNextGen:
 #endif
-    // Prior to PatternProvider and on non Chrome-branded builds, no alternative
-    // `PatternSource`s exist.
+    // On non Chrome-branded builds, no alternative `PatternSource`s exist.
     case HeuristicSource::kLegacy:
       break;
     // If ML is active, compare against the `PatternSource`-based predictions
@@ -51,10 +50,7 @@ DenseSet<HeuristicSource> GetNonActiveHeuristicSources() {
     case HeuristicSource::kMachineLearning:
       non_active_sources.insert(
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-          base::FeatureList::IsEnabled(
-              features::kAutofillParsingPatternProvider)
-              ? HeuristicSource::kDefault
-              : HeuristicSource::kLegacy
+          HeuristicSource::kDefault
 #else
           HeuristicSource::kLegacy
 #endif
