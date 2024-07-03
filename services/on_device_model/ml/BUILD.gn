@@ -11,6 +11,7 @@ source_set("ml") {
   public = [
     "chrome_ml.h",
     "on_device_model_executor.h",
+    "session_accessor.h",
     "utils.h",
   ]
 
@@ -19,6 +20,7 @@ source_set("ml") {
     "language_detector.cc",
     "language_detector.h",
     "on_device_model_executor.cc",
+    "session_accessor.cc",
     "utils.cc",
   ]
 

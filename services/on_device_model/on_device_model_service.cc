@@ -318,11 +318,12 @@ void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {
 }
 
 void SessionWrapper::ReplayPreviousContext() {
-  session_->ClearContext();
-  for (const auto& context : previous_contexts_) {
-    AddContextInternal(context.Clone(),
-                       mojo::PendingRemote<mojom::ContextClient>(),
-                       base::DoNothing());
+  if (session_->ClearContext()) {
+    for (const auto& context : previous_contexts_) {
+      AddContextInternal(context.Clone(),
+                         mojo::PendingRemote<mojom::ContextClient>(),
+                         base::DoNothing());
+    }
   }
 }
 

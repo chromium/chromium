@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
         mojom::InputOptionsPtr input,
         mojo::PendingRemote<mojom::StreamingResponder> response,
         base::OnceClosure on_complete) = 0;
-    virtual void ClearContext() = 0;
+    virtual bool ClearContext() = 0;
     virtual void SizeInTokens(const std::string& text,
                               base::OnceCallback<void(uint32_t)> callback) = 0;
     virtual void Score(const std::string& text,

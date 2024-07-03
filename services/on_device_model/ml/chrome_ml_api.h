@@ -41,6 +41,10 @@ using PlatformFile = int;
 
 // Opaque handle to an instance of a ChromeML model.
 using ChromeMLModel = uintptr_t;
+// Opaque handle to an instance of a ChromeML session.
+using ChromeMLSession = uintptr_t;
+// Opaque handle to an object that allows canceling operations.
+using ChromeMLCancel = uintptr_t;
 
 // Function called to release resources.
 using ChromeMLDisposeFn = std::function<void()>;
@@ -351,6 +355,37 @@ struct ChromeMLAPI {
   void (*Score)(ChromeMLModel model,
                 const std::string& text,
                 const ChromeMLScoreFn& fn);
+
+  // Session based mirror of the above API.
+  // TODO: b/350517296 - Delete old API.
+  ChromeMLModel (*SessionCreateModel)(const ChromeMLModelDescriptor* descriptor,
+                                      uintptr_t context,
+                                      ChromeMLScheduleFn schedule);
+  bool (*SessionExecuteModel)(ChromeMLSession session,
+                              ChromeMLModel model,
+                              const ChromeMLExecuteOptions* options,
+                              ChromeMLCancel cancel);
+  void (*SessionSizeInTokens)(ChromeMLSession session,
+                              const std::string& text,
+                              const ChromeMLSizeInTokensFn& fn);
+  void (*SessionScore)(ChromeMLSession session,
+                       const std::string& text,
+                       const ChromeMLScoreFn& fn);
+
+  // Create a new session in the model, optionally loading adaptation data.
+  ChromeMLSession (*CreateSession)(
+      ChromeMLModel model,
+      const ChromeMLAdaptationDescriptor* descriptor);
+
+  // Clone an existing session.
+  ChromeMLSession (*CloneSession)(ChromeMLSession session);
+
+  // Destroy a session.
+  void (*DestroySession)(ChromeMLSession session);
+
+  ChromeMLCancel (*CreateCancel)();
+  void (*DestroyCancel)(ChromeMLCancel cancel);
+  void (*CancelExecuteModel)(ChromeMLCancel cancel);
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.
