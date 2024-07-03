@@ -3273,7 +3273,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540846231645422635">停用设备网络接口报告功能</translation>
-<translation id="3540935459049973317">应用级时间限制</translation>
+<translation id="3540935459049973317">各应用的使用时限</translation>
 <translation id="3546271546272655966">可能会使用“<ph name="DBSC_FEATURE_NAME" />”，具体取决于功能发布流程。</translation>
 <translation id="3547954654003013442">代理设置</translation>
 <translation id="3548064438634502368">关闭浏览器</translation>

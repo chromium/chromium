@@ -1760,6 +1760,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2273119997271134996">Problema con la porta video del dock</translation>
 <translation id="2274840746523584236">Ricarica il Chromebook</translation>
 <translation id="2275193525496879616">Autorizzazione consentita. Collega una videocamera al dispositivo.</translation>
+<translation id="2275352532065325930">Posizione ricerca di schede</translation>
 <translation id="2276503375879033601">Aggiungi altre applicazioni</translation>
 <translation id="2278193750452754829">Estensioni consentite su questo sito. Seleziona per aprire il menu.</translation>
 <translation id="2278562042389100163">Apri finestra browser</translation>
@@ -3913,7 +3914,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
 <translation id="3826440694796503677">L'amministratore ha disabilitato l'aggiunta di altri Account Google</translation>
 <translation id="3827774300009121996">&amp;Schermo intero</translation>
-<translation id="3828029223314399057">Cerca tra i Preferiti</translation>
+<translation id="3828029223314399057">Cerca tra i preferiti</translation>
 <translation id="3828953470056652895">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" />, i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" /> e i <ph name="BEGIN_LINK3" />Termini di servizio di Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoria utilizzata elevata - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Condivisione file SMB</translation>
@@ -5361,6 +5362,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4927753642311223124">Nessuna notifica.</translation>
 <translation id="4928629450964837566">Usa una password più sicura</translation>
 <translation id="4929386379796360314">Destinazioni di stampa</translation>
+<translation id="4930406318748549391">Posizione del riquadro laterale</translation>
 <translation id="4930447554870711875">Sviluppatori</translation>
 <translation id="4930714375720679147">Attiva</translation>
 <translation id="4931347390544064118">Quando si utilizza una rete predefinita, le connessioni sicure potrebbero non essere sempre disponibili. Considera l'idea di selezionare un provider diverso per assicurarti di utilizzare sempre una connessione sicura.</translation>

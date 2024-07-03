@@ -1759,6 +1759,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2273119997271134996">Produciuse un problema relacionado co porto de vídeo da base de conexión</translation>
 <translation id="2274840746523584236">Carga o Chromebook</translation>
 <translation id="2275193525496879616">Permiso concedido. Conecta unha cámara ao teu dispositivo.</translation>
+<translation id="2275352532065325930">Posición de Busca de pestanas</translation>
 <translation id="2276503375879033601">Engadir máis aplicacións</translation>
 <translation id="2278193750452754829">As extensións non están permitidas neste sitio. Selecciona para abrir o menú</translation>
 <translation id="2278562042389100163">Abrir ventá do navegador</translation>
@@ -5364,6 +5365,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4927753642311223124">Non hai ningunha notificación.</translation>
 <translation id="4928629450964837566">Usa un contrasinal máis seguro</translation>
 <translation id="4929386379796360314">Destinos de impresión</translation>
+<translation id="4930406318748549391">Posición do panel lateral</translation>
 <translation id="4930447554870711875">Programadores</translation>
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4931347390544064118">Coa opción predeterminada da rede, pode que en ocasións non haxa conexións seguras dispoñibles. Recomendámosche que selecciones outro provedor para contar sempre cunha rede segura.</translation>

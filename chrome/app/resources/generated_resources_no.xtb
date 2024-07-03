@@ -1192,7 +1192,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Før du registrerer deg, må du tømme TPM-enheten, slik at <ph name="DEVICE_OS" /> kan få eierskap over enheten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan også slå TPM-enheten helt av. Dataene dine blir fremdeles lagret trygt med programvarekryptering, men visse sikkerhetsfunksjoner, som maskinvarebaserte sertifikater, blir deaktivert.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan endre TPM-innstillingene ved å starte systemet på nytt og gå inn i BIOS-/UEFI-innstillingene. Fremgangsmåten for dette avhenger av hvilken enhetsmodell du har. For mer informasjon, åpne <ph name="DEVICE_OS" />-dokumentasjonen på en annen enhet før du starter systemet på nytt: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="1852799913675865625">Det oppstod en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1852799913675865625">Det oppsto en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Fortsett der du slapp. Du kan angi at apper alltid skal gjenopprettes ved oppstart, eller slå av gjenoppretting, i innstillingene.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
@@ -1767,6 +1767,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2273119997271134996">Problem med videoporten på dokken</translation>
 <translation id="2274840746523584236">Lad Chromebooken</translation>
 <translation id="2275193525496879616">Tillatt. Koble et kamera til enheten.</translation>
+<translation id="2275352532065325930">Plassering av fanesøk</translation>
 <translation id="2276503375879033601">Legg til flere programmer</translation>
 <translation id="2278193750452754829">Utvidelser er tillatt på dette nettstedet. Velg for å åpne menyen</translation>
 <translation id="2278562042389100163">Åpne nettleservindu</translation>
@@ -2067,7 +2068,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Posisjonstilgang tillates</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
-<translation id="2475982808118771221">Det oppstod en feil</translation>
+<translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="247616523300581745">Skjul disse filene</translation>
 <translation id="2476435723907345463">Tilgangen til passnøkler er fjernet</translation>
 <translation id="2476901513051581836">Kan ikke frigjøre lagringsplass før vi vet størrelsen på lagringsplassen uten nett.</translation>
@@ -2507,7 +2508,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Fjern Linux</translation>
-<translation id="2791952154587244007">Det oppstod en feil. Kioskappen er ikke i stand til å starte automatisk på denne enheten.</translation>
+<translation id="2791952154587244007">Det oppsto en feil. Kioskappen er ikke i stand til å starte automatisk på denne enheten.</translation>
 <translation id="2792290659606763004">Vil du fjerne Android-apper?</translation>
 <translation id="2792465461386711506">Slå på Chrome-synkronisering for å se nylige Chrome-faner fra telefonen din</translation>
 <translation id="2792697226874849938">Restriksjonsbilde</translation>
@@ -3682,7 +3683,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3683524264665795342"><ph name="APP_NAME" />-forespørsel om skjermdeling</translation>
 <translation id="3685598397738512288">USB-innstillinger for Linux</translation>
 <translation id="3687598459967813435">Tillat alltid varsler fra <ph name="WEBSITE" /></translation>
-<translation id="368789413795732264">Det oppstod en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
+<translation id="368789413795732264">Det oppsto en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688368689701175138">Denne passnøkkelen lagres i Google Passordlagring for <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">skrive til filer og mapper du åpner i appen</translation>
 <translation id="3688526734140524629">Bytt kanal</translation>
@@ -5367,6 +5368,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4927753642311223124">Her er det ikke noe nytt. Men intet nytt er jo godt nytt!</translation>
 <translation id="4928629450964837566">Bruk et sikrere passord</translation>
 <translation id="4929386379796360314">Destinasjoner for utskrift</translation>
+<translation id="4930406318748549391">Plassering av sidepanelet</translation>
 <translation id="4930447554870711875">Utviklere</translation>
 <translation id="4930714375720679147">Slå på</translation>
 <translation id="4931347390544064118">Sikre tilkoblinger er kanskje ikke alltid tilgjengelige når du bruker nettverksstandarden. Vurder å velge en annen leverandør for å sikre at du alltid bruker en sikker tilkobling.</translation>
@@ -6571,7 +6573,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="584945105664698226">Talehastighet</translation>
 <translation id="5851461096964823885">Kan ikke åpne <ph name="FILE_NAMES" /> når Google Disk ikke er tilgjengelig</translation>
 <translation id="5851868085455377790">Utsteder </translation>
-<translation id="5852112051279473187">Beklager!  Det oppstod et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
+<translation id="5852112051279473187">Beklager!  Det oppsto et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
 <translation id="5852137567692933493">Omstart og Powerwash</translation>
 <translation id="5853487241227591972">Trinn 4 av 4: Diagnostikkdata eksporteres</translation>
 <translation id="5854066326260337683">Støtte for eldre nettlesere er avslått for øyeblikket. Du kan slå på støtte for eldre nettlesere ved å angi regelen <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
@@ -8573,7 +8575,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7384687527486377545">Automatisk gjentakelse for tastaturet</translation>
 <translation id="7384804382450832142">Koble til Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten slettes permanent.</translation>
-<translation id="7385854874724088939">Det oppstod en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
+<translation id="7385854874724088939">Det oppsto en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
 <translation id="7387107590792462040">Vent til installeringen er fullført</translation>
 <translation id="7387273928653486359">Akseptabel</translation>
 <translation id="7387951778417998929">For å bruke en annen søkemotor enn standard, skriv inn snarveien for søkemotoren i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Du kan også endre standard søkemotor her.</translation>

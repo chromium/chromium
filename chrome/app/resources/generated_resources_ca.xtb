@@ -1760,6 +1760,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2273119997271134996">Error del port de vídeo de la base</translation>
 <translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2275193525496879616">Concedit. Connecta una càmera al dispositiu.</translation>
+<translation id="2275352532065325930">Posició de la cerca de pestanyes</translation>
 <translation id="2276503375879033601">Afegeix més aplicacions</translation>
 <translation id="2278193750452754829">Les extensions es permeten en aquest lloc web. Selecciona per obrir el menú.</translation>
 <translation id="2278562042389100163">Obre una finestra del navegador</translation>
@@ -5359,6 +5360,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4927753642311223124">No hi ha cap notificació, podeu continuar.</translation>
 <translation id="4928629450964837566">Utilitza una contrasenya més segura</translation>
 <translation id="4929386379796360314">Destinacions d'impressió</translation>
+<translation id="4930406318748549391">Posició del tauler lateral</translation>
 <translation id="4930447554870711875">Desenvolupadors</translation>
 <translation id="4930714375720679147">Activa</translation>
 <translation id="4931347390544064118">Pot ser que les connexions segures no estiguin sempre disponibles quan s'utilitza la configuració predeterminada de la xarxa. Pots seleccionar un altre proveïdor per assegurar-te que sempre utilitzes una connexió segura.</translation>

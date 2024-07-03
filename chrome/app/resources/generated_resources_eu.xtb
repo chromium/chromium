@@ -585,7 +585,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1433478348197382180">Irakurtzeko modua</translation>
 <translation id="1433980411933182122">Abiaraztea</translation>
 <translation id="1434696352799406980">Abiarazte-orria, fitxa berriaren orria, bilatzailea eta ainguratutako fitxak berrezarriko dira. Gainera, luzapen guztiak desgaituko dira eta aldi baterako datuak (adibidez, cookieak) garbituko dira. Laster-markak, historia eta gordetako pasahitzak ez dira garbituko.</translation>
-<translation id="1434886155212424586">Hasierako orria fitxa berriaren orria da</translation>
+<translation id="1434886155212424586">Orri nagusia fitxa berriaren orria da</translation>
 <translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
@@ -1760,6 +1760,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2273119997271134996">Oinarriko bideo-atakaren arazoa</translation>
 <translation id="2274840746523584236">Kargatu Chromebook-a</translation>
 <translation id="2275193525496879616">Baimena dauka. Konektatu kamera bat gailura.</translation>
+<translation id="2275352532065325930">Fitxa-bilaketaren posizioa</translation>
 <translation id="2276503375879033601">Gehitu aplikazio gehiago</translation>
 <translation id="2278193750452754829">Webgune honetan luzapenak erabil daitezke. Menua irekitzeko, hautatu hau.</translation>
 <translation id="2278562042389100163">Ireki leihoa arakatzailean</translation>
@@ -5360,6 +5361,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4927753642311223124">Hemen ez dago ikusteko ezer.</translation>
 <translation id="4928629450964837566">Erabili pasahitz seguruago bat</translation>
 <translation id="4929386379796360314">Inprimatzearen helmugak</translation>
+<translation id="4930406318748549391">Alboko panelaren posizioa</translation>
 <translation id="4930447554870711875">Garatzaileak</translation>
 <translation id="4930714375720679147">Aktibatu</translation>
 <translation id="4931347390544064118">Baliteke konexio seguruak erabilgarri ez egotea sarearen balio lehenetsia erabiltzean. Beti konexio segurua daukazula ziurtatzeko, hautatu beste hornitzaile bat.</translation>
