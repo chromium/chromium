@@ -19,21 +19,54 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 
+namespace {
+
 using system_cpu::CpuSample;
 using system_cpu::FakeCpuProbe;
 using system_cpu::StreamingCpuProbe;
 
-class CpuProbeManagerTest : public ::testing::Test {
+// Different amounts of delay to insert to test interactions between responses
+// to subsequent RequestSample() calls.
+enum class ResponseDelay {
+  // Responses will be posted immediately. With MOCK_TIME, they'll arrive on the
+  // same time tick as the RequestSample() call.
+  kNone,
+  // Responses will be delayed but arrive before the next RequestSample() call.
+  kLessThanSampleInterval,
+  // Responses will arrive after the next RequestSample() call.
+  kGreaterThanSampleInterval,
+  // Responses will arrive on the same time tick as the next RequestSample()
+  // call.
+  kEqualToSampleInterval,
+};
+
+base::TimeDelta GetResponseDelayDelta(ResponseDelay delay) {
+  switch (delay) {
+    case ResponseDelay::kNone:
+      return base::TimeDelta();
+    case ResponseDelay::kLessThanSampleInterval:
+      return TestTimeouts::tiny_timeout() / 2;
+    case ResponseDelay::kGreaterThanSampleInterval:
+      return TestTimeouts::tiny_timeout() * 2;
+    case ResponseDelay::kEqualToSampleInterval:
+      return TestTimeouts::tiny_timeout();
+  }
+}
+
+}  // namespace
+
+class CpuProbeManagerTest : public ::testing::TestWithParam<ResponseDelay> {
  public:
   CpuProbeManagerTest()
       : cpu_probe_manager_(CpuProbeManager::CreateForTesting(
-            std::make_unique<FakeCpuProbe>(),
+            std::make_unique<FakeCpuProbe>(GetResponseDelayDelta(GetParam())),
             TestTimeouts::tiny_timeout(),
             base::BindRepeating(&CpuProbeManagerTest::CollectorCallback,
                                 base::Unretained(this)))) {}
@@ -80,8 +113,26 @@ class CpuProbeManagerTest : public ::testing::Test {
 };
 
 using CpuProbeManagerDeathTest = CpuProbeManagerTest;
+using CpuProbeManagerDelayedResponseTest = CpuProbeManagerTest;
 
-TEST_F(CpuProbeManagerTest, CreateCpuProbeExists) {
+// Most tests won't include a response delay.
+INSTANTIATE_TEST_SUITE_P(NoResponseDelay,
+                         CpuProbeManagerTest,
+                         ::testing::Values(ResponseDelay::kNone));
+
+INSTANTIATE_TEST_SUITE_P(NoResponseDelay,
+                         CpuProbeManagerDeathTest,
+                         ::testing::Values(ResponseDelay::kNone));
+
+INSTANTIATE_TEST_SUITE_P(
+    AllResponseDelays,
+    CpuProbeManagerDelayedResponseTest,
+    ::testing::Values(ResponseDelay::kNone,
+                      ResponseDelay::kLessThanSampleInterval,
+                      ResponseDelay::kGreaterThanSampleInterval,
+                      ResponseDelay::kEqualToSampleInterval));
+
+TEST_P(CpuProbeManagerTest, CreateCpuProbeExists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<CpuProbeManager> cpu_probe_manager =
@@ -91,7 +142,7 @@ TEST_F(CpuProbeManagerTest, CreateCpuProbeExists) {
   }
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStarted) {
+TEST_P(CpuProbeManagerTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
@@ -103,7 +154,7 @@ TEST_F(CpuProbeManagerTest, EnsureStarted) {
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
+TEST_P(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -124,14 +175,14 @@ TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
                             mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(CpuProbeManagerDeathTest, CalculateStateValueTooLarge) {
+TEST_P(CpuProbeManagerDeathTest, CalculateStateValueTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EXPECT_DCHECK_DEATH_WITH(cpu_probe_manager_->CalculateState(CpuSample{1.1}),
                            "unexpected value: 1.1");
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
@@ -160,7 +211,7 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
               mojom::PressureState(mojom::PressureState::kSerious));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -191,7 +242,7 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -222,7 +273,7 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -254,7 +305,7 @@ TEST_F(CpuProbeManagerTest,
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDeltaTwoState) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -283,7 +334,7 @@ TEST_F(CpuProbeManagerTest,
                   mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -315,7 +366,7 @@ TEST_F(CpuProbeManagerTest,
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedImmediate) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
@@ -332,7 +383,7 @@ TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedImmediate) {
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedDelayed) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
@@ -349,7 +400,8 @@ TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedDelayed) {
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedImmediate) {
+TEST_P(CpuProbeManagerDelayedResponseTest,
+       StopImmediateEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
@@ -365,7 +417,7 @@ TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedImmediate) {
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedDelayed) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopImmediateEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
@@ -380,6 +432,37 @@ TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedDelayed) {
   WaitForUpdate();
   EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
+}
+
+TEST_P(CpuProbeManagerDelayedResponseTest, StopEnsureStartedNoRace) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Can't simulate the race if there's no delay in sending a response.
+  if (GetParam() == ResponseDelay::kNone) {
+    GTEST_SKIP();
+  }
+
+  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
+      ->SetLastSample(CpuSample{0.9});
+
+  cpu_probe_manager_->EnsureStarted();
+
+  // This should send a sample request. Stop and restart the manager before the
+  // response is received, to be sure it's correctly ignored.
+  task_environment_.FastForwardBy(TestTimeouts::tiny_timeout());
+
+  cpu_probe_manager_->Stop();
+  EXPECT_THAT(samples_, ::testing::IsEmpty());
+  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
+      ->SetLastSample(CpuSample{0.65});
+  cpu_probe_manager_->EnsureStarted();
+
+  WaitForUpdate();
+
+  // The 0.9 sample was sent before Stop(), so it should NOT be included in the
+  // pressure calculation.
+  EXPECT_THAT(samples_, ::testing::ElementsAre(
+                            mojom::PressureState(mojom::PressureState::kFair)));
 }
 
 }  // namespace device

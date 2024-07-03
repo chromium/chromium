@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
@@ -84,9 +85,6 @@ class CpuProbeManager {
   // interval.
   void ToggleStateRandomization();
 
-  // Called after CpuProbe::StartSampling() completes.
-  void OnSamplingStarted();
-
   // Called periodically while the CpuProbe is running.
   void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>);
 
@@ -120,13 +118,7 @@ class CpuProbeManager {
   base::RepeatingCallback<void(mojom::PressureState)> sampling_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // True if the CpuProbe state will be reported after the next update.
-  //
-  // The CpuSample reported by many CpuProbe implementations relies
-  // on the differences observed between two Update() calls. For this reason,
-  // the CpuSample reported after a first Update() call is not
-  // reported via `sampling_callback_`.
-  bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  base::WeakPtrFactory<CpuProbeManager> weak_factory_{this};
 };
 
 }  // namespace device

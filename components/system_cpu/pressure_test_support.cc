@@ -15,7 +15,8 @@
 
 namespace system_cpu {
 
-FakeCpuProbe::FakeCpuProbe() = default;
+FakeCpuProbe::FakeCpuProbe(base::TimeDelta response_delay)
+    : response_delay_(response_delay) {}
 
 FakeCpuProbe::~FakeCpuProbe() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -25,8 +26,9 @@ void FakeCpuProbe::Update(SampleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::AutoLock auto_lock(lock_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), last_sample_));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), last_sample_),
+      response_delay_);
 }
 
 base::WeakPtr<CpuProbe> FakeCpuProbe::GetWeakPtr() {

@@ -17,6 +17,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "components/system_cpu/cpu_probe.h"
 #include "components/system_cpu/cpu_sample.h"
 
@@ -48,7 +49,11 @@ class FakePlatformCpuProbe : public T {
 // Test double for CpuProbe that always returns a predetermined value.
 class FakeCpuProbe final : public CpuProbe {
  public:
-  FakeCpuProbe();
+  // Creates a FakeCpuProbe that delays Update() responses by `response_delay`.
+  // Setting this to >0 can mimic production CpuProbes that take samples on
+  // background threads.
+  explicit FakeCpuProbe(base::TimeDelta response_delay = base::TimeDelta());
+
   ~FakeCpuProbe() final;
 
   // CpuProbe implementation.
@@ -59,6 +64,8 @@ class FakeCpuProbe final : public CpuProbe {
   void SetLastSample(std::optional<CpuSample> sample);
 
  private:
+  const base::TimeDelta response_delay_;
+
   base::Lock lock_;
   std::optional<CpuSample> last_sample_ GUARDED_BY_CONTEXT(lock_);
 
