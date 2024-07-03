@@ -589,12 +589,13 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   });
 
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(
-      picker_view->search_results_view_for_testing()
-          .section_views_for_testing(),
-      ElementsAre(Pointee(Property(
-          "title", &PickerSectionView::title_label_for_testing,
-          Property("text", &views::Label::GetText, u"Matching links")))));
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(
+                  Property("title", &PickerSectionView::title_label_for_testing,
+                           Property("text", &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(
+                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
@@ -627,12 +628,13 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
 
   // Results page should keep old results until new results arrive.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(
-      picker_view->search_results_view_for_testing()
-          .section_views_for_testing(),
-      ElementsAre(Pointee(Property(
-          "title", &PickerSectionView::title_label_for_testing,
-          Property("text", &views::Label::GetText, u"Matching links")))));
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(
+                  Property("title", &PickerSectionView::title_label_for_testing,
+                           Property("text", &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(
+                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
@@ -671,12 +673,13 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
 
   // Results page should show the new results.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(
-      picker_view->search_results_view_for_testing()
-          .section_views_for_testing(),
-      ElementsAre(Pointee(Property(
-          "title", &PickerSectionView::title_label_for_testing,
-          Property("text", &views::Label::GetText, u"Matching links")))));
+  EXPECT_THAT(picker_view->search_results_view_for_testing()
+                  .section_views_for_testing(),
+              ElementsAre(Pointee(
+                  Property("title", &PickerSectionView::title_label_for_testing,
+                           Property("text", &views::Label::GetText,
+                                    l10n_util::GetStringUTF16(
+                                        IDS_PICKER_LINKS_CATEGORY_LABEL))))));
 }
 
 TEST_F(PickerViewTest, ShowsNoResultsBeforeTimeout) {

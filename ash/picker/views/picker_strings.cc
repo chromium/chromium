@@ -113,36 +113,21 @@ std::u16string GetSectionTitleForPickerCategoryType(
 
 std::u16string GetSectionTitleForPickerSectionType(
     PickerSectionType section_type) {
-  // TODO: b/325870358 - Finalize strings and use a GRD file.
   switch (section_type) {
     case PickerSectionType::kNone:
-      return u"";
     case PickerSectionType::kCategories:
-      return u"Matching categories";
     case PickerSectionType::kSuggestions:
-      return u"Suggested";
+    case PickerSectionType::kEditorWrite:
+    case PickerSectionType::kEditorRewrite:
+      return u"";
     case PickerSectionType::kLinks:
-      return u"Matching links";
+      return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);
     case PickerSectionType::kFiles:
-      return u"Matching files";
+      return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case PickerSectionType::kDriveFiles:
-      return u"Matching Google Drive files";
+      return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
     case PickerSectionType::kGifs:
       return u"Other expressions";
-    case PickerSectionType::kEditorWrite:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_EDITOR_WRITE_CATEGORY_TYPE_SECTION_TITLE);
-#else
-      return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case PickerSectionType::kEditorRewrite:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_EDITOR_REWRITE_CATEGORY_TYPE_SECTION_TITLE);
-#else
-      return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 }
 

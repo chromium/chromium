@@ -71,6 +71,12 @@ auto AsView(Matcher matcher) {
       Pointee(matcher));
 }
 
+auto MatchesTitlelessSection(int num_items) {
+  return AllOf(
+      Property(&PickerSectionView::title_label_for_testing, nullptr),
+      Property(&PickerSectionView::item_views_for_testing, SizeIs(num_items)));
+}
+
 auto MatchesResultSection(PickerSectionType section_type, int num_items) {
   return AllOf(
       Property(&PickerSectionView::title_label_for_testing,
@@ -124,9 +130,8 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
   EXPECT_THAT(
       view.section_views_for_testing(),
-      ElementsAre(
-          Pointee(MatchesResultSection(PickerSectionType::kSuggestions, 2)),
-          Pointee(MatchesResultSection(PickerSectionType::kFiles, 1))));
+      ElementsAre(Pointee(MatchesTitlelessSection(2)),
+                  Pointee(MatchesResultSection(PickerSectionType::kFiles, 1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, ClearSearchResultsClearsView) {
@@ -179,8 +184,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
 
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
   EXPECT_THAT(view.section_views_for_testing(),
-              ElementsAre(Pointee(
-                  MatchesResultSection(PickerSectionType::kCategories, 1))));
+              ElementsAre(Pointee(MatchesTitlelessSection(1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
@@ -244,9 +248,8 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(2));
   EXPECT_THAT(
       view.section_views_for_testing(),
-      ElementsAre(
-          Pointee(MatchesResultSection(PickerSectionType::kFiles, 1)),
-          Pointee(MatchesResultSection(PickerSectionType::kSuggestions, 1))));
+      ElementsAre(Pointee(MatchesResultSection(PickerSectionType::kFiles, 1)),
+                  Pointee(MatchesTitlelessSection(1))));
 }
 
 TEST_F(PickerSearchResultsViewTest, GetsTopItem) {
