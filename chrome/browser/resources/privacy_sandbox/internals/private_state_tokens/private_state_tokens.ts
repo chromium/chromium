@@ -4,4 +4,5 @@
 
 import './app.js';
 
-export {PrivateStateTokensToolbarElement} from './toolbar.js';
+export type {PrivateStateTokensAppElement} from './app.js';
+export type {PrivateStateTokensToolbarElement} from './toolbar.js';

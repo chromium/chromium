@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_input/cr_input.js';
+import './toolbar.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 

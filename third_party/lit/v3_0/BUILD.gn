@@ -44,6 +44,7 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/extensions:build_ts",
     "//chrome/test/data/webui/history:build_ts",
+    "//chrome/test/data/webui/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/test/data/webui/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
     "//chrome/test/data/webui/welcome:build_ts",
