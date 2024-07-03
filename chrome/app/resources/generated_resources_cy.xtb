@@ -847,7 +847,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1607139524282324606">Clirio'r cofnod</translation>
 <translation id="1607499585984539560">Nid yw'r defnyddiwr yn gysylltiedig â pharth</translation>
 <translation id="1608668830839595724">Rhagor o gamau ar gyfer yr eitemau a ddewisir</translation>
-<translation id="1608698493373028805">Mae'n bosib na fydd yr estyniad hwn yn cael ei gefnogi mwyach</translation>
 <translation id="1610272688494140697">Gosodiadau Ap</translation>
 <translation id="161042844686301425">Gwyrddlas</translation>
 <translation id="1611432201750675208">Mae'ch dyfais wedi'i chloi</translation>
@@ -1932,6 +1931,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2376056713414548745">Darllen yn uchel</translation>
 <translation id="2377667304966270281">Diffygion Caled</translation>
 <translation id="237828693408258535">Cyfieithu'r dudalen hon?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Mae'n bosib na fydd yr estyniad hwn yn cael ei gefnogi mwyach}zero{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}two{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}few{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}many{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}other{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}}</translation>
 <translation id="2378982052244864789">Dewiswch gyfeiriadur estyniadau.</translation>
 <translation id="2379281330731083556">Argraffu gan ddefnyddio deialog y system... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Gall hyn achosi i'ch rhwydwaith symudol ddatgysylltu am ychydig funudau</translation>
@@ -4254,6 +4254,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="406213378265872299">Ymddygiadau sydd wedi'u personoleiddio</translation>
 <translation id="4062561150282203854">Cysoni apiau a gosodiadau eich <ph name="DEVICE_TYPE" /> a rhagor</translation>
 <translation id="4065876735068446555">Mae'n bosib y bydd y rhwydwaith rydych yn ei ddefnyddio (<ph name="NETWORK_ID" />) yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
+<translation id="4065931125325392744">Mae'n bosib na fydd yr estyniad hwn yn cael ei gefnogi mwyach</translation>
 <translation id="4066207411788646768">Gwiriwch eich cysylltiad i weld yr argraffwyr sydd ar gael yn eich rhwydwaith</translation>
 <translation id="4067839975993712852">Marcio'r tab cyfredol fel y'i darllenwyd</translation>
 <translation id="4068776064906523561">Olion bysedd sydd wedi'u cadw</translation>
@@ -5318,6 +5319,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4883436287898674711">Pob un o'r <ph name="WEBSITE_1" /> o wefannau</translation>
 <translation id="48838266408104654">&amp;Rheolwr Tasgau</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Dangos llwybr byr Google Lens bob amser</translation>
 <translation id="4885692421645694729">Nid oes gan yr estyniad hwn fynediad ychwanegol at y wefan</translation>
 <translation id="4887424188275796356">Agor Gyda Gwyliwr System</translation>
 <translation id="488785315393301722">Dangos Manylion</translation>
@@ -8094,6 +8096,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>
 <translation id="6989274756151920076">Aros yma</translation>
 <translation id="6991665348624301627">Dewiswch gyrchfan</translation>
+<translation id="6991926986715044139">Dangos Llwybr Byr Google Lens Bob Amser</translation>
 <translation id="6992554835374084304">Troi gwell gwirio sillafu ymlaen</translation>
 <translation id="6993000214273684335">Mae tab wedi'i dynnu o'r grŵp dienw - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Wrthi'n diweddaru porwr Chrome</translation>
@@ -10312,7 +10315,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8636500887554457830">Peidio â chaniatáu i wefannau anfon ffenestri naid na defnyddio ailgyfeiriadau</translation>
 <translation id="8636514272606969031">Panel ochr wedi'i binio</translation>
 <translation id="8637688295594795546">Mae diweddariad system ar gael. Wrthi'n paratoi i'w lawrlwytho…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Mae'n bosib na fydd yr estyniad hwn yn cael ei gefnogi mwyach}zero{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}two{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}few{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}many{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}other{Mae'n bosib na fydd yr estyniadau hyn yn cael eu cefnogi'n fuan}}</translation>
 <translation id="8638719155236856752">Iechyd Rhwydwaith ChromeOS</translation>
 <translation id="8639635302972078117">Anfon data defnydd a diagnostig. Ar hyn o bryd mae'r ddyfais hon yn anfon data diagnostig, dyfais ac ap yn awtomatig at Google. Ni ddefnyddir hwn i adnabod eich plentyn a bydd yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w Gyfrif Google.</translation>
 <translation id="8640575194957831802">Agorwyd ddiwethaf</translation>

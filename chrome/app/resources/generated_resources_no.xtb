@@ -841,7 +841,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1607139524282324606">Tøm oppføring</translation>
 <translation id="1607499585984539560">Brukeren er ikke tilknyttet domenet</translation>
 <translation id="1608668830839595724">Flere handlinger for de valgte elementene</translation>
-<translation id="1608698493373028805">Det kan hende at denne utvidelsen snart ikke støttes lenger</translation>
 <translation id="1610272688494140697">Appinnstillinger</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Enheten er låst</translation>
@@ -1923,6 +1922,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2376056713414548745">Les høyt</translation>
 <translation id="2377667304966270281">Harde feil</translation>
 <translation id="237828693408258535">Vil du oversette denne siden?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Det kan hende at denne utvidelsen snart ikke støttes lenger}other{Det kan hende at disse utvidelsene snart ikke støttes lenger}}</translation>
 <translation id="2378982052244864789">Velg katalog for utvidelsen.</translation>
 <translation id="2379281330731083556">Skriv ut med systemdialogen <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Dette kan føre til at mobilnettverket kobles fra i noen minutter</translation>
@@ -2607,7 +2607,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2862986593239703553">dette kortet</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
 <translation id="2865057607286263192">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn. Dette medfører at gjentakende tastetrykk blir slått av for alfabettaster. Bare tilgjengelig på engelsk (USA).</translation>
-<translation id="2865919525181940183">Skjermdump av programmene som er på skjermen</translation>
+<translation id="2865919525181940183">Skjermbilde av programmene som er på skjermen</translation>
 <translation id="286674810810214575">Sjekker strømkilder …</translation>
 <translation id="2867768963760577682">Åpne som festet fane</translation>
 <translation id="2868746137289129307">Denne utvidelsen er utdatert og avslått av bedriftsretningslinjene. Den kan slås på automatisk når en nyere versjon er tilgjengelig.</translation>
@@ -4243,6 +4243,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="406213378265872299">Tilpasset atferd</translation>
 <translation id="4062561150282203854">Synkroniser blant annet <ph name="DEVICE_TYPE" />-appene og -innstillingene dine</translation>
 <translation id="4065876735068446555">Det kan hende at nettverket du bruker (<ph name="NETWORK_ID" />), krever at du besøker en påloggingsside.</translation>
+<translation id="4065931125325392744">Det kan hende at denne utvidelsen snart ikke støttes lenger</translation>
 <translation id="4066207411788646768">Kontroller tilkoblingen din for å se tilgjengelige skrivere på nettverket</translation>
 <translation id="4067839975993712852">Merk denne fanen som lest</translation>
 <translation id="4068776064906523561">Lagrede fingeravtrykk</translation>
@@ -4458,7 +4459,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4249248555939881673">Venter på nettverkstilkobling …</translation>
 <translation id="4249373718504745892">Kameraet og mikrofonen er blokkert for denne siden.</translation>
 <translation id="424963718355121712">Apper må leveres fra verten de påvirker</translation>
-<translation id="4250229828105606438">Skjermdump</translation>
+<translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Registrering som kiosk- og skiltenhet</translation>
 <translation id="4252828488489674554">Høyreklikk på navnet på fanegruppen for å endre denne gruppen, eller klikk for å skjule den</translation>
@@ -5307,6 +5308,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="48838266408104654">&amp;Oppgavebehandling</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Vis alltid Google Lens-snarveien</translation>
 <translation id="4885692421645694729">Denne utvidelsen har ingen ytterligere nettstedstilgang</translation>
 <translation id="4887424188275796356">Åpne med visningsprogrammet for systemet</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
@@ -8073,6 +8075,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6988572888918530647">Administrer Google-kontoen din</translation>
 <translation id="6989274756151920076">Jeg vil bli her</translation>
 <translation id="6991665348624301627">Velg en destinasjon</translation>
+<translation id="6991926986715044139">Vis alltid Google Lens-snarveien</translation>
 <translation id="6992554835374084304">Slå på forbedret stavekontroll</translation>
 <translation id="6993000214273684335">Fanen er fjernet fra en gruppe uten navn – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Oppdaterer Chrome-nettleseren</translation>
@@ -10293,7 +10296,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8636500887554457830">Ikke la nettsteder sende forgrunnsvinduer eller bruke viderekoblinger</translation>
 <translation id="8636514272606969031">Sidepanelet er festet</translation>
 <translation id="8637688295594795546">Systemoppdatering er tilgjengelig. Forbereder nedlasting ...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Det kan hende at denne utvidelsen snart ikke støttes lenger}other{Det kan hende at disse utvidelsene snart ikke støttes lenger}}</translation>
 <translation id="8638719155236856752">Nettverkstilstand for ChromeOS</translation>
 <translation id="8639635302972078117">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
 <translation id="8640575194957831802">Sist åpnet</translation>

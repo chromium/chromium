@@ -838,7 +838,6 @@
 <translation id="1607139524282324606">清除此条目</translation>
 <translation id="1607499585984539560">此用户未与网域关联</translation>
 <translation id="1608668830839595724">可对所选项执行的更多操作</translation>
-<translation id="1608698493373028805">此扩展程序可能很快将不再受支持</translation>
 <translation id="1610272688494140697">应用设置</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
@@ -1909,6 +1908,7 @@
 <translation id="2376056713414548745">大声朗读</translation>
 <translation id="2377667304966270281">硬故障数</translation>
 <translation id="237828693408258535">翻译此页？</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{此扩展程序可能很快将不再受支持}other{这些扩展程序可能很快将不再受支持}}</translation>
 <translation id="2378982052244864789">选择扩展程序目录。</translation>
 <translation id="2379281330731083556">使用系统对话框进行打印...<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">这可能会导致您的移动网络连接断开几分钟</translation>
@@ -4227,6 +4227,7 @@
 <translation id="406213378265872299">自定义的行为</translation>
 <translation id="4062561150282203854">同步您的 <ph name="DEVICE_TYPE" /> 应用、设置等内容</translation>
 <translation id="4065876735068446555">您正在使用的网络 (<ph name="NETWORK_ID" />) 可能需要您访问其登录页面。</translation>
+<translation id="4065931125325392744">此扩展程序可能很快将不再受支持</translation>
 <translation id="4066207411788646768">请检查您的网络连接状况，以查看网络中可用的打印机</translation>
 <translation id="4067839975993712852">将当前标签页标记为已读</translation>
 <translation id="4068776064906523561">已保存的指纹</translation>
@@ -5291,6 +5292,7 @@
 <translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="48838266408104654">任务管理器(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
+<translation id="4885446229353981848">始终显示 Google 智能镜头快捷方式</translation>
 <translation id="4885692421645694729">此扩展程序无权访问其他网站</translation>
 <translation id="4887424188275796356">使用系统查看器打开</translation>
 <translation id="488785315393301722">显示详细信息</translation>
@@ -8055,6 +8057,7 @@
 <translation id="6988572888918530647">管理 Google 账号</translation>
 <translation id="6989274756151920076">保持现状</translation>
 <translation id="6991665348624301627">选择目标打印机</translation>
+<translation id="6991926986715044139">始终显示 Google 智能镜头快捷方式</translation>
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">正在更新 Chrome 浏览器</translation>
@@ -10275,7 +10278,6 @@
 <translation id="8636500887554457830">不允许网站显示弹出式窗口或使用重定向</translation>
 <translation id="8636514272606969031">侧边栏已固定</translation>
 <translation id="8637688295594795546">有系统更新，开始下载...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{此扩展程序可能很快将不再受支持}other{这些扩展程序可能很快将不再受支持}}</translation>
 <translation id="8638719155236856752">ChromeOS 网络运行状况</translation>
 <translation id="8639635302972078117">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
 <translation id="8640575194957831802">上次打开时间</translation>

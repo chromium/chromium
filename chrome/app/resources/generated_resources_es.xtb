@@ -843,7 +843,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1607499585984539560">El usuario no está asociado a un dominio</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
-<translation id="1608698493373028805">Es posible que esta extensión deje de admitirse próximamente</translation>
 <translation id="1610272688494140697">Configuración de la aplicación</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
@@ -1917,6 +1916,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2376056713414548745">Leer en voz alta</translation>
 <translation id="2377667304966270281">Fallos graves</translation>
 <translation id="237828693408258535">¿Quieres traducir esta página?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Puede que esta extensión deje de admitirse próximamente}other{Puede que estas extensiones dejen de admitirse próximamente}}</translation>
 <translation id="2378982052244864789">Selecciona el directorio de la extensión.</translation>
 <translation id="2379281330731083556">Imprimir utilizando el cuadro de diálogo del sistema <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Es posible que tu red móvil se desconecte durante unos minutos.</translation>
@@ -4237,6 +4237,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="406213378265872299">Comportamientos personalizados</translation>
 <translation id="4062561150282203854">Sincroniza las aplicaciones y los ajustes de tu <ph name="DEVICE_TYPE" />, entre otros elementos</translation>
 <translation id="4065876735068446555">La red que estás utilizando (<ph name="NETWORK_ID" />) puede requerir el acceso a su página de inicio de sesión.</translation>
+<translation id="4065931125325392744">Puede que esta extensión deje de admitirse próximamente</translation>
 <translation id="4066207411788646768">Comprueba la conexión a Internet para ver las impresoras disponibles de tu red</translation>
 <translation id="4067839975993712852">Marcar la pestaña actual como leída</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
@@ -5301,6 +5302,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4883436287898674711">Todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Administrador de tareas</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Mostrar siempre el acceso directo a Google Lens</translation>
 <translation id="4885692421645694729">Esta extensión no tiene acceso adicional al sitio</translation>
 <translation id="4887424188275796356">Abrir con el visor del sistema</translation>
 <translation id="488785315393301722">Mostrar detalles</translation>
@@ -8068,6 +8070,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6988572888918530647">Gestionar tu cuenta de Google</translation>
 <translation id="6989274756151920076">Quedarme aquí</translation>
 <translation id="6991665348624301627">Seleccionar un destino</translation>
+<translation id="6991926986715044139">Mostrar siempre el acceso directo a Google Lens</translation>
 <translation id="6992554835374084304">Activa la revisión ortográfica mejorada</translation>
 <translation id="6993000214273684335">Pestaña quitada de grupo sin nombre (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6993050154661569036">Actualizando el navegador Chrome</translation>
@@ -10288,7 +10291,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8636500887554457830">No permitir que los sitios envíen ventanas emergentes ni utilicen redirecciones</translation>
 <translation id="8636514272606969031">Panel lateral fijado</translation>
 <translation id="8637688295594795546">Hay disponible una actualización del sistema. Preparando para descargar…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Es posible que esta extensión deje de admitirse pronto}other{Es posible que estas extensiones dejen de admitirse pronto}}</translation>
 <translation id="8638719155236856752">Estado de red de ChromeOS</translation>
 <translation id="8639635302972078117">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo.</translation>
 <translation id="8640575194957831802">Abiertos por última vez</translation>

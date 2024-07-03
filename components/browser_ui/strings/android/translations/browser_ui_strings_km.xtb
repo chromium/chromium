@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2597457036804169544">កុំប្រើរចនាប័ទ្មងងឹតលើគេហទំព័រ</translation>
 <translation id="2606760465469169465">ការផ្ទៀងផ្ទាត់ដោយស្វ័យ​ប្រវត្តិ</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">អនុញ្ញាត JavaScript សម្រាប់គេហទំព័រជាក់លាក់។</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2677748264148917807">ចាកចេញ</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">ពិនិត្យមើល</translation>
 <translation id="3628308229821498208">ការស្វែងរក​ដែលបាន​ណែនាំ</translation>
 <translation id="3697164069658504920">នៅពេល​បើក គេហទំព័រ​អាចស្នើសុំប្រើ​ឧបករណ៍ USB បាន។ នៅពេល​បិទ គេហទំព័រ​មិនអាចប្រើ​ឧបករណ៍ USB បានទេ។</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">គេហទំព័រ​ដែលអ្នក​ចូលមើល​អាចរក្សាទុក​ព័ត៌មាន​បន្តិចបន្តួច​ជាមួយ Chrome ដោយជាចម្បង មានគោលបំណងបញ្ជាក់ភាពត្រឹមត្រូវថា អ្នកមិនមែនជាបូតទេ</translation>
 <translation id="3721953990244350188">ច្រានចោល និងបង្ហាញសកម្មភាពបន្ទាប់ដែលអាចធ្វើបាន</translation>
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
@@ -174,6 +172,7 @@
 <translation id="3859306556332390985">ស្វែងរក​ទៅ​មុខ</translation>
 <translation id="3895926599014793903">បង្ខំបើកដំណើរការពង្រីក</translation>
 <translation id="3908288065506437185">ទប់ស្កាត់​ខូគីភាគីទីបី​ក្នុងមុខងារ​ឯកជន</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">មុខងារ​មួយចំនួន​ប្រហែល​​​​មិន​​ដំណើរការ​ទេ។ គេហទំព័រ​ដែល​ពាក់ព័ន្ធ​នៅ​តែ​អាច​ប្រើ​ខូគី​ភាគីទីបីបាន។</translation>
 <translation id="3933121352599513978">បង្រួម​សំណើ​ដែលមិនចង់បាន (បានណែនាំ)</translation>
 <translation id="3955193568934677022">អនុញ្ញាត​ឲ្យ​ទំព័រ​ចាក់​មាតិកា​ដែលមាន​ការ​ការពារ (ត្រូវបាន​ណែនាំ)</translation>
@@ -228,7 +227,6 @@
 <translation id="4962975101802056554">ដក​ការអនុញ្ញាត​ទាំងអស់​សម្រាប់​ឧបករណ៍</translation>
 <translation id="497421865427891073">ទៅមុខ</translation>
 <translation id="4976702386844183910">បានចូល​មើល​លើកចុង​ក្រោយនៅថ្ងៃទី <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">អ្នក​បានអនុញ្ញាត​ខូគី​ភាគីទីបី​សម្រាប់​គេហទំព័រនេះ</translation>
 <translation id="4994033804516042629">រកមិនឃើញ​ទំនាក់ទំនង​ទេ</translation>
 <translation id="4996978546172906250">ចែករំលែកតាមរយៈ</translation>
@@ -280,7 +278,6 @@
 <translation id="5690795753582697420">កាមេរ៉ាត្រូវបានបិទនៅក្នុងការកំណត់ Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> អាចប្រើ​ព័ត៌មាន​របស់អ្នក នៅពេលដែល​អ្នករុករក</translation>
 <translation id="5700761515355162635">បានអនុញ្ញាត​ខូគី​ភាគីទីបី</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">សកម្មភាពនេះ​លុប​ខូគី និង​ទិន្នន័យ​គេហទំព័រ​ផ្សេងទៀត​សម្រាប់ <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">បានទប់ស្កាត់ខូគី​ភាគទីបីនៅក្នុងមុខងារឯកជន</translation>
 <translation id="5740126560802162366">គេហ​ទំព័រ​អាច​រក្សាទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់​អ្នក</translation>

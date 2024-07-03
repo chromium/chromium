@@ -839,7 +839,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1607139524282324606">Girişi silin</translation>
 <translation id="1607499585984539560">İstifadəçi domen ilə əlaqəli deyil</translation>
 <translation id="1608668830839595724">Seçilmiş elementlər üçün daha çox əməliyyat</translation>
-<translation id="1608698493373028805">Bu artırma tezliklə dəstəklənməyə bilər</translation>
 <translation id="1610272688494140697">Tətbiq Ayarları</translation>
 <translation id="161042844686301425">Firuzəyi</translation>
 <translation id="1611432201750675208">Cihazınız kilidlidir</translation>
@@ -1915,6 +1914,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2376056713414548745">Ucadan oxuyun</translation>
 <translation id="2377667304966270281">Ağır Zədələr</translation>
 <translation id="237828693408258535">Bu səhifə tərcümə edilsin?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Bu artırma tezliklə dəstəklənməyə bilər}other{Bu artırmalar tezliklə dəstəklənməyə bilər}}</translation>
 <translation id="2378982052244864789">Artırma direktivini seçin.</translation>
 <translation id="2379281330731083556">İstifadəçi sistemi dialoqu çap edin... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Mobil şəbəkə bir neçə dəqiqəlik kəsilə bilər</translation>
@@ -4237,6 +4237,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="406213378265872299">Fərdiləşdirilmiş davranışlar</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> tətbiqləri, ayarları və daha çoxunu sinxronlaşdırın</translation>
 <translation id="4065876735068446555">İstifadə etdiyiniz şəbəkə (<ph name="NETWORK_ID" />) login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
+<translation id="4065931125325392744">Bu artırma tezliklə dəstəklənməyə bilər</translation>
 <translation id="4066207411788646768">Şəbəkədə əlçatan printerlərə baxmaq üçün bağlantını yoxlayın</translation>
 <translation id="4067839975993712852">Cari tabı oxunmuş olaraq qeyd edin</translation>
 <translation id="4068776064906523561">Yadda saxlanmış barmaq izləri</translation>
@@ -5299,6 +5300,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="48838266408104654">&amp;Tapşırıq Meneceri</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Google Linza qısayolu hər zaman göstərilsin</translation>
 <translation id="4885692421645694729">Bu artırmanın əlavə sayt girişi yoxdur</translation>
 <translation id="4887424188275796356">Sistem İzləyici ilə Açın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
@@ -8065,6 +8067,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6988572888918530647">Google Hesabını İdarə Edin</translation>
 <translation id="6989274756151920076">Burada qalın</translation>
 <translation id="6991665348624301627">Təyinat yeri seçin</translation>
+<translation id="6991926986715044139">Google Linza qısayolu hər zaman göstərilsin</translation>
 <translation id="6992554835374084304">Qabaqcıl orfoqrafik yoxlamanı aktiv edin</translation>
 <translation id="6993000214273684335">Tab adsız qrupdan silindi - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome brauzeri güncəllənir</translation>
@@ -10283,7 +10286,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8636500887554457830">Saytlara popap bildirişlər göndərmək, yaxud yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
 <translation id="8636514272606969031">Yan panel bərkidildi</translation>
 <translation id="8637688295594795546">Sistem güncəlləşməsi əlçatandır. İndi endiriləcək...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Bu artırma tezliklə dəstəklənməyə bilər}other{Bu artırmalar tezliklə dəstəklənməyə bilər}}</translation>
 <translation id="8638719155236856752">ChromeOS şəbəkə vəziyyəti</translation>
 <translation id="8639635302972078117">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda saxlanıla bilər.</translation>
 <translation id="8640575194957831802">Son açılan</translation>

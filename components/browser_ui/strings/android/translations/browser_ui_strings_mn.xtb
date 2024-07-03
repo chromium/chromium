@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">Түр санах ой</translation>
 <translation id="2597457036804169544">Сайтуудад бараан загварыг бүү ашигла</translation>
 <translation id="2606760465469169465">Автоматаар баталгаажуулах</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">JavaScript-г тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3628308229821498208">Санал болгосон хайлтууд</translation>
 <translation id="3697164069658504920">Асаалттай үед сайтууд USB төхөөрөмжүүдийг ашиглахыг хүсэх боломжтой. Унтраалттай үед сайтууд USB төхөөрөмжүүдийг ашиглах боломжгүй.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Таны зочилсон сайт голчлон таныг бот биш болохыг баталгаажуулахын тулд бага хэмжээний мэдээллийг Chrome-р хадгалах боломжтой</translation>
 <translation id="3721953990244350188">Хаагаад, дараагийн боломжтой үйлдлийг харуулах</translation>
 <translation id="3744111561329211289">Дэвсгэрт синк хийх</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">Төхөөрөмжийн бүх зөвшөөрлийг цуцлах</translation>
 <translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="4976702386844183910">Хамгийн сүүлд <ph name="DATE" />-д зочилсон</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Та энэ сайтад гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="4994033804516042629">Харилцагч олдсонгүй</translation>
 <translation id="4996978546172906250">-аар хуваалцах</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> таныг үзэх явцад мэдээллийг тань ашиглах боломжтой</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Энэ нь <ph name="WEBSITE" />-н күүки болон сайтын бусад өгөгдлийг устгана</translation>
 <translation id="5723967018671998714">Гуравдагч талын күүкиг нууцлалтай горимд блоклодог</translation>
 <translation id="5740126560802162366">Сайтууд таны төхөөрөмж дээр өгөгдөл хадгалах боломжтой</translation>

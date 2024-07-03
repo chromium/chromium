@@ -845,7 +845,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1607139524282324606">Limpar entrada</translation>
 <translation id="1607499585984539560">O usuário não está afiliado ao domínio</translation>
 <translation id="1608668830839595724">Mais ações para itens selecionados</translation>
-<translation id="1608698493373028805">Em breve, esta extensão pode não estar mais disponível</translation>
 <translation id="1610272688494140697">Configurações do app</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">Seu dispositivo está bloqueado</translation>
@@ -1930,6 +1929,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2376056713414548745">Ler em voz alta</translation>
 <translation id="2377667304966270281">Falhas graves</translation>
 <translation id="237828693408258535">Traduzir esta página?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Esta extensão pode ficar indisponível em breve}one{Esta extensão pode ficar indisponível em breve}other{Estas extensões podem ficar indisponíveis em breve}}</translation>
 <translation id="2378982052244864789">Selecionar o diretório da extensão.</translation>
 <translation id="2379281330731083556">Imprimir utilizando caixa de diálogo de sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Isso pode desconectar a rede móvel por alguns minutos</translation>
@@ -4252,6 +4252,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="406213378265872299">Comportamentos personalizados</translation>
 <translation id="4062561150282203854">Sincronizar apps, configurações e muito mais do seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">A rede que você está usando (<ph name="NETWORK_ID" />) pode exigir que você visite a página de login.</translation>
+<translation id="4065931125325392744">Esta extensão pode ficar indisponível em breve</translation>
 <translation id="4066207411788646768">Verifique sua conexão para ver as impressoras disponíveis na sua rede</translation>
 <translation id="4067839975993712852">Marcar a guia atual como lida</translation>
 <translation id="4068776064906523561">Impressões digitais salvas</translation>
@@ -5316,6 +5317,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Gerenciador de tarefas</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Sempre mostrar o atalho do Google Lens</translation>
 <translation id="4885692421645694729">Esta extensão não tem nenhum acesso extra a sites</translation>
 <translation id="4887424188275796356">Abrir com o Visualizador do sistema</translation>
 <translation id="488785315393301722">Mostrar detalhes</translation>
@@ -8087,6 +8089,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6988572888918530647">Gerenciar sua Conta do Google</translation>
 <translation id="6989274756151920076">Ficar aqui</translation>
 <translation id="6991665348624301627">Selecione um destino</translation>
+<translation id="6991926986715044139">Sempre mostrar o atalho do Google Lens</translation>
 <translation id="6992554835374084304">Ativar a verificação ortográfica aprimorada</translation>
 <translation id="6993000214273684335">Guia removida do grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Atualizando o navegador Chrome</translation>
@@ -10307,7 +10310,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8636500887554457830">Não permitir que os sites enviem pop-ups ou usem redirecionamentos</translation>
 <translation id="8636514272606969031">Painel lateral fixado</translation>
 <translation id="8637688295594795546">A atualização do sistema está disponível. Preparando para fazer download...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Em breve, esta extensão pode não estar disponível}one{Em breve, esta extensão pode não estar disponível}other{Em breve, estas extensões podem não estar disponíveis}}</translation>
 <translation id="8638719155236856752">Integridade da rede do ChromeOS</translation>
 <translation id="8639635302972078117">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela.</translation>
 <translation id="8640575194957831802">Aberto pela última vez</translation>

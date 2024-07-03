@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">ক্লিপবোর্ড</translation>
 <translation id="2597457036804169544">সাইটে ডার্ক থিম প্রয়োগ করবেন না</translation>
 <translation id="2606760465469169465">অটোমেটিক যাচাই</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">একটি নির্দিষ্ট সাইটের জন্য জাভাস্ক্রিপ্ট মঞ্জুর করুন।</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3628308229821498208">সাজেস্ট করা সার্চ</translation>
 <translation id="3697164069658504920">চালু থাকলে, সাইট আপনার USB ডিভাইস ব্যবহার করার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার USB ডিভাইস ব্যবহার করতে পারে না।</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">আপনার দেখা সাইট Chrome-এর মাধ্যমে অল্প পরিমাণ তথ্য সেভ করতে পারে। আপনি যে আসলে বট নন এটি যাচাই করতেই তা করা হয়</translation>
 <translation id="3721953990244350188">এই অ্যাকশন বাতিল করে উপলভ্য পরবর্তী অ্যাকশন দেখুন</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">ডিভাইসের ক্ষেত্রে সমস্ত অনুমতি সরিয়ে দিন</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4976702386844183910"><ph name="DATE" />-এ শেষবার দেখেছেন</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">এই সাইটের জন্য আপনি থার্ড-পার্টি কুকির অনুমতি দিয়েছেন</translation>
 <translation id="4994033804516042629">কোনও পরিচিতি পাওয়া যায়নি</translation>
 <translation id="4996978546172906250">এর মাধ্যমে শেয়ার করুন</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android সেটিংসে ক্যামেরা বন্ধ করা আছে</translation>
 <translation id="5691080386278724773">ব্রাউজ করার সময় <ph name="SITE" /> আপনার তথ্য ব্যবহার করতে পারবে</translation>
 <translation id="5700761515355162635">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">এটি <ph name="WEBSITE" />-এর জন্য কুকি এবং অন্যান্য সাইট ডেটা মুছে ফেলে</translation>
 <translation id="5723967018671998714">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="5740126560802162366">সাইটগুলি আপনার ডিভাইসে ডেটা সেভ করতে পারে</translation>

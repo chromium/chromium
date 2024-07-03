@@ -843,7 +843,6 @@
 <translation id="1607139524282324606">エラー項目を消去</translation>
 <translation id="1607499585984539560">ユーザーはドメインに関連付けられていません</translation>
 <translation id="1608668830839595724">選択した項目のその他の操作</translation>
-<translation id="1608698493373028805">この拡張機能はまもなくサポートされなくなる可能性があります</translation>
 <translation id="1610272688494140697">アプリの設定</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611432201750675208">デバイスはロックされています</translation>
@@ -1911,6 +1910,7 @@
 <translation id="2376056713414548745">読み上げ</translation>
 <translation id="2377667304966270281">ハードの障害数</translation>
 <translation id="237828693408258535">このページを翻訳しますか？</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{この拡張機能はまもなくサポートされなくなる可能性があります}other{これらの拡張機能はまもなくサポートされなくなる可能性があります}}</translation>
 <translation id="2378982052244864789">拡張機能のディレクトリを選択してください。</translation>
 <translation id="2379281330731083556">システム ダイアログを使用して印刷... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">これにより、モバイル ネットワークが数分切断されることがあります。</translation>
@@ -4229,6 +4229,7 @@
 <translation id="406213378265872299">動作のカスタマイズ</translation>
 <translation id="4062561150282203854"><ph name="DEVICE_TYPE" /> のアプリや設定などを同期します</translation>
 <translation id="4065876735068446555">ご利用のネットワーク（<ph name="NETWORK_ID" />）では、ログインページへのアクセスが必要な可能性があります。</translation>
+<translation id="4065931125325392744">この拡張機能はまもなくサポートされなくなる可能性があります</translation>
 <translation id="4066207411788646768">ネットワークで使用できるプリンタを表示するには、インターネット接続を確認してください</translation>
 <translation id="4067839975993712852">現在のタブを既読にする</translation>
 <translation id="4068776064906523561">保存した指紋</translation>
@@ -5291,6 +5292,7 @@
 <translation id="4883436287898674711"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="48838266408104654">タスク マネージャ(&amp;T)</translation>
 <translation id="4884987973312178454">6 倍</translation>
+<translation id="4885446229353981848">Google レンズのショートカットを常に表示する</translation>
 <translation id="4885692421645694729">この拡張機能では、追加のサイトアクセスは行われません</translation>
 <translation id="4887424188275796356">システム ビューアで開く</translation>
 <translation id="488785315393301722">詳細を表示</translation>
@@ -8054,6 +8056,7 @@
 <translation id="6988572888918530647">Google アカウントを管理する</translation>
 <translation id="6989274756151920076">このまま続行</translation>
 <translation id="6991665348624301627">送信先の選択</translation>
+<translation id="6991926986715044139">Google レンズのショートカットを常に表示する</translation>
 <translation id="6992554835374084304">拡張スペルチェックの有効化</translation>
 <translation id="6993000214273684335">タブを名前のないグループから移動しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome ブラウザを更新しています</translation>
@@ -10272,7 +10275,6 @@
 <translation id="8636500887554457830">サイトにポップアップの送信やリダイレクトの使用を許可しない</translation>
 <translation id="8636514272606969031">サイドパネルを固定しました</translation>
 <translation id="8637688295594795546">システムのアップデートが見つかりました。ダウンロードの準備をしています...</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{この拡張機能はまもなくサポートされなくなる可能性があります}other{これらの拡張機能はまもなくサポートされなくなる可能性があります}}</translation>
 <translation id="8638719155236856752">ChromeOS ネットワーク健全性</translation>
 <translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="8640575194957831802">最終使用日</translation>

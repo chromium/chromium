@@ -844,7 +844,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">L'utilisateur n'est pas affilié au domaine</translation>
 <translation id="1608668830839595724">Plus d'actions pour les éléments sélectionnés</translation>
-<translation id="1608698493373028805">Cette extension pourrait bientôt ne plus être prise en charge</translation>
 <translation id="1610272688494140697">Paramètres des applications</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Votre appareil est verrouillé</translation>
@@ -1917,6 +1916,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2376056713414548745">Lire à haute voix</translation>
 <translation id="2377667304966270281">Défaillances matérielles</translation>
 <translation id="237828693408258535">Traduire cette page?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Cette extension pourrait bientôt ne plus être prise en charge}one{Cette extension pourrait bientôt ne plus être prise en charge}other{Ces extensions pourraient bientôt ne plus être prises en charge}}</translation>
 <translation id="2378982052244864789">Sélectionner le répertoire de l'extension.</translation>
 <translation id="2379281330731083556">Imprimer à l'aide de la boîte de dialogue du système… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Il se peut que votre réseau cellulaire soit déconnecté pendant quelques minutes</translation>
@@ -4241,6 +4241,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="406213378265872299">Comportements personnalisés</translation>
 <translation id="4062561150282203854">Synchroniser les applis, les paramètres et plus de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4065876735068446555">Le réseau que vous utilisez (<ph name="NETWORK_ID" />) peut vous demander de consulter sa page de connexion.</translation>
+<translation id="4065931125325392744">Cette extension pourrait bientôt ne plus être prise en charge</translation>
 <translation id="4066207411788646768">Veuillez vérifier votre connexion pour voir les imprimantes accessibles sur votre réseau</translation>
 <translation id="4067839975993712852">Marquer l'onglet actuel comme lu</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
@@ -5305,6 +5306,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestionnaire de &amp;tâches</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Toujours afficher le raccourci Lentille Google</translation>
 <translation id="4885692421645694729">Cette extension n'a pas d'accès de site supplémentaire</translation>
 <translation id="4887424188275796356">Ouvrir avec le lecteur système</translation>
 <translation id="488785315393301722">Afficher les détails</translation>
@@ -8074,6 +8076,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
 <translation id="6989274756151920076">Rester ici</translation>
 <translation id="6991665348624301627">Sélectionnez une destination</translation>
+<translation id="6991926986715044139">Toujours afficher le raccourci Lentille Google</translation>
 <translation id="6992554835374084304">Activer le correcteur orthographique amélioré</translation>
 <translation id="6993000214273684335">Onglet retiré d'un groupe sans nom : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Mise à jour du navigateur Chrome en cours…</translation>
@@ -10292,7 +10295,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8636500887554457830">Ne pas autoriser les sites à envoyer des fenêtres contextuelles ni à utiliser des redirections</translation>
 <translation id="8636514272606969031">Panneau latéral épinglé</translation>
 <translation id="8637688295594795546">Mise à jour du système possible. Préparation du téléchargement…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Cette extension pourrait bientôt ne plus être prise en charge}one{Cette extension pourrait bientôt ne plus être prise en charge}other{Ces extensions pourraient bientôt ne plus être prises en charge}}</translation>
 <translation id="8638719155236856752">Santé du réseau ChromeOS</translation>
 <translation id="8639635302972078117">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
 <translation id="8640575194957831802">Dernière ouverture</translation>

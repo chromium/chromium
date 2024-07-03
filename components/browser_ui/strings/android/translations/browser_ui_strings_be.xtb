@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2597457036804169544">Не прымяняць цёмную тэму да сайтаў</translation>
 <translation id="2606760465469169465">Аўтаматычная праверка</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Дазвол JavaScript на канкрэтным сайце.</translation>
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3628308229821498208">Прапанаваныя пошукавыя запыты</translation>
 <translation id="3697164069658504920">Калі гэты параметр уключаны, сайты могуць запытваць дазвол на выкарыстанне USB-прылад. Калі параметр выключаны, сайты не могуць выкарыстоўваць такія прылады.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Наведаны вамі сайт можа захаваць невялікі аб'ём інфармацыі ў Chrome, у асноўным для пацвярджэння таго, што вы не бот.</translation>
 <translation id="3721953990244350188">Закрыць і паказаць наступнае даступнае дзеянне</translation>
 <translation id="3744111561329211289">Фонавая сінхранізацыя</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">Адклікаць усе дазволы для прылады</translation>
 <translation id="497421865427891073">Наперад</translation>
 <translation id="4976702386844183910">Апошняе наведванне: <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Вы дазволілі староннія файлы cookie для гэтага сайта</translation>
 <translation id="4994033804516042629">Кантакты не знойдзены</translation>
 <translation id="4996978546172906250">Абагуліць праз</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Камера выключана ў наладах Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> можа выкарыстоўваць вашы даныя падчас прагляду сайтаў</translation>
 <translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Будуць выдалены файлы cookie і іншыя даныя сайта <ph name="WEBSITE" /></translation>
 <translation id="5723967018671998714">У рэжыме інкогніта староннія файлы cookie блакіруюцца</translation>
 <translation id="5740126560802162366">Сайты могуць захоўваць даныя на вашай прыладзе</translation>

@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटहरूमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
 <translation id="2606760465469169465">स्वतः पुष्टि गर्ने अनुमति</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">कुनै विशेष साइटलाई JavaScript को प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3628308229821498208">सिफारिस गरिएका खोजहरू</translation>
 <translation id="3697164069658504920">यो सेटिङ अन भएका बेला साइटहरूले USB डिभाइसहरू प्रयोग गर्ने अनुमति माग्न सक्छन्। यो सेटिङ अफ भएका बेला साइटहरूले USB डिभाइसहरू प्रयोग गर्न सक्दैनन्।</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">तपाईंले खोल्ने साइटले मुख्यतः तपाईं कुनै बट होइन भन्ने कुरा पुष्टि गर्न Chrome मा थोरै जानकारी सेभ गर्न सक्छ</translation>
 <translation id="3721953990244350188">यो कारबाही खारेज गर्नुहोस् र उपलब्ध अर्को कारबाही देखाउनुहोस्</translation>
 <translation id="3744111561329211289">पृष्ठभूमिमा सिंक गर्ने सुविधा</translation>
@@ -179,7 +177,7 @@
 <translation id="3955193568934677022">साइटहरूलाई सुरक्षित सामग्री प्ले गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3974105241379491420">साइटहरूले तपाईंका बारेमा सेभ गरिएको जानकारी प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
-<translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
+<translation id="3987993985790029246">लिंक कपी गर्नुहोस्</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">डिभाइसका सबै अनुमतिहरू फिर्ता लिनुहोस्</translation>
 <translation id="497421865427891073">अगाडि जानुहोस्</translation>
 <translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">तपाईंले यो साइटमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो</translation>
 <translation id="4994033804516042629">कुनै पनि सम्पर्क ठेगाना भेटिएन</translation>
 <translation id="4996978546172906250">मार्फत साझा गर्नुहोस्</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android का सेटिङमा क्यामेरा बन्द गरिएको छ</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> ले तपाईंले सामग्री ब्राउज गरिरहेका बेला तपाईंको जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">तपाईंले यसो गर्नुभयो भने <ph name="WEBSITE" /> सम्बन्धी कुकी तथा अन्य साइट डेटा मेटिन्छ</translation>
 <translation id="5723967018671998714">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइन्छ</translation>
 <translation id="5740126560802162366">साइटहरूले तपाईंको डिभाइसमा जानकारी सेभ गर्न सक्छन्</translation>

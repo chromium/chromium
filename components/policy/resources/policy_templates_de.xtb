@@ -346,9 +346,9 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
       Warnung: Bei den Einstellungen „Wipe“ und „MinimalMigrate“ werden lokale Daten entfernt.</translation>
 <translation id="1248955696540150266">Peer-to-Peer-Downloads von automatischen Updates zulassen</translation>
 <translation id="1249640740800891502">Einstellungen für SkyVault (alle Daten in der Cloud)</translation>
-<translation id="1250597158212586309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, haben Nutzer die Möglichkeit, Warnungen zu gehackten Passwörtern zu schließen und wiederherzustellen.
+<translation id="1250597158212586309">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, haben Nutzer die Möglichkeit, Warnungen zu kompromittierten Passwörtern zu schließen und wiederherzustellen.
 
-      Wird die Richtlinie deaktiviert, können Nutzer Warnungen zu gehackten Passwörtern nicht schließen. Ist sie aktiv, können Nutzer Warnungen zu gehackten Passwörtern schließen.</translation>
+      Wird die Richtlinie deaktiviert, können Nutzer Warnungen zu kompromittierten Passwörtern nicht schließen. Ist sie aktiv, können Nutzer Warnungen zu kompromittierten Passwörtern schließen.</translation>
 <translation id="1252536192437793850">Websites erlauben, den Nutzer um Zugriff auf einen seriellen Port zu bitten</translation>
 <translation id="1255159327956066463">Funktion für das ghost-Dialogfeld aktivieren</translation>
 <translation id="125655429495551011">Wird für die Richtlinie ein String festgelegt, wird er während der DHCP-Anfrage als Gerätehostname verwendet. Die Variablen <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="SERIAL_NUM_PLACEHOLDER" />, <ph name="MAC_ADDR_PLACEHOLDER" />, <ph name="MACHINE_NAME_PLACEHOLDER" /> und <ph name="LOCATION_PLACEHOLDER" /> des Strings können durch Werte auf dem Gerät ersetzt werden, bevor der String als Hostname verwendet wird. Das Ergebnis muss ein gültiger Hostname gemäß RFC 1035, Abschnitt 3.1 sein.
@@ -4587,7 +4587,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs un
 <translation id="4611983465824842867">In unsicheren Formularen keine Warnungen anzeigen und auch nicht Autofill deaktivieren</translation>
 <translation id="4615003180013429835">Parsing-Modus für Websiteliste</translation>
 <translation id="4615892138881859957">Tastenkombination zum Auslösen der Taste „Einfügen“ im Sechserblock verwalten</translation>
-<translation id="4617338332148204752">Metatag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
+<translation id="4617338332148204752">Meta-Tag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
 <translation id="461901491675418689">Funktion „NewBaseUrlInheritanceBehavior“ verfügbar</translation>
 <translation id="4624006912948309924">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcherleiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
 
@@ -9297,13 +9297,13 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
           Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten.
 
           Beachte: Die tatsächliche Obergrenze für die Größe der Zwischenablage hängt von der maximalen Nachrichtengröße für den WebRTC-Datenkanal ab, die nicht durch diese Richtlinie gesteuert wird.</translation>
-<translation id="8294750666104911727">Normalerweise werden Seiten, bei denen das Metatag "X-UA-Compatible" auf "chrome=1" gesetzt ist, unabhängig von der Richtlinie "ChromeFrameRendererSettings" in <ph name="PRODUCT_FRAME_NAME" /> gerendert.
+<translation id="8294750666104911727">Normalerweise werden Seiten, bei denen das Meta-Tag "X-UA-Compatible" auf "chrome=1" gesetzt ist, unabhängig von der Richtlinie "ChromeFrameRendererSettings" in <ph name="PRODUCT_FRAME_NAME" /> gerendert.
 
-          Bei aktivierter Einstellung werden die Seiten nicht nach Metatags durchsucht.
+          Bei aktivierter Einstellung werden die Seiten nicht nach Meta-Tags durchsucht.
 
-          Bei deaktivierter Einstellung werden die Seiten nach Metatags durchsucht.
+          Bei deaktivierter Einstellung werden die Seiten nach Meta-Tags durchsucht.
 
-          Ist die Richtlinie nicht festgelegt, werden die Seiten nach Metatags durchsucht.</translation>
+          Ist die Richtlinie nicht festgelegt, werden die Seiten nach Meta-Tags durchsucht.</translation>
 <translation id="8295496526151576383">Diese Richtlinie gibt die Erweiterungen an, die den Dialog zur Bestätigung des Druckauftrags überspringen dürfen, wenn die <ph name="PRINTING_API" />-Funktion "<ph name="SUBMIT_JOB_FUNCTION" />" zum Senden eines Druckauftrags verwendet wird.
 
       Steht eine Erweiterung nicht auf der Liste oder ist die Liste nicht konfiguriert, wird dem Nutzer für jeden Aufruf von "<ph name="SUBMIT_JOB_FUNCTION" />" der Bestätigungsdialog für den Druckauftrag angezeigt.</translation>

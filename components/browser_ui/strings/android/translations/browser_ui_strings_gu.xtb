@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">ક્લિપબોર્ડ</translation>
 <translation id="2597457036804169544">સાઇટ પર ઘેરી થીમ લાગુ કરશો નહીં</translation>
 <translation id="2606760465469169465">ઑટોમૅટિક ચકાસણી</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ચોક્કસ સાઇટ માટે JavaScript ની મંજૂરી આપો.</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="2677748264148917807">છોડો</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3628308229821498208">સૂચવેલી શોધ</translation>
 <translation id="3697164069658504920">ચાલુ હોય ત્યારે, સાઇટ USB ડિવાઇસનો ઉપયોગ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ USB ડિવાઇસનો ઉપયોગ કરી શકતી નથી.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">તમે મુલાકાત લો છો તે સાઇટ Chrome પર થોડીક માહિતી સાચવી શકે છે, મુખ્યત્વે એ ચકાસણી કરવા કે તમે બૉટ નથી</translation>
 <translation id="3721953990244350188">છોડી દો અને આગલી ઉપલબ્ધ ક્રિયા બતાવો</translation>
 <translation id="3744111561329211289">બૅકગ્રાઉન્ડ સિંક</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">ડિવાઇસ માટેની બધી પરવાનગીઓને રદબાતલ કરો</translation>
 <translation id="497421865427891073">આગળ જાઓ</translation>
 <translation id="4976702386844183910">છેલ્લે <ph name="DATE" />ના રોજ મુલાકાત લીધી</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">તમે આ સાઇટ માટે ત્રીજા પક્ષની કુકીને મંજૂરી આપી છે</translation>
 <translation id="4994033804516042629">કોઈ સંપર્કો મળ્યા નથી</translation>
 <translation id="4996978546172906250">આનાથી શેર કરો</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android સેટિંગમાંથી કૅમેરા બંધ કરવામાં આવ્યો છે</translation>
 <translation id="5691080386278724773">જેમ જેમ તમે બ્રાઉઝ કરશો, તેમ તેમ <ph name="SITE" /> તમારી માહિતીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="5700761515355162635">ત્રીજા પક્ષની કુકીને મંજૂરી આપી</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">આમ કરવાથી <ph name="WEBSITE" /> માટેના કુકી અને સાઇટનો અન્ય ડેટા ડિલીટ થઈ જશે</translation>
 <translation id="5723967018671998714">છૂપા મોડમાં ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="5740126560802162366">સાઇટ તમારા ડિવાઇસ પર ડેટા સાચવી શકે છે</translation>

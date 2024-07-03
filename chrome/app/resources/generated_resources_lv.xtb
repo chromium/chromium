@@ -845,7 +845,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1607139524282324606">Notīrīt ierakstu</translation>
 <translation id="1607499585984539560">Lietotājs nav saistīts ar domēnu</translation>
 <translation id="1608668830839595724">Citas darbības ar atlasītajiem vienumiem</translation>
-<translation id="1608698493373028805">Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts</translation>
 <translation id="1610272688494140697">Lietotnes iestatījumi</translation>
 <translation id="161042844686301425">Ciānzila</translation>
 <translation id="1611432201750675208">Jūsu ierīce ir bloķēta</translation>
@@ -1918,6 +1917,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2376056713414548745">Lasīšana skaļi</translation>
 <translation id="2377667304966270281">Nopietnas kļūdas</translation>
 <translation id="237828693408258535">Vai tulkot šo lapu?</translation>
+<translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts}zero{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}one{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}other{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}}</translation>
 <translation id="2378982052244864789">Atlasiet paplašinājuma direktoriju.</translation>
 <translation id="2379281330731083556">Drukāt, izmantojot sistēmas dialoglodziņu... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Uz dažām minūtēm var tikt pārtraukts savienojums ar mobilo tīklu.</translation>
@@ -4238,6 +4238,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="406213378265872299">Pielāgota rīcība</translation>
 <translation id="4062561150282203854">Sinhronizējiet savas ierīces (<ph name="DEVICE_TYPE" />) lietotnes, iestatījumus u.c. saturu</translation>
 <translation id="4065876735068446555">Iespējams, izmantotajā tīklā (<ph name="NETWORK_ID" />) tiks prasīts apmeklēt pieteikšanās lapu.</translation>
+<translation id="4065931125325392744">Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts</translation>
 <translation id="4066207411788646768">Lūdzu, pārbaudiet savienojumu, lai skatītu tīklā pieejamos printerus.</translation>
 <translation id="4067839975993712852">Atzīmēt pašreizējo cilni kā izlasītu</translation>
 <translation id="4068776064906523561">Saglabātie pirkstu nospiedumi</translation>
@@ -5302,6 +5303,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4883436287898674711">Visās <ph name="WEBSITE_1" /> vietnēs</translation>
 <translation id="48838266408104654">Uz&amp;devumu pārvaldnieks</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Vienmēr rādīt Google Lens saīsni</translation>
 <translation id="4885692421645694729">Šim paplašinājumam nav papildu piekļuves vietnēm.</translation>
 <translation id="4887424188275796356">Atvēršana, izmantojot sistēmas skatītāju</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
@@ -8070,6 +8072,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6988572888918530647">Google konta pārvaldība</translation>
 <translation id="6989274756151920076">Palikt šeit</translation>
 <translation id="6991665348624301627">Printera atlase</translation>
+<translation id="6991926986715044139">Vienmēr rādīt Google Lens saīsni</translation>
 <translation id="6992554835374084304">Uzlabotās pareizrakstības pārbaudes ieslēgšana</translation>
 <translation id="6993000214273684335">Cilne tika noņemta no grupas bez nosaukuma — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Notiek pārlūkprogrammas Chrome atjaunināšana</translation>
@@ -10289,7 +10292,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8636500887554457830">Neļaut vietnēm sūtīt uznirstošos elementus vai izmantot novirzīšanu</translation>
 <translation id="8636514272606969031">Sānu panelis ir piesprausts</translation>
 <translation id="8637688295594795546">Ir pieejams sistēmas atjauninājums. Notiek sagatavošana lejupielādei…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{Iespējams, šis paplašinājums drīzumā vairs netiks atbalstīts}zero{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}one{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}other{Iespējams, šie paplašinājumi drīzumā vairs netiks atbalstīti}}</translation>
 <translation id="8638719155236856752">ChromeOS tīkla stāvoklis</translation>
 <translation id="8639635302972078117">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja jūsu bērnam ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā.</translation>
 <translation id="8640575194957831802">Visnesenāk atvērtās</translation>

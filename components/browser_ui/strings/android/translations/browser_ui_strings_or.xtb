@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
 <translation id="2597457036804169544">ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2606760465469169465">ସ୍ୱତଃ-ଯାଞ୍ଚ</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ JavaScriptକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3628308229821498208">ପ୍ରସ୍ତାବିତ ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="3697164069658504920">ଚାଲୁ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ USB ଡିଭାଇସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ପଚାରିପାରିବ। ବନ୍ଦ ଥିବା ସମୟରେ, ସାଇଟଗୁଡ଼ିକ USB ଡିଭାଇସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ।</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ମୁଖ୍ୟତଃ ଆପଣ ଏକ ବୋଟ ନୁହଁନ୍ତି ବୋଲି ବୈଧ କରିବାକୁ Chromeରେ କିଛି ସୂଚନା ସେଭ କରିପାରିବ</translation>
 <translation id="3721953990244350188">ଖାରଜ କରି ପରବର୍ତ୍ତୀ ଉପଲବ୍ଧ କାର୍ଯ୍ୟ ଦେଖାନ୍ତୁ</translation>
 <translation id="3744111561329211289">ପୃଷ୍ଠପଟ ସିଙ୍କ୍‌</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">ଡିଭାଇସ୍‌ପାଇଁ ଥିବା ସମସ୍ତ ଅନୁମତିଗୁଡ଼ିକ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4976702386844183910">ଗତ ଥର <ph name="DATE" />ରେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ଏହି ସାଇଟ ପାଇଁ ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="4994033804516042629">କୌଣସି ଯୋଗାଯୋଗ ମିଳିଲା ନାହିଁ</translation>
 <translation id="4996978546172906250">ଏହା ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Android ସେଟିଂସରେ କ୍ୟାମେରା ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="5691080386278724773">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ <ph name="SITE" /> ଆପଣଙ୍କ ସୂଚନାକୁ ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="5700761515355162635">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">ଏହା <ph name="WEBSITE" /> ପାଇଁ କୁକୀ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରେ</translation>
 <translation id="5723967018671998714">ଇନକଗ୍ନିଟୋ ମୋଡରେ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5740126560802162366">ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ଡିଭାଇସରେ ଡାଟା ସେଭ କରିପାରେ</translation>

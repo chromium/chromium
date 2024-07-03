@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2597457036804169544">Կայքերում չկիրառել մուգ թեման</translation>
 <translation id="2606760465469169465">Ավտոմատ ստուգում</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Թույլատրել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3628308229821498208">Որոնման առաջարկվող հարցումներ</translation>
 <translation id="3697164069658504920">Երբ այս պարամետրը միացված է, կայքերը կարող են USB սարքերն օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել USB սարքերը։</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Կայքը, որն այցելում եք, կարող է փոքր քանակությամբ տեղեկություններ պահպանել Chrome-ի միջոցով՝ հիմնականում հաստատելու, որ դուք ռոբոտ չեք</translation>
 <translation id="3721953990244350188">Փակել և ցույց տալ հաջորդ հասանելի գործողությունը</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
@@ -228,7 +226,6 @@
 <translation id="4962975101802056554">Չեղարկել սարքի բոլոր թույլտվությունները</translation>
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4976702386844183910">Վերջին այցելությունը՝ <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Դուք թույլատրել եք երրորդ կողմի քուքիները այս կայքի համար</translation>
 <translation id="4994033804516042629">Ոչ մի կոնտակտ չի գտնվել</translation>
 <translation id="4996978546172906250">Համօգտագործման միջոցը`</translation>
@@ -280,7 +277,6 @@
 <translation id="5690795753582697420">Տեսախցիկն անջատված է Android-ի կարգավորումներում</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> կայքը կարող է օգտագործել ձեր տեղեկությունները, երբ դիտարկելիս լինեք</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">Քուքիները և <ph name="WEBSITE" /> կայքի այլ տվյալները կջնջվեն</translation>
 <translation id="5723967018671998714">Երրորդ կողմի քուքիներն արգելափակվում են ինկոգնիտո ռեժիմում</translation>
 <translation id="5740126560802162366">Կայքերը կարող են տվյալները պահել ձեր սարքում</translation>

@@ -97,7 +97,6 @@
 <translation id="2586657967955657006">ຄລິບບອດ</translation>
 <translation id="2597457036804169544">ຢ່ານຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊ</translation>
 <translation id="2606760465469169465">ຢັ້ງຢືນອັດຕະໂນມັດ</translation>
-<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ອະນຸຍາດ JavaScript ສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>
 <translation id="2677748264148917807">ອອກ​ໄປ</translation>
@@ -158,7 +157,6 @@
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3628308229821498208">ການຊອກຫາທີ່ແນະນຳ</translation>
 <translation id="3697164069658504920">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ອຸປະກອນ USB ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ອຸປະກອນ USB ໄດ້.</translation>
-<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນຈຳນວນໜ້ອຍໜຶ່ງໄດ້ດ້ວຍ Chrome, ສ່ວນໃຫຍ່ແລ້ວແມ່ນໃຊ້ເພື່ອກວດສອບວ່າທ່ານບໍ່ແມ່ນບັອດ</translation>
 <translation id="3721953990244350188">ປິດ ແລະ ສະແດງຄຳສັ່ງຕໍ່ໄປທີ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="3744111561329211289">ການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງ</translation>
@@ -174,6 +172,7 @@
 <translation id="3859306556332390985">ເລື່ອນໄປໜ້າ</translation>
 <translation id="3895926599014793903">ບັງຄັບໃຫ້ເປີດ​ໃຊ້​ການ​ຊູມ</translation>
 <translation id="3908288065506437185">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">ຄຸນສົມບັດບາງຢ່າງອາດບໍ່ເຮັດວຽກ. ເວັບໄຊທີ່ກ່ຽວຂ້ອງຍັງສາມາດໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມຢູ່.</translation>
 <translation id="3933121352599513978">ຫຍໍ້ການ​ຮ້ອງ​ຂໍທີ່ບໍ່ຕ້ອງການລົງ (ແນະນຳ)</translation>
 <translation id="3955193568934677022">ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆຫຼິ້ນເນື້ອຫາທີ່ໄດ້ຮັບການປົກປ້ອງ (ແນະນຳ)</translation>
@@ -228,7 +227,6 @@
 <translation id="4962975101802056554">ຖອນການອະນຸຍາດທັງໝົດສຳລັບອຸປະກອນ</translation>
 <translation id="497421865427891073">ໄປຂ້າງ​ຫນ້າ</translation>
 <translation id="4976702386844183910">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="DATE" /></translation>
-<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມສຳລັບເວັບໄຊນີ້</translation>
 <translation id="4994033804516042629">ບໍ່ເຫັນລາຍຊື່ຕິດຕໍ່</translation>
 <translation id="4996978546172906250">ແຊຣ໌ຜ່ານ</translation>
@@ -280,7 +278,6 @@
 <translation id="5690795753582697420">ກ້ອງປິດຢູ່ໃນການຕັ້ງຄ່າ Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> ສາມາດໃຊ້ຂໍ້ມູນຂອງທ່ານໄດ້ໃນເວລາທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="5700761515355162635">ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມແລ້ວ</translation>
-<translation id="5705383358494210886"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /></translation>
 <translation id="5706552988683188916">ນີ້ຈະລຶບຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນສຳລັບ <ph name="WEBSITE" /> ອອກ</translation>
 <translation id="5723967018671998714">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="5740126560802162366">ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນຢູ່ໃນອຸປະກອນຂອງທ່ານໄດ້</translation>
