@@ -380,6 +380,9 @@ void FakeShillManagerClient::ConfigureService(
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
       return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
+      return;
   }
 
   ShillServiceClient::TestInterface* service_client =
@@ -546,6 +549,16 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
       return;
+    case FakeShillSimulatedResult::kInProgress: {
+      base::Value::Dict tethering_state;
+      tethering_state.Set(shill::kTetheringStatusStateProperty,
+                          shill::kTetheringStateStarting);
+      SetManagerProperty(shill::kTetheringStatusProperty,
+                         base::Value(std::move(tethering_state)));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), "In progress"));
+      return;
+    }
   }
 }
 
@@ -579,6 +592,9 @@ void FakeShillManagerClient::CheckTetheringReadiness(
       return;
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
+      return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
       return;
   }
 }
@@ -640,6 +656,9 @@ void FakeShillManagerClient::CreateP2PGroup(
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
       return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
+      return;
   }
 }
 
@@ -691,6 +710,9 @@ void FakeShillManagerClient::ConnectToP2PGroup(
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
       return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
+      return;
   }
 }
 
@@ -715,6 +737,9 @@ void FakeShillManagerClient::DestroyP2PGroup(
       return;
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
+      return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
       return;
   }
 }
@@ -744,6 +769,9 @@ void FakeShillManagerClient::DisconnectFromP2PGroup(
       return;
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
+      return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
       return;
   }
 }

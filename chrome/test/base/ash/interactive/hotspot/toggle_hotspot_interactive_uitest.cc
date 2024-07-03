@@ -218,5 +218,75 @@ IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
       Log("Turn on and off hotspot from Quick Settings complete"));
 }
 
+IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest, AbortEnablingHotspot) {
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
+  AddCellularService();
+
+  // By setting the enable result to Busy, we are simulating the situation where
+  // the enable operation is stuck.
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateTetheringEnableResult(FakeShillSimulatedResult::kInProgress,
+                                         shill::kTetheringEnableResultBusy);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Waiting for hotspot summary item and toggle to exist and enabled"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotSummaryItem()),
+      WaitForElementEnabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Make sure hotspot is initially disabled"),
+
+      ObserveState(kHotspotStateService,
+                   std::make_unique<HotspotStateObserver>()),
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Click the hotspot toggle then wait for it to be enabled"),
+
+      ClickElement(kOSSettingsId, settings::hotspot::HotspotToggle()),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         true),
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kEnabling),
+
+      Log("Simulating enable result to success to successfully abort "
+          "ongoing operations"),
+
+      Do([&]() {
+        ShillManagerClient::Get()
+            ->GetTestInterface()
+            ->SetSimulateTetheringEnableResult(
+                FakeShillSimulatedResult::kSuccess,
+                shill::kTetheringEnableResultSuccess);
+      }),
+
+      Log("Abort the enable operation by clicking on the toggle button"),
+
+      ClickElement(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Wait for the hotspot state to be disabled"),
+
+      WaitForState(kHotspotStateService,
+                   hotspot_config::mojom::HotspotState::kDisabled),
+      WaitForToggleState(kOSSettingsId, settings::hotspot::HotspotToggle(),
+                         false),
+
+      Log("Test complete"));
+}
+
 }  // namespace
 }  // namespace ash

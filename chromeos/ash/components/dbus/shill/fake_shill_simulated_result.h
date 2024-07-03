@@ -12,7 +12,8 @@ namespace ash {
 enum class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillSimulatedResult {
   kSuccess,
   kFailure,
-  kTimeout
+  kTimeout,
+  kInProgress
 };
 
 }  // namespace ash
