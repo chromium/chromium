@@ -16,6 +16,8 @@ class AIMetrics {
   };
 
   // This class contains all the model execution API supported.
+  //
+  // LINT.IfChange(AIAPI)
   enum class AIAPI {
     kCanCreateSession = 0,
     kCreateSession = 1,
@@ -26,6 +28,7 @@ class AIMetrics {
 
     kMaxValue = kSessionDestroy,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 
   static const char* GetAIAPIUsageMetricName(AISessionType session_type);
   static const char* GetAIModelAvailabilityMetricName(

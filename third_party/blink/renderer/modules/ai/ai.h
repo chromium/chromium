@@ -26,6 +26,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // LINT.IfChange(AIModelAvailability)
   enum class ModelAvailability {
     kReadily = 0,
     kAfterDownload = 1,
@@ -33,6 +34,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
 
     kMaxValue = kNo,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelAvailability)
 
   explicit AI(ExecutionContext* context);
   ~AI() override = default;
