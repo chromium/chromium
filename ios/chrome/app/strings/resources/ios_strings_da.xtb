@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Din iPhone blev for nylig gendannet, hvilket muligvis har ændret din standardbrowser.</translation>
 <translation id="136942498637440594">Du kan søge ved hjælp af billeder og det, du ser.</translation>
 <translation id="1375321115329958930">Gemte adgangskoder</translation>
-<translation id="1377255359165588604">Synkroniseringen fungerer ikke.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Adgangskoder</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -682,7 +681,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="452503091941773389">{count,plural, =1{{count} bogmærke}one{{count}bogmærke}other{{count}bogmærker}}</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4527660062930312477">Din konto er administreret</translation>
-<translation id="4536418791685807335">Prøv at logge ind igen.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}one{{count} gemt forslag til autofuldførelse er tilgængeligt over dit tastatur.}other{{count} gemte forslag til autofuldførelse er tilgængelige over dit tastatur.}}</translation>
 <translation id="4540780316273593836">Der gik noget galt</translation>
 <translation id="4550040941166547650">Kun på denne enhed.</translation>
@@ -1650,7 +1648,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="913036870884277353">Åbn nemt links i andre apps.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9144931028079269381">Skjul læseliste</translation>
-<translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
 <translation id="9162432979321511934">Aktivér Adgangskoder via Autofyld</translation>
 <translation id="9162941801309769488">Pakken spores ikke</translation>

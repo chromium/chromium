@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Váš iPhone bol nedávno obnovený, v dôsledku čoho sa možno zmenil váš predvolený prehliadač.</translation>
 <translation id="136942498637440594">Môžete vyhľadávať obrázky a všetko, čo vidíte.</translation>
 <translation id="1375321115329958930">Uložené heslá</translation>
-<translation id="1377255359165588604">Synchronizácia prestala fungovať.</translation>
 <translation id="1377321085342047638">Číslo karty</translation>
 <translation id="1377508275003315939">Heslá</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -682,7 +681,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="452503091941773389">{count,plural, =1{{count} záložka}few{{count} záložky}many{{count} bookmarks}other{{count} záložiek}}</translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4527660062930312477">Váš účet je spravovaný</translation>
-<translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený návrh automatického dopĺňania.}few{Nad klávesnicou sú k dispozícii {count} uložené návrhy automatického dopĺňania.}many{{count} saved autocomplete suggestions available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených návrhov automatického dopĺňania.}}</translation>
 <translation id="4540780316273593836">Vyskytol sa problém</translation>
 <translation id="4550040941166547650">Iba v tomto zariadení</translation>
@@ -1650,7 +1648,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="913036870884277353">Jednoducho otvárajte odkazy v iných aplikáciách.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9144931028079269381">Skryť Čitateľský zoznam</translation>
-<translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9157836665414082580">Obmedziť dialógové okná</translation>
 <translation id="9162432979321511934">Zapnite automatické dopĺňanie hesiel</translation>
 <translation id="9162941801309769488">Sledovanie zásielky bolo zrušené</translation>

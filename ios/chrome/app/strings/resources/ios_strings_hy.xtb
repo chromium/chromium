@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Ձեր iPhone-ի պարունակությունը վերջերս վերականգնվել է, ինչը կարող է հանգեցնել կանխադրված դիտարկիչի փոփոխության։</translation>
 <translation id="136942498637440594">Դուք կարող եք որոնել պատկերներ և այն, ինչ տեսնում եք։</translation>
 <translation id="1375321115329958930">Պահված գաղտնաբառեր</translation>
-<translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
 <translation id="1383876407941801731">Որոնում</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} էջանիշ}one{{count} էջանիշ}other{{count} էջանիշ}}</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4527660062930312477">Դուք օգտագործում եք կառավարվող հաշիվ</translation>
-<translation id="4536418791685807335">Փորձեք նորից մուտք գործել:</translation>
 <translation id="4539187448429948815">{count,plural, =1{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}one{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}other{Ինքնալրացման {count} պահված հուշում ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="4540780316273593836">Սխալ առաջացավ</translation>
 <translation id="4550040941166547650">Միայն այս սարքում</translation>
@@ -1650,7 +1648,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="913036870884277353">Հեշտությամբ բացեք հղումները այլ հավելվածներում։</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9144931028079269381">Թաքցնել «Ընթերցանության ցանկ» կետը</translation>
-<translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9157836665414082580">Արգելափակել երկխոսության պատուհանները</translation>
 <translation id="9162432979321511934">Միացրեք Գաղտնաբառերի ինքնալրացումը</translation>
 <translation id="9162941801309769488">Փաթեթը չի հետագծվում</translation>

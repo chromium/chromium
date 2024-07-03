@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Your iPhone was recently restored, which might have changed your default browser.</translation>
 <translation id="136942498637440594">You can search images and what you see.</translation>
 <translation id="1375321115329958930">Saved passwords</translation>
-<translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
 <translation id="1377508275003315939">Passwords</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -682,7 +681,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="452750746583162491">Review your synced data</translation>
 <translation id="4527660062930312477">Your account is managed</translation>
-<translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} saved autocomplete suggestion available above your keyboard.}other{{count} saved autocomplete suggestions available above your keyboard.}}</translation>
 <translation id="4540780316273593836">Something went wrong.</translation>
 <translation id="4550040941166547650">Only on this device</translation>
@@ -1650,7 +1648,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="913036870884277353">Easily open links in other apps.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Hide Reading List</translation>
-<translation id="9148126808321036104">Sign in again</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
 <translation id="9162941801309769488">Parcel untracked</translation>

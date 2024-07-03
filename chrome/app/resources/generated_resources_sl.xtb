@@ -1402,7 +1402,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1989288015781834552">Znova zaženite, če želite dokončati posodobitev. Zavihki se bodo znova odprli.</translation>
 <translation id="1989903373608997757">Vedno uporabi</translation>
 <translation id="1990046457226896323">Datoteke za govor so bile prenesene.</translation>
-<translation id="1990512225220753005">Ne prikaži bližnjic na tej strani</translation>
 <translation id="1990727803345673966">Varnostno kopirane datoteke in aplikacije za Linux se obnavljajo.</translation>
 <translation id="199191324030140441">Izklop načina Ne moti</translation>
 <translation id="1992397118740194946">Ni nastavljeno</translation>
@@ -2842,7 +2841,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3015639418649705390">Znova zaženi</translation>
 <translation id="3016381065346027039">Ni vnosov v dnevniku</translation>
 <translation id="3016641847947582299">Komponenta je posodobljena</translation>
-<translation id="3017079585324758401">Ozadje</translation>
 <translation id="3019023222666709803">Orodje za puščice</translation>
 <translation id="3019285239893817657">Gumb za podstran</translation>
 <translation id="3019595674945299805">Storitev VPN</translation>
@@ -4193,7 +4191,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4002440992267487163">Nastavitev kode PIN</translation>
 <translation id="4005817994523282006">Način zaznavanja časovnega pasu</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{S tem boste skupino trajno izbrisali iz naprave.}one{S tem boste skupine trajno izbrisali iz naprave.}two{S tem boste skupine trajno izbrisali iz naprave.}few{S tem boste skupine trajno izbrisali iz naprave.}other{S tem boste skupine trajno izbrisali iz naprave.}}</translation>
-<translation id="4007856537951125667">Skrivanje bližnjic</translation>
 <translation id="4010036441048359843">Vklop označevanja</translation>
 <translation id="4010746393007464819">Na voljo je nadgradnja na Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Če želite dostopati do zaznamkov v mobilni napravi, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5328,7 +5325,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4877276003880815204">Pregled elementov</translation>
 <translation id="4877652723592270843">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex? Če ga želite, za pet sekund pridržite gumba za glasnost.</translation>
 <translation id="4878634973244289103">Povratnih informacij ni mogoče poslati. Poskusite znova pozneje.</translation>
-<translation id="4878653975845355462">Skrbnik je izklopil ozadja po meri</translation>
 <translation id="4878718769565915065">Dodajanje prstnega odtisa temu varnostnemu ključu ni uspelo.</translation>
 <translation id="4879491255372875719">Samodejno (privzeto)</translation>
 <translation id="4880315242806573837">Varnostne posodobitve se bodo kmalu končale. Nadgradite na novi Chromebook.</translation>
@@ -7152,7 +7148,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6243774244933267674">Strežnik ni na voljo</translation>
 <translation id="6244245036423700521">Uvoz datoteke ONC</translation>
 <translation id="6245523954602476652">Do njega lahko dostopate v Googlovem upravitelju gesel.</translation>
-<translation id="6246790815526961700">Nalaganje iz naprave</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6247620186971210352">Ni aplikacij</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8752,7 +8747,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7458933488302148148">Preverite shranjena gesla, da izboljšate svojo varnost in poskrbite za večjo varnost v spletu.</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom ChromeOS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema ChromeOS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, kdaj v sistemu ChromeOS pride do sesutij, katere funkcije uporabljate in koliko pomnilnika običajno uporabljate. Če je vklopljena tudi sinhronizacija aplikacij, se bodo zbirali drugi diagnostični podatki in podatki o uporabi aplikacije, tudi za Android in spletne aplikacije.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave Chrome. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Trenutna tema, ki ste jo namestili</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="746216226901520237">Naslednjič bo telefon odklenil napravo <ph name="DEVICE_TYPE" />. Funkcijo Smart Lock lahko izklopite v nastavitvah.</translation>
 <translation id="7464153996453281700">Komponenta je že posodobljena.</translation>
@@ -8990,7 +8984,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7642778300616172920">Skrij občutljivo vsebino</translation>
 <translation id="7643842463591647490">{0,plural, =1{# odprto okno}one{# odprto okno}two{# odprti okni}few{# odprta okna}other{# odprtih oken}}</translation>
 <translation id="7643932971554933646">Dovolite spletnemu mestu ogled datotek?</translation>
-<translation id="7644543211198159466">Barva in tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (lastnik)</translation>
 <translation id="7645681574855902035">Preklic varnostnega kopiranja vsebnika za Linux</translation>
 <translation id="7646772052135772216">Sinhronizacija gesel ne deluje</translation>
@@ -9749,7 +9742,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="816704878106051517">{COUNT,plural, =1{telefonsko številko}one{# telefonsko številko}two{# telefonski številki}few{# telefonske številke}other{# telefonskih številk}}</translation>
 <translation id="8168435359814927499">Vsebina</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj zavihek na bralni seznam}one{Dodaj zavihke na bralni seznam}two{Dodaj zavihke na bralni seznam}few{Dodaj zavihke na bralni seznam}other{Dodaj zavihke na bralni seznam}}</translation>
-<translation id="8171334254070436367">Skrij vse kartice</translation>
 <translation id="8174047975335711832">Podatki o napravi</translation>
 <translation id="8176332201990304395">Rožnata in bela</translation>
 <translation id="8176529144855282213">Če želite vklopiti dostop do mikrofona, vklopite fizično stikalo za mikrofon na napravi.</translation>

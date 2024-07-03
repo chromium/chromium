@@ -1402,7 +1402,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1989288015781834552">Ail-lansiwch i orffen y diweddariad. Bydd eich tabiau'n ailagor.</translation>
 <translation id="1989903373608997757">Defnyddio pob amser</translation>
 <translation id="1990046457226896323">Wedi lawrlwytho ffeiliau lleferydd</translation>
-<translation id="1990512225220753005">Peidio â dangos llwybrau byr ar y dudalen hon</translation>
 <translation id="1990727803345673966">Mae eich ffeiliau ac apiau Linux wrthi'n cael eu hadfer</translation>
 <translation id="199191324030140441">Diffodd Peidiwch ag Aflonyddu</translation>
 <translation id="1992397118740194946">Heb ei osod</translation>
@@ -2842,7 +2841,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3015639418649705390">Ail-lansio nawr</translation>
 <translation id="3016381065346027039">Dim cofnodion log</translation>
 <translation id="3016641847947582299">Diweddarwyd y gydran</translation>
-<translation id="3017079585324758401">Cefndir</translation>
 <translation id="3019023222666709803">Offeryn Saeth</translation>
 <translation id="3019285239893817657">Botwm is-dudalen</translation>
 <translation id="3019595674945299805">Gwasanaeth VPN</translation>
@@ -4193,7 +4191,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4002440992267487163">Gosod PIN</translation>
 <translation id="4005817994523282006">Dull canfod cylchfa amser</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Bydd hyn yn dileu'r grŵp o'ch dyfais yn barhaol.}zero{Bydd hyn yn dileu'r grwpiau o'ch dyfais yn barhaol.}two{Bydd hyn yn dileu'r grwpiau o'ch dyfais yn barhaol.}few{Bydd hyn yn dileu'r grwpiau o'ch dyfais yn barhaol.}many{Bydd hyn yn dileu'r grwpiau o'ch dyfais yn barhaol.}other{Bydd hyn yn dileu'r grwpiau o'ch dyfais yn barhaol.}}</translation>
-<translation id="4007856537951125667">Cuddio llwybrau byr bysellfwrdd</translation>
 <translation id="4010036441048359843">Troi amlygu ymlaen</translation>
 <translation id="4010746393007464819">Mae uwchraddiad i Debian 12 (Bookworm) ar gael</translation>
 <translation id="4010917659463429001">I gael eich nodau tudalen ar eich dyfais symudol, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5328,7 +5325,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4877276003880815204">Archwilio Elfennau</translation>
 <translation id="4877652723592270843">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex? Os felly, pwyswch a daliwch y ddwy fysell lefel sain am bum eiliad.</translation>
 <translation id="4878634973244289103">Methu ag anfon adborth. Rhowch gynnig arall arni'n nes ymlaen.</translation>
-<translation id="4878653975845355462">Mae cefndiroedd personol wedi'u diffodd gan eich gweinyddwr</translation>
 <translation id="4878718769565915065">Wedi methu ag ychwanegu olion bysedd at yr allwedd ddiogelwch hon</translation>
 <translation id="4879491255372875719">Awtomatig (diofyn)</translation>
 <translation id="4880315242806573837">Bydd diweddariadau diogelwch yn dod i ben yn fuan. Uwchraddio i Chromebook newydd.</translation>
@@ -7149,7 +7145,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6243774244933267674">Nid yw'r gweinydd ar gael</translation>
 <translation id="6244245036423700521">Mewnforio Ffeil ONC</translation>
 <translation id="6245523954602476652">Gallwch gael mynediad ato ar Rheolwr Cyfrineiriau Google</translation>
-<translation id="6246790815526961700">Uwchlwytho o'r ddyfais</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
 <translation id="6247620186971210352">Ni chanfuwyd unrhyw apiau</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8750,7 +8745,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7458933488302148148">Gwiriwch eich cyfrineiriau sydd wedi'u cadw i gryfhau eich diogelwch ac i aros yn fwy diogel ar-lein</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Mae caniatáu i'ch dyfeisiau ChromeOS anfon adroddiadau awtomatig yn ein helpu i flaenoriaethu beth i'w drwsio a'i wella yn ChromeOS. Gall yr adroddiadau hyn gynnwys pethau megis pan fyddai ChromeOS yn torri, pa nodweddion rydych yn eu defnyddio a faint o gof rydych yn ei ddefnyddio yn nodweddiadol. Bydd data diagnostig a defnydd apiau eraill gan gynnwys ar gyfer Android ac apiau gwe, yn cael eu casglu os yw cysoni apiau hefyd wedi'i droi ymlaen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw amser yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Thema bresennol rydych wedi'i gosod</translation>
 <translation id="7461924472993315131">Pinio</translation>
 <translation id="746216226901520237">Y tro nesaf, bydd eich ffôn yn datgloi eich <ph name="DEVICE_TYPE" />. Gallwch ddiffodd Smart Lock yn y gosodiadau.</translation>
 <translation id="7464153996453281700">Cydran eisoes yn gyfredol</translation>
@@ -8988,7 +8982,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7642778300616172920">Cuddio cynnwys sensitif</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ffenestr ar agor}zero{# ffenestr ar agor}two{# ffenestr ar agor}few{# ffenestr ar agor}many{# ffenestr ar agor}other{# ffenestr ar agor}}</translation>
 <translation id="7643932971554933646">Gadael i'r wefan weld ffeiliau?</translation>
-<translation id="7644543211198159466">Lliw a thema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (perchennog)</translation>
 <translation id="7645681574855902035">Wrthi'n canslo gwneud copi wrth gefn Linux</translation>
 <translation id="7646772052135772216">Nid yw cysoni cyfrineiriau'n gweithio</translation>
@@ -9746,7 +9739,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="816704878106051517">{COUNT,plural, =1{rhif ffôn}zero{# rhif ffôn}two{# rif ffôn}few{# rhif ffôn}many{# rhif ffôn}other{# rhif ffôn}}</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ychwanegu Tab at y Rhestr Ddarllen}zero{Ychwanegu Tabiau at y Rhestr Ddarllen}two{Ychwanegu Tabiau at y Rhestr Ddarllen}few{Ychwanegu Tabiau at y Rhestr Ddarllen}many{Ychwanegu Tabiau at y Rhestr Ddarllen}other{Ychwanegu Tabiau at y Rhestr Ddarllen}}</translation>
-<translation id="8171334254070436367">Cuddio pob cerdyn</translation>
 <translation id="8174047975335711832">Gwybodaeth am y ddyfais</translation>
 <translation id="8176332201990304395">Pinc a gwyn</translation>
 <translation id="8176529144855282213">I droi mynediad meicroffon ymlaen, trowch switsh y meicroffon corfforol ymlaen ar eich dyfais</translation>

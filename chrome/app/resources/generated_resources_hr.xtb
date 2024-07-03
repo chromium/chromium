@@ -1392,7 +1392,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1989288015781834552">Ponovno pokrenite da biste ažurirali – kartice će se ponovno otvoriti.</translation>
 <translation id="1989903373608997757">Koristi uvijek</translation>
 <translation id="1990046457226896323">Govorne datoteke su preuzete</translation>
-<translation id="1990512225220753005">Nemoj prikazivati prečace na ovoj stranici</translation>
 <translation id="1990727803345673966">Vraćaju se sigurnosno kopirane Linux datoteke i aplikacije</translation>
 <translation id="199191324030140441">Isključivanje načina Ne uznemiravaj</translation>
 <translation id="1992397118740194946">Nije postavljeno</translation>
@@ -2831,7 +2830,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3015639418649705390">Ponovo pokreni sada</translation>
 <translation id="3016381065346027039">Nema unosa u zapisniku</translation>
 <translation id="3016641847947582299">Komponenta je ažurirana</translation>
-<translation id="3017079585324758401">Pozadina</translation>
 <translation id="3019023222666709803">Alat za strelice</translation>
 <translation id="3019285239893817657">Gumb podstranice</translation>
 <translation id="3019595674945299805">Usluga VPN-a</translation>
@@ -4183,7 +4181,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4002440992267487163">Postavi PIN</translation>
 <translation id="4005817994523282006">Način otkrivanja vremenske zone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Time ćete trajno izbrisati grupu s uređaja.}one{Time ćete trajno izbrisati grupe s uređaja.}few{Time ćete trajno izbrisati grupe s uređaja.}other{Time ćete trajno izbrisati grupe s uređaja.}}</translation>
-<translation id="4007856537951125667">Skrivanje prečaca</translation>
 <translation id="4010036441048359843">Uključi isticanje</translation>
 <translation id="4010746393007464819">Dostupna je nadogradnja na Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Da biste prenijeli svoje oznake na svoj mobilni uređaj, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5320,7 +5317,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4877276003880815204">Pregledajte elemente</translation>
 <translation id="4877652723592270843">Želite li aktivirati ChromeVox, ugrađeni čitač zaslona za ChromeOS Flex? Ako želite, pritisnite i zadržite obje tipke za glasnoću pet sekundi.</translation>
 <translation id="4878634973244289103">Povratne informacije nisu poslane. Pokušajte ponovo kasnije.</translation>
-<translation id="4878653975845355462">Vaš administrator isključio je prilagođene pozadine</translation>
 <translation id="4878718769565915065">Dodavanje otiska prsta sigurnosnom ključu nije uspjelo</translation>
 <translation id="4879491255372875719">Automatski (zadano)</translation>
 <translation id="4880315242806573837">Sigurnosna ažuriranja uskoro završavaju. Nadogradite na novi Chromebook.</translation>
@@ -7142,7 +7138,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6243774244933267674">Poslužitelj nije dostupan</translation>
 <translation id="6244245036423700521">Uvoz ONC datoteke</translation>
 <translation id="6245523954602476652">Možete joj pristupiti na Google upravitelju zaporki.</translation>
-<translation id="6246790815526961700">Prijenos s uređaja</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6247620186971210352">Aplikacije nisu pronađene</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8742,7 +8737,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7458933488302148148">Provjerite svoje spremljene zaporke da biste se bolje zaštitili i da biste bili sigurniji online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim ChromeOS uređajima da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje ChromeOS-a. Ta izvješća mogu uključivati, primjerice, informacije o situacijama u kojima se ChromeOS ruši, o tome kojim se značajkama koristite i koliko memorije obično upotrebljavate. Drugi podaci o dijagnostici i upotrebi aplikacije, uključujući podatke za Android i web-aplikacije, prikupljat će se ako je uključena i sinkronizacija aplikacija.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama Chrome uređaja. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Trenutačna instalirana tema</translation>
 <translation id="7461924472993315131">Prikvači</translation>
 <translation id="746216226901520237">Sljedeći će put vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Smart Lock možete isključiti u Postavkama.</translation>
 <translation id="7464153996453281700">Komponenta je već ažurirana</translation>
@@ -8980,7 +8974,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7642778300616172920">Sakrij osjetljiv sadržaj</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvoreni prozor}one{# otvoreni prozor}few{# otvorena prozora}other{# otvorenih prozora}}</translation>
 <translation id="7643932971554933646">Želite li dopustiti web-lokaciji da pregleda datoteke?</translation>
-<translation id="7644543211198159466">Boja i tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7645681574855902035">Otkazivanje sigurnosnog kopiranja Linuxa</translation>
 <translation id="7646772052135772216">Sinkronizacija zaporki ne radi</translation>
@@ -9739,7 +9732,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="816704878106051517">{COUNT,plural, =1{telefonski broj}one{# telefonski broj}few{# telefonska broja}other{# telefonskih brojeva}}</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj karticu na popis za čitanje}one{Dodaj kartice na popis za čitanje}few{Dodaj kartice na popis za čitanje}other{Dodaj kartice na popis za čitanje}}</translation>
-<translation id="8171334254070436367">Sakrij sve kartice</translation>
 <translation id="8174047975335711832">Informacije o uređaju</translation>
 <translation id="8176332201990304395">Ružičasta i bijela</translation>
 <translation id="8176529144855282213">Da biste uključili pristup mikrofonu, uključite fizički prekidač mikrofona na uređaju</translation>

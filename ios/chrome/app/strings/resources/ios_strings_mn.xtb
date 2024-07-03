@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Таны iPhone-г саяхан сэргээсэн бөгөөд энэ нь таны өгөгдмөл хөтчийг өөрчилсөн байж магадгүй.</translation>
 <translation id="136942498637440594">Та зургууд болон харж буй зүйлээ хайх боломжтой.</translation>
 <translation id="1375321115329958930">Хадгалагдсан нууц үг</translation>
-<translation id="1377255359165588604">Синк ажиллахаа больсон байна.</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
 <translation id="1377508275003315939">Нууц үг</translation>
 <translation id="1383876407941801731">Хайлт</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} хавчуурга}other{{count} хавчуурга}}</translation>
 <translation id="452750746583162491">Синк хийсэн өгөгдлөө шалгах</translation>
 <translation id="4527660062930312477">Таны бүртгэлийг удирддаг</translation>
-<translation id="4536418791685807335">Дахин нэвтрэхээр оролдоно уу.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Таны гарын дээр хадгалсан автоматаар бөглөх {count} зөвлөмж боломжтой байна.}other{Таны гарын дээр хадгалсан автоматаар бөглөх {count} зөвлөмж боломжтой байна.}}</translation>
 <translation id="4540780316273593836">Алдаа гарлаа</translation>
 <translation id="4550040941166547650">Зөвхөн энэ төхөөрөмжид</translation>
@@ -1650,7 +1648,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="913036870884277353">Холбооснуудыг бусад аппад хялбархан нээнэ үү.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9144931028079269381">Унших жагсаалтыг нуух</translation>
-<translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>
 <translation id="9157836665414082580">Харилцах цонхыг зогсоох</translation>
 <translation id="9162432979321511934">Автоматаар бөглөх хэсгийн нууц үгнүүдийг асаах</translation>
 <translation id="9162941801309769488">Илгээмжийг хянахаа больсон</translation>

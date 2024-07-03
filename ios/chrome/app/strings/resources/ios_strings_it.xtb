@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Il tuo iPhone è stato ripristinato di recente e questo potrebbe aver modificato il tuo browser predefinito.</translation>
 <translation id="136942498637440594">Puoi cercare immagini e ciò che vedi.</translation>
 <translation id="1375321115329958930">Password salvate</translation>
-<translation id="1377255359165588604">La sincronizzazione si è interrotta.</translation>
 <translation id="1377321085342047638">Numero carta</translation>
 <translation id="1377508275003315939">Password</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -686,7 +685,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="452503091941773389">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4527660062930312477">Il tuo account è gestito</translation>
-<translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} suggerimento di completamento automatico salvato disponibile sopra la tastiera.}other{{count} suggerimenti di completamento automatico salvati disponibili sopra la tastiera.}}</translation>
 <translation id="4540780316273593836">Si è verificato un problema</translation>
 <translation id="4550040941166547650">Solo su questo dispositivo</translation>
@@ -1655,7 +1653,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="913036870884277353">Apri facilmente i link in altre app.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Nascondi elenco di lettura</translation>
-<translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9157836665414082580">Elimina finestre di dialogo</translation>
 <translation id="9162432979321511934">Attiva l'opzione Compila automaticamente le password.</translation>
 <translation id="9162941801309769488">Pacchetto non monitorato</translation>

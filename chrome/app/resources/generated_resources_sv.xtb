@@ -1400,7 +1400,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1989288015781834552">Starta om för att slutföra uppdateringen – dina flikar öppnas igen.</translation>
 <translation id="1989903373608997757">Använd alltid</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
-<translation id="1990512225220753005">Visa inte genvägar på den här sidan</translation>
 <translation id="1990727803345673966">De säkerhetskopierade Linux-filerna och Linux-apparna återställs</translation>
 <translation id="199191324030140441">Inaktivera Stör ej</translation>
 <translation id="1992397118740194946">Inte angett</translation>
@@ -2841,7 +2840,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3015639418649705390">Starta om nu</translation>
 <translation id="3016381065346027039">Inga loggposter</translation>
 <translation id="3016641847947582299">Komponenten har uppdaterats</translation>
-<translation id="3017079585324758401">Bakgrund</translation>
 <translation id="3019023222666709803">Pilverktyg</translation>
 <translation id="3019285239893817657">Knapp till undersida</translation>
 <translation id="3019595674945299805">VPN-tjänst</translation>
@@ -4194,7 +4192,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4002440992267487163">Konfigurera pinkod</translation>
 <translation id="4005817994523282006">Metod för tidszonsidentifiering</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Detta raderar gruppen permanent från enheten.}other{Detta raderar grupperna permanent från enheten.}}</translation>
-<translation id="4007856537951125667">Dölj genvägar</translation>
 <translation id="4010036441048359843">Aktivera markering</translation>
 <translation id="4010746393007464819">En uppgradering till Debian 12 (Bookworm) är tillgänglig</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om du vill ha dina bokmärken på din mobila enhet.</translation>
@@ -4735,6 +4732,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4423376891418188461">Återställ inställningar</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner som använts och hur mycket minne som brukar användas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Lösenord, nycklar och annan data raderas permanent från <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Radera <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Kontrollera att USB- eller Bluetooth-brytaren är ansluten till Chromebook innan du sätter igång. Du kan även använda tangenter på tangentbordet.</translation>
 <translation id="4426490308207168518">Lämna feedback eller rapportera ett problem</translation>
@@ -5331,7 +5329,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4877276003880815204">Inspektera element</translation>
 <translation id="4877652723592270843">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS Flex? I så fall håller du båda volymknapparna nedtryckta i fem sekunder.</translation>
 <translation id="4878634973244289103">Det gick inte att skicka feedback. Försök igen senare.</translation>
-<translation id="4878653975845355462">Anpassade bakgrunder har inaktiverats av administratören</translation>
 <translation id="4878718769565915065">Det gick inte att lägga till ett fingeravtryck på säkerhetsnyckeln</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
 <translation id="4880315242806573837">Säkerhetsuppdateringar upphör snart. Uppgradera till en ny Chromebook.</translation>
@@ -7157,7 +7154,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6243774244933267674">Servern är inte tillgänglig</translation>
 <translation id="6244245036423700521">Importera ONC-fil</translation>
 <translation id="6245523954602476652">Du kan komma åt det i Google Lösenordshantering.</translation>
-<translation id="6246790815526961700">Ladda upp från enheten</translation>
 <translation id="6247557882553405851">Google Lösenordshantering</translation>
 <translation id="6247620186971210352">Inga appar hittades</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -7527,6 +7523,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="653920215766444089">Söker efter pekdon</translation>
 <translation id="6539674013849300372">Skydda dig på webben med ett starkt lösenord. Det sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Nedladdningen återupptas …</translation>
+<translation id="6540174167103635041">Installera appen</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Aktivera endast om du vet vad du gör eller om du har blivit ombedd att göra det eftersom insamling av data kan försämra resultatet.</translation>
 <translation id="6540488083026747005">Du har tillåtit tredjepartscookies på den här webbplatsen</translation>
 <translation id="6541638731489116978">Den här webbplatsen har blockerats från att använda enhetens rörelsesensorer.</translation>
@@ -8753,7 +8750,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7458933488302148148">Kontrollera dina sparade lösenord och öka säkerheten online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från ChromeOS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i ChromeOS. Dessa rapporter kan innehålla information som när ChromeOS kraschar, vilka funktioner du använder och hur mycket minne du brukar använda. Annan appdiagnostikdata och data om användning, bland annat för Android- och webbappar, samlas in om appsynkronisering också har aktiverats.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Aktuellt tema som du har installerat</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746216226901520237">Nästa gång låser mobilen upp din <ph name="DEVICE_TYPE" />. Du kan inaktivera Smart Lock i inställningarna.</translation>
 <translation id="7464153996453281700">Komponenten är redan uppdaterad</translation>
@@ -8991,7 +8987,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7642778300616172920">Dölj känsligt innehåll</translation>
 <translation id="7643842463591647490">{0,plural, =1{# öppet fönster}other{# öppna fönster}}</translation>
 <translation id="7643932971554933646">Vill du ge webbplatsen läsbehörighet till filer?</translation>
-<translation id="7644543211198159466">Färg och tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ägare)</translation>
 <translation id="7645681574855902035">Säkerhetskopieringen av Linux avbryts …</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
@@ -9750,7 +9745,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="816704878106051517">{COUNT,plural, =1{ett telefonnummer}other{# telefonnummer}}</translation>
 <translation id="8168435359814927499">Innehåll</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lägg till fliken i läslistan}other{Lägg till flikarna i läslistan}}</translation>
-<translation id="8171334254070436367">Dölj alla kort</translation>
 <translation id="8174047975335711832">Enhetsinformation</translation>
 <translation id="8176332201990304395">Rosa och vit</translation>
 <translation id="8176529144855282213">Aktivera mikrofonåtkomst med hjälp av det fysiska mikrofonreglaget på enheten</translation>

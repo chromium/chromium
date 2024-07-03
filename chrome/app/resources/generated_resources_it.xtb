@@ -1390,7 +1390,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1989288015781834552">Riavvia per completare l'aggiornamento. Le tue schede verranno riaperte.</translation>
 <translation id="1989903373608997757">Usa sempre</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
-<translation id="1990512225220753005">Non mostrare scorciatoie in questa pagina</translation>
 <translation id="1990727803345673966">È in corso il ripristino della copia di backup dei file e delle app di Linux</translation>
 <translation id="199191324030140441">Disattiva Non disturbare</translation>
 <translation id="1992397118740194946">Non impostata</translation>
@@ -2828,7 +2827,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3015639418649705390">Riavvia ora</translation>
 <translation id="3016381065346027039">Non ci sono voci di log</translation>
 <translation id="3016641847947582299">Componente aggiornato</translation>
-<translation id="3017079585324758401">Sfondo</translation>
 <translation id="3019023222666709803">Strumento Freccia</translation>
 <translation id="3019285239893817657">Pulsante pagina secondaria</translation>
 <translation id="3019595674945299805">Servizio VPN</translation>
@@ -3931,7 +3929,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
 <translation id="3826440694796503677">L'amministratore ha disabilitato l'aggiunta di altri Account Google</translation>
 <translation id="3827774300009121996">&amp;Schermo intero</translation>
-<translation id="3828029223314399057">Cerca tra i Preferiti</translation>
+<translation id="3828029223314399057">Cerca tra i preferiti</translation>
 <translation id="3828953470056652895">Ho letto e accetto i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" />, i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Chrome e ChromeOS<ph name="END_LINK2" /> e i <ph name="BEGIN_LINK3" />Termini di servizio di Google Play<ph name="END_LINK3" />.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoria utilizzata elevata - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">Condivisione file SMB</translation>
@@ -4180,7 +4178,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4002440992267487163">Configurazione del PIN</translation>
 <translation id="4005817994523282006">Metodo di rilevamento del fuso orario</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Il gruppo verrà eliminato definitivamente dal tuo dispositivo.}other{I gruppi verranno eliminati definitivamente dal tuo dispositivo.}}</translation>
-<translation id="4007856537951125667">Nascondi scorciatoie</translation>
 <translation id="4010036441048359843">Attiva l'evidenziazione</translation>
 <translation id="4010746393007464819">È disponibile un upgrade a Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Per trovare i tuoi preferiti sul tuo dispositivo mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5317,7 +5314,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4877276003880815204">Ispeziona elementi</translation>
 <translation id="4877652723592270843">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS Flex? In questo caso, tieni premuti entrambi i tasti del volume per cinque secondi.</translation>
 <translation id="4878634973244289103">Impossibile inviare il feedback. Riprova più tardi.</translation>
-<translation id="4878653975845355462">Gli sfondi personalizzati sono stati disattivati dall'amministratore</translation>
 <translation id="4878718769565915065">Impossibile aggiungere un'impronta a questo token di sicurezza</translation>
 <translation id="4879491255372875719">Automatica (impostazione predefinita)</translation>
 <translation id="4880315242806573837">Gli aggiornamenti della sicurezza stanno per terminare. Passa a un nuovo Chromebook.</translation>
@@ -7140,7 +7136,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6243774244933267674">Server non disponibile</translation>
 <translation id="6244245036423700521">Importa file ONC</translation>
 <translation id="6245523954602476652">Puoi accedervi su Gestore delle password di Google.</translation>
-<translation id="6246790815526961700">Carica dal dispositivo</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6247620186971210352">Nessuna app trovata</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8736,7 +8731,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7458933488302148148">Controlla le password salvate per aumentare la tua sicurezza e proteggerti meglio online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che utilizzi e sulla quantità di memoria solitamente impiegata. Se è attiva anche la sincronizzazione app, verranno raccolti altri dati diagnostici e sull'utilizzo delle app, incluse le app per Android e web.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema installato attualmente</translation>
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746216226901520237">La prossima volta potrai usare il tuo telefono per sbloccare il dispositivo <ph name="DEVICE_TYPE" />. Puoi disattivare Smart Lock nelle Impostazioni.</translation>
 <translation id="7464153996453281700">Componente già aggiornato</translation>
@@ -8974,7 +8968,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7642778300616172920">Nascondi contenuti sensibili</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra aperta}other{# finestre aperte}}</translation>
 <translation id="7643932971554933646">Vuoi consentire al sito di visualizzare i file?</translation>
-<translation id="7644543211198159466">Colore e tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietario)</translation>
 <translation id="7645681574855902035">Annullamento del backup di Linux</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
@@ -9733,7 +9726,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="816704878106051517">{COUNT,plural, =1{un numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Aggiungi scheda all'elenco di lettura}other{Aggiungi schede all'elenco di lettura}}</translation>
-<translation id="8171334254070436367">Nascondi tutte le schede</translation>
 <translation id="8174047975335711832">Informazioni del dispositivo</translation>
 <translation id="8176332201990304395">Rosa e bianco</translation>
 <translation id="8176529144855282213">Per attivare l'accesso al microfono, attiva l'interruttore fisico del microfono sul dispositivo</translation>

@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone bu yaxınlarda bərpa edildiyi üçün defolt brauzer dəyişmiş ola bilər.</translation>
 <translation id="136942498637440594">Şəkil və gördüklərinizi axtara bilərsiniz.</translation>
 <translation id="1375321115329958930">Saxlanılmış Parollar</translation>
-<translation id="1377255359165588604">Sinxronizasiya işləmir.</translation>
 <translation id="1377321085342047638">Kart Nömrəsi</translation>
 <translation id="1377508275003315939">Parollar</translation>
 <translation id="1383876407941801731">Axtar</translation>
@@ -682,7 +681,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="452503091941773389">{count,plural, =1{{count} əlfəcin}other{{count} əlfəcin}}</translation>
 <translation id="452750746583162491">Sinxronlaşdırılmış datanızı nəzərdən keçirin</translation>
 <translation id="4527660062930312477">Hesab idarə edilir</translation>
-<translation id="4536418791685807335">Yenidən daxil olmağa cəhd edin.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Klaviaturanın yuxarısında əlçatan olan {count} yadda saxlanmış avtomatik tamamlama təklifi.}other{Klaviaturanın yuxarısında əlçatan olan {count} yadda saxlanmış avtomatik tamamlama təklifi.}}</translation>
 <translation id="4540780316273593836">Xəta baş verdi</translation>
 <translation id="4550040941166547650">Yalnız bu cihazda</translation>
@@ -1650,7 +1648,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="913036870884277353">Keçidləri digər tətbiqlərdə asanlıqla açın.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9144931028079269381">Oxu Siyahısını gizlədin</translation>
-<translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9157836665414082580">Dialoqların qarşısını alın</translation>
 <translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
 <translation id="9162941801309769488">Paket izlənmədi</translation>

@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Вашиот iPhone е вратен неодамна, што можеби го променило вашиот стандарден прелистувач.</translation>
 <translation id="136942498637440594">Може да пребарувате слики, како и работите што ги гледате.</translation>
 <translation id="1375321115329958930">Зачувани лозинки</translation>
-<translation id="1377255359165588604">Синхронизацијата престана да работи.</translation>
 <translation id="1377321085342047638">Број на картичка</translation>
 <translation id="1377508275003315939">Лозинки</translation>
 <translation id="1383876407941801731">Барај</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} обележувач}one{{count} обележувач}other{{count} обележувачи}}</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4527660062930312477">Вашата сметка е управувана</translation>
-<translation id="4536418791685807335">Обидете се да се најавите повторно.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} зачуван предлог за автоматско довршување достапен над тастатурата.}one{{count} зачуван предлог за автоматско довршување достапни над тастатурата.}other{{count} зачувани предлози за автоматско довршување достапни над тастатурата.}}</translation>
 <translation id="4540780316273593836">Нешто тргна наопаку</translation>
 <translation id="4550040941166547650">Само на уредов</translation>
@@ -1650,7 +1648,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="913036870884277353">Лесно отворајте линкови во други апликации.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9144931028079269381">Скриј „Список за читање“</translation>
-<translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9157836665414082580">Отстрани дијалози</translation>
 <translation id="9162432979321511934">Вклучете автоматско пополнување лозинки</translation>
 <translation id="9162941801309769488">Следењето на пакетот е сопрено</translation>

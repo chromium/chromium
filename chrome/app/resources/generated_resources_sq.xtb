@@ -1386,7 +1386,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1989288015781834552">Rinise për të përfunduar përditësimin. Skedat e tua do të hapen përsëri.</translation>
 <translation id="1989903373608997757">Përdor gjithmonë</translation>
 <translation id="1990046457226896323">Skedarët e ligjërimit u shkarkuan</translation>
-<translation id="1990512225220753005">Mos shfaq shkurtore në këtë faqe</translation>
 <translation id="1990727803345673966">Skedarët dhe aplikacionet e rezervuara të Linux po restaurohen</translation>
 <translation id="199191324030140441">Çaktivizo modalitetin "Mos shqetëso"</translation>
 <translation id="1992397118740194946">Nuk është caktuar</translation>
@@ -2824,7 +2823,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3015639418649705390">Hape përsëri tani</translation>
 <translation id="3016381065346027039">Asnjë regjistrim në evidencë</translation>
 <translation id="3016641847947582299">Përbërësi u përditësua</translation>
-<translation id="3017079585324758401">Sfondi</translation>
 <translation id="3019023222666709803">Vegla e shigjetës</translation>
 <translation id="3019285239893817657">Butoni i nënfaqes</translation>
 <translation id="3019595674945299805">Shërbimi VPN</translation>
@@ -4173,7 +4171,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Kjo do të fshijë përgjithmonë grupin nga pajisja jote.}other{Kjo do të fshijë përgjithmonë grupet nga pajisja jote.}}</translation>
-<translation id="4007856537951125667">Fshih shkurtoret</translation>
 <translation id="4010036441048359843">Aktivizo theksimin</translation>
 <translation id="4010746393007464819">Ofrohet një përditësim në Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Për të marrë faqeshënuesit në pajisjen tënde celulare, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5308,7 +5305,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4877276003880815204">Inspekto elementet</translation>
 <translation id="4877652723592270843">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex? Nëse po, shtyp dhe mbaj shtypur të dy tastet e volumit për pesë sekonda.</translation>
 <translation id="4878634973244289103">Nuk mund të dërgohen përshtypje. Provo sërish më vonë</translation>
-<translation id="4878653975845355462">Sfondet e personalizuara janë çaktivizuar nga administratori yt</translation>
 <translation id="4878718769565915065">Shtimi i një gjurme gishti te ky çelës sigurie dështoi</translation>
 <translation id="4879491255372875719">Automatike (e parazgjedhur)</translation>
 <translation id="4880315242806573837">Përditësimet e sigurisë përfundojnë së shpejti. Përmirësoje me një pajisje të re Chromebook.</translation>
@@ -7129,7 +7125,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6243774244933267674">Serveri është jashtë shërbimit</translation>
 <translation id="6244245036423700521">Importo skedarin ONC</translation>
 <translation id="6245523954602476652">Mund të qasesh në të te "Menaxheri i fjalëkalimeve i Google".</translation>
-<translation id="6246790815526961700">Ngarko nga pajisja</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6247620186971210352">Nuk u gjet asnjë aplikacion</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8722,7 +8717,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7458933488302148148">Kontrollo fjalëkalimet e ruajtura për të forcuar sigurinë dhe për të qëndruar më i sigurt online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Nëse lejon që pajisjet me ChromeOS të dërgojnë raporte automatike, kjo na ndihmon t'i japim përparësi gjërave që do të rregullojmë dhe përmirësojmë në ChromeOS. Këto raporte mund të përfshijnë gjëra të tilla si ndërprerjet aksidentale të ChromeOS, cilat veçori përdor dhe sa memorie përdor ti zakonisht. Nëse aktivizohet edhe sinkronizimi i aplikacioneve, do të mblidhen të dhëna të tjera të përdorimit dhe të diagnostikimit të aplikacioneve, duke përfshirë për aplikacionet e uebit dhe aplikacionet për Android.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose të mos i lejosh në çdo kohë në cilësimet e pajisjes sate me Chrome. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin komandues të administratorit.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema aktuale që ke instaluar</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="746216226901520237">Herën tjetër, telefoni yt do të shkyçë pajisjen tënde <ph name="DEVICE_TYPE" />. Mund ta çaktivizosh Smart Lock te "Cilësimet".</translation>
 <translation id="7464153996453281700">Komponenti është tashmë i përditësuar</translation>
@@ -8960,7 +8954,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7642778300616172920">Fshih përmbajtjet delikate</translation>
 <translation id="7643842463591647490">{0,plural, =1{# dritare e hapur}other{# dritare të hapura}}</translation>
 <translation id="7643932971554933646">Do ta lejosh sajtin të shikojë skedarët?</translation>
-<translation id="7644543211198159466">Ngjyra dhe tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7645681574855902035">Po anulon rezervimin e Linux</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
@@ -9717,7 +9710,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="816704878106051517">{COUNT,plural, =1{një numër telefoni}other{# numra telefoni}}</translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Shtoje skedën në listë leximi}other{Shtoji skedat në listë leximi}}</translation>
-<translation id="8171334254070436367">Fshih të gjitha kartat</translation>
 <translation id="8174047975335711832">Informacioni i pajisjes</translation>
 <translation id="8176332201990304395">Rozë dhe e bardhë</translation>
 <translation id="8176529144855282213">Për të aktivizuar qasjen te mikrofoni, aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>

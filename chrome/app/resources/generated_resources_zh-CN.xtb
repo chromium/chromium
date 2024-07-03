@@ -1382,7 +1382,6 @@
 <translation id="1989288015781834552">重新启动即可完成更新。您的标签页将会自动重新打开。</translation>
 <translation id="1989903373608997757">始终使用</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
-<translation id="1990512225220753005">不在本页上显示快捷方式</translation>
 <translation id="1990727803345673966">正在恢复您备份的 Linux 文件和应用</translation>
 <translation id="199191324030140441">关闭“勿扰”模式</translation>
 <translation id="1992397118740194946">未设置</translation>
@@ -2818,7 +2817,6 @@
 <translation id="3015639418649705390">立即重新启动</translation>
 <translation id="3016381065346027039">没有日志条目</translation>
 <translation id="3016641847947582299">组件已更新</translation>
-<translation id="3017079585324758401">背景</translation>
 <translation id="3019023222666709803">箭头工具</translation>
 <translation id="3019285239893817657">子页面按钮</translation>
 <translation id="3019595674945299805">VPN 服务</translation>
@@ -4166,7 +4164,6 @@
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{此操作会将该分组从您的设备中永久删除。}other{此操作会将这些分组从您的设备中永久删除。}}</translation>
-<translation id="4007856537951125667">隐藏快捷方式</translation>
 <translation id="4010036441048359843">开启突出显示功能</translation>
 <translation id="4010746393007464819">可以升级至 Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">要在移动设备上获取书签，请<ph name="GET_IOS_APP_LINK" />。</translation>
@@ -5301,7 +5298,6 @@
 <translation id="4877276003880815204">检查元素</translation>
 <translation id="4877652723592270843">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请同时按住两个音量键 5 秒钟。</translation>
 <translation id="4878634973244289103">无法发送反馈。请稍后重试。</translation>
-<translation id="4878653975845355462">您的管理员已关闭自定义背景</translation>
 <translation id="4878718769565915065">未能向此安全密钥添加指纹</translation>
 <translation id="4879491255372875719">自动（默认）</translation>
 <translation id="4880315242806573837">安全更新即将终止。请升级为新款 Chromebook。</translation>
@@ -7119,7 +7115,6 @@
 <translation id="6243774244933267674">服务器不可用</translation>
 <translation id="6244245036423700521">导入 ONC 文件</translation>
 <translation id="6245523954602476652">您可以通过 Google 密码管理工具获取该密码。</translation>
-<translation id="6246790815526961700">从设备上传</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6247620186971210352">未找到任何应用</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8713,7 +8708,6 @@
 <translation id="7458933488302148148">检查您已保存的密码，让您在上网时更安全、更安心</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">您已安装的当前主题背景</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="7464153996453281700">组件已是最新版本</translation>
@@ -8951,7 +8945,6 @@
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
-<translation id="7644543211198159466">颜色和主题</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">正在取消 Linux 备份</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
@@ -9710,7 +9703,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
-<translation id="8171334254070436367">隐藏所有卡片</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8176332201990304395">粉色和白色</translation>
 <translation id="8176529144855282213">如需开启麦克风使用权限，请开启设备上的实体麦克风开关</translation>

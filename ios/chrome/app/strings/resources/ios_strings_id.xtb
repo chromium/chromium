@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
 <translation id="136942498637440594">Anda dapat menelusuri gambar dan objek yang Anda lihat.</translation>
 <translation id="1375321115329958930">Sandi Tersimpan</translation>
-<translation id="1377255359165588604">Sinkronisasi berhenti berfungsi.</translation>
 <translation id="1377321085342047638">Nomor Kartu</translation>
 <translation id="1377508275003315939">Sandi</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -682,7 +681,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmark}}</translation>
 <translation id="452750746583162491">Tinjau data Anda yang disinkronkan</translation>
 <translation id="4527660062930312477">Akun Anda Dikelola</translation>
-<translation id="4536418791685807335">Coba masuk lagi.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} saran pelengkapan otomatis tersimpan tersedia di atas keyboard Anda.}other{{count} saran pelengkapan otomatis tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="4540780316273593836">Terjadi Error</translation>
 <translation id="4550040941166547650">Hanya di Perangkat Ini</translation>
@@ -1650,7 +1648,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="913036870884277353">Buka link dengan mudah di aplikasi lain.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9144931028079269381">Sembunyikan Daftar Bacaan</translation>
-<translation id="9148126808321036104">Login sekali lagi</translation>
 <translation id="9157836665414082580">Sembunyikan Dialog</translation>
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9162941801309769488">Paket Tidak Terlacak</translation>

@@ -1389,7 +1389,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1989288015781834552">Herstart om de update af te ronden. Je tabbladen worden opnieuw geopend.</translation>
 <translation id="1989903373608997757">Altijd gebruiken</translation>
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
-<translation id="1990512225220753005">Geen snelkoppelingen op deze pagina bekijken</translation>
 <translation id="1990727803345673966">De back-up van je Linux-bestanden en -apps wordt teruggezet</translation>
 <translation id="199191324030140441">Niet storen uitzetten</translation>
 <translation id="1992397118740194946">Niet ingesteld</translation>
@@ -2826,7 +2825,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3015639418649705390">Nu opnieuw starten</translation>
 <translation id="3016381065346027039">Geen logboekitems</translation>
 <translation id="3016641847947582299">Component bijgewerkt</translation>
-<translation id="3017079585324758401">Achtergrond</translation>
 <translation id="3019023222666709803">Tool Pijl</translation>
 <translation id="3019285239893817657">Knop voor subpagina</translation>
 <translation id="3019595674945299805">VPN-service</translation>
@@ -4175,7 +4173,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4002440992267487163">Pincode instellen</translation>
 <translation id="4005817994523282006">Detectiemethode voor tijdzone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Hiermee wordt de groep definitief van je apparaat verwijderd.}other{Hiermee worden de groepen definitief van je apparaat verwijderd.}}</translation>
-<translation id="4007856537951125667">Snelkoppelingen verbergen</translation>
 <translation id="4010036441048359843">Markeren aanzetten</translation>
 <translation id="4010746393007464819">Er is een upgrade beschikbaar voor Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om je bookmarks te bekijken op je mobiele apparaat.</translation>
@@ -5308,7 +5305,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4877276003880815204">Elementen inspecteren</translation>
 <translation id="4877652723592270843">Wil je ChromeVox, de ingebouwde schermlezer voor Chrome OS Flex, activeren? Houd dan beide volumeknoppen 5 seconden ingedrukt.</translation>
 <translation id="4878634973244289103">Kan geen feedback sturen. Probeer het later opnieuw.</translation>
-<translation id="4878653975845355462">Aangepaste achtergronden zijn uitgezet door je beheerder</translation>
 <translation id="4878718769565915065">Kan vingerafdruk niet toevoegen aan deze beveiligingssleutel</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
 <translation id="4880315242806573837">Beveiligingsupdates worden binnenkort beëindigd. Upgrade naar een nieuwe Chromebook.</translation>
@@ -7125,7 +7121,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6243774244933267674">Server is niet beschikbaar</translation>
 <translation id="6244245036423700521">ONC-bestand importeren</translation>
 <translation id="6245523954602476652">Je kunt het openen via Google Wachtwoordmanager.</translation>
-<translation id="6246790815526961700">Uploaden via apparaat</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
 <translation id="6247620186971210352">Geen apps gevonden</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8717,7 +8712,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7458933488302148148">Check je opgeslagen wachtwoorden om je beveiliging te verbeteren en veiliger te internetten</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Als je je ChromeOS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in ChromeOS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie geven zoals wanneer ChromeOS crasht, welke functies je gebruikt en hoeveel geheugen je gewoonlijk gebruikt. Andere app-diagnose- en gebruiksgegevens, waaronder voor Android- en web-apps, worden verzameld als synchronisatie van apps ook aanstaat.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Huidig thema dat je hebt geïnstalleerd</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746216226901520237">De volgende keer wordt <ph name="DEVICE_TYPE" /> ontgrendeld met je telefoon. Je kunt Smart Lock uitzetten in Instellingen.</translation>
 <translation id="7464153996453281700">Component is al up-to-date</translation>
@@ -8955,7 +8949,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7642778300616172920">Gevoelige content verbergen</translation>
 <translation id="7643842463591647490">{0,plural, =1{# geopend venster}other{# geopende vensters}}</translation>
 <translation id="7643932971554933646">Site toestemming geven deze bestanden te bekijken?</translation>
-<translation id="7644543211198159466">Kleur en thema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigenaar)</translation>
 <translation id="7645681574855902035">Back-up voor Linux annuleren</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
@@ -9712,7 +9705,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="816704878106051517">{COUNT,plural, =1{een telefoonnummer}other{# telefoonnummers}}</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
-<translation id="8171334254070436367">Alle kaarten verbergen</translation>
 <translation id="8174047975335711832">Apparaatgegevens</translation>
 <translation id="8176332201990304395">Roze/wit</translation>
 <translation id="8176529144855282213">Zet de fysieke microfoonschakelaar op je apparaat aan om toegang tot de microfoon aan te zetten</translation>

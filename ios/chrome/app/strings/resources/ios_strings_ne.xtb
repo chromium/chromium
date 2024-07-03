@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">तपाईंको iPhone भर्खरै रिस्टोर गरिएको हुनाले तपाईंको डिफल्ट ब्राउजर परिवर्तन भएको हुन सक्छ।</translation>
 <translation id="136942498637440594">तपाईं फोटोहरू र आफूले देखेका कुरा खोज्न सक्नुहुन्छ।</translation>
 <translation id="1375321115329958930">सुरक्षित गरिएका पासवर्डहरू</translation>
-<translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
 <translation id="1377508275003315939">पासवर्डहरू</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} वटा बुकमार्क}other{{count} वटा बुकमार्क}}</translation>
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4527660062930312477">तपाईंको खाता व्यवस्थापन गरिएको छ</translation>
-<translation id="4536418791685807335">फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="4539187448429948815">{count,plural, =1{तपाईंको किबोर्डको माथिल्लो भागमा {count} सेभ गरिएको शब्दको पूर्वानुमान उपलब्ध छ।}other{तपाईंको किबोर्डको माथिल्लो भागमा {count} वटा सेभ गरिएको शब्दको पूर्वानुमान उपलब्ध छ।}}</translation>
 <translation id="4540780316273593836">कुनै समस्या आयो</translation>
 <translation id="4550040941166547650">यो डिभाइसमा मात्र</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">अन्य एपहरूमा सजिलैसँग लिंक खोल्नुहोस्।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9144931028079269381">"पछि पढ्न सेभ गरिएका वेबपेजको सूची" लुकाउनुहोस्</translation>
-<translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
 <translation id="9157836665414082580">संवादहरू रोक्नुहोस्</translation>
 <translation id="9162432979321511934">पासवर्ड अटोफिल गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="9162941801309769488">प्याकेज अनट्र्याक गरिएको छ</translation>

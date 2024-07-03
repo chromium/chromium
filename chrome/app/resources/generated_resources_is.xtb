@@ -1400,7 +1400,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1989288015781834552">Endurræstu til að ljúka uppfærslu. Fliparnir þínir opnast aftur.</translation>
 <translation id="1989903373608997757">Nota alltaf</translation>
 <translation id="1990046457226896323">Talskrár sóttar</translation>
-<translation id="1990512225220753005">Ekki sýna flýtileiðir á þessari síðu</translation>
 <translation id="1990727803345673966">Verið er að endurheimta öryggisafrit Linux-skráa og forrita</translation>
 <translation id="199191324030140441">Slökkva á „Ónáðið ekki“</translation>
 <translation id="1992397118740194946">Ekki stillt</translation>
@@ -2840,7 +2839,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3015639418649705390">Endurræsa núna</translation>
 <translation id="3016381065346027039">Engar annálsfærslur</translation>
 <translation id="3016641847947582299">Íhlutur uppfærður</translation>
-<translation id="3017079585324758401">Bakgrunnur</translation>
 <translation id="3019023222666709803">Örvarverkfæri</translation>
 <translation id="3019285239893817657">Hnappur fyrir undirsíðu</translation>
 <translation id="3019595674945299805">VPN-þjónusta</translation>
@@ -4191,7 +4189,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4002440992267487163">Uppsetning PIN-númers</translation>
 <translation id="4005817994523282006">Aðferð við val á tímabelti</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Hópnum verður eytt varanlega úr tækinu.}one{Hópunum verður eytt varanlega úr tækinu.}other{Hópunum verður eytt varanlega úr tækinu.}}</translation>
-<translation id="4007856537951125667">Fela flýtileiðir</translation>
 <translation id="4010036441048359843">Kveikja á yfirstrikun</translation>
 <translation id="4010746393007464819">Uppfærsla í Debian 12 (Bookworm) er í boði</translation>
 <translation id="4010917659463429001">Til að sækja bókamerkin þín í fartækið þitt: <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5326,7 +5323,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4877276003880815204">Kanna einingar</translation>
 <translation id="4877652723592270843">Viltu kveikja á ChromeVox, innbyggða skjálesaranum fyrir ChromeOS Flex? Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur ef þú vilt það.</translation>
 <translation id="4878634973244289103">Ekki tókst að senda ábendingu. Reyndu aftur síðar.</translation>
-<translation id="4878653975845355462">Kerfisstjórinn þinn hefur slökkt á sérsniðnum bakgrunni</translation>
 <translation id="4878718769565915065">Ekki tókst að bæta fingrafari við öryggislykil</translation>
 <translation id="4879491255372875719">Sjálfvirkt (sjálfgildi)</translation>
 <translation id="4880315242806573837">Öryggisuppfærslum lýkur bráðlega. Skiptu yfir í nýja Chromebook-tölvu.</translation>
@@ -7148,7 +7144,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6243774244933267674">Ekki næst í netþjóninn</translation>
 <translation id="6244245036423700521">Flytja ONC-skrá inn</translation>
 <translation id="6245523954602476652">Þú getur nálgast það í Google-aðgangsorðastjórnun.</translation>
-<translation id="6246790815526961700">Hlaða upp úr tæki</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6247620186971210352">Engin forrit fundust</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8743,7 +8738,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7458933488302148148">Athugaðu vistuð aðgangsorð til að efla öryggi og netöryggi</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS-tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær ChromeOS hrynur, hvaða eiginleikar eru notaðir og hversu mikið minni er yfirleitt notað. Öðrum greiningar- og notkunargögnum forrita, þ.m.t. fyrir Android- og vefforrit, verður safnað ef einnig er kveikt á samstillingu forrita.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Núverandi þema sem þú settir upp</translation>
 <translation id="7461924472993315131">Festa</translation>
 <translation id="746216226901520237">Næst tekur síminn þinn <ph name="DEVICE_TYPE" /> úr lás. Þú getur slökkt á Smart Lock í stillingunum.</translation>
 <translation id="7464153996453281700">Íhlutur er þegar uppfærður</translation>
@@ -8981,7 +8975,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7642778300616172920">Fela viðkvæmt efni</translation>
 <translation id="7643842463591647490">{0,plural, =1{# opinn gluggi}one{# opinn gluggi}other{# opnir gluggar}}</translation>
 <translation id="7643932971554933646">Viltu leyfa svæði að skoða skrár?</translation>
-<translation id="7644543211198159466">Litur og þema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigandi)</translation>
 <translation id="7645681574855902035">Hættir við Linux-afritun</translation>
 <translation id="7646772052135772216">Samstilling aðgangsorða virkar ekki</translation>
@@ -9739,7 +9732,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="816704878106051517">{COUNT,plural, =1{símanúmer}one{# símanúmer}other{# símanúmer}}</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Bæta flipa við leslista}one{Bæta flipum við leslista}other{Bæta flipum við leslista}}</translation>
-<translation id="8171334254070436367">Fela öll spjöld</translation>
 <translation id="8174047975335711832">Upplýsingar um tæki</translation>
 <translation id="8176332201990304395">Bleikur og hvítur</translation>
 <translation id="8176529144855282213">Til að kveikja á hljóðnemaaðgangi skaltu kveikja á hljóðnemarofa tækisins</translation>

@@ -1399,7 +1399,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1989288015781834552">Herbegin om opdatering te voltooi. Jou oortjies sal weer oopgemaak word.</translation>
 <translation id="1989903373608997757">Gebruik altyd</translation>
 <translation id="1990046457226896323">Spraaklêers is afgelaai</translation>
-<translation id="1990512225220753005">Moenie kortpaaie op hierdie bladsy wys nie</translation>
 <translation id="1990727803345673966">Jou gerugsteunde Linux-lêers en -programme word tans teruggestel</translation>
 <translation id="199191324030140441">Skakel Moenie Steur Nie af</translation>
 <translation id="1992397118740194946">Nie gestel nie</translation>
@@ -2839,7 +2838,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3015639418649705390">Herbegin nou</translation>
 <translation id="3016381065346027039">Geen loglêerinskrywings nie</translation>
 <translation id="3016641847947582299">Komponent opgedateer</translation>
-<translation id="3017079585324758401">Agtergrond</translation>
 <translation id="3019023222666709803">Pylnutsding</translation>
 <translation id="3019285239893817657">Subbladsy-knoppie</translation>
 <translation id="3019595674945299805">VPN-diens</translation>
@@ -4190,7 +4188,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4002440992267487163">PIN-opstelling</translation>
 <translation id="4005817994523282006">Tydsone-bespeuringsmetode</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Dit sal die groep permanent van jou toestel af uitvee}other{Dit sal die groepe permanent van jou toestel af uitvee}}</translation>
-<translation id="4007856537951125667">Versteek kortpaaie</translation>
 <translation id="4010036441048359843">Skakel merk aan</translation>
 <translation id="4010746393007464819">'n Opgradering na Debian 12 (Bookworm) is beskikbaar</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> om jou boekmerke op jou mobiele toestel te kry.</translation>
@@ -5325,7 +5322,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4877276003880815204">Ondersoek elemente</translation>
 <translation id="4877652723592270843">Wil jy ChromeVox, Chrome OS Flex se ingeboude skermleser, aktiveer? Indien wel, druk en hou albei volumesleutels vyf sekondes lank.</translation>
 <translation id="4878634973244289103">Kan nie terugvoer stuur nie. Probeer asseblief later weer.</translation>
-<translation id="4878653975845355462">Gepasmaakte agtergronde is deur jou administrateur afgeskakel</translation>
 <translation id="4878718769565915065">Kon nie 'n vingerafdruk by hierdie sekuriteitsleutel voeg nie</translation>
 <translation id="4879491255372875719">Outomaties (verstek)</translation>
 <translation id="4880315242806573837">Sekuriteitopdaterings eindig binnekort. Gradeer op na ’n nuwe Chromebook.</translation>
@@ -7148,7 +7144,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6243774244933267674">Bediener nie beskikbaar nie</translation>
 <translation id="6244245036423700521">Voer ONC-lêer in</translation>
 <translation id="6245523954602476652">Jy kan toegang daartoe kry op Google Wagwoordbestuurder.</translation>
-<translation id="6246790815526961700">Laai van toestel af op</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6247620186971210352">Geen programme gekry nie</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8741,7 +8736,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7458933488302148148">Gaan jou gestoorde wagwoorde na om jou sekuriteit te versterk en veiliger te bly aanlyn</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />As jy jou Chrome-toestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in ChromeOS reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos wanneer ChromeOS omval, watter kenmerke jy gebruik, en hoeveel geheue jy gewoonlik gebruik. Ander appdiagnostiek en gebruiksdata, insluitend vir Android- en webapps, sal ingesamel word as appsinkronisering ook aangeskakel is.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in jou Chrome-toestel se instellings begin of stop. As jy ’n domeinadmin is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Huidige tema wat jy geïnstalleer het</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Jou foon sal volgende keer jou <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel.</translation>
 <translation id="7464153996453281700">Komponent is reeds bygewerk</translation>
@@ -8979,7 +8973,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7642778300616172920">Versteek sensitiewe inhoud</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oop venster}other{# oop vensters}}</translation>
 <translation id="7643932971554933646">Laat werf lêers bekyk?</translation>
-<translation id="7644543211198159466">Kleur en tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eienaar)</translation>
 <translation id="7645681574855902035">Kanselleer tans Linux-rugsteun</translation>
 <translation id="7646772052135772216">Wagwoordsinkronisering werk nie</translation>
@@ -9737,7 +9730,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="816704878106051517">{COUNT,plural, =1{'n foonnommer}other{# foonnommers}}</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Voeg oortjie by leeslys}other{Voeg oortjies by leeslys}}</translation>
-<translation id="8171334254070436367">Versteek alle kaarte</translation>
 <translation id="8174047975335711832">Toestelinligting</translation>
 <translation id="8176332201990304395">Pienk en wit</translation>
 <translation id="8176529144855282213">Skakel die fisieke mikrofoonskakelaar op jou toestel aan as jy mikrofoontoegang wil aanskakel</translation>

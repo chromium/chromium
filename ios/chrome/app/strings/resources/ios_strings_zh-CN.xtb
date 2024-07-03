@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">您最近恢复过您的 iPhone，这可能更改了您的默认浏览器设置。</translation>
 <translation id="136942498637440594">您可以搜索图片和您看到的内容。</translation>
 <translation id="1375321115329958930">已保存的密码</translation>
-<translation id="1377255359165588604">同步功能已停止工作。</translation>
 <translation id="1377321085342047638">卡号</translation>
 <translation id="1377508275003315939">密码</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} 个书签}other{{count} 个书签}}</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527660062930312477">您的账号是受管理的账号</translation>
-<translation id="4536418791685807335">请尝试重新登录。</translation>
 <translation id="4539187448429948815">{count,plural, =1{键盘上方显示了 {count} 条已保存的自动补全建议。}other{键盘上方显示了 {count} 条已保存的自动补全建议。}}</translation>
 <translation id="4540780316273593836">出了点问题</translation>
 <translation id="4550040941166547650">仅保存在该设备上</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">轻松地打开其他应用中的链接。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9144931028079269381">隐藏“阅读清单”</translation>
-<translation id="9148126808321036104">重新登录</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
 <translation id="9162432979321511934">开启“自动填充密码”</translation>
 <translation id="9162941801309769488">已取消跟踪包裹</translation>

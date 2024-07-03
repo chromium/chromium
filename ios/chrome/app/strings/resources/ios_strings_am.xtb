@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">የእርስዎ iPhone በቅርቡ ወደነበረበት ተመልሷል፣ ይህም ነባሪ አሳሽዎን ቀይሮ ሊሆን ይችላል።</translation>
 <translation id="136942498637440594">ምስሎች እና የሚመለከቱትን መፈለግ ይችላሉ።</translation>
 <translation id="1375321115329958930">የተቀመጡ የይለፍ ቃላት</translation>
-<translation id="1377255359165588604">ስምረት መሥራት አቁሟል።</translation>
 <translation id="1377321085342047638">የካርድ ቁጥር</translation>
 <translation id="1377508275003315939">የይለፍ ቃሎች</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} ዕልባት}one{{count} ዕልባት}other{{count} ዕልባቶች}}</translation>
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4527660062930312477">የእርስዎ መለያ ተስዳድሯል</translation>
-<translation id="4536418791685807335">እንደገና ወደ መለያ ለመግባት ይሞክሩ።</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} የተቀመጠ ራስሰር አጠናቅ ጥቆማ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}other{{count} የተቀመጡ ራስሰር አጠናቅ ጥቆማዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="4540780316273593836">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="4550040941166547650">በዚህ መሣሪያ ላይ ብቻ</translation>
@@ -1650,7 +1648,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="913036870884277353">በቀላሉ በሌሎች መተግበሪያዎች ውስጥ አገናኞችን ይክፈቱ።</translation>
 <translation id="9137526406337347448">Google አገልግሎቶች</translation>
 <translation id="9144931028079269381">የንባብ ዝርዝርን ደብቅ</translation>
-<translation id="9148126808321036104">እንደገና ይግቡ</translation>
 <translation id="9157836665414082580">መገናኛዎችን አፍን</translation>
 <translation id="9162432979321511934">የይለፍ ቃላት በራስ ሰር ሙላን ያብሩ</translation>
 <translation id="9162941801309769488">የጥቅል ክትትል ተቋርጧል</translation>

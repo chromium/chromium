@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone yaqinda asliga qaytarilgani uchun undagi asosiy brauzer oʻzgargan boʻlishi mumkin.</translation>
 <translation id="136942498637440594">Rasmlar va koʻrganlaringizni qidirishingiz mumkin.</translation>
 <translation id="1375321115329958930">Saqlab olingan parollar</translation>
-<translation id="1377255359165588604">Sinxronlab bo‘lmadi.</translation>
 <translation id="1377321085342047638">Karta raqami</translation>
 <translation id="1377508275003315939">Parollar</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
@@ -682,7 +681,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="452503091941773389">{count,plural, =1{{count} ta bukmark}other{{count} ta bukmark}}</translation>
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4527660062930312477">Hisobingiz nazorat ostida</translation>
-<translation id="4536418791685807335">Qaytadan kirib ko‘ring.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} ta saqlangan avtomatik kiritish taklifi klavuatura ustida chiqadi.}other{{count} ta saqlangan avtomatik kiritish taklifi klavuatura ustida chiqadi.}}</translation>
 <translation id="4540780316273593836">Nimadir xato ketdi</translation>
 <translation id="4550040941166547650">Faqat shu qurilmada</translation>
@@ -1650,7 +1648,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="913036870884277353">Boshqa ilovalardagi havolalarni oson ochish.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9144931028079269381">Saqlangan sahifalarni yashirish</translation>
-<translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9157836665414082580">Muloqot oynalarini bloklash</translation>
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
 <translation id="9162941801309769488">Paket kuzatilmadi</translation>

@@ -1389,7 +1389,6 @@
 <translation id="1989288015781834552">اپ ڈیٹ مکمل کرنے کیلئے بند کر کے دوبارہ چلائیں۔ آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
 <translation id="1989903373608997757">ہمیشہ استعمال کریں</translation>
 <translation id="1990046457226896323">اسپیچ فائلز ڈاؤن لوڈ ہو گئیں</translation>
-<translation id="1990512225220753005">اس صفحہ پر شارٹ کٹس نہ دکھائیں</translation>
 <translation id="1990727803345673966">‏آپ کی بیک اپ لی گئی Linux فائلز اور ایپس کو بحال کیا جا رہا ہے</translation>
 <translation id="199191324030140441">'ڈسٹرب نہ کریں' کو آف کریں</translation>
 <translation id="1992397118740194946">سیٹ نہیں ہے</translation>
@@ -2828,7 +2827,6 @@
 <translation id="3015639418649705390">ابھی دوبارہ شروع کریں</translation>
 <translation id="3016381065346027039">کوئی لاگ اندراجات نہیں ہے</translation>
 <translation id="3016641847947582299">عنصر کو اپ ڈیٹ کر دیا گیا</translation>
-<translation id="3017079585324758401">پس منظر</translation>
 <translation id="3019023222666709803">تیر کے نشان کا ٹول</translation>
 <translation id="3019285239893817657">ذیلی صفحے کا بٹن</translation>
 <translation id="3019595674945299805">‏VPN سروس</translation>
@@ -4177,7 +4175,6 @@
 <translation id="4002440992267487163">پن کا سیٹ اپ</translation>
 <translation id="4005817994523282006">ٹائم زون کا پتہ لگانے کا طریقہ</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{اس سے آپ کے آلے سے گروپ مستقل طور پر حذف ہو جائے گا۔}other{اس سے آپ کے آلے سے گروپس مستقل طور پر حذف ہو جائیں گے۔}}</translation>
-<translation id="4007856537951125667">شارٹ کٹس چھپائیں</translation>
 <translation id="4010036441048359843">ہائی لائٹ کو آن کریں</translation>
 <translation id="4010746393007464819">‏Debian 12 (کتابی کیڑا) میں اپ گریڈ دستیاب ہے</translation>
 <translation id="4010917659463429001">اپنے موبائل آلہ پر اپنے بُک مارکس حاصل کرنے کے لیے، <ph name="GET_IOS_APP_LINK" />۔</translation>
@@ -5312,7 +5309,6 @@
 <translation id="4877276003880815204">عناصر کا معائنہ کریں</translation>
 <translation id="4877652723592270843">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو والیوم کی دونوں کلیدوں کو 5 سیکنڈ کے لئے چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="4878634973244289103">تاثرات بھیجنے سے قاصر۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="4878653975845355462">آپ کے منتظم نے حسب ضرورت کے پس مناظر کو آف کر دیا ہے</translation>
 <translation id="4878718769565915065">اس حفاظتی کلید میں فنگر پرنٹ شامل کرنے میں ناکام ہو گیا</translation>
 <translation id="4879491255372875719">خودکار (ڈیفالٹ)</translation>
 <translation id="4880315242806573837">‏سیکیورٹی اپ ڈیٹس جلد ختم ہو جائیں گی۔ کسی نئے Chromebook پر اپ گریڈ کریں۔</translation>
@@ -7132,7 +7128,6 @@
 <translation id="6243774244933267674">سرور دستیاب نہیں ہے</translation>
 <translation id="6244245036423700521">‏ONC فائل درآمد کریں</translation>
 <translation id="6245523954602476652">‏آپ Google پاس ورڈ مینیجر پر اس تک رسائی حاصل کر سکتے ہیں۔</translation>
-<translation id="6246790815526961700">آلے سے اپ لوڈ کریں</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
 <translation id="6247620186971210352">کوئی ایپ نہیں ملی</translation>
 <translation id="6247708409970142803">‎<ph name="PERCENTAGE" />%‎</translation>
@@ -8725,7 +8720,6 @@
 <translation id="7458933488302148148">اپنی سیکیورٹی کو مضبوط بنانے اور آن لائن محفوظ رہنے کیلئے، اپنے محفوظ کردہ پاس ورڈز چیک کریں</translation>
 <translation id="745988141575685751">‏<ph name="BEGIN_PARAGRAPH1" />آپ کے ChromeOS آلات کو خودکار رپورٹس بھیجنے کی اجازت دینے سے ہمیں یہ ترجیح دینے میں مدد ملتی ہے کہ ChromeOS میں کیا درست اور بہتر کرنا ہے۔ ان رپورٹس میں ایسی چیزیں شامل ہو سکتی ہیں، جیسے ChromeOS کب کریش ہوتا ہے، آپ کن خصوصیات کا استعمال کرتے ہیں اور آپ عام طور پر کتنی میموری استعمال کرتے ہیں۔ اگر ایپس کو سنک کرنے کی سہولت کو فعال کیا گیا ہے تو Android اور ویب ایپس سمیت، ایپ کا دیگر ڈائیگناسٹک اور استعمال کا ڈیٹا جمع کیا جائے گا۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />آپ اپنے Chrome آلے کی ترتیبات میں کسی بھی وقت ان رپورٹس کی اجازت کو شروع یا بند کر سکتے ہیں۔ اگر آپ ڈومین کے منتظم ہیں تو آپ منتظم کونسول میں اس ترتیب کو تبدیل کر سکتے ہیں۔<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">موجودہ تھیم جسے آپ نے انسٹال کیا ہے</translation>
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="746216226901520237">‏اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں۔</translation>
 <translation id="7464153996453281700">جزء پہلے سے ہی اپ ٹو ڈیٹ ہے</translation>
@@ -8963,7 +8957,6 @@
 <translation id="7642778300616172920">حساس مواد چھپائیں</translation>
 <translation id="7643842463591647490">{0,plural, =1{# کھلی ہوئی ونڈو}other{# کھلی ہوئی ونڈوز}}</translation>
 <translation id="7643932971554933646">سائٹ کو فائلز پڑھنے دیں؟</translation>
-<translation id="7644543211198159466">رنگ اور تھیم</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7645681574855902035">‏Linux کا بیک اپ منسوخ ہو رہا ہے</translation>
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
@@ -9721,7 +9714,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{ایک فون نمبر}other{# فون نمبرز}}</translation>
 <translation id="8168435359814927499">مواد</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{پڑھنے کی فہرست میں ٹیب شامل کریں}other{پڑھنے کی فہرست میں ٹیبز شامل کریں}}</translation>
-<translation id="8171334254070436367">سبھی کارڈز کو چھپائیں</translation>
 <translation id="8174047975335711832">آلہ کی معلومات</translation>
 <translation id="8176332201990304395">گلابی اور سفید</translation>
 <translation id="8176529144855282213">مائیکروفون تک رسائی کو آن کرنے کے لیے، اپنے آلے پر فزیکل مائیکروفون سوئچ کو آن کریں</translation>

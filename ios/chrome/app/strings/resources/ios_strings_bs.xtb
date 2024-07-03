@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Vaš iPhone je nedavno vraćen u prethodno stanje, zbog čega vam je možda promijenjen zadani preglednik.</translation>
 <translation id="136942498637440594">Možete pretraživati slike i ono što vidite.</translation>
 <translation id="1375321115329958930">Sačuvane lozinke</translation>
-<translation id="1377255359165588604">Sinhronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1377508275003315939">Lozinke</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -686,7 +685,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="452503091941773389">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="452750746583162491">Pregledajte sinhronizirane podatke</translation>
 <translation id="4527660062930312477">Vašim računom se upravlja</translation>
-<translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} sačuvani prijedlog za automatsko popunjavanje je dostupan iznad tastature.}one{{count} sačuvani prijedlog za automatsko popunjavanje je dostupan iznad tastature.}few{{count} sačuvana prijedloga za automatsko popunjavanje su dostupna iznad tastature.}other{{count} sačuvanih prijedloga za automatsko popunjavanje je dostupno iznad tastature.}}</translation>
 <translation id="4540780316273593836">Nešto nije uredu</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
@@ -1655,7 +1653,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="913036870884277353">Jednostavno otvarajte linkove u drugim aplikacijama.</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9144931028079269381">Sakrij Listu za čitanje</translation>
-<translation id="9148126808321036104">Prijavi se ponovo</translation>
 <translation id="9157836665414082580">Spriječi dijaloge</translation>
 <translation id="9162432979321511934">Uključite automatsko popunjavanje lozinki</translation>
 <translation id="9162941801309769488">Praćenje paketa je prekinuto</translation>

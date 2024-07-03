@@ -1386,7 +1386,6 @@
 <translation id="1989288015781834552">અપડેટ પૂર્ણ કરવા માટે ફરીથી લૉન્ચ કરો. તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="1989903373608997757">હંમેશાં ઉપયોગ કરો</translation>
 <translation id="1990046457226896323">સ્પીચ ફાઇલો ડાઉનલોડ કરી</translation>
-<translation id="1990512225220753005">આ પેજ પર શૉર્ટકટ બતાવશો નહીં</translation>
 <translation id="1990727803345673966">બૅકઅપ લેવામાં આવેલી તમારી Linux ફાઇલો અને ઍપને રિસ્ટોર કરવામાં આવી રહી છે</translation>
 <translation id="199191324030140441">'ખલેલ પાડશો નહીં' સુવિધા બંધ કરો</translation>
 <translation id="1992397118740194946">સેટ નથી</translation>
@@ -2824,7 +2823,6 @@
 <translation id="3015639418649705390">હમણાં ફરીથી લૉન્ચ કરો</translation>
 <translation id="3016381065346027039">કોઈ લૉગ એન્ટ્રી નથી</translation>
 <translation id="3016641847947582299">ઘટક અપડેટ કર્યો</translation>
-<translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
 <translation id="3019023222666709803">ઍરો ટૂલ</translation>
 <translation id="3019285239893817657">સબપેજનું બટન</translation>
 <translation id="3019595674945299805">VPN સેવા</translation>
@@ -4175,7 +4173,6 @@
 <translation id="4002440992267487163">પિનને સેટઅપ કરો</translation>
 <translation id="4005817994523282006">સમય ઝોન ઓળખ પદ્ધતિ</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{આમ કરવાથી તમારા ડિવાઇસમાંથી આ ગ્રૂપ કાયમ માટે ડિલીટ થઈ જશે.}one{આમ કરવાથી તમારા ડિવાઇસમાંથી આ ગ્રૂપ કાયમ માટે ડિલીટ થઈ જશે.}other{આમ કરવાથી તમારા ડિવાઇસમાંથી આ ગ્રૂપ કાયમ માટે ડિલીટ થઈ જશે.}}</translation>
-<translation id="4007856537951125667">શૉર્ટકટ છુપાવો</translation>
 <translation id="4010036441048359843">હાઇલાઇટ ચાલુ કરો</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) માટેનું અપગ્રેડ ઉપલબ્ધ છે</translation>
 <translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5310,7 +5307,6 @@
 <translation id="4877276003880815204">ઘટકો તપાસો</translation>
 <translation id="4877652723592270843">શું તમે ChromeOS Flex માટેનું બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો? જો હા હોય, તો પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કી દબાવી રાખો.</translation>
 <translation id="4878634973244289103">પ્રતિસાદ મોકલી શકતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
-<translation id="4878653975845355462">તમારા વ્યવસ્થાપક દ્વારા કસ્ટમ બૅકગ્રાઉન્ડ બંધ કરવામાં આવ્યાં છે</translation>
 <translation id="4878718769565915065">આ સિક્યુરિટી કીમાં ફિંગરપ્રિન્ટ ઉમેરવાનું નિષ્ફળ રહ્યું</translation>
 <translation id="4879491255372875719">ઑટોમૅટિક (ડિફૉલ્ટ)</translation>
 <translation id="4880315242806573837">સુરક્ષા અપડેટ મળવાનું ટૂંક સમયમાં સમાપ્ત થશે. નવી Chromebook પર અપગ્રેડ કરો.</translation>
@@ -7134,7 +7130,6 @@ USB ડિવાઇસ</translation>
 <translation id="6243774244933267674">સર્વર અનુપલબ્ધ</translation>
 <translation id="6244245036423700521">ONC ફાઇલની આયાત કરો</translation>
 <translation id="6245523954602476652">તમે Google Password Manager પર તેને ઍક્સેસ કરી શકો છો.</translation>
-<translation id="6246790815526961700">ડિવાઇસમાંથી અપડેટ</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6247620186971210352">કોઈ ઍપ મળી નથી</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8730,7 +8725,6 @@ USB ડિવાઇસ</translation>
 <translation id="7458933488302148148">તમારી સુરક્ષા મજબૂત કરવા અને ઑનલાઇન વધુ સલામત રહેવા માટે, તમારા સાચવેલા પાસવર્ડ ચેક કરો</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />તમારા ChromeOS ડિવાઇસને ઑટોમૅટિક રિપોર્ટ મોકલવાની મંજૂરી આપવાથી, અમને ChromeOSમાં શું સુધારવું અને શું બહેતર બનાવવું તેને પ્રાધાન્યતા આપવામાં સહાય મળે છે. આ રિપોર્ટમાં ChromeOS ક્યારે ક્રૅશ થાય છે, તમે કઈ સુવિધાઓનો ઉપયોગ કરો છો અને તમે સામાન્ય રીતે કેટલી મેમરીનો ઉપયોગ કરો છો, તેના જેવી બાબતોનો સમાવેશ થઈ શકે છે. જો ઍપ સિંક કરવાની સુવિધા પણ ચાલુ કરેલી હોય, તો Android અને વેબ ઍપ સહિત અન્ય ઍપના ડાયગ્નોસ્ટિક અને વપરાશના ડેટાને એકત્રિત કરવામાં આવશે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમે તમારા Chrome ડિવાઇસના સેટિંગમાં કોઈપણ સમયે આ રિપોર્ટને મંજૂરી આપવાનું શરૂ અથવા બંધ કરી શકો છો. જો તમે ડોમેન ઍડમિનિસ્ટ્રેટર હો, તો તમે ઍડમિન કન્સોલમાં આ સેટિંગ બદલી શકો છો.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">તમે ઇન્સ્ટૉલ કરેલી વર્તમાન થીમ</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
 <translation id="746216226901520237">આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
 <translation id="7464153996453281700">ઘટક પહેલેથી અપ ટૂ ડેટ છે</translation>
@@ -8968,7 +8962,6 @@ USB ડિવાઇસ</translation>
 <translation id="7642778300616172920">સંવેદનશીલ કન્ટેન્ટ છુપાવો</translation>
 <translation id="7643842463591647490">{0,plural, =1{# વિંડો ખોલો}one{# વિંડો ખોલો}other{# વિંડો ખોલો}}</translation>
 <translation id="7643932971554933646">સાઇટને ફાઇલો જોવાની મંજૂરી આપીએ?</translation>
-<translation id="7644543211198159466">રંગ અને થીમ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (માલિક)</translation>
 <translation id="7645681574855902035">Linuxનું બૅકઅપ રદ કરી રહ્યાં છીએ</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
@@ -9721,7 +9714,6 @@ USB ડિવાઇસ</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{એક ફોન નંબર}one{# ફોન નંબર}other{# ફોન નંબર}}</translation>
 <translation id="8168435359814927499">કન્ટેન્ટ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{વાંચન સૂચિમાં ટૅબ ઉમેરો}one{વાંચન સૂચિમાં ટૅબ ઉમેરો}other{વાંચન સૂચિમાં ટૅબ ઉમેરો}}</translation>
-<translation id="8171334254070436367">બધા કાર્ડ છુપાવો</translation>
 <translation id="8174047975335711832">ઉપકરણ માહિતી</translation>
 <translation id="8176332201990304395">ગુલાબી અને સફેદ</translation>
 <translation id="8176529144855282213">માઇક્રોફોનનો ઍક્સેસ ચાલુ કરવા માટે, તમારા ડિવાઇસ પર માઇક્રોફોનની ભૌતિક સ્વિચ ચાલુ કરો</translation>

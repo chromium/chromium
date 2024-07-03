@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhonen din ble nylig gjenopprettet, noe som kan ha medført at standardnettleseren ble endret.</translation>
 <translation id="136942498637440594">Du kan søke i bilder og det du ser.</translation>
 <translation id="1375321115329958930">Lagrede passord</translation>
-<translation id="1377255359165588604">Synkroniseringen har sluttet å fungere.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Passord</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -682,7 +681,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="452503091941773389">{count,plural, =1{{count} bokmerke}other{{count} bokmerker}}</translation>
 <translation id="452750746583162491">Gjennomgå de synkroniserte dataene dine</translation>
 <translation id="4527660062930312477">Kontoen din administreres</translation>
-<translation id="4536418791685807335">Prøv å logge på igjen.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} lagret forslag til autofullføring er tilgjengelig over tastaturet.}other{{count} lagrede forslag til autofullføring er tilgjengelige over tastaturet.}}</translation>
 <translation id="4540780316273593836">Noe gikk galt</translation>
 <translation id="4550040941166547650">Bare på denne enheten</translation>
@@ -1650,7 +1648,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="913036870884277353">Åpne linker i andre apper enkelt.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9144931028079269381">Skjul leselisten</translation>
-<translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9162941801309769488">Pakken spores ikke lenger</translation>

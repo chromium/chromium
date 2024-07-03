@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone je bil nedavno obnovljen, zaradi česar se je morda spremenil privzeti brskalnik.</translation>
 <translation id="136942498637440594">Iščete lahko slike in prikazano vsebino.</translation>
 <translation id="1375321115329958930">Shranjena gesla</translation>
-<translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card Number</translation>
 <translation id="1377508275003315939">Gesla</translation>
 <translation id="1383876407941801731">Išči</translation>
@@ -682,7 +681,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="452503091941773389">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
 <translation id="4527660062930312477">Vaš račun je upravljan</translation>
-<translation id="4536418791685807335">Try signing in again.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjen predlog za samodokončanje.}one{Nad tipkovnico je na voljo {count} shranjen predlog za samodokončanje.}two{Nad tipkovnico sta na voljo {count} shranjena predloga za samodokončanje.}few{Nad tipkovnico so na voljo {count} shranjeni predlogi za samodokončanje.}other{Nad tipkovnico je na voljo {count} shranjenih predlogov za samodokončanje.}}</translation>
 <translation id="4540780316273593836">Prišlo je do napake</translation>
 <translation id="4550040941166547650">Samo v tej napravi</translation>
@@ -1650,7 +1648,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="913036870884277353">Preprosto odprite povezave v drugih aplikacijah.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9144931028079269381">Skrij bralni seznam</translation>
-<translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
 <translation id="9162432979321511934">Vklopite AutoFill Passwords (Samodejno izpolnjevanje gesel).</translation>
 <translation id="9162941801309769488">Sledenje paketu je ustavljeno</translation>

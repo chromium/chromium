@@ -1386,7 +1386,6 @@
 <translation id="1989288015781834552">更新を完了するには再起動してください。開いているタブは復旧されます。</translation>
 <translation id="1989903373608997757">常に使用</translation>
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
-<translation id="1990512225220753005">このページではショートカットを表示しません</translation>
 <translation id="1990727803345673966">バックアップした Linux のファイルとアプリを復元しています</translation>
 <translation id="199191324030140441">サイレント モードをオフにする</translation>
 <translation id="1992397118740194946">未設定</translation>
@@ -2820,7 +2819,6 @@
 <translation id="3015639418649705390">今すぐ再起動</translation>
 <translation id="3016381065346027039">ログエントリはありません</translation>
 <translation id="3016641847947582299">コンポーネント更新完了</translation>
-<translation id="3017079585324758401">背景</translation>
 <translation id="3019023222666709803">矢印ツール</translation>
 <translation id="3019285239893817657">サブページのボタン</translation>
 <translation id="3019595674945299805">VPN サービス</translation>
@@ -4168,7 +4166,6 @@
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{この操作を行うとデバイスからグループが完全に削除されます。}other{この操作を行うとデバイスからグループが完全に削除されます。}}</translation>
-<translation id="4007856537951125667">ショートカットを非表示にする</translation>
 <translation id="4010036441048359843">ハイライト表示をオンにする</translation>
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
@@ -5301,7 +5298,6 @@
 <translation id="4877276003880815204">要素の検証</translation>
 <translation id="4877652723592270843">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。有効にする場合は、両方の音量キーを 5 秒間長押ししてください。</translation>
 <translation id="4878634973244289103">フィードバックを送信できませんでした。しばらくしてからもう一度お試しください。</translation>
-<translation id="4878653975845355462">カスタムの背景は、管理者によって無効化されています</translation>
 <translation id="4878718769565915065">このセキュリティ キーにフィンガープリントを追加できませんでした</translation>
 <translation id="4879491255372875719">自動（デフォルト）</translation>
 <translation id="4880315242806573837">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook にアップグレードしましょう。</translation>
@@ -7120,7 +7116,6 @@
 <translation id="6243774244933267674">サーバーを使用できません</translation>
 <translation id="6244245036423700521">ONC ファイルのインポート</translation>
 <translation id="6245523954602476652">Google パスワード マネージャーからアクセスできます。</translation>
-<translation id="6246790815526961700">デバイスからアップロード</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>
 <translation id="6247620186971210352">アプリが見つかりません</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8711,7 +8706,6 @@
 <translation id="7458933488302148148">保存したパスワードをチェックしてセキュリティを強化し、ウェブを安全に利用できるようにしましょう</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ChromeOS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に ChromeOS を修正および改善する取り組みにご協力ください。自動レポートでは、ChromeOS がクラッシュした時間、使用されている機能、通常のメモリ使用量などの情報が送信されます。アプリの同期もオンになっている場合、Android アプリやウェブアプリなどのアプリの診断データと使用状況データが収集されます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">インストールした現在のテーマ</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="7464153996453281700">コンポーネントはすでに最新です</translation>
@@ -8949,7 +8943,6 @@
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
 <translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
-<translation id="7644543211198159466">色とテーマ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">Linux のバックアップをキャンセルしています</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
@@ -9707,7 +9700,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
-<translation id="8171334254070436367">カードをすべて非表示にする</translation>
 <translation id="8174047975335711832">デバイス情報</translation>
 <translation id="8176332201990304395">ピンクと白</translation>
 <translation id="8176529144855282213">マイクへのアクセスを有効にするには、デバイスの物理的なマイクスイッチをオンにしてください</translation>

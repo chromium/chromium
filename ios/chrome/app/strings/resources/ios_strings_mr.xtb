@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">तुमचा iPhone नुकताच रिस्टोअर करण्यात आला, ज्यामुळे तुमचा डीफॉल्ट ब्राउझर बदलला असावा.</translation>
 <translation id="136942498637440594">तुम्ही इमेज आणि तुम्ही काय पाहता ते शोधू शकता.</translation>
 <translation id="1375321115329958930">सेव्ह केलेले पासवर्ड</translation>
-<translation id="1377255359165588604">संकालनाने कार्य करणे थांबविले आहे.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1377508275003315939">पासवर्ड</translation>
 <translation id="1383876407941801731">शोधा</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} बुकमार्क}other{{count} बुकमार्क}}</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4527660062930312477">तुमचे खाते व्यवस्थापित केले आहे</translation>
-<translation id="4536418791685807335">पुन्हा साइन इन करण्याचा प्रयत्न करा.</translation>
 <translation id="4539187448429948815">{count,plural, =1{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेली ऑटोकंप्लीट सूचना उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वर {count} सेव्ह केलेल्या ऑटोकंप्लीट सूचना उपलब्ध आहेत.}}</translation>
 <translation id="4540780316273593836">काहीतरी चूक झाली</translation>
 <translation id="4550040941166547650">फक्त या डिव्हाइसवर</translation>
@@ -1651,7 +1649,6 @@
 <translation id="913036870884277353">इतर अ‍ॅप्समध्ये लिंक सहजपणे उघडा.</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9144931028079269381">वाचन सूची लपवा</translation>
-<translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9157836665414082580">संवाद दर्शवू नका</translation>
 <translation id="9162432979321511934">ऑटोफिल पासवर्ड सुरू करा</translation>
 <translation id="9162941801309769488">पॅकेजचा माग ठेवणे बंद केले आहे</translation>

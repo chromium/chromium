@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">您的 iPhone 最近已還原，可能已變更預設瀏覽器。</translation>
 <translation id="136942498637440594">你可搜尋圖片和看到的內容。</translation>
 <translation id="1375321115329958930">已儲存的密碼</translation>
-<translation id="1377255359165588604">同步處理功能已停止運作。</translation>
 <translation id="1377321085342047638">卡號碼</translation>
 <translation id="1377508275003315939">密碼</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4527660062930312477">你的帳戶是受管帳戶</translation>
-<translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4539187448429948815">{count,plural, =1{鍵盤上面顯示 {count} 個儲存咗嘅自動完成建議。}other{鍵盤上面顯示 {count} 個儲存咗嘅自動完成建議。}}</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
 <translation id="4550040941166547650">只在此裝置上</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">輕鬆開啟其他應用程式中的連結。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9144931028079269381">隱藏「閱讀清單」</translation>
-<translation id="9148126808321036104">重新登入</translation>
 <translation id="9157836665414082580">隱藏對話框</translation>
 <translation id="9162432979321511934">開啟「自動填入密碼」功能</translation>
 <translation id="9162941801309769488">已取消追蹤包裹</translation>

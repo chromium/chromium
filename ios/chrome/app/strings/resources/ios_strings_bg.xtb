@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Вашият iPhone наскоро бе възстановен. Това може да е променило браузъра ви по подразбиране.</translation>
 <translation id="136942498637440594">Можете да търсите изображения и това, което виждате.</translation>
 <translation id="1375321115329958930">Запазени пароли</translation>
-<translation id="1377255359165588604">Синхронизирането спря да работи.</translation>
 <translation id="1377321085342047638">№ на картата</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} отметка}other{{count} отметки}}</translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4527660062930312477">Профилът ви се управлява</translation>
-<translation id="4536418791685807335">Опитайте да влезете отново.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} запазено предложение за автоматично довършване е налице над клавиатурата ви.}other{{count} запазени предложения за автоматично довършване са налице над клавиатурата ви.}}</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="4550040941166547650">Само на това устройство</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">Лесно отваряйте връзки в други приложения.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9144931028079269381">Скриване на „Списък за четене“</translation>
-<translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9157836665414082580">Диалогови прозорци: Блокиране</translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9162941801309769488">Пратката не се проследява</translation>

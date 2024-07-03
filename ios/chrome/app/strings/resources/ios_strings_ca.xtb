@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">L'iPhone s'ha restaurat recentment, i és possible que el navegador predeterminat hagi canviat.</translation>
 <translation id="136942498637440594">Pots cercar imatges i el que veus.</translation>
 <translation id="1375321115329958930">Contrasenyes desades</translation>
-<translation id="1377255359165588604">La sincronització ha deixat de funcionar.</translation>
 <translation id="1377321085342047638">Número de targeta</translation>
 <translation id="1377508275003315939">Contrasenyes</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -682,7 +681,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="452503091941773389">{count,plural, =1{{count} adreça d'interès}other{{count} adreces d'interès}}</translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4527660062930312477">El teu compte està gestionat</translation>
-<translation id="4536418791685807335">Prova d'iniciar la sessió de nou.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Hi ha {count} suggeriment de compleció automàtica desat disponible a sobre del teclat.}other{Hi ha {count} suggeriments de compleció automàtica desats disponibles a sobre del teclat.}}</translation>
 <translation id="4540780316273593836">S'ha produït un error</translation>
 <translation id="4550040941166547650">Només en aquest dispositiu</translation>
@@ -1650,7 +1648,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="913036870884277353">Obre els enllaços fàcilment en altres aplicacions.</translation>
 <translation id="9137526406337347448">Serveis de Google</translation>
 <translation id="9144931028079269381">Amaga l'opció Llista de lectura</translation>
-<translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9157836665414082580">Suprimeix quadres de diàleg</translation>
 <translation id="9162432979321511934">Activa l'opció Emplena automàticament les contrasenyes</translation>
 <translation id="9162941801309769488">No s'ha fet el seguiment del paquet</translation>

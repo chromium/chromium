@@ -1390,7 +1390,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1989288015781834552">Relansează pentru a finaliza actualizarea. Filele se vor redeschide.</translation>
 <translation id="1989903373608997757">Folosește întotdeauna</translation>
 <translation id="1990046457226896323">Fișierele de redare în scris a vorbirii s-au descărcat</translation>
-<translation id="1990512225220753005">Nu afișa comenzi rapide pe această pagină</translation>
 <translation id="1990727803345673966">Fișierele și aplicațiile din Linux pentru care ai făcut backup sunt restabilite</translation>
 <translation id="199191324030140441">Dezactivează funcția Nu deranja</translation>
 <translation id="1992397118740194946">Nu este setat</translation>
@@ -2827,7 +2826,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3015639418649705390">Relansează acum</translation>
 <translation id="3016381065346027039">Nu există intrări în jurnal</translation>
 <translation id="3016641847947582299">Componentă actualizată</translation>
-<translation id="3017079585324758401">Fundal</translation>
 <translation id="3019023222666709803">Instrument săgeată</translation>
 <translation id="3019285239893817657">Butonul Pagină secundară</translation>
 <translation id="3019595674945299805">Servicii VPN</translation>
@@ -4177,7 +4175,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4002440992267487163">Configurează codul PIN</translation>
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Astfel, grupul se va șterge definitiv de pe dispozitiv.}few{Astfel, grupurile se vor șterge definitiv de pe dispozitiv.}other{Astfel, grupurile se vor șterge definitiv de pe dispozitiv.}}</translation>
-<translation id="4007856537951125667">Ascunde comenzile rapide</translation>
 <translation id="4010036441048359843">Activează evidențierea</translation>
 <translation id="4010746393007464819">Este disponibil un upgrade la Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Pentru a accesa marcajele pe dispozitivul mobil, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5312,7 +5309,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4877276003880815204">Inspectează elementele</translation>
 <translation id="4877652723592270843">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome Flex? Dacă da, apasă lung ambele butoane de volum timp de cinci secunde.</translation>
 <translation id="4878634973244289103">Feedbackul nu poate fi trimis. Încearcă din nou mai târziu.</translation>
-<translation id="4878653975845355462">Administratorul a dezactivat fundalurile personalizate</translation>
 <translation id="4878718769565915065">Nu s-a putut adăuga o amprentă la cheia de securitate</translation>
 <translation id="4879491255372875719">Automat (prestabilit)</translation>
 <translation id="4880315242806573837">Actualizările de securitate se vor încheia în curând. Fă upgrade la un Chromebook nou.</translation>
@@ -7133,7 +7129,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6243774244933267674">Server indisponibil</translation>
 <translation id="6244245036423700521">Importă fișierul ONC</translation>
 <translation id="6245523954602476652">Îl poți accesa în Managerul de parole Google.</translation>
-<translation id="6246790815526961700">Încarcă de pe dispozitiv</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6247620186971210352">Nu s-au găsit aplicații</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8729,7 +8724,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7458933488302148148">Verifică parolele salvate pentru a consolida securitatea și a rămâne în siguranță online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele ChromeOS să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru ChromeOS. Aceste rapoarte pot include aspecte precum situațiile în care se blochează ChromeOS, ce funcții folosești și câtă memorie utilizezi de obicei. Alte date de diagnosticare și de utilizare a aplicațiilor, inclusiv pentru aplicațiile Android și web, vor fi colectate dacă și Sincronizarea aplicațiilor este activată.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema actuală pe care ai instalat-o</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746216226901520237">Data viitoare, telefonul va debloca dispozitivul <ph name="DEVICE_TYPE" />. Poți debloca Smart Lock în Setări.</translation>
 <translation id="7464153996453281700">Componenta este deja actualizată</translation>
@@ -8967,7 +8961,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7642778300616172920">Ascunde conținutul sensibil</translation>
 <translation id="7643842463591647490">{0,plural, =1{# fereastră deschisă}few{# ferestre deschise}other{# de ferestre deschise}}</translation>
 <translation id="7643932971554933646">Permiți ca site-ul să vadă fișierele?</translation>
-<translation id="7644543211198159466">Culoare și temă</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietar)</translation>
 <translation id="7645681574855902035">Se anulează backupul Linux</translation>
 <translation id="7646772052135772216">Sincronizarea parolelor nu funcționează</translation>
@@ -9726,7 +9719,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="816704878106051517">{COUNT,plural, =1{un număr de telefon}few{# numere de telefon}other{# de numere de telefon}}</translation>
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Adaugă fila în lista de lectură}few{Adaugă filele în lista de lectură}other{Adaugă filele în lista de lectură}}</translation>
-<translation id="8171334254070436367">Ascunde toate cardurile</translation>
 <translation id="8174047975335711832">Informații despre dispozitiv</translation>
 <translation id="8176332201990304395">Roz și alb</translation>
 <translation id="8176529144855282213">Pentru a activa accesul la microfon, activează comutatorul fizic pentru microfon de pe dispozitiv</translation>

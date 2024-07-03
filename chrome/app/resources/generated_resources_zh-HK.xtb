@@ -1399,7 +1399,6 @@
 <translation id="1989288015781834552">重新啟動即可完成更新。你的分頁將會重新開啟。</translation>
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
-<translation id="1990512225220753005">不要在此頁面顯示捷徑</translation>
 <translation id="1990727803345673966">系統正在還原已備份的 Linux 檔案和應用程式</translation>
 <translation id="199191324030140441">關閉「請勿騷擾」</translation>
 <translation id="1992397118740194946">未設定</translation>
@@ -2838,7 +2837,6 @@
 <translation id="3015639418649705390">立即重新啟動</translation>
 <translation id="3016381065346027039">沒有記錄項目</translation>
 <translation id="3016641847947582299">組件已更新</translation>
-<translation id="3017079585324758401">背景</translation>
 <translation id="3019023222666709803">箭咀工具</translation>
 <translation id="3019285239893817657">子頁面按鈕</translation>
 <translation id="3019595674945299805">VPN 服務</translation>
@@ -4184,7 +4182,6 @@
 <translation id="4002440992267487163">PIN 設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{此操作會將群組從裝置中永久刪除。}other{此操作會將群組從裝置中永久刪除。}}</translation>
-<translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4010036441048359843">開啟突顯功能</translation>
 <translation id="4010746393007464819">可以升級至 Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">如要在所有裝置上查看書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
@@ -5315,7 +5312,6 @@
 <translation id="4877276003880815204">檢查元素</translation>
 <translation id="4877652723592270843">係咪要啟用 ChromeOS Flex 內置嘅螢幕閱讀器 ChromeVox？要嘅話就請同時㩒住校高同校低音量鍵五秒。</translation>
 <translation id="4878634973244289103">無法傳送意見，請稍後再試。</translation>
-<translation id="4878653975845355462">管理員已關閉自訂背景功能</translation>
 <translation id="4878718769565915065">無法將指紋新增到此安全密鑰</translation>
 <translation id="4879491255372875719">自動 (預設)</translation>
 <translation id="4880315242806573837">安全更新即將終止，請改用新 Chromebook。</translation>
@@ -7134,7 +7130,6 @@
 <translation id="6243774244933267674">無法與伺服器連線</translation>
 <translation id="6244245036423700521">匯入 ONC 檔案</translation>
 <translation id="6245523954602476652">您可在「Google 密碼管理工具」上存取密碼。</translation>
-<translation id="6246790815526961700">從裝置上載</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6247620186971210352">找不到應用程式</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8727,7 +8722,6 @@
 <translation id="7458933488302148148">請檢查已儲存的密碼，提升安全性並保保網上安全</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這些報告可能包括 ChromeOS 當機時間、您所使用的功能，以及記憶體一般使用量。如果同時開啟應用程式同步功能，系統亦會收集其他應用程式診斷和使用資料 (包括 Android 和網絡應用程式)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">您目前安裝的主題</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="7464153996453281700">組件已是最新版本</translation>
@@ -8965,7 +8959,6 @@
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要讓網站查看檔案嗎？</translation>
-<translation id="7644543211198159466">顏色和主題</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7645681574855902035">正在取消 Linux 備份</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
@@ -9724,7 +9717,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{1 個電話號碼}other{# 個電話號碼}}</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
-<translation id="8171334254070436367">隱藏所有資訊卡</translation>
 <translation id="8174047975335711832">裝置資料</translation>
 <translation id="8176332201990304395">粉紅色和白色</translation>
 <translation id="8176529144855282213">如要開啟麥克風存取權，請開啟裝置上的實體麥克風開關</translation>

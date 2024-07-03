@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Din iPhone återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
 <translation id="136942498637440594">Du kan söka efter bilder och saker du ser.</translation>
 <translation id="1375321115329958930">Sparade lösenord</translation>
-<translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1383876407941801731">Sök</translation>
@@ -686,7 +685,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="452503091941773389">{count,plural, =1{{count} bokmärke}other{{count} bokmärken}}</translation>
 <translation id="452750746583162491">Granska din synkroniserade data</translation>
 <translation id="4527660062930312477">Kontot är hanterat</translation>
-<translation id="4536418791685807335">Försök att logga in igen.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} sparat förslag för autoslutförande visas ovanför tangentbordet.}other{{count} sparade förslag för autoslutförande visas ovanför tangentbordet.}}</translation>
 <translation id="4540780316273593836">Något gick fel</translation>
 <translation id="4550040941166547650">Bara på den här enheten</translation>
@@ -1655,7 +1653,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="913036870884277353">Öppna länkar enkelt i andra appar.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Dölj Läslista</translation>
-<translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9157836665414082580">Visa inte dialogrutor</translation>
 <translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9162941801309769488">Paketet spåras inte</translation>

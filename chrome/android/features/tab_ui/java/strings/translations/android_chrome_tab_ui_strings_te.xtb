@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}}</translation>
 <translation id="5556417849629758491">స్టోర్ సమాచారాన్ని చూడండి, ఆప్షన్ స్క్రీన్ పైభాగంలో అందుబాటులో ఉంది</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{ట్యాబ్ రీస్టోర్ చేయండి}other{ట్యాబ్‌లను రీస్టోర్ చేయండి}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome నుండి <ph name="TABS_COUNT_ONE" /> లింక్}other{Chrome నుండి <ph name="TABS_COUNT_MANY" /> లింక్‌లు}}</translation>
 <translation id="575494663145460764">ధర తగ్గింపు అలర్ట్‌లను పొందాలనుకుంటున్నారా?</translation>
 <translation id="58326064309361797">గ్రూప్‌గా చేయడానికి ట్యాబ్‌లను లాగండి</translation>

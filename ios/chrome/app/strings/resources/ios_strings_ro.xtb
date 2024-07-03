@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Dispozitivul iPhone a fost restabilit recent, acțiune care ar fi putut schimba browserul prestabilit.</translation>
 <translation id="136942498637440594">Poți să cauți imagini și ceea ce vezi.</translation>
 <translation id="1375321115329958930">Parole salvate</translation>
-<translation id="1377255359165588604">Sincronizarea a încetat să funcționeze.</translation>
 <translation id="1377321085342047638">Număr card</translation>
 <translation id="1377508275003315939">Parole</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -682,7 +681,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="452503091941773389">{count,plural, =1{{count} marcaj}few{{count} marcaje}other{{count} de marcaje}}</translation>
 <translation id="452750746583162491">Examinează datele sincronizate</translation>
 <translation id="4527660062930312477">Contul tău este gestionat</translation>
-<translation id="4536418791685807335">Încearcă să te conectezi din nou.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} sugestie de completare automată salvată disponibilă deasupra tastaturii.}few{{count} sugestii de completare automată salvate disponibile deasupra tastaturii.}other{{count} de sugestii de completare automată salvate disponibile deasupra tastaturii.}}</translation>
 <translation id="4540780316273593836">A apărut o eroare</translation>
 <translation id="4550040941166547650">Numai pe acest dispozitiv</translation>
@@ -1650,7 +1648,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="913036870884277353">Deschide cu ușurință linkuri în alte aplicații.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Ascunde Lista de lecturi</translation>
-<translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9157836665414082580">Închide casetele de dialog</translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
 <translation id="9162941801309769488">S-a anulat urmărirea pachetului</translation>

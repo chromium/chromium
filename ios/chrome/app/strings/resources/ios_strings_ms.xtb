@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone anda dipulihkan baru-baru ini dan mungkin telah menukar penyemak imbas lalai anda.</translation>
 <translation id="136942498637440594">Anda boleh mencari imej dan perkara yang anda lihat.</translation>
 <translation id="1375321115329958930">Kata Laluan Disimpan</translation>
-<translation id="1377255359165588604">Penyegerakan telah berhenti berfungsi.</translation>
 <translation id="1377321085342047638">Nombor Kad</translation>
 <translation id="1377508275003315939">Kata laluan</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -126,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Pilih “Tambahkan pada Google Calendar“ atau “Tambahkan pada Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> Kata Laluan yang Digunakan Semula</translation>
+<translation id="1636234353664774105">Dapatkan arah menuju destinasi anda dengan bimbingan sepanjang jalan menggunakan ciri navigasi</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1641316430523156212">Ikut</translation>
 <translation id="1644574205037202324">Sejarah</translation>
@@ -209,6 +209,7 @@
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2062410130322589403">Panduan Pilihan Privasi Anda</translation>
 <translation id="20638360198452347">Pemilih jenis unit</translation>
+<translation id="2067852168641682340">Simpan pada akaun ini setiap kali</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2078437078822043850">Anda boleh menatal ke kanan untuk menyemak imbas dalam Inkognito.</translation>
@@ -314,6 +315,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="261739049332372104">Untuk mendapatkan kemaskinian tentang kandungan yang penting bagi anda, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
 <translation id="2625189173221582860">Kata laluan disalin</translation>
 <translation id="2626236249646841566">Semak sambungan anda dan cuba log masuk sekali lagi.</translation>
+<translation id="2635918910848538771">Autolengkap CVC</translation>
 <translation id="2637313651144986786">Cari Tab...</translation>
 <translation id="2640733327287333451">Tiada Nama Pengguna ••••••</translation>
 <translation id="2648721026697078500">Jangan Sekali-kali Alihkan</translation>
@@ -497,6 +499,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3533202363250687977">Tutup Semua Tab Inkognito</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
 <translation id="3540141921715814660">Tambahkan pada Penanda Halaman</translation>
+<translation id="3547356470684043247">Baca penilaian pelanggan tentang produk, perkhidmatan atau pengalaman untuk membantu anda membuat keputusan berdasarkan ulasan</translation>
 <translation id="355101282835380364">Simpan dalam Akaun…</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> daripada <ph name="NUMBER_OF_TABS" />.</translation>
@@ -682,7 +685,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="452503091941773389">{count,plural, =1{{count} penanda halaman}other{{count} penanda halaman}}</translation>
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
 <translation id="4527660062930312477">Akaun Anda Terurus</translation>
-<translation id="4536418791685807335">Cuba log masuk semula.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} cadangan autolengkap yang disimpan tersedia pada sebelah atas papan kekunci anda.}other{{count} cadangan autolengkap yang disimpan tersedia pada sebelah atas papan kekunci anda.}}</translation>
 <translation id="4540780316273593836">Kesilapan Telah Berlaku</translation>
 <translation id="4550040941166547650">Hanya pada Peranti Ini</translation>
@@ -716,6 +718,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4659194143325814340">{count,plural, =1{{count} halaman pada Senarai Bacaan anda}other{{count} halaman pada Senarai Bacaan anda}}</translation>
 <translation id="4659667755519643272">Masuk ke Penukar Tab</translation>
 <translation id="46614316059270592">Simpan Kata Laluan</translation>
+<translation id="467189612236587057">Berhubung dengan perniagaan dengan memulakan panggilan telefon</translation>
 <translation id="4682686630151240767">1. Buka Tetapan iPhone</translation>
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
 <translation id="469300482518076788">Tutup Tab</translation>
@@ -1650,7 +1653,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="913036870884277353">Buka pautan dengan mudah pada apl lain.</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9144931028079269381">Sembunyikan Senarai Bacaan</translation>
-<translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9157836665414082580">Sekat Dialog</translation>
 <translation id="9162432979321511934">Hidupkan Autolengkap Kata Laluan</translation>
 <translation id="9162941801309769488">Pakej Dinyahjejak</translation>

@@ -1402,7 +1402,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1989288015781834552">Paleiskite iš naujo ir baikite atnaujinti. Skirtukai bus atidaryti iš naujo.</translation>
 <translation id="1989903373608997757">Visada naudoti</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
-<translation id="1990512225220753005">Nerodyti sparčiųjų klavišų šiame puslapyje</translation>
 <translation id="1990727803345673966">Atkuriamos atsarginės „Linux“ failų ir programų kopijos</translation>
 <translation id="199191324030140441">Išjungti netrukdymo režimą</translation>
 <translation id="1992397118740194946">Nenustatyta</translation>
@@ -2842,7 +2841,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3015639418649705390">Paleisti iš naujo dabar</translation>
 <translation id="3016381065346027039">Nėra žurnalo įrašų</translation>
 <translation id="3016641847947582299">Komponentas atnaujintas</translation>
-<translation id="3017079585324758401">Fonas</translation>
 <translation id="3019023222666709803">Rodyklės įrankis</translation>
 <translation id="3019285239893817657">Papildomo puslapio mygtukas</translation>
 <translation id="3019595674945299805">VPN paslauga</translation>
@@ -4193,7 +4191,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4002440992267487163">Prisegimo funkcijos nustatymas</translation>
 <translation id="4005817994523282006">Laiko juostos aptikimo metodas</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio.}one{Atlikus šį veiksmą grupės bus visam laikui ištrintos iš įrenginio.}few{Atlikus šį veiksmą grupės bus visam laikui ištrintos iš įrenginio.}many{Atlikus šį veiksmą grupės bus visam laikui ištrintos iš įrenginio.}other{Atlikus šį veiksmą grupės bus visam laikui ištrintos iš įrenginio.}}</translation>
-<translation id="4007856537951125667">Slėpti sparčiuosius klavišus</translation>
 <translation id="4010036441048359843">Įjungti paryškinimą</translation>
 <translation id="4010746393007464819">Pasiekiamas naujovinimas į 12 versijos „Debian“ („Bookworm“)</translation>
 <translation id="4010917659463429001">Kad pasiektumėte žymes mobiliajame įrenginyje, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5328,7 +5325,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4877276003880815204">Inspect Elements</translation>
 <translation id="4877652723592270843">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą? Jei norite, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus.</translation>
 <translation id="4878634973244289103">Nepavyko išsiųsti atsiliepimo. Vėliau bandykite dar kartą.</translation>
-<translation id="4878653975845355462">Administratorius išjungė tinkintus fonus</translation>
 <translation id="4878718769565915065">Nepavyko pridėti kontrolinio kodo prie šio saugos rakto</translation>
 <translation id="4879491255372875719">Automatinis (numatytasis)</translation>
 <translation id="4880315242806573837">Saugos naujiniai netrukus baigsis. Naujovinkite į naują „Chromebook“.</translation>
@@ -7151,7 +7147,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6243774244933267674">Serveris negalimas</translation>
 <translation id="6244245036423700521">Importuoti ONC failą</translation>
 <translation id="6245523954602476652">Jį galite pasiekti „Google“ slaptažodžių tvarkyklėje.</translation>
-<translation id="6246790815526961700">Įkelti iš įrenginio</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6247620186971210352">Nerasta programų</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8751,7 +8746,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7458933488302148148">Patikrinkite išsaugotus slaptažodžius, kad būtumėte geriau apsaugoti internete</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Leisdami „ChromeOS“ įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „ChromeOS“. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kada „ChromeOS“ užstringa, kurios funkcijos buvo naudojamos ir kiek įprastai atminties naudojama. Kiti programų diagnostikos ir naudojimo duomenys, įskaitant „Android“ ir žiniatinklio programas, bus renkami, jei taip pat įgalintas programų sinchronizavimas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas „Chrome“ įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Dabartinė jūsų įdiegta tema</translation>
 <translation id="7461924472993315131">Prisegti</translation>
 <translation id="746216226901520237">Kitą kartą telefonu galėsite atrakinti „<ph name="DEVICE_TYPE" />“. Funkciją „Smart Lock“ galite išjungti „Nustatymų“ skiltyje.</translation>
 <translation id="7464153996453281700">Komponentas jau atnaujintas</translation>
@@ -8989,7 +8983,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7642778300616172920">Slėpti neskelbtiną turinį</translation>
 <translation id="7643842463591647490">{0,plural, =1{# atidarytas langas}one{# atidarytas langas}few{# atidaryti langai}many{# atidaryto lango}other{# atidarytų langų}}</translation>
 <translation id="7643932971554933646">Leisti svetainei peržiūrėti failus?</translation>
-<translation id="7644543211198159466">Spalva ir tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (savininkas)</translation>
 <translation id="7645681574855902035">Atšaukiamas „Linux“ atsarginės kopijos kūrimas</translation>
 <translation id="7646772052135772216">Slaptažodžio sinchronizavimas neveikia</translation>
@@ -9748,7 +9741,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="816704878106051517">{COUNT,plural, =1{telefono numerį}one{# telefono numerį}few{# telefono numerius}many{# telefono numerio}other{# telefono numerių}}</translation>
 <translation id="8168435359814927499">Turinys</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Pridėti skirtuką prie skaitomų sąrašo}one{Pridėti skirtuką prie skaitomų sąrašo}few{Pridėti skirtukus prie skaitomų sąrašo}many{Pridėti skirtukus prie skaitomų sąrašo}other{Pridėti skirtukus prie skaitomų sąrašo}}</translation>
-<translation id="8171334254070436367">Slėpti visas korteles</translation>
 <translation id="8174047975335711832">Įrenginio informacija</translation>
 <translation id="8176332201990304395">Rožinė ir balta</translation>
 <translation id="8176529144855282213">Norėdami įjungti prieigą prie mikrofono, įjunkite fizinį įrenginio jungiklį</translation>

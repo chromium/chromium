@@ -297,7 +297,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
 <translation id="2524132927880411790">Öppna röstsökning i Google-appen</translation>
 <translation id="2527209463677295330">Om du tar med mer av sidans text kanske du får bättre resultat</translation>
-<translation id="2527497042232966453">Byter till inkognitoflikar</translation>
 <translation id="2527779675047087889">Dölj innehållet i Urklipp</translation>
 <translation id="2532336938189706096">Webbvy</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> objekt har tagits bort</translation>
@@ -947,7 +946,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5726692708398506830">Gör allt på sidan större</translation>
 <translation id="5728072125198221967">Länkade Google-tjänster</translation>
 <translation id="5744751019568455640">Du kan välja en av de här rösterna till att läsa upp dina webbsidor. Om du gillar den här rösten och vill att jag ska fortsätta använda den kan du trycka på röstens namn.</translation>
-<translation id="5748802427693696783">Bytte till standardflikar</translation>
 <translation id="5749068826913805084">Chrome måste ha åtkomst till lagringsutrymmet om det ska gå att ladda ned filer.</translation>
 <translation id="5749237766298580851">Av <ph name="SEPARATOR" /> Rekommenderas inte</translation>
 <translation id="5752232708629533680">Dela endast GIF</translation>

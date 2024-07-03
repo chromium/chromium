@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">‏ה-iPhone שוחזר לאחרונה, ויכול להיות שדפדפן ברירת מחדל השתנה בעקבות זאת.</translation>
 <translation id="136942498637440594">אפשר לחפש תמונות ודברים שנמצאים בסביבה.</translation>
 <translation id="1375321115329958930">סיסמאות שמורות</translation>
-<translation id="1377255359165588604">הסנכרון הפסיק לפעול.</translation>
 <translation id="1377321085342047638">מספר כרטיס</translation>
 <translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{סימניה אחת ({count})}one{{count} סימניות}two{{count} סימניות}other{{count} סימניות}}</translation>
 <translation id="452750746583162491">סקירת הנתונים המסונכרנים</translation>
 <translation id="4527660062930312477">החשבון שלך מנוהל</translation>
-<translation id="4536418791685807335">יש לנסות להיכנס שוב.</translation>
 <translation id="4539187448429948815">{count,plural, =1{מעל המקלדת מופיעה הצעה שמורה אחת ({count}) של ההשלמה האוטומטית.}one{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}two{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}other{מעל המקלדת מופיעות {count} הצעות שמורות של ההשלמה האוטומטית.}}</translation>
 <translation id="4540780316273593836">משהו השתבש</translation>
 <translation id="4550040941166547650">רק במכשיר הזה</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">פתיחת קישורים באפליקציות אחרות בקלות</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9144931028079269381">הסתרה של רשימת הקריאה</translation>
-<translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9157836665414082580">הסתרת תיבות דו-שיח</translation>
 <translation id="9162432979321511934">מפעילים את האפשרות מילוי אוטומטי של סיסמאות.</translation>
 <translation id="9162941801309769488">המעקב אחר החבילה בוטל</translation>

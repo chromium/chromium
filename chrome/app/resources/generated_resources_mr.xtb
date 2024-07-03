@@ -1398,7 +1398,6 @@
 <translation id="1989288015781834552">अपडेट पूर्ण करण्यासाठी पुन्हा लाँच करा. तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="1989903373608997757">नेहमी वापरा</translation>
 <translation id="1990046457226896323">स्पीच फाइल डाउनलोड केल्या आहेत</translation>
-<translation id="1990512225220753005">या पेजवर शॉर्टकट दाखवू नका</translation>
 <translation id="1990727803345673966">तुमच्या बॅकअप घेतलेल्या Linux फाइल आणि ॲप्स रिस्टोअर केली जात आहेत</translation>
 <translation id="199191324030140441">व्यत्यय आणू नका बंद करा</translation>
 <translation id="1992397118740194946">सेट नाही</translation>
@@ -2838,7 +2837,6 @@
 <translation id="3015639418649705390">आता पुन्हा लाँच करा</translation>
 <translation id="3016381065346027039">कोणत्याही लॉग नोंदी नाहीत</translation>
 <translation id="3016641847947582299">घटक अपडेट केला</translation>
-<translation id="3017079585324758401">बॅकग्राउंड</translation>
 <translation id="3019023222666709803">ॲरो टूल</translation>
 <translation id="3019285239893817657">सबपेज बटण</translation>
 <translation id="3019595674945299805">VPN सेवा</translation>
@@ -4189,7 +4187,6 @@
 <translation id="4002440992267487163">पिन सेटअप</translation>
 <translation id="4005817994523282006">टाइमझोन शोध पद्धत</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{यामुळे तुमच्या डिव्हाइसमधून गट कायमचा हटवला जाईल.}other{यामुळे तुमच्या डिव्हाइसमधून गट कायमचे हटवले जातील.}}</translation>
-<translation id="4007856537951125667">शॉर्टकट लपवा</translation>
 <translation id="4010036441048359843">हायलाइट सुरू करा</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) चे अपग्रेड उपलब्ध आहे</translation>
 <translation id="4010917659463429001">तुमचे बुकमार्क तुमच्या मोबाइल डिव्हाइसवर मिळवण्यासाठी, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5322,7 +5319,6 @@
 <translation id="4877276003880815204">तपासणी घटक</translation>
 <translation id="4877652723592270843">तुम्हाला ChromeOS Flex साठी बिल्ट-इन स्क्रीन रीडर असलेले ChromeVox अ‍ॅक्टिव्हेट करायचे आहे का? करायचे असल्यास, दोन्ही व्हॉल्यूम की पाच सेकंदांसाठी प्रेस करून धरून ठेवा.</translation>
 <translation id="4878634973244289103">फीडबॅक पाठवू शकत नाही. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
-<translation id="4878653975845355462">तुमच्या अ‍ॅडमिनिस्ट्रेटरने कस्टम बॅकग्राउंड बंद केले आहेत</translation>
 <translation id="4878718769565915065">या सिक्युरिटी कीवर फिंगरप्रिंट जोडता आली नाही</translation>
 <translation id="4879491255372875719">आपोआप (डीफॉल्ट)</translation>
 <translation id="4880315242806573837">सुरक्षा अपडेट लवकरच संपतील. नवीन Chromebook वर अपग्रेड करा.</translation>
@@ -7145,7 +7141,6 @@
 <translation id="6243774244933267674">सर्व्हर अनुपलब्ध</translation>
 <translation id="6244245036423700521">ONC फाइल इंपोर्ट करा</translation>
 <translation id="6245523954602476652">तुम्ही Google Password Manager मध्ये ते अ‍ॅक्सेस करू शकता.</translation>
-<translation id="6246790815526961700">डिव्हाइसवरून अपलोड करा</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6247620186971210352">कोणतीही अ‍ॅप्स आढळली नाहीत</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8739,7 +8734,6 @@
 <translation id="7458933488302148148">तुमची सुरक्षा मजबूत करण्यासाठी आणि ऑनलाइन सुरक्षित राहण्यासाठी तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />तुमच्या ChromeOS डिव्‍हाइसना आपोआप अहवाल पाठवण्‍याची अनुमती दिल्याने ChromeOS मध्‍ये कशाचे निराकरण करायचे आणि कोणती सुधारणा करायची याला प्राधान्य देण्‍यात आम्‍हाला मदत होते. या अहवालांमध्ये ChromeOS कधी क्रॅश होते, तुम्ही कोणती वैशिष्ट्ये वापरता आणि तुम्ही सामान्यतः किती मेमरी वापरता यांसारख्या गोष्टींचा समावेश असू शकतो. अ‍ॅप्स सिंक करणेदेखील सुरू केले असल्यास, इतर अ‍ॅपचा निदानासंबंधी डेटा आणि वापर डेटा गोळा केला जाईल, ज्यामध्ये Android व वेब अ‍ॅप्ससाठीच्या डेटाचा समावेश असेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही तुमच्या Chrome डिव्‍हाइस सेटिंग्‍जमध्‍ये या अहवालांना अनुमती देणे कधीही सुरू करू शकता किंवा थांबवू शकता. तुम्ही डोमेन अ‍ॅडमिनिस्ट्रेटर असल्यास, ॲडमिन कन्सोलमध्ये हे सेटिंग बदलू शकता.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">तुम्ही इंस्टॉल केलेली सध्याची थीम</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
 <translation id="7464153996453281700">घटक आधीच अप टू डेट आहे</translation>
@@ -8977,7 +8971,6 @@
 <translation id="7642778300616172920">संवेदनशील आशय लपवा</translation>
 <translation id="7643842463591647490">{0,plural, =1{# खुली विंडो}other{# खुल्या विंडो}}</translation>
 <translation id="7643932971554933646">साइटला फाइल वाचू द्यायच्या का?</translation>
-<translation id="7644543211198159466">रंग आणि थीम</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालक)</translation>
 <translation id="7645681574855902035">Linux बॅकअप रद्द करत आहे</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक काम करत नाही</translation>
@@ -9734,7 +9727,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
 <translation id="8168435359814927499">आशय</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{वाचन सूचीवर टॅब जोडा}other{वाचन सूचीवर टॅब जोडा}}</translation>
-<translation id="8171334254070436367">सर्व कार्ड लपवा</translation>
 <translation id="8174047975335711832">डिव्हाइस माहिती</translation>
 <translation id="8176332201990304395">गुलाबी आणि पांढरा</translation>
 <translation id="8176529144855282213">मायक्रोफोनचा अ‍ॅक्सेस सुरू करण्यासाठी, तुमच्या डिव्हाइसवरील मायक्रोफोनचा प्रत्यक्ष स्विच सुरू करा</translation>

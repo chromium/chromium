@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone ได้รับการกู้คืนข้อมูลเมื่อเร็วๆ นี้ ซึ่งอาจมีการเปลี่ยนเบราว์เซอร์เริ่มต้น</translation>
 <translation id="136942498637440594">คุณค้นหารูปภาพและสิ่งที่คุณเห็นได้</translation>
 <translation id="1375321115329958930">รหัสผ่านที่บันทึกไว้</translation>
-<translation id="1377255359165588604">การซิงค์หยุดทำงานแล้ว</translation>
 <translation id="1377321085342047638">หมายเลขบัตร</translation>
 <translation id="1377508275003315939">รหัสผ่าน</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{บุ๊กมาร์ก {count} รายการ}other{บุ๊กมาร์ก {count} รายการ}}</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4527660062930312477">บัญชีของคุณได้รับการจัดการ</translation>
-<translation id="4536418791685807335">ลองลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="4539187448429948815">{count,plural, =1{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{คำแนะนำที่เติมข้อความอัตโนมัติที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="4540780316273593836">เกิดข้อผิดพลาด</translation>
 <translation id="4550040941166547650">เฉพาะในอุปกรณ์นี้</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">เปิดลิงก์ในแอปอื่นๆ ได้อย่างง่ายดาย</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">ซ่อน "เรื่องรออ่าน"</translation>
-<translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9157836665414082580">ระงับกล่องโต้ตอบ</translation>
 <translation id="9162432979321511934">เปิดการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="9162941801309769488">เลิกติดตามพัสดุแล้ว</translation>

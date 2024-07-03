@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone on palautettu äskettäin, mikä on saattanut vaihtaa oletusselaimesi.</translation>
 <translation id="136942498637440594">Voit hakea kuvia ja näkemääsi sisältöä.</translation>
 <translation id="1375321115329958930">Tallennetut salasanat</translation>
-<translation id="1377255359165588604">Synkronointi on lakannut toimimasta.</translation>
 <translation id="1377321085342047638">Kortin numero</translation>
 <translation id="1377508275003315939">Salasanat</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -682,7 +681,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} kirjanmerkki}other{{count} kirjanmerkkiä}}</translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
 <translation id="4527660062930312477">Tiliäsi ylläpidetään</translation>
-<translation id="4536418791685807335">Yritä kirjautua sisään uudelleen.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Näppäimistön yläpuolella on saatavilla {count} tallennettu automaattinen täydennysehdotus.}other{Näppäimistön yläpuolella on saatavilla {count} tallennettua automaattista täydennysehdotusta.}}</translation>
 <translation id="4540780316273593836">Jotain meni pieleen</translation>
 <translation id="4550040941166547650">Vain tällä laitteella</translation>
@@ -1650,7 +1648,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="913036870884277353">Avaa linkkejä helposti muissa sovelluksissa.</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9144931028079269381">Piilota "Lukulista"</translation>
-<translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9157836665414082580">Estä valintaikkunat</translation>
 <translation id="9162432979321511934">Laita Täytä salasanat automaattisesti päälle.</translation>
 <translation id="9162941801309769488">Pakettia ei seurata</translation>

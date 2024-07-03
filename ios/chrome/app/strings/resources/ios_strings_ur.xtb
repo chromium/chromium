@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">‏آپ کے iPhone کو حال ہی میں بحال کیا گیا تھا، ممکن ہے کہ اس کی وجہ سے آپ کا ڈیفالٹ براؤزر تبدیل ہو گیا ہو۔</translation>
 <translation id="136942498637440594">آپ تصاویر اور جو کچھ آپ دیکھتے ہیں تلاش کر سکتے ہیں۔</translation>
 <translation id="1375321115329958930">محفوظ کردہ پاس ورڈز</translation>
-<translation id="1377255359165588604">مطابقت پذیری نے کام کرنا بند کر دیا ہے۔</translation>
 <translation id="1377321085342047638">کارڈ نمبر</translation>
 <translation id="1377508275003315939">پاس ورڈز</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} بُک مارک}other{{count} بُک مارکس}}</translation>
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4527660062930312477">آپ کا اکاؤنٹ نظم کردہ ہے</translation>
-<translation id="4536418791685807335">دوبارہ سائن ان کرنے کی کوشش کریں۔</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} محفوظ شدہ خودکار تکمیل کی تجویز آپ کے کی بورڈ کے اوپر دستیاب ہے۔}other{{count} محفوظ شدہ خودکار تکمیل کی تجاویز آپ کے کی بورڈ کے اوپر دستیاب ہیں۔}}</translation>
 <translation id="4540780316273593836">کچھ غلط ہو گیا</translation>
 <translation id="4550040941166547650">صرف اس آلہ پر</translation>
@@ -1650,7 +1648,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="913036870884277353">دوسری ایپس میں آسانی سے لنکس کھولیں۔</translation>
 <translation id="9137526406337347448">‏Google سروسز</translation>
 <translation id="9144931028079269381">پڑھنے کی فہرست کو چھپائیں</translation>
-<translation id="9148126808321036104">دوبارہ سائن ان کریں</translation>
 <translation id="9157836665414082580">ڈائیلاگز کو دبائیں</translation>
 <translation id="9162432979321511934">آٹو فل پاس ورڈز آن کریں</translation>
 <translation id="9162941801309769488">پیکج سے ٹریک کو ختم کر دیا گیا</translation>

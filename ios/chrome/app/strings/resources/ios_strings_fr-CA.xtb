@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Votre iPhone a été récemment restauré, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="136942498637440594">Vous pouvez rechercher des images et ce que vous voyez.</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
-<translation id="1377255359165588604">La synchronisation a cessé de fonctionner.</translation>
 <translation id="1377321085342047638">Num. carte</translation>
 <translation id="1377508275003315939">Mots de passe</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -682,7 +681,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="452503091941773389">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4527660062930312477">Votre compte est géré</translation>
-<translation id="4536418791685807335">Essayez de vous reconnecter.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}one{{count} suggestion de saisie semi-automatique enregistrée, accessible au-dessus de votre clavier.}other{{count} suggestions de saisie semi-automatique enregistrées, accessibles au-dessus de votre clavier.}}</translation>
 <translation id="4540780316273593836">Un problème est survenu</translation>
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
@@ -1649,7 +1647,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="913036870884277353">Ouvrez facilement des liens dans d'autres applications.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9144931028079269381">Masquer la Liste de lecture</translation>
-<translation id="9148126808321036104">Connectez-vous de nouveau</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9162941801309769488">Suivi du colis annulé</translation>

@@ -587,7 +587,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1433478348197382180">Irakurtzeko modua</translation>
 <translation id="1433980411933182122">Abiaraztea</translation>
 <translation id="1434696352799406980">Abiarazte-orria, fitxa berriaren orria, bilatzailea eta ainguratutako fitxak berrezarriko dira. Gainera, luzapen guztiak desgaituko dira eta aldi baterako datuak (adibidez, cookieak) garbituko dira. Laster-markak, historia eta gordetako pasahitzak ez dira garbituko.</translation>
-<translation id="1434886155212424586">Hasierako orria fitxa berriaren orria da</translation>
+<translation id="1434886155212424586">Orri nagusia fitxa berriaren orria da</translation>
 <translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
@@ -1389,7 +1389,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1989288015781834552">Eguneratzen amaitzeko, exekutatu berriro. Fitxak berriro irekiko dira.</translation>
 <translation id="1989903373608997757">Erabili beti</translation>
 <translation id="1990046457226896323">Deskargatu dira hizketa-fitxategiak</translation>
-<translation id="1990512225220753005">Ez erakutsi lasterbideak orri honetan</translation>
 <translation id="1990727803345673966">Babeskopiak dituzten Linux-eko fitxategiak eta aplikazioak leheneratzen ari dira</translation>
 <translation id="199191324030140441">Desaktibatu ez molestatzeko modua</translation>
 <translation id="1992397118740194946">Ezarri gabe</translation>
@@ -2826,7 +2825,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3015639418649705390">Exekutatu berriro</translation>
 <translation id="3016381065346027039">Ez dago sarrerarik erregistroan</translation>
 <translation id="3016641847947582299">Osagaia eguneratu da</translation>
-<translation id="3017079585324758401">Atzeko planoa</translation>
 <translation id="3019023222666709803">Geziaren tresna</translation>
 <translation id="3019285239893817657">Azpiorrira joateko botoia</translation>
 <translation id="3019595674945299805">VPNaren zerbitzua</translation>
@@ -4175,7 +4173,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4002440992267487163">PIN kodearen konfigurazioa</translation>
 <translation id="4005817994523282006">Ordu-zona hautemateko metodoa</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Taldea betiko ezabatuko da gailutik.}other{Taldeak betiko ezabatuko dira gailutik.}}</translation>
-<translation id="4007856537951125667">Ezkutatu lasterbideak</translation>
 <translation id="4010036441048359843">Aktibatu nabarmentzea</translation>
 <translation id="4010746393007464819">Debian 12 bertsiora berri daiteke (Bookworm)</translation>
 <translation id="4010917659463429001">Laster-markak gailu mugikorrean izateko, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5310,7 +5307,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4877276003880815204">Aztertu elementuak</translation>
 <translation id="4877652723592270843">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu? Hala bada, eduki sakatuta bi bolumen-botoiak bost segundoz.</translation>
 <translation id="4878634973244289103">Ezin dira bidali oharrak. Saiatu berriro geroago.</translation>
-<translation id="4878653975845355462">Administratzaileak desaktibatu egin ditu atzeko plano pertsonalizatuak</translation>
 <translation id="4878718769565915065">Ezin izan da gehitu hatz-marka segurtasun-giltzan</translation>
 <translation id="4879491255372875719">Automatikoa (lehenetsia)</translation>
 <translation id="4880315242806573837">Segurtasun-eguneratzeak amaitzear daude. Bertsio-berritu beste Chromebook batera.</translation>
@@ -7128,7 +7124,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6243774244933267674">Zerbitzaria ez dago erabilgarri</translation>
 <translation id="6244245036423700521">Inportatu ONC fitxategia</translation>
 <translation id="6245523954602476652">Google-ren Pasahitz-kudeatzailea zerbitzuan daukazu erabilgarri</translation>
-<translation id="6246790815526961700">Kargatu gailutik</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="6247620186971210352">Ez da aurkitu aplikaziorik</translation>
 <translation id="6247708409970142803">% <ph name="PERCENTAGE" /></translation>
@@ -8662,7 +8657,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> aplikazio blokeatuta</translation>
 <translation id="741906494724992817">Aplikazio honek ez du baimen berezirik eskatzen.</translation>
 <translation id="7419142833919893307">Ez da gehitu erabiltzaile-izenik</translation>
-<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PINa ez da zuzena. Saiakera bat geratzen da.}other{PINa ez da zuzena. # saiakera geratzen dira.}}</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PINa ez da zuzena. 1 saiakera geratzen da.}other{PINa ez da zuzena. # saiakera geratzen dira.}}</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
 <translation id="7419819959108735624">Hautatu edozer, Google Lens-ekin bilatzeko</translation>
 <translation id="742130257665691897">Laster-markak kendu dira</translation>
@@ -8720,7 +8715,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7458933488302148148">Egiaztatu gordetako pasahitzak segurtasuna areagotzeko eta sarean babestuago egoteko</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ChromeOS-eko gailuei txosten automatikoak bidaltzeko baimena emanez gero, ChromeOS-en zer konpondu eta hobetu behar den lehenesten lagunduko diguzu. Txosten horietan hauek sar daitezke, besteak beste: ChromeOS-en gertatzen diren hutsegiteak, zein eginbide erabiltzen dituzun eta zenbat memoria erabili ohi duzun. Aplikazioen sinkronizazioa ere aktibatzen bada, beste aplikazioen diagnostiko- eta erabilera-datuak bilduko dira, Android-eko eta sareko aplikazioenak barne.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Instalatuta daukazun gaia</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746216226901520237">Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
 <translation id="7464153996453281700">Osagaia eguneratuta dago jada</translation>
@@ -8958,7 +8952,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7642778300616172920">Ezkutatu kontuzko edukia</translation>
 <translation id="7643842463591647490">{0,plural, =1{# leiho dago irekita}other{# leiho daude irekita}}</translation>
 <translation id="7643932971554933646">Fitxategiak ikusteko baimena eman nahi diozu webguneari?</translation>
-<translation id="7644543211198159466">Kolorea eta gaia</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (jabea)</translation>
 <translation id="7645681574855902035">Linux-eko babeskopia bertan behera uzten</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
@@ -9716,7 +9709,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="816704878106051517">{COUNT,plural, =1{telefono-zenbaki bat}other{# telefono-zenbaki}}</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Gehitu fitxa irakurketa-zerrendan}other{Gehitu fitxak irakurketa-zerrendan}}</translation>
-<translation id="8171334254070436367">Ezkutatu txartel guztiak</translation>
 <translation id="8174047975335711832">Gailuaren informazioa</translation>
 <translation id="8176332201990304395">Arrosa eta zuria</translation>
 <translation id="8176529144855282213">Mikrofonoa erabiltzeko baimena emateko, aktibatu gailuko mikrofonoaren etengailu fisikoa</translation>

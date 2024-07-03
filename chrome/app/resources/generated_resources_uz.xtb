@@ -1388,7 +1388,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1989288015781834552">Yangilashni tamomlash uchun qayta oching. Joriy varaqlar qayta ochiladi.</translation>
 <translation id="1989903373608997757">Har doim ishlatish</translation>
 <translation id="1990046457226896323">Avtomatik subtitr fayllari yuklab olindi</translation>
-<translation id="1990512225220753005">Bu sahifada chiqmasin</translation>
 <translation id="1990727803345673966">Zaxiralangan Linux fayllari va ilovalar tiklanmoqda</translation>
 <translation id="199191324030140441">Bezovta qilinmasin rejimini faolsizlantirish</translation>
 <translation id="1992397118740194946">O‘rnatilmagan</translation>
@@ -2828,7 +2827,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3015639418649705390">Qayta ishga tushirish</translation>
 <translation id="3016381065346027039">Jurnalda hech qanday axborot topilmadi</translation>
 <translation id="3016641847947582299">Komponent yangilandi</translation>
-<translation id="3017079585324758401">Orqa fon</translation>
 <translation id="3019023222666709803">Strelka vositasi</translation>
 <translation id="3019285239893817657">Quyi sahifa tugmasi</translation>
 <translation id="3019595674945299805">VPN xizmati</translation>
@@ -4177,7 +4175,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4002440992267487163">PIN-kodni sozlash</translation>
 <translation id="4005817994523282006">Vaqt mintaqasi aniqlanish uslubi</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.}other{Bunda guruh qurilmadan butunlay oʻchirib tashlanadi.}}</translation>
-<translation id="4007856537951125667">Yorliqlarni berkitish</translation>
 <translation id="4010036441048359843">Uygʻu berishni yoqish</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) yangilanishi chiqdi</translation>
 <translation id="4010917659463429001">Xatcho‘plaringizni mobil qurilmangizda ko‘rish uchun <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5312,7 +5309,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4877276003880815204">Elementlarni tekshirish</translation>
 <translation id="4877652723592270843">ChromeOS Flex tizimidagi ichiga oʻrnatilgan skrin rider – ChromeVox faollashtirilsinmi? Uni yoqish uchun ikkala tovush tugmasini birga besh soniya bosib turing</translation>
 <translation id="4878634973244289103">Fikr-mulohaza yuborilmadi. Keyinroq qaytadan urining.</translation>
-<translation id="4878653975845355462">Fon rasmlarini oʻzgartirishni administrator taqiqlagan</translation>
 <translation id="4878718769565915065">Bu elektron kalitga barmoq izi kiritilmadi</translation>
 <translation id="4879491255372875719">Avtomatik (birlamchi)</translation>
 <translation id="4880315242806573837">Xavfsizlik yangilanishlari tez orada tugatiladi. Yangi Chromebook oling.</translation>
@@ -7134,7 +7130,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6243774244933267674">Server ish faoliyatida emas</translation>
 <translation id="6244245036423700521">ONC faylni import qilish</translation>
 <translation id="6245523954602476652">Unga Google Parollar menejeri orqali kirishingiz mumkin.</translation>
-<translation id="6246790815526961700">Qurilmadan yuklash</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6247620186971210352">Hech qanday ilova topilmadi</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8727,7 +8722,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7458933488302148148">Saqlangan parollarni xavfsizlikni kuchaytirish va onlaynda xavfsiz qolish maqsadlarida tekshiring</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga ChromeOS qachon ishlamay qolgani, qaysi funksiyalardan foydalanilgani va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin. Ilovalar sinxronizatsiyasi yoniq boʻlsa, Android va veb ilovalar diagnostika va foydlanish statistikasi ham jamlanadi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Chrome qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Siz oʻrnatgan joriy mavzu</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="746216226901520237">Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="7464153996453281700">Komponent allaqachon yangilangan</translation>
@@ -8965,7 +8959,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7642778300616172920">Maxfiy axborotlar berkitilsin</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ta ochiq oyna}other{# ta ochiq oyna}}</translation>
 <translation id="7643932971554933646">Sayt uchun fayllarni ochishga ruxsat berilsinmi?</translation>
-<translation id="7644543211198159466">Ranglar va mavzular</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (egasi)</translation>
 <translation id="7645681574855902035">Linux tasvirini zaxiralash bekor qilinmoqda</translation>
 <translation id="7646772052135772216">Parollar sinxronizatsiyasi ishlamadi</translation>
@@ -9722,7 +9715,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="816704878106051517">{COUNT,plural, =1{telefon raqami}other{# ta telefon raqami}}</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Varaqni mutolaa roʻyxatiga kiritish}other{Varaqlarni mutolaa roʻyxatiga kiritish}}</translation>
-<translation id="8171334254070436367">Barcha bildirgilarni berkitish</translation>
 <translation id="8174047975335711832">Qurilma haqida axborot</translation>
 <translation id="8176332201990304395">Pushti va oq</translation>
 <translation id="8176529144855282213">Mikrofonga kirishga ruxsat berish uchun qurilmangizdagi mavjud mikrofonni yoqing</translation>

@@ -1399,7 +1399,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1989288015781834552">Pokrenite ponovo da završite ažuriranje. Kartice će se ponovo otvoriti.</translation>
 <translation id="1989903373608997757">Uvijek koristi</translation>
 <translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
-<translation id="1990512225220753005">Ne prikazuj prečice na ovoj stranici</translation>
 <translation id="1990727803345673966">Sigurnosna kopija fajlova i aplikacija Linuxa se vraća</translation>
 <translation id="199191324030140441">Isključi funkciju Ne ometaj</translation>
 <translation id="1992397118740194946">Nije postavljeno</translation>
@@ -2840,7 +2839,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3015639418649705390">Ponovo pokreni sada</translation>
 <translation id="3016381065346027039">Nema unosa u zapisnik</translation>
 <translation id="3016641847947582299">Komponenta je ažurirana</translation>
-<translation id="3017079585324758401">Pozadina</translation>
 <translation id="3019023222666709803">Alat za crtanje strelice</translation>
 <translation id="3019285239893817657">Dugme za podstranicu</translation>
 <translation id="3019595674945299805">VPN usluga</translation>
@@ -4193,7 +4191,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4002440992267487163">Postavi PIN</translation>
 <translation id="4005817994523282006">Način prepoznavanja vremenske zone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Ovo će trajno izbrisati grupu s uređaja.}one{Ovo će trajno izbrisati grupe s uređaja.}few{Ovo će trajno izbrisati grupe s uređaja.}other{Ovo će trajno izbrisati grupe s uređaja.}}</translation>
-<translation id="4007856537951125667">Sakrij prečice</translation>
 <translation id="4010036441048359843">Uključivanje isticanja</translation>
 <translation id="4010746393007464819">Dostupna je nadogradnja na Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Za mogućnost pristupanja oznakama na mobilnom uređaju, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5330,7 +5327,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4877276003880815204">Provjeri elemente</translation>
 <translation id="4877652723592270843">Želite li aktivirati ChromeVox, ugrađeni čitač ekrana za ChromeOS Flex? Ako želite, pritisnite i pet sekundi držite obje tipke za jačinu zvuka.</translation>
 <translation id="4878634973244289103">Nije moguće poslati povratne informacije. Pokušajte ponovo kasnije.</translation>
-<translation id="4878653975845355462">Vaš administrator je isključio prilagođene pozadine</translation>
 <translation id="4878718769565915065">Dodavanje otiska prsta ovom sigurnosnom ključu nije uspjelo</translation>
 <translation id="4879491255372875719">Automatski (zadano)</translation>
 <translation id="4880315242806573837">Sigurnosna ažuriranja uskoro završavaju. Pređite na novi Chromebook.</translation>
@@ -7156,7 +7152,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6243774244933267674">Server je nedostupan</translation>
 <translation id="6244245036423700521">Uvezi ONC fajl</translation>
 <translation id="6245523954602476652">Lozinki možete pristupiti u Google upravitelju lozinki</translation>
-<translation id="6246790815526961700">Otpremi s uređaja</translation>
 <translation id="6247557882553405851">Google upravitelju lozinki</translation>
 <translation id="6247620186971210352">Nije pronađena nijedna aplikacija</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8756,7 +8751,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7458933488302148148">Provjerite sačuvane lozinke da ojačate sigurnost i budete sigurniji online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno popraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o padovima ChromeOS-a, funkcijama koje koristite i količini memorije koju obično koristite. Drugi dijagnostički podaci i podaci o korištenju aplikacija, uključujući za Android i web aplikacije, će se prikupljati ako je sinhronizacija aplikacija također uključena.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama Chrome uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Trenutna tema koju ste instalirali</translation>
 <translation id="7461924472993315131">PIN</translation>
 <translation id="746216226901520237">Sljedeći put će vaš telefon otključati vaš uređaj <ph name="DEVICE_TYPE" />. Pametno zaključavanje možete isključiti u Postavkama.</translation>
 <translation id="7464153996453281700">Komponenta je već ažurirana</translation>
@@ -8994,7 +8988,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7642778300616172920">Sakrij osjetljivi sadržaj</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvoreni prozor}one{# otvoreni prozor}few{# otvorena prozora}other{# otvorenih prozora}}</translation>
 <translation id="7643932971554933646">Dopustiti web lokaciji da pregleda fajlove?</translation>
-<translation id="7644543211198159466">Boja i tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7645681574855902035">Otkazivanje izrade sigurnosne kopije za Linux</translation>
 <translation id="7646772052135772216">Sinhronizacija lozinki ne funkcionira</translation>
@@ -9753,7 +9746,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="816704878106051517">{COUNT,plural, =1{broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj karticu na listu za čitanje}one{Dodaj kartice na listu za čitanje}few{Dodaj kartice na listu za čitanje}other{Dodaj kartice na listu za čitanje}}</translation>
-<translation id="8171334254070436367">Sakrij sve kartice</translation>
 <translation id="8174047975335711832">Informacije s uređaja</translation>
 <translation id="8176332201990304395">Ružičasta i bijela</translation>
 <translation id="8176529144855282213">Da uključite pristup mikrofonu, uključite fizički prekidač mikrofona na uređaju</translation>

@@ -1390,7 +1390,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1989288015781834552">Relancez le navigateur pour terminer la mise à jour. Vos onglets seront rouverts.</translation>
 <translation id="1989903373608997757">Toujours utiliser</translation>
 <translation id="1990046457226896323">Fichiers vocaux téléchargés</translation>
-<translation id="1990512225220753005">Ne pas afficher de raccourcis sur cette page</translation>
 <translation id="1990727803345673966">Vos fichiers et applis Linux sauvegardés sont en cours de restauration</translation>
 <translation id="199191324030140441">Désactiver le mode "Ne pas déranger"</translation>
 <translation id="1992397118740194946">Non défini</translation>
@@ -2827,7 +2826,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3015639418649705390">Relancer maintenant</translation>
 <translation id="3016381065346027039">Aucune entrée de journal</translation>
 <translation id="3016641847947582299">Composant mis à jour</translation>
-<translation id="3017079585324758401">Arrière-plan</translation>
 <translation id="3019023222666709803">Outil Flèche</translation>
 <translation id="3019285239893817657">Bouton pour accéder à la sous-page</translation>
 <translation id="3019595674945299805">Service VPN</translation>
@@ -4176,7 +4174,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4002440992267487163">Configuration du code</translation>
 <translation id="4005817994523282006">Méthode de détection du fuseau horaire</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Le groupe sera définitivement supprimé de votre appareil.}one{Le groupe sera définitivement supprimé de votre appareil.}other{Les groupes seront définitivement supprimés de votre appareil.}}</translation>
-<translation id="4007856537951125667">Masquer les raccourcis</translation>
 <translation id="4010036441048359843">Activer la mise en surbrillance</translation>
 <translation id="4010746393007464819">Une mise à niveau vers Debian 12 (Bookworm) est disponible</translation>
 <translation id="4010917659463429001">Pour synchroniser vos favoris avec votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5311,7 +5308,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4877276003880815204">Examiner les éléments</translation>
 <translation id="4877652723592270843">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour ChromeOS Flex ? Si oui, appuyez sur les deux boutons de volume pendant cinq secondes.</translation>
 <translation id="4878634973244289103">Impossible d'envoyer les commentaires. Veuillez réessayer plus tard.</translation>
-<translation id="4878653975845355462">Votre administrateur a désactivé les arrière-plans personnalisés</translation>
 <translation id="4878718769565915065">Échec de l'ajout d'une empreinte à cette clé de sécurité</translation>
 <translation id="4879491255372875719">Automatique (par défaut)</translation>
 <translation id="4880315242806573837">Vous ne recevrez bientôt plus de mises à jour de sécurité. Passez à un nouveau Chromebook.</translation>
@@ -7133,7 +7129,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6243774244933267674">Serveur indisponible.</translation>
 <translation id="6244245036423700521">Importer le fichier ONC</translation>
 <translation id="6245523954602476652">Vous pouvez y accéder dans le Gestionnaire de mots de passe de Google.</translation>
-<translation id="6246790815526961700">Importer depuis l'appareil</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6247620186971210352">Aucune application n'a été trouvée</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8729,7 +8724,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7458933488302148148">Vérifiez vos mots de passe enregistrés pour renforcer votre sécurité et naviguer en toute tranquillité</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils ChromeOS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans ChromeOS. Ces rapports peuvent inclure diverses informations (plantages de ChromeOS, fonctionnalités utilisées, quantité de mémoire généralement utilisée, etc.). D'autres données d'utilisation et de diagnostic des applis (y compris Android et Web) seront collectées si la synchronisation des applis est aussi activée.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Thème actuel que vous avez installé</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746216226901520237">La prochaine fois, votre téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans les paramètres.</translation>
 <translation id="7464153996453281700">Composant déjà à jour</translation>
@@ -8967,7 +8961,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7642778300616172920">Masquer le contenu sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# fenêtre ouverte}one{# fenêtre ouverte}other{# fenêtres ouvertes}}</translation>
 <translation id="7643932971554933646">Autoriser le site à voir les fichiers ?</translation>
-<translation id="7644543211198159466">Couleur et thème</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propriétaire)</translation>
 <translation id="7645681574855902035">Annulation de la sauvegarde Linux…</translation>
 <translation id="7646772052135772216">La synchronisation du mot de passe ne fonctionne pas</translation>
@@ -9726,7 +9719,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="816704878106051517">{COUNT,plural, =1{un numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
-<translation id="8171334254070436367">Masquer toutes les fiches</translation>
 <translation id="8174047975335711832">Informations sur l'appareil</translation>
 <translation id="8176332201990304395">Rose et blanc</translation>
 <translation id="8176529144855282213">Pour activer l'accès au micro, activez le bouton physique du micro sur votre appareil</translation>

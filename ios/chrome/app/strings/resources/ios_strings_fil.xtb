@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Na-restore kamakailan ang iPhone mo, na posibleng nagpabago sa iyong default na browser.</translation>
 <translation id="136942498637440594">Puwede mong hanapin ang mga larawan at kung ano ang makikita mo.</translation>
 <translation id="1375321115329958930">Mga Naka-save na Password</translation>
-<translation id="1377255359165588604">Huminto ang pag-sync.</translation>
 <translation id="1377321085342047638">Numero ng Card</translation>
 <translation id="1377508275003315939">Mga Password</translation>
 <translation id="1383876407941801731">Hanapin</translation>
@@ -682,7 +681,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}one{{count} bookmark}other{{count} na bookmark}}</translation>
 <translation id="452750746583162491">Suriin ang iyong naka-sync na data</translation>
 <translation id="4527660062930312477">Pinapamahalaan ang Iyong Account</translation>
-<translation id="4536418791685807335">Subukang mag-sign in muli.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} na-save na autocomplete na suhestyon ang available sa itaas ng iyong keyboard.}one{{count} na-save na autocomplete na suhestyon ang available sa itaas ng iyong keyboard.}other{{count} na na-save na autocomplete na suhestyon ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="4540780316273593836">Nagkaproblema</translation>
 <translation id="4550040941166547650">Sa Device Lang na Ito</translation>
@@ -1650,7 +1648,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="913036870884277353">Madaling makapagbukas ng mga link sa iba pang app.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9144931028079269381">I-hide ang Listahan ng Babasahin</translation>
-<translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9157836665414082580">Pigilan ang Mga Dialog</translation>
 <translation id="9162432979321511934">I-on ang I-autofill ang Mga Password</translation>
 <translation id="9162941801309769488">Hindi na Sinusubaybayan ang Package</translation>

@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Tu iPhone se ha restaurado recientemente, lo que puede que haya cambiado tu navegador predeterminado.</translation>
 <translation id="136942498637440594">Puedes buscar imágenes y lo que ves.</translation>
 <translation id="1375321115329958930">Contraseñas guardadas</translation>
-<translation id="1377255359165588604">La sincronización ha dejado de funcionar.</translation>
 <translation id="1377321085342047638">Número de tarjeta</translation>
 <translation id="1377508275003315939">Contraseñas</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -682,7 +681,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="452503091941773389">{count,plural, =1{{count} marcador}other{{count} marcadores}}</translation>
 <translation id="452750746583162491">Revisar los datos sincronizados</translation>
 <translation id="4527660062930312477">Tu cuenta está gestionada</translation>
-<translation id="4536418791685807335">Prueba a iniciar sesión de nuevo.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} sugerencia de autocompletado guardada disponible encima del teclado.}other{{count} sugerencias de autocompletado guardadas disponibles encima del teclado.}}</translation>
 <translation id="4540780316273593836">Se ha producido un error</translation>
 <translation id="4550040941166547650">Solo en este dispositivo</translation>
@@ -1650,7 +1648,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="913036870884277353">Abre enlaces fácilmente en otras aplicaciones.</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9144931028079269381">Ocultar Lista de lectura</translation>
-<translation id="9148126808321036104">Volver a iniciar sesión</translation>
 <translation id="9157836665414082580">Quitar cuadros de diálogo</translation>
 <translation id="9162432979321511934">Activa Autocompletar contraseñas</translation>
 <translation id="9162941801309769488">Paquete sin seguimiento</translation>

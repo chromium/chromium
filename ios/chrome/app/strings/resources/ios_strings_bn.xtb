@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">আপনার iPhone সম্প্রতি ফিরিয়ে আনা হয়েছে, যেটি হয়ত আপনার ডিফল্ট ব্রাউজার পরিবর্তন করেছে।</translation>
 <translation id="136942498637440594">আপনি ছবি ও কী দেখতে পারেন তা সার্চ করতে পারবেন।</translation>
 <translation id="1375321115329958930">সংরক্ষিত পাসওয়ার্ড</translation>
-<translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count}টি বুকমার্ক}one{{count}টি বুকমার্ক}other{{count}টি বুকমার্ক}}</translation>
 <translation id="452750746583162491">আপনার সিঙ্ক করা ডেটা পর্যালোচনা করুন</translation>
 <translation id="4527660062930312477">আপনার অ্যাকাউন্ট ম্যানেজ করা হয়</translation>
-<translation id="4536418791685807335">আবার সাইন ইন করার চেষ্টা করুন।</translation>
 <translation id="4539187448429948815">{count,plural, =1{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}one{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}other{আপনার কীবোর্ডের উপরে {count}টি অটোকমপ্লিট সাজেশন উপলভ্য আছে।}}</translation>
 <translation id="4540780316273593836">কিছু সমস্যা হয়েছে</translation>
 <translation id="4550040941166547650">শুধুমাত্র এই ডিভাইসে</translation>
@@ -1651,7 +1649,6 @@
 <translation id="913036870884277353">অন্য অ্যাপে সহজেই লিঙ্ক খুলুন।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9144931028079269381">'পড়ার তালিকা' লুকান</translation>
-<translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9157836665414082580">ডায়ালগ রুদ্ধ করুন</translation>
 <translation id="9162432979321511934">অটোফিল পাসওয়ার্ড চালু করুন</translation>
 <translation id="9162941801309769488">প্যাকেজ আর ট্র্যাক করা হচ্ছে না</translation>

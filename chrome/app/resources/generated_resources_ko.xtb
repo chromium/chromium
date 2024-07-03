@@ -1400,7 +1400,6 @@
 <translation id="1989288015781834552">다시 실행하여 업데이트를 종료하세요. 탭이 다시 열립니다.</translation>
 <translation id="1989903373608997757">항상 사용</translation>
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
-<translation id="1990512225220753005">이 페이지에 바로가기를 표시하지 않습니다.</translation>
 <translation id="1990727803345673966">백업된 Linux 파일 및 앱 복원 중</translation>
 <translation id="199191324030140441">방해 금지 모드 사용 중지</translation>
 <translation id="1992397118740194946">설정 안됨</translation>
@@ -2841,7 +2840,6 @@
 <translation id="3015639418649705390">지금 다시 시작</translation>
 <translation id="3016381065346027039">로그 항목 없음</translation>
 <translation id="3016641847947582299">구성요소가 업데이트됨</translation>
-<translation id="3017079585324758401">배경</translation>
 <translation id="3019023222666709803">화살표 도구</translation>
 <translation id="3019285239893817657">하위 페이지 버튼</translation>
 <translation id="3019595674945299805">VPN 서비스</translation>
@@ -4192,7 +4190,6 @@
 <translation id="4002440992267487163">PIN 설정</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{기기에서 그룹이 완전히 삭제됩니다.}other{기기에서 그룹이 완전히 삭제됩니다.}}</translation>
-<translation id="4007856537951125667">바로가기 숨기기</translation>
 <translation id="4010036441048359843">강조 표시 사용 설정</translation>
 <translation id="4010746393007464819">Debian 12(Bookworm)로 업그레이드할 수 있습니다.</translation>
 <translation id="4010917659463429001">휴대기기에서 내 북마크를 사용하려면 <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5326,7 +5323,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4877276003880815204">요소 검사</translation>
 <translation id="4877652723592270843">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
 <translation id="4878634973244289103">의견을 보낼 수 없습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="4878653975845355462">관리자가 맞춤 백그라운드를 사용 중지했습니다.</translation>
 <translation id="4878718769565915065">보안 키에 지문을 추가할 수 없습니다.</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
 <translation id="4880315242806573837">보안 업데이트가 곧 종료됩니다. 새 Chromebook으로 업그레이드하세요.</translation>
@@ -7148,7 +7144,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6243774244933267674">서버를 사용할 수 없음</translation>
 <translation id="6244245036423700521">ONC 파일 가져오기</translation>
 <translation id="6245523954602476652">Google 비밀번호 관리자에서 액세스할 수 있습니다</translation>
-<translation id="6246790815526961700">기기에서 업로드</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8741,7 +8736,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7458933488302148148">저장된 비밀번호를 점검하여 보안을 강화하고 온라인에서 더 안전하게 보호하세요.</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상 종료되는지, 어떤 기능을 사용하는지, 일반적으로 메모리를 얼마나 많이 사용하는지 등의 정보가 포함될 수 있습니다. 앱 동기화도 사용 설정되어 있으면 Android 및 웹 앱을 포함한 다른 앱 진단 및 사용 데이터가 수집됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">내가 설치한 현재 테마입니다.</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746216226901520237">다음번에는 휴대전화를 통해 <ph name="DEVICE_TYPE" />이 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 있습니다.</translation>
 <translation id="7464153996453281700">구성요소가 이미 최신 상태임</translation>
@@ -8979,7 +8973,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>
 <translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
-<translation id="7644543211198159466">색상 및 테마</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />(소유자)</translation>
 <translation id="7645681574855902035">Linux 백업 취소 중</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
@@ -9739,7 +9732,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{전화번호 1개}other{전화번호 #개}}</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
-<translation id="8171334254070436367">모든 카드 숨기기</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
 <translation id="8176529144855282213">마이크 액세스를 사용 설정하려면 기기에서 실제 마이크 스위치를 켜세요.</translation>

@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Váš iPhone byl nedávno obnoven, což mohlo změnit váš výchozí prohlížeč.</translation>
 <translation id="136942498637440594">Můžete vyhledávat obrázky a to, co vidíte.</translation>
 <translation id="1375321115329958930">Uložená hesla</translation>
-<translation id="1377255359165588604">Synchronizace přestala fungovat.</translation>
 <translation id="1377321085342047638">Číslo karty</translation>
 <translation id="1377508275003315939">Hesla</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
@@ -682,7 +681,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="452503091941773389">{count,plural, =1{{count} záložka}few{{count} záložky}many{{count} záložky}other{{count} záložek}}</translation>
 <translation id="452750746583162491">Zkontrolovat synchronizovaná data</translation>
 <translation id="4527660062930312477">Váš účet je spravován</translation>
-<translation id="4536418791685807335">Zkuste se přihlásit znovu.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložený návrh automatického doplňování.}few{Nad klávesnicí jsou k dispozici {count} uložené návrhy automatického doplňování.}many{Nad klávesnicí je k dispozici {count} uloženého návrhu automatického doplňování.}other{Nad klávesnicí je k dispozici {count} uložených návrhů automatického doplňování.}}</translation>
 <translation id="4540780316273593836">Něco se pokazilo</translation>
 <translation id="4550040941166547650">Pouze na tomto zařízení</translation>
@@ -1650,7 +1648,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="913036870884277353">Snadno otevírejte odkazy v jiných aplikacích.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9144931028079269381">Skrýt možnost Seznam četby</translation>
-<translation id="9148126808321036104">Znovu přihlásit</translation>
 <translation id="9157836665414082580">Potlačit dialogová okna</translation>
 <translation id="9162432979321511934">Zapněte Automatické vyplnění hesel</translation>
 <translation id="9162941801309769488">Sledování zásilky bylo zrušeno</translation>

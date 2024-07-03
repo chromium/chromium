@@ -1199,7 +1199,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="185111092974636561"><ph name="BEGIN_PARAGRAPH1" />Før du registrerer deg, må du tømme TPM-enheten, slik at <ph name="DEVICE_OS" /> kan få eierskap over enheten.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan også slå TPM-enheten helt av. Dataene dine blir fremdeles lagret trygt med programvarekryptering, men visse sikkerhetsfunksjoner, som maskinvarebaserte sertifikater, blir deaktivert.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Du kan endre TPM-innstillingene ved å starte systemet på nytt og gå inn i BIOS-/UEFI-innstillingene. Fremgangsmåten for dette avhenger av hvilken enhetsmodell du har. For mer informasjon, åpne <ph name="DEVICE_OS" />-dokumentasjonen på en annen enhet før du starter systemet på nytt: g.co/flex/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="1852799913675865625">Det oppstod en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
+<translation id="1852799913675865625">Det oppsto en feil under forsøket på å lese filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Fortsett der du slapp. Du kan angi at apper alltid skal gjenopprettes ved oppstart, eller slå av gjenoppretting, i innstillingene.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1856715684130786728">Legg til plassering</translation>
@@ -1393,7 +1393,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1989288015781834552">Start på nytt for å fullføre oppdateringen. Fanene dine åpnes på nytt.</translation>
 <translation id="1989903373608997757">Bruk alltid</translation>
 <translation id="1990046457226896323">Talefiler er lastet ned</translation>
-<translation id="1990512225220753005">Ikke vis snarveier på denne siden</translation>
 <translation id="1990727803345673966">De sikkerhetskopierte Linux-filene og -appene dine gjenopprettes</translation>
 <translation id="199191324030140441">Slå av Ikke forstyrr</translation>
 <translation id="1992397118740194946">Ikke angitt</translation>
@@ -2082,7 +2081,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2471469610750100598">Svart (standard)</translation>
 <translation id="2471506181342525583">Posisjonstilgang tillates</translation>
 <translation id="2473195200299095979">Oversett denne siden</translation>
-<translation id="2475982808118771221">Det oppstod en feil</translation>
+<translation id="2475982808118771221">Det oppsto en feil</translation>
 <translation id="247616523300581745">Skjul disse filene</translation>
 <translation id="2476435723907345463">Tilgangen til passnøkler er fjernet</translation>
 <translation id="2476901513051581836">Kan ikke frigjøre lagringsplass før vi vet størrelsen på lagringsplassen uten nett.</translation>
@@ -2521,7 +2520,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Fjern Linux</translation>
-<translation id="2791952154587244007">Det oppstod en feil. Kioskappen er ikke i stand til å starte automatisk på denne enheten.</translation>
+<translation id="2791952154587244007">Det oppsto en feil. Kioskappen er ikke i stand til å starte automatisk på denne enheten.</translation>
 <translation id="2792290659606763004">Vil du fjerne Android-apper?</translation>
 <translation id="2792465461386711506">Slå på Chrome-synkronisering for å se nylige Chrome-faner fra telefonen din</translation>
 <translation id="2792697226874849938">Restriksjonsbilde</translation>
@@ -2833,7 +2832,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3015639418649705390">Start på nytt nå</translation>
 <translation id="3016381065346027039">Ingen loggoppføringer</translation>
 <translation id="3016641847947582299">Komponenten er oppdatert</translation>
-<translation id="3017079585324758401">Bakgrunn</translation>
 <translation id="3019023222666709803">Pilverktøy</translation>
 <translation id="3019285239893817657">knapp til underordnet side</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
@@ -3698,7 +3696,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3683524264665795342"><ph name="APP_NAME" />-forespørsel om skjermdeling</translation>
 <translation id="3685598397738512288">USB-innstillinger for Linux</translation>
 <translation id="3687598459967813435">Tillat alltid varsler fra <ph name="WEBSITE" /></translation>
-<translation id="368789413795732264">Det oppstod en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
+<translation id="368789413795732264">Det oppsto en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">skrive til filer og mapper du åpner i appen</translation>
 <translation id="3688526734140524629">Bytt kanal</translation>
 <translation id="3688578402379768763">Oppdatert</translation>
@@ -4182,7 +4180,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4002440992267487163">Konfigurering av PIN-kode</translation>
 <translation id="4005817994523282006">Metode for registrering av tidssone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Dette medfører at gruppen slettes permanent fra enheten.}other{Dette medfører at gruppene slettes permanent fra enheten.}}</translation>
-<translation id="4007856537951125667">Skjul snarveier</translation>
 <translation id="4010036441048359843">Slå på fremheving</translation>
 <translation id="4010746393007464819">En oppgradering til Debian 12 (Bookworm) er tilgjengelig</translation>
 <translation id="4010917659463429001">For å få bokmerker på mobilenheten din, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5317,7 +5314,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4877276003880815204">Undersøk elementer</translation>
 <translation id="4877652723592270843">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
 <translation id="4878634973244289103">Kunne ikke sende tilbakemeldingen. Prøv på nytt senere.</translation>
-<translation id="4878653975845355462">Administratoren har slått av egendefinerte bakgrunner</translation>
 <translation id="4878718769565915065">Kunne ikke legge til fingeravtrykket på denne sikkerhetsnøkkelen</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
 <translation id="4880315242806573837">Du slutter snart å få sikkerhetsoppdateringer. Oppgrader til en ny Chromebook.</translation>
@@ -6603,7 +6599,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="584945105664698226">Talehastighet</translation>
 <translation id="5851461096964823885">Kan ikke åpne <ph name="FILE_NAMES" /> når Google Disk ikke er tilgjengelig</translation>
 <translation id="5851868085455377790">Utsteder </translation>
-<translation id="5852112051279473187">Beklager!  Det oppstod et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
+<translation id="5852112051279473187">Beklager!  Det oppsto et problem under registrering av enheten din.  Prøv på nytt eller kontakt din brukerstøtterepresentant.</translation>
 <translation id="5852137567692933493">Omstart og Powerwash</translation>
 <translation id="5853487241227591972">Trinn 4 av 4: Diagnostikkdata eksporteres</translation>
 <translation id="5854066326260337683">Støtte for eldre nettlesere er avslått for øyeblikket. Du kan slå på støtte for eldre nettlesere ved å angi regelen <ph name="BEGIN_LINK" />{BrowserSwitcherEnabled}<ph name="END_LINK" />.</translation>
@@ -7137,7 +7133,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6243774244933267674">Tjeneren er ikke tilgjengelig</translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
 <translation id="6245523954602476652">Du finner det i Google Passordlagring.</translation>
-<translation id="6246790815526961700">Last opp fra enheten</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6247620186971210352">Fant ingen apper</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8618,7 +8613,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7384687527486377545">Automatisk gjentakelse for tastaturet</translation>
 <translation id="7384804382450832142">Koble til Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten slettes permanent.</translation>
-<translation id="7385854874724088939">Det oppstod en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
+<translation id="7385854874724088939">Det oppsto en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
 <translation id="7387107590792462040">Vent til installeringen er fullført</translation>
 <translation id="7387273928653486359">Akseptabel</translation>
 <translation id="7387951778417998929">For å bruke en annen søkemotor enn standard, skriv inn snarveien for søkemotoren i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Du kan også endre standard søkemotor her.</translation>
@@ -8731,7 +8726,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7458933488302148148">Sjekk de lagrede passordene dine for å få bedre sikkerhet og holde deg tryggere på nettet</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enhetene dine lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om når ChromeOS krasjer, hvilke funksjoner du bruker, og hvor mye minne du vanligvis bruker. Andre appdiagnostikk- og bruksdata, blant annet for Android og nettapper, blir samlet inn hvis appsynkronisering også er slått på.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for Chrome-enheten. Hvis du er domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema som er installert akkurat nå</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746216226901520237">Neste gang låser telefonen opp <ph name="DEVICE_TYPE" />-enheten din. Du kan slå av Smart Lock i innstillingene.</translation>
 <translation id="7464153996453281700">Komponenten er allerede oppdatert</translation>
@@ -8969,7 +8963,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7642778300616172920">Skjul sensitivt innhold</translation>
 <translation id="7643842463591647490">{0,plural, =1{# åpent vindu}other{# åpne vinduer}}</translation>
 <translation id="7643932971554933646">Vil du la nettstedet se filene?</translation>
-<translation id="7644543211198159466">Farge og tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eier)</translation>
 <translation id="7645681574855902035">Avbryter sikkerhetskopiering av Linux</translation>
 <translation id="7646772052135772216">Passordsynkronisering fungerer ikke</translation>
@@ -9728,7 +9721,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="816704878106051517">{COUNT,plural, =1{et telefonnummer}other{# telefonnumre}}</translation>
 <translation id="8168435359814927499">Innhold</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Legg fanen til på leselisten}other{Legg fanene til på leselisten}}</translation>
-<translation id="8171334254070436367">Skjul alle kort</translation>
 <translation id="8174047975335711832">Enhetsinformasjon</translation>
 <translation id="8176332201990304395">Rosa og hvit</translation>
 <translation id="8176529144855282213">For å slå på tilgang til mikrofonen, slå på den fysiske mikrofonbryteren på enheten</translation>

@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Votre iPhone a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="136942498637440594">Vous pouvez rechercher des images et ce que vous voyez.</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
-<translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
 <translation id="1377321085342047638">Numéro de carte</translation>
 <translation id="1377508275003315939">Mots de passe</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -682,7 +681,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="452503091941773389">{count,plural, =1{{count} favori}one{{count} favori}other{{count} favoris}}</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4527660062930312477">Votre compte est géré</translation>
-<translation id="4536418791685807335">Veuillez essayer de vous reconnecter.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} suggestion de saisie automatique enregistrée disponible au-dessus de votre clavier.}one{{count} suggestion de saisie automatique enregistrée disponible au-dessus de votre clavier.}other{{count} suggestions de saisie automatique enregistrées disponibles au-dessus de votre clavier.}}</translation>
 <translation id="4540780316273593836">Un problème est survenu.</translation>
 <translation id="4550040941166547650">Uniquement sur cet appareil</translation>
@@ -1651,7 +1649,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="913036870884277353">Ouvrez facilement des liens dans d'autres applis.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Masquer "Liste de lecture"</translation>
-<translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9162432979321511934">Activez "Préremplir les mots de passe"</translation>
 <translation id="9162941801309769488">Colis non suivi</translation>

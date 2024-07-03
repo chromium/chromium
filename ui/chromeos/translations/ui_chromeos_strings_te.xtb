@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయండి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
+<translation id="3702842351052426940">మీ SIM కార్డ్ లేదా eSIM ప్రొఫైల్ డియాక్టివేట్ చేయబడవచ్చు. మీ SIM కార్డ్‌ను రీప్లేస్ చేయడానికి లేదా eSIM ప్రొఫైల్స్‌ను మార్చడానికి ప్రయత్నించండి.</translation>
 <translation id="3722341589402358578">ఎర్రర్ ఏర్పడింది. కొన్ని ఐటెమ్‌లు ట్రాష్ చేయబడకపోవచ్చు.</translation>
 <translation id="3726463242007121105">పరికరం తెరవడం సాధ్యం కాదు ఎందుకంటే దాని ఫైల్‌సిస్టమ్‌కు మద్దతు లేదు.</translation>
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">ఈ ప్రాక్సీని మీ నిర్వాహకులు అమలు చేశారు</translation>
 <translation id="3830674330436234648">ప్లేబ్యాక్ అందుబాటులో లేదు</translation>
 <translation id="383652340667548381">సెర్బియన్</translation>
+<translation id="3839045880592694915">మీ మోడెమ్, మీ క్యారియర్ ద్వారా కనెక్ట్ చేయడానికి అనుమతించబడదు. మరిన్ని వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="3855472144336161447">జర్మన్ నియో 2</translation>
 <translation id="3858860766373142691">పేరు</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
 <translation id="6271903698064569429">ఫైల్స్‌ను అప్‌లోడ్ చేయడం సాధ్యం కాదు ఎందుకంటే "<ph name="SHARED_DRIVE_NAME" />"‌లో తగినంత స్టోరేజ్ లేదు.</translation>
+<translation id="6279140785485544797">మీ మొబైల్ డేటా ప్లాన్ గడువు ముగిసి పోవచ్చు. సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
 <translation id="6295542640242147836">లాక్ SIM</translation>
 <translation id="6296410173147755564">చెల్లని PUK</translation>

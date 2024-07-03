@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Садржај iPhone-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
 <translation id="136942498637440594">Можете да претражујете слике и оно што видите.</translation>
 <translation id="1375321115329958930">Сачуване лозинке</translation>
-<translation id="1377255359165588604">Синхронизација више не функционише.</translation>
 <translation id="1377321085342047638">Број картице</translation>
 <translation id="1377508275003315939">Лозинке</translation>
 <translation id="1383876407941801731">Претражи</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} обележивач}one{{count} обележивач}few{{count} обележивача}other{{count} обележивача}}</translation>
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4527660062930312477">Налогом се управља</translation>
-<translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} сачувани предлог за аутоматско довршавање је доступан изнад тастатуре.}one{{count} сачувани предлог за аутоматско довршавање је доступан изнад тастатуре.}few{{count} сачувана предлога за аутоматско довршавање су доступна изнад тастатуре.}other{{count} сачуваних предлога за аутоматско довршавање је доступно изнад тастатуре.}}</translation>
 <translation id="4540780316273593836">Дошло је до грешке</translation>
 <translation id="4550040941166547650">Само на овом уређају</translation>
@@ -1650,7 +1648,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="913036870884277353">Лако отварајте линкове у другим апликацијама.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9144931028079269381">Сакриј опцију Листа за читање</translation>
-<translation id="9148126808321036104">Пријави ме поново</translation>
 <translation id="9157836665414082580">Спречи дијалоге</translation>
 <translation id="9162432979321511934">Укључите Аутоматско попуњавање лозинки</translation>
 <translation id="9162941801309769488">Праћење пакета је опозвано</translation>

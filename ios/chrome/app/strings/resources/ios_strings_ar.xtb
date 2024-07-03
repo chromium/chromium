@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">‏تمّت استعادة بيانات هاتف iPhone مؤخرًا، وبالتالي هناك احتمالية أن يكون المتصفِّح التلقائي تغيّر.</translation>
 <translation id="136942498637440594">يمكنك البحث عن الصور وما تراه فيها.</translation>
 <translation id="1375321115329958930">كلمات المرور المحفوظة</translation>
-<translation id="1377255359165588604">توقفت المزامنة.</translation>
 <translation id="1377321085342047638">رقم البطاقة</translation>
 <translation id="1377508275003315939">كلمات المرور</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -684,7 +683,6 @@
 <translation id="452503091941773389">{count,plural, =1{إشارة مرجعية واحدة ({count})}zero{{count} إشارة مرجعية}two{إشارتان مرجعيتان ({count})}few{{count} إشارات مرجعية}many{{count} إشارةً مرجعيةً}other{{count} إشارة مرجعية}}</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4527660062930312477">حسابك مُدار</translation>
-<translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>
 <translation id="4539187448429948815">{count,plural, =1{يتوفّر اقتراح واحد ({count}) محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}zero{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}two{يتوفّر اقتراحان ({count}) محفوظان للإكمال التلقائي أعلى لوحة المفاتيح.}few{تتوفّر {count} اقتراحات محفوظة للإكمال التلقائي أعلى لوحة المفاتيح.}many{يتوفّر {count} اقتراحًا محفوظًا للإكمال التلقائي أعلى لوحة المفاتيح.}other{يتوفّر {count} اقتراح محفوظ للإكمال التلقائي أعلى لوحة المفاتيح.}}</translation>
 <translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="4550040941166547650">على هذا الجهاز فقط</translation>
@@ -1652,7 +1650,6 @@
 <translation id="913036870884277353">يمكنك بسهولة فتح الروابط المتوفّرة في التطبيقات الأخرى.</translation>
 <translation id="9137526406337347448">‏خدمات Google</translation>
 <translation id="9144931028079269381">إخفاء "قائمة القراءة"</translation>
-<translation id="9148126808321036104">تسجيل الدخول مرة أخرى</translation>
 <translation id="9157836665414082580">إيقاف مربعات الحوار</translation>
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9162941801309769488">تم إيقاف تتبُّع الحزمة</translation>

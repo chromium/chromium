@@ -1400,7 +1400,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1989288015781834552">Genstart for at opdatere. Dine faner åbnes igen.</translation>
 <translation id="1989903373608997757">Brug altid</translation>
 <translation id="1990046457226896323">Talefilerne blev downloadet</translation>
-<translation id="1990512225220753005">Vis ikke genveje på denne side</translation>
 <translation id="1990727803345673966">Dine sikkerhedskopierede Linux-filer og -apps gendannes</translation>
 <translation id="199191324030140441">Deaktiver Forstyr ikke</translation>
 <translation id="1992397118740194946">Ikke angivet</translation>
@@ -2840,7 +2839,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3015639418649705390">Genstart nu</translation>
 <translation id="3016381065346027039">Ingen logfilposter</translation>
 <translation id="3016641847947582299">Komponenten er opdateret</translation>
-<translation id="3017079585324758401">Baggrund</translation>
 <translation id="3019023222666709803">Pileværktøj</translation>
 <translation id="3019285239893817657">Knap til underside</translation>
 <translation id="3019595674945299805">VPN-tjeneste</translation>
@@ -4191,7 +4189,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4002440992267487163">Konfiguration af pinkode</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Denne handling sletter gruppen permanent fra din enhed.}one{Denne handling sletter gruppen permanent fra din enhed.}other{Denne handling sletter grupperne permanent fra din enhed.}}</translation>
-<translation id="4007856537951125667">Skjul genveje</translation>
 <translation id="4010036441048359843">Aktivér fremhævning</translation>
 <translation id="4010746393007464819">Der er en tilgængelig opgradering til Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" /> for at få dine bogmærker på alle dine mobilenheder.</translation>
@@ -5326,7 +5323,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4877276003880815204">Inspect Elements (Undersøg elementer)</translation>
 <translation id="4877652723592270843">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex? Hold begge lydstyrkeknapper nede i fem sekunder for at aktivere.</translation>
 <translation id="4878634973244289103">Din feedback kunne ikke indsendes. Prøv igen senere.</translation>
-<translation id="4878653975845355462">Tilpassede baggrunde er blevet deaktiveret af din administrator</translation>
 <translation id="4878718769565915065">Der blev ikke føjet et fingeraftryk til denne sikkerhedsnøgle</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
 <translation id="4880315242806573837">Du vil snart ikke længere modtage sikkerhedsopdateringer. Opgrader til en ny Chromebook.</translation>
@@ -7148,7 +7144,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6243774244933267674">Serveren er utilgængelig</translation>
 <translation id="6244245036423700521">Importér ONC-fil</translation>
 <translation id="6245523954602476652">Du kan få adgang til den i Google Adgangs­kode­admin­istrator.</translation>
-<translation id="6246790815526961700">Upload fra enhed</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>
 <translation id="6247620186971210352">Der blev ikke fundet nogen apps</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8744,7 +8739,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7458933488302148148">Tjek dine gemte adgangskoder for at forbedre sikkerheden og beskytte dig selv online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ved at give dine ChromeOS-enheder tilladelse til at sende automatiske rapporter gør du det nemmere for os at prioritere, hvad der skal rettes og forbedres i ChromeOS. Disse rapporter kan f.eks. indeholde oplysninger om, hvornår ChromeOS oplever nedbrud, hvilke funktioner du benytter, og hvor meget hukommelse du normalt bruger. Andre data til appdiagnostik og brugsdata, bl.a. for Android- og webapps, indsamles, hvis synkronisering af apps også er aktiveret.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan til enhver tid tillade eller fjerne tilladelsen for afsendelse af disse rapporter i indstillingerne for din Chrome-enhed. Hvis du er domæneadministrator, kan du ændre denne indstilling i Administrationskonsol.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Det aktuelle tema, du har installeret</translation>
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746216226901520237">Næste gang låser din telefon din <ph name="DEVICE_TYPE" /> op. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="7464153996453281700">Komponenten er allerede opdateret</translation>
@@ -8982,7 +8976,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7642778300616172920">Skjul følsomt indhold</translation>
 <translation id="7643842463591647490">{0,plural, =1{# åbent vindue}one{# åbent vindue}other{# åbne vinduer}}</translation>
 <translation id="7643932971554933646">Skal websitet kunne se filer?</translation>
-<translation id="7644543211198159466">Farve og tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ejer)</translation>
 <translation id="7645681574855902035">Annullerer Linux-sikkerhedskopiering</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
@@ -9740,7 +9733,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="816704878106051517">{COUNT,plural, =1{et telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>
 <translation id="8168435359814927499">Indhold</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Føj fane til Læseliste}one{Føj fane til Læseliste}other{Føj faner til Læseliste}}</translation>
-<translation id="8171334254070436367">Skjul alle kort</translation>
 <translation id="8174047975335711832">Enhedsoplysninger</translation>
 <translation id="8176332201990304395">Lyserød og hvid</translation>
 <translation id="8176529144855282213">Aktivér mikrofonadgang ved at tænde mikrofonen på enhedens fysiske kontakt</translation>

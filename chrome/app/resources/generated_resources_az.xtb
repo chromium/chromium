@@ -1385,7 +1385,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1989288015781834552">Yenidən başladaraq güncəllənməni tamamlayın. Tablar yenidən açılacaq.</translation>
 <translation id="1989903373608997757">Həmişə istifadə edilsin</translation>
 <translation id="1990046457226896323">Nitq faylları endirilib</translation>
-<translation id="1990512225220753005">Bu səhifədə qısayollar göstərməyin</translation>
 <translation id="1990727803345673966">Yedəklənmiş Linux fayl və tətbiqləri bərpa edilir</translation>
 <translation id="199191324030140441">"Narahat Etməyin" Rejimini Söndürün</translation>
 <translation id="1992397118740194946">Ayarlanmayıb</translation>
@@ -2825,7 +2824,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3015639418649705390">Yenidən başladın</translation>
 <translation id="3016381065346027039">Giriş daxiletməsi yoxdur</translation>
 <translation id="3016641847947582299">Komponent güncəlləşib</translation>
-<translation id="3017079585324758401">Arxa fon</translation>
 <translation id="3019023222666709803">Ox Aləti</translation>
 <translation id="3019285239893817657">Alt səhifə düyməsi</translation>
 <translation id="3019595674945299805">VPN xidməti</translation>
@@ -4176,7 +4174,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4002440992267487163">Pin ayarlanması</translation>
 <translation id="4005817994523282006">Saat qurşağının aşkarlanması üsulu</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Bununla qrup cihazdan həmişəlik silinəcək.}other{Bununla qruplar cihazdan həmişəlik silinəcək.}}</translation>
-<translation id="4007856537951125667">Qısayolları gizlədin</translation>
 <translation id="4010036441048359843">Vurğulamanı yandırın</translation>
 <translation id="4010746393007464819">Debian 12-yə (Bookworm) təkmilləşdirmə əlçatandır</translation>
 <translation id="4010917659463429001">Mobil cihazda əlfəcinlər əldə etmək üçün <ph name="GET_IOS_APP_LINK" /> linkinə daxil olun.</translation>
@@ -5309,7 +5306,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4877276003880815204">Elementləri Yoxlayın</translation>
 <translation id="4877652723592270843">ChromeOS Flex üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, hər iki səs düyməsinə beş saniyə basıb saxlayın.</translation>
 <translation id="4878634973244289103">Rəy göndərmək mümkün deyil. Sonra cəhd edin.</translation>
-<translation id="4878653975845355462">Fərdi arxa fonlar administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="4878718769565915065">Bu təhlükəsizlik açarına barmaq izinin əlavə edilməsi alınmadı</translation>
 <translation id="4879491255372875719">Avtomatik (defolt)</translation>
 <translation id="4880315242806573837">Təhlükəsizlik güncəllənmələri tezliklə başa çatacaq. Yeni Chromebook-a təkmilləşdirin.</translation>
@@ -7129,7 +7125,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6243774244933267674">Server əlçatan deyil</translation>
 <translation id="6244245036423700521">ONC Faylı idxal edin</translation>
 <translation id="6245523954602476652">Ona Google Parol Menecerində daxil ola bilərsiniz.</translation>
-<translation id="6246790815526961700">Cihazdan yükləyin</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
 <translation id="6247620186971210352">Tətbiq tapılmadı</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8722,7 +8717,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7458933488302148148">Təhlükəsizliyi gücləndirmək və onlayn olarkən təhlükəsiz qalmaq üçün saxlanmış parolları yoxlayın</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazından hesabat göndərilməsini avtomatikləşdirmək ChromeOS düzəliş və təkmilləşmələrini prioritetləşdirməyə kömək edir. Bu hesabatlarda ChromeOS-un çökmə vaxtı, istifadə edilən funksiyalar və yaddaş istifadəsi kimi məlumatlar ola bilər. Tətbiq sinxronlaşdırması aktiv olarsa, Android və veb-tətbiqlər daxil olmaqla digər tətbiq diaqnostika və istifadə datası əldə ediləcək.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Chrome cihazı ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Quraşdırdığınız hazırki tema</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Növbəti dəfə telefon <ph name="DEVICE_TYPE" /> cihazını kiliddən çıxaracaq. Ayarlardan Smart Lock'u deaktiv edə bilərsiniz.</translation>
 <translation id="7464153996453281700">Komponent artıq güncəldir</translation>
@@ -8960,7 +8954,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7642778300616172920">Həssas məlumatı gizlədin</translation>
 <translation id="7643842463591647490">{0,plural, =1{# açıq pəncərə}other{# açıq pəncərə}}</translation>
 <translation id="7643932971554933646">Sayta fayllara baxmağa icazə verilsin?</translation>
-<translation id="7644543211198159466">Rəng və tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (sahib)</translation>
 <translation id="7645681574855902035">Linux yedəkləməsi ləğv edilir</translation>
 <translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>
@@ -9718,7 +9711,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefon nömrəsi}other{# telefon nömrəsi}}</translation>
 <translation id="8168435359814927499">Kontent</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Oxuma Siyahısına Tab əlavə edin}other{Oxuma Siyahısına Tablar əlavə edin}}</translation>
-<translation id="8171334254070436367">Bütün kartları gizlədin</translation>
 <translation id="8174047975335711832">Cihaz haqqında məlumat</translation>
 <translation id="8176332201990304395">Çəhrayı və ağ</translation>
 <translation id="8176529144855282213">Mikrofon girişini aktiv etmək üçün cihazınızda fiziki mikrofon keçiricisini aktiv edin</translation>

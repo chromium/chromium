@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Twój iPhone został ostatnio przywrócony, co mogło spowodować zmianę przeglądarki domyślnej.</translation>
 <translation id="136942498637440594">Możesz wyszukiwać obrazy i sprawdzać, co widzisz.</translation>
 <translation id="1375321115329958930">Zapisane hasła</translation>
-<translation id="1377255359165588604">Synchronizacja przestała działać.</translation>
 <translation id="1377321085342047638">Numer karty</translation>
 <translation id="1377508275003315939">Hasła</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -682,7 +681,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="452503091941773389">{count,plural, =1{{count} zakładka}few{{count} zakładki}many{{count} zakładek}other{{count} zakładki}}</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4527660062930312477">Konto jest zarządzane</translation>
-<translation id="4536418791685807335">Spróbuj zalogować się jeszcze raz.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} zapisana sugestia autouzupełniania dostępna nad klawiaturą.}few{{count} zapisane sugestie autouzupełniania dostępne nad klawiaturą.}many{{count} zapisanych sugestii autouzupełniania dostępnych nad klawiaturą.}other{{count} zapisanej sugestii autouzupełniania dostępne nad klawiaturą.}}</translation>
 <translation id="4540780316273593836">Coś poszło nie tak</translation>
 <translation id="4550040941166547650">Tylko na tym urządzeniu</translation>
@@ -1650,7 +1648,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="913036870884277353">Łatwo otwieraj linki w innych aplikacjach.</translation>
 <translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9144931028079269381">Ukryj opcję Do przeczytania</translation>
-<translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9157836665414082580">Ukryj okna dialogowe</translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
 <translation id="9162941801309769488">Śledzenie przesyłki zostało anulowane</translation>

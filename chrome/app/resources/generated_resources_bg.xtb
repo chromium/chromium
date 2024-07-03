@@ -1395,7 +1395,6 @@
 <translation id="1989288015781834552">Рестартирайте браузъра, за да завърши актуализирането. Разделите ви ще се отворят отново.</translation>
 <translation id="1989903373608997757">Да се използва винаги</translation>
 <translation id="1990046457226896323">Файловете за говор бяха изтеглени</translation>
-<translation id="1990512225220753005">Преките пътища да не се показват на тази страница</translation>
 <translation id="1990727803345673966">Файловете и приложенията за Linux се възстановяват от резервното ви копие</translation>
 <translation id="199191324030140441">Изключване на режима „Не безпокойте“</translation>
 <translation id="1992397118740194946">Няма зададен</translation>
@@ -2835,7 +2834,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3015639418649705390">Рестартиране сега</translation>
 <translation id="3016381065346027039">Няма записи в регистрационния файл</translation>
 <translation id="3016641847947582299">Компонентът е актуализиран</translation>
-<translation id="3017079585324758401">Фон</translation>
 <translation id="3019023222666709803">Инструмент за стрелка</translation>
 <translation id="3019285239893817657">Бутон за подстраница</translation>
 <translation id="3019595674945299805">VPN услуга</translation>
@@ -4187,7 +4185,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Групата ще бъде изтрита за постоянно от устройството ви.}other{Групите ще бъдат изтрити за постоянно от устройството ви.}}</translation>
-<translation id="4007856537951125667">Скриване на преките пътища</translation>
 <translation id="4010036441048359843">Включване на открояването</translation>
 <translation id="4010746393007464819">Налице е надстройка до Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" />, за да получите отметките си на мобилното си устройство.</translation>
@@ -5322,7 +5319,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4877276003880815204">Инспектиране на елементите</translation>
 <translation id="4877652723592270843">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex? Ако е така, натиснете и двата бутона за силата на звука и ги задръжте за пет секунди.</translation>
 <translation id="4878634973244289103">Отзивите не могат да се изпратят. Моля, опитайте отново по-късно.</translation>
-<translation id="4878653975845355462">Персонализираните фонове са изключени от администратора ви</translation>
 <translation id="4878718769565915065">Добавянето на отпечатък към този ключ за сигурност не бе успешно</translation>
 <translation id="4879491255372875719">Автоматично (стандартно)</translation>
 <translation id="4880315242806573837">Актуализациите за сигурност приключват скоро. Преминете към нов Chromebook.</translation>
@@ -7145,7 +7141,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6243774244933267674">Няма достъп до сървъра</translation>
 <translation id="6244245036423700521">Импортиране на ONC файл</translation>
 <translation id="6245523954602476652">Паролата е достъпна в Google Мениджър на пароли.</translation>
-<translation id="6246790815526961700">Качване от устройството</translation>
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6247620186971210352">Няма намерени приложения</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8739,7 +8734,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7458933488302148148">Проверете запазените си пароли, за да подобрите сигурността си и да бъдете по-защитени онлайн</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Като разрешите на устройствата си с ChromeOS да изпращат автоматични сигнали, ни помагате да разбираме какво е най-важно да поправим и подобрим в операционната система. Тези сигнали могат да включват различни неща, като например информация за възникнали сривове в ChromeOS, използваните функции и колко памет ползвате обикновено. Други данни за диагностиката и използването на приложенията, включително тези за Android и уеб приложенията, ще се събират, ако синхронизирането на приложенията също е включено.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Имате възможност да разрешите или забраните сигналите по всяко време от настройките на устройството си с Chrome. Ако сте администратор на домейн, можете да извършите тази промяна от администраторската конзола.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Текущата тема, която сте инсталирали</translation>
 <translation id="7461924472993315131">Фиксиране</translation>
 <translation id="746216226901520237">Следващия път телефонът ви ще отключи устройството ви <ph name="DEVICE_TYPE" />. Можете да изключите Smart Lock от настройките.</translation>
 <translation id="7464153996453281700">Компонентът вече е актуален</translation>
@@ -8977,7 +8971,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7642778300616172920">Скриване на поверителното съдържание</translation>
 <translation id="7643842463591647490">{0,plural, =1{# отворен прозорец}other{# отворени прозореца}}</translation>
 <translation id="7643932971554933646">Да се разреши ли на сайта да преглежда файловете?</translation>
-<translation id="7644543211198159466">Цвят и тема</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (собственик)</translation>
 <translation id="7645681574855902035">Създаването на резервно копие на Linux се анулира</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
@@ -9736,7 +9729,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="816704878106051517">{COUNT,plural, =1{телефонен номер}other{# телефонни номера}}</translation>
 <translation id="8168435359814927499">Съдържание</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
-<translation id="8171334254070436367">Скриване на всички карти</translation>
 <translation id="8174047975335711832">Информация за устройството</translation>
 <translation id="8176332201990304395">Розово и бяло</translation>
 <translation id="8176529144855282213">За да включите достъпа до микрофона, активирайте съответния физически превключвател на устройството си</translation>

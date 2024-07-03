@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Duela gutxi iPhone-a leheneratu duzunez, agian arakatzaile lehenetsia aldatu da.</translation>
 <translation id="136942498637440594">Irudiak eta ikusten duzuna bila ditzakezu.</translation>
 <translation id="1375321115329958930">Gordetako pasahitzak</translation>
-<translation id="1377255359165588604">Gelditu egin da sinkronizazioa.</translation>
 <translation id="1377321085342047638">Txartelaren zenbakia</translation>
 <translation id="1377508275003315939">Pasahitzak</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -682,7 +681,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="452503091941773389">{count,plural, =1{{count} laster-marka}other{{count} laster-marka}}</translation>
 <translation id="452750746583162491">Berrikusi sinkronizatutako datuak</translation>
 <translation id="4527660062930312477">Kudeatuta dago kontua</translation>
-<translation id="4536418791685807335">Hasi saioa berriro.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Gordetako automatikoki osatzeko iradokizun {count} dago erabilgarri teklatuaren gainean.}other{Gordetako automatikoki osatzeko {count} iradokizun daude erabilgarri teklatuaren gainean.}}</translation>
 <translation id="4540780316273593836">Arazoren bat izan da</translation>
 <translation id="4550040941166547650">Gailu honetan soilik</translation>
@@ -1650,7 +1648,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="913036870884277353">Ireki estekak erraz beste aplikazio batzuetan.</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9144931028079269381">Ezkutatu "Irakurketa-zerrenda"</translation>
-<translation id="9148126808321036104">Hasi saioa berriro</translation>
 <translation id="9157836665414082580">Ezkutatu leihoak</translation>
 <translation id="9162432979321511934">Aktibatu pasahitzen betetze automatikoa</translation>
 <translation id="9162941801309769488">Utzi zaio paketearen jarraipena egiteari</translation>

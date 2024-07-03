@@ -1389,7 +1389,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1989288015781834552">Reinicia para finalizar la actualización; las pestañas volverán a abrirse</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Archivos de voz descargados</translation>
-<translation id="1990512225220753005">No mostrar accesos directos en esta página</translation>
 <translation id="1990727803345673966">La copia de seguridad de tus archivos y aplicaciones de Linux se está restaurando</translation>
 <translation id="199191324030140441">Desactivar No molestar</translation>
 <translation id="1992397118740194946">Sin configurar</translation>
@@ -2827,7 +2826,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3015639418649705390">Reiniciar ahora</translation>
 <translation id="3016381065346027039">No hay ninguna entrada de registro</translation>
 <translation id="3016641847947582299">Componente actualizado</translation>
-<translation id="3017079585324758401">Fondo</translation>
 <translation id="3019023222666709803">Herramienta de flecha</translation>
 <translation id="3019285239893817657">Botón de página secundaria</translation>
 <translation id="3019595674945299805">Servicio VPN</translation>
@@ -4176,7 +4174,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Se eliminará permanentemente el grupo de tu dispositivo.}other{Se eliminarán permanentemente los grupos de tu dispositivo.}}</translation>
-<translation id="4007856537951125667">Ocultar accesos directos</translation>
 <translation id="4010036441048359843">Activar resaltado</translation>
 <translation id="4010746393007464819">Hay disponible una actualización a Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Para ver los marcadores en todos tus dispositivos, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5311,7 +5308,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4877276003880815204">Inspeccionar elementos</translation>
 <translation id="4877652723592270843">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex? Si es así, mantén pulsadas las dos teclas de volumen durante cinco segundos.</translation>
 <translation id="4878634973244289103">No se pueden enviar los comentarios. Vuelve a intentarlo más tarde.</translation>
-<translation id="4878653975845355462">El administrador ha desactivado los fondos personalizados</translation>
 <translation id="4878718769565915065">No se ha podido añadir una huella digital a esta llave de seguridad</translation>
 <translation id="4879491255372875719">Automático (predeterminado)</translation>
 <translation id="4880315242806573837">Este dispositivo pronto dejará de recibir actualizaciones de seguridad. Cambia a un nuevo Chromebook.</translation>
@@ -7132,7 +7128,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6243774244933267674">Servidor no disponible</translation>
 <translation id="6244245036423700521">Importar archivo ONC</translation>
 <translation id="6245523954602476652">Puedes acceder a ella desde el Gestor de contraseñas de Google.</translation>
-<translation id="6246790815526961700">Subir desde dispositivo</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6247620186971210352">No se han encontrado aplicaciones</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8726,7 +8721,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7458933488302148148">Comprueba tus contraseñas guardadas para reforzar tu seguridad y mejorar tu protección online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Si permites que tus dispositivos ChromeOS nos envíen informes automáticamente, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones utilizas y cuánta memoria sueles usar. Si la sincronización de aplicaciones también está activada, se recogerán otros datos de diagnóstico y de uso de aplicaciones, incluidas aplicaciones Android y aplicaciones web.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento desde los ajustes de tu dispositivo Chrome. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema instalado actualmente</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746216226901520237">La próxima vez, el teléfono desbloqueará tu <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="7464153996453281700">El componente ya está actualizado</translation>
@@ -8964,7 +8958,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Permitir que el sitio web vea los archivos?</translation>
-<translation id="7644543211198159466">Color y tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguridad de Linux</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
@@ -9723,7 +9716,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="816704878106051517">{COUNT,plural, =1{un número de teléfono}other{# números de teléfono}}</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Añadir pestaña a lista de lectura}other{Añadir pestañas a lista de lectura}}</translation>
-<translation id="8171334254070436367">Ocultar todas las tarjetas</translation>
 <translation id="8174047975335711832">Información del dispositivo</translation>
 <translation id="8176332201990304395">Rosa y blanco</translation>
 <translation id="8176529144855282213">Para permitir el acceso al micrófono, activa el interruptor físico del micrófono en tu dispositivo</translation>

@@ -1391,7 +1391,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1989288015781834552">Palaidiet atkārtoti, lai atjauninātu. Cilnes tiks atkārtoti atvērtas.</translation>
 <translation id="1989903373608997757">Vienmēr izmantot</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
-<translation id="1990512225220753005">Šajā lapā nerādīt saīsnes</translation>
 <translation id="1990727803345673966">Notiek jūsu dublēto Linux failu un lietotņu atjaunošana</translation>
 <translation id="199191324030140441">Izslēgt režīmu “Netraucēt”</translation>
 <translation id="1992397118740194946">Nav iestatīts</translation>
@@ -2828,7 +2827,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3015639418649705390">Restartēt tūlīt</translation>
 <translation id="3016381065346027039">Nav neviena žurnāla ieraksta</translation>
 <translation id="3016641847947582299">Komponents atjaunināts</translation>
-<translation id="3017079585324758401">Fons</translation>
 <translation id="3019023222666709803">Bultiņas rīks</translation>
 <translation id="3019285239893817657">Apakšlapas poga</translation>
 <translation id="3019595674945299805">VPN pakalpojums</translation>
@@ -4177,7 +4175,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Tādējādi šī grupa tiks neatgriezeniski izdzēsta no jūsu ierīces.}zero{Tādējādi šīs grupas tiks neatgriezeniski izdzēstas no jūsu ierīces.}one{Tādējādi šīs grupas tiks neatgriezeniski izdzēstas no jūsu ierīces.}other{Tādējādi šīs grupas tiks neatgriezeniski izdzēstas no jūsu ierīces.}}</translation>
-<translation id="4007856537951125667">Paslēpt saīsnes</translation>
 <translation id="4010036441048359843">Ieslēgt atzīmēšanu</translation>
 <translation id="4010746393007464819">Ir pieejams jauninājums uz versiju Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Lai iegūtu savas grāmatzīmes mobilajā ierīcē, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5312,7 +5309,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4877276003880815204">Pārbaudīt elementus</translation>
 <translation id="4877652723592270843">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet un piecas sekundes turiet nospiestas abas skaļuma pogas.</translation>
 <translation id="4878634973244289103">Nevar nosūtīt atsauksmes. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
-<translation id="4878653975845355462">Jūsu administrators ir izslēdzis pielāgotos fonus</translation>
 <translation id="4878718769565915065">Neizdevās pievienot pirksta nospiedumu šai drošības atslēgai.</translation>
 <translation id="4879491255372875719">Automātiski (noklusējums)</translation>
 <translation id="4880315242806573837">Drošības atjauninājumi drīz vairs netiks nodrošināti. Izmantojiet jaunu Chromebook datoru.</translation>
@@ -7130,7 +7126,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6243774244933267674">Serveris nav pieejams.</translation>
 <translation id="6244245036423700521">Importēt ONC failu</translation>
 <translation id="6245523954602476652">Varat tai piekļūt Google paroļu pārvaldniekā.</translation>
-<translation id="6246790815526961700">Augšupielādēt no ierīces</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6247620186971210352">Netika atrasta neviena lietotne</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8728,7 +8723,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7458933488302148148">Pārbaudiet saglabātās paroles, lai uzlabotu savu drošību un uzturētu drošību tiešsaistē.</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Atļaujot ChromeOS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt ChromeOS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, ChromeOS avāriju datus, kā arī informāciju par izmantotajām funkcijām un atmiņas lietojuma parasto apjomu. Ja būs ieslēgta arī lietotņu sinhronizācija, tiks vākti citi lietotņu diagnostikas un lietojuma dati, tostarp par Android un tīmekļa lietotnēm.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Pašlaik instalētais motīvs</translation>
 <translation id="7461924472993315131">Piespraust</translation>
 <translation id="746216226901520237">Nākamajā reizē šīs ierīces <ph name="DEVICE_TYPE" /> atbloķēšanai tiks izmantots jūsu tālrunis. Iestatījumos varat izslēgt Smart Lock.</translation>
 <translation id="7464153996453281700">Komponents jau ir atjaunināts</translation>
@@ -8966,7 +8960,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7642778300616172920">Paslēpt sensitīvu saturu</translation>
 <translation id="7643842463591647490">{0,plural, =1{# atvērts logs}zero{# atvērti logi}one{# atvērts logs}other{# atvērti logi}}</translation>
 <translation id="7643932971554933646">Vai atļaut vietnei skatīt failus?</translation>
-<translation id="7644543211198159466">Krāsa un motīvs</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
 <translation id="7645681574855902035">Linux dublējuma atcelšana</translation>
 <translation id="7646772052135772216">Paroļu sinhronizācija nedarbojas</translation>
@@ -9724,7 +9717,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="816704878106051517">{COUNT,plural, =1{tālruņa numurs}zero{# tālruņa numuru}one{# tālruņa numurs}other{# tālruņa numuri}}</translation>
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
-<translation id="8171334254070436367">Paslēpt visas kartītes</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8176332201990304395">Rozā un balta</translation>
 <translation id="8176529144855282213">Lai ieslēgtu piekļuvi mikrofonam, ieslēdziet fizisko mikrofona slēdzi ierīcē.</translation>

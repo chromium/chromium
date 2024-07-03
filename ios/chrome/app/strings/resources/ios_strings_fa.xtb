@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">‏iPhone اخیراً بازیابی شده است و ممکن است مرورگر پیش‌فرضتان را تغییر داده باشد.</translation>
 <translation id="136942498637440594">می‌توانید تصاویر و آنچه را که می‌بینید جستجو کنید.</translation>
 <translation id="1375321115329958930">رمزهای ورود ذخیره شده</translation>
-<translation id="1377255359165588604">همگام‌سازی متوقف شد.</translation>
 <translation id="1377321085342047638">شماره کارت</translation>
 <translation id="1377508275003315939">گذرواژه‌ها</translation>
 <translation id="1383876407941801731">جستجو</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{‫{count} نشانک}one{‫{count} نشانک}other{‫{count} نشانک}}</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4527660062930312477">حسابتان مدیریت می‌شود</translation>
-<translation id="4536418791685807335">دوباره برای ورود به سیستم تلاش کنید.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} پیشنهاد تکمیل خودکار ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="4540780316273593836">مشکلی رخ داد</translation>
 <translation id="4550040941166547650">فقط در «این دستگاه»</translation>
@@ -1650,7 +1648,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="913036870884277353">پیوندها را به‌سادگی در برنامه‌های دیگر باز کنید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9144931028079269381">پنهان کردن فهرست خواندن</translation>
-<translation id="9148126808321036104">ورود مجدد به سیستم</translation>
 <translation id="9157836665414082580">توقف نمایش کادرهای گفتگو</translation>
 <translation id="9162432979321511934">روشن کردن تکمیل خودکار گذرواژه‌ها</translation>
 <translation id="9162941801309769488">ردیابی بسته لغو شد</translation>

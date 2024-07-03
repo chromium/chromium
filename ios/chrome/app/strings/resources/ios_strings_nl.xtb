@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Je iPhone is recent hersteld, waardoor je standaardbrowser misschien is veranderd.</translation>
 <translation id="136942498637440594">Je kunt zoeken naar afbeeldingen en wat je ziet.</translation>
 <translation id="1375321115329958930">Opgeslagen wachtwoorden</translation>
-<translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -682,7 +681,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="452503091941773389">{count,plural, =1{{count} bookmark}other{{count} bookmarks}}</translation>
 <translation id="452750746583162491">Je gesynchroniseerde gegevens controleren</translation>
 <translation id="4527660062930312477">Je account wordt beheerd</translation>
-<translation id="4536418791685807335">Probeer opnieuw in te loggen.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} opgeslagen suggestie voor automatische aanvulling beschikbaar boven je toetsenbord.}other{{count} opgeslagen suggesties voor automatisch aanvullen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="4550040941166547650">Alleen op dit apparaat</translation>
@@ -1650,7 +1648,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="913036870884277353">Open links makkelijk in andere apps.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9144931028079269381">Leeslijst verbergen</translation>
-<translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9157836665414082580">Dialoogvensters onderdrukken</translation>
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
 <translation id="9162941801309769488">Pakket wordt niet meer gevolgd</translation>

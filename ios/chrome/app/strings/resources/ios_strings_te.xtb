@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">మీ iPhone ఇటీవల రీస్టోర్ అయింది, దాని వలన మీ ఆటోమేటిక్ బ్రౌజర్ మారి ఉండవచ్చు.</translation>
 <translation id="136942498637440594">మీరు ఇమేజ్‌లను, మీరు చూసే వాటిని సెర్చ్ చేయవచ్చు.</translation>
 <translation id="1375321115329958930">సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
-<translation id="1377255359165588604">సింక్‌ పని చేయడం ఆపివేయబడింది.</translation>
 <translation id="1377321085342047638">కార్డ్ నంబర్</translation>
 <translation id="1377508275003315939">పాస్‌వర్డ్‌లు</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
@@ -126,6 +125,7 @@
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1622717322707146952">"Google Calendarకు జోడించు" లేదా "Apple Calendarకు జోడించు" ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> వేరే చోట వాడిన పాస్‌వర్డ్‌లు</translation>
+<translation id="1636234353664774105">నావిగేషన్ ఫీచర్‌ను ఉపయోగించి 'సులువైన దిశల' గైడెన్స్‌తో మీ గమ్యస్థానానికి దిశలను పొందండి</translation>
 <translation id="1641113438599504367">సురక్షిత బ్రౌజింగ్</translation>
 <translation id="1641316430523156212">ఫాలో అవ్వండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -209,6 +209,7 @@
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2062410130322589403">మీ గోప్యత ఎంపికలకు సంబంధించిన గైడ్</translation>
 <translation id="20638360198452347">యూనిట్ రకం ఎంపిక సాధనం</translation>
+<translation id="2067852168641682340">ప్రతిసారీ ఈ ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="2078437078822043850">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి కుడి వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
@@ -314,6 +315,7 @@
 <translation id="261739049332372104">మీకు ముఖ్యమైన కంటెంట్ గురించిన అప్‌డేట్‌లను పొందడానికి, మీ iOS సెట్టింగ్‌లలో నోటిఫికేషన్‌ను ఆన్ చేయండి.</translation>
 <translation id="2625189173221582860">పాస్‌వర్డ్ కాపీ చేయబడింది</translation>
 <translation id="2626236249646841566">మీ కనెక్షన్‌‌ను చెక్ చేసి, మళ్లీ సైన్ ఇన్ చేయడానికి ట్రై చేయండి.</translation>
+<translation id="2635918910848538771">CVCని ఆటోఫిల్ చేయండి</translation>
 <translation id="2637313651144986786">ట్యాబ్‌లలో సెర్చ్ చేయండి...</translation>
 <translation id="2640733327287333451">యూజర్‌నేమ్, •••••• సేవ్ చేసి లేవు</translation>
 <translation id="2648721026697078500">ఎప్పటికీ తరలించవద్దు</translation>
@@ -497,6 +499,7 @@
 <translation id="3533202363250687977">అజ్ఞాత ట్యాబ్‌లన్నీ మూసివేయండి</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
 <translation id="3540141921715814660">బుక్‌మార్క్‌లకు జోడించండి</translation>
+<translation id="3547356470684043247">రివ్యూలతో మీ నిర్ణయాలను తెలియజేయడంలో సహాయపడేందుకు ప్రోడక్ట్‌లు, సర్వీస్‌లు లేదా ఎక్స్‌పీరియన్స్‌లకు సంబంధించిన కస్టమర్ పరిశీలనలను చదవండి</translation>
 <translation id="355101282835380364">ఖాతాలో సేవ్ చేయండి…</translation>
 <translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="3565930036634619844">Tab. <ph name="NUMBER_OF_TABS" />లో <ph name="TAB_INDEX" />.</translation>
@@ -682,7 +685,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} బుక్‌మార్క్}other{{count} బుక్‌మార్క్‌లు}}</translation>
 <translation id="452750746583162491">సింక్ చేసిన మీ డేటాను రివ్యూ చేయండి</translation>
 <translation id="4527660062930312477">మీ ఖాతా మేనేజ్ చేయబడుతోంది</translation>
-<translation id="4536418791685807335">మళ్లీ సైన్ ఇన్ చేయడానికి ప్రయత్నించండి.</translation>
 <translation id="4539187448429948815">{count,plural, =1{సేవ్ చేసిన {count} ఆటో-కంప్లీట్ సూచన మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{సేవ్ చేసిన {count} ఆటో-కంప్లీట్ సూచనలు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="4540780316273593836">ఏదో తప్పు జరిగింది</translation>
 <translation id="4550040941166547650">ఈ పరికరంలో మాత్రమే</translation>
@@ -716,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{మీ రీడింగ్ లిస్ట్‌లో {count} పేజీ ఉంది}other{మీ రీడింగ్ లిస్ట్‌లో {count} పేజీలు ఉన్నాయి}}</translation>
 <translation id="4659667755519643272">ట్యాబ్ స్విచర్‌లోకి ప్రవేశించు</translation>
 <translation id="46614316059270592">పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
+<translation id="467189612236587057">ఫోన్ కాల్ చేసి బిజినెస్‌తో కనెక్ట్ అవ్వండి</translation>
 <translation id="4682686630151240767">1. iPhone సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="4689564913179979534">పేమెంట్ ఆప్షన్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="469300482518076788">ట్యాబ్‌ను మూసివేయండి</translation>
@@ -1650,7 +1653,6 @@
 <translation id="913036870884277353">లింక్‌లను సులభంగా ఇతర యాప్‌లలో తెరవవచ్చు.</translation>
 <translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9144931028079269381">చదవాల్సిన లిస్ట్‌ను దాచండి</translation>
-<translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="9157836665414082580">డైలాగ్‌లను కుదించు</translation>
 <translation id="9162432979321511934">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేసే ఆప్షన్‌ను ఆన్ చేయండి</translation>
 <translation id="9162941801309769488">ప్యాకేజీ ట్రాక్ చేయబడలేదు</translation>

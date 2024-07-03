@@ -1399,7 +1399,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1989288015781834552">Relaunch to finish update. Your tabs will reopen.</translation>
 <translation id="1989903373608997757">Always use</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
-<translation id="1990512225220753005">Don't show shortcuts on this page</translation>
 <translation id="1990727803345673966">Your backed up Linux files and apps are being restored</translation>
 <translation id="199191324030140441">Turn off Do Not Disturb</translation>
 <translation id="1992397118740194946">Not set</translation>
@@ -2839,7 +2838,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3015639418649705390">Relaunch now</translation>
 <translation id="3016381065346027039">No log entries</translation>
 <translation id="3016641847947582299">Component updated</translation>
-<translation id="3017079585324758401">Background</translation>
 <translation id="3019023222666709803">Arrow tool</translation>
 <translation id="3019285239893817657">Subpage button</translation>
 <translation id="3019595674945299805">VPN service</translation>
@@ -4190,7 +4188,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4002440992267487163">Pin setup</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{This will permanently delete the group from your device.}other{This will permanently delete the groups from your device.}}</translation>
-<translation id="4007856537951125667">Hide shortcuts</translation>
 <translation id="4010036441048359843">Turn on highlight</translation>
 <translation id="4010746393007464819">An upgrade to Debian 12 (Bookworm) is available</translation>
 <translation id="4010917659463429001">To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5325,7 +5322,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4877276003880815204">Inspect elements</translation>
 <translation id="4877652723592270843">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex? If so, press and hold both volume keys for five seconds.</translation>
 <translation id="4878634973244289103">Unable to send feedback. Please try again later.</translation>
-<translation id="4878653975845355462">Custom backgrounds have been turned off by your administrator</translation>
 <translation id="4878718769565915065">Adding a fingerprint to this security key failed</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
 <translation id="4880315242806573837">Security updates end soon. Upgrade to a new Chromebook.</translation>
@@ -7147,7 +7143,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6243774244933267674">Server unavailable</translation>
 <translation id="6244245036423700521">Import ONC file</translation>
 <translation id="6245523954602476652">You can access it on Google Password Manager.</translation>
-<translation id="6246790815526961700">Upload from device</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6247620186971210352">No apps found.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8741,7 +8736,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7458933488302148148">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Allowing your ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features you use and how much memory you typically use. Other app diagnostic and usage data, including for Android and web apps, will be collected if apps sync is also turned on.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Current theme that you have installed</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Next time, your phone will unlock your <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
 <translation id="7464153996453281700">Component already up to date</translation>
@@ -8979,7 +8973,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7642778300616172920">Hide sensitive content</translation>
 <translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>
 <translation id="7643932971554933646">Let site view files?</translation>
-<translation id="7644543211198159466">Colour and theme</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
 <translation id="7645681574855902035">Cancelling Linux backup</translation>
 <translation id="7646772052135772216">Password sync isn't working</translation>
@@ -9738,7 +9731,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="816704878106051517">{COUNT,plural, =1{a phone number}other{# phone numbers}}</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Add Tab to Reading List}other{Add Tabs to Reading List}}</translation>
-<translation id="8171334254070436367">Hide all cards</translation>
 <translation id="8174047975335711832">Device information</translation>
 <translation id="8176332201990304395">Pink and white</translation>
 <translation id="8176529144855282213">To turn on microphone access, turn on the physical microphone switch on your device</translation>

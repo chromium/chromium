@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Vaš je iPhone nedavno vraćen na prethodno stanje, što je možda promijenilo vaš zadani preglednik.</translation>
 <translation id="136942498637440594">Možete pretraživati slike i ono što vidite.</translation>
 <translation id="1375321115329958930">Spremljene zaporke</translation>
-<translation id="1377255359165588604">Sinkronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1377508275003315939">Zaporke</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -686,7 +685,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="452503091941773389">{count,plural, =1{{count} oznaka}one{{count} oznaka}few{{count} oznake}other{{count} oznaka}}</translation>
 <translation id="452750746583162491">Pregledajte svoje sinkronizirane podatke</translation>
 <translation id="4527660062930312477">Računom se upravlja</translation>
-<translation id="4536418791685807335">Pokušajte se ponovo prijaviti.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}one{Iznad tipkovnice dostupan je {count} spremljeni prijedlog samodovršavanja.}few{Iznad tipkovnice dostupna su {count} spremljena prijedloga samodovršavanja.}other{Iznad tipkovnice dostupno je {count} spremljenih prijedloga samodovršavanja.}}</translation>
 <translation id="4540780316273593836">Nešto nije u redu</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
@@ -1655,7 +1653,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="913036870884277353">Lako otvarajte veze u drugim aplikacijama.</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9144931028079269381">Sakrij opciju Popis za čitanje</translation>
-<translation id="9148126808321036104">Prijavite se ponovno</translation>
 <translation id="9157836665414082580">Izostavi dijaloge</translation>
 <translation id="9162432979321511934">Uključite automatsko popunjavanje zaporki</translation>
 <translation id="9162941801309769488">Paket se ne prati</translation>

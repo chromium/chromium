@@ -297,7 +297,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2523184218357549926">Saadab Google'ile teie külastatud lehtede URL-id</translation>
 <translation id="2524132927880411790">Ava Google’i rakenduse häälotsing</translation>
 <translation id="2527209463677295330">Kaasates rohkem lehe teksti võite näha paremaid tulemusi</translation>
-<translation id="2527497042232966453">Inkognito vahelehed on aktiveeritud</translation>
 <translation id="2527779675047087889">Peida lõikelaua sisu</translation>
 <translation id="2532336938189706096">Veebi kuva</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> üksust kustutati</translation>
@@ -946,7 +945,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5726692708398506830">Lehel kuvatud sisu suurendamine</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
 <translation id="5744751019568455640">Siin on hääled, mida saate oma veebilehtede ettelugemiseks valida. Kui teile meeldib see hääl ja soovite, et jätkaksin selle kasutamist, puudutage lihtsalt hääle nime.</translation>
-<translation id="5748802427693696783">Tavapärased vahelehed on aktiveeritud</translation>
 <translation id="5749068826913805084">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile.</translation>
 <translation id="5749237766298580851">Väljas <ph name="SEPARATOR" /> Ei soovitata</translation>
 <translation id="5752232708629533680">Jagatakse vaid GIF-i</translation>

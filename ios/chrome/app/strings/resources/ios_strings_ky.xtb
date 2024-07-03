@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone түзмөгүңүз жакында калыбына келтирилген. Бул демейки серепчиңизди өзгөрткөн болушу мүмкүн.</translation>
 <translation id="136942498637440594">Сүрөттөрдү жана көрүп турган нерселерди издей аласыз</translation>
 <translation id="1375321115329958930">Сакталган сырсөздөр</translation>
-<translation id="1377255359165588604">Шайкештирүү иштебей калды.</translation>
 <translation id="1377321085342047638">Карт номер</translation>
 <translation id="1377508275003315939">Сырсөздөр</translation>
 <translation id="1383876407941801731">Издөө</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} кыстарма}other{{count} кыстарма}}</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4527660062930312477">Аккаунтуңуз тескелүүдө</translation>
-<translation id="4536418791685807335">Кайра кирип көрүңүз.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Сакталган {count} автотолтуруу сунушу баскычтоптун өйдө жагында жеткиликтүү.}other{Сакталган {count} автотолтуруу сунушу баскычтоптун өйдө жагында жеткиликтүү.}}</translation>
 <translation id="4540780316273593836">Бир жерден ката кетти</translation>
 <translation id="4550040941166547650">Ушул түзмөктө гана</translation>
@@ -1650,7 +1648,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="913036870884277353">Башка колдонмолордо шилтемелерди оңой ачыңыз.</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9144931028079269381">"Окуу тизмеси" параметрин жашыруу</translation>
-<translation id="9148126808321036104">Кайра кириңиз</translation>
 <translation id="9157836665414082580">Диалогдорду жашыруу</translation>
 <translation id="9162432979321511934">Сырсөздөрдү автотолтурууну күйгүзүү</translation>
 <translation id="9162941801309769488">Топтомго көз салынган жок</translation>

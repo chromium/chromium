@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Teie iPhone taastati hiljuti, mistõttu võis teie vaikebrauseri muutuda.</translation>
 <translation id="136942498637440594">Saate otsida pilte ja seda, mida näete.</translation>
 <translation id="1375321115329958930">Salvestatud paroolid</translation>
-<translation id="1377255359165588604">Sünkroonimine lakkas töötamast.</translation>
 <translation id="1377321085342047638">Kaardinr</translation>
 <translation id="1377508275003315939">Paroolid</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -682,7 +681,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="452503091941773389">{count,plural, =1{{count} järjehoidja}other{{count} järjehoidjat}}</translation>
 <translation id="452750746583162491">Vaadake oma sünkroonitud andmed üle</translation>
 <translation id="4527660062930312477">Teie kontot hallatakse</translation>
-<translation id="4536418791685807335">Proovige uuesti sisse logida.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} salvestatud automaatse täitmise soovitus on klaviatuuri kohal saadaval.}other{{count} salvestatud automaatse täitmise soovitust on klaviatuuri kohal saadaval.}}</translation>
 <translation id="4540780316273593836">Midagi läks valesti</translation>
 <translation id="4550040941166547650">Ainult selles seadmes</translation>
@@ -1650,7 +1648,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="913036870884277353">Saate teistes rakendustes hõlpsalt linke avada.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Peida valik „Lugemisloend“</translation>
-<translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9157836665414082580">Blokeeri dialoogid</translation>
 <translation id="9162432979321511934">Lülitage sisse valik Paroolide automaatne täitmine</translation>
 <translation id="9162941801309769488">Saadetist ei jälgita</translation>

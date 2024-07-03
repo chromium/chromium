@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">প্ৰস্থৰ সৈতে খাপ খুৱাওক</translation>
 <translation id="1081061862829655580">ট্ৰে’ ১৯</translation>
 <translation id="1082026381988252344">স্ক্ৰ’ল কৰক আৰু আপোনাৰ শ্বেয়াৰ কৰা টেবৰ সমল জুম কৰক</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" />ৰ দাম সচৰাচৰ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> হয় কিন্তু বৰ্তমান সমগ্ৰ পৃথিৱীত ইয়াৰ দাম <ph name="CURRENT_PRICE" />।</translation>
 <translation id="1089439967362294234">পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="1090629319939036170">VR মেনু</translation>
 <translation id="1091779689406092804">স্ক্ৰীনশ্বট</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাৰ্য উপলব্ধ, সেইবিলাক এটা এটাকৈ চাবলৈ টেব টিপক</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ভাৰ্চুৱেল কাৰ্ডৰ সবিশেষ</translation>
+<translation id="1803254472779303354">মাউছ লক কৰাৰ অনুমতি আছে</translation>
 <translation id="1803351196216024260">মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1806174020048213474">এই এপ্‌টোৱে ৱাই-ফাই ক্ৰিডেনশ্বিয়েলসমূহ ইনষ্টল কৰাৰ অনুমতি বিচাৰি অনুৰোধ জনাইছে। ছেটআপ কৰা পাছত, অংশগ্ৰহণ কৰা ৱাই-ফাই নেটৱৰ্কসমূহৰ সৈতে আপোনাৰ <ph name="DEVICE_TYPE" /> স্বয়ংক্ৰিয়ভাৱে সংযুক্ত হ’ব। এই ক্ৰিডেনশ্বিয়েলসমূহ আঁতৰাবলৈ এপ্‌টো আনইনষ্টল কৰক।</translation>
 <translation id="1807246157184219062">পাতল</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">কম মূল্যৰ বিকল্প</translation>
 <translation id="2702801445560668637">পঢ়াৰ সূচী</translation>
 <translation id="270415722347413271">অপ্টিকেল ডিস্ক (মেট)</translation>
+<translation id="2704192696317130398">আপোনাৰ মাউছটো লক কৰিবনে?</translation>
 <translation id="2704283930420550640">মান সজ্জাৰ সৈতে মিলা নাই৷</translation>
 <translation id="2704606927547763573">প্ৰতিলিপি কৰা হ'ল</translation>
 <translation id="2705137772291741111">এই ছাইটৰ ছেভ কৰি ৰখা (কেশ্ব কৰা) প্ৰতিলিপি পঢ়িব পৰা নাযায়।</translation>
@@ -1213,6 +1216,7 @@
 <translation id="3307649904964670439">Chrome কাষ্টমাইজ কৰাৰ বুটাম, আপোনাৰ ব্ৰাউজাৰৰ ৰূপ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
 <translation id="3318016344440038475">টিভিৰ হাস্য-ব্যংগৰ অনুষ্ঠান</translation>
+<translation id="3321152582690622182">ট্ৰেক কৰি থকা নাই</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">ক্ৰিমছন</translation>
 <translation id="3325027355611702542">কেম্পাৰ আৰু RV</translation>
@@ -2165,6 +2169,7 @@
 <translation id="5125751979347152379">অমান্য URL।</translation>
 <translation id="512592033764059484">ফুটবল</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" />ৰ আকাৰ ভালদৰে সলনি নহ’ব পাৰে। এপ্‌টো সমস্যাৰ সন্মুখীন হোৱাত বাধা দিবলৈ পূৰ্বে ছেট কৰি থোৱা ৱিণ্ড’ৰ আকাৰ ব্যৱহাৰ কৰক।</translation>
+<translation id="512756860033933700">কীব’ৰ্ড লক কৰাৰ অনুমতি আছে</translation>
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5129534298163637277">নিশ্চিতকৰণ ডায়লগ</translation>
 <translation id="5135404736266831032">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
@@ -2195,6 +2200,7 @@
 <translation id="5177076414499237632">এই পৃষ্ঠাখনৰ উৎস আৰু বিষয়বস্তুৰ বিষয়ে জানক</translation>
 <translation id="5179490652562926740">পৰিশোধ সম্পৰ্কীয় সত্যাপনৰ ছেটিং ছেভ কৰা হ’ল</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />ত নাই নেকি? এই আসোঁৱাহটোৰ অভিযোগ দিয়ক</translation>
+<translation id="5180662470511508940">কীব’ৰ্ড লক কৰাৰ অনুমতি নাই</translation>
 <translation id="5187079891181379721">কৰ্পৰেট অনুষ্ঠান</translation>
 <translation id="5190072300954988691">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি নাই</translation>
 <translation id="5190835502935405962">বুকমাৰ্কৰ বাৰ</translation>
@@ -2767,6 +2773,7 @@
 <translation id="6298456705131259420">ইয়াত সূচীবদ্ধ কৰা ছাইটসমূহক প্ৰভাৱিত কৰে। এটা ড’মেইনৰ নামৰ আগত “[*.]” লগালে সমগ্ৰ ড’মেইনটোৰ বাবে এটা ব্যতিক্ৰম সৃষ্টি হয়। উদাহৰণস্বৰূপে, “[*.]google.com” যোগ দিয়াৰ অৰ্থ হৈছে যে তৃতীয় পক্ষৰ কুকিসমূহো mail.google.comৰ বাবে সক্ৰিয় হ’ব পাৰে, কাৰণ এইটো google.comৰ অংশ।</translation>
 <translation id="6300452962057769623">{0,plural, =0{আপোনাৰ ডিভাইচটো এতিয়াই ৰিষ্টাৰ্ট হ'ব}=1{আপোনাৰ ডিভাইচটো ১ ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}one{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}other{আপোনাৰ ডিভাইচটো # ছেকেণ্ডত ৰিষ্টাৰ্ট হ'ব}}</translation>
 <translation id="6301104306974789820">মূল্য ট্ৰেকিঙৰ জাননী পাওক</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতিৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="6304398603974202180">মাল্টিমিডিয়া ছফ্টৱেৰ</translation>
 <translation id="6305205051461490394"><ph name="URL" />ত উপনীত হ’ব নোৱাৰি৷</translation>
 <translation id="6306713302480826305">এই ঠিকনাটো এইটো আৰু আপোনাৰ অন্য ছাইন-ইন কৰা ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব</translation>
@@ -2909,6 +2916,7 @@
 <translation id="6545864417968258051">ব্লুটুথ স্কেনিং</translation>
 <translation id="6547208576736763147">বাওঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6549443526281184652">কাষ্টম</translation>
+<translation id="6550245281449521513">মাউছ লক কৰাৰ অনুমতি নাই</translation>
 <translation id="6551873053534932690">একাউণ্টত ঠিকনা ছেভ কৰিবনে?</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিনৰ পূৰ্বে শেষবাৰ চাইছিল</translation>
 <translation id="6556866813142980365">ৰিডু</translation>
@@ -3827,6 +3835,7 @@
 <translation id="8278544367771164040">বাণিজ্যিক ঋণ</translation>
 <translation id="8279290844152565425">সংগীতানুষ্ঠান আৰু সংগীতৰ উৎসৱ</translation>
 <translation id="8279611986089885641">Chromeৰ জাননী লাভ কৰাৰ সুবিধাটো অন হৈ থাকিবই লাগিব। আপুনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />ত সেয়া অন কৰিব পাৰে।</translation>
+<translation id="8280387559022105172">আপোনাৰ কীব’ৰ্ড লক কৰিবনে?</translation>
 <translation id="8280630997017109758">ট্ৰে’ ১১</translation>
 <translation id="8281730697546299650">এতিয়া বিজ্ঞাপনৰ গোপনীয়তা সম্পৰ্কীয় অন্য সুবিধা উপলব্ধ</translation>
 <translation id="8281886186245836920">এৰি যাওক</translation>
@@ -4299,6 +4308,7 @@
 <translation id="9191834167571392248">বাওঁফালে তলৰ অংশত পাঞ্চ কৰক</translation>
 <translation id="9192361865877479444">মেটেল (Matte)</translation>
 <translation id="9192947025498305328">প্ৰাকৃতিক সৌন্দৰ্য সম্পৰ্কীয় প্ৰ’ডাক্ট</translation>
+<translation id="919455784772793601">এই প্ৰ’ডাক্টটো বিক্ৰী কৰা অন্য ষ্ট’ৰসমূহ দেখুওৱা এখন পৃষ্ঠা খোলক।</translation>
 <translation id="9199905725844810519">প্ৰিণ্ট কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="9205078245616868884">আপোনাৰ ডেটা নিজৰ ছিংক পাছফ্ৰেজৰ জৰিয়তে এনক্ৰিপ্ট কৰা হৈছে। ছিংক কৰিবলৈ পাছফ্ৰেজ দিয়ক।</translation>
 <translation id="920643408853370361">ভ্ৰমণ বীমা</translation>

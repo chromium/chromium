@@ -1389,7 +1389,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1989288015781834552">Reinicia per finalitzar l'actualització. Les pestanyes es tornaran a obrir.</translation>
 <translation id="1989903373608997757">Utilitza sempre</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
-<translation id="1990512225220753005">No mostris dreceres en aquesta pàgina</translation>
 <translation id="1990727803345673966">S'estan restaurant els fitxers i les aplicacions de Linux que tenen còpia de seguretat</translation>
 <translation id="199191324030140441">Desactiva el mode No molestis</translation>
 <translation id="1992397118740194946">No establerta</translation>
@@ -2826,7 +2825,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3015639418649705390">Reinicia ara</translation>
 <translation id="3016381065346027039">No hi ha cap entrada al registre</translation>
 <translation id="3016641847947582299">Component actualitzat</translation>
-<translation id="3017079585324758401">Fons</translation>
 <translation id="3019023222666709803">Eina de fletxa</translation>
 <translation id="3019285239893817657">Botó de subpàgina</translation>
 <translation id="3019595674945299805">Servei de VPN</translation>
@@ -4174,7 +4172,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4002440992267487163">Configuració del PIN</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{El grup se suprimirà permanentment del dispositiu.}other{Els grups se suprimiran permanentment del dispositiu.}}</translation>
-<translation id="4007856537951125667">Amaga les dreceres</translation>
 <translation id="4010036441048359843">Activa la marcació</translation>
 <translation id="4010746393007464819">Hi ha una actualització a Debian 12 (Bookworm) disponible</translation>
 <translation id="4010917659463429001">Per accedir a les teves adreces d'interès des del dispositiu mòbil, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5309,7 +5306,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4877276003880815204">Inspecciona els elements</translation>
 <translation id="4877652723592270843">Vols activar ChromeVox, el lector de pantalla integrat per a ChromeOS Flex? Si és així, mantén premudes les dues tecles de volum durant cinc segons.</translation>
 <translation id="4878634973244289103">No es poden enviar els suggeriments. Torna-ho a provar més tard.</translation>
-<translation id="4878653975845355462">L'administrador ha desactivat els fons personalitzats</translation>
 <translation id="4878718769565915065">No s'ha pogut afegir una empremta digital a aquesta clau de seguretat</translation>
 <translation id="4879491255372875719">Automàtic (opció predeterminada)</translation>
 <translation id="4880315242806573837">Aviat ja no hi haurà més actualitzacions de seguretat. Compra't un Chromebook nou.</translation>
@@ -7129,7 +7125,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6243774244933267674">El servidor no està disponible</translation>
 <translation id="6244245036423700521">Importa un fitxer ONC</translation>
 <translation id="6245523954602476652">Pots accedir-hi des del gestor de contrasenyes de Google.</translation>
-<translation id="6246790815526961700">Penja des del dispositiu</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>
 <translation id="6247620186971210352">No s'ha trobat cap aplicació</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8723,7 +8718,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7458933488302148148">Comprova les contrasenyes desades per reforçar la seguretat i protegir-te més en línia</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan falla ChromeOS, quines funcions fas servir i quanta memòria utilitzes normalment. Es recolliran altres dades de diagnòstic i d'ús d'aplicacions, incloses les d'aplicacions web i d'Android, si la sincronització d'aplicacions també està activada.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema instal·lat actualment</translation>
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746216226901520237">La propera vegada, <ph name="DEVICE_TYPE" /> es desbloquejarà amb el telèfon. Pots desactivar Smart Lock a Configuració.</translation>
 <translation id="7464153996453281700">Component ja actualitzat</translation>
@@ -8961,7 +8955,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7642778300616172920">Amaga el contingut sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra oberta}other{# finestres obertes}}</translation>
 <translation id="7643932971554933646">Vols permetre que el lloc web vegi els fitxers?</translation>
-<translation id="7644543211198159466">Color i tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7645681574855902035">S'està cancel·lant la còpia de seguretat de Linux</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
@@ -9720,7 +9713,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="816704878106051517">{COUNT,plural, =1{1 número de telèfon}other{# números de telèfon}}</translation>
 <translation id="8168435359814927499">Contingut</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Afegeix la pestanya a la llista de lectura}other{Afegeix les pestanyes a la llista de lectura}}</translation>
-<translation id="8171334254070436367">Amaga totes les targetes</translation>
 <translation id="8174047975335711832">Informació del dispositiu</translation>
 <translation id="8176332201990304395">Rosa i blanc</translation>
 <translation id="8176529144855282213">Per activar l'accés al micròfon, activa l'interruptor físic del micròfon al dispositiu</translation>

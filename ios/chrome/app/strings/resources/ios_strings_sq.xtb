@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Telefoni yt iPhone është restauruar së fundi, gjë që mund të ketë ndryshuar shfletuesin tënd të parazgjedhur.</translation>
 <translation id="136942498637440594">Mund të kërkosh imazhe dhe gjërat që shikon.</translation>
 <translation id="1375321115329958930">Fjalëkalimet e ruajtura</translation>
-<translation id="1377255359165588604">"Sinkronizimi" ka ndaluar së funksionuari.</translation>
 <translation id="1377321085342047638">Numri i kartës</translation>
 <translation id="1377508275003315939">Fjalëkalimet</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -682,7 +681,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="452503091941773389">{count,plural, =1{{count} faqeshënues}other{{count} faqeshënues}}</translation>
 <translation id="452750746583162491">Rishiko të dhënat e tua të sinkronizuara</translation>
 <translation id="4527660062930312477">Llogaria jote është e menaxhuar</translation>
-<translation id="4536418791685807335">Provo të identifikohesh sërish.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Ofrohet {count} sugjerim i ruajtur për plotësimin automatik mbi tastierën tënde.}other{Ofrohen {count} sugjerime të ruajtura për plotësimin automatik mbi tastierën tënde.}}</translation>
 <translation id="4540780316273593836">Ndodhi një gabim</translation>
 <translation id="4550040941166547650">. Vetëm në këtë pajisje</translation>
@@ -1650,7 +1648,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="913036870884277353">Hap me lehtësi lidhjet në aplikacione të tjera.</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9144931028079269381">Fshih "Listën e leximit"</translation>
-<translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9157836665414082580">Fshih dialogjet</translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9162941801309769488">Paketë e pagjurmuar</translation>

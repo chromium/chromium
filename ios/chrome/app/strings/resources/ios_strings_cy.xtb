@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Cafodd eich iPhone ei adfer yn ddiweddar, a allai fod wedi newid eich porwr diofyn.</translation>
 <translation id="136942498637440594">Gallwch chwilio delweddau a'r hyn a welwch.</translation>
 <translation id="1375321115329958930">Cyfrineiriau a Gadwyd</translation>
-<translation id="1377255359165588604">Mae Cysoni wedi stopio gweithio.</translation>
 <translation id="1377321085342047638">Rhif y Cerdyn</translation>
 <translation id="1377508275003315939">Cyfrineiriau</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -682,7 +681,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="452503091941773389">{count,plural, =1{{count} nod tudalen}zero{{count} nod tudalen}two{{count} nod tudalen}few{{count} nod tudalen}many{{count} nod tudalen}other{{count} nod tudalen}}</translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
 <translation id="4527660062930312477">Mae eich Cyfrif yn cael ei Reoli</translation>
-<translation id="4536418791685807335">Rhowch gynnig arall ar fewngofnodi.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} awgrym awtolenwi sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{{count} awgrymiadau awtolenwi sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{{count} awgrym awtolenwi sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{{count} awgrym awtolenwi sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{{count} awgrym awtolenwi sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{{count} awgrym awtolenwi sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="4540780316273593836">Aeth Rhywbeth o'i Le</translation>
 <translation id="4550040941166547650">Ar y ddyfais hon yn unig</translation>
@@ -1650,7 +1648,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="913036870884277353">Agor dolenni mewn apiau eraill yn hawdd.</translation>
 <translation id="9137526406337347448">Gwasanaethau Google</translation>
 <translation id="9144931028079269381">Cuddio Rhestr Ddarllen</translation>
-<translation id="9148126808321036104">Mewngofnodwch eto</translation>
 <translation id="9157836665414082580">Atal Deialogau</translation>
 <translation id="9162432979321511934">Troi Awtolenwi Cyfrineiriau ymlaen</translation>
 <translation id="9162941801309769488">Pecyn heb ei dracio</translation>

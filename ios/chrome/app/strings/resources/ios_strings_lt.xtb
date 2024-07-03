@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">„iPhone“ neseniai atkurtas, todėl galėjo būti pakeista numatytoji naršyklė.</translation>
 <translation id="136942498637440594">Galite ieškoti vaizdų ir to, ką matote.</translation>
 <translation id="1375321115329958930">Išsaugoti slaptažodžiai</translation>
-<translation id="1377255359165588604">Sinchronizavimas nebeveikia.</translation>
 <translation id="1377321085342047638">Kort. Nr.</translation>
 <translation id="1377508275003315939">Slaptažodžiai</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -682,7 +681,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="452503091941773389">{count,plural, =1{{count} žymė}one{{count} žymė}few{{count} žymės}many{{count} žymės}other{{count} žymių}}</translation>
 <translation id="452750746583162491">Peržiūrėti sinchronizuotus duomenis</translation>
 <translation id="4527660062930312477">Jūsų paskyra yra valdoma</translation>
-<translation id="4536418791685807335">Bandykite prisijungti dar kartą.</translation>
 <translation id="4539187448429948815">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}one{Virš klaviatūros pasiekiamas {count} išsaugotas automatinio užbaigimo pasiūlymas.}few{Virš klaviatūros pasiekiami {count} išsaugoti automatinio užbaigimo pasiūlymai.}many{Virš klaviatūros pasiekiama {count} išsaugoto automatinio užbaigimo pasiūlymo.}other{Virš klaviatūros pasiekiama {count} išsaugotų automatinio užbaigimo pasiūlymų.}}</translation>
 <translation id="4540780316273593836">Kažkas nepavyko</translation>
 <translation id="4550040941166547650">Tik šiame įrenginyje</translation>
@@ -1650,7 +1648,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="913036870884277353">Lengvai atidarykite nuorodas kitose programose.</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9144931028079269381">Slėpti skaitymo sąrašą</translation>
-<translation id="9148126808321036104">Prisijungti dar kartą</translation>
 <translation id="9157836665414082580">Nerod. dialogo langų</translation>
 <translation id="9162432979321511934">Įjunkite parinktį „Automatinis slaptažodžių pildymas“</translation>
 <translation id="9162941801309769488">Paketas nestebimas</translation>

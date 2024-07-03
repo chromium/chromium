@@ -1400,7 +1400,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1989288015781834552">Reinicializar para concluir a atualização. As guias serão reabertas.</translation>
 <translation id="1989903373608997757">Usar sempre</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
-<translation id="1990512225220753005">Não mostrar atalhos nesta página</translation>
 <translation id="1990727803345673966">Os arquivos e apps do Linux salvos em backup estão sendo restaurados</translation>
 <translation id="199191324030140441">Desativar o Não perturbe</translation>
 <translation id="1992397118740194946">Não definido</translation>
@@ -2839,7 +2838,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">Nenhuma entrada de registro</translation>
 <translation id="3016641847947582299">Componente atualizado</translation>
-<translation id="3017079585324758401">Plano de fundo</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão de subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
@@ -4191,7 +4189,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4002440992267487163">Configuração do PIN</translation>
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Essa ação vai excluir permanentemente o grupo do seu dispositivo.}one{Essa ação vai excluir permanentemente o grupo do seu dispositivo.}other{Essa ação vai excluir permanentemente os grupos do seu dispositivo.}}</translation>
-<translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4010036441048359843">Ativar destaque</translation>
 <translation id="4010746393007464819">Um upgrade para o Debian 12 (Bookworm) está disponível</translation>
 <translation id="4010917659463429001">Para acessar seus favoritos no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5326,7 +5323,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4877276003880815204">Inspecionar elementos</translation>
 <translation id="4877652723592270843">Você quer ativar o ChromeVox, o leitor de tela integrado do ChromeOS Flex? Se for o caso, aperte as duas teclas de volume e segure por cinco segundos</translation>
 <translation id="4878634973244289103">Não foi possível enviar feedback. Tente novamente mais tarde.</translation>
-<translation id="4878653975845355462">Os planos de fundo personalizados foram desativados pelo administrador</translation>
 <translation id="4878718769565915065">Falha ao adicionar uma impressão digital a esta chave de segurança</translation>
 <translation id="4879491255372875719">Automático (padrão)</translation>
 <translation id="4880315242806573837">As atualizações de segurança serão encerradas em breve. Faça upgrade para um novo Chromebook.</translation>
@@ -7149,7 +7145,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6243774244933267674">Servidor não disponível</translation>
 <translation id="6244245036423700521">Importar arquivo ONC</translation>
 <translation id="6245523954602476652">Você pode acessá-la no Gerenciador de senhas do Google.</translation>
-<translation id="6246790815526961700">Upload do dispositivo</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8745,7 +8740,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7458933488302148148">Verifique suas senhas salvas para melhorar a segurança on-line</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que seus dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar nesse sistema. Esses relatórios podem incluir informações como falhas do ChromeOS, os recursos e a quantidade de memória que você usa normalmente. Outros dados de uso e diagnóstico de apps, incluindo apps Android e da Web, serão coletados se a sincronização também estiver ativada.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Você pode ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo Chrome. Se você administra um domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema instalado atualmente</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Na próxima vez, o smartphone desbloqueará o <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
 <translation id="7464153996453281700">O componente já está atualizado</translation>
@@ -8983,7 +8977,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}one{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permitir que o site veja arquivos?</translation>
-<translation id="7644543211198159466">Cor e tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7645681574855902035">Cancelando backup do Linux</translation>
 <translation id="7646772052135772216">A sincronização de senha não está funcionando</translation>
@@ -9742,7 +9735,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="816704878106051517">{COUNT,plural, =1{um número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Adicionar guia à lista de leitura}one{Adicionar guia à lista de leitura}other{Adicionar guias à lista de leitura}}</translation>
-<translation id="8171334254070436367">Ocultar todos os cards</translation>
 <translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8176332201990304395">Rosa e branco</translation>
 <translation id="8176529144855282213">Para permitir o acesso ao microfone, ative o botão físico dele no seu dispositivo</translation>

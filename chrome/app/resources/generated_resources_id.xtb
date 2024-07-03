@@ -1399,7 +1399,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1989288015781834552">Luncurkan kembali untuk menyelesaikan update. Tab Anda akan dibuka kembali.</translation>
 <translation id="1989903373608997757">Selalu gunakan</translation>
 <translation id="1990046457226896323">File ucapan didownload</translation>
-<translation id="1990512225220753005">Jangan tampilkan pintasan di halaman ini</translation>
 <translation id="1990727803345673966">Cadangan file dan aplikasi Linux sedang dipulihkan</translation>
 <translation id="199191324030140441">Nonaktifkan Jangan Ganggu</translation>
 <translation id="1992397118740194946">Belum disetel</translation>
@@ -2839,7 +2838,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3015639418649705390">Luncurkan ulang sekarang</translation>
 <translation id="3016381065346027039">Tidak ada entri log</translation>
 <translation id="3016641847947582299">Komponen telah diperbarui</translation>
-<translation id="3017079585324758401">Latar belakang</translation>
 <translation id="3019023222666709803">Alat Panah</translation>
 <translation id="3019285239893817657">Tombol subhalaman</translation>
 <translation id="3019595674945299805">Layanan VPN</translation>
@@ -4190,7 +4188,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4002440992267487163">Penyiapan pin</translation>
 <translation id="4005817994523282006">Metode deteksi zona waktu</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Tindakan ini akan menghapus permanen grup dari perangkat Anda.}other{Tindakan ini akan menghapus permanen grup dari perangkat Anda.}}</translation>
-<translation id="4007856537951125667">Sembunyikan pintasan</translation>
 <translation id="4010036441048359843">Aktifkan sorotan</translation>
 <translation id="4010746393007464819">Upgrade ke versi Debian 12 (Bookworm) telah tersedia</translation>
 <translation id="4010917659463429001">Untuk mendapatkan bookmark di perangkat seluler, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5325,7 +5322,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4877276003880815204">Periksa Elemen</translation>
 <translation id="4877652723592270843">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS Flex? Jika iya, tekan dan tahan kedua tombol volume selama lima detik.</translation>
 <translation id="4878634973244289103">Tidak dapat mengirim masukan. Coba lagi nanti.</translation>
-<translation id="4878653975845355462">Latar belakang kustom telah dinonaktifkan oleh administrator Anda</translation>
 <translation id="4878718769565915065">Gagal menambahkan sidik jari ke kunci keamanan ini</translation>
 <translation id="4879491255372875719">Otomatis (default)</translation>
 <translation id="4880315242806573837">Update keamanan akan segera berakhir. Upgrade ke Chromebook baru.</translation>
@@ -7147,7 +7143,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6243774244933267674">Server tidak tersedia</translation>
 <translation id="6244245036423700521">Impor File ONC</translation>
 <translation id="6245523954602476652">Anda dapat mengaksesnya di Pengelola Sandi Google.</translation>
-<translation id="6246790815526961700">Upload dari perangkat</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6247620186971210352">Aplikasi tidak ditemukan</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8740,7 +8735,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7458933488302148148">Periksa sandi tersimpan untuk memperkuat keamanan Anda dan tetap aman saat online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS Anda mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang Anda gunakan, dan berapa banyak memori yang biasanya Anda gunakan. Data penggunaan dan diagnostik aplikasi lainnya, termasuk untuk aplikasi web dan Android, akan dikumpulkan jika sinkronisasi aplikasi juga diaktifkan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat Chrome. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Tema saat ini yang telah diinstal</translation>
 <translation id="7461924472993315131">Sematkan</translation>
 <translation id="746216226901520237">Saat digunakan lagi, ponsel Anda akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="7464153996453281700">Komponen sudah yang terbaru</translation>
@@ -8978,7 +8972,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7642778300616172920">Sembunyikan konten sensitif</translation>
 <translation id="7643842463591647490">{0,plural, =1{# jendela dibuka}other{# jendela dibuka}}</translation>
 <translation id="7643932971554933646">Izinkan situs melihat file?</translation>
-<translation id="7644543211198159466">Warna dan tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7645681574855902035">Membatalkan pencadangan Linux</translation>
 <translation id="7646772052135772216">Sinkronisasi sandi tidak berfungsi</translation>
@@ -9737,7 +9730,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="816704878106051517">{COUNT,plural, =1{1 nomor telepon}other{# nomor telepon}}</translation>
 <translation id="8168435359814927499">Konten</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tambahkan Tab ke Daftar Bacaan}other{Tambahkan Tab ke Daftar Bacaan}}</translation>
-<translation id="8171334254070436367">Sembunyikan semua kartu</translation>
 <translation id="8174047975335711832">Informasi perangkat</translation>
 <translation id="8176332201990304395">Merah muda dan putih</translation>
 <translation id="8176529144855282213">Untuk mengaktifkan akses mikrofon, aktifkan tombol mikrofon fisik di perangkat</translation>

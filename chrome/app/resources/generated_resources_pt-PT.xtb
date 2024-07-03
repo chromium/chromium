@@ -1390,7 +1390,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1989288015781834552">Reinicie para concluir a atualização. Os separadores vão ser reabertos.</translation>
 <translation id="1989903373608997757">Usar sempre</translation>
 <translation id="1990046457226896323">Ficheiros de voz transferidos.</translation>
-<translation id="1990512225220753005">Não mostre atalhos nesta página</translation>
 <translation id="1990727803345673966">As apps e os ficheiros do Linux da cópia de segurança estão a ser restaurados</translation>
 <translation id="199191324030140441">Desativar o modo Não incomodar</translation>
 <translation id="1992397118740194946">Não definida</translation>
@@ -2829,7 +2828,6 @@ Quer pará-lo?</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">Sem entradas do registo</translation>
 <translation id="3016641847947582299">Componente atualizado</translation>
-<translation id="3017079585324758401">Fundo</translation>
 <translation id="3019023222666709803">Ferramenta de seta</translation>
 <translation id="3019285239893817657">Botão da subpágina</translation>
 <translation id="3019595674945299805">Serviço VPN</translation>
@@ -4182,7 +4180,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4002440992267487163">Configuração do PIN</translation>
 <translation id="4005817994523282006">Método de deteção do fuso horário</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Esta ação elimina permanentemente o grupo do seu dispositivo.}other{Esta ação elimina permanentemente os grupos do seu dispositivo.}}</translation>
-<translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4010036441048359843">Ativar realce</translation>
 <translation id="4010746393007464819">Está disponível uma atualização para a versão Debian 12 (Bookworm).</translation>
 <translation id="4010917659463429001">Para obter os seus marcadores no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5319,7 +5316,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4877276003880815204">Inspecionar elementos</translation>
 <translation id="4877652723592270843">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex? Em caso afirmativo, prima sem soltar ambas as teclas de volume durante cinco segundos.</translation>
 <translation id="4878634973244289103">Não foi possível enviar feedback. Tente mais tarde.</translation>
-<translation id="4878653975845355462">Os fundos personalizados foram desativados pelo seu administrador.</translation>
 <translation id="4878718769565915065">A adição de uma impressão digital a esta chave de segurança falhou.</translation>
 <translation id="4879491255372875719">Automático (predefinição)</translation>
 <translation id="4880315242806573837">As atualizações de segurança terminam em breve. Atualize para um novo Chromebook.</translation>
@@ -7146,7 +7142,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6243774244933267674">Servidor indisponível</translation>
 <translation id="6244245036423700521">Importar ficheiro ONC</translation>
 <translation id="6245523954602476652">Pode obtê-la no Gestor de Palavras-passe da Google.</translation>
-<translation id="6246790815526961700">Carregar a partir do dispositivo</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6247620186971210352">Não foram encontradas aplicações.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8742,7 +8737,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7458933488302148148">Verifique as suas palavras-passe guardadas para reforçar a sua segurança, nomeadamente online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos com ChromeOS enviem relatórios automáticos, ajuda-nos a priorizar o que deve ser corrigido e melhorado no ChromeOS. Estes relatórios podem incluir informações como a altura em que o ChromeOS falha, que funcionalidades usa e a quantidade de memória que usa habitualmente. Vão ser recolhidos outros dados de diagnóstico e utilização das apps, incluindo para apps Web e Android, se a sincronização de apps também estiver ativada.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do Dispositivo Chrome. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">O tema atual que tem instalado.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Pode desativar o Smart Lock nas Definições.</translation>
 <translation id="7464153996453281700">O componente já está atualizado</translation>
@@ -8980,7 +8974,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permite que o site veja ficheiros?</translation>
-<translation id="7644543211198159466">Cor e tema</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7645681574855902035">A cancelar a cópia de segurança do Linux…</translation>
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>
@@ -9739,7 +9732,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="816704878106051517">{COUNT,plural, =1{um número de telefone}other{# números de telefone}}</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Adicionar separador à lista de leitura}other{Adicionar separadores à lista de leitura}}</translation>
-<translation id="8171334254070436367">Ocultar todos os cartões</translation>
 <translation id="8174047975335711832">Informações do dispositivo</translation>
 <translation id="8176332201990304395">Cor-de-rosa e branco</translation>
 <translation id="8176529144855282213">Para ativar o acesso ao microfone, ative o interruptor físico do microfone no dispositivo</translation>

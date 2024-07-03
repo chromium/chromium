@@ -1395,7 +1395,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1989288015781834552">Fungua tena ili ukamilishe kusasisha. Vichupo vyako vitafunguka upya</translation>
 <translation id="1989903373608997757">Tumia wakati wote</translation>
 <translation id="1990046457226896323">Faili za matamshi zimepakuliwa</translation>
-<translation id="1990512225220753005">Usionyeshe njia za mkato kwenye ukurasa huu</translation>
 <translation id="1990727803345673966">Faili zilizohifadhiwa nakala pamoja na programu zako za Linux zinarejeshwa</translation>
 <translation id="199191324030140441">Zima kipengele cha Usinisumbue</translation>
 <translation id="1992397118740194946">Haijawekwa</translation>
@@ -2836,7 +2835,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3015639418649705390">Anzisha upya sasa</translation>
 <translation id="3016381065346027039">Hakuna data kwenye kumbukumbu</translation>
 <translation id="3016641847947582299">Kipengele kimesasishwa</translation>
-<translation id="3017079585324758401">Mandhari ya nyuma</translation>
 <translation id="3019023222666709803">Zana ya mshale ya kuhariri picha</translation>
 <translation id="3019285239893817657">Kitufe cha ukurasa mdogo</translation>
 <translation id="3019595674945299805">Huduma ya VPN</translation>
@@ -4187,7 +4185,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4002440992267487163">Mipangilio ya Pin</translation>
 <translation id="4005817994523282006">Mbinu ya kutambua saa za eneo</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Hatua hii itafuta kabisa kikundi kwenye kifaa chako.}other{Hatua hii itafuta kabisa vikundi kwenye kifaa chako.}}</translation>
-<translation id="4007856537951125667">Ficha njia za mikato</translation>
 <translation id="4010036441048359843">Washa kipengele cha kuangazia</translation>
 <translation id="4010746393007464819">Sasisho la Debian 12 (Bookworm) linapatikana</translation>
 <translation id="4010917659463429001">Ili uzipate alamisho zako kwenye kifaa chako cha mkononi, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5320,7 +5317,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4877276003880815204">Kagua Vipengee</translation>
 <translation id="4877652723592270843">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex? Ikiwa ndivyo, bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano.</translation>
 <translation id="4878634973244289103">Imeshindwa kutuma maoni. Tafadhali jaribu tena baadaye.</translation>
-<translation id="4878653975845355462">Kipengele cha mandhari-nyuma maalum kimezimwa na msimamizi wako</translation>
 <translation id="4878718769565915065">Imeshindwa kuweka alama ya kidole kwenye ufunguo huu wa usalama</translation>
 <translation id="4879491255372875719">Kiotomatiki (chaguomsingi)</translation>
 <translation id="4880315242806573837">Muda wa masasisho ya usalama utaisha hivi karibuni. Pata toleo jipya la Chromebook.</translation>
@@ -7142,7 +7138,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6243774244933267674">Seva haipatikani.</translation>
 <translation id="6244245036423700521">Pakia Faili ya ONC</translation>
 <translation id="6245523954602476652">Unaweza kulifikia kwenye Kidhibiti cha Manenosiri cha Google.</translation>
-<translation id="6246790815526961700">Pakia kutoka kwenye kifaa</translation>
 <translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="6247620186971210352">Haikupata programu zozote</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8736,7 +8731,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7458933488302148148">Kagua manenosiri uliyohifadhi ili uimarishe ulinzi wako na uwe salama ukiwa mtandaoni</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa ChromeOS vitume ripoti kiotomatiki hutusaidia kufahamu vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha ChromeOS. Ripoti hizi zinaweza kujumuisha vitu kama vile ChromeOS inapoacha kufanya kazi, vipengele unavyotumia na nafasi ya hifadhi inayotumika kwa kawaida. Data nyingine ya uchunguzi na matumizi ya programu, ikijumuisha ya Android na programu za wavuti, itakusanywa ikiwa kipengele cha usawazishaji wa programu kitawashwa pia.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako cha Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Mandhari ya sasa uliyosakinisha</translation>
 <translation id="7461924472993315131">Bana</translation>
 <translation id="746216226901520237">Wakati ujao, simu yako itafungua <ph name="DEVICE_TYPE" /> yako. Unaweza kuzima Smart Lock katika Mipangilio.</translation>
 <translation id="7464153996453281700">Kipengele kimesasishwa tayari</translation>
@@ -8974,7 +8968,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7642778300616172920">Ficha maudhui nyeti</translation>
 <translation id="7643842463591647490">{0,plural, =1{Dirisha # limefunguliwa}other{Madirisha # yamefunguliwa}}</translation>
 <translation id="7643932971554933646">Je, ungependa kuruhusu tovuti ione faili?</translation>
-<translation id="7644543211198159466">Rangi na mandhari</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (mmiliki)</translation>
 <translation id="7645681574855902035">Inaghairi kuhifadhi rudufu ya Linux</translation>
 <translation id="7646772052135772216">Kipengele cha usawazishaji wa nenosiri hakifanyi kazi</translation>
@@ -9734,7 +9727,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="816704878106051517">{COUNT,plural, =1{namba ya simu}other{Nambari # za simu}}</translation>
 <translation id="8168435359814927499">Maudhui</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ongeza Kichupo kwenye Orodha ya Kusoma}other{Ongeza Vichupo kwenye Orodha ya Kusoma}}</translation>
-<translation id="8171334254070436367">Ficha kadi zote</translation>
 <translation id="8174047975335711832">Maelezo ya kifaa</translation>
 <translation id="8176332201990304395">Waridi na nyeupe</translation>
 <translation id="8176529144855282213">Ili uruhusu ufikiaji wa maikrofoni, washa swichi ya maikrofoni kwenye kifaa chako</translation>

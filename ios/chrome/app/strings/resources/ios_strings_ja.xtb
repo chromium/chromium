@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">iPhone が最近復元されたため、デフォルトのブラウザが変更されている可能性があります。</translation>
 <translation id="136942498637440594">画像や見たものを検索できます。</translation>
 <translation id="1375321115329958930">保存したパスワード</translation>
-<translation id="1377255359165588604">同期機能が動作を停止しました。</translation>
 <translation id="1377321085342047638">カード番号</translation>
 <translation id="1377508275003315939">パスワード</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -682,7 +681,6 @@
 <translation id="452503091941773389">{count,plural, =1{{count} 個のブックマーク}other{{count} 個のブックマーク}}</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4527660062930312477">ご利用のアカウントは管理されています</translation>
-<translation id="4536418791685807335">もう一度ログインしてみてください。</translation>
 <translation id="4539187448429948815">{count,plural, =1{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}other{キーボードの上部に保存済みの予測入力の候補が {count} 件表示されています。}}</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="4550040941166547650">このデバイスのみ</translation>
@@ -1650,7 +1648,6 @@
 <translation id="913036870884277353">他のアプリで簡単にリンクを開くことができます。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9144931028079269381">リーディング リストを非表示</translation>
-<translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9162941801309769488">荷物の追跡解除</translation>

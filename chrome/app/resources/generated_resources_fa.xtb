@@ -1396,7 +1396,6 @@
 <translation id="1989288015781834552">برای به‌روزرسانی، برنامه را راه‌اندازی مجدد کنید. برگه‌ها دوباره باز می‌شوند.</translation>
 <translation id="1989903373608997757">همیشه استفاده شود</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
-<translation id="1990512225220753005">میان‌برها در این صفحه نشان داده نشود</translation>
 <translation id="1990727803345673966">‏فایل‌ها و برنامه‌های پشتیبان‌گیری‌شده Linux درحال بازیابی هستند</translation>
 <translation id="199191324030140441">خاموش کردن «مزاحم نشوید»</translation>
 <translation id="1992397118740194946">تنظیم نشده</translation>
@@ -2836,7 +2835,6 @@
 <translation id="3015639418649705390">اکنون راه‌اندازی مجدد شود</translation>
 <translation id="3016381065346027039">ورودی گزارشی وجود ندارد</translation>
 <translation id="3016641847947582299">مؤلفه به‌روز شد</translation>
-<translation id="3017079585324758401">پس‌زمینه</translation>
 <translation id="3019023222666709803">ابزار پیکان</translation>
 <translation id="3019285239893817657">دکمه صفحه فرعی</translation>
 <translation id="3019595674945299805">‏سرویس VPN</translation>
@@ -4187,7 +4185,6 @@
 <translation id="4002440992267487163">تنظیم پین</translation>
 <translation id="4005817994523282006">روش تشخیص منطقه زمانی</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد.}one{با این کار، گروه برای همیشه از دستگاهتان حذف خواهد شد.}other{با این کار، گروه‌ها برای همیشه از دستگاهتان حذف خواهد شد.}}</translation>
-<translation id="4007856537951125667">پنهان کردن میان‌برها</translation>
 <translation id="4010036441048359843">روشن کردن برجسته‌سازی</translation>
 <translation id="4010746393007464819">‏ارتقایی برای Debian نسخه ۱۲ ‏(Bookworm) دردسترس است</translation>
 <translation id="4010917659463429001">برای اینکه نشانک‌هایتان را در دستگاه همراهتان داشته باشید، <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5322,7 +5319,6 @@
 <translation id="4877276003880815204">بازرسی عناصر</translation>
 <translation id="4877652723592270843">‏آیا می‌خواهید ChromeVox را که صفحه‌خوان داخلی ChromeOS Flex است فعال کنید؟ اگر پاسختان مثبت است، هر دو کلید میزان صدا را فشار دهید و پنج ثانیه نگه دارید.</translation>
 <translation id="4878634973244289103">بازخورد ارسال نمی‌شود. لطفاً بعداً دوباره امتحان کنید.</translation>
-<translation id="4878653975845355462">سرپرستتان پس‌زمینه سفارشی را خاموش کرده است</translation>
 <translation id="4878718769565915065">اثر انگشت به این کلید ایمنی اضافه نشد</translation>
 <translation id="4879491255372875719">خودکار (پیش‌فرض)</translation>
 <translation id="4880315242806573837">‏به‌روزرسانی‌های امنیتی به‌زودی به‌اتمام می‌رسد. به Chromebook جدید ارتقا دهید.</translation>
@@ -7144,7 +7140,6 @@
 <translation id="6243774244933267674">سرور در دسترس نیست</translation>
 <translation id="6244245036423700521">‏وارد کردن فایل «پیکربندی شبکه باز» (ONC)</translation>
 <translation id="6245523954602476652">‏در «مدیر گذرواژه Google» می‌توانید به آن دسترسی داشته باشید.</translation>
-<translation id="6246790815526961700">بارگذاری از دستگاه</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6247620186971210352">برنامه‌ای پیدا نشد</translation>
 <translation id="6247708409970142803">%<ph name="PERCENTAGE" /></translation>
@@ -8740,7 +8735,6 @@
 <translation id="7458933488302148148">برای تقویت امنیت و ایمنی بیشتر در اینترنت، گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید</translation>
 <translation id="745988141575685751">‏<ph name="BEGIN_PARAGRAPH1" />اجازه دادن به دستگاه‌های ChromeOS برای ارسال گزارش‌های خودکار در اولویت‌بندی آنچه باید در ChromeOS درست کنیم و بهبود ببخشیم به ما کمک می‌کند. این گزارش‌ها می‌تواند شامل مواردی ازاین‌قبیل باشد: چه زمانی ChromeOS ازکار می‌افتد، از کدام ویژگی‌ها استفاده می‌کنید، و معمولاً از چه مقدار حافظه استفاده می‌کنید. اگر «همگام‌سازی برنامه‌ها» نیز فعال باشد، دیگر داده‌های استفاده و عیب‌یابی برنامه (ازجمله برای برنامه‌های وب و Android) جمع‌آوری خواهد شد.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />هرزمان خواستید می‌توانید اجازه دادن به این گزارش‌ها را در تنظیمات دستگاه Chrome، شروع یا متوقف کنید. اگر سرپرست دامنه هستید، می‌توانید این تنظیم را در «کنسول سرپرست» تغییر دهید.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">زمینه کنونی که نصب کرده‌اید</translation>
 <translation id="7461924472993315131">پین</translation>
 <translation id="746216226901520237">‏دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> را باز خواهد کرد. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="7464153996453281700">عنصر درحال‌حاضر به‌روز است</translation>
@@ -8978,7 +8972,6 @@
 <translation id="7642778300616172920">پنهان کردن محتوای حساس</translation>
 <translation id="7643842463591647490">{0,plural, =1{# پنجره باز}one{# پنجره باز}other{# پنجره باز}}</translation>
 <translation id="7643932971554933646">به سایت اجازه می‌دهید فایل‌ها را ببیند؟</translation>
-<translation id="7644543211198159466">رنگ و زمینه</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7645681574855902035">‏درحال لغو پشتیبان‌گیری Linux</translation>
 <translation id="7646772052135772216">همگام‌سازی گذرواژه کار نمی‌کند</translation>
@@ -9736,7 +9729,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{یک شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
 <translation id="8168435359814927499">محتوا</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{افزودن برگه به فهرست خواندن}one{افزودن برگه به فهرست خواندن}other{افزودن برگه‌ها به فهرست خواندن}}</translation>
-<translation id="8171334254070436367">پنهان کردن همه کارت‌ها</translation>
 <translation id="8174047975335711832">اطلاعات دستگاه</translation>
 <translation id="8176332201990304395">صورتی و سفید</translation>
 <translation id="8176529144855282213">برای روشن کردن دسترسی میکروفون، کلید فیزیکی میکروفون را روی دستگاهتان روشن کنید</translation>

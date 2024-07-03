@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Dein iPhone wurde vor Kurzem wiederhergestellt. Möglicherweise hat sich dadurch dein Standardbrowser geändert.</translation>
 <translation id="136942498637440594">Du kannst nach Bildern und dem, was du siehst, suchen.</translation>
 <translation id="1375321115329958930">Gespeicherte Passwörter</translation>
-<translation id="1377255359165588604">Die Synchronisierung funktioniert nicht mehr.</translation>
 <translation id="1377321085342047638">Kartennummer</translation>
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
@@ -682,7 +681,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="452503091941773389">{count,plural, =1{{count} Lesezeichen}other{{count} Lesezeichen}}</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4527660062930312477">Dein Konto wird verwaltet</translation>
-<translation id="4536418791685807335">Melde dich noch einmal an.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} gespeicherter automatisch vervollständigter Vorschlag oben auf der Tastatur verfügbar.}other{{count} gespeicherte automatisch vervollständigte Vorschläge oben auf der Tastatur verfügbar.}}</translation>
 <translation id="4540780316273593836">Ein Problem ist aufgetreten</translation>
 <translation id="4550040941166547650">Nur auf diesem Gerät</translation>
@@ -1650,7 +1648,6 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="913036870884277353">Links ganz einfach in anderen Apps öffnen.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9144931028079269381">Leseliste ausblenden</translation>
-<translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
 <translation id="9162941801309769488">Verfolgung des Pakets aufgehoben</translation>

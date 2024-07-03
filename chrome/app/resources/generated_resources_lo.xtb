@@ -1397,7 +1397,6 @@
 <translation id="1989288015781834552">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດໃຫ້ສຳເລັດ. ແຖບຂອງທ່ານຈະເປີດຄືນໃໝ່.</translation>
 <translation id="1989903373608997757">ໃຊ້ຕະຫຼອດ</translation>
 <translation id="1990046457226896323">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າແລ້ວ</translation>
-<translation id="1990512225220753005">ຢ່າສະແດງທາງລັດໃນໜ້ານີ້</translation>
 <translation id="1990727803345673966">ກຳລັງກູ້ຄືນໄຟລ໌ Linux ທີ່ສຳຮອງຂໍ້ມູນແລ້ວຂອງທ່ານ</translation>
 <translation id="199191324030140441">ປິດໂໝດຫ້າມລົບກວນແລ້ວ</translation>
 <translation id="1992397118740194946">ບໍ່​ໄດ້ຕັ້ງ​</translation>
@@ -2840,7 +2839,6 @@
 <translation id="3015639418649705390">ເລີ່ມເປີດໃຊ້ໃໝ່ຕອນນີ້ເລີຍ</translation>
 <translation id="3016381065346027039">ບໍ່ມີລາຍການບັນທຶກ</translation>
 <translation id="3016641847947582299">ອັບເດດອົງ​ປະ​ກອບ​ແລ້ວ</translation>
-<translation id="3017079585324758401">ພາບພື້ນຫຼັງ</translation>
 <translation id="3019023222666709803">ເຄື່ອງມືລູກສອນ</translation>
 <translation id="3019285239893817657">ປຸ່ມໜ້າຍ່ອຍ</translation>
 <translation id="3019595674945299805">ບໍລິການ VPN</translation>
@@ -4193,7 +4191,6 @@
 <translation id="4002440992267487163">ການຕັ້ງຄ່າ PIN</translation>
 <translation id="4005817994523282006">ວິທີການກວດຫາເຂດເວລາ</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{ສິ່ງນີ້ຈະລຶບກຸ່ມຈາກອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ.}other{ສິ່ງນີ້ຈະລຶບກຸ່ມຈາກອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ.}}</translation>
-<translation id="4007856537951125667">ເຊື່ອງທາງລັດ</translation>
 <translation id="4010036441048359843">ເປີດໃຊ້ໄຮໄລ້</translation>
 <translation id="4010746393007464819">ມີການອັບເກຣດເປັນ Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">ເພື່ອເອົາບຸກມາກຂອງທ່ານຢູ່ໃນອຸປະກອນມືຖື, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5330,7 +5327,6 @@
 <translation id="4877276003880815204">ກວດກາອົງປະກອບ</translation>
 <translation id="4877652723592270843">ທ່ານຕ້ອງການເປີດນຳໃຊ້ ChromeVox, ໂປຣແກຣມອ່ານໜ້າຈໍທີ່ມີມາໃນຕົວສຳລັບ ChromeOS Flex ບໍ່? ຖ້າຕ້ອງການ, ກະລຸນາກົດປຸ່ມລະດັບສຽງທັງສອງຄ້າງໄວ້ເປັນເວລາຫ້າວິນາທີ.</translation>
 <translation id="4878634973244289103">ບໍ່ສາມາດສົ່ງຄຳຕິຊົມໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
-<translation id="4878653975845355462">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ປິດພາບພື້ນຫຼັງແບບກຳນົດເອງແລ້ວ</translation>
 <translation id="4878718769565915065">ການເພີ່ມລາຍນິ້ວມືໃສ່ກະແຈຄວາມປອດໄພບໍ່ສຳເລັດ</translation>
 <translation id="4879491255372875719">ອັດຕະໂນມັດ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4880315242806573837">ການອັບເດດຄວາມປອດໄພຈະສິ້ນສຸດລົງໃນໄວໆນີ້. ອັບເກຣດເປັນ Chromebook ເວີຊັນໃໝ່.</translation>
@@ -7155,7 +7151,6 @@
 <translation id="6243774244933267674">ບໍ່ມີເຊີບເວີຢູ່</translation>
 <translation id="6244245036423700521">ນຳເຂົ້າໄຟລ໌ ONC</translation>
 <translation id="6245523954602476652">ທ່ານສາມາດເຂົ້າເຖິງມັນໄດ້ຢູ່ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
-<translation id="6246790815526961700">ອັບໂຫຼດຈາກອຸປະກອນ</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6247620186971210352">ບໍ່ພົບແອັບໃດໆ</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
@@ -8749,7 +8744,6 @@
 <translation id="7458933488302148148">ກວດສອບລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານເພື່ອເພີ່ມຄວາມປອດໄພຂອງທ່ານ ແລະ ໃຊ້ໂລກອອນລາຍຢ່າງປອດໄພຍິ່ງຂຶ້ນ</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />ການອະນຸຍາດໃຫ້ອຸປະກອນ ChromeOS ຂອງທ່ານສົ່ງລາຍງານອັດຕະໂນມັດຈະຊ່ວຍໃຫ້ພວກເຮົາຈັດລຳດັບຄວາມສຳຄັນໄດ້ວ່າຈະແກ້ໄຂ ແລະ ປັບປຸງຫຍັງໃນ ChromeOS. ລາຍງານເຫຼົ່ານີ້ສາມາດຮວມເອົາຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ChromeOS ຫຼົ້ມຕອນໃດ, ມີການໃຊ້ຄຸນສົມບັດໃດ ແລະ ໂດຍປົກກະຕິແລ້ວທ່ານໃຊ້ໜ່ວຍຄວາມຈຳເທົ່າໃດ. ຂໍ້ມູນການວິນິໄສ ແລະ ການນຳໃຊ້ແອັບອື່ນໆ, ເຊິ່ງມີການຮວບຮວມສຳລັບແອັບ Android ແລະ ເວັບແອັບ ຫາກມີການເປີດການຊິ້ງແອັບ.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ທ່ານສາມາດເລີ່ມ ຫຼື ຢຸດການອະນຸຍາດລາຍງານເຫຼົ່ານີ້ໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າອຸປະກອນ Chrome ຂອງທ່ານ. ຫາກທ່ານເປັນຜູ້ເບິ່ງແຍງລະບົບໂດເມນ, ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ໃນຄອນໂຊຜູ້ເບິ່ງແຍງ.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">ຮູບແບບສີສັນປັດຈຸບັນທີ່ທ່ານໄດ້ຕິດຕັ້ງ</translation>
 <translation id="7461924472993315131">ປັກໝຸດ</translation>
 <translation id="746216226901520237">ຄັ້ງຕໍ່ໄປ, ໂທລະສັບຂອງທ່ານຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7464153996453281700">ອົງປະກອບມີການອັບເດດແລ້ວ</translation>
@@ -8987,7 +8981,6 @@
 <translation id="7642778300616172920">ເຊື່ອງເນື້ອຫາທີ່ລະອຽດອ່ອນ</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ໜ້າຈໍເປີດຢູ່}other{# ໜ້າຈໍເປີດຢູ່}}</translation>
 <translation id="7643932971554933646">ອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງໄຟລ໌ບໍ?</translation>
-<translation id="7644543211198159466">ສີ ແລະ ຮູບແບບສີສັນ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ເຈົ້າ​ຂອງ​)</translation>
 <translation id="7645681574855902035">ກຳລັງຍົກເລີກການສຳຮອງຂໍ້ມູນ Linux</translation>
 <translation id="7646772052135772216">ການຊິ້ງຂໍ້ມູນລະຫັດຜ່ານບໍ່ເຮັດວຽກ</translation>
@@ -9744,7 +9737,6 @@
 <translation id="816704878106051517">{COUNT,plural, =1{ເບີໂທລະສັບ}other{# ເບີໂທລະສັບ}}</translation>
 <translation id="8168435359814927499">ເນື້ອ​ໃນ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ລາຍການທີ່ຈະອ່ານ}other{ເພີ່ມແຖບໃສ່ລາຍການທີ່ຈະອ່ານ}}</translation>
-<translation id="8171334254070436367">ເຊື່ອງບັດທັງໝົດ</translation>
 <translation id="8174047975335711832">ຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
 <translation id="8176332201990304395">ສີບົວ ແລະ ສີຂາວ</translation>
 <translation id="8176529144855282213">ເພື່ອເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນ, ໃຫ້ເປີດສະວິດໄມໂຄຣໂຟນແທ້ຢູ່ອຸປະກອນຂອງທ່ານ</translation>

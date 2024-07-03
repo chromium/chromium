@@ -1391,7 +1391,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1989288015781834552">Aktualizaci dokončíte opětovným spuštěním. Vaše karty se znovu otevřou.</translation>
 <translation id="1989903373608997757">Použít vždy</translation>
 <translation id="1990046457226896323">Stažené řečové soubory</translation>
-<translation id="1990512225220753005">Nezobrazovat zkratky na této stránce</translation>
 <translation id="1990727803345673966">Probíhá obnovování zálohovaných souborů a aplikací systému Linux</translation>
 <translation id="199191324030140441">Vypnout režim Nerušit</translation>
 <translation id="1992397118740194946">Hodnota není nastavena</translation>
@@ -2828,7 +2827,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3015639418649705390">Restartovat</translation>
 <translation id="3016381065346027039">Protokol neobsahuje žádné záznamy</translation>
 <translation id="3016641847947582299">Komponenta byla aktualizována</translation>
-<translation id="3017079585324758401">Pozadí</translation>
 <translation id="3019023222666709803">Nástroj Šipka</translation>
 <translation id="3019285239893817657">Tlačítko podstránky</translation>
 <translation id="3019595674945299805">Služba VPN</translation>
@@ -4176,7 +4174,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4002440992267487163">Nastavení kódu PIN</translation>
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Skupina bude ze zařízení natrvalo smazána.}few{Skupiny budou ze zařízení natrvalo smazány.}many{Skupiny budou ze zařízení natrvalo smazány.}other{Skupiny budou ze zařízení natrvalo smazány.}}</translation>
-<translation id="4007856537951125667">Skrýt zkratky</translation>
 <translation id="4010036441048359843">Zapnout zvýraznění</translation>
 <translation id="4010746393007464819">Je k dispozici upgrade na Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Chcete-li své záložky mít na mobilním zařízení, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -5311,7 +5308,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4877276003880815204">Prozkoumat prvky</translation>
 <translation id="4877652723592270843">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro systém ChromeOS Flex? Pokud ano, na pět sekund podržte obě tlačítka hlasitosti.</translation>
 <translation id="4878634973244289103">Zpětnou vazbu nebylo možné odeslat. Zopakujte akci později.</translation>
-<translation id="4878653975845355462">Administrátor vlastní pozadí vypnul</translation>
 <translation id="4878718769565915065">Přidání otisku prstu k tomuto bezpečnostnímu klíči se nezdařilo</translation>
 <translation id="4879491255372875719">Automatické (výchozí)</translation>
 <translation id="4880315242806573837">Aktualizace zabezpečení brzy skončí. Upgradujte na nový Chromebook.</translation>
@@ -7129,7 +7125,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6243774244933267674">Server není dostupný</translation>
 <translation id="6244245036423700521">Importovat soubor ONC</translation>
 <translation id="6245523954602476652">Můžete k němu získat přístup pomocí Správce hesel Google.</translation>
-<translation id="6246790815526961700">Nahrát ze zařízení</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6247620186971210352">Nebyly nalezeny žádné aplikace</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" /> %</translation>
@@ -8726,7 +8721,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7458933488302148148">Zkontrolujte uložená hesla a zvyšte zabezpečení online</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat údaje, jako jsou datum a čas selhání systému ChromeOS, používané funkce a typické využití paměti. Pokud je zapnutá také synchronizace aplikací, budou shromažďovány také další diagnostické údaje o aplikacích a jejich využití, a to včetně aplikací pro Android a webových aplikací.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete kdykoli povolit nebo zakázat v nastavení zařízení Chrome. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="7460045493116006516">Aktuálně nainstalovaný motiv</translation>
 <translation id="7461924472993315131">Připnout</translation>
 <translation id="746216226901520237">Příště váš telefon zařízení <ph name="DEVICE_TYPE" /> odemkne. Funkci Smart Lock můžete vypnout v Nastavení.</translation>
 <translation id="7464153996453281700">Komponenta je již aktuální</translation>
@@ -8964,7 +8958,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7642778300616172920">Skrýt citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otevřené okno}few{# otevřená okna}many{# otevřeného okna}other{# otevřených oken}}</translation>
 <translation id="7643932971554933646">Povolit webu zobrazení souborů?</translation>
-<translation id="7644543211198159466">Barva a motiv</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7645681574855902035">Zálohování kontejneru systému Linux se ruší</translation>
 <translation id="7646772052135772216">Synchronizace hesel nefunguje</translation>
@@ -9723,7 +9716,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="816704878106051517">{COUNT,plural, =1{telefonní číslo}few{# telefonní čísla}many{# telefonního čísla}other{# telefonních čísel}}</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Přidat kartu do seznamu četby}few{Přidat karty do seznamu četby}many{Přidat karty do seznamu četby}other{Přidat karty do seznamu četby}}</translation>
-<translation id="8171334254070436367">Skrýt všechny karty</translation>
 <translation id="8174047975335711832">Informace o zařízení</translation>
 <translation id="8176332201990304395">Růžová a bílá</translation>
 <translation id="8176529144855282213">Pokud chcete zapnout přístup k mikrofonu, zapněte na zařízení fyzický přepínač mikrofonu</translation>

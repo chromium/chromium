@@ -77,7 +77,6 @@
 <translation id="1365106417372288489">Nemrégiben helyreállították iPhone eszközét, ami megváltoztathatta az alapértelmezett böngészőt.</translation>
 <translation id="136942498637440594">Rákereshet képekre és arra, amit lát.</translation>
 <translation id="1375321115329958930">Mentett jelszavak</translation>
-<translation id="1377255359165588604">A szinkronizálás leállt.</translation>
 <translation id="1377321085342047638">Kártyaszám</translation>
 <translation id="1377508275003315939">Jelszavak</translation>
 <translation id="1383876407941801731">Keresés</translation>
@@ -682,7 +681,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="452503091941773389">{count,plural, =1{{count} könyvjelző}other{{count} könyvjelző}}</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4527660062930312477">Fiókja felügyelet alatt áll</translation>
-<translation id="4536418791685807335">Próbáljon meg újra bejelentkezni.</translation>
 <translation id="4539187448429948815">{count,plural, =1{{count} mentett automatikus kiegészítési javaslat áll rendelkezésre a billentyűzet felett.}other{{count} mentett automatikus kiegészítési javaslat áll rendelkezésre a billentyűzet felett.}}</translation>
 <translation id="4540780316273593836">Hiba történt</translation>
 <translation id="4550040941166547650">Csak erre az eszközre</translation>
@@ -1650,7 +1648,6 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="913036870884277353">Egyszerűen megnyithatja a más alkalmazásokban lévő linkeket.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Az Olvasólista elrejtése</translation>
-<translation id="9148126808321036104">Jelentkezzen be újra</translation>
 <translation id="9157836665414082580">Párbeszédablakok elrejtése</translation>
 <translation id="9162432979321511934">Kapcsolja be a Jelszavak automatikus kitöltése beállítást</translation>
 <translation id="9162941801309769488">Csomag követése visszavonva</translation>
