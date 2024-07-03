@@ -107,11 +107,11 @@ std::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
       return device::ConnectionFailureReason::kJniThreadAttach;
     case bt_private::ConnectResultType::kWakelock:
       return device::ConnectionFailureReason::kWakelock;
+    case bt_private::ConnectResultType::kAlreadyConnected:
+      return device::ConnectionFailureReason::kAlreadyConnected;
     case bt_private::ConnectResultType::kInProgress:
       [[fallthrough]];
     case bt_private::ConnectResultType::kAuthRejected:
-      [[fallthrough]];
-    case bt_private::ConnectResultType::kAlreadyConnected:
       [[fallthrough]];
     case bt_private::ConnectResultType::kAuthCanceled:
       [[fallthrough]];
