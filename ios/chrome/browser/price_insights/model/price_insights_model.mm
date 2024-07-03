@@ -8,6 +8,8 @@
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/commerce/core/subscriptions/subscriptions_storage.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
@@ -168,6 +170,11 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
       ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   execution_it->second->config->accessibility_label =
       l10n_util::GetStringUTF8(IDS_PRICE_INSIGHTS_ACCESSIBILITY);
+  execution_it->second->config->iph_feature =
+      &feature_engagement::kIPHiOSContextualPanelPriceInsightsFeature;
+  execution_it->second->config->iph_entrypoint_used_event_name =
+      feature_engagement::events::
+          kIOSContextualPanelPriceInsightsEntrypointUsed;
 
   if (!execution_it->second->config->price_insights_info.has_value()) {
     execution_it->second->config->relevance =
@@ -238,6 +245,8 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   entrypoint_message = config->entrypoint_message;
   accessibility_label = config->accessibility_label;
   entrypoint_image_name = config->entrypoint_image_name;
+  iph_feature = config->iph_feature;
+  iph_entrypoint_used_event_name = config->iph_entrypoint_used_event_name;
   image_type = config->image_type;
   relevance = config->relevance;
 }
