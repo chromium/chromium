@@ -105,6 +105,8 @@ class ASH_EXPORT Combobox : public views::Button,
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
   bool OnKeyPressed(const ui::KeyEvent& e) override;
 
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
   std::unique_ptr<ui::ComboboxModel> owned_model_;

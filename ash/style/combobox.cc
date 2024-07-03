@@ -387,6 +387,7 @@ Combobox::Combobox(ui::ComboboxModel* model)
   // an editable text field, which `views::Combobox` does not have. Use
   // `ax::mojom::Role::kPopUpButton` to match an HTML <select> element.
   GetViewAccessibility().SetProperties(ax::mojom::Role::kPopUpButton);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 Combobox::~Combobox() = default;
@@ -473,11 +474,6 @@ void Combobox::OnBlur() {
 void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
 
-  if (IsMenuRunning()) {
-    node_data->AddState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kCollapsed);
-  }
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   node_data->SetValue(title_->GetText());
 
@@ -610,6 +606,7 @@ void Combobox::ShowDropDownMenu() {
   menu_->SetContentsView(std::move(menu_view));
   menu_->Show();
   menu_view_->ScrollToSelectedView();
+  UpdateExpandedCollapsedAccessibleState();
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       kComboboxActiveColorId, kComboboxRoundedCorners));
@@ -618,19 +615,18 @@ void Combobox::ShowDropDownMenu() {
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
 
   RequestFocus();
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 }
 
 void Combobox::CloseDropDownMenu() {
   menu_view_ = nullptr;
   menu_.reset();
+  UpdateExpandedCollapsedAccessibleState();
 
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
   title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 
   // Commit the selection once the combobox view state has been updated.
   // NOTE: This may run selection callback, which may end up deleting this,
@@ -809,6 +805,14 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     }
   }
   return true;
+}
+
+void Combobox::UpdateExpandedCollapsedAccessibleState() const {
+  if (IsMenuRunning()) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
 }
 
 BEGIN_METADATA(Combobox)

@@ -32,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -535,6 +536,29 @@ TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
             initial_tasks_count);
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
+}
+
+TEST_F(GlanceablesTasksViewTest, ComboboxExpandedCollapsedAccessibleState) {
+  auto* combobox = GetComboBoxView();
+
+  ui::AXNodeData node_data;
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Check accessibility of combobox while it's open.
+  LeftClickOn(combobox);
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  // Check accessibility of combobox while it's closed.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
 TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
