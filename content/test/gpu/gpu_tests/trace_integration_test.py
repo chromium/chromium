@@ -471,7 +471,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     try:
       tab.action_runner.WaitForJavaScriptCondition(args.finish_js_condition,
-                                                   timeout=30)
+                                                   timeout=60)
     finally:
       test_messages = tab.EvaluateJavaScript(
           'domAutomationController._messages')
