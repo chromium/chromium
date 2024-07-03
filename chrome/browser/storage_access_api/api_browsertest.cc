@@ -2515,6 +2515,31 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 }
 
+// Validate that if third-party cookies are not blocked, requestStorageAccess
+// beyond cookies returns a usable handle.
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+                       BeyondCookies) {
+  SetBlockThirdPartyCookies(false);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+  EXPECT_TRUE(
+      content::EvalJs(
+          GetFrame(),
+          "document.requestStorageAccess({all: true}).then((handle) => "
+          "handle.estimate().then(() => true, () => false), () => false)")
+          .ExtractBool());
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
+}
+
 class StorageAccessAPIAutograntsWithFedCMBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
