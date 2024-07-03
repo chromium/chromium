@@ -19,6 +19,7 @@ found in the LICENSE file.
     android:paddingBottom="8dp"
     android:gravity="center_vertical"
     android:text="@string/signin_add_account_to_device"
+    android:textDirection="locale"
     android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"
     app:drawableStartCompat="@drawable/ic_person_add_40dp"
     app:drawableTint="?attr/colorPrimary" />
