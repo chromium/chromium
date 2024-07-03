@@ -194,9 +194,9 @@ void AuthenticateWithLegacyApi(const std::u16string& message,
       std::move(result_callback));
 }
 
-void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
-                               UserConsentVerificationResult result,
-                               const std::u16string& message) {
+void OnAuthenticationReceived(base::OnceCallback<void(bool)> callback,
+                              const std::u16string& message,
+                              UserConsentVerificationResult result) {
   AuthenticationResultStatusWin authentication_result =
       ConvertUserConsentVerificationResult(result);
   RecordWindowsHelloAuthenticationResult(authentication_result);
@@ -229,14 +229,6 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
   }
 }
 
-void OnAuthenticationReceived(base::OnceCallback<void(bool)> callback,
-                              const std::u16string& message,
-                              UserConsentVerificationResult result) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ReturnAuthenticationValue, std::move(callback),
-                                result, message));
-}
-
 void OnAuthenticationAsyncOpFail(
     base::OnceCallback<void(bool)> callback,
     const std::u16string& message,
@@ -245,9 +237,7 @@ void OnAuthenticationAsyncOpFail(
       AuthenticationResultStatusWin::kAsyncOperationFailed);
   RecordAuthenticationAsyncOpFailureReson(hr);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AuthenticateWithLegacyApi, message, std::move(callback)));
+  AuthenticateWithLegacyApi(message, std::move(callback));
 }
 
 // TODO(b/349728186): Cleanup after Win11 solution is launched.
