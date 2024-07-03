@@ -53,9 +53,6 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 }  // namespace
 
 void RecordSourceRegistrationError(SourceRegistrationError error) {
-  static_assert(SourceRegistrationError::kMaxValue ==
-                    SourceRegistrationError::kDestinationLimitPriorityInvalid,
-                "Update ConversionSourceRegistrationError enum.");
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError13", error);
 }
 

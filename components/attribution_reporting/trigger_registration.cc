@@ -94,11 +94,6 @@ bool ContributionsFilteringIdsFitWithinMaxBytes(
 }  // namespace
 
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
-  static_assert(
-      TriggerRegistrationError::kMaxValue ==
-          TriggerRegistrationError::
-              kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig,
-      "Update ConversionTriggerRegistrationError enum.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError11",
                                 error);
 }

@@ -3301,6 +3301,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not seen, from Long-press"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionAggregatableDebugReportingRegistrationError) -->
+
 <enum name="ConversionAggregatableDebugReportingRegistrationError">
   <int value="0" label="Root JSON value has wrong type"/>
   <int value="1" label="budget invalid"/>
@@ -3311,6 +3313,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="debug_data types invalid"/>
   <int value="7" label="aggregation_coordinator_origin invalid"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/aggregatable_debug_reporting_config.h:AggregatableDebugReportingConfigError) -->
 
 <enum name="ConversionAggregatableDebugReportProcessResult">
   <int value="0" label="Success"/>
@@ -3527,6 +3531,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="None"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionSourceRegistrationError) -->
+
 <enum name="ConversionSourceRegistrationError">
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>
@@ -3577,6 +3583,8 @@ Called by update_net_error_codes.py.-->
   <int value="41" label="event_level_epsilon value is invalid"/>
   <int value="42" label="destination_limit_priority is invalid"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
 
 <enum name="ConversionsRegistrationMethod">
   <int value="0" label="kNavForeground: Registered via foreground navigation"/>
@@ -3739,6 +3747,8 @@ Called by update_net_error_codes.py.-->
              formatted"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionVerboseDebugReportType) -->
+
 <enum name="ConversionVerboseDebugReportType">
   <int value="0" label="source-destination-limit"/>
   <int value="1" label="source-noised"/>
@@ -3777,6 +3787,8 @@ Called by update_net_error_codes.py.-->
   <int value="33" label="source-trigger-state-cardinality-limit"/>
   <int value="36" label="source-destination-per-day-rate-limit"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->
 
 <enum name="CookieAccessType">
   <int value="-1" label="Unknown cookie access"/>

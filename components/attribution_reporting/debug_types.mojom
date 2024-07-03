@@ -6,6 +6,8 @@ module attribution_reporting.mojom;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(DebugDataType)
 enum DebugDataType {
   kSourceDestinationLimit = 0,
   kSourceNoised = 1,
@@ -46,3 +48,4 @@ enum DebugDataType {
   kSourceDestinationPerDayRateLimit = 36,
   kSourceDestinationLimitReplaced = 37,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionVerboseDebugReportType)

@@ -306,11 +306,6 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 }
 
 void RecordVerboseDebugReportType(DebugDataType type) {
-  static_assert(
-      DebugDataType::kMaxValue ==
-          DebugDataType::kSourceDestinationLimitReplaced,
-      "Update ConversionVerboseDebugReportType enum if the new type is "
-      "supported for verbose debug reports.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);
 }
