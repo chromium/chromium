@@ -39,7 +39,7 @@ const void* kConstrainedWindowWidgetIdentifier = "ConstrainedWindowWidget";
 namespace {
 
 // Storage access for the currently active ConstrainedWindowViewsClient.
-std::unique_ptr<ConstrainedWindowViewsClient>& CurrentClient() {
+std::unique_ptr<ConstrainedWindowViewsClient>& CurrentBrowserModalClient() {
   static base::NoDestructor<std::unique_ptr<ConstrainedWindowViewsClient>>
       client;
   return *client;
@@ -194,7 +194,7 @@ void ConfigureDesiredBoundsDelegate(views::WidgetDelegate* dialog_delegate,
 // static
 void SetConstrainedWindowViewsClient(
     std::unique_ptr<ConstrainedWindowViewsClient> new_client) {
-  CurrentClient() = std::move(new_client);
+  CurrentBrowserModalClient() = std::move(new_client);
 }
 
 void UpdateWebContentsModalDialogPosition(
@@ -231,7 +231,6 @@ content::WebContents* GetTopLevelWebContents(
 views::Widget* ShowWebModalDialogViews(
     views::WidgetDelegate* dialog,
     content::WebContents* initiator_web_contents) {
-  DCHECK(CurrentClient());
   // For embedded WebContents, use the embedder's WebContents for constrained
   // window.
   content::WebContents* web_contents =
@@ -243,11 +242,11 @@ views::Widget* ShowWebModalDialogViews(
 
 std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::WidgetDelegate* dialog,
-    content::WebContents* initiator_web_contents) {
+    content::WebContents* initiator_web_contents,
+    views::Widget::InitParams::Ownership expected_ownership) {
   views::Widget* widget =
       ShowWebModalDialogViews(dialog, initiator_web_contents);
-  CHECK_EQ(widget->ownership(),
-           views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  CHECK_EQ(widget->ownership(), expected_ownership);
   return base::WrapUnique<views::Widget>(widget);
 }
 
@@ -288,10 +287,10 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
                                              gfx::NativeWindow parent) {
   DCHECK_NE(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
   DCHECK_NE(ui::MODAL_TYPE_NONE, dialog->GetModalType());
-  DCHECK(!parent || CurrentClient());
+  DCHECK(!parent || CurrentBrowserModalClient());
 
   gfx::NativeView parent_view =
-      parent ? CurrentClient()->GetDialogHostView(parent) : nullptr;
+      parent ? CurrentBrowserModalClient()->GetDialogHostView(parent) : nullptr;
   views::Widget* widget =
       views::DialogDelegate::CreateDialogWidget(dialog, nullptr, parent_view);
   widget->SetNativeWindowProperty(
@@ -310,7 +309,8 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
     return widget;
 
   ModalDialogHost* host =
-      parent ? CurrentClient()->GetModalDialogHost(parent) : nullptr;
+      parent ? CurrentBrowserModalClient()->GetModalDialogHost(parent)
+             : nullptr;
   if (host) {
     DCHECK_EQ(parent_view, host->GetHostView());
     ModalDialogHostObserver* dialog_host_observer =
@@ -328,7 +328,8 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
   // TODO(crbug.com/41493925): Remove will_use_custom_frame once native frame
   // dialogs support autosize.
   bool will_use_custom_frame = views::DialogDelegate::CanSupportCustomFrame(
-      parent ? CurrentClient()->GetDialogHostView(parent) : nullptr);
+      parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
+             : nullptr);
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::MODAL_TYPE_WINDOW, will_use_custom_frame);
   dialog->SetOwnedByWidget(true);

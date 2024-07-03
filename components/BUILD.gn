@@ -1036,6 +1036,11 @@ if (use_blink) {
       data += [ "$root_out_dir/Content Shell.app/" ]
     }
 
+    if (toolkit_views && !is_mac) {
+      # TODO(crbug.com/349781050): Enable test on Mac.
+      deps += [ "//components/constrained_window:browser_tests" ]
+    }
+
     if (is_ios) {
       entitlements_path = "//content/app/ios/appex/app.entitlements"
       bundle_deps = [

@@ -281,7 +281,8 @@ HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
   // WindowClosing callback is guaranteed to be called regardless of whether the
   // dialog is closed by the user or the OS.
   dialog_delegate_.RegisterWindowClosingCallback(std::move(close_callback));
-  dialog_delegate_.SetWidgetOwnsNativeWidget();
+  dialog_delegate_.SetOwnershipOfNewWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   dialog_delegate_.SetModalType(ui::MODAL_TYPE_CHILD);
   dialog_delegate_.SetShowCloseButton(false);
@@ -296,7 +297,8 @@ HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
       dialog_view_->GetInitiallyFocusedView());
 
   dialog_widget_ = constrained_window::ShowWebModalDialogViewsOwned(
-      &dialog_delegate_, web_contents);
+      &dialog_delegate_, web_contents,
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   NotifyShownAsync(web_contents_);
 }

@@ -118,11 +118,13 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
     gfx::NativeWindow context,
     gfx::NativeView parent,
     const gfx::Rect& bounds) {
+  DialogDelegate* dialog = delegate->AsDialogDelegate();
+
   views::Widget::InitParams params(
-      Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+      dialog ? dialog->ownership_of_new_widget_
+             : Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.delegate = delegate;
   params.bounds = bounds;
-  DialogDelegate* dialog = delegate->AsDialogDelegate();
 
   if (dialog)
     dialog->params_.custom_frame &= CanSupportCustomFrame(parent);
@@ -146,10 +148,6 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   // method behaviors.
   params.child = parent && (delegate->GetModalType() == ui::MODAL_TYPE_CHILD);
 #endif
-
-  if (dialog && dialog->widget_owns_native_widget_) {
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  }
 
   if (BubbleDialogDelegate* bubble = delegate->AsBubbleDialogDelegate()) {
     // TODO(crbug.com/41493925): Remove this CHECK once native frame dialogs
@@ -466,9 +464,10 @@ void DialogDelegate::SetCloseCallback(base::OnceClosure callback) {
   close_callback_ = std::move(callback);
 }
 
-void DialogDelegate::SetWidgetOwnsNativeWidget() {
+void DialogDelegate::SetOwnershipOfNewWidget(
+    Widget::InitParams::Ownership ownership) {
   CHECK(!GetWidget());
-  widget_owns_native_widget_ = true;
+  ownership_of_new_widget_ = ownership;
 }
 
 std::optional<std::unique_ptr<View>> DialogDelegate::DisownExtraView() {

@@ -52,3 +52,20 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "constrained_window_views_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":constrained_window",
+    "//components/web_modal:test_support",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

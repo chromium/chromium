@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/widget.h"
 
 namespace content {
 class WebContents;
@@ -20,7 +21,6 @@ class DialogModel;
 
 namespace views {
 class DialogDelegate;
-class Widget;
 class WidgetDelegate;
 }
 
@@ -66,7 +66,8 @@ views::Widget* ShowWebModalDialogViews(
 // As above, but with an owned widget.
 std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::WidgetDelegate* dialog,
-    content::WebContents* initiator_web_contents);
+    content::WebContents* initiator_web_contents,
+    views::Widget::InitParams::Ownership expected_ownership);
 
 // Create a widget for |dialog| that is modal to |web_contents|.
 // The modal type of |dialog->GetModalType()| must be ui::MODAL_TYPE_CHILD.
