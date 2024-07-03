@@ -40,8 +40,8 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void addTeardown(V8VoidFunction*);
 
   // API attributes.
-  bool active() { return active_; }
-  AbortSignal* signal() { return signal_.Get(); }
+  bool active() const { return active_; }
+  AbortSignal* signal() const { return signal_.Get(); }
 
   void Trace(Visitor*) const override;
 
