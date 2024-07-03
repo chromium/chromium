@@ -31,6 +31,10 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.13.0
+
+  - Add new methods ``.cloned()`` and ``.copied()``, by @ColonelThirtyTwo (#107)
+
 - 1.12.0
 
   - **MSRV**: ``either`` now requires Rust 1.37 or later.

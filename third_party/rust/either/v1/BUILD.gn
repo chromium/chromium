@@ -13,19 +13,19 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/into_either.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/iterator.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/serde_untagged.rs",
-    "//third_party/rust/chromium_crates_io/vendor/either-1.12.0/src/serde_untagged_optional.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/into_either.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/iterator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/serde_untagged.rs",
+    "//third_party/rust/chromium_crates_io/vendor/either-1.13.0/src/serde_untagged_optional.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.12.0"
+  cargo_pkg_version = "1.13.0"
   cargo_pkg_authors = "bluss"
   cargo_pkg_name = "either"
   cargo_pkg_description = "The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases."

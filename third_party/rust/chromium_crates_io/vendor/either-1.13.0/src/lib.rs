@@ -6,10 +6,10 @@
 //! **Crate features:**
 //!
 //! * `"use_std"`
-//! Enabled by default. Disable to make the library `#![no_std]`.
+//!   Enabled by default. Disable to make the library `#![no_std]`.
 //!
 //! * `"serde"`
-//! Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
+//!   Disabled by default. Enable to `#[derive(Serialize, Deserialize)]` for `Either`
 //!
 
 #![doc(html_root_url = "https://docs.rs/either/1/")]
@@ -1089,6 +1089,62 @@ impl<T> Either<T, T> {
         match self {
             Left(l) => Left(f(l)),
             Right(r) => Right(f(r)),
+        }
+    }
+}
+
+impl<L, R> Either<&L, &R> {
+    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by cloning the contents of
+    /// either branch.
+    pub fn cloned(self) -> Either<L, R>
+    where
+        L: Clone,
+        R: Clone,
+    {
+        match self {
+            Self::Left(l) => Either::Left(l.clone()),
+            Self::Right(r) => Either::Right(r.clone()),
+        }
+    }
+
+    /// Maps an `Either<&L, &R>` to an `Either<L, R>` by copying the contents of
+    /// either branch.
+    pub fn copied(self) -> Either<L, R>
+    where
+        L: Copy,
+        R: Copy,
+    {
+        match self {
+            Self::Left(l) => Either::Left(*l),
+            Self::Right(r) => Either::Right(*r),
+        }
+    }
+}
+
+impl<L, R> Either<&mut L, &mut R> {
+    /// Maps an `Either<&mut L, &mut R>` to an `Either<L, R>` by cloning the contents of
+    /// either branch.
+    pub fn cloned(self) -> Either<L, R>
+    where
+        L: Clone,
+        R: Clone,
+    {
+        match self {
+            Self::Left(l) => Either::Left(l.clone()),
+            Self::Right(r) => Either::Right(r.clone()),
+        }
+    }
+
+    /// Maps an `Either<&mut L, &mut R>` to an `Either<L, R>` by copying the contents of
+    /// either branch.
+    pub fn copied(self) -> Either<L, R>
+    where
+        L: Copy,
+        R: Copy,
+    {
+        match self {
+            Self::Left(l) => Either::Left(*l),
+            Self::Right(r) => Either::Right(*r),
         }
     }
 }
