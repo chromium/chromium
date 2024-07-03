@@ -53,11 +53,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   };
 
   // An interface implemented by a Listener object wishing to know about the
-  // the result of the Select File/Folder action. These callbacks must be
-  // re-entrant.
-  // WARNING: See note about the lifetime of the Listener in the
-  // SelectFileDialog::Create() comments below.
-  //
+  // the result of the Select File/Folder action. For any given call to
+  // SelectFile(), exactly one of these callbacks will be invoked once, possibly
+  // *but not necessarily* while SelectFile() is still on the stack.
+
   // TODO(https://crbug.com/340178601): remove the params field. The default
   // implementations of the variants that take params call the variants that do
   // not take params, so if your client code does not use params, you should
@@ -98,18 +97,17 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //
   // This is optional and should only be used by components that have to live
   // elsewhere in the tree due to layering violations. (For example, because of
-  // a dependency on chrome's extension system.) Takes ownership of `factory`,
-  // destroying it on the next SetFactory() call, and leaking otherwise.
+  // a dependency on chrome's extension system.)
   static void SetFactory(std::unique_ptr<SelectFileDialogFactory> factory);
 
   // Creates a dialog box helper. This is an inexpensive wrapper around the
   // platform-native file selection dialog. |policy| is an optional class that
   // can prevent showing a dialog.
   //
-  // WARNING: The lifetime of the Listener is not managed by this class.
-  // The calling code should call always ListenerDestroyed() (on the base class
-  // BaseShellDialog) when the listener is destroyed since the SelectFileDialog
-  // is refcounted and uses a background thread.
+  // Note that Listener's lifetime is tricky to get right: Listener must outlive
+  // the returned SelectFileDialog, but there may be hidden references to that
+  // object held by worker threads. In general it is only safe to destroy the
+  // listener when there are no calls to SelectFile() outstanding.
   static scoped_refptr<SelectFileDialog> Create(
       Listener* listener,
       std::unique_ptr<SelectFilePolicy> policy);
@@ -181,12 +179,20 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
 
   // Selects a File.
   // Before doing anything this function checks if FileBrowsing is forbidden
-  // by Policy. If so, it tries to show an InfoBar and behaves as though no File
-  // was selected (the user clicked `Cancel` immediately).
-  // Otherwise it will start displaying the dialog box. This will also
-  // block the calling window until the dialog box is complete. The listener
-  // associated with this object will be notified when the selection is
-  // complete.
+  // by the SelectFilePolicy supplied at creation time. If so, it tries to show
+  // an InfoBar and behaves as though the dialog was cancelled, by posting a
+  // call back to the listener's FileSelectionCanceled method. Otherwise, it
+  // starts showing the dialog.
+  //
+  // On some platforms (Linux-kde), this method blocks the entire UI thread
+  // until the dialog is closed. On others (Mac) it may enter a nested message
+  // loop. It sometimes, but not always, tries to block input events from being
+  // delivered to its owning window (Windows, Linux-gtk). On some platforms it
+  // uses a background thread, although listener callbacks are always run on the
+  // UI thread. In general when using this method you must ensure that the
+  // Listener, and any data passed to SelectFile(), remain live until one of the
+  // callbacks has been run.
+  //
   // |type| is the type of file dialog to be shown, see Type enumeration above.
   // |title| is the title to be displayed in the dialog. If this string is
   //   empty, the default title is used.
@@ -205,7 +211,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // |params| is data from the calling context which will be passed through to
   //   the listener. Can be NULL. Non-NULL values of |params| are deprecated.
   // |caller| is the URL of the dialog caller which can be used to check further
-  //   policy restrictions, when applicable. Can be NULL.
+  //   policy restrictions, when applicable. Can be NULL. Non-NULL values of
+  //   |caller| are deprecated - store the state in the calling object directly.
   // NOTE: only one instance of any shell dialog can be shown per owning_window
   // at a time (for obvious reasons).
   void SelectFile(Type type,
