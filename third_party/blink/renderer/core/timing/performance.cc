@@ -1156,8 +1156,7 @@ PerformanceMeasure* Performance::MeasureInternal(
     end = MakeGarbageCollected<V8UnionDoubleOrString>(*end_mark);
   }
   return MeasureWithDetail(script_state, measure_name, start,
-                           /* duration = */ std::nullopt, end,
-                           ScriptValue::CreateNull(script_state->GetIsolate()),
+                           /* duration = */ std::nullopt, end, ScriptValue(),
                            exception_state);
 }
 
