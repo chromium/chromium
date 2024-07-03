@@ -5357,10 +5357,52 @@ source_set("unit_tests") {
   ]
 }
 
-group("browser_tests") {
+source_set("browser_tests") {
   testonly = true
 
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "logging_browsertest.cc",
+    "network_change_manager_client_browsertest.cc",
+    "note_taking_helper_browsertest.cc",
+    "os_url_handler_browsertest.cc",
+    "preferences_browsertest.cc",
+    "shutdown_policy_browsertest.cc",
+    "startup_settings_cache_browsertest.cc",
+    "url_handler_browsertest.cc",
+    "wmp_browsertest.cc",
+  ]
+
   deps = [
+    ":ash",
+    ":test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//components/account_id",
+    "//components/language/core/browser",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//url",
+
+    # Gather browser tests from subdirectories.
     "//chrome/browser/ash/accessibility:browser_tests",
     "//chrome/browser/ash/app_mode:browser_tests",
     "//chrome/browser/ash/app_restore:browser_tests",
@@ -5387,6 +5429,10 @@ group("browser_tests") {
     "//chrome/browser/ash/system_web_apps:browser_tests",
     "//chrome/browser/ash/wallpaper:browser_tests",
   ]
+
+  if (enable_extensions) {
+    sources += [ "eol_notification_browsertest.cc" ]
+  }
 }
 
 if (is_chromeos_device) {
