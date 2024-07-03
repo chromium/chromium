@@ -265,7 +265,10 @@ void PickerView::GetZeroStateSuggestedResults(
 }
 
 void PickerView::RequestPseudoFocus(views::View* view) {
-  if (active_item_container_ == nullptr ||
+  // Only allow `view` to become pseudo focused if it is visible and part of the
+  // active item container.
+  if (view == nullptr || !view->IsDrawn() ||
+      active_item_container_ == nullptr ||
       !active_item_container_->ContainsItem(view)) {
     return;
   }
