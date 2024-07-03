@@ -9,7 +9,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -1101,10 +1100,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
         // Skip initialization if testing value has been set.
         if (mTabGroupSyncIphController == null) {
-            // TODO: Change Context to Activity in this class to avoid casting.
             UserEducationHelper userEducationHelper =
                     new UserEducationHelper(
-                            (Activity) mContext,
+                            mWindowAndroid.getActivity().get(),
                             mModel.getProfile(),
                             new Handler(Looper.getMainLooper()));
             Tracker tracker = TrackerFactory.getTrackerForProfile(mModel.getProfile());
