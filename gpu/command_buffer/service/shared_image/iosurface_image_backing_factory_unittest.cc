@@ -450,9 +450,9 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_WriteReadReadOnThreeDevices) {
   ASSERT_NE(device_2, nullptr);
 
   gfx::Size size(256, 256);
-  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_WEBGPU_READ,
-                               SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-                               SHARED_IMAGE_USAGE_SCANOUT};
+  SharedImageUsageSet usage = {
+      SHARED_IMAGE_USAGE_WEBGPU_READ, SHARED_IMAGE_USAGE_WEBGPU_WRITE,
+      SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT};
   auto factory_ref_0 = CreateSharedImage(size, usage);
   auto factory_ref_1 = CreateSharedImage(size, usage);
   auto factory_ref_2 = CreateSharedImage(size, usage);
