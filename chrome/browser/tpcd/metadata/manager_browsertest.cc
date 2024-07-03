@@ -51,6 +51,7 @@ const base::FilePath::CharType kComponentFileName[] =
 
 const char* kFirstPartyHost = "a.test";
 const char* kThirdPartyHost1 = "b.test";
+const char* kThirdPartyHost1Sub = "sub.b.test";
 const char* kThirdPartyHost2 = "c.test";
 const char* kThirdPartyHost3 = "d.test";
 
@@ -402,6 +403,81 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     histogram_tester.ExpectUniqueSample(
         kThirdPartyCookieAllowMechanismHistogram,
         ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
+  }
+}
+
+// This test coverage ensures more specific patterns precede on others.
+IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
+                       TpcdDtGracePeriodEnforced_EntryPrecedence) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  const GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
+  const GURL third_party_url_1 = https_server()->GetURL(kThirdPartyHost1, "/");
+  const GURL third_party_url_1_sub =
+      https_server()->GetURL(kThirdPartyHost1Sub, "/");
+
+  const std::string secondary_pattern_spec =
+      ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
+
+  const std::string wildcard = "[*.]";
+  const std::string primary_pattern_spec_1 =
+      base::StrCat({wildcard, kThirdPartyHost1});
+  const std::string primary_pattern_spec_1_sub =
+      base::StrCat({wildcard, kThirdPartyHost1Sub});
+
+  Metadata metadata;
+
+  // This order of insertion of entries should be maintained in order to have
+  // the less specific entry first in the list.
+  {
+    const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
+    tpcd::metadata::helpers::AddEntryToMetadata(
+        metadata, primary_pattern_spec_1, secondary_pattern_spec,
+        Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_on);
+
+    const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
+    tpcd::metadata::helpers::AddEntryToMetadata(
+        metadata, primary_pattern_spec_1_sub, secondary_pattern_spec,
+        Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_off);
+  }
+
+  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
+  MockComponentInstallation(metadata);
+  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 2u);
+
+  auto embedder_origin = url::Origin::Create(first_party_url);
+
+  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      third_party_url_1, net::SiteForCookies(), embedder_origin, {}));
+  {
+    base::HistogramTester histogram_tester;
+    content::CookieChangeObserver observer(GetWebContents(),
+                                           /*num_expected_calls=*/2);
+    NavigateToPageWithFrame(kFirstPartyHost);
+    NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
+    ExpectCookie(GetFrame(), /*expected=*/true);
+    observer.Wait();
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectUniqueSample(
+        kThirdPartyCookieAllowMechanismHistogram,
+        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
+  }
+
+  EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {}));
+  {
+    base::HistogramTester histogram_tester;
+    NavigateToPageWithFrame(kFirstPartyHost);
+    NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
+    ExpectCookie(GetFrame(), /*expected=*/false);
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
+        0);
   }
 }
 
