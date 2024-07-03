@@ -5419,6 +5419,12 @@ targets.legacy_basic_suite(
                 shards = 4,
             ),
         ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "wpt_web_tests_webview",
+    tests = {
         "webview_blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 4,

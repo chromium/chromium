@@ -5638,6 +5638,9 @@
           ],
         },
       },
+    },
+
+    'wpt_web_tests_webview': {
       'webview_blink_wpt_tests': {
         'test': 'trichrome_webview_wpt_64',
         'results_handler': 'layout tests',

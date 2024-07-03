@@ -1265,6 +1265,19 @@
           'gtest_tests': 'webview_trichrome_64_cts_gtests',
         }
       },
+      'android-webview-13-x64-wpt-android-specific': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          '13-x64-emulator',
+          'emulator-8-cores',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_webview',
+        },
+        'os_type': 'android',
+      },
       'android-webview-pie-x86-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',

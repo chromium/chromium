@@ -858,11 +858,24 @@ try_.builder(
 
 try_.builder(
     name = "android-chrome-13-x64-wpt-android-specific",
-    description_html = "Run wpt tests on Android 13 emulators.",
+    description_html = "Run wpt tests on Chrome Android in Android 13 emulators.",
     mirrors = ["ci/android-chrome-13-x64-wpt-android-specific"],
     gn_args = gn_args.config(
         configs = [
             "ci/android-chrome-13-x64-wpt-android-specific",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "chrome-blink-engprod@google.com",
+)
+
+try_.builder(
+    name = "android-webview-13-x64-wpt-android-specific",
+    description_html = "Run wpt tests on Android Webview in Android 13 emulators.",
+    mirrors = ["ci/android-webview-13-x64-wpt-android-specific"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-webview-13-x64-wpt-android-specific",
             "release_try_builder",
         ],
     ),

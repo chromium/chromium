@@ -77,6 +77,7 @@
     "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
     "android-mte-arm64-rel": "ci/android-mte-arm64-rel/gn-args.json",
     "android-tablet-14-arm64-fyi-rel": "ci/android-tablet-14-arm64-fyi-rel/gn-args.json",
+    "android-webview-13-x64-wpt-android-specific": "ci/android-webview-13-x64-wpt-android-specific/gn-args.json",
     "android-webview-pie-x86-wpt-fyi-rel": "ci/android-webview-pie-x86-wpt-fyi-rel/gn-args.json"
   },
   "chromium.angle": {
@@ -604,6 +605,7 @@
     "android-webview-12-x64-dbg": "try/android-webview-12-x64-dbg/gn-args.json",
     "android-webview-13-x64-dbg": "try/android-webview-13-x64-dbg/gn-args.json",
     "android-webview-13-x64-hostside-rel": "try/android-webview-13-x64-hostside-rel/gn-args.json",
+    "android-webview-13-x64-wpt-android-specific": "try/android-webview-13-x64-wpt-android-specific/gn-args.json",
     "android-webview-oreo-arm64-dbg": "try/android-webview-oreo-arm64-dbg/gn-args.json",
     "android-webview-pie-arm64-dbg": "try/android-webview-pie-arm64-dbg/gn-args.json",
     "android-webview-pie-x86-wpt-fyi-rel": "try/android-webview-pie-x86-wpt-fyi-rel/gn-args.json",
