@@ -44,7 +44,7 @@ void PasswordManagerClient::ShowKeyboardReplacingSurface(
 }
 #endif
 
-bool PasswordManagerClient::CanUseBiometricAuthForFilling(
+bool PasswordManagerClient::IsReauthBeforeFillingRequired(
     device_reauth::DeviceAuthenticator*) {
   return false;
 }

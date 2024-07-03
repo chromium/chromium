@@ -558,7 +558,7 @@ void ChromePasswordManagerClient::
 }
 #endif
 
-bool ChromePasswordManagerClient::CanUseBiometricAuthForFilling(
+bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
     device_reauth::DeviceAuthenticator* authenticator) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (!GetLocalStatePrefs() || !GetPrefs() || !authenticator) {
@@ -574,7 +574,7 @@ bool ChromePasswordManagerClient::CanUseBiometricAuthForFilling(
   if (!authenticator || !GetPrefs()) {
     return false;
   }
-  return authenticator->CanAuthenticateWithBiometrics() &&
+  return authenticator->CanAuthenticateWithBiometricOrScreenLock() &&
          base::FeatureList::IsEnabled(
              password_manager::features::kBiometricTouchToFill) &&
          GetPrefs()->GetBoolean(

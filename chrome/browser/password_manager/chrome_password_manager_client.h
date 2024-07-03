@@ -153,7 +153,7 @@ class ChromePasswordManagerClient
       base::OnceCallback<void(bool)> shown_cb) override;
 #endif
 
-  bool CanUseBiometricAuthForFilling(
+  bool IsReauthBeforeFillingRequired(
       device_reauth::DeviceAuthenticator* authenticator) override;
   // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all

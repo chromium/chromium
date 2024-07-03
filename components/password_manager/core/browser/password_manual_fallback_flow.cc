@@ -277,7 +277,7 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
       password_client_->GetDeviceAuthenticator();
   // Note: this is currently only implemented on Android, Mac and Windows.
   // For other platforms, the `authenticator` will be null.
-  if (!password_client_->CanUseBiometricAuthForFilling(authenticator.get())) {
+  if (!password_client_->IsReauthBeforeFillingRequired(authenticator.get())) {
     std::move(fill_fields).Run();
   } else {
     authenticator_ = std::move(authenticator);

@@ -102,7 +102,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(bool,
-              CanUseBiometricAuthForFilling,
+              IsReauthBeforeFillingRequired,
               (device_reauth::DeviceAuthenticator*),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
@@ -631,7 +631,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
                                        std::u16string(u"password")));
@@ -662,7 +662,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -705,7 +705,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -807,7 +807,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
   FieldRendererId field_id = MakeFieldRendererId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
   EXPECT_CALL(driver(), FillField(std::u16string(u"password")));
   flow().DidAcceptSuggestion(
@@ -831,7 +831,7 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -896,7 +896,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
@@ -937,7 +937,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthIfPreviousNotFinished) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*authenticator2, AuthenticateWithMessage);
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
@@ -974,7 +974,7 @@ TEST_F(PasswordManualFallbackFlowTest, CancelsAuthOnDestroy) {
   auto authenticator_ptr = authenticator.get();
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
-  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+  EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(true));
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));

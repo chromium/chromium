@@ -233,7 +233,7 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       client_->GetDeviceAuthenticator();
-  if (client_->CanUseBiometricAuthForFilling(authenticator.get())) {
+  if (client_->IsReauthBeforeFillingRequired(authenticator.get())) {
     authenticator_ = std::move(authenticator);
     authenticator_->AuthenticateWithMessage(
         u"", base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,

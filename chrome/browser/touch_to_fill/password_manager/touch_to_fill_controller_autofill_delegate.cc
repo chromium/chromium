@@ -131,7 +131,7 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
-  if (!password_client_->CanUseBiometricAuthForFilling(authenticator_.get())) {
+  if (!password_client_->IsReauthBeforeFillingRequired(authenticator_.get())) {
     FillCredential(credential);
     return;
   }

@@ -208,7 +208,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (override));
   MOCK_METHOD(bool,
-              CanUseBiometricAuthForFilling,
+              IsReauthBeforeFillingRequired,
               (device_reauth::DeviceAuthenticator*),
               (override));
 
@@ -1424,7 +1424,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, test_password_));
 
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(false));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(false));
   EXPECT_CALL(client, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
@@ -1469,7 +1469,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 
@@ -1517,7 +1517,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
                   autofill::SuggestionHidingReason::kAcceptSuggestion));
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 
@@ -1560,7 +1560,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1605,7 +1605,7 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1651,7 +1651,7 @@ TEST_F(PasswordAutofillManagerTest,
       .Times(0);
 
   // The authenticator exists and is available.
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1680,7 +1680,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, kDefaultTriggerSource, base::i18n::RIGHT_TO_LEFT,
       std::u16string(), ShowWebAuthnCredentials(false), gfx::RectF());
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1697,7 +1697,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 
   // Triggering new authentication should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_ptr, Cancel());
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(*authenticator_ptr2, AuthenticateWithMessage);
 
   EXPECT_CALL(client, GetDeviceAuthenticator)
@@ -1732,7 +1732,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(MoveArg<1>(&auth_callback));
 
-  EXPECT_CALL(client, CanUseBiometricAuthForFilling).WillOnce(Return(true));
+  EXPECT_CALL(client, IsReauthBeforeFillingRequired).WillOnce(Return(true));
   EXPECT_CALL(client, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 

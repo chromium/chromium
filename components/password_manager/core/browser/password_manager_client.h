@@ -223,7 +223,9 @@ class PasswordManagerClient {
       base::OnceCallback<void(bool)> shown_cb);
 #endif
 
-  virtual bool CanUseBiometricAuthForFilling(
+  // Checks whether user re-authentication should be triggered before password
+  // filling.
+  virtual bool IsReauthBeforeFillingRequired(
       device_reauth::DeviceAuthenticator* authenticator);
 
   // Returns a pointer to a DeviceAuthenticator. Might be null if
