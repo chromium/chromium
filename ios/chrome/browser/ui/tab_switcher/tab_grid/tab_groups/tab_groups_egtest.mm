@@ -1080,7 +1080,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
                  @"Inactive tab count should be 0");
 
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
