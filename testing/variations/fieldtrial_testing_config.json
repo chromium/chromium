@@ -91,11 +91,12 @@
     "AccessibilityManageBroadcastReceiverOnBackground": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240701",
                     "enable_features": [
                         "AccessibilityManageBroadcastReceiverOnBackground"
                     ]
