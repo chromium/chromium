@@ -20,6 +20,10 @@
 #include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 
+namespace ukm {
+class UkmRecorder;
+}
+
 namespace viz {
 struct FrameTimingDetails;
 }
@@ -27,7 +31,6 @@ struct FrameTimingDetails;
 namespace cc {
 class DroppedFrameCounter;
 class EventLatencyTracker;
-class UkmManager;
 struct BeginMainFrameMetrics;
 struct FrameInfo;
 
@@ -83,7 +86,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
 
-  void SetUkmManager(UkmManager* manager);
+  void InitializeUkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
+  void SetSourceId(ukm::SourceId source_id);
 
   void AddActiveTracker(FrameSequenceTrackerType type);
   void RemoveActiveTracker(FrameSequenceTrackerType type);

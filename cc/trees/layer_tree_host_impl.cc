@@ -557,9 +557,6 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   mutator_host_->ClearMutators();
   mutator_host_->SetMutatorHostClient(nullptr);
 
-  // Clear the UKM Manager so that we do not try to report when the
-  // UKM System has shut down.
-  compositor_frame_reporting_controller_->SetUkmManager(nullptr);
   // `frame_trackers_` holds a pointer to
   // `compositor_frame_reporting_controller_`. Setting
   // `compositor_frame_reporting_controller_` to nullptr here leads to
@@ -5393,9 +5390,8 @@ void LayerTreeHostImpl::ShowScrollbarsForImplScroll(ElementId element_id) {
 
 void LayerTreeHostImpl::InitializeUkm(
     std::unique_ptr<ukm::UkmRecorder> recorder) {
-  DCHECK(!ukm_manager_);
-  ukm_manager_ = std::make_unique<UkmManager>(std::move(recorder));
-  compositor_frame_reporting_controller_->SetUkmManager(ukm_manager_.get());
+  compositor_frame_reporting_controller_->InitializeUkmManager(
+      std::move(recorder));
 }
 
 void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
@@ -5407,10 +5403,8 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   // case. Also, since checkerboard stats are only recorded with user
   // interaction, it must be in progress when the navigation commits for this
   // case to occur.
-  if (ukm_manager_) {
-    // The source id has already been associated to the URL.
-    ukm_manager_->SetSourceId(source_id);
-  }
+  // The source id has already been associated to the URL.
+  compositor_frame_reporting_controller_->SetSourceId(source_id);
   total_frame_counter_.Reset();
   dropped_frame_counter_.Reset();
   is_measuring_smoothness_ = false;

@@ -43,7 +43,6 @@
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/total_frame_counter.h"
-#include "cc/metrics/ukm_manager.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -77,6 +76,10 @@
 
 namespace gfx {
 class PointF;
+}
+
+namespace ukm {
+class UkmRecorder;
 }
 
 namespace cc {
@@ -852,7 +855,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
           decoding_mode_map);
 
   void InitializeUkm(std::unique_ptr<ukm::UkmRecorder> recorder);
-  UkmManager* ukm_manager() { return ukm_manager_.get(); }
 
   ActiveFrameSequenceTrackers FrameSequenceTrackerActiveTypes() {
     return frame_trackers_.FrameSequenceTrackerActiveTypes();
@@ -1254,8 +1256,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ImplThreadPhase impl_thread_phase_ = ImplThreadPhase::IDLE;
 
   ImageAnimationController image_animation_controller_;
-
-  std::unique_ptr<UkmManager> ukm_manager_;
 
   // Provides RenderFrameMetadata to the Browser process upon the submission of
   // each CompositorFrame.

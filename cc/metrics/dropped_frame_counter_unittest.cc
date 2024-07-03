@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"

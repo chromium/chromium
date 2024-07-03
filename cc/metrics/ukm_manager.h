@@ -21,8 +21,6 @@ class UkmRecorder;
 
 namespace cc {
 
-enum class AggregationType;
-
 class CC_EXPORT UkmRecorderFactory {
  public:
   virtual ~UkmRecorderFactory() {}
@@ -30,7 +28,6 @@ class CC_EXPORT UkmRecorderFactory {
   virtual std::unique_ptr<ukm::UkmRecorder> CreateRecorder() = 0;
 };
 
-// TODO(xidachen): rename the class to CompositorUkmManager.
 class CC_EXPORT UkmManager {
  public:
   explicit UkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
@@ -57,7 +54,7 @@ class CC_EXPORT UkmManager {
 
   ukm::UkmRecorder* recorder() { return recorder_.get(); }
 
-  ukm::SourceId source_id() { return source_id_; }
+  ukm::SourceId source_id() const { return source_id_; }
 
  private:
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;

@@ -18,6 +18,7 @@
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 
 namespace cc {
@@ -839,9 +840,20 @@ CompositorFrameReportingController::RestoreReporterAtBeginImpl(
   return nullptr;
 }
 
-void CompositorFrameReportingController::SetUkmManager(UkmManager* manager) {
-  latency_ukm_reporter_->set_ukm_manager(manager);
-  scroll_jank_ukm_reporter_->set_ukm_manager(manager);
+void CompositorFrameReportingController::InitializeUkmManager(
+    std::unique_ptr<ukm::UkmRecorder> recorder) {
+  latency_ukm_reporter_->InitializeUkmManager(std::move(recorder));
+  // TODO(crbug/334977830): the mix of `GlobalMetricsTrackers` and `raw_ptr` is
+  // making ownership harder to follow. We should clean this all up.
+  //
+  // The order of reporters is strictly managed to guarantee their lifetimes.
+  // `latency_ukm_reporter_` outlives `scroll_jank_ukm_reporter_`.
+  scroll_jank_ukm_reporter_->set_ukm_manager(
+      latency_ukm_reporter_->ukm_manager());
+}
+
+void CompositorFrameReportingController::SetSourceId(ukm::SourceId source_id) {
+  latency_ukm_reporter_->SetSourceId(source_id);
 }
 
 CompositorFrameReporter::SmoothThread
