@@ -145,6 +145,16 @@ void SharedStorageWorklet::AddModuleHelper(
   scoped_refptr<SecurityOrigin> script_security_origin =
       SecurityOrigin::Create(script_source_url);
 
+  if (!resolve_to_worklet &&
+      !execution_context->GetSecurityOrigin()->IsSameOriginWith(
+          script_security_origin.get())) {
+    // This `addModule()` call could be affected by the breaking change
+    // proposed in https://github.com/WICG/shared-storage/pull/158. Measure its
+    // usage.
+    execution_context->CountUse(
+        WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript);
+  }
+
   if (!cross_origin_script_allowed_ &&
       !execution_context->GetSecurityOrigin()->IsSameOriginWith(
           script_security_origin.get())) {

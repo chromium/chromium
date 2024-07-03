@@ -400,6 +400,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8GPUAdapter_RequestAdapterInfo_Method,
           WebFeature::
               kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin,
+          WebFeature::kSharedStorageAPI_AddModule_CrossOriginScript,
       }));
   return *opt_in_features;
 }
