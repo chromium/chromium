@@ -3258,6 +3258,31 @@ const FeatureEntry::Choice kForceCompanionPinnedStateChoices[] = {
 };
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kLensOverlayNoOmniboxEntryPoint[] = {
+    {"omnibox-entry-point", "false"},
+};
+const FeatureEntry::FeatureParam kLensOverlayResponsiveOmniboxEntryPoint[] = {
+    {"omnibox-entry-point", "true"},
+    {"omnibox-entry-point-always-visible", "false"},
+};
+const FeatureEntry::FeatureParam kLensOverlayPersistentOmniboxEntryPoint[] = {
+    {"omnibox-entry-point", "true"},
+    {"omnibox-entry-point-always-visible", "true"},
+};
+
+const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
+    {"with no omnibox entry point", kLensOverlayNoOmniboxEntryPoint,
+     std::size(kLensOverlayNoOmniboxEntryPoint), nullptr},
+    {"with responsive chip omnibox entry point",
+     kLensOverlayResponsiveOmniboxEntryPoint,
+     std::size(kLensOverlayResponsiveOmniboxEntryPoint), nullptr},
+    {"with persistent icon omnibox entry point",
+     kLensOverlayPersistentOmniboxEntryPoint,
+     std::size(kLensOverlayPersistentOmniboxEntryPoint), nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kAlwaysEnableHdcpChoices[] = {
     {flag_descriptions::kAlwaysEnableHdcpDefault, "", ""},
@@ -9361,7 +9386,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay", flag_descriptions::kLensOverlayName,
      flag_descriptions::kLensOverlayDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlay)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensOverlay,
+                                    kLensOverlayVariations,
+                                    "LensOverlay")},
 #endif
 
     {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
