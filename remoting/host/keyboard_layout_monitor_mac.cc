@@ -31,7 +31,7 @@ namespace {
 
 class KeyboardLayoutMonitorMac : public KeyboardLayoutMonitor {
  public:
-  KeyboardLayoutMonitorMac(
+  explicit KeyboardLayoutMonitorMac(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
 
   ~KeyboardLayoutMonitorMac() override;
