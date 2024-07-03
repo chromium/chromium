@@ -146,7 +146,7 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   EXPECT_FALSE(active_behavior->ShouldGifBeSupported());
   EXPECT_TRUE(active_behavior->ShouldShowPreviewNotification());
   EXPECT_FALSE(active_behavior->ShouldSkipVideoRecordingCountDown());
-  EXPECT_FALSE(active_behavior->ShouldCreateRecordingOverlayController());
+  EXPECT_FALSE(active_behavior->ShouldCreateAnnotationsOverlayController());
   EXPECT_FALSE(active_behavior->ShouldShowUserNudge());
   EXPECT_TRUE(active_behavior->ShouldAutoSelectFirstCamera());
 }

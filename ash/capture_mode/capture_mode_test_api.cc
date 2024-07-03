@@ -153,8 +153,8 @@ void CaptureModeTestApi::ResetRecordingServiceClientReceiver() {
   controller_->recording_service_client_receiver_.reset();
 }
 
-RecordingOverlayController*
-CaptureModeTestApi::GetRecordingOverlayController() {
+AnnotationsOverlayController*
+CaptureModeTestApi::GetAnnotationsOverlayController() {
   CHECK(controller_->is_recording_in_progress());
   VideoRecordingWatcher* video_recording_watcher =
       controller_->video_recording_watcher_.get();
@@ -162,8 +162,8 @@ CaptureModeTestApi::GetRecordingOverlayController() {
   const CaptureModeBehavior* active_behavior =
       video_recording_watcher->active_behavior();
   CHECK(active_behavior);
-  CHECK(active_behavior->ShouldCreateRecordingOverlayController());
-  return video_recording_watcher->recording_overlay_controller_.get();
+  CHECK(active_behavior->ShouldCreateAnnotationsOverlayController());
+  return video_recording_watcher->annotations_overlay_controller_.get();
 }
 
 void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {

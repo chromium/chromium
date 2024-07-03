@@ -78,7 +78,7 @@ class CaptureModeBehavior {
   virtual bool ShouldGifBeSupported() const;
   virtual bool ShouldShowPreviewNotification() const;
   virtual bool ShouldSkipVideoRecordingCountDown() const;
-  virtual bool ShouldCreateRecordingOverlayController() const;
+  virtual bool ShouldCreateAnnotationsOverlayController() const;
   virtual bool ShouldShowUserNudge() const;
   virtual bool ShouldAutoSelectFirstCamera() const;
   virtual bool RequiresCaptureFolderCreation() const;

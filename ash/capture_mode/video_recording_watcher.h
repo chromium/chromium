@@ -42,7 +42,7 @@ namespace ash {
 class CaptureModeBehavior;
 class CaptureModeController;
 class CaptureModeDemoToolsController;
-class RecordingOverlayController;
+class AnnotationsOverlayController;
 class RecordedWindowRootObserver;
 
 // An instance of this class is created while video recording is in progress to
@@ -86,9 +86,9 @@ class ASH_EXPORT VideoRecordingWatcher
   CaptureModeSource recording_source() const { return recording_source_; }
 
   // Toggles the overlay widget on or off. Can only be called if
-  // `ShouldCreateRecordingOverlayController()` return true for
+  // `ShouldCreateAnnotationsOverlayController()` return true for
   // `active_behavior_`.
-  void ToggleRecordingOverlayEnabled();
+  void ToggleAnnotationsOverlayEnabled();
 
   // Clean up prior to deletion.
   void ShutDown();
@@ -229,7 +229,7 @@ class ASH_EXPORT VideoRecordingWatcher
   // push the current size of the window being recorded to the service.
   void OnWindowSizeChangeThrottleTimerFiring();
 
-  // Returns the bounds that should be used for the recording overlay widget
+  // Returns the bounds that should be used for the annotations overlay widget
   // relative to its parent |window_being_recorded_|.
   gfx::Rect GetOverlayWidgetBounds() const;
 
@@ -310,8 +310,8 @@ class ASH_EXPORT VideoRecordingWatcher
   gfx::Rect partial_region_bounds_;
 
   // Controls and owns the overlay widget, which is used to host Projector mode
-  // recording overlay contents such as annotations.
-  std::unique_ptr<RecordingOverlayController> recording_overlay_controller_;
+  // overlay contents such as annotations.
+  std::unique_ptr<AnnotationsOverlayController> annotations_overlay_controller_;
 
   // Maintains window dimmers where each is mapped by the window it dims. These
   // are created for the windows that are above the |window_being_recorded_| in

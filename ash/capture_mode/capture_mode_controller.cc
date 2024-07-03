@@ -880,13 +880,13 @@ void CaptureModeController::RefreshContentProtection() {
   }
 }
 
-void CaptureModeController::ToggleRecordingOverlayEnabled() {
+void CaptureModeController::ToggleAnnotationsOverlayEnabled() {
   CHECK(is_recording_in_progress());
   CHECK(video_recording_watcher_);
   CHECK(video_recording_watcher_->active_behavior()
-            ->ShouldCreateRecordingOverlayController());
+            ->ShouldCreateAnnotationsOverlayController());
 
-  video_recording_watcher_->ToggleRecordingOverlayEnabled();
+  video_recording_watcher_->ToggleAnnotationsOverlayEnabled();
 }
 
 bool CaptureModeController::IsRootDriveFsPath(

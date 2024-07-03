@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CAPTURE_MODE_RECORDING_OVERLAY_CONTROLLER_H_
-#define ASH_CAPTURE_MODE_RECORDING_OVERLAY_CONTROLLER_H_
+#ifndef ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_CONTROLLER_H_
+#define ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -16,25 +17,27 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace gfx{
+class Rect;
+}
+
 namespace ash {
 
 class AnnotationsOverlayView;
 
 // Constructs and owns the widget that will be used as an overlay on top of the
-// recorded surface, to host contents, such as the Projector mode's annotations,
-// which are meant to be shown as part of the recording.
-class ASH_EXPORT RecordingOverlayController {
+// underlying surface to host annotations.
+class ASH_EXPORT AnnotationsOverlayController {
  public:
-  // Constructs the overlay widget, and adds it as a child of
-  // |window_being_recorded| with the initial bounds provided.
-  // |initial_bounds_in_parent| should be relative to the parent
-  // |window_being_recorded|.
-  RecordingOverlayController(aura::Window* window_being_recorded,
+  // Constructs the overlay widget, and adds it as a child of `window`.
+  // `initial_bounds_in_parent` are initial region bounds selected by the user.
+  // Set only if the surface for annotating is a region.
+  AnnotationsOverlayController(aura::Window* window,
                              const gfx::Rect& initial_bounds_in_parent);
-  RecordingOverlayController(const RecordingOverlayController&) = delete;
-  RecordingOverlayController& operator=(const RecordingOverlayController&) =
+  AnnotationsOverlayController(const AnnotationsOverlayController&) = delete;
+  AnnotationsOverlayController& operator=(const AnnotationsOverlayController&) =
       delete;
-  ~RecordingOverlayController() = default;
+  ~AnnotationsOverlayController() = default;
 
   bool is_enabled() const { return is_enabled_; }
 
@@ -42,14 +45,14 @@ class ASH_EXPORT RecordingOverlayController {
   void Toggle();
 
   // Sets the bounds of the overlay widget. The given bounds should be relative
-  // to the parent |window_being_recorded|.
+  // to the parent `window`.
   void SetBounds(const gfx::Rect& bounds_in_parent);
 
-  // Gets the underlying window of |overlay_widget_|.
+  // Gets the underlying window of `overlay_widget_`.
   aura::Window* GetOverlayNativeWindow();
 
  private:
-  // Starts or stops showing the overlay on top of the recorded surface.
+  // Starts or stops showing the overlay on top of the surface.
   void Start();
   void Stop();
 
@@ -67,4 +70,4 @@ class ASH_EXPORT RecordingOverlayController {
 
 }  // namespace ash
 
-#endif  // ASH_CAPTURE_MODE_RECORDING_OVERLAY_CONTROLLER_H_
+#endif  // ASH_ANNOTATOR_ANNOTATIONS_OVERLAY_CONTROLLER_H_

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
@@ -16,7 +17,6 @@
 #include "ash/capture_mode/capture_mode_demo_tools_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
@@ -242,12 +242,12 @@ VideoRecordingWatcher::VideoRecordingWatcher(
   window_being_recorded_->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kAccessibility);
 
-  const bool should_create_recording_overlay =
-      active_behavior_->ShouldCreateRecordingOverlayController();
-  if (should_create_recording_overlay) {
-    recording_overlay_controller_ =
-        std::make_unique<RecordingOverlayController>(window_being_recorded_,
-                                                     GetOverlayWidgetBounds());
+  const bool should_create_annotations_overlay =
+      active_behavior_->ShouldCreateAnnotationsOverlayController();
+  if (should_create_annotations_overlay) {
+    annotations_overlay_controller_ =
+        std::make_unique<AnnotationsOverlayController>(
+            window_being_recorded_, GetOverlayWidgetBounds());
   }
 
   controller_->camera_controller()->OnRecordingStarted(active_behavior_);
@@ -264,12 +264,12 @@ VideoRecordingWatcher::~VideoRecordingWatcher() {
   CHECK(is_shutting_down_);
 }
 
-void VideoRecordingWatcher::ToggleRecordingOverlayEnabled() {
-  CHECK(active_behavior_->ShouldCreateRecordingOverlayController());
+void VideoRecordingWatcher::ToggleAnnotationsOverlayEnabled() {
+  CHECK(active_behavior_->ShouldCreateAnnotationsOverlayController());
   CHECK(!is_shutting_down_);
-  CHECK(recording_overlay_controller_);
+  CHECK(annotations_overlay_controller_);
 
-  recording_overlay_controller_->Toggle();
+  annotations_overlay_controller_->Toggle();
 }
 
 void VideoRecordingWatcher::ShutDown() {
@@ -280,7 +280,7 @@ void VideoRecordingWatcher::ShutDown() {
   cursor_events_throttle_timer_.Stop();
   cursor_capture_overlay_remote_.reset();
   root_observer_.reset();
-  recording_overlay_controller_.reset();
+  annotations_overlay_controller_.reset();
   demo_tools_controller_.reset();
   dimmers_.clear();
   ReleaseLayer();
@@ -370,8 +370,8 @@ void VideoRecordingWatcher::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  if (recording_overlay_controller_) {
-    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
+  if (annotations_overlay_controller_) {
+    annotations_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
   }
 
   if (recording_source_ != CaptureModeSource::kWindow) {
@@ -513,8 +513,8 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
     uint32_t metrics) {
   // A change in the work area, could mean that the docked magnifier state has
   // changed, therefore we must update the overlay widget's bounds if any.
-  if (recording_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
-    recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
+  if (annotations_overlay_controller_ && (metrics & DISPLAY_METRIC_WORK_AREA)) {
+    annotations_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
   }
 
   if (!(metrics &
@@ -906,8 +906,8 @@ gfx::Rect VideoRecordingWatcher::GetOverlayWidgetBounds() const {
 }
 
 bool VideoRecordingWatcher::PointerHighlightingEnabled() const {
-  return !(recording_overlay_controller_ &&
-           recording_overlay_controller_->is_enabled());
+  return !(annotations_overlay_controller_ &&
+           annotations_overlay_controller_->is_enabled());
 }
 
 }  // namespace ash

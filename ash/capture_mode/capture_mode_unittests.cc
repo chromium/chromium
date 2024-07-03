@@ -9,6 +9,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
+#include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -29,7 +30,6 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
-#include "ash/capture_mode/recording_overlay_controller.h"
 #include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
@@ -4858,7 +4858,7 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
     EXPECT_TRUE(active_behavior->ShouldGifBeSupported());
     EXPECT_TRUE(active_behavior->ShouldShowPreviewNotification());
     EXPECT_FALSE(active_behavior->ShouldSkipVideoRecordingCountDown());
-    EXPECT_FALSE(active_behavior->ShouldCreateRecordingOverlayController());
+    EXPECT_FALSE(active_behavior->ShouldCreateAnnotationsOverlayController());
     EXPECT_TRUE(active_behavior->ShouldShowUserNudge());
     EXPECT_FALSE(active_behavior->ShouldAutoSelectFirstCamera());
   };
@@ -5623,7 +5623,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   const CaptureModeBehavior* active_behavior =
       controller->video_recording_watcher_for_testing()->active_behavior();
   ASSERT_TRUE(active_behavior);
-  EXPECT_TRUE(active_behavior->ShouldCreateRecordingOverlayController());
+  EXPECT_TRUE(active_behavior->ShouldCreateAnnotationsOverlayController());
 
   EXPECT_CALL(*projector_client(), StopSpeechRecognition());
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -5844,7 +5844,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
                                      /*expected_count=*/9);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
+TEST_F(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidget) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -5853,8 +5853,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForRecordingToStart();
   CaptureModeTestApi test_api;
-  RecordingOverlayController* overlay_controller =
-      test_api.GetRecordingOverlayController();
+  AnnotationsOverlayController* overlay_controller =
+      test_api.GetAnnotationsOverlayController();
   EXPECT_FALSE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
@@ -5869,7 +5869,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/false);
 }
 
-TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       AnnotationsOverlayDockedMagnifier) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -5878,8 +5879,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForRecordingToStart();
   CaptureModeTestApi test_api;
-  RecordingOverlayController* overlay_controller =
-      test_api.GetRecordingOverlayController();
+  AnnotationsOverlayController* overlay_controller =
+      test_api.GetAnnotationsOverlayController();
 
   auto* annotator_controller = Shell::Get()->annotator_controller();
   annotator_controller->EnableAnnotatorTool();
@@ -5906,12 +5907,12 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   EXPECT_EQ(root_window_bounds, overlay_window->GetBoundsInRootWindow());
 }
 
-TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
+TEST_P(ProjectorCaptureModeIntegrationTests, AnnotationsOverlayWidgetBounds) {
   const auto capture_source = GetParam();
   StartRecordingForProjectorFromSource(capture_source);
   CaptureModeTestApi test_api;
-  RecordingOverlayController* overlay_controller =
-      test_api.GetRecordingOverlayController();
+  AnnotationsOverlayController* overlay_controller =
+      test_api.GetAnnotationsOverlayController();
   EXPECT_FALSE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayWindow(overlay_window, capture_source);
@@ -5919,7 +5920,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
 
 // Regression test for https://crbug.com/1322655.
 TEST_P(ProjectorCaptureModeIntegrationTests,
-       RecordingOverlayWidgetBoundsSecondDisplay) {
+       AnnotationsOverlayWidgetBoundsSecondDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
@@ -5935,8 +5936,8 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
   EXPECT_EQ(roots[1], GetWindowBeingRecorded()->GetRootWindow());
 
   CaptureModeTestApi test_api;
-  RecordingOverlayController* overlay_controller =
-      test_api.GetRecordingOverlayController();
+  AnnotationsOverlayController* overlay_controller =
+      test_api.GetAnnotationsOverlayController();
   EXPECT_FALSE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayWindow(overlay_window, capture_source);
@@ -5981,7 +5982,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
     EXPECT_FALSE(
         projector_active_behavior->ShouldSkipVideoRecordingCountDown());
     EXPECT_TRUE(
-        projector_active_behavior->ShouldCreateRecordingOverlayController());
+        projector_active_behavior->ShouldCreateAnnotationsOverlayController());
     EXPECT_FALSE(projector_active_behavior->ShouldShowUserNudge());
     EXPECT_TRUE(projector_active_behavior->ShouldAutoSelectFirstCamera());
   };
@@ -6036,7 +6037,8 @@ class EventTargetCatcher : public ui::EventHandler {
 
 }  // namespace
 
-TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       AnnotationsOverlayWidgetTargeting) {
   auto* controller = CaptureModeController::Get();
   controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -6045,8 +6047,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForRecordingToStart();
   CaptureModeTestApi test_api;
-  RecordingOverlayController* overlay_controller =
-      test_api.GetRecordingOverlayController();
+  AnnotationsOverlayController* overlay_controller =
+      test_api.GetAnnotationsOverlayController();
 
   auto* annotator_controller = Shell::Get()->annotator_controller();
   annotator_controller->EnableAnnotatorTool();

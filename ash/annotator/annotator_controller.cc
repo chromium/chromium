@@ -72,13 +72,13 @@ void ToggleAnnotatorCanvas() {
   auto* capture_mode_controller = CaptureModeController::Get();
   // TODO(b/200292852): This check should not be necessary, but because
   // several Projector unit tests that rely on mocking and don't test the real
-  // code path, we can end up calling |ToggleRecordingOverlayEnabled()|
+  // code path, we can end up calling |ToggleAnnotationsOverlayEnabled()|
   // without ever starting a Projector recording session.
   // |CaptureModeController| asserts all invariants via DCHECKs, and those
   // tests would crash. Remove any unnecessary mocks and test the real thing
   // if possible.
   if (capture_mode_controller->is_recording_in_progress()) {
-    capture_mode_controller->ToggleRecordingOverlayEnabled();
+    capture_mode_controller->ToggleAnnotationsOverlayEnabled();
   }
 }
 }  // namespace

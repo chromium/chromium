@@ -131,7 +131,9 @@ class ProjectorBehavior : public CaptureModeBehavior {
         return true;
     }
   }
-  bool ShouldCreateRecordingOverlayController() const override { return true; }
+  bool ShouldCreateAnnotationsOverlayController() const override {
+    return true;
+  }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldAutoSelectFirstCamera() const override { return true; }
   bool RequiresCaptureFolderCreation() const override { return true; }
@@ -375,7 +377,7 @@ bool CaptureModeBehavior::ShouldSkipVideoRecordingCountDown() const {
   return false;
 }
 
-bool CaptureModeBehavior::ShouldCreateRecordingOverlayController() const {
+bool CaptureModeBehavior::ShouldCreateAnnotationsOverlayController() const {
   return false;
 }
 

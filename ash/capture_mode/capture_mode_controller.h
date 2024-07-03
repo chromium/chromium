@@ -270,12 +270,12 @@ class ASH_EXPORT CaptureModeController
   // protection.
   void RefreshContentProtection();
 
-  // Toggles the recording overlay on or off. When on, the recording overlay
+  // Toggles the annotations overlay on or off. When on, the annotations overlay
   // widget's window will be shown and can consume all the events targeting the
   // window being recorded. Otherwise, it's hidden and cannot accept any events.
   // This can only be called while recording is in progress for a Projector
   // session.
-  void ToggleRecordingOverlayEnabled();
+  void ToggleAnnotationsOverlayEnabled();
 
   // Returns true if the given `path` is the root folder of DriveFS, false
   // otherwise.
