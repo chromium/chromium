@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -440,6 +441,8 @@ void ViewTransition::ProcessCurrentState() {
         // performing the capture.
         bool snap_browser_controls =
             document_->GetFrame()->IsOutermostMainFrame() &&
+            document_->GetPage()->GetBrowserControls().PermittedState() !=
+                cc::BrowserControlsState::kHidden &&
             creation_type_ == CreationType::kForSnapshot;
         if (!style_tracker_->Capture(snap_browser_controls)) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
