@@ -147,10 +147,6 @@ void RecordDeliveryStatus(blink::mojom::PushEventStatus status) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.DeliveryStatus", status);
 }
 
-void RecordPushSubcriptionChangeStatus(blink::mojom::PushEventStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("PushMessaging.PushSubscriptionChangeStatus",
-                            status);
-}
 void RecordUnsubscribeReason(blink::mojom::PushUnregistrationReason reason) {
   UMA_HISTOGRAM_ENUMERATION("PushMessaging.UnregistrationReason", reason);
 }
@@ -1552,8 +1548,6 @@ void PushMessagingServiceImpl::FirePushSubscriptionChange(
 void PushMessagingServiceImpl::FirePushSubscriptionChangeCallback(
     const PushMessagingAppIdentifier& app_identifier,
     blink::mojom::PushEventStatus status) {
-  // Log Data in UMA
-  RecordPushSubcriptionChangeStatus(status);
 }
 
 void PushMessagingServiceImpl::DidGetSenderIdUnexpectedUnsubscribe(

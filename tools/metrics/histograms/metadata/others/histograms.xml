@@ -7239,18 +7239,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.PushSubscriptionChangeStatus"
-    enum="PushEventStatus" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When a Service Worker receives a pushsubscriptionchange event, this records
-    whether the overall operation was successful, or otherwise the type of error
-    encountered.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.RegistrationStatus"
     enum="PushRegistrationStatus" expires_after="2024-02-04">
   <owner>peter@chromium.org</owner>
