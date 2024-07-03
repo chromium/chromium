@@ -41,7 +41,7 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
 
 // A compound backing that combines a shared memory backing and real GPU
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
-// have it's own shared memory segment.
+// have its own shared memory segment.
 // TODO(crbug.com/40213543): Support multiple GPU backings.
 class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
  public:

@@ -145,7 +145,7 @@ class CompoundImageBackingTest : public testing::Test {
 
   // Create a compound backing containing shared memory + GPU backing.
   std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
-      bool add_scanout_usage = false) {
+      SharedImageUsageSet usage) {
     constexpr gfx::Size size(100, 100);
     constexpr gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
     constexpr gfx::BufferUsage buffer_usage =
@@ -159,10 +159,7 @@ class CompoundImageBackingTest : public testing::Test {
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, Mailbox::Generate(), std::move(handle),
         viz::GetSinglePlaneSharedImageFormat(buffer_format), size,
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-        add_scanout_usage
-            ? SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT
-            : SHARED_IMAGE_USAGE_DISPLAY_READ,
+        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, usage,
         "TestLabel");
   }
 
@@ -182,7 +179,9 @@ class CompoundImageBackingTest : public testing::Test {
         &test_factory_, Mailbox::Generate(), std::move(handle),
         viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-        SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel");
+        SharedImageUsageSet(
+            {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT}),
+        "TestLabel");
   }
 
  protected:
@@ -193,7 +192,8 @@ class CompoundImageBackingTest : public testing::Test {
 };
 
 TEST_F(CompoundImageBackingTest, References) {
-  auto backing = CreateCompoundBacking();
+  auto backing = CreateCompoundBacking(
+      {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT});
 
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
   EXPECT_NE(compound_backing, nullptr);
@@ -218,16 +218,29 @@ TEST_F(CompoundImageBackingTest, References) {
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
 
+#if !BUILDFLAG(IS_WIN)
   // On overlay access a GPU backing will be allocated and the recorded size
   // will increase.
   EXPECT_EQ(memory_tracker_.GetSize(), kTestBackingSize * 2);
 
+  ASSERT_TRUE(HasGpuBacking(compound_backing));
   auto* gpu_backing = GetGpuBacking(compound_backing);
-
   // GPU backing still shouldn't have any references after a wrapped
   // representation is created.
   EXPECT_TRUE(compound_backing->HasAnyRefs());
   EXPECT_FALSE(gpu_backing->HasAnyRefs());
+#else
+  // On Windows, no GPU backing is needed for overlays.
+  EXPECT_EQ(memory_tracker_.GetSize(), kTestBackingSize);
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
+  {
+    auto access = overlay_rep->BeginScopedReadAccess();
+    std::optional<gl::DCLayerOverlayImage> overlay_image =
+        access->GetDCLayerOverlayImage();
+    ASSERT_TRUE(overlay_image);
+    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
+  }
+#endif
 
   overlay_rep.reset();
   EXPECT_TRUE(compound_backing->HasAnyRefs());
@@ -241,7 +254,9 @@ TEST_F(CompoundImageBackingTest, References) {
 }
 
 TEST_F(CompoundImageBackingTest, UploadOnAccess) {
-  auto backing = CreateCompoundBacking();
+  auto backing = CreateCompoundBacking(
+      {SHARED_IMAGE_USAGE_SCANOUT, SHARED_IMAGE_USAGE_GLES2_READ,
+       SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_DISPLAY_WRITE});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
@@ -249,33 +264,48 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
 
-  auto* gpu_backing = GetGpuBacking(compound_backing);
+  if constexpr (!BUILDFLAG(IS_WIN)) {
+    ASSERT_TRUE(HasGpuBacking(compound_backing));
+    auto* gpu_backing = GetGpuBacking(compound_backing);
 
-  // The compound backing hasn't been accessed yet.
-  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+    // The compound backing hasn't been accessed yet.
+    EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
-  // Only shared memory should have latest content initially.
-  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
-  EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+    // Only shared memory should have latest content initially.
+    EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+    EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
 
-  // First access should trigger upload from memory to GPU.
-  overlay_rep->BeginScopedReadAccess();
-  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+    // First access should trigger upload from memory to GPU.
+    overlay_rep->BeginScopedReadAccess();
+    EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
-  // After GPU read access both should have latest content.
-  EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
-  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
+    // After GPU read access both should have latest content.
+    EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+    EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 
-  // Second access shouldn't trigger upload since no shared memory updates
-  // happened.
-  overlay_rep->BeginScopedReadAccess();
-  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+    // Second access shouldn't trigger upload since no shared memory updates
+    // happened.
+    overlay_rep->BeginScopedReadAccess();
+    EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
-  // Notify compound backing of shared memory update. Next access should
-  // trigger a new upload.
-  compound_backing->Update(nullptr);
-  overlay_rep->BeginScopedReadAccess();
-  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+    // Notify compound backing of shared memory update. Next access should
+    // trigger a new upload.
+    compound_backing->Update(nullptr);
+    overlay_rep->BeginScopedReadAccess();
+    EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  } else {
+    // On Windows, no GPU backing is needed for overlays.
+    EXPECT_FALSE(HasGpuBacking(compound_backing));
+
+    // Shared memory should have the latest content initially.
+    EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+    EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+
+    // Access does not change that.
+    overlay_rep->BeginScopedReadAccess();
+    EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
+    EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
+  }
 
   // Test that GLTexturePassthrough access causes upload.
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
@@ -283,6 +313,8 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   compound_backing->Update(nullptr);
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  ASSERT_TRUE(HasGpuBacking(compound_backing));
+  auto* gpu_backing = GetGpuBacking(compound_backing);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // Test that GLTexture access causes upload.
@@ -320,7 +352,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
 }
 
 TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
-  auto backing = CreateCompoundBacking();
+  auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
@@ -331,6 +363,7 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
 
+  ASSERT_TRUE(HasGpuBacking(compound_backing));
   auto* gpu_backing = GetGpuBacking(compound_backing);
 
   // On write access UploadFromMemory() should be called and then only GPU
@@ -348,30 +381,8 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
-#if BUILDFLAG(IS_WIN)
-// Tests the behavior of |kAllowShmemOverlays|, which is only true on Windows.
-// In this case we expect there to be scanout access, but no GPU access.
-TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
-  auto backing = CreateCompoundBacking(/*add_scanout_usage=*/true);
-  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
-
-  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
-
-  auto overlay_rep =
-      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
-  auto access = overlay_rep->BeginScopedReadAccess();
-
-  std::optional<gl::DCLayerOverlayImage> overlay_image =
-      access->GetDCLayerOverlayImage();
-  ASSERT_TRUE(overlay_image);
-  EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
-
-  EXPECT_FALSE(HasGpuBacking(compound_backing));
-}
-#endif
-
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
-  auto backing = CreateCompoundBacking();
+  auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
@@ -396,7 +407,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
 }
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
-  auto backing = CreateCompoundBacking();
+  auto backing = CreateCompoundBacking({SHARED_IMAGE_USAGE_GLES2_READ});
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
 
   auto factory_rep = manager_.Register(std::move(backing), &tracker_);
@@ -432,15 +443,21 @@ TEST_F(CompoundImageBackingTest, Multiplanar) {
 
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+  if constexpr (!BUILDFLAG(IS_WIN)) {
+    ASSERT_TRUE(HasGpuBacking(compound_backing));
+    auto* gpu_backing = GetGpuBacking(compound_backing);
 
-  auto* gpu_backing = GetGpuBacking(compound_backing);
+    // The compound backing hasn't been accessed yet.
+    EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
-  // The compound backing hasn't been accessed yet.
-  EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
-
-  // First access should trigger upload from memory to GPU.
-  overlay_rep->BeginScopedReadAccess();
-  EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+    // First access should trigger upload from memory to GPU.
+    overlay_rep->BeginScopedReadAccess();
+    EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+  } else {
+    // On Windows, no GPU backing is needed for overlays.
+    auto access = overlay_rep->BeginScopedReadAccess();
+    EXPECT_FALSE(HasGpuBacking(compound_backing));
+  }
 }
 
 }  // namespace gpu
