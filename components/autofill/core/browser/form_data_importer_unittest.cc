@@ -2126,37 +2126,6 @@ TEST_F(FormDataImporterTest,
               CreditCard::RecordType::kMaskedServerCard);
 }
 
-// Tests that a credit card is extracted when it matches a full server
-// card.
-TEST_F(FormDataImporterTest,
-       ExtractCreditCard_DuplicateServerCards_ExtractFullCard) {
-  // Add a full server card.
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "");  // Imported cards have no billing info.
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card);
-  EXPECT_EQ(
-      1U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // Type the same data as the unmasked card into a form.
-  FormData form =
-      CreateFullCreditCardForm("Clyde Barrow", "378282246310005", "04", "2999");
-
-  // The card should not be offered to be saved locally because it only matches
-  // the full server card.
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  std::optional<CreditCard> extracted_credit_card =
-      ExtractCreditCard(form_structure);
-  EXPECT_TRUE(extracted_credit_card);
-  EXPECT_EQ(extracted_credit_card.value().record_type(),
-            CreditCard::RecordType::kFullServerCard);
-}
-
 TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   // Start with a single valid credit card form.
   FormData form1 = CreateFullCreditCardForm(
@@ -2718,38 +2687,6 @@ TEST_F(
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
 TEST_F(FormDataImporterTest,
-       ExtractFormData_ExtractCreditCardRecordType_FullServerCard) {
-  // Add a full server card.
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Biggie Smalls",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "1");
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card);
-  EXPECT_EQ(
-      1U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // Simulate a form submission with the same full server card.
-  FormData form = CreateFullCreditCardForm("Biggie Smalls", "378282246310005",
-                                           "04", "2999");
-
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  // |credit_card_import_type_| should be SERVER_CARD.
-  ASSERT_TRUE(test_api(form_data_importer()).credit_card_import_type() ==
-              FormDataImporter::CreditCardImportType::kServerCard);
-}
-
-// Ensures that
-// `FormDataImporterTest::credit_card_import_type_` is set
-// correctly.
-TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NoCard_InvalidCardNumber) {
   // Simulate a form submission using a credit card with an invalid card number.
   FormData form = CreateFullCreditCardForm("Biggie Smalls",
@@ -2856,37 +2793,6 @@ TEST_F(FormDataImporterTest,
   // form doesn't have credit card section.
   ASSERT_TRUE(test_api(form_data_importer()).credit_card_import_type() ==
               FormDataImporter::CreditCardImportType::kNoCard);
-}
-
-// Ensures that `credit_card_import_type_` is set as kServerCard when a full
-// server card is found with the same number.
-TEST_F(FormDataImporterTest,
-       ExtractFormData_ExtractCreditCardRecordType_ServerCardWithSameLastFour) {
-  // Add a valid server card.
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
-  test::SetCreditCardInfo(&server_card, "John Dillinger",
-                          "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card);
-  ASSERT_EQ(
-      1U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // Simulate a form submission with the same card number but different
-  // expiration date.
-  FormData form = CreateFullCreditCardForm("Biggie Smalls",
-                                           "4111 1111 1111 1111", "02", "2999");
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  // `credit_card_import_type_` should be kServerCard because a server card with
-  // the same card number was found.
-  ASSERT_TRUE(test_api(form_data_importer()).credit_card_import_type() ==
-              FormDataImporter::CreditCardImportType::kServerCard);
 }
 
 // Ensures that `cvc` is set when a server card is found.
@@ -3369,115 +3275,6 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
-TEST_F(FormDataImporterTest,
-       DuplicateFullServerCardWhileContainingLocalCardCopies) {
-  CreditCard server_card1(CreditCard::RecordType::kMaskedServerCard, "a123");
-  test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
-                          "01", "2999", "1");
-  server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card1);
-  CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
-                          "378282246310005" /* American Express */, "04",
-                          "2999", "1");
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card2);
-
-  // Add two local cards to the credit cards to ensure that in the case where we
-  // have separate copies of a server card and a local card, we still only set
-  // `extracted_credit_card` to the server card details as we want the server
-  // to be the source of truth. Adding two cards also helps us ensure that we
-  // will update both.
-  for (int i = 0; i < 2; i++) {
-    CreditCard local_card = test::GetCreditCard();
-    test::SetCreditCardInfo(&local_card, "Clyde Barrow",
-                            "378282246310005" /* American Express */, "05",
-                            "2999", "1");
-    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
-    personal_data_manager_->payments_data_manager().AddCreditCard(local_card);
-  }
-
-  EXPECT_EQ(
-      4U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // A user re-types (or fills with) an unmasked card. Don't offer to save
-  // here, either. Since it's unmasked, we know for certain that it's the same
-  // card.
-  FormData form;
-  form.set_url(GURL("https://www.foo.com"));
-  form.set_fields(
-      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                           FormControlType::kInputText),
-       CreateTestFormField("Card Number:", "card_number", "378282246310005",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Month:", "exp_month", "04",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Year:", "exp_year", "2999",
-                           FormControlType::kInputText)});
-  FormStructure form_structure(form);
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  // Ensure that we imported the server version of the card, not the local
-  // version.
-  ASSERT_TRUE(extracted_data.extracted_credit_card->record_type() ==
-              CreditCard::RecordType::kFullServerCard);
-
-  // Check that both of the local cards we have added were updated.
-  int matched_local_cards = 0;
-  for (const CreditCard* card :
-       personal_data_manager_->payments_data_manager().GetCreditCards()) {
-    if (card->record_type() == CreditCard::RecordType::kLocalCard) {
-      matched_local_cards++;
-      EXPECT_EQ(card->expiration_month(), 4);
-    }
-  }
-  EXPECT_EQ(matched_local_cards, 2);
-}
-
-TEST_F(FormDataImporterTest,
-       Metrics_SubmittedServerCardExpirationStatus_FullServerCardMatch) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card);
-  EXPECT_EQ(
-      1U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // A user fills/enters the card's information on a checkout form.  Ensure that
-  // an expiration date match is recorded.
-  FormData form;
-  form.set_url(GURL("https://www.foo.com"));
-  form.set_fields(
-      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                           FormControlType::kInputText),
-       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Month:", "exp_month", "04",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Year:", "exp_year", "2111",
-                           FormControlType::kInputText)});
-  base::HistogramTester histogram_tester;
-  FormStructure form_structure(form);
-
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedServerCardExpirationStatus",
-      AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED, 1);
-}
-
 // Ensure that we don't offer to save if we already have same card stored as a
 // server card and user submitted an invalid expiration date month.
 TEST_F(FormDataImporterTest,
@@ -3585,45 +3382,6 @@ TEST_F(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
   ASSERT_TRUE(extracted_data.extracted_credit_card);
-}
-
-TEST_F(FormDataImporterTest,
-       Metrics_SubmittedServerCardExpirationStatus_FullServerCardMismatch) {
-  CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&server_card, "Clyde Barrow",
-                          "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->test_payments_data_manager().AddServerCreditCard(
-      server_card);
-  EXPECT_EQ(
-      1U,
-      personal_data_manager_->payments_data_manager().GetCreditCards().size());
-
-  // A user fills/enters the card's information on a checkout form but changes
-  // the expiration date of the card.  Ensure that an expiration date mismatch
-  // is recorded.
-  FormData form;
-  form.set_url(GURL("https://www.foo.com"));
-  form.set_fields(
-      {CreateTestFormField("Name on card:", "name_on_card", "Clyde Barrow",
-                           FormControlType::kInputText),
-       CreateTestFormField("Card Number:", "card_number", "4444333322221111",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Month:", "exp_month", "04",
-                           FormControlType::kInputText),
-       CreateTestFormField("Exp Year:", "exp_year", "2345",
-                           FormControlType::kInputText)});
-  FormStructure form_structure(form);
-
-  base::HistogramTester histogram_tester;
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                         nullptr);
-  auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
-      form_structure, /*profile_autofill_enabled=*/true,
-      /*payment_methods_autofill_enabled=*/true);
-  ASSERT_TRUE(extracted_data.extracted_credit_card);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedServerCardExpirationStatus",
-      AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
 }
 
 TEST_F(FormDataImporterTest,

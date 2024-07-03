@@ -132,15 +132,16 @@ class AutofillMetrics {
   };
 
   // Metric to measure if a submitted card's expiration date matches the same
-  // server card's expiration date (unmasked or not).  Cards are considered to
-  // be the same if they have the same card number (if unmasked) or if they have
-  // the same last four digits (if masked).
+  // server card's expiration date. Cards are considered to be the same if they
+  // have the same last four digits.
   enum SubmittedServerCardExpirationStatusMetric {
     // The submitted card and the unmasked server card had the same expiration
     // date.
+    // DEPRECATED: Full server cards are no longer supported.
     FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED,
     // The submitted card and the unmasked server card had different expiration
     // dates.
+    // DEPRECATED: Full server cards are no longer supported.
     FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH,
     // The submitted card and the masked server card had the same expiration
     // date.

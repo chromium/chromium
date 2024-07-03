@@ -896,18 +896,6 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       return std::nullopt;
     }
 
-    if (server_card->record_type() == CreditCard::RecordType::kFullServerCard) {
-      AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
-          server_card->HasSameExpirationDateAs(candidate)
-              ? AutofillMetrics::FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED
-              : AutofillMetrics::
-                    FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
-      // Return that we found a full server card with a matching card number
-      // to `candidate`.
-      credit_card_import_type_ = CreditCardImportType::kServerCard;
-      return *server_card;
-    }
-
     // Only return the masked server card if both the last four digits and
     // expiration date match.
     if (server_card->HasSameExpirationDateAs(candidate)) {

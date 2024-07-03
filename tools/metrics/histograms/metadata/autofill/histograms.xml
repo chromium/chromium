@@ -5511,9 +5511,8 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Metric to measure if a submitted card's expiration date matches the same
-    server card's expiration date (unmasked or not). Cards are considered to be
-    the same if they have the same card number (if unmasked) or if they have the
-    same network and last four digits (if masked).
+    server card's expiration date. Cards are considered to be the same if they
+    have the same network and last four digits.
   </summary>
 </histogram>
 
