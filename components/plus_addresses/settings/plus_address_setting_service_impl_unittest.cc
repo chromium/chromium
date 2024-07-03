@@ -9,7 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"

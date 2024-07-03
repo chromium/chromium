@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 
 #include <string>
 

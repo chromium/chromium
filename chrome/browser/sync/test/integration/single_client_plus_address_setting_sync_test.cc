@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
-#include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"

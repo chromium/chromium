@@ -146,7 +146,6 @@ if (is_android) {
     "//components/plus_addresses",
     "//components/plus_addresses:test_support",
     "//components/plus_addresses/settings",
-    "//components/plus_addresses/settings:test_support",
     "//components/plus_addresses/webdata",
     "//components/reading_list/core:test_support",
     "//components/reading_list/features:flags",
