@@ -1024,10 +1024,7 @@ def _RunCompileDex(devices, package_name, compilation_filter):
   cmd = ['cmd', 'package', 'compile', '-f', '-m', compilation_filter,
          package_name]
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
-  outputs = parallel_devices.RunShellCommand(cmd, timeout=120).pGet(None)
-  for output in _PrintPerDeviceOutput(devices, outputs):
-    for line in output:
-      print(line)
+  return parallel_devices.RunShellCommand(cmd, timeout=120).pGet(None)
 
 
 def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
@@ -1258,11 +1255,20 @@ class _Command:
       #
       # - Called directly, then --package-name is required on the command-line.
       #
+      # Similarly is_official_build is set directly by the bundle wrapper
+      # script, so it also needs to be added for non-bundle builds.
       if not self.is_bundle:
         group.add_argument(
             '--package-name',
             help=argparse.SUPPRESS if self._from_wrapper_script else (
                 "App's package name."))
+
+        group.add_argument(
+            '--is-official-build',
+            action='store_true',
+            default=False,
+            help=argparse.SUPPRESS if self._from_wrapper_script else
+            ('Whether this is an official build or not (affects perf).'))
 
     if self.needs_apk_helper or self.needs_package_name:
       # Adding this argument to the subparser would override the set_defaults()
@@ -1501,6 +1507,7 @@ class _PackageInfoCommand(_Command):
 class _InstallCommand(_Command):
   name = 'install'
   description = 'Installs the APK or bundle to one or more devices.'
+  needs_package_name = True
   needs_apk_helper = True
   supports_incremental = True
   default_modules = []
@@ -1539,6 +1546,8 @@ class _InstallCommand(_Command):
       _InstallBundle(self.devices, self.apk_helper, modules, self.args.fake)
     else:
       _InstallApk(self.devices, self.apk_helper, self.install_dict)
+    if self.args.is_official_build:
+      _RunCompileDex(self.devices, self.args.package_name, 'speed')
 
 
 class _UninstallCommand(_Command):
@@ -1866,8 +1875,11 @@ class _CompileDexCommand(_Command):
              '"speed-profile".')
 
   def Run(self):
-    _RunCompileDex(self.devices, self.args.package_name,
-                   self.args.compilation_filter)
+    outputs = _RunCompileDex(self.devices, self.args.package_name,
+                             self.args.compilation_filter)
+    for output in _PrintPerDeviceOutput(self.devices, outputs):
+      for line in output:
+        print(line)
 
 
 class _PrintCertsCommand(_Command):
@@ -2243,7 +2255,7 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
                  additional_apk_paths, aapt2_path, keystore_path,
                  keystore_password, keystore_alias, package_name,
                  command_line_flags_file, proguard_mapping_path, target_cpu,
-                 system_image_locales, default_modules):
+                 system_image_locales, default_modules, is_official_build):
   """Entry point for generated app bundle wrapper scripts.
 
   Args:
@@ -2279,16 +2291,15 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
   _InstallCommand.default_modules = default_modules
 
   parser = argparse.ArgumentParser()
-  parser.set_defaults(
-      package_name=package_name,
-      command_line_flags_file=command_line_flags_file,
-      proguard_mapping_path=proguard_mapping_path,
-      target_cpu=target_cpu)
-  _RunInternal(
-      parser,
-      output_directory=output_directory,
-      additional_apk_paths=additional_apk_paths,
-      bundle_generation_info=bundle_generation_info)
+  parser.set_defaults(package_name=package_name,
+                      command_line_flags_file=command_line_flags_file,
+                      proguard_mapping_path=proguard_mapping_path,
+                      target_cpu=target_cpu,
+                      is_official_build=is_official_build)
+  _RunInternal(parser,
+               output_directory=output_directory,
+               additional_apk_paths=additional_apk_paths,
+               bundle_generation_info=bundle_generation_info)
 
 
 def RunForTestApk(*, output_directory, package_name, test_apk_path,

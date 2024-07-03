@@ -3655,9 +3655,7 @@ if (!is_robolectric && enable_java_templates) {
         data += invoker.data
       }
 
-      deps = [
-        "//testing/android/instrumentation:test_runner_java",
-      ]
+      deps = [ "//testing/android/instrumentation:test_runner_java" ]
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
@@ -5090,6 +5088,9 @@ if (!is_robolectric && enable_java_templates) {
         # Required by logcat command.
         data_deps += [ "//build/android/stacktrace:java_deobfuscate" ]
         data += [ _proguard_mapping_path ]
+      }
+      if (is_official_build) {
+        args += [ "--is-official-build" ]
       }
     }
 
