@@ -816,6 +816,8 @@ component("ash") {
     "keyboard/virtual_keyboard_container_layout_manager.h",
     "keyboard/virtual_keyboard_controller.cc",
     "keyboard/virtual_keyboard_controller.h",
+    "lobster/lobster_controller.cc",
+    "lobster/lobster_controller.h",
     "lock_screen_action/lock_screen_action_background_controller.cc",
     "lock_screen_action/lock_screen_action_background_controller.h",
     "lock_screen_action/lock_screen_action_background_controller_impl.cc",

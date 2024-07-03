@@ -867,6 +867,9 @@ const char kExtensionAppsBlockForAppServiceInAsh[] =
 // kRmaNotAllowed switch takes priority over this one.
 const char kLaunchRma[] = "launch-rma";
 
+// Enables the lobster feature.
+const char kLobsterFeatureKey[] = "lobster-feature-key";
+
 // Enables Chrome-as-a-login-manager behavior.
 const char kLoginManager[] = "login-manager";
 
