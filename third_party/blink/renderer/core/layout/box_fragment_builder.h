@@ -608,6 +608,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
            (!node_.IsPaginatedRoot() || IsFragmentainerBoxType());
   }
 
+  // Handle (lay out / propagate) out-of-flow positioned descendants and other
+  // special descendants. This function is to be called when an algorithm is
+  // done with regular in-flow descendants and has set up its final size.
+  void HandleOofsAndSpecialDescendants();
+
  private:
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column

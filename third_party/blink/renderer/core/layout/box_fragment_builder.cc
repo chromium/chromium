@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
@@ -522,6 +523,10 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
   SetPreviousBreakAfter(break_after);
 
   SetPageNameIfNeeded(To<PhysicalBoxFragment>(fragment).PageName());
+}
+
+void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
+  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), this).Run();
 }
 
 const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
