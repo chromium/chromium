@@ -172,6 +172,8 @@ class SafeBrowsingDatabaseManager
   // Check if |url| is in the resources blocklist. Returns true if not, false
   // if further checks need to be made in which case the result will be passed
   // to callback in |client|.
+  // TODO(crbug.com/40862355): This method is not used. Deprecate it and the
+  // underlying store.
   virtual bool CheckResourceUrl(const GURL& url, Client* client) = 0;
 
   // Called on the IO thread to check if the given url belongs to a list the
