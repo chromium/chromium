@@ -238,6 +238,7 @@ class ProfilePickerParametrizedInteractiveUiTest
     button_enabled.where = button_query;
     button_enabled.type = StateChange::Type::kExistsAndConditionTrue;
     button_enabled.test_function = "(btn) => !btn.disabled";
+    LOG(INFO) << "b/330201475: Waiting for button to be enabled";
     return WaitForStateChange(web_contents_id, button_enabled);
   }
 
@@ -248,12 +249,14 @@ class ProfilePickerParametrizedInteractiveUiTest
     button_disabled.where = button_query;
     button_disabled.type = StateChange::Type::kExistsAndConditionTrue;
     button_disabled.test_function = "(btn) => btn.disabled";
+    LOG(INFO) << "b/330201475 Waiting for button to be disabled";
     return WaitForStateChange(web_contents_id, button_disabled);
   }
 
   auto PressJsButton(const ui::ElementIdentifier web_contents_id,
                      const DeepQuery& button_query) {
     // This can close/navigate the current page, so don't wait for success.
+    LOG(INFO) << "b/330201475 Pressing button";
     return ExecuteJsAt(web_contents_id, button_query, "(btn) => btn.click()",
                        ExecuteJsMode::kFireAndForget);
   }
@@ -266,6 +269,8 @@ class ProfilePickerParametrizedInteractiveUiTest
                                            "cr-radio-button"};
     const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
                                            "#choiceList"};
+
+    LOG(INFO) << "b/330201475 CompleteSearchEngineChoiceStep";
     return Steps(
         WaitForWebContentsNavigation(
             kPickerWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
@@ -288,7 +293,6 @@ class ProfilePickerParametrizedInteractiveUiTest
         WaitForButtonDisabled(kPickerWebContentsId,
                               kSearchEngineChoiceActionButton),
 
-        PressJsButton(kPickerWebContentsId, kSearchEngineChoiceActionButton),
         PressJsButton(kPickerWebContentsId, first_search_engine),
         WaitForButtonEnabled(kPickerWebContentsId,
                              kSearchEngineChoiceActionButton),
@@ -522,14 +526,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   );
 }
 
-// TODO(crbug.com/330201475): Flaky on win-asan.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_ContinueWithoutAccount DISABLED_ContinueWithoutAccount
-#else
-#define MAYBE_ContinueWithoutAccount ContinueWithoutAccount
-#endif
 IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,
-                       MAYBE_ContinueWithoutAccount) {
+                       ContinueWithoutAccount) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
                      GURL("chrome://profile-picker"));
 
