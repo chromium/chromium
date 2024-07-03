@@ -90,6 +90,17 @@ void SoundSectionView::UpdateStateForSelectedPlaylist(
   }
 }
 
+void SoundSectionView::UpdateSelectedPlaylistForNewState(
+    focus_mode_util::SoundState new_state) {
+  for (auto* playlist_view : playlist_view_list_) {
+    if (playlist_view->playlist_data().state !=
+        focus_mode_util::SoundState::kNone) {
+      playlist_view->SetState(new_state);
+      return;
+    }
+  }
+}
+
 void SoundSectionView::CreatePlaylistViewsContainer(
     focus_mode_util::SoundType type) {
   playlist_views_container_ =

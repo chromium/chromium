@@ -33,10 +33,16 @@ class ASH_EXPORT FocusModeSoundsView
 
   // FocusModeSoundsController::Observer:
   void OnSelectedPlaylistChanged() override;
+  void OnPlaylistStateChanged() override;
 
  private:
   // Updates this view based on `is_soundscape_type`.
   void UpdateSoundsView(bool is_soundscape_type);
+
+  // Updates the playback state for all of the playlists under
+  // `soundscape_container_` and `youtube_music_container_`.
+  void UpdateStateForSelectedPlaylist(
+      const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
 
   // Creates `soundscape_button_` and `youtube_music_button_`.
   void CreateTabSliderButtons(bool is_network_connected);

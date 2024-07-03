@@ -16,7 +16,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "ui/gfx/image/image_skia.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace ash {
 
@@ -25,7 +33,9 @@ class FocusModeYouTubeMusicDelegate;
 // This class is used to download images and record the info of playlists after
 // getting the response data we need from Music API, which will be used to show
 // on `FocusModeSoundsView`.
-class ASH_EXPORT FocusModeSoundsController {
+class ASH_EXPORT FocusModeSoundsController
+    : public media_session::mojom::AudioFocusObserver,
+      public media_session::mojom::MediaControllerObserver {
  public:
   using UpdateSoundsViewCallback = base::OnceCallback<void(bool)>;
 
@@ -62,13 +72,15 @@ class ASH_EXPORT FocusModeSoundsController {
    public:
     // Called when a playlist is toggled by the user on the focus panel.
     virtual void OnSelectedPlaylistChanged() = 0;
+    // Called when the state of `selected_playlist_` has been changed.
+    virtual void OnPlaylistStateChanged() {}
   };
 
   FocusModeSoundsController();
   FocusModeSoundsController(const FocusModeSoundsController&) = delete;
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;
-  ~FocusModeSoundsController();
+  ~FocusModeSoundsController() override;
 
   // Download the artwork for a track. Exposed here so that native portion of
   // the focus mode web UI can download the artwork using the focus mode network
@@ -97,6 +109,26 @@ class ASH_EXPORT FocusModeSoundsController {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // media_session::mojom::AudioFocusObserver:
+  void OnFocusGained(
+      media_session::mojom::AudioFocusRequestStatePtr session) override;
+  void OnFocusLost(
+      media_session::mojom::AudioFocusRequestStatePtr session) override;
+  void OnRequestIdReleased(const base::UnguessableToken& request_id) override;
+
+  // media_session::mojom::MediaControllerObserver:
+  void MediaSessionInfoChanged(
+      media_session::mojom::MediaSessionInfoPtr session_info) override;
+  void MediaSessionMetadataChanged(
+      const std::optional<media_session::MediaMetadata>& metadata) override {}
+  void MediaSessionActionsChanged(
+      const std::vector<media_session::mojom::MediaSessionAction>& actions)
+      override {}
+  void MediaSessionChanged(
+      const std::optional<base::UnguessableToken>& request_id) override {}
+  void MediaSessionPositionChanged(
+      const std::optional<media_session::MediaPosition>& position) override {}
 
   // Toggles a playlist with the same id as the `playlist_data` to select or
   // deselect based on its previous state.
@@ -138,7 +170,26 @@ class ASH_EXPORT FocusModeSoundsController {
   focus_mode_util::SoundType sound_type_ =
       focus_mode_util::SoundType::kSoundscape;
 
+  // True if the request id of the focus mode media session has gained audio
+  // focus. Note that focus mode will only have a maximum of one media playing
+  // at any given time.
+  bool has_audio_focus_ = false;
+  base::UnguessableToken media_session_request_id_ =
+      base::UnguessableToken::Null();
+
   base::ObserverList<Observer> observers_;
+
+  // Used to control the media session.
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      media_controller_manager_remote_;
+  mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
+
+  // Connections with the media session service to listen for audio focus
+  // updates and control media sessions.
+  mojo::Receiver<media_session::mojom::AudioFocusObserver>
+      audio_focus_observer_receiver_{this};
+  mojo::Receiver<media_session::mojom::MediaControllerObserver>
+      media_controller_observer_receiver_{this};
 
   base::WeakPtrFactory<FocusModeSoundsController> weak_factory_{this};
 };

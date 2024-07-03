@@ -11,6 +11,7 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_soundscape_delegate.h"
@@ -20,6 +21,8 @@
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/media_session/public/cpp/media_session_service.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -194,6 +197,12 @@ bool MayContainsSelectedPlaylist(
                         &FocusModeSoundsController::Playlist::playlist_id);
 }
 
+bool HasAudioFocus(const base::UnguessableToken& focus_mode_request_id,
+                   const base::UnguessableToken& session_request_id) {
+  return !focus_mode_request_id.is_empty() &&
+         focus_mode_request_id == session_request_id;
+}
+
 }  // namespace
 
 FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist() = default;
@@ -215,6 +224,24 @@ FocusModeSoundsController::FocusModeSoundsController()
   // locale.
   soundscape_playlists_.reserve(kPlaylistNum);
   youtube_music_playlists_.reserve(kPlaylistNum);
+
+  // `service` can be null in tests.
+  media_session::MediaSessionService* service =
+      Shell::Get()->shell_delegate()->GetMediaSessionService();
+  if (!service) {
+    return;
+  }
+
+  // Connect to receive audio focus events.
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
+  service->BindAudioFocusManager(
+      audio_focus_remote.BindNewPipeAndPassReceiver());
+  audio_focus_remote->AddObserver(
+      audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
+
+  // Connect to the `MediaControllerManager`.
+  service->BindMediaControllerManager(
+      media_controller_manager_remote_.BindNewPipeAndPassReceiver());
 }
 
 FocusModeSoundsController::~FocusModeSoundsController() = default;
@@ -264,6 +291,91 @@ void FocusModeSoundsController::AddObserver(Observer* observer) {
 
 void FocusModeSoundsController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void FocusModeSoundsController::OnFocusGained(
+    media_session::mojom::AudioFocusRequestStatePtr session) {
+  if (selected_playlist_.empty() || has_audio_focus_) {
+    return;
+  }
+
+  CHECK(session->request_id.has_value());
+  const auto& request_id =
+      FocusModeController::Get()->GetMediaSessionRequestId();
+  has_audio_focus_ = HasAudioFocus(request_id, session->request_id.value());
+
+  // If it's not our focus mode media gained the focus, or if the request id
+  // isn't changed, we will do nothing.
+  if (!has_audio_focus_ || media_session_request_id_ == request_id) {
+    return;
+  }
+
+  // Otherwise, we will bind the media controller observer with the specific
+  // request id to observe our media state.
+  media_session_request_id_ = request_id;
+
+  media_controller_remote_.reset();
+  media_controller_observer_receiver_.reset();
+
+  media_controller_manager_remote_->CreateMediaControllerForSession(
+      media_controller_remote_.BindNewPipeAndPassReceiver(),
+      media_session_request_id_);
+  media_controller_remote_->AddObserver(
+      media_controller_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void FocusModeSoundsController::OnFocusLost(
+    media_session::mojom::AudioFocusRequestStatePtr session) {
+  if (!has_audio_focus_) {
+    return;
+  }
+
+  CHECK(session->request_id.has_value());
+  has_audio_focus_ =
+      HasAudioFocus(FocusModeController::Get()->GetMediaSessionRequestId(),
+                    session->request_id.value());
+}
+
+void FocusModeSoundsController::OnRequestIdReleased(
+    const base::UnguessableToken& request_id) {
+  if (request_id.is_empty() || request_id != media_session_request_id_) {
+    return;
+  }
+
+  has_audio_focus_ = false;
+  media_session_request_id_ = base::UnguessableToken::Null();
+  if (selected_playlist_.empty() ||
+      selected_playlist_.state != focus_mode_util::SoundState::kPlaying) {
+    return;
+  }
+
+  // When entering the ending moment, the media widget will be closed, then
+  // the request id will be released. Hence, we need to update the state of
+  // the `selected_playlist_` when entering the ending moment.
+  selected_playlist_.state = focus_mode_util::SoundState::kSelected;
+  for (auto& observer : observers_) {
+    observer.OnPlaylistStateChanged();
+  }
+}
+
+void FocusModeSoundsController::MediaSessionInfoChanged(
+    media_session::mojom::MediaSessionInfoPtr session_info) {
+  if (!session_info) {
+    return;
+  }
+
+  switch (session_info->playback_state) {
+    case media_session::mojom::MediaPlaybackState::kPlaying:
+      selected_playlist_.state = focus_mode_util::SoundState::kPlaying;
+      break;
+    case media_session::mojom::MediaPlaybackState::kPaused:
+      selected_playlist_.state = focus_mode_util::SoundState::kPaused;
+      break;
+  };
+
+  for (auto& observer : observers_) {
+    observer.OnPlaylistStateChanged();
+  }
 }
 
 void FocusModeSoundsController::TogglePlaylist(

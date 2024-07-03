@@ -451,6 +451,12 @@ void FocusModeController::TriggerEndingMomentImmediately() {
   OnTimerTick();
 }
 
+const base::UnguessableToken& FocusModeController::GetMediaSessionRequestId() {
+  return focus_mode_media_view_
+             ? focus_mode_media_view_->GetMediaSessionRequestId()
+             : base::UnguessableToken::Null();
+}
+
 void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
   focus_mode_metrics_recorder_ =

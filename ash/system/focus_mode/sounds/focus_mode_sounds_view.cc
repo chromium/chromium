@@ -194,8 +194,30 @@ void FocusModeSoundsView::OnSelectedPlaylistChanged() {
   const auto& selected_playlist = FocusModeController::Get()
                                       ->focus_mode_sounds_controller()
                                       ->selected_playlist();
-  soundscape_container_->UpdateStateForSelectedPlaylist(selected_playlist);
-  youtube_music_container_->UpdateStateForSelectedPlaylist(selected_playlist);
+  UpdateStateForSelectedPlaylist(selected_playlist);
+}
+
+void FocusModeSoundsView::OnPlaylistStateChanged() {
+  const auto& selected_playlist = FocusModeController::Get()
+                                      ->focus_mode_sounds_controller()
+                                      ->selected_playlist();
+  if (selected_playlist.empty()) {
+    UpdateStateForSelectedPlaylist(selected_playlist);
+    return;
+  }
+
+  switch (selected_playlist.type) {
+    case focus_mode_util::SoundType::kSoundscape:
+      soundscape_container_->UpdateSelectedPlaylistForNewState(
+          selected_playlist.state);
+      break;
+    case focus_mode_util::SoundType::kYouTubeMusic:
+      youtube_music_container_->UpdateSelectedPlaylistForNewState(
+          selected_playlist.state);
+      break;
+    case focus_mode_util::SoundType::kNone:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
@@ -214,6 +236,12 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
     }
     youtube_music_container_->UpdateContents(playlists);
   }
+}
+
+void FocusModeSoundsView::UpdateStateForSelectedPlaylist(
+    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+  soundscape_container_->UpdateStateForSelectedPlaylist(selected_playlist);
+  youtube_music_container_->UpdateStateForSelectedPlaylist(selected_playlist);
 }
 
 void FocusModeSoundsView::CreateTabSliderButtons(bool is_network_connected) {

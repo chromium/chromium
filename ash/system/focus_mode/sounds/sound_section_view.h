@@ -45,8 +45,13 @@ class ASH_EXPORT SoundSectionView : public views::View {
   void ShowAlternateView(bool show_alternate_view);
   void SetAlternateView(std::unique_ptr<views::BoxLayoutView> alternate_view);
 
+  // Updates the state of `PlaylistView` for the newly `selected_playlist` and
+  // reset the state of `PlaylistView` for unselected playlists.
   void UpdateStateForSelectedPlaylist(
       const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
+
+  // Updates the state of `PlaylistView` for the existing selected playlist.
+  void UpdateSelectedPlaylistForNewState(focus_mode_util::SoundState new_state);
 
  private:
   void CreatePlaylistViewsContainer(focus_mode_util::SoundType type);

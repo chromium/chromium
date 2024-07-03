@@ -20,6 +20,10 @@
 
 class PrefRegistrySimple;
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -186,6 +190,9 @@ class ASH_EXPORT FocusModeController
   // This is currently only used in testing to trigger an ending moment
   // immediately if there is an ongoing session.
   void TriggerEndingMomentImmediately();
+
+  // Get the request id for the media session played for Focus Sounds.
+  const base::UnguessableToken& GetMediaSessionRequestId();
 
  private:
   // Starts a focus session by updating UI elements, starting `timer_`, and
