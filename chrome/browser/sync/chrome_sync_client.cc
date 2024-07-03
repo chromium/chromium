@@ -241,6 +241,24 @@ syncer::ModelTypeControllerDelegate* GetSavedTabGroupControllerDelegate(
         // BUILDFLAG(IS_WIN)
 }
 
+syncer::ModelTypeControllerDelegate* GetSharedTabGroupControllerDelegate(
+    Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  tab_groups::SavedTabGroupKeyedService* keyed_service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+  CHECK(keyed_service);
+  return keyed_service->GetSharedTabGroupControllerDelegate().get();
+#elif BUILDFLAG(IS_ANDROID)
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
+      ->GetSharedTabGroupControllerDelegate()
+      .get();
+#else
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+}
+
 }  // namespace
 
 ChromeSyncClient::ChromeSyncClient(Profile* profile)
@@ -541,9 +559,7 @@ ChromeSyncClient::CreateModelTypeControllers(
     if (base::FeatureList::IsEnabled(
             data_sharing::features::kDataSharingFeature)) {
       syncer::ModelTypeControllerDelegate* delegate =
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
-              ->GetSharedTabGroupControllerDelegate()
-              .get();
+          GetSharedTabGroupControllerDelegate(profile_);
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::SHARED_TAB_GROUP_DATA,
           /*delegate_for_full_sync_mode=*/

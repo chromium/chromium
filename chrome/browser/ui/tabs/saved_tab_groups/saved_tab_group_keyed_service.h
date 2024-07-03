@@ -51,6 +51,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   SavedTabGroupModel* model() { return &model_; }
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate();
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSharedTabGroupControllerDelegate();
   Profile* profile() { return profile_; }
 
   // SavedTabGroupController

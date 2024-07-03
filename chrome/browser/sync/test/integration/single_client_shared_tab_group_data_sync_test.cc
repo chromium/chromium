@@ -6,7 +6,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
@@ -17,6 +16,13 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#else
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace tab_groups {
 namespace {
@@ -84,9 +90,17 @@ class SingleClientSharedTabGroupDataSyncTest : public SyncTest {
                 collaboration_id));
   }
 
+// TabGroupSyncService is used on Android only.
+#if BUILDFLAG(IS_ANDROID)
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
   }
+#else
+  tab_groups::SavedTabGroupModel* GetSavedTabGroupModel() const {
+    return tab_groups::SavedTabGroupServiceFactory::GetForProfile(GetProfile(0))
+        ->model();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   base::test::ScopedFeatureList feature_overrides_;
@@ -119,6 +133,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 
   ASSERT_TRUE(SetupSync());
 
+  // TabGroupSyncService is used on Android only.
+#if BUILDFLAG(IS_ANDROID)
   TabGroupSyncService* tab_group_sync_service = GetTabGroupSyncService();
   EXPECT_THAT(
       tab_group_sync_service->GetAllGroups(),
@@ -129,6 +145,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
       tab_group_sync_service->GetGroup(group_guid)->saved_tabs(),
       UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
                            HasTabMetadata("tab 2", "http://google.com/2")));
+#else
+  tab_groups::SavedTabGroupModel* model = GetSavedTabGroupModel();
+  EXPECT_THAT(
+      model->saved_tab_groups(),
+      UnorderedElementsAre(HasSharedGroupMetadata(
+          "title", tab_groups::TabGroupColorId::kCyan, collaboration_id)));
+  ASSERT_TRUE(model->Get(group_guid));
+  EXPECT_THAT(
+      model->Get(group_guid)->saved_tabs(),
+      UnorderedElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
+                           HasTabMetadata("tab 2", "http://google.com/2")));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

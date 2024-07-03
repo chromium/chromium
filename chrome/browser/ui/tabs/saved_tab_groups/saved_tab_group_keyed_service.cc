@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/common/channel_info.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
@@ -43,6 +45,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -57,12 +60,32 @@ namespace {
 
 constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
-std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
-CreateChangeProcessor() {
+std::unique_ptr<syncer::ModelTypeChangeProcessor>
+CreateSavedTabGroupChangeProcessor() {
   return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
       syncer::SAVED_TAB_GROUP,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));
+}
+
+std::unique_ptr<syncer::ModelTypeChangeProcessor>
+CreateSharedTabGroupDataChangeProcessor() {
+  return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      syncer::SHARED_TAB_GROUP_DATA,
+      base::BindRepeating(&syncer::ReportUnrecoverableError,
+                          chrome::GetChannel()));
+}
+
+std::unique_ptr<SyncDataTypeConfiguration>
+MaybeCreateSyncConfigurationForSharedTabGroupData(
+    syncer::OnceModelTypeStoreFactory store_factory) {
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature)) {
+    return nullptr;
+  }
+
+  return std::make_unique<SyncDataTypeConfiguration>(
+      CreateSharedTabGroupDataChangeProcessor(), std::move(store_factory));
 }
 
 }  // anonymous namespace
@@ -75,9 +98,10 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(
       sync_bridge_mediator_(
           model(),
           profile->GetPrefs(),
-          std::make_unique<SyncDataTypeConfiguration>(CreateChangeProcessor(),
-                                                      GetStoreFactory()),
-          /*shared_tab_group_configuration=*/nullptr,
+          std::make_unique<SyncDataTypeConfiguration>(
+              CreateSavedTabGroupChangeProcessor(),
+              GetStoreFactory()),
+          MaybeCreateSyncConfigurationForSharedTabGroupData(GetStoreFactory()),
           /*migrated_android_local_ids=*/
           std::map<base::Uuid, LocalTabGroupID>()),
       metrics_logger_(
@@ -116,6 +140,11 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 SavedTabGroupKeyedService::GetSavedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+SavedTabGroupKeyedService::GetSharedTabGroupControllerDelegate() {
+  return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
 }
 
 void SavedTabGroupKeyedService::ConnectRestoredGroupToSaveId(
