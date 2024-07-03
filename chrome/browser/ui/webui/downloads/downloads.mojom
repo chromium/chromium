@@ -146,6 +146,10 @@ interface PageHandler {
   // interstitial.
   RecordOpenBypassWarningInterstitial(string id);
 
+  // Called when "Download anyway" is clicked on the chrome://downloads warning
+  // bypass interstitial, for dangerous files.
+  RecordOpenSurveyOnDangerousInterstitial(string id);
+
   // Called when "Download dangerous file" is clicked from the
   // chrome://downloads warning dialog, for dangerous files.
   SaveDangerousFromDialogRequiringGesture(string id);

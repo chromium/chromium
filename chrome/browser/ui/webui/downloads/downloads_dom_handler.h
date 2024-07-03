@@ -88,6 +88,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void SaveSuspiciousRequiringGesture(const std::string& id) override;
   void RecordOpenBypassWarningDialog(const std::string& id) override;
   void RecordOpenBypassWarningInterstitial(const std::string& id) override;
+  void RecordOpenSurveyOnDangerousInterstitial(const std::string& id) override;
   void SaveDangerousFromDialogRequiringGesture(const std::string& id) override;
   void RecordCancelBypassWarningDialog(const std::string& id) override;
   void DiscardDangerous(const std::string& id) override;

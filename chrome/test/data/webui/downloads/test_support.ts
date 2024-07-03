@@ -33,6 +33,7 @@ class FakePageHandler implements PageHandlerInterface {
     'recordCancelBypassWarningDialog',
     'recordOpenBypassWarningDialog',
     'recordOpenBypassWarningInterstitial',
+    'recordOpenSurveyOnDangerousInterstitial',
     'remove',
     'saveDangerousFromDialogRequiringGesture',
     'saveSuspiciousRequiringGesture',
@@ -56,6 +57,11 @@ class FakePageHandler implements PageHandlerInterface {
 
   recordOpenBypassWarningInterstitial(id: string) {
     this.callTracker_.methodCalled('recordOpenBypassWarningInterstitial', id);
+  }
+
+  recordOpenSurveyOnDangerousInterstitial(id: string) {
+    this.callTracker_.methodCalled(
+        'recordOpenSurveyOnDangerousInterstitial', id);
   }
 
   async remove(id: string) {

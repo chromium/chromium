@@ -102,6 +102,7 @@ enum DownloadsDOMEvent {
   DOWNLOADS_DOM_EVENT_OPEN_BYPASS_WARNING_PROMPT = 18,
   DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT = 19,
   DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT = 20,
+  DOWNLOADS_DOM_EVENT_OPEN_SURVEY_ON_DANGEROUS_INTERSTITIAL = 21,
   DOWNLOADS_DOM_EVENT_MAX
 };
 
@@ -361,6 +362,21 @@ void DownloadsDOMHandler::RecordOpenBypassWarningInterstitial(
 
   MaybeReportBypassAction(file, WarningSurface::DOWNLOADS_PAGE,
                           WarningAction::KEEP);
+}
+
+void DownloadsDOMHandler::RecordOpenSurveyOnDangerousInterstitial(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kDangerousDownloadInterstitial));
+  CountDownloadsDOMEvents(
+      DOWNLOADS_DOM_EVENT_OPEN_SURVEY_ON_DANGEROUS_INTERSTITIAL);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!CanLogWarningMetrics(file)) {
+    return;
+  }
+
+  RecordDangerousDownloadInterstitialActionHistogram(
+      DangerousDownloadInterstitialAction::kOpenSurvey);
 }
 
 void DownloadsDOMHandler::SaveDangerousFromDialogRequiringGesture(

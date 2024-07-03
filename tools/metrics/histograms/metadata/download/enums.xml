@@ -298,6 +298,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="OpenBypassWarningPrompt"/>
   <int value="19" label="SaveDangerousFromPrompt"/>
   <int value="20" label="CancelBypassWarningPrompt"/>
+  <int value="21" label="OpenSurveyOnDangerousInterstitial"/>
 </enum>
 
 <enum name="DownloadedFileAction">

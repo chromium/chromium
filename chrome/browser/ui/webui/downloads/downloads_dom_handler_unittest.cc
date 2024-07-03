@@ -471,6 +471,16 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
                   .empty());
 }
 
+TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
+       RecordOpenSurveyOnDangerousInterstitial) {
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler_->RecordOpenSurveyOnDangerousInterstitial("1");
+
+  histogram_tester_.ExpectUniqueSample(
+      "Download.DangerousDownloadInterstitial.Action",
+      DangerousDownloadInterstitialAction::kOpenSurvey, 1);
+}
+
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:
