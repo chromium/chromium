@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 
 #include <initializer_list>
@@ -97,9 +92,7 @@ bool RenameTable(sql::Database* db,
 bool DoesColumnExist(sql::Database* db,
                      std::string_view table_name,
                      std::string_view column_name) {
-  return db->DoesColumnExist(
-      base::cstring_view(table_name.data(), table_name.size()),
-      base::cstring_view(column_name.data(), column_name.size()));
+  return db->DoesColumnExist(std::string(table_name), std::string(column_name));
 }
 
 bool AddColumn(sql::Database* db,
