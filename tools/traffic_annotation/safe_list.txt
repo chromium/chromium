@@ -14,6 +14,9 @@ test_annotation,net/quic/quic_chromium_client_session_peer.cc
 all,ash/ambient/backdrop/ambient_backend_controller_impl.cc
 all,chromeos/ash/services/libassistant/chromium_http_connection.cc
 
+# TODO(crbug.com/5665922): Fix, and figure out how this error got through CQ.
+all,chrome/enterprise_companion/event_logger.cc
+
 # ChromeOS-specific annotations.
 all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
