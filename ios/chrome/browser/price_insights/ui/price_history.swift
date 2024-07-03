@@ -272,7 +272,7 @@ struct HistoryGraph: View {
 
     let valueRange = paddedMaxPrice - paddedMinPrice
     var tickInterval = valueRange / Double(Self.tickCountY - 1)
-    var tickLow = 0.0
+    var tickLow = paddedMinPrice
 
     /// Ensure the tick interval is a multiple of below values to improve the
     /// readability. Bigger values are used when possible.
