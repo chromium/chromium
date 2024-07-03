@@ -123,7 +123,8 @@ public class AccountSelectionCoordinator
                         mBottomSheetController,
                         mBottomSheetContent,
                         imageFetcher,
-                        avatarSize);
+                        avatarSize,
+                        rpMode);
     }
 
     static View setupContentView(

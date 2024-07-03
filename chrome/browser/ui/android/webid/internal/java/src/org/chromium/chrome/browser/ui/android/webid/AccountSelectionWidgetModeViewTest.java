@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import android.content.res.Resources;
 import android.view.View;
@@ -29,11 +28,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View tests for the Account Selection Button Mode component ensure that model changes are
+ * View tests for the Account Selection Widget Mode component ensure that model changes are
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountSelectionButtonModeViewTest {
+public class AccountSelectionWidgetModeViewTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -50,19 +49,11 @@ public class AccountSelectionButtonModeViewTest {
 
     private final RpContext[] mRpContexts =
             new RpContext[] {
-                new RpContext(
-                        "signin",
-                        R.string.account_selection_button_mode_sheet_title_explicit_signin),
-                new RpContext(
-                        "signup",
-                        R.string.account_selection_button_mode_sheet_title_explicit_signup),
-                new RpContext(
-                        "use", R.string.account_selection_button_mode_sheet_title_explicit_use),
-                new RpContext(
-                        "continue",
-                        R.string.account_selection_button_mode_sheet_title_explicit_continue),
-                new RpContext(
-                        "", R.string.account_selection_button_mode_sheet_title_explicit_signin)
+                new RpContext("signin", R.string.account_selection_sheet_title_explicit_signin),
+                new RpContext("signup", R.string.account_selection_sheet_title_explicit_signup),
+                new RpContext("use", R.string.account_selection_sheet_title_explicit_use),
+                new RpContext("continue", R.string.account_selection_sheet_title_explicit_continue),
+                new RpContext("", R.string.account_selection_sheet_title_explicit_signin)
             };
 
     private Resources mResources;
@@ -89,17 +80,10 @@ public class AccountSelectionButtonModeViewTest {
                                             activity,
                                             mModel,
                                             mSheetAccountItems,
-                                            /* rpMode= */ RpMode.BUTTON);
+                                            /* rpMode= */ RpMode.WIDGET);
                             activity.setContentView(mContentView);
                             mResources = activity.getResources();
                         });
-    }
-
-    @Test
-    public void testDragHandlebarShown() {
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        View handlebar = mContentView.findViewById(R.id.drag_handlebar);
-        assertTrue(handlebar.isShown());
     }
 
     @Test
@@ -113,17 +97,59 @@ public class AccountSelectionButtonModeViewTest {
                             .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe-example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
-            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
 
             assertEquals(
                     "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "idp.org"),
+                    mResources.getString(rpContext.mTitleId, "iframe-example.org", "idp.org"),
                     title.getText().toString());
-            assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
         }
+    }
+
+    @Test
+    public void testVerifyingTitleDisplayedExplicitSignin() {
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.VERIFY)
+                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.RP_CONTEXT, "signin")
+                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+
+        assertEquals(
+                "Incorrect title",
+                mResources.getString(R.string.verify_sheet_title),
+                title.getText().toString());
+        assertEquals("Incorrect subtitle", "", subtitle.getText());
+    }
+
+    @Test
+    public void testVerifyingTitleDisplayedAutoReauthn() {
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_REAUTHN)
+                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .with(HeaderProperties.RP_CONTEXT, "signin")
+                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+
+        assertEquals(
+                "Incorrect title",
+                mResources.getString(R.string.verify_sheet_title_auto_reauthn),
+                title.getText().toString());
+        assertEquals("Incorrect subtitle", "", subtitle.getText());
     }
 }

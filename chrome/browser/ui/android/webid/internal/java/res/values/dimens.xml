@@ -6,21 +6,21 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="account_selection_sheet_horizontal_margin">24dp</dimen>
-
+  <!-- FedCM widget mode bottom sheet dimensions. -->
   <!--
   account_selection_sheet_horizontal_margin - 12dp between 'x' in button and right edge of button.
   -->
   <dimen name="account_selection_sheet_close_button_horizontal_margin">12dp</dimen>
-
   <dimen name="account_selection_sheet_title_height">32dp</dimen>
-
   <dimen name="account_selection_sheet_item_padding">10dp</dimen>
-
   <dimen name="account_selection_account_avatar_size">40dp</dimen>
   <dimen name="account_selection_account_avatar_monogram_text_size">16dp</dimen>
-
   <dimen name="account_selection_sheet_button_margin">4dp</dimen>
-
   <dimen name="account_selection_sheet_icon_size">20dp</dimen>
+
+  <!-- FedCM button mode bottom sheet dimensions. -->
+  <dimen name="account_selection_button_mode_sheet_icon_size">32dp</dimen>
+
+  <!-- Common FedCM bottom sheet dimensions. -->
+  <dimen name="account_selection_sheet_horizontal_margin">24dp</dimen>
 </resources>

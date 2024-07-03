@@ -28,6 +28,7 @@ import androidx.annotation.StringRes;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
@@ -547,7 +548,8 @@ class AccountSelectionViewBinder {
                 || key == HeaderProperties.IFRAME_FOR_DISPLAY
                 || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE
-                || key == HeaderProperties.RP_CONTEXT) {
+                || key == HeaderProperties.RP_CONTEXT
+                || key == HeaderProperties.RP_MODE) {
             Resources resources = view.getResources();
             TextView headerTitleText = view.findViewById(R.id.header_title);
             TextView headerSubtitleText = view.findViewById(R.id.header_subtitle);
@@ -559,7 +561,8 @@ class AccountSelectionViewBinder {
                             resources,
                             headerType,
                             model.get(HeaderProperties.TOP_FRAME_FOR_DISPLAY),
-                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY));
+                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY),
+                            model.get(HeaderProperties.RP_MODE));
             if (!subtitle.isEmpty()) {
                 headerTitleText.setPadding(
                         /* left= */ 0, /* top= */ 12, /* right= */ 0, /* bottom= */ 0);
@@ -576,7 +579,8 @@ class AccountSelectionViewBinder {
                             headerType,
                             rpUrlForDisplayInTitle,
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
-                            model.get(HeaderProperties.RP_CONTEXT));
+                            model.get(HeaderProperties.RP_CONTEXT),
+                            model.get(HeaderProperties.RP_MODE));
             headerTitleText.setText(title);
             headerTitleText.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -599,6 +603,9 @@ class AccountSelectionViewBinder {
             }
 
             if (key == HeaderProperties.TYPE) {
+                // There is no progress bar or divider in the header for button mode.
+                if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON) return;
+
                 boolean progressBarVisible =
                         (headerType == HeaderProperties.HeaderType.VERIFY
                                 || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN);
@@ -620,6 +627,9 @@ class AccountSelectionViewBinder {
                 headerIconView.setVisibility(View.VISIBLE);
             }
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
+            // There is no explicit close button for button mode, user swipes to close instead.
+            if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON) return;
+
             final Runnable closeOnClickRunnable =
                     (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
             view.findViewById(R.id.close_button)
@@ -647,7 +657,8 @@ class AccountSelectionViewBinder {
             HeaderProperties.HeaderType type,
             String rpUrl,
             String idpUrl,
-            String rpContext) {
+            String rpContext,
+            @RpMode.EnumType int rpMode) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
@@ -655,6 +666,26 @@ class AccountSelectionViewBinder {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
         @StringRes int titleStringId;
+        if (rpMode == RpMode.BUTTON) {
+            switch (rpContext) {
+                case "signup":
+                    titleStringId =
+                            R.string.account_selection_button_mode_sheet_title_explicit_signup;
+                    break;
+                case "use":
+                    titleStringId = R.string.account_selection_button_mode_sheet_title_explicit_use;
+                    break;
+                case "continue":
+                    titleStringId =
+                            R.string.account_selection_button_mode_sheet_title_explicit_continue;
+                    break;
+                default:
+                    titleStringId =
+                            R.string.account_selection_button_mode_sheet_title_explicit_signin;
+            }
+            return String.format(resources.getString(titleStringId), idpUrl);
+        }
+
         switch (rpContext) {
             case "signup":
                 titleStringId = R.string.account_selection_sheet_title_explicit_signup;
@@ -675,7 +706,12 @@ class AccountSelectionViewBinder {
             Resources resources,
             HeaderProperties.HeaderType type,
             String topFrameUrl,
-            String iframeUrl) {
+            String iframeUrl,
+            @RpMode.EnumType int rpMode) {
+        if (rpMode == RpMode.BUTTON) {
+            return topFrameUrl;
+        }
+
         if (type == HeaderProperties.HeaderType.VERIFY
                 || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN
                 || iframeUrl.isEmpty()) {

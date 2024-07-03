@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -99,6 +100,7 @@ class AccountSelectionMediator {
     private final ModelList mSheetAccountItems;
     private final ImageFetcher mImageFetcher;
     private final @Px int mDesiredAvatarSize;
+    private final @RpMode.EnumType int mRpMode;
 
     private final BottomSheetController mBottomSheetController;
     private final AccountSelectionBottomSheetContent mBottomSheetContent;
@@ -155,7 +157,8 @@ class AccountSelectionMediator {
             BottomSheetController bottomSheetController,
             AccountSelectionBottomSheetContent bottomSheetContent,
             ImageFetcher imageFetcher,
-            @Px int desiredAvatarSize) {
+            @Px int desiredAvatarSize,
+            @RpMode.EnumType int rpMode) {
         assert tab != null;
         mTab = tab;
         assert delegate != null;
@@ -164,6 +167,7 @@ class AccountSelectionMediator {
         mSheetAccountItems = sheetAccountItems;
         mImageFetcher = imageFetcher;
         mDesiredAvatarSize = desiredAvatarSize;
+        mRpMode = rpMode;
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mLastSheetSeen = mBottomSheetContent;
@@ -314,6 +318,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.IFRAME_FOR_DISPLAY, iframeForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .with(HeaderProperties.RP_CONTEXT, rpContext)
+                .with(HeaderProperties.RP_MODE, mRpMode)
                 .build();
     }
 

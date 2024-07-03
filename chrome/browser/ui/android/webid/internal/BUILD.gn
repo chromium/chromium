@@ -65,6 +65,7 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/layout/account_selection_account_item.xml",
+    "java/res/layout/account_selection_button_mode_header_item.xml",
     "java/res/layout/account_selection_button_mode_sheet.xml",
     "java/res/layout/account_selection_continue_button.xml",
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
@@ -83,6 +84,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeViewTest.java",
   ]
 
   deps = [

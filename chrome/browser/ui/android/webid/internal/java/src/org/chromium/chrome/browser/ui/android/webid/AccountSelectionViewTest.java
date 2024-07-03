@@ -115,7 +115,8 @@ public class AccountSelectionViewTest {
                 new RpContext("signin", R.string.account_selection_sheet_title_explicit_signin),
                 new RpContext("signup", R.string.account_selection_sheet_title_explicit_signup),
                 new RpContext("use", R.string.account_selection_sheet_title_explicit_use),
-                new RpContext("continue", R.string.account_selection_sheet_title_explicit_continue)
+                new RpContext("continue", R.string.account_selection_sheet_title_explicit_continue),
+                new RpContext("", R.string.account_selection_sheet_title_explicit_signin)
             };
 
     private class TokenError {
@@ -291,102 +292,6 @@ public class AccountSelectionViewTest {
     }
 
     @Test
-    public void testSignInTitleDisplayedWithoutIframe() {
-        mModel.set(
-                ItemProperties.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
-                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .with(HeaderProperties.RP_CONTEXT, "signin")
-                        .build());
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView title = mContentView.findViewById(R.id.header_title);
-        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-        assertEquals(
-                "Incorrect title",
-                mResources.getString(
-                        R.string.account_selection_sheet_title_explicit_signin,
-                        "example.org",
-                        "idp.org"),
-                title.getText().toString());
-        assertEquals("Incorrect subtitle", "", subtitle.getText());
-    }
-
-    @Test
-    public void testSignInTitleDisplayedWithIframe() {
-        mModel.set(
-                ItemProperties.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe-example.org")
-                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .with(HeaderProperties.RP_CONTEXT, "signin")
-                        .build());
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView title = mContentView.findViewById(R.id.header_title);
-        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-        assertEquals(
-                "Incorrect title",
-                mResources.getString(
-                        R.string.account_selection_sheet_title_explicit_signin,
-                        "iframe-example.org",
-                        "idp.org"),
-                title.getText().toString());
-        assertEquals(
-                "Incorrect subtitle",
-                mResources.getString(
-                        R.string.account_selection_sheet_subtitle_explicit, "example.org"),
-                subtitle.getText());
-    }
-
-    @Test
-    public void testVerifyingTitleDisplayedExplicitSignin() {
-        mModel.set(
-                ItemProperties.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.VERIFY)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .with(HeaderProperties.RP_CONTEXT, "signin")
-                        .build());
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView title = mContentView.findViewById(R.id.header_title);
-        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-        assertEquals(
-                "Incorrect title",
-                mResources.getString(R.string.verify_sheet_title),
-                title.getText().toString());
-        assertEquals("Incorrect subtitle", "", subtitle.getText());
-    }
-
-    @Test
-    public void testVerifyingTitleDisplayedAutoReauthn() {
-        mModel.set(
-                ItemProperties.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_REAUTHN)
-                        .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .with(HeaderProperties.RP_CONTEXT, "signin")
-                        .build());
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView title = mContentView.findViewById(R.id.header_title);
-        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-        assertEquals(
-                "Incorrect title",
-                mResources.getString(R.string.verify_sheet_title_auto_reauthn),
-                title.getText().toString());
-        assertEquals("Incorrect subtitle", "", subtitle.getText());
-    }
-
-    @Test
     public void testAccountsChangedByModel() {
         mSheetAccountItems.addAll(
                 asList(
@@ -491,58 +396,6 @@ public class AccountSelectionViewTest {
         TextView continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
 
         assertEquals(expectedTextColor, continueButton.getTextColors().getDefaultColor());
-    }
-
-    @Test
-    public void testRpContextTitleDisplayedWithoutIframe() {
-        for (RpContext rpContext : mRpContexts) {
-            mModel.set(
-                    ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                            .with(HeaderProperties.IFRAME_FOR_DISPLAY, "")
-                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .build());
-            assertEquals(View.VISIBLE, mContentView.getVisibility());
-            TextView title = mContentView.findViewById(R.id.header_title);
-            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-            assertEquals(
-                    "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "example.org", "idp.org"),
-                    title.getText().toString());
-            assertEquals("Incorrect subtitle", "", subtitle.getText());
-        }
-    }
-
-    @Test
-    public void testRpContextTitleDisplayedWithIframe() {
-        for (RpContext rpContext : mRpContexts) {
-            mModel.set(
-                    ItemProperties.HEADER,
-                    new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.TOP_FRAME_FOR_DISPLAY, "example.org")
-                            .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe-example.org")
-                            .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                            .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .build());
-            assertEquals(View.VISIBLE, mContentView.getVisibility());
-            TextView title = mContentView.findViewById(R.id.header_title);
-            TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
-
-            assertEquals(
-                    "Incorrect title",
-                    mResources.getString(rpContext.mTitleId, "iframe-example.org", "idp.org"),
-                    title.getText().toString());
-            assertEquals(
-                    "Incorrect subtitle",
-                    mResources.getString(
-                            R.string.account_selection_sheet_subtitle_explicit, "example.org"),
-                    subtitle.getText());
-        }
     }
 
     @Test

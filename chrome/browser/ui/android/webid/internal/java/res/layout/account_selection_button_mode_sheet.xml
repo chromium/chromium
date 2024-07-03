@@ -26,7 +26,7 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <include layout="@layout/account_selection_header_item"
+    <include layout="@layout/account_selection_button_mode_header_item"
         android:id="@+id/header_view_item" />
     <FrameLayout
         android:id="@+id/sheet_item_list_container"

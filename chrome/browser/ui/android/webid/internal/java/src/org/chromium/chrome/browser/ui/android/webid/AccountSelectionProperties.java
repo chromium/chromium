@@ -79,6 +79,8 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("type");
         static final ReadableObjectPropertyKey<String> RP_CONTEXT =
                 new ReadableObjectPropertyKey<>("rp_context");
+        static final ReadableObjectPropertyKey<Integer> RP_MODE =
+                new ReadableObjectPropertyKey<>("rp_mode");
 
         static final PropertyKey[] ALL_KEYS = {
             CLOSE_ON_CLICK_LISTENER,
@@ -87,7 +89,8 @@ class AccountSelectionProperties {
             IFRAME_FOR_DISPLAY,
             IDP_BRAND_ICON,
             TYPE,
-            RP_CONTEXT
+            RP_CONTEXT,
+            RP_MODE
         };
 
         private HeaderProperties() {}
