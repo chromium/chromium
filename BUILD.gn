@@ -350,8 +350,8 @@ group("gn_all") {
 
       if (enable_platform_experience) {
         deps += [
+          "//chrome/browser/platform_experience/win:os_update_handler",
           "//chrome/browser/platform_experience/win:platform_experience_helper",
-          "//chrome/browser/platform_experience/win:win_update_helper",
         ]
       }
     }
