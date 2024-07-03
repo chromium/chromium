@@ -4290,6 +4290,8 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/mouse-scrolling-over-standard-scrollbar.html [ Failure Pass ]
 crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Crash Failure Pass Timeout ]
 crbug.com/1459304 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrolling-container-moves-offscreen.html [ Failure Pass ]
+crbug.com/324441376 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
+crbug.com/324441376 [ Linux ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 
 ### END PERCENT BASED SCROLLING TEST FAILURES
 
@@ -7546,6 +7548,11 @@ crbug.com/348486001 [ Win11-arm64 ] virtual/prerender2-fallback-prefetch-spec-ru
 
 # The overlapping navigation behavior is flaky.
 crbug.com/348101805 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-nav.html [ Failure Pass ]
+
+# Flaky on Linux.
+crbug.com/324441376 [ Linux ] virtual/fractional-scroll-offsets/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
+crbug.com/324441376 [ Linux ] virtual/fluent-non-overlay-scrollbar/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
+crbug.com/324441376 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
 
 # Gardener 2024-06-28
 crbug.com/349938120 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
