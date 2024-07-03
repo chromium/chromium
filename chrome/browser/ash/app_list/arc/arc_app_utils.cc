@@ -228,31 +228,6 @@ bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
 
 }  // namespace
 
-// Package names, kept in sorted order.
-const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";
-const char kPlayStorePackage[] = "com.android.vending";
-
-// App IDs, kept in sorted order.
-const char kAndroidContactsAppId[] = "kipfkokfekalckplgaikemhghlbkgpfl";
-const char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";
-const char kGoogleCalendarAppId[] = "decaoeahkmjpajbmlbpogjjkjbjokeed";
-const char kGoogleDuoAppId[] = "djkcbcmkefiiphjkonbeknmcgiheajce";
-const char kGoogleMapsAppId[] = "gmhipfhgnoelkiiofcnimehjnpaejiel";
-const char kGooglePhotosAppId[] = "fdbkkojdbojonckghlanfaopfakedeca";
-const char kGoogleTVAppId[] = "kadljooblnjdohjelobhphgeimdbcpbo";
-const char kInfinitePainterAppId[] = "afihfgfghkmdmggakhkgnfhlikhdpima";
-const char kLightRoomAppId[] = "fpegfnbgomakooccabncdaelhfppceni";
-const char kPackageInstallerAppId[] = "jegcgkleafemmaabigncnldhlhnddfkf";
-const char kPlayBooksAppId[] = "cafegjnmmjpfibnlddppihpnkbkgicbg";
-const char kPlayGamesAppId[] = "nplnnjkbeijcggmpdcecpabgbjgeiedc";
-const char kPlayMoviesAppId[] = "dbbihmicnlldbflflckpafphlekmjfnm";
-const char kPlayMusicAppId[] = "ophbaopahelaolbjliokocojjbgfadfn";
-const char kPlayStoreAppId[] = "cnbgggchhmkkdmeppjobngjoejnihlei";
-const char kSettingsAppId[] = "mconboelelhjpkbdhhiijkgcimoangdj";
-const char kYoutubeAppId[] = "aniolghapcdkoolpkffememnhpphmjkl";
-const char kYoutubeMusicAppId[] = "hpdkdmlckojaocbedhffglopeafcgggc";
-const char kYoutubeMusicWebApkAppId[] = "jcmmigapnpnikbmnjknhcoageaeinihi";
-
 bool ShouldShowInLauncher(const std::string& app_id) {
   for (auto* const id : kAppIdsHiddenInLauncher) {
     if (id == app_id)
