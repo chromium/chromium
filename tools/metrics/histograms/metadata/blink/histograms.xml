@@ -1195,6 +1195,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Experimental.Cookies.FirstCookieRequest"
+    enum="FirstCookieRequest" expires_after="2024-12-08">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google</owner>
+  <summary>
+    Whether the first cookie request is a SET, GET, or a check to determine if
+    the cookies are enabled. This is an experiment to determine if we should
+    return the version and/or the cookie string on SET.
+
+    A sample is recorded on the first GetCookiesString, SetCookiesString, or
+    CookiesEnabled request sent from the Document owned CookieJar.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.AccountLabel.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2025-02-12">
   <owner>cbiesinger@chromium.org</owner>
