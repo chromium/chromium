@@ -705,10 +705,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // `PrefetchStreamingURLLoader` is set here.
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader_;
 
-  // The time at which |prefetched_response_| was received. This is used to
-  // determine whether or not |prefetched_response_| is stale.
-  std::optional<base::TimeTicks> prefetch_received_time_;
-
   ukm::SourceId ukm_source_id_;
 
   // The sizes information of the prefetched response.
