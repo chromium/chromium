@@ -161,9 +161,6 @@
 # crbug.com/1513740
 -org.chromium.chrome.browser.signin.SigninManagerIntegrationTest.testUpdateAccountListTwoAccountsThenRemoveAll
 
-# crbug.com/1515446
--org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
-
 # crbug.com/1515448
 -org.chromium.chrome.browser.site_settings.FamilyLinkControlsTest.*
 
