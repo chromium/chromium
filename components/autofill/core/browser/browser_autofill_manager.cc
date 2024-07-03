@@ -1331,6 +1331,16 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
   }
 
+  if (autofill_field) {
+    // TODO(crbug.com/349982907): Until the linked bug is fixed, Chrome on iOS
+    // does not forward focus events. The OnAskForValuesToFillImpl() call
+    // indicates that a field was focused on iOS. On desktop it's not capturing
+    // all focus events (neglecting if the user presses the tab key or a field
+    // acquires focus on page load). Therefore, this is a temporary workaround
+    // that should be deleted with crbug.com/349982907.
+    autofill_field->set_was_focused(true);
+  }
+
   // Once the user triggers autofill from the context menu, this event is
   // recorded, because the IPH configuration limits how many times the IPH can
   // be shown.
@@ -1743,6 +1753,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
 void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
     bool had_interacted_form) {
+  // TODO(crbug.com/349982907): This function is not called on iOS.
+
   // For historical reasons, Chrome takes action on this message only if focus
   // was previously on a form with which the user had interacted.
   // TODO(crbug.com/40726656): Remove need for this short-circuit.
@@ -1768,6 +1780,8 @@ void BrowserAutofillManager::OnFocusOnNonFormFieldImpl(
 void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
     const FieldGlobalId& field_id) {
+  // TODO(crbug.com/349982907): This function is not called on iOS.
+
   if (pending_form_data_ &&
       pending_form_data_->global_id() != form.global_id()) {
     // A new form has received the focus, so we may have votes to upload for the
