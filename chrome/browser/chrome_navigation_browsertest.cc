@@ -1698,7 +1698,9 @@ class WebstoreOverrideIsolationBrowserTest
     : public WebstoreIsolationBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Override the webstore URL.
+    // Override the webstore URL. Note: although this specifies a path, in
+    // reality we just look at the scheme, host and port when using the
+    // override.
     command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
                                     "https://chrome.foo.com/frame_tree");
 
@@ -1719,7 +1721,9 @@ IN_PROC_BROWSER_TEST_F(WebstoreOverrideIsolationBrowserTest,
       initial_web_contents->GetPrimaryMainFrame()->GetSiteInstance());
 
   // Open a popup for chrome.foo.com and ensure that it's isolated in a
-  // different SiteInstance and process from the rest of foo.com.
+  // different SiteInstance and process from the rest of foo.com. Since the
+  // command line override applies to the entire subdomain, there should have
+  // been a BrowsingInstance swap at this point.
   const GURL webstore_origin_url("https://chrome.foo.com/title1.html");
   OpenPopup(initial_web_contents, webstore_origin_url);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -1732,30 +1736,15 @@ IN_PROC_BROWSER_TEST_F(WebstoreOverrideIsolationBrowserTest,
       popup->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_NE(initial_instance, popup_instance);
   EXPECT_NE(initial_instance->GetProcess(), popup_instance->GetProcess());
-  // This URL still does *not* match the web store URL due to it not having the
-  // /frame_tree/ path, so there will not have been a full BrowsingInstance
-  // swap.
-  EXPECT_TRUE(initial_instance->IsRelatedSiteInstance(popup_instance.get()));
+  EXPECT_FALSE(initial_instance->IsRelatedSiteInstance(popup_instance.get()));
 
-  // Now navigate the popup to the full web store URL and confirm that this
-  // causes a BrowsingInstance swap.
-  const GURL webstore_url("https://chrome.foo.com/frame_tree/simple.htm");
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(popup, webstore_url));
-  scoped_refptr<content::SiteInstance> webstore_instance(
-      popup->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_NE(webstore_instance, popup_instance);
-  EXPECT_NE(webstore_instance, initial_instance);
-  EXPECT_FALSE(webstore_instance->IsRelatedSiteInstance(popup_instance.get()));
-  EXPECT_FALSE(
-      webstore_instance->IsRelatedSiteInstance(initial_instance.get()));
-
-  // Finally navigate the popup back away from the web store URL. This will lead
+  // Navigate the popup back away from the web store URL. This will lead
   // to another new process and BrowsingInstance swap.
   EXPECT_TRUE(content::NavigateToURLFromRenderer(popup, first_url));
   scoped_refptr<content::SiteInstance> final_instance(
       popup->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_NE(final_instance->GetProcess(), webstore_instance->GetProcess());
-  EXPECT_FALSE(final_instance->IsRelatedSiteInstance(webstore_instance.get()));
+  EXPECT_NE(final_instance->GetProcess(), popup_instance->GetProcess());
+  EXPECT_FALSE(final_instance->IsRelatedSiteInstance(popup_instance.get()));
 }
 
 // Check that it's possible to navigate to a chrome scheme URL from a crashed

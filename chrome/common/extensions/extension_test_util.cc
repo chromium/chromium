@@ -96,11 +96,20 @@ void SetGalleryUpdateURL(const GURL& new_url) {
 }
 
 // Note: This list should be kept in sync with the set of all features which
-// have delegated availability checks. Currently this is only controlled_frame.
+// have delegated availability checks. This includes controlled_frame and
+// webstore_overide.
 std::vector<const char*> GetExpectedDelegatedFeaturesForTest() {
   return {
-      "chromeWebViewInternal", "controlledFrameInternal", "guestViewInternal",
-      "webRequestInternal",    "webViewInternal",
+      // Controlled frame:
+      "chromeWebViewInternal",
+      "controlledFrameInternal",
+      "guestViewInternal",
+      "webRequestInternal",
+      "webViewInternal",
+
+      // Webstore override:
+      "management",
+      "webstorePrivate",
   };
 }
 

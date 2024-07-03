@@ -538,12 +538,13 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
   nav_observer.Wait();
   EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
 
-  // If not using the new Webstore URL, verify that we have the Webstore hosted
-  // app loaded into the Web Contents. Note: the new Webstore is granted it's
-  // powers without use of the hosted app.
+  // If this test is for the old Webstore URL, verify that we have the Webstore
+  // hosted app loaded into the Web Contents.
+  // TODO(crbug.com/328494022): Remove this when we get rid of using the hosted
+  // app for the old Webstore.
   content::RenderProcessHost* new_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
-  if (GetParam() != kNewWebstoreURL) {
+  if (GetParam() == kWebstoreURL) {
     EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
         extensions::kWebStoreAppId, new_process_host->GetID()));
   }
@@ -583,10 +584,11 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
   EXPECT_EQ(true, content::EvalJs(web_contents,
                                   "!!chrome && !!chrome.webstorePrivate"));
 
-  // Verify that we have the Webstore hosted app loaded into the Web Contents.
-  // Note: the new Webstore is granted it's powers without use of the hosted
-  // app, so we don't do this check for it.
-  if (GetParam() != kNewWebstoreURL) {
+  // Verify that we have the Webstore hosted app loaded into the Web Contents if
+  // this is for the old Webstore URL. Note: The new Webstore and the Webstore
+  // URL override are granted their powers without use of the hosted app, so we
+  // don't do this check for them.
+  if (GetParam() == kWebstoreURL) {
     content::RenderProcessHost* render_process_host =
         web_contents->GetPrimaryMainFrame()->GetProcess();
     EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(

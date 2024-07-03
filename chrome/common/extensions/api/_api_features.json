@@ -1038,6 +1038,13 @@
     "channel": "stable",
     "contexts": ["web_page"],
     "matches": ["https://chromewebstore.google.com/*"]
+  }, {
+    // Used for webstore testing. See comment in
+    // chrome/common/extensions/webstore_override.cc
+    "channel": "stable",
+    "contexts": ["web_page"],
+    "requires_delegated_availability_check": true,
+    "matches": ["<all_urls>"]
   }],
   "webviewTag": {
     "internal": true,

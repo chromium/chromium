@@ -65,14 +65,15 @@ const char kAppModeOAuth2Token[] = "app-mode-oauth-token";
 // OS login, and which mode the app was launched in.
 const char kAppRunOnOsLoginMode[] = "app-run-on-os-login-mode";
 
-// The URL that the webstore APIs download extensions from.
+// Overrides the URL that the webstore APIs download extensions from.
 // Note: the URL must contain one '%s' for the extension ID.
 const char kAppsGalleryDownloadURL[] = "apps-gallery-download-url";
 
-// The update url used by gallery/webstore extensions.
+// Overrides the update url used by webstore extensions.
 const char kAppsGalleryUpdateURL[] = "apps-gallery-update-url";
 
-// The URL to use for the gallery link in the app launcher.
+// Overrides the url that the browser treats as the webstore, granting it the
+// webstore APIs and giving it some special protections.
 const char kAppsGalleryURL[] = "apps-gallery-url";
 
 // Allowlist for Negotiate Auth servers

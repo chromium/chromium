@@ -2932,6 +2932,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       extensions::switches::kExtensionsOnChromeURLs,
       extensions::switches::kSetExtensionThrottleTestParams,  // For tests only.
       extensions::switches::kAllowlistedExtensionID,
+      extensions::switches::kExtensionTestApiOnWebPages, // For tests only.
 #endif
       switches::kAllowInsecureLocalhost,
       switches::kAppsGalleryURL,

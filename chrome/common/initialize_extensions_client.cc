@@ -4,6 +4,7 @@
 
 #include "chrome/common/initialize_extensions_client.h"
 
+#include <map>
 #include <memory>
 
 #include "base/no_destructor.h"
@@ -12,12 +13,39 @@
 #include "chrome/common/controlled_frame/controlled_frame.h"
 #include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
+#include "chrome/common/extensions/webstore_override.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
+
+namespace {
+
+// Helper method to merge all the FeatureDelegatedAvailabilityCheckMaps into a
+// single map.
+extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+CombineAllAvailabilityCheckMaps() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map_list[] = {
+      controlled_frame::CreateAvailabilityCheckMap(),
+      extensions::webstore_override::CreateAvailabilityCheckMap()};
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap result;
+
+  for (auto& map : map_list) {
+    result.merge(map);
+    // DCHECK that none of the keys were overlapping i.e. the map we merged in
+    // is empty now. This is done as a DCHECK rather than a CHECK as it is meant
+    // as a catch for developers adding a new delegated availability check that
+    // might have overlapping keys with an existing one.
+    DCHECK(map.empty())
+        << "Overlapping feature name key in delegated availibty check map for: "
+        << map.begin()->first;
+  }
+  return result;
+}
+
+}  // namespace
 
 void EnsureExtensionsClientInitialized() {
   static bool initialized = false;
@@ -29,7 +57,7 @@ void EnsureExtensionsClientInitialized() {
     initialized = true;
 
     extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
-        controlled_frame::CreateAvailabilityCheckMap());
+        CombineAllAvailabilityCheckMaps());
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
     extensions_client->AddAPIProvider(

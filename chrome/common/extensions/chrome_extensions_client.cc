@@ -75,6 +75,8 @@ void ChromeExtensionsClient::InitializeWebStoreUrls(
   if (command_line->HasSwitch(switches::kAppsGalleryURL)) {
     webstore_base_url_ =
         GURL(command_line->GetSwitchValueASCII(switches::kAppsGalleryURL));
+    new_webstore_base_url_ =
+        GURL(command_line->GetSwitchValueASCII(switches::kAppsGalleryURL));
   } else {
     webstore_base_url_ = GURL(extension_urls::kChromeWebstoreBaseURL);
     new_webstore_base_url_ = GURL(extension_urls::kNewChromeWebstoreBaseURL);

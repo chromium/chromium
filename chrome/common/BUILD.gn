@@ -329,6 +329,8 @@ static_library("common_lib") {
       "extensions/sync_helper.h",
       "extensions/webstore_install_result.cc",
       "extensions/webstore_install_result.h",
+      "extensions/webstore_override.cc",
+      "extensions/webstore_override.h",
       "initialize_extensions_client.cc",
       "initialize_extensions_client.h",
     ]

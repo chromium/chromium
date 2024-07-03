@@ -49,6 +49,7 @@
 #include "extensions/browser/install/extension_install_ui.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/switches.h"
 #include "gpu/config/gpu_feature_type.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -126,7 +127,7 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
 // A base class for tests below.
 class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
  public:
-  ExtensionWebstorePrivateApiTest() {}
+  ExtensionWebstorePrivateApiTest() = default;
 
   ExtensionWebstorePrivateApiTest(const ExtensionWebstorePrivateApiTest&) =
       delete;
@@ -137,9 +138,9 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kAppsGalleryURL,
-        "http://www.example.com/extensions/api_test");
+    command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+                                    "http://www.example.com/");
+    command_line->AppendSwitch(switches::kExtensionTestApiOnWebPages);
   }
 
   void SetUpOnMainThread() override {
@@ -161,21 +162,9 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
   }
 
  protected:
-  // Returns a test server URL, but with host 'www.example.com' so it matches
-  // the web store app's extent that we set up via command line flags.
-  GURL DoGetTestServerURL(const std::string& path) {
-    GURL url = embedded_test_server()->GetURL(path);
-
-    // Replace the host with 'www.example.com' so it matches the web store
-    // app's extent.
-    GURL::Replacements replace_host;
-    replace_host.SetHostStr("www.example.com");
-
-    return url.ReplaceComponents(replace_host);
-  }
-
   virtual GURL GetTestServerURL(const std::string& path) {
-    return DoGetTestServerURL(
+    return embedded_test_server()->GetURL(
+        "www.example.com",
         std::string("/extensions/api_test/webstore_private/") + path);
   }
 
@@ -386,7 +375,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     // TODO (crbug.com/995575): figure out why this switch speeds up the test,
     // and fix the test setup so this is not required.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    command_line->AppendSwitch(switches::kShortMergeSessionTimeoutForTest);
+    command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);
 #endif
   }
 
