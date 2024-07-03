@@ -18,11 +18,9 @@ namespace webnn::coreml {
 
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver),
-                       std::move(client_remote),
                        context_provider,
                        GraphBuilderCoreml::GetContextProperties()),
       options_(std::move(options)) {}

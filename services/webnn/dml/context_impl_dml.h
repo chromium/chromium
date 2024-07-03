@@ -26,7 +26,6 @@ class ContextImplDml final : public WebNNContextImpl {
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
                  WebNNContextProviderImpl* context_provider,
                  std::unique_ptr<CommandRecorder> command_recorder,
                  const gpu::GpuFeatureInfo& gpu_feature_info);
@@ -43,14 +42,6 @@ class ContextImplDml final : public WebNNContextImpl {
                   mojom::WebNNBuffer::ReadBufferCallback callback);
 
   void WriteBuffer(BufferImplDml* dst_buffer, mojo_base::BigBuffer src_buffer);
-
-  // Some errors like `E_OUTOFMEMORY`, `DXGI_ERROR_DEVICE_REMOVED` and
-  // `DXGI_ERROR_DEVICE_RESET` are treated as `context lost` errors, other
-  // errors will crash the GPU process.
-  //
-  // TODO(crbug.com/349640008): For the `context lost` errors, we should
-  // gracefully terminate the GPU process.
-  void HandleContextLostOrCrash(std::string_view message_for_log, HRESULT hr);
 
  private:
   void CreateGraphImpl(

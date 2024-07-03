@@ -15,7 +15,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_lost_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
@@ -63,18 +62,11 @@ MLContext::MLContext(
       power_preference_(power_preference),
       model_format_(model_format),
       num_threads_(num_threads),
-      lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
-      context_remote_(execution_context),
-      context_client_receiver_(this, execution_context),
+      remote_context_(execution_context),
       properties_(std::move(create_context_success->context_properties)) {
-  context_remote_.Bind(
+  remote_context_.Bind(
       std::move(create_context_success->context_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  context_client_receiver_.Bind(
-      std::move(create_context_success->context_client_receiver),
-      execution_context->GetTaskRunner(TaskType::kMachineLearning));
-  context_client_receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MLContext::OnDisconnected, WrapWeakPersistent(this)));
 }
 
 MLContext::~MLContext() = default;
@@ -100,15 +92,9 @@ unsigned int MLContext::GetNumThreads() const {
 }
 
 void MLContext::Trace(Visitor* visitor) const {
-  visitor->Trace(lost_property_);
-  visitor->Trace(context_remote_);
-  visitor->Trace(context_client_receiver_);
+  visitor->Trace(remote_context_);
 
   ScriptWrappable::Trace(visitor);
-}
-
-ScriptPromise<MLContextLostInfo> MLContext::lost(ScriptState* script_state) {
-  return lost_property_->Promise(script_state->World());
 }
 
 ScriptPromise<MLComputeResult> MLContext::compute(
@@ -137,39 +123,30 @@ ScriptPromise<MLComputeResult> MLContext::compute(
 void MLContext::CreateWebNNGraph(
     webnn::mojom::blink::GraphInfoPtr graph_info,
     webnn::mojom::blink::WebNNContext::CreateGraphCallback callback) {
-  if (!context_remote_.is_bound()) {
+  if (!remote_context_.is_bound()) {
     std::move(callback).Run(webnn::mojom::blink::CreateGraphResult::NewError(
         webnn::mojom::blink::Error::New(
             webnn::mojom::blink::Error::Code::kUnknownError,
-            "Context is lost.")));
+            "Invalid script state.")));
     return;
   }
 
-  context_remote_->CreateGraph(std::move(graph_info),
+  remote_context_->CreateGraph(std::move(graph_info),
                                WTF::BindOnce(std::move(callback)));
-}
-
-void MLContext::OnLost(const String& message) {
-  context_remote_.reset();
-  context_client_receiver_.reset();
-
-  CHECK_EQ(lost_property_->GetState(), LostProperty::kPending);
-  auto* context_lost_info = MLContextLostInfo::Create();
-  context_lost_info->setMessage(message);
-  lost_property_->Resolve(context_lost_info);
-}
-
-void MLContext::OnDisconnected() {
-  OnLost("WebNN context is lost due to connection error.");
 }
 
 void MLContext::CreateWebNNBuffer(
     mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNBuffer> receiver,
     webnn::mojom::blink::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
-  CHECK(context_remote_.is_bound());
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_context_.is_bound()) {
+    return;
+  }
+
   // Use `WebNNContext` to create `WebNNBuffer` message pipe.
-  context_remote_->CreateBuffer(std::move(receiver), std::move(buffer_info),
+  remote_context_->CreateBuffer(std::move(receiver), std::move(buffer_info),
                                 buffer_handle);
 }
 
@@ -196,13 +173,6 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
                                   const MLBufferDescriptor* descriptor,
                                   ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLContext::createBuffer");
-  // Remote context gets automatically unbound when the execution context
-  // destructs.
-  if (!context_remote_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Context is lost.");
-    return nullptr;
-  }
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");

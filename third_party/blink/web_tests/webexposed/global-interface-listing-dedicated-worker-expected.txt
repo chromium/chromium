@@ -1183,7 +1183,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
-[Worker]     getter lost
 [Worker]     method compute
 [Worker]     method constructor
 [Worker]     method createBuffer

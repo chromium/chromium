@@ -2587,9 +2587,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
 // Append an identity node to the input node output. Return the node output of
 // the identity operator if it's successfully created, otherwise return a
 // nullptr.
-//
-// TODO(crbug.com/349649099): Handle context lost for operator creation
-// failures.
 const NodeOutput* AppendIdentityNode(
     GraphBuilderDml& graph_builder,
     const NodeOutput* input,
@@ -4988,11 +4985,16 @@ void HandleGraphCreationFailure(
 void HandleGraphCreationFailure(
     const std::string& error_message,
     HRESULT hr,
-    WebNNContextImpl::CreateGraphImplCallback callback,
-    ContextImplDml* context) {
-  std::move(callback).Run(base::unexpected(
-      CreateError(mojom::Error::Code::kUnknownError, error_message)));
-  context->HandleContextLostOrCrash(error_message, hr);
+    WebNNContextImpl::CreateGraphImplCallback callback) {
+  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  if (hr == E_OUTOFMEMORY) {
+    std::move(callback).Run(base::unexpected(CreateError(
+        mojom::Error::Code::kUnknownError,
+        error_message + " No enough memory resources are available.")));
+  } else {
+    std::move(callback).Run(base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError, error_message)));
+  }
 }
 
 bool IsDispatchBindingValid(
@@ -5340,7 +5342,6 @@ GraphImplDml::GraphImplDml(
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
       persistent_resource_(std::move(persistent_resource)),
       adapter_(std::move(adapter)),
-      context_(context),
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
@@ -5407,7 +5408,7 @@ void GraphImplDml::OnCompilationComplete(
   HRESULT hr = initialization_command_recorder->Open();
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to open the command recorder.", hr,
-                               std::move(callback), context.get());
+                               std::move(callback));
     return;
   }
 
@@ -5453,7 +5454,7 @@ void GraphImplDml::OnCompilationComplete(
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
             "Failed to create custom upload buffer for constants.", hr,
-            std::move(callback), context.get());
+            std::move(callback));
         return;
       }
       buffer_variant = std::move(cpu_buffer);
@@ -5467,7 +5468,7 @@ void GraphImplDml::OnCompilationComplete(
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
             "Failed to create upload buffer for constants.", hr,
-            std::move(callback), context.get());
+            std::move(callback));
         return;
       }
       // Create the default heap that only can be accessed by GPU not provide
@@ -5479,7 +5480,7 @@ void GraphImplDml::OnCompilationComplete(
       if (FAILED(hr)) {
         HandleGraphCreationFailure(
             "Failed to create default input buffer for constants.", hr,
-            std::move(callback), context.get());
+            std::move(callback));
         return;
       }
       buffer_variant =
@@ -5530,7 +5531,7 @@ void GraphImplDml::OnCompilationComplete(
     if (FAILED(hr)) {
       HandleGraphCreationFailure(
           "Failed to create the default buffer for persistent resource.", hr,
-          std::move(callback), context.get());
+          std::move(callback));
       return;
     }
 
@@ -5545,14 +5546,14 @@ void GraphImplDml::OnCompilationComplete(
       persistent_buffer_binding_desc);
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to initialize the operator.", hr,
-                               std::move(callback), context.get());
+                               std::move(callback));
     return;
   }
 
   hr = initialization_command_recorder->Close();
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to close the command list.", hr,
-                               std::move(callback), context.get());
+                               std::move(callback));
     return;
   }
 
@@ -5575,7 +5576,7 @@ void GraphImplDml::OnCompilationComplete(
   hr = initialization_command_recorder->Execute();
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to execute the command list.", hr,
-                               std::move(callback), context.get());
+                               std::move(callback));
     return;
   }
 
@@ -5604,7 +5605,7 @@ void GraphImplDml::OnInitializationComplete(
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
         "Failed to wait for the initialization to complete.", hr,
-        std::move(callback), context.get());
+        std::move(callback));
     return;
   }
 
@@ -5618,7 +5619,7 @@ void GraphImplDml::OnInitializationComplete(
     HandleGraphCreationFailure(
         "Failed to allocate compute resource.",
         std::move(compute_resources_allocation_result.error()),
-        std::move(callback), context.get());
+        std::move(callback));
     return;
   }
   std::unique_ptr<ComputeResources> compute_resources =
@@ -5631,7 +5632,7 @@ void GraphImplDml::OnInitializationComplete(
   if (FAILED(hr)) {
     HandleGraphCreationFailure(
         "Failed to record commands and bind resources for execution.", hr,
-        std::move(callback), context.get());
+        std::move(callback));
     return;
   }
 
@@ -6035,8 +6036,6 @@ void GraphImplDml::CreateAndBuild(
             mojom::Error::Code::kNotSupportedError, std::move(error_message)));
       }
     }
-    // TODO(crbug.com/349649099): Handle context lost for operator creation
-    // failures.
     if (!create_operator_result.has_value()) {
       std::move(callback).Run(
           base::unexpected(std::move(create_operator_result.error())));
@@ -6104,21 +6103,28 @@ void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
     HRESULT hr,
     mojom::WebNNGraph::ComputeCallback callback) {
+  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   compute_resources_.reset();
+  if (hr == E_OUTOFMEMORY) {
+    std::move(callback).Run(ComputeResult::NewError(CreateError(
+        mojom::Error::Code::kUnknownError,
+        error_message + " No enough memory resources are available.")));
+  } else {
     std::move(callback).Run(ComputeResult::NewError(
         CreateError(mojom::Error::Code::kUnknownError, error_message)));
-    context_->HandleContextLostOrCrash(error_message, hr);
+  }
 }
 
+// TODO(crbug.com/41492165): generate error using context.
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
                                          HRESULT hr) {
+  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();
 
   // Clear out previous buffers recorded for dispatch() so we don't mistakenly
   // skip recording on failure.
   previous_input_buffers_.clear();
   previous_output_buffers_.clear();
-  context_->HandleContextLostOrCrash(error_message, hr);
 }
 
 void GraphImplDml::ComputeImpl(

@@ -19,10 +19,6 @@ dictionary MLComputeResult {
   MLNamedArrayBufferViews outputs;
 };
 
-dictionary MLContextLostInfo {
-  DOMString message;
-};
-
 dictionary MLOpSupportLimits {
   MLSupportLimits input;
   MLSupportLimits constant;
@@ -47,11 +43,6 @@ typedef record<DOMString, MLBuffer> MLNamedBuffers;
   SecureContext,
   Exposed=(Window, DedicatedWorker)
 ] interface MLContext {
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState
-  ] readonly attribute Promise<MLContextLostInfo> lost;
-
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,

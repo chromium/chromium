@@ -14,7 +14,6 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
@@ -25,7 +24,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -34,12 +32,9 @@ class ExecutionContext;
 class MLBuffer;
 class MLBufferDescriptor;
 class MLComputeResult;
-class MLContextLostInfo;
 class MLOpSupportLimits;
 
-class MODULES_EXPORT MLContext
-    : public ScriptWrappable,
-      public webnn::mojom::blink::WebNNContextClient {
+class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -68,8 +63,6 @@ class MODULES_EXPORT MLContext
   void Trace(Visitor* visitor) const override;
 
   // IDL interface:
-  ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
-
   ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
                                          MLGraph* graph,
                                          const MLNamedArrayBufferViews& inputs,
@@ -134,14 +127,6 @@ class MODULES_EXPORT MLContext
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
 
  private:
-  using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
-
-  // Closes the `context_remote_` and `context_client_receiver_` pipes
-  // because the context has been lost.
-  void OnLost(const String& message) override;
-
-  void OnDisconnected();
-
   // Validate and write ArrayBuffer data to hardware accelerated OS
   // machine learning buffers in the WebNN Service.
   // `src_data` is the source span of the array buffer data.
@@ -162,13 +147,9 @@ class MODULES_EXPORT MLContext
   V8MLModelFormat model_format_;
   unsigned int num_threads_;
 
-  Member<LostProperty> lost_property_;
-
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
-  HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
-  HeapMojoReceiver<webnn::mojom::blink::WebNNContextClient, MLContext>
-      context_client_receiver_;
+  HeapMojoRemote<webnn::mojom::blink::WebNNContext> remote_context_;
   webnn::ContextProperties properties_;
 };
 

@@ -15,11 +15,9 @@ namespace webnn::tflite {
 // for creating a `GraphImplTflite` which uses TFLite for inference.
 class ContextImplTflite final : public WebNNContextImpl {
  public:
-  ContextImplTflite(
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      mojo::PendingRemote<mojom::WebNNContextClient> client_remote,
-      WebNNContextProviderImpl* context_provider,
-      mojom::CreateContextOptionsPtr options);
+  ContextImplTflite(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                    WebNNContextProviderImpl* context_provider,
+                    mojom::CreateContextOptionsPtr options);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;

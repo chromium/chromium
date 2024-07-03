@@ -5896,7 +5896,6 @@ interface MLBuffer
     method destroy
 interface MLContext
     attribute @@toStringTag
-    getter lost
     method compute
     method constructor
     method createBuffer
