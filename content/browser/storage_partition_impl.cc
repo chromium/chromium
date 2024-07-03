@@ -551,6 +551,7 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           client_cert_responder_remote,
       BrowserContext* browser_context,
+      int process_id,
       base::WeakPtr<WebContents> web_contents,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info)
       : client_cert_responder_(std::move(client_cert_responder_remote)),
@@ -558,6 +559,7 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
             GetContentClient()->browser()->CreateClientCertStore(
                 browser_context),
             browser_context->GetWeakPtr(),
+            process_id,
             web_contents,
             std::move(cert_info.get()),
             this)) {
@@ -2265,7 +2267,10 @@ void StoragePartitionImpl::OnCertificateRequested(
   }
 
   base::WeakPtr<WebContents> web_contents_weak;
-  if (context.type() != ContextType::kServiceWorkerContext) {
+  int process_id = network::mojom::kInvalidProcessId;
+  if (context.type() == ContextType::kServiceWorkerContext) {
+    process_id = context.process_id();
+  } else {
     WebContents* web_contents = context.GetWebContents();
     // The WebContents is already invalid. Bail.
     if (!web_contents) {
@@ -2274,11 +2279,18 @@ void StoragePartitionImpl::OnCertificateRequested(
     }
     CHECK_EQ(web_contents->GetBrowserContext(), browser_context_.get());
     web_contents_weak = web_contents->GetWeakPtr();
+
+    if (context.navigation_or_document()) {
+      auto* render_frame_host = context.navigation_or_document()->GetDocument();
+      if (render_frame_host) {
+        process_id = render_frame_host->GetProcess()->GetID();
+      }
+    }
   }
 
   // SSLClientAuthDelegate handles its own lifetime.
   new SSLClientAuthDelegate(std::move(cert_responder), browser_context(),
-                            web_contents_weak, cert_info);
+                            process_id, web_contents_weak, cert_info);
 }
 
 void StoragePartitionImpl::OnSSLCertificateError(

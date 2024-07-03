@@ -54,10 +54,12 @@ class SSLClientAuthHandler::ClientCertificateDelegateImpl
 SSLClientAuthHandler::SSLClientAuthHandler(
     std::unique_ptr<net::ClientCertStore> client_cert_store,
     base::WeakPtr<BrowserContext> browser_context,
+    int process_id,
     base::WeakPtr<WebContents> web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     Delegate* delegate)
     : browser_context_(browser_context),
+      process_id_(process_id),
       web_contents_(web_contents),
       cert_request_info_(cert_request_info),
       client_cert_store_(std::move(client_cert_store)),
@@ -113,8 +115,8 @@ void SSLClientAuthHandler::DidGetClientCertsOnPostTask(
   base::WeakPtr<SSLClientAuthHandler> weak_self = weak_factory_.GetWeakPtr();
   base::OnceClosure cancellation_callback =
       GetContentClient()->browser()->SelectClientCertificate(
-          browser_context_.get(), web_contents_.get(), cert_request_info_.get(),
-          std::move(client_certs),
+          browser_context_.get(), process_id_, web_contents_.get(),
+          cert_request_info_.get(), std::move(client_certs),
           std::make_unique<ClientCertificateDelegateImpl>(weak_self));
   if (weak_self) {
     cancellation_callback_ = std::move(cancellation_callback);

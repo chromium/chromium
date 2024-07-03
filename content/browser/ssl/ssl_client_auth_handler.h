@@ -58,8 +58,11 @@ class SSLClientAuthHandler {
   // is not associated with a document, such as service workers. If
   // `web_contents` is not null, it is guaranteed to be associated with the same
   // BrowserContext as `browser_context`.
+  // `process_id` corresponds to the ID of the renderer process initiating the
+  // request.
   SSLClientAuthHandler(std::unique_ptr<net::ClientCertStore> client_cert_store,
                        base::WeakPtr<BrowserContext> browser_context,
+                       int process_id,
                        base::WeakPtr<WebContents> web_contents,
                        net::SSLCertRequestInfo* cert_request_info,
                        Delegate* delegate);
@@ -85,6 +88,7 @@ class SSLClientAuthHandler {
   base::OnceClosure cancellation_callback_;
 
   base::WeakPtr<BrowserContext> browser_context_;
+  const int process_id_;
   base::WeakPtr<WebContents> web_contents_;
 
   // The certs to choose from.

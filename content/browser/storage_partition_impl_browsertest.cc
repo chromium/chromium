@@ -73,6 +73,7 @@ class ClientCertBrowserClient : public ContentBrowserTestContentBrowserClient {
   // |delegate|.
   base::OnceClosure SelectClientCertificate(
       BrowserContext* browser_context,
+      int process_id,
       WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,
