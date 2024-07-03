@@ -185,13 +185,13 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
     return AXObject::GetTextDirection();
 
   switch (inline_text_box_->GetDirection()) {
-    case AbstractInlineTextBox::kLeftToRight:
+    case PhysicalDirection::kRight:
       return ax::mojom::blink::WritingDirection::kLtr;
-    case AbstractInlineTextBox::kRightToLeft:
+    case PhysicalDirection::kLeft:
       return ax::mojom::blink::WritingDirection::kRtl;
-    case AbstractInlineTextBox::kTopToBottom:
+    case PhysicalDirection::kDown:
       return ax::mojom::blink::WritingDirection::kTtb;
-    case AbstractInlineTextBox::kBottomToTop:
+    case PhysicalDirection::kUp:
       return ax::mojom::blink::WritingDirection::kBtt;
   }
 

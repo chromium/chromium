@@ -3498,20 +3498,15 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
   if (!style)
     return AXObject::GetTextDirection();
 
-  if (style->IsHorizontalWritingMode()) {
-    switch (style->Direction()) {
-      case TextDirection::kLtr:
-        return ax::mojom::blink::WritingDirection::kLtr;
-      case TextDirection::kRtl:
-        return ax::mojom::blink::WritingDirection::kRtl;
-    }
-  } else {
-    switch (style->Direction()) {
-      case TextDirection::kLtr:
-        return ax::mojom::blink::WritingDirection::kTtb;
-      case TextDirection::kRtl:
-        return ax::mojom::blink::WritingDirection::kBtt;
-    }
+  switch (style->GetWritingDirection().InlineEnd()) {
+    case PhysicalDirection::kRight:
+      return ax::mojom::blink::WritingDirection::kLtr;
+    case PhysicalDirection::kLeft:
+      return ax::mojom::blink::WritingDirection::kRtl;
+    case PhysicalDirection::kDown:
+      return ax::mojom::blink::WritingDirection::kTtb;
+    case PhysicalDirection::kUp:
+      return ax::mojom::blink::WritingDirection::kBtt;
   }
 
   NOTREACHED_IN_MIGRATION();

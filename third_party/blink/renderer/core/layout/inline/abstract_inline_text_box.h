@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 
 namespace blink {
 
@@ -49,8 +50,7 @@ class CORE_EXPORT AbstractInlineTextBox final
   // in contrast to a "DOM offset", is an offset in the box's text after any
   // collapsible white space in the DOM has been collapsed.
   unsigned TextOffsetInFormattingContext(unsigned offset) const;
-  enum Direction { kLeftToRight, kRightToLeft, kTopToBottom, kBottomToTop };
-  Direction GetDirection() const;
+  PhysicalDirection GetDirection() const;
   Node* GetNode() const;
   LayoutText* GetLayoutText() const { return layout_text_.Get(); }
   AXObjectCache* ExistingAXObjectCache() const;
