@@ -63,12 +63,16 @@ using read_anything::mojom::VoicePackInstallationState;
 
 namespace {
 
-// All components of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
-// needed for URL information. |ui::AXMode::kScreenReader| is needed for heading
-// level information. |ui::AXMode::kInlineTextBoxes| is needed for complete
-// Screen2x output -- if excluded, some nodes from the tree will not be
-// identified as content nodes.
-constexpr ui::AXMode kReadAnythingAXMode = ui::kAXModeWebContentsOnly;
+// All AXMode flags of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
+// needed for retrieveing the `aria-expanded` attribute.
+// |ui::AXMode::kScreenReader| is needed for HTML tag, and heading level
+// information. |ui::AXMode::kInlineTextBoxes| is needed for complete screen2x
+// output -- if excluded, some nodes from the tree will not be identified as
+// content nodes.
+// TODO(nektar): kHTML is a heavy-handed approach as it copies all HTML
+// attributes into the accessibility tree. It should be removed ASAP.
+constexpr ui::AXMode kReadAnythingAXMode =
+    ui::kAXModeWebContentsOnly | ui::AXMode::kHTML;
 
 int GetNormalizedFontScale(double font_scale) {
   DCHECK(font_scale >= kReadAnythingMinimumFontScale &&

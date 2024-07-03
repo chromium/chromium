@@ -1921,8 +1921,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityElementClassIdSrcAttr) {
-  RunHtmlTest(FILE_PATH_LITERAL("element-class-id-src-attr.html"));
+                       AccessibilityElementClassIdAttr) {
+  RunHtmlTest(FILE_PATH_LITERAL("element-class-id-attr.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

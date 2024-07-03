@@ -5505,7 +5505,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
 
   // Web content accessibility support should now be enabled.
   expected_mode |= ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                   ui::AXMode::kScreenReader | ui::AXMode::kHTML;
+                   ui::AXMode::kScreenReader;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -5540,11 +5540,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
     ASSERT_HRESULT_SUCCEEDED(text_element->GetCurrentPropertyValue(
         UIA_AutomationIdPropertyId, variant.Receive()));
   }
-  // TODO(janewman) UIA_AutomationIdPropertyId currently requires the author
-  // supplied ID property, this requires HTML mode enabled to be available,
-  // crbug 703277 is tracking separating this out so that kHTML can be removed
-  // altogether.
-  expected_mode |= ui::AXMode::kHTML;
   EXPECT_EQ(
       expected_mode,
       BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode());

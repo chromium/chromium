@@ -1519,9 +1519,9 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
 
   // Define snapshot parameters:
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode =
-      ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata)
-          .flags();
+  params->ax_mode = ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTML |
+                               ui::AXMode::kHTMLMetadata)
+                        .flags();
   params->max_nodes = 5000;
   params->timeout = base::Seconds(2);
 

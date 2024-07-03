@@ -582,7 +582,8 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
 
-  ui::AXMode mode(ui::AXMode::kWebContents | ui::AXMode::kHTMLMetadata);
+  ui::AXMode mode(ui::AXMode::kWebContents | ui::AXMode::kHTML |
+                  ui::AXMode::kHTMLMetadata);
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(

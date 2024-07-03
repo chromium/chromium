@@ -31,17 +31,7 @@ export class MathHandler {
    * @return {boolean} Whether any math was spoken.
    */
   speak() {
-    let mathml;
-
-    // Math can exist either as explicit innerHtml (handled by the Blink
-    // renderer for nodes with role math) or as a data attribute.
-    if (this.node_.role === chrome.automation.RoleType.MATH &&
-        this.node_.innerHtml) {
-      mathml = this.node_.innerHtml;
-    } else {
-      mathml = this.node_.htmlAttributes['data-mathml'];
-    }
-
+    const mathml = this.node_.mathContent;
     if (!mathml) {
       return false;
     }

@@ -661,8 +661,7 @@ export namespace AutomationPredicate {
 
   export function math(node: AutomationNode): boolean {
     // TODO(b/314203187): Not null asserted, check to make sure it's correct.
-    return node.role === Role.MATH ||
-        Boolean(node.htmlAttributes!['data-mathml']);
+    return Boolean(node.mathContent);
   }
 
   /** Matches against nodes visited during group navigation. */

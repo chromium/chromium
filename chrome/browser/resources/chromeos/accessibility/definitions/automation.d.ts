@@ -747,6 +747,7 @@ declare namespace chrome {
       nameFrom?: NameFromType;
       imageAnnotation?: string;
       value?: string;
+      htmlId?: string;
       htmlTag?: string;
       hierarchicalLevel?: number;
       caretBounds?: Rect;
@@ -816,9 +817,11 @@ declare namespace chrome {
       ariaColumnCount?: number;
       tableCellColumnIndex?: number;
       tableCellAriaColumnIndex?: number;
+      ariaCellColumnIndexText?: string;
       tableCellColumnSpan?: number;
       tableCellRowIndex?: number;
       tableCellAriaRowIndex?: number;
+      ariaCellRowIndexText?: string;
       tableCellRowSpan?: number;
       tableColumnHeader?: AutomationNode;
       tableRowHeader?: AutomationNode;
@@ -840,7 +843,6 @@ declare namespace chrome {
       autoComplete?: string;
       className?: string;
       modal?: boolean;
-      htmlAttributes?: {[key: string]: any};
       inputType?: string;
       accessKey?: string;
       ariaInvalidValue?: string;
@@ -851,7 +853,7 @@ declare namespace chrome {
       hasPopup?: HasPopup;
       restriction?: string;
       checked?: string;
-      innerHtml?: string;
+      mathContent?: string;
       color?: number;
       backgroundColor?: number;
       colorValue?: number;

@@ -1696,6 +1696,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kAccessKey:
         result += " access_key=" + value;
         break;
+      case ax::mojom::StringAttribute::kAppId:
+        result += " app_id=" + value.substr(0, 8);
+        break;
       case ax::mojom::StringAttribute::kAriaCellColumnIndexText:
         result += " aria_cell_column_index_text=" + value;
         break;
@@ -1750,9 +1753,6 @@ std::string AXNodeData::ToString(bool verbose) const {
                   base::NumberToString(static_cast<int>(value.size())) +
                   " bytes)";
         break;
-      case ax::mojom::StringAttribute::kInnerHtml:
-        result += " inner_html=" + value;
-        break;
       case ax::mojom::StringAttribute::kInputType:
         result += " input_type=" + value;
         break;
@@ -1777,8 +1777,8 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kContainerLiveStatus:
         result += " container_live=" + value;
         break;
-      case ax::mojom::StringAttribute::kAppId:
-        result += " app_id=" + value.substr(0, 8);
+      case ax::mojom::StringAttribute::kMathContent:
+        result += " math_content=" + value;
         break;
       case ax::mojom::StringAttribute::kPlaceholder:
         result += " placeholder=" + value;

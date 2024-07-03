@@ -94,10 +94,12 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         base::ASCIIToUTF16(script), base::NullCallback());
   }
 
-  void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kLoadComplete);
+  void LoadInitialAccessibilityTreeFromHtml(
+      const std::string& html,
+      const ui::AXMode& additional_mode_flags = ui::AXMode()) {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete | additional_mode_flags,
+        ax::mojom::Event::kLoadComplete);
     GURL html_data_url(
         base::EscapeExternalHandlerValue("data:text/html," + html));
     ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
@@ -309,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         <input type="checkbox">
       </body>
       </html>)HTML");
-  LoadInitialAccessibilityTreeFromHtml(url_str);
+  LoadInitialAccessibilityTreeFromHtml(url_str, ui::AXMode::kHTML);
 
   const ui::AXTree& tree = GetAXTree();
   const ui::AXNode* root = tree.root();
