@@ -16385,6 +16385,7 @@ from previous Chrome versions.
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
+  <int value="-1824540307" label="NotificationWidthIncrease:enabled"/>
   <int value="-1824539611" label="U2fPermissionPrompt:disabled"/>
   <int value="-1824166290"
       label="ComputePressureRateObfuscationMitigation:disabled"/>
@@ -23746,6 +23747,7 @@ from previous Chrome versions.
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
+  <int value="1338745937" label="NotificationWidthIncrease:disabled"/>
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
   <int value="1339426771" label="TopSitesFromSiteEngagement:disabled"/>

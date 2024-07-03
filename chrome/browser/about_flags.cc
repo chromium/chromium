@@ -11265,6 +11265,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMahiDebuggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiDebugging)},
 
+    {"notification-width-increase",
+     flag_descriptions::kNotificationWidthIncreaseName,
+     flag_descriptions::kNotificationWidthIncreaseDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kNotificationWidthIncrease)},
+
     {"sparky", flag_descriptions::kSparkyName,
      flag_descriptions::kSparkyDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kSparky)},

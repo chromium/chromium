@@ -6045,6 +6045,15 @@
       "expiry_milestone": 116
   },
   {
+    "name": "notification-width-increase",
+    "owners": [
+      "bbetini@google.com",
+      "leandre@chromium.org",
+      "amehfooz@chromium.org"
+    ],
+    "expiry_milestone": 130
+  },
+  {
       "name": "notifications-ignore-require-interaction",
       "owners": ["amehfooz@chromium.org", "joelhockey@chromium.org" ],
       "expiry_milestone": 140

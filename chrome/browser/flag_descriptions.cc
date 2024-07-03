@@ -7185,6 +7185,12 @@ const char kMultiZoneRgbKeyboardName[] =
 const char kMultiZoneRgbKeyboardDescription[] =
     "Enable multi-zone RGB keyboard customization on supported devices.";
 
+const char kNotificationWidthIncreaseName[] =
+    "Notification Width Increase Feature";
+const char kNotificationWidthIncreaseDescription[] =
+    "Enables increased notification width for pop-up notifications and "
+    "notifications in the message center.";
+
 const char kEnableNearbyBleV2Name[] = "Nearby BLE v2";
 const char kEnableNearbyBleV2Description[] = "Enables Nearby BLE v2.";
 

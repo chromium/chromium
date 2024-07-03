@@ -4163,6 +4163,9 @@ extern const char kMultiCalendarSupportDescription[];
 extern const char kMultiZoneRgbKeyboardName[];
 extern const char kMultiZoneRgbKeyboardDescription[];
 
+extern const char kNotificationWidthIncreaseName[];
+extern const char kNotificationWidthIncreaseDescription[];
+
 extern const char kEnableNearbyBleV2Name[];
 extern const char kEnableNearbyBleV2Description[];
 
