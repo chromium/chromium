@@ -5,6 +5,10 @@
     font-size: 0.875rem;  /* 14px */
   }
 
+  :host([is-empty]) {
+    padding-block: 80px;
+  }
+
   cr-dialog::part(dialog) {
     --cr-dialog-width: min(calc(100% - 32px), 512px);
   }

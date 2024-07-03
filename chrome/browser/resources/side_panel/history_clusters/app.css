@@ -24,5 +24,6 @@
 #historyClusters {
   flex: 1;
   margin-inline-start: var(--sp-body-padding);
-  padding-bottom: var(--sp-body-padding);
+  padding-block-start: 0;
+  padding-block-end: var(--sp-body-padding);
 }
