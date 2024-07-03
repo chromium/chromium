@@ -19,7 +19,8 @@ class TestBrowser final : public Browser {
   // Constructor that takes a WebStateListDelegate.
   TestBrowser(ChromeBrowserState* browser_state,
               SceneState* scene_state,
-              std::unique_ptr<WebStateListDelegate> web_state_list_delegate);
+              std::unique_ptr<WebStateListDelegate> web_state_list_delegate,
+              Type type = Type::kRegular);
 
   // Constructor that takes only a BrowserState and a SceneState; a fake
   // WebStateListDelegate will be used.
@@ -32,7 +33,7 @@ class TestBrowser final : public Browser {
 
   // Constructor that takes only a BrowserState; a fake WebStateListDelegate
   // will be used. SceneState will be nil.
-  TestBrowser(ChromeBrowserState* browser_state);
+  explicit TestBrowser(ChromeBrowserState* browser_state);
 
   TestBrowser(const TestBrowser&) = delete;
   TestBrowser& operator=(const TestBrowser&) = delete;
@@ -40,6 +41,7 @@ class TestBrowser final : public Browser {
   ~TestBrowser() final;
 
   // Browser.
+  Type type() const override;
   ChromeBrowserState* GetBrowserState() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
@@ -54,6 +56,7 @@ class TestBrowser final : public Browser {
   void DestroyInactiveBrowser() final;
 
  private:
+  const Type type_;
   raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
   __weak SceneState* scene_state_ = nil;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;

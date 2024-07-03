@@ -15,8 +15,10 @@
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
     SceneState* scene_state,
-    std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
-    : browser_state_(browser_state),
+    std::unique_ptr<WebStateListDelegate> web_state_list_delegate,
+    Type type)
+    : type_(type),
+      browser_state_(browser_state),
       scene_state_(scene_state),
       web_state_list_delegate_(std::move(web_state_list_delegate)),
       command_dispatcher_([[CommandDispatcher alloc] init]) {
@@ -50,6 +52,10 @@ TestBrowser::~TestBrowser() {
 
 #pragma mark - Browser
 
+Browser::Type TestBrowser::type() const {
+  return type_;
+}
+
 ChromeBrowserState* TestBrowser::GetBrowserState() {
   return browser_state_;
 }
@@ -79,7 +85,7 @@ base::WeakPtr<Browser> TestBrowser::AsWeakPtr() {
 }
 
 bool TestBrowser::IsInactive() const {
-  return false;
+  return type_ == Type::kInactive;
 }
 
 Browser* TestBrowser::GetActiveBrowser() {
@@ -91,8 +97,10 @@ Browser* TestBrowser::GetInactiveBrowser() {
 }
 
 Browser* TestBrowser::CreateInactiveBrowser() {
-  inactive_browser_ =
-      std::make_unique<TestBrowser>(browser_state_, scene_state_);
+  CHECK_EQ(type_, Type::kRegular);
+  inactive_browser_ = std::make_unique<TestBrowser>(
+      browser_state_, scene_state_,
+      std::make_unique<FakeWebStateListDelegate>(), Type::kInactive);
   SnapshotBrowserAgent::CreateForBrowser(inactive_browser_.get());
   SnapshotBrowserAgent::FromBrowser(inactive_browser_.get())
       ->SetSessionID("some_id");
