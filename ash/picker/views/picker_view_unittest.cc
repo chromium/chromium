@@ -959,9 +959,7 @@ TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
 
   ASSERT_NE(picker_view->emoji_bar_view_for_testing(), nullptr);
   EXPECT_TRUE(picker_view->emoji_bar_view_for_testing()->GetVisible());
-  EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
-                  ->item_row_for_testing()
-                  ->children(),
+  EXPECT_THAT(picker_view->emoji_bar_view_for_testing()->GetItemsForTesting(),
               ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
                           Truly(&views::IsViewClass<PickerSymbolItemView>)));
 }
@@ -978,9 +976,7 @@ TEST_F(PickerViewTest, InitiallyShowsSuggestedEmojis) {
   ASSERT_NE(picker_view->emoji_bar_view_for_testing(), nullptr);
   EXPECT_TRUE(picker_view->emoji_bar_view_for_testing()->GetVisible());
   EXPECT_THAT(
-      picker_view->emoji_bar_view_for_testing()
-          ->item_row_for_testing()
-          ->children(),
+      picker_view->emoji_bar_view_for_testing()->GetItemsForTesting(),
       ElementsAre(AsView<PickerEmojiItemView>(
                       Property(&PickerEmojiItemView::GetTextForTesting, u"😊")),
                   AsView<PickerEmojiItemView>(Property(

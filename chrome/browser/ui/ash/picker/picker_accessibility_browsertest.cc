@@ -179,6 +179,58 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingEmojiBarItemsAnnouncesGrid) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerEmojiBarView>(
+          /*delegate=*/nullptr, /*picker_width=*/1000));
+  view->SetSearchResults({
+      ash::PickerSearchResult::Emoji(u"😊", u"happy"),
+      ash::PickerSearchResult::Symbol(u"♬", u"music"),
+      ash::PickerSearchResult::Emoticon(u"(°□°)", u"surprise"),
+  });
+
+  sm_.Call([view]() { view->GetItemsForTesting()[0]->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("happy");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 1");
+  sm_.ExpectSpeechPattern("Table * 1 by 5");
+
+  sm_.Call([view]() { view->GetItemsForTesting()[1]->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("music");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 2");
+
+  sm_.Call([view]() { view->GetItemsForTesting()[2]->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("surprise");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 3");
+
+  sm_.Call([view]() { view->gifs_button_for_testing()->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_PICKER_GIFS_BUTTON_LABEL));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 4");
+
+  sm_.Call(
+      [view]() { view->more_emojis_button_for_testing()->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern(
+      l10n_util::GetStringUTF8(IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("row 1 column 5");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        FocusingGifsButtonAnnouncesLabel) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()
@@ -310,9 +362,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*delegate=*/nullptr, /*picker_width=*/1000));
   view->SetSearchResults({ash::PickerSearchResult::Emoji(u"😊", u"happy")});
 
-  sm_.Call([view]() {
-    view->item_row_for_testing()->children().front()->RequestFocus();
-  });
+  sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
   sm_.ExpectSpeechPattern("happy");
   sm_.ExpectSpeechPattern("Button");
@@ -331,9 +381,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
           /*delegate=*/nullptr, /*picker_width=*/1000));
   view->SetSearchResults({ash::PickerSearchResult::Symbol(u"♬", u"music")});
 
-  sm_.Call([view]() {
-    view->item_row_for_testing()->children().front()->RequestFocus();
-  });
+  sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
   sm_.ExpectSpeechPattern("music");
   sm_.ExpectSpeechPattern("Button");
@@ -353,9 +401,7 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
   view->SetSearchResults(
       {ash::PickerSearchResult::Emoticon(u"(°□°)", u"surprise")});
 
-  sm_.Call([view]() {
-    view->item_row_for_testing()->children().front()->RequestFocus();
-  });
+  sm_.Call([view]() { view->GetItemsForTesting().front()->RequestFocus(); });
 
   sm_.ExpectSpeechPattern("surprise");
   sm_.ExpectSpeechPattern("Button");
