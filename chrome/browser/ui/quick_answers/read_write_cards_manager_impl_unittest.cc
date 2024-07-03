@@ -323,18 +323,11 @@ TEST_P(ReadWriteCardsManagerImplTest,
 // Tests that the appropriate controller is returned given the editor mode
 // provided in each case.
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultBlocked) {
-  // If no text is selected and editor mode is kBlocked:
-  // - If Mahi is enabled, Mahi is showing opt-in flow (i.e., magic boost card
-  //   controller is fetched).
-  // - If Mahi is disabled, no card is shown
+  // If no text is selected and editor mode is kBlocked, no card is shown
   OnGetEditorModeResult(
-      base::BindOnce(
-          &ExpectControllersEqual,
-          "Wrong controller is fetched when editor mode is kBlocked",
-          IsMahiEnabled()
-              ? std::vector<
-                    ReadWriteCardController*>{magic_boost_card_controller()}
-              : std::vector<ReadWriteCardController*>{}),
+      base::BindOnce(&ExpectControllersEqual,
+                     "Wrong controller is fetched when editor mode is kBlocked",
+                     std::vector<ReadWriteCardController*>{}),
       editor_menu::EditorMode::kBlocked);
 
   if (IsMahiEnabled()) {

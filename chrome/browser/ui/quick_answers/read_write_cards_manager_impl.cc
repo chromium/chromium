@@ -109,8 +109,7 @@ ReadWriteCardsManagerImpl::GetControllers(
   const bool should_opt_in_orca_with_magic_boost =
       editor_mode == editor_menu::EditorMode::kPromoCard;
   const bool should_opt_in_hmr_with_magic_boost =
-      (!editor_mode || editor_mode == editor_menu::EditorMode::kBlocked) &&
-      (should_show_mahi || should_show_qa) &&
+      !editor_mode && (should_show_mahi || should_show_qa) &&
       hmr_consent_status == HMRConsentStatus::kUnset;
 
   if (magic_boost_card_controller_ && (should_opt_in_hmr_with_magic_boost ||
@@ -153,16 +152,21 @@ ReadWriteCardsManagerImpl::GetControllers(
   }
 
   // Otherwise, use Quick Answers and Mahi if available.
-  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers;
 
-  if (hmr_consent_status == HMRConsentStatus::kDeclined) {
-    return controllers;
+  // Return no controller if consent_status is `kDeclined` (users explicitly
+  // decline in the opt-in flow), or `kUnset` (both Quick Answers and Mahi is
+  // not available to opt-in).
+  if (hmr_consent_status == HMRConsentStatus::kDeclined ||
+      hmr_consent_status == HMRConsentStatus::kUnset) {
+    return {};
   }
 
   if (hmr_consent_status) {
     CHECK(hmr_consent_status == HMRConsentStatus::kApproved ||
           hmr_consent_status == HMRConsentStatus::kPending);
   }
+
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers;
 
   if (should_show_qa) {
     controllers.emplace_back(quick_answers_controller_->GetWeakPtr());
