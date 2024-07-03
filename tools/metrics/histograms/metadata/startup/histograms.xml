@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Experimental.{name}.Tabbed.{suffix}"
-    units="ms" expires_after="2024-10-28">
+    units="ms" expires_after="2024-12-30">
   <owner>pasko@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -886,7 +886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.LoadTime.RecordedProcessCreation" enum="Boolean"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>spvw@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>

@@ -1633,7 +1633,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.MagicStack.Module.{Event}.TabResumption.{Surface}.{Source}"
-    units="index" expires_after="2024-09-01">
+    units="index" expires_after="2024-12-30">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2698,7 +2698,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ParcelTracking.Tracked.{Source}" units="count"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>hiramahmood@google.com</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Logs number of packages tracked from {Source}.</summary>
@@ -3720,7 +3720,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>olivierrobin@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>The context in which Search With has been triggered.</summary>
@@ -4080,7 +4080,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.TabPickup.TimeSinceLastCrossDeviceSync" units="ms"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -4375,7 +4375,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.UnitConversion.DetectedMeasurements" units="measurements"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -4385,7 +4385,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.UnitConversion.{Type}" enum="UnitChangeTypes"
-    expires_after="2024-10-28">
+    expires_after="2024-12-30">
   <owner>erahmaoui@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

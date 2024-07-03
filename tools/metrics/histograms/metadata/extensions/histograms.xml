@@ -1062,7 +1062,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestActionTime.{RegexRulesetSize}"
-    units="microseconds" expires_after="2024-10-28">
+    units="microseconds" expires_after="2024-12-30">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -4552,7 +4552,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_PostReturn"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2024-10-28">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2024-12-30">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

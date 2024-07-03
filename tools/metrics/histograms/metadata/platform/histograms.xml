@@ -1661,7 +1661,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Resourced.MemoryNotificationCountTenMinutes"
-    units="count" expires_after="2024-10-28">
+    units="count" expires_after="2024-12-30">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>

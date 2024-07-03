@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
-    expires_after="2024-09-15">
+    expires_after="2024-12-30">
   <owner>ajgo@chromium.org</owner>
   <owner>brucedawson@chromium.org</owner>
   <summary>
