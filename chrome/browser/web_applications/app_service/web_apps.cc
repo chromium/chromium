@@ -228,8 +228,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
     // them.
   } else if (can_close) {
     // Isolated web apps can only be launched in new window.
-    if (chromeos::features::IsCrosShortstandEnabled() ||
-        web_app->isolation_data().has_value()) {
+    if (web_app->isolation_data().has_value()) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     } else {
