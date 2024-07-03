@@ -132,7 +132,7 @@ public class EdgeToEdgeInstrumentationTest {
                 "Couldn't get the EdgeToEdgeController during setUp!");
         assertFalse(
                 "Setup error, all tests start ToNormal (controller never activated)!",
-                mEdgeToEdgeController.isToEdge());
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
         mTestOsWrapper = new TestOsWrapper();
         mEdgeToEdgeController.setOsWrapperForTesting(mTestOsWrapper);
         mTestOsWrapper.resetPaddingMonitor();
@@ -151,22 +151,26 @@ public class EdgeToEdgeInstrumentationTest {
     void goToEdge() {
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_COVER_PAGE));
         waitTillToEdge();
-        assertTrue("Helper goToEdge failed to go ToEdge", mEdgeToEdgeController.isToEdge());
+        assertTrue(
+                "Helper goToEdge failed to go ToEdge",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     /** Puts the screen ToNormal by loading a page that has the appropriate HTML. */
     void goToNormal() {
         sActivityTestRule.loadUrl(mTestServer.getURL(TEST_AUTO_PAGE));
         waitTillToNormal();
-        assertFalse("Helper goToNormal failed to go ToNormal", mEdgeToEdgeController.isToEdge());
+        assertFalse(
+                "Helper goToNormal failed to go ToNormal",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     void waitTillToEdge() {
-        CriteriaHelper.pollUiThread(() -> mEdgeToEdgeController.isToEdge());
+        CriteriaHelper.pollUiThread(() -> mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     void waitTillToNormal() {
-        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeController.isToEdge());
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     /** Rotates the device to the given orientation. */
@@ -201,7 +205,9 @@ public class EdgeToEdgeInstrumentationTest {
 
         int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;
         rotate(targetOrientation);
-        assertFalse("Rotation did not preserve ToNormal setting", mEdgeToEdgeController.isToEdge());
+        assertFalse(
+                "Rotation did not preserve ToNormal setting",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
         assertNotEquals(
                 "Padding indicates ToEdge, which is inconsistent with the Controller"
                         + " thinking we're ToNormal!",
@@ -220,7 +226,9 @@ public class EdgeToEdgeInstrumentationTest {
 
         int targetOrientation = Configuration.ORIENTATION_LANDSCAPE;
         rotate(targetOrientation);
-        assertTrue("Rotation did not preserve ToEdge setting", mEdgeToEdgeController.isToEdge());
+        assertTrue(
+                "Rotation did not preserve ToEdge setting",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
         assertEquals(
                 "Padding indicates ToNormal, which is inconsistent with the Controller"
                         + " thinking we're ToEdge!",
@@ -237,7 +245,9 @@ public class EdgeToEdgeInstrumentationTest {
 
         int targetOrientation = Configuration.ORIENTATION_PORTRAIT;
         rotate(targetOrientation);
-        assertFalse("Rotation did not preserve ToNormal setting", mEdgeToEdgeController.isToEdge());
+        assertFalse(
+                "Rotation did not preserve ToNormal setting",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
         assertNotEquals(
                 "Padding indicates ToEdge, which is inconsistent with the Controller"
                         + " thinking we're ToNormal!",
@@ -253,7 +263,9 @@ public class EdgeToEdgeInstrumentationTest {
 
         int targetOrientation = Configuration.ORIENTATION_PORTRAIT;
         rotate(targetOrientation);
-        assertTrue("Rotation did not preserve ToEdge setting", mEdgeToEdgeController.isToEdge());
+        assertTrue(
+                "Rotation did not preserve ToEdge setting",
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
         assertEquals(
                 "Padding indicates ToNormal, which is inconsistent with the Controller"
                         + " thinking we're ToEdge!",
@@ -328,7 +340,7 @@ public class EdgeToEdgeInstrumentationTest {
         rotate(targetOrientation);
         assertFalse(
                 "Should exit ToEdge when device no longer supported",
-                mEdgeToEdgeController.isToEdge());
+                mEdgeToEdgeController.isPageOptedIntoEdgeToEdge());
     }
 
     @Test

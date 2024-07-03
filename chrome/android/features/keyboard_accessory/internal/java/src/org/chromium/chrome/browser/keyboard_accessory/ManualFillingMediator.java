@@ -687,9 +687,7 @@ class ManualFillingMediator
         int newControlsHeight = 0;
         int newControlsOffset = 0;
         if (requiresVisibleBar(extensionState)) {
-            boolean isEdgeToEdgeActive =
-                    mEdgeToEdgeControllerSupplier.get() != null
-                            && mEdgeToEdgeControllerSupplier.get().isEdgeToEdgeActive();
+            boolean isEdgeToEdgeActive = mEdgeToEdgeControllerSupplier.get() != null;
             // TODO(crbug.com/41483806): Treat VirtualKeyboardMode.OVERLAYS_CONTENT like fullscreen?
             if (mModel.get(IS_FULLSCREEN) // Hides UI and lets keyboard overlay webContents.
                     // No need to set the controls height to 0 in edge-to-edge since the content

@@ -15,6 +15,9 @@ import static org.chromium.chrome.browser.toolbar.bottom.BottomControlsPropertie
 
 import android.app.Activity;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -49,6 +53,15 @@ public class BottomControlsMediatorTest {
 
     private static final int DEFAULT_HEIGHT = 80;
     private static final int DEFAULT_INSET = 56;
+    private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
+    private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
+
+    private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
+            new WindowInsetsCompat.Builder()
+                    .setInsets(WindowInsetsCompat.Type.navigationBars(), NAVIGATION_BAR_INSETS)
+                    .setInsets(WindowInsetsCompat.Type.statusBars(), STATUS_BAR_INSETS)
+                    .build();
+
     @Mock BottomControlsStacker mBottomControlsStacker;
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock WindowAndroid mWindowAndroid;
@@ -58,6 +71,7 @@ public class BottomControlsMediatorTest {
     @Mock FullscreenManager mFullscreenManager;
     @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
+    @Mock InsetObserver mInsetObserver;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
@@ -69,6 +83,8 @@ public class BottomControlsMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
+        doReturn(SYSTEM_BARS_WINDOW_INSETS).when(mInsetObserver).getLastRawWindowInsets();
+        doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mModel =
                 new PropertyModel.Builder(BottomControlsProperties.ALL_KEYS)

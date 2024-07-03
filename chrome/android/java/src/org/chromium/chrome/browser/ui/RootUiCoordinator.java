@@ -902,6 +902,8 @@ public class RootUiCoordinator
 
         initMessagesInfra();
         initScrollCapture();
+
+        // TODO(crbug.com/350610430) Potentially create the E2EController earlier during startup
         initializeEdgeToEdgeController(
                 mActivity,
                 mActivityTabProvider,

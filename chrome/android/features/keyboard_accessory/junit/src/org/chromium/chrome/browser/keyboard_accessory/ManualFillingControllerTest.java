@@ -1032,8 +1032,6 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(false);
 
-        // Set edge-to-edge mode as active.
-        when(mMockEdgeToEdgeController.isEdgeToEdgeActive()).thenReturn(true);
         mModel.set(SHOW_WHEN_VISIBLE, true);
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(eq(mMockActivity), any()))
                 .thenReturn(true);

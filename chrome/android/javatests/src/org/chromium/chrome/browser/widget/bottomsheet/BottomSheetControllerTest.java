@@ -1212,11 +1212,6 @@ public class BottomSheetControllerTest {
         }
 
         @Override
-        public boolean isEdgeToEdgeActive() {
-            return false;
-        }
-
-        @Override
         public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {}
 
         @Override
@@ -1229,7 +1224,7 @@ public class BottomSheetControllerTest {
         public void unregisterObserver(ChangeObserver changeObserver) {}
 
         @Override
-        public boolean isToEdge() {
+        public boolean isPageOptedIntoEdgeToEdge() {
             return bottomInset != 0;
         }
     }

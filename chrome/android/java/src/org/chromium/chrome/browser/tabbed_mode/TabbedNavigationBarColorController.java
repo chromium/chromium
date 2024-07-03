@@ -410,11 +410,12 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
 
     /**
      * Update the scrim amount on the navigation bar.
+     *
      * @param fraction The scrim fraction in range [0, 1].
      */
     public void setNavigationBarScrimFraction(float fraction) {
         if (mEdgeToEdgeControllerSupplier.get() != null
-                && mEdgeToEdgeControllerSupplier.get().isToEdge()) {
+                && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge()) {
             return;
         }
 

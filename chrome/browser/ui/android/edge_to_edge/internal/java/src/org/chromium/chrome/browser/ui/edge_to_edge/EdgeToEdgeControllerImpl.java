@@ -61,9 +61,16 @@ public class EdgeToEdgeControllerImpl
 
     private Tab mCurrentTab;
     private WebContentsObserver mWebContentsObserver;
-    private boolean mIsActivityToEdge;
+
+    /**
+     * Whether the edge-to-edge feature is enabled and the current tab content is showing
+     * edge-to-edge. This could be from the web content being opted in, or from the tab showing a
+     * native page that supports edge-to-edge.
+     */
+    private boolean mIsPageOptedIntoEdgeToEdge;
+
     private InsetObserver mInsetObserver;
-    private @Nullable Insets mSystemInsets;
+    private @NonNull Insets mSystemInsets;
     private @Nullable Insets mKeyboardInsets;
     private @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
     private boolean mBottomControlsAreVisible;
@@ -118,6 +125,16 @@ public class EdgeToEdgeControllerImpl
         mInsetObserver = mWindowAndroid.getInsetObserver();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
+
+        mWindowInsetsConsumer = this::handleWindowInsets;
+        mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
+
+        assert mInsetObserver.getLastRawWindowInsets() != null
+                : "The inset observer should have non-null insets by the time the"
+                        + " EdgeToEdgeControllerImpl is initialized.";
+        mSystemInsets = getSystemInsets(mInsetObserver.getLastRawWindowInsets());
+
+        mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
     }
 
     @VisibleForTesting
@@ -136,12 +153,10 @@ public class EdgeToEdgeControllerImpl
     @Override
     public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.addObserver(adjuster);
-        if (mSystemInsets != null) {
-            boolean shouldPad = shouldPadAdjusters();
-            adjuster.overrideBottomInset(
-                    shouldPad ? mSystemInsets.bottom : 0,
-                    shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
-        }
+        boolean shouldPad = shouldPadAdjusters();
+        adjuster.overrideBottomInset(
+                shouldPad ? mSystemInsets.bottom : 0,
+                shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
     }
 
     @Override
@@ -161,19 +176,12 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public int getBottomInset() {
-        return mSystemInsets == null || !isToEdge()
-                ? 0
-                : (int) Math.ceil(mSystemInsets.bottom * mPxToDp);
+        return isPageOptedIntoEdgeToEdge() ? (int) Math.ceil(mSystemInsets.bottom * mPxToDp) : 0;
     }
 
     @Override
-    public boolean isToEdge() {
-        return mIsActivityToEdge;
-    }
-
-    @Override
-    public boolean isEdgeToEdgeActive() {
-        return mWindowInsetsConsumer != null;
+    public boolean isPageOptedIntoEdgeToEdge() {
+        return mIsPageOptedIntoEdgeToEdge;
     }
 
     // BrowserControlsStateProvider.Observer
@@ -200,7 +208,7 @@ public class EdgeToEdgeControllerImpl
     }
 
     private void updateBrowserControlsVisibility(boolean visible) {
-        if (mBottomControlsAreVisible == visible || mSystemInsets == null) {
+        if (mBottomControlsAreVisible == visible) {
             return;
         }
         mBottomControlsAreVisible = visible;
@@ -256,33 +264,20 @@ public class EdgeToEdgeControllerImpl
      */
     @VisibleForTesting
     void drawToEdge(boolean toEdge) {
-        if (toEdge == mIsActivityToEdge) return;
+        if (toEdge == mIsPageOptedIntoEdgeToEdge) return;
 
-        mIsActivityToEdge = toEdge;
+        mIsPageOptedIntoEdgeToEdge = toEdge;
         Log.v(TAG, "Switching %s", (toEdge ? "ToEdge" : "ToNormal"));
         View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
         assert contentView != null : "Root view for Edge To Edge not found!";
 
-        // Setup the basic enabling of the Edge to Edge Android Feature.
-        // Sets up this window to open up System edges to be drawn underneath.
-        if (toEdge && mSystemInsets == null && mWindowInsetsConsumer == null) {
-            mWindowInsetsConsumer = this::handleWindowInsets;
-            mEdgeToEdgeOSWrapper.setDecorFitsSystemWindows(mActivity.getWindow(), false);
-            mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
-        } else if (mSystemInsets != null) {
-            // It's possible for toEdge to change more than once prior to the first time
-            // #handleWindowInsets is called. #handleWindowInsets will call #adjustEdges using
-            // the current mIsActivityToEdge once insets are available.
-            adjustEdges(toEdge, contentView);
-        }
+        adjustEdges(toEdge, contentView);
     }
 
+    @NonNull
     private WindowInsetsCompat handleWindowInsets(
             View rootView, @NonNull WindowInsetsCompat windowInsets) {
-        Insets newInsets =
-                windowInsets.getInsets(
-                        WindowInsetsCompat.Type.navigationBars()
-                                + WindowInsetsCompat.Type.statusBars());
+        Insets newInsets = getSystemInsets(windowInsets);
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
         if (!newInsets.equals(mSystemInsets) || !newKeyboardInsets.equals(mKeyboardInsets)) {
@@ -291,12 +286,12 @@ public class EdgeToEdgeControllerImpl
 
             // When a foldable goes to/from tablet mode we must reassess.
             // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
-            mIsActivityToEdge =
-                    mIsActivityToEdge
+            mIsPageOptedIntoEdgeToEdge =
+                    mIsPageOptedIntoEdgeToEdge
                             && EdgeToEdgeControllerFactory.isSupportedConfiguration(mActivity);
             // Note that we cannot adjustEdges earlier since we need the system
             // insets.
-            adjustEdges(mIsActivityToEdge, rootView.findViewById(ROOT_UI_VIEW_ID));
+            adjustEdges(mIsPageOptedIntoEdgeToEdge, rootView.findViewById(ROOT_UI_VIEW_ID));
         }
         return windowInsets;
     }
@@ -306,9 +301,11 @@ public class EdgeToEdgeControllerImpl
      * activity is currently in edge-to-edge, and if the adjusters aren't already positioned above
      * the system insets due to the keyboard or the bottom controls being visible.
      */
+    // TODO(crbug.com/350544729) Update to account for the bottom chin (particularly when scrolled
+    //  off).
     private boolean shouldPadAdjusters() {
         boolean keyboardIsVisible = mKeyboardInsets != null && mKeyboardInsets.bottom > 0;
-        return mIsActivityToEdge && !keyboardIsVisible;
+        return mIsPageOptedIntoEdgeToEdge && !keyboardIsVisible;
     }
 
     /**
@@ -320,8 +317,6 @@ public class EdgeToEdgeControllerImpl
      * @param contentView The content view in the window.
      */
     private void adjustEdges(boolean toEdge, View contentView) {
-        assert mSystemInsets != null : "Trying to adjustToEdge without mSystemInsets!";
-
         // Adjust the bottom padding to reflect whether ToEdge or ToNormal for the Gesture Nav Bar.
         // All the other edges need to be padded to prevent drawing under an edge that we
         // don't want drawn ToEdge (e.g. the Status Bar).
@@ -347,7 +342,7 @@ public class EdgeToEdgeControllerImpl
                     shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
         }
         for (var observer : mEdgeChangeObservers) {
-            observer.onToEdgeChange(isToEdge() ? mSystemInsets.bottom : 0);
+            observer.onToEdgeChange(isPageOptedIntoEdgeToEdge() ? mSystemInsets.bottom : 0);
         }
 
         int bottomInsetOnSaveArea = toEdge ? mSystemInsets.bottom : 0;
@@ -383,7 +378,7 @@ public class EdgeToEdgeControllerImpl
     }
 
     public void setToEdgeForTesting(boolean toEdge) {
-        mIsActivityToEdge = toEdge;
+        mIsPageOptedIntoEdgeToEdge = toEdge;
     }
 
     public @Nullable ChangeObserver getAnyChangeObserverForTesting() {
@@ -396,5 +391,10 @@ public class EdgeToEdgeControllerImpl
 
     void setKeyboardInsetsForTesting(Insets keyboardInsetsForTesting) {
         mKeyboardInsets = keyboardInsetsForTesting;
+    }
+
+    private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {
+        return windowInsets.getInsets(
+                WindowInsetsCompat.Type.navigationBars() + WindowInsetsCompat.Type.statusBars());
     }
 }
