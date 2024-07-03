@@ -175,11 +175,19 @@ namespace declarativeNetRequest {
     // The name of the header. This condition matches on the name
     // only if both `values` and `excludedValues` are not specified.
     DOMString header;
-    // If specified, this condition matches if the header's value
-    // contains at least one element in this list.
+    // If specified, this condition matches if the header's value matches at
+    // least one pattern in this list. This supports case-insensitive header
+    // value matching plus the following constructs:
+    //
+    // <b>'*'</b>  : Matches any number of characters.
+    //
+    // <b>'?'</b>  : Matches zero or one character(s).
+    //
+    // '*' and '?' can be escaped with a backslash, e.g. '\*' and '\?'
     DOMString[]? values;
-    // If specified, this condition is not matched if the header
-    // exists but its value contains at least one element in this list.
+    // If specified, this condition is not matched if the header exists but its
+    // value contains at least one element in this list. This uses the same
+    // match pattern syntax as `values`.
     DOMString[]? excludedValues;
   };
 

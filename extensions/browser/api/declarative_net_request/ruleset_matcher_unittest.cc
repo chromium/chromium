@@ -1713,9 +1713,17 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
           {TestHeaderCondition("key3", {"excludedValue"}, {}),
            TestHeaderCondition("key4", {}, {"allowlistedValue"})});
 
+  // `rule_3` will match if
+  //   - the content-type header specifies a PDF
+  TestRule rule_3 = CreateGenericRule(kMinValidID + 2);
+  rule_3.action->type = std::string("block");
+  rule_3.condition->url_filter = std::string("nopdf.com");
+  rule_3.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("content-type", {"*application/pdf*"}, {})});
+
   std::unique_ptr<RulesetMatcher> matcher;
-  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2}, CreateTemporarySource(),
-                                    &matcher));
+  ASSERT_TRUE(CreateVerifiedMatcher({rule_1, rule_2, rule_3},
+                                    CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
 
   struct {
@@ -1785,6 +1793,12 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
       {"http://example.com", "HTTP/1.0 200 OK\r\nkey4: allowlistedValue\r\n",
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
                                      kMinValidID + 1)},
+
+      // Test wildcard support for header value matching.
+      {"http://nopdf.com",
+       "HTTP/1.0 200 OK\r\ncontent-type: application/pdf; charset=utf-8\r\n",
+       CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
+                                     kMinValidID + 2)},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
