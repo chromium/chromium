@@ -67,6 +67,8 @@ void WaitableEvent::Reset() {
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (!record_replay_ordered_lock_id_)
     disallow.emplace("WaitableEvent::Reset");
+  else
+    RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
 
   PeekPort(receive_right_->Name(), true);
 }
@@ -98,6 +100,8 @@ bool WaitableEvent::IsSignaled() {
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (!record_replay_ordered_lock_id_)
     disallow.emplace("WaitableEvent::IsSignaled");
+  else
+    RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
 
   return PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
 }
