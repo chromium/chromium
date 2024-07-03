@@ -27,6 +27,13 @@ promise_setup(async () => {
   ]);
 });
 
+// Internal test because the spec currently does not require transient user activation.
+promise_test(async t=>{
+  assert_false(navigator.userActivation.isActive);
+  let request = buildValidNavigatorIdentityRequest();
+  await promise_rejects_dom(t, "NetworkError", navigator.identity.get(request));
+}, "navigator.identity.get() fails if the page doesn't have user activation");
+
 // Tests for success are here because the tests rely on the
 // --use-fake-ui-for-digital-identity command line flag. Moving the tests to
 // /external requires a WebDriver testing API.

@@ -28,11 +28,6 @@ async function createIframeAndWaitForMessage(test, iframeUrl) {
 
 // Requires browser to have mode where OS-presented digital-identity-prompt is
 // bypassed in favour of returning "fake_test_token" directly.
-promise_test(async t=>{
-  assert_false(navigator.userActivation.isActive);
-  let request = buildValidNavigatorIdentityRequest();
-  await promise_rejects_dom(t, "NetworkError", navigator.identity.get(request));
-}, "navigator.identity.get() fails if the page doesn't have user activation");
 
 promise_test(async t => {
   let request = buildValidNavigatorIdentityRequest();
