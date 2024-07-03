@@ -349,7 +349,7 @@
     </activity>  # DIFF-ANCHOR: 7468a722
     <activity  # DIFF-ANCHOR: d32b85df
         android:name="org.chromium.chrome.browser.settings.SettingsActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
         android:label="@string/settings"
         android:theme="@style/Theme.Chromium.Settings">
