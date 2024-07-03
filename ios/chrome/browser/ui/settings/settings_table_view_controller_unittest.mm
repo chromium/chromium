@@ -159,7 +159,9 @@ class SettingsTableViewControllerTest
                              forProtocol:@protocol(SnackbarCommands)];
 
     SettingsTableViewController* controller =
-        [[SettingsTableViewController alloc] initWithBrowser:browser_.get()];
+        [[SettingsTableViewController alloc]
+                     initWithBrowser:browser_.get()
+            hasDefaultBrowserBlueDot:has_default_browser_blue_dot_];
     controller.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
     controller.settingsHandler =
@@ -193,6 +195,23 @@ class SettingsTableViewControllerTest
 
   PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
 
+  void VerifyDefaultBrowwserBlueDot(bool has_default_browser_blue_dot) {
+    has_default_browser_blue_dot_ = has_default_browser_blue_dot;
+    CreateController();
+    CheckController();
+
+    NSArray<TableViewItem*>* default_section_items =
+        [controller().tableViewModel
+            itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                             SettingsSectionIdentifierDefaults];
+
+    TableViewDetailIconItem* default_browser_item =
+        static_cast<TableViewDetailIconItem*>(default_section_items[0]);
+
+    EXPECT_EQ(has_default_browser_blue_dot,
+              BadgeType::kNotificationDot == default_browser_item.badgeType);
+  }
+
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
@@ -210,6 +229,7 @@ class SettingsTableViewControllerTest
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   SettingsTableViewController* controller_ = nullptr;
+  BOOL has_default_browser_blue_dot_ = false;
 };
 
 // Verifies that the Sync icon displays the on state when the user has turned
@@ -523,4 +543,14 @@ TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
   for (TableViewItem* advanced_item in advanced_items) {
     EXPECT_NE(advanced_item.accessibilityIdentifier, kSettingsPlusAddressesId);
   }
+}
+
+// Verifies that the default browser blue dot is displayed when indicated.
+TEST_F(SettingsTableViewControllerTest, TestHasDefaultBrowserBlueDot) {
+  VerifyDefaultBrowwserBlueDot(true);
+}
+
+// Verifies that the default browser blue dot is not displayed when indicated.
+TEST_F(SettingsTableViewControllerTest, TestHasNoDefaultBrowserBlueDot) {
+  VerifyDefaultBrowwserBlueDot(false);
 }

@@ -215,8 +215,6 @@ DEFINE_VARIATION_PARAM(kIPHPriceNotificationsWhileBrowsingFeature,
                        "IPH_PriceNotificationsWhileBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
                        "IPH_iOSDefaultBrowserOverflowMenuBadge");
-DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserSettingsBadgeFeature,
-                       "IPH_iOSDefaultBrowserSettingsBadge");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAppStoreFeature, "IPH_iOSPromoAppStore");
 DEFINE_VARIATION_PARAM(kIPHiOSLensKeyboardFeature, "IPH_iOSLensKeyboard");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoWhatsNewFeature, "IPH_iOSPromoWhatsNew");
@@ -600,7 +598,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHPriceNotificationsWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
-        VARIATION_ENTRY(kIPHiOSDefaultBrowserSettingsBadgeFeature),
         VARIATION_ENTRY(kIPHiOSLensKeyboardFeature),
         VARIATION_ENTRY(kIPHiOSPromoAppStoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoWhatsNewFeature),

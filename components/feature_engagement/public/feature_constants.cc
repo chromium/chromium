@@ -516,9 +516,6 @@ BASE_FEATURE(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
 BASE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
              "IPH_iOSDefaultBrowserOverflowMenuBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSDefaultBrowserSettingsBadgeFeature,
-             "IPH_iOSDefaultBrowserSettingsBadge",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSLensKeyboardFeature,
              "IPH_iOSLensKeyboard",
              base::FEATURE_ENABLED_BY_DEFAULT);

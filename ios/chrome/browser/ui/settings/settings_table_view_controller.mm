@@ -336,7 +336,8 @@ struct EnhancedSafeBrowsingActivePromoData
 
 #pragma mark Initialization
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+       hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -344,6 +345,7 @@ struct EnhancedSafeBrowsingActivePromoData
   if (self) {
     _browser = browser;
     _browserState = _browser->GetBrowserState();
+    self.showingDefaultBrowserNotificationDot = hasDefaultBrowserBlueDot;
     self.title = l10n_util::GetNSStringWithFixup(IDS_IOS_SETTINGS_TITLE);
     _searchEngineObserverBridge.reset(new SearchEngineObserverBridge(
         self,
@@ -2011,8 +2013,6 @@ struct EnhancedSafeBrowsingActivePromoData
 // the blue dot badge to the right settings row if it is.
 - (void)maybeActivateDefaultBrowserBlueDotPromo:
     (TableViewDetailIconItem*)defaultBrowserCellItem {
-  self.showingDefaultBrowserNotificationDot = NO;
-
   if (!_browserState) {
     return;
   }
@@ -2023,18 +2023,9 @@ struct EnhancedSafeBrowsingActivePromoData
     return;
   }
 
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(_browserState);
-  if (!syncService) {
-    return;
-  }
-
-  if (ShouldTriggerDefaultBrowserHighlightFeature(
-          feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature,
-          tracker, syncService)) {
+  if (self.showingDefaultBrowserNotificationDot) {
     // Add the blue dot promo badge to the default browser row.
     defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
-    self.showingDefaultBrowserNotificationDot = YES;
 
     // If we've only started showing the blue dot recently (<6 hours), don't
     // notify the FET again that the promo is being shown, since we're not in a

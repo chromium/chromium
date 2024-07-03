@@ -1211,10 +1211,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Highlight the Settings destination with a promo badge if needed.
 - (void)maybeHighlightSettingsWithPromoBadge {
+  if (self.syncService &&
+      ShouldIndicateIdentityErrorInOverflowMenu(self.syncService)) {
+    return;
+  }
+
   if (self.engagementTracker &&
-      ShouldTriggerDefaultBrowserHighlightFeature(
-          feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
-          self.engagementTracker, self.syncService)) {
+      ShouldTriggerDefaultBrowserHighlightFeature(self.engagementTracker)) {
     self.settingsDestination.badge = BadgeTypePromo;
     // If we've only started showing the blue dot recently (<6 hours), don't
     // notify the FET again that the promo is being shown, since we're not in a
@@ -2253,7 +2256,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                        : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
   [self.applicationHandler
-      showSettingsFromViewController:self.baseViewController];
+      showSettingsFromViewController:self.baseViewController
+            hasDefaultBrowserBlueDot:(self.settingsDestination.badge ==
+                                      BadgeTypePromo)];
 }
 
 - (void)enterpriseLearnMore {

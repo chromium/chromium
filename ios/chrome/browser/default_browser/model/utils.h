@@ -13,9 +13,6 @@
 namespace feature_engagement {
 class Tracker;
 }
-namespace syncer {
-class SyncService;
-}
 namespace base {
 class Time;
 }
@@ -166,13 +163,9 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
 
-// Returns true if the passed default browser badge `feature` should be shown.
-// Also makes the necessary calls to the FET for keeping track of usage, as well
-// as checking that the correct preconditions are met.
+// Returns true if the default browser blue dot should be shown.
 bool ShouldTriggerDefaultBrowserHighlightFeature(
-    const base::Feature& feature,
-    feature_engagement::Tracker* tracker,
-    syncer::SyncService* syncService);
+    feature_engagement::Tracker* tracker);
 
 // Returns true if the non-modal default browser promo cooldown refactor is
 // enabled.

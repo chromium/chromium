@@ -19,8 +19,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
-#import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -451,18 +449,17 @@ void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
 }
 
 bool ShouldTriggerDefaultBrowserHighlightFeature(
-    const base::Feature& feature,
-    feature_engagement::Tracker* tracker,
-    syncer::SyncService* syncService) {
-  if (IsChromeLikelyDefaultBrowser() ||
-      (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService))) {
+    feature_engagement::Tracker* tracker) {
+  if (IsChromeLikelyDefaultBrowser()) {
     return false;
   }
 
   // We ask the appropriate FET feature if it should trigger, i.e. if we
   // should show the blue dot promo badge.
-  if (tracker->ShouldTriggerHelpUI(feature)) {
-    tracker->Dismissed(feature);
+  if (tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature)) {
+    tracker->Dismissed(
+        feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature);
     return true;
   }
 

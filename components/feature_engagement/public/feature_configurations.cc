@@ -1873,12 +1873,12 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature.name == feature->name) {
-    // A config to allow a user to be shown the blue dot promo on the carousel.
-    // It depends on kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed
-    // users eligible, and adds more constraints to decide when to stop showing
-    // the promo to the user. This FET feature is non-blocking because it is a
-    // passive promo that appears alongside the rest of the UI, and does not
-    // interrupt the user's flow.
+    // A config to allow a user to be shown the blue dot promo on the Chrome
+    // Settings icon in overflow menu and Default Browser row in Chrome
+    // Settings.
+    // This FET feature is non-blocking because it is a passive promo
+    // that appears alongside the rest of the UI, and does not interrupt the
+    // user's flow.
 
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1901,41 +1901,15 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kChromeOpened,
                     Comparator(GREATER_THAN_OR_EQUAL, 7), 360, 360));
-    config->blocked_by.type = BlockedBy::Type::NONE;
-    config->blocking.type = Blocking::Type::NONE;
-    return config;
-  }
 
-  if (kIPHiOSDefaultBrowserSettingsBadgeFeature.name == feature->name) {
-    // A config to allow a user to be shown the blue dot promo in the default
-    // browser settings row item. It depends on
-    // kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed users
-    // eligible, and adds more constraints to decide when to stop showing the
-    // promo. This FET feature is non-blocking because it is a passive promo
-    // that appears alongside the rest of the UI, and does not interrupt the
-    // user's flow.
-
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->used = EventConfig("blue_dot_promo_settings_dismissed",
-                               Comparator(EQUAL, 0), 30, 360);
-    config->trigger = EventConfig("blue_dot_promo_settings_shown",
-                                  Comparator(ANY, 0), 360, 360);
+    // Continue checking deprecated settings badge conditions to not show blue
+    // dot at all if user would not have qualified for settings badge.
+    config->event_configs.insert(EventConfig(
+        "blue_dot_promo_settings_dismissed", Comparator(EQUAL, 0), 30, 360));
     config->event_configs.insert(
         EventConfig("blue_dot_promo_settings_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
-    config->event_configs.insert(EventConfig("default_browser_promo_shown",
-                                             Comparator(EQUAL, 0), 14, 360));
-    config->event_configs.insert(EventConfig("default_browser_fre_shown",
-                                             Comparator(EQUAL, 0), 14, 360));
-    config->event_configs.insert(EventConfig(
-        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::kChromeOpened,
-                    Comparator(GREATER_THAN_OR_EQUAL, 7), 360, 360));
+
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;

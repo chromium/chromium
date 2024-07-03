@@ -16,7 +16,9 @@ class Browser;
 
 // Initializes a new SettingsTableViewController. `browser` must not
 // be nil and must not be associated with an off the record browser state.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBrowser:(Browser*)browser
+       hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

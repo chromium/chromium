@@ -1,6 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/ntp/model",
-  "+ios/chrome/browser/settings/model/sync/utils/identity_error_util.h",
   "+ios/chrome/browser/signin/model",
 ]
