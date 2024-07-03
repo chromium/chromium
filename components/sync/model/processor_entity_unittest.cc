@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
@@ -832,6 +833,19 @@ TEST_F(ProcessorEntityTest, ShouldMatchEntitiesByCollaborations) {
 
   EXPECT_TRUE(entity->MatchesData(*matching_entity_data));
   EXPECT_FALSE(entity->MatchesData(*different_collaboration_entity_data));
+}
+
+TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->RecordLocalUpdate(
+      GenerateSharedTabGroupDataEntityData(kHash, "guid", "collaboration"),
+      /*trimmed_specifics=*/{});
+  entity->RecordLocalDeletion(DeletionOrigin::Unspecified());
+
+  CommitRequestData request;
+  entity->InitializeCommitRequestData(&request);
+
+  EXPECT_EQ(request.entity->collaboration_id, "collaboration");
 }
 
 }  // namespace syncer

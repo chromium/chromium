@@ -279,6 +279,9 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
     if (metadata_.has_deletion_origin()) {
       data->deletion_origin = metadata_.deletion_origin();
     }
+    if (metadata_.has_collaboration()) {
+      data->collaboration_id = metadata_.collaboration().collaboration_id();
+    }
     request->entity = std::move(data);
   }
 

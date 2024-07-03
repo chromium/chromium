@@ -15,6 +15,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -63,21 +64,26 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
   return specifics;
 }
 
+std::unique_ptr<EntityData> CreateDefaultPreferenceEntityData() {
+  auto data = std::make_unique<syncer::EntityData>();
+
+  data->client_tag_hash = kTag;
+  data->specifics = GeneratePreferenceSpecifics(kTag, kValue);
+  data->creation_time = base::Time::Now();
+  data->modification_time = data->creation_time;
+  data->name = "Name:";
+
+  return data;
+}
+
 TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
 
-  auto data = std::make_unique<syncer::EntityData>();
-
-  data->client_tag_hash = kTag;
-  data->specifics = GeneratePreferenceSpecifics(kTag, kValue);
-
-  // These fields are not really used for much, but we set them anyway
-  // to make this item look more realistic.
+  std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
   data->creation_time = creation_time;
   data->modification_time = modification_time;
-  data->name = "Name:";
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
@@ -109,13 +115,10 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
 
-  auto data = std::make_unique<syncer::EntityData>();
-
-  data->client_tag_hash = kTag;
-  // Leave the specifics empty.
+  std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
   data->creation_time = creation_time;
   data->modification_time = modification_time;
-  data->name = "Name:";
+  data->specifics.Clear();
 
   // Empty specifics means this is a deletion aka tombstone.
   ASSERT_TRUE(data->is_deleted());
@@ -331,6 +334,24 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
 
   ASSERT_THAT(msg.commit().entries(), SizeIs(1));
   EXPECT_THAT(msg.commit().entries(0).id_string(), Not(IsEmpty()));
+}
+
+TEST(CommitContributionImplTest, ShouldPopulateCollaborationId) {
+  std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
+  data->collaboration_id = "collaboration";
+
+  CommitRequestData request_data;
+  request_data.sequence_number = 2;
+  request_data.base_version = 123;
+  request_data.specifics_hash = base::Base64Encode(
+      base::SHA1HashString(data->specifics.SerializeAsString()));
+  request_data.entity = std::move(data);
+
+  SyncEntity entity;
+  CommitContributionImpl::PopulateCommitProto(PREFERENCES, request_data,
+                                              &entity);
+
+  EXPECT_EQ(entity.collaboration().collaboration_id(), "collaboration");
 }
 
 }  // namespace
