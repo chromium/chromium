@@ -11,12 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
 
-import androidx.core.widget.TextViewCompat;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -29,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
-import org.chromium.base.MathUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -694,31 +691,6 @@ public class UrlBarTest {
                                     .getActivity()
                                     .getColor(R.color.branded_url_text_on_dark_bg);
                     Criteria.checkThat(mUrlBar.getCurrentTextColor(), equalTo(expectedTextColor));
-                });
-    }
-
-    @Test
-    @SmallTest
-    public void testEnforceTextHeight() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    float origTextSize = mUrlBar.getTextSize();
-                    mUrlBar.clearFocus();
-                    mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, 100);
-                    mUrlBar.enforceMaxTextHeight();
-                    Assert.assertTrue(
-                            mUrlBar.getHeight()
-                                            - mUrlBar.getPaddingTop()
-                                            - mUrlBar.getPaddingBottom()
-                                    >= UrlBar.getMaxHeightOfFont(
-                                            TextViewCompat.getTextMetricsParams(mUrlBar)
-                                                    .getTextPaint()
-                                                    .getFontMetrics()));
-                    // Enforce a max, but not a min.
-                    mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, 10f);
-                    mUrlBar.enforceMaxTextHeight();
-                    Assert.assertEquals(10f, mUrlBar.getTextSize(), MathUtils.EPSILON);
-                    mUrlBar.setTextSize(origTextSize);
                 });
     }
 

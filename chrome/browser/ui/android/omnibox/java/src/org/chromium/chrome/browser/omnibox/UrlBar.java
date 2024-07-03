@@ -65,6 +65,7 @@ import java.util.Optional;
 /** The URL text entry view for the Omnibox. */
 public abstract class UrlBar extends AutocompleteEditText {
     private static final String TAG = "UrlBar";
+    @VisibleForTesting static final float LINE_HEIGHT_FACTOR = 1.15f;
 
     private static final boolean DEBUG = false;
 
@@ -213,6 +214,11 @@ public abstract class UrlBar extends AutocompleteEditText {
         setFocusable(false);
         setFocusableInTouchMode(false);
         setHorizontalFadingEdgeEnabled(true);
+        // Disable elegant text height for now. We calculate font size at runtime, and try to
+        // respect the user's need to increase the font size.
+        // Enabling elegant text for UrlBar will likely produce smaller font when users ask for a
+        // larger one.
+        setElegantTextHeight(false);
         // Use a global draw instead of View#onDraw in case this View is not visible.
         FirstDrawDetector.waitForFirstDraw(
                 this,
@@ -1145,18 +1151,20 @@ public abstract class UrlBar extends AutocompleteEditText {
         // too small.
         if (viewHeight <= 0) return;
 
-        var fontMetrics = getPaint().getFontMetrics();
-        var effectiveFontHeightPx = getMaxHeightOfFont(fontMetrics);
+        float effectiveFontHeightPx = getMaxHeightOfFont();
+
+        if (getPaint().isElegantTextHeight()) {
+            // http://go/ui-font-deprecation: when enabled, line height will be increased by up to
+            // 60%.
+            effectiveFontHeightPx *= getLineHeight() / getTextSize();
+        } else {
+            // Otherwise, scale the font down a little bit so it doesn't extend edge to edge.
+            // This ensures we present the user with properly rendered UI and that we respect their
+            // choice to use larger font (within the bounds permitted by url bar height).
+            effectiveFontHeightPx *= LINE_HEIGHT_FACTOR;
+        }
 
         if (effectiveFontHeightPx > viewHeight) {
-            // Allow the effective font height an extra 2px to ensure aliasing does not get trimmed.
-            // Floating point font size means certain glyphs extending from top to bottom
-            // (e.g. found in Burmese language) may produce aliasing that expands vertically.
-            // Delay the computation until after comparison so that we don't need to worry about
-            // epsilon when comparing floats: once applied, the newly calculated effective font
-            // height should be smaller by the size expressed below.
-            effectiveFontHeightPx += 2.f;
-
             // we need to shrink the text to fit in the text field.
             var scaleRatio = viewHeight / effectiveFontHeightPx;
             setTextSize(TypedValue.COMPLEX_UNIT_PX, getTextSize() * scaleRatio);
@@ -1165,7 +1173,8 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @VisibleForTesting
     @Px
-    static float getMaxHeightOfFont(Paint.FontMetrics fontMetrics) {
+    float getMaxHeightOfFont() {
+        var fontMetrics = getPaint().getFontMetrics();
         return fontMetrics.bottom - fontMetrics.top;
     }
 
