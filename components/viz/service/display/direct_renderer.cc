@@ -656,7 +656,8 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
 }
 
 void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
-  TRACE_EVENT0("viz", "DirectRenderer::DrawRenderPass");
+  TRACE_EVENT1("viz", "DirectRenderer::DrawRenderPass", "NumberOfQuads",
+               render_pass->quad_list.size());
 
   bool can_skip_rp = CanSkipRenderPass(render_pass);
   if (render_pass != current_frame()->root_render_pass) {
