@@ -283,7 +283,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   ui::AXNodeData data;
 
   // Initially the view is collapsed and there are no expanded-changed events.
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
@@ -296,7 +297,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // Expanding the view should result the expanded state being present and an
   // expanded-changed event being fired.
   notification_header_view_->SetExpanded(true);
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
@@ -309,7 +311,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // Calling `SetExpanded` without the changing the expanded state should not
   // result in an expanded-changed event being fired.
   notification_header_view_->SetExpanded(true);
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
@@ -322,7 +325,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // Collapsing the view should result the collapsed state being present and an
   // expanded-changed event being fired.
   notification_header_view_->SetExpanded(false);
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
@@ -337,7 +341,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // event, and neither the expanded nor the collapsed state should be present.
   notification_header_view_->SetExpandButtonEnabled(false);
   notification_header_view_->SetExpanded(true);
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,
@@ -366,7 +371,8 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // the view. As a result, we should expect the previously-set expanded state
   // to be present, but no expanded-changed event fired.
   notification_header_view_->SetExpandButtonEnabled(true);
-  notification_header_view_->GetAccessibleNodeData(&data);
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kExpandedChanged,

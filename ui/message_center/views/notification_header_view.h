@@ -117,6 +117,8 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   void UpdateColors();
 
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Color used for labels and buttons in this view.
   std::optional<SkColor> color_;
 

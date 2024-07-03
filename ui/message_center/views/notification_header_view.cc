@@ -24,6 +24,7 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -234,6 +235,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -300,12 +302,6 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(app_name_view_->GetText());
   node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
-
-  // If the expand button is not shown to the user, this view is not expandable.
-  if (expand_button_ && expand_button_->GetVisible()) {
-    node_data->AddState(is_expanded_ ? ax::mojom::State::kExpanded
-                                     : ax::mojom::State::kCollapsed);
-  }
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -345,23 +341,19 @@ void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
   // We shouldn't execute this method if the expand button is not here.
   DCHECK(expand_button_);
   expand_button_->SetVisible(enabled);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void NotificationHeaderView::SetExpanded(bool expanded) {
   // We shouldn't execute this method if the expand button is not here.
   DCHECK(expand_button_);
-  bool was_expanded = is_expanded_;
   is_expanded_ = expanded;
   UpdateColors();
   expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
 
-  // If the expand button is not shown to the user, this view is presumably not
-  // expandable.
-  if (expand_button_->GetVisible() && was_expanded != is_expanded_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  }
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void NotificationHeaderView::SetColor(std::optional<SkColor> color) {
@@ -473,6 +465,19 @@ void NotificationHeaderView::UpdateColors() {
   if (using_default_app_icon_ && app_icon_view_) {
     app_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
         kProductIcon, actual_color, kSmallImageSizeMD));
+  }
+}
+
+void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
+  if (!expand_button_ || !expand_button_->GetVisible()) {
+    GetViewAccessibility().RemoveExpandCollapseState();
+    return;
+  }
+
+  if (is_expanded_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
   }
 }
 
