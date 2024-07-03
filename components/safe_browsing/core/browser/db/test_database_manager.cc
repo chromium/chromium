@@ -103,11 +103,6 @@ TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::UNKNOWN;
 }
 
-bool TestSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void TestSafeBrowsingDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {

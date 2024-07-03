@@ -583,10 +583,6 @@ ThreatSource V4LocalDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return ThreatSource::LOCAL_PVER4;
 }
 
-bool V4LocalDatabaseManager::IsDownloadProtectionEnabled() const {
-  return true;
-}
-
 void V4LocalDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {

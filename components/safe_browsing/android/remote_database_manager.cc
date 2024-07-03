@@ -292,10 +292,6 @@ RemoteSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::REMOTE;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
-  return false;
-}
-
 void RemoteSafeBrowsingDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {

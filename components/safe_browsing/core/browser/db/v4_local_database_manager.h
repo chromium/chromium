@@ -90,7 +90,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
-  bool IsDownloadProtectionEnabled() const override;
 
   void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

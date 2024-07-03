@@ -239,9 +239,6 @@ class SafeBrowsingDatabaseManager
   // implementation.
   virtual ThreatSource GetNonBrowseUrlThreatSource() const = 0;
 
-  // Returns whether download protection is enabled.
-  virtual bool IsDownloadProtectionEnabled() const = 0;
-
   //
   // Methods to indicate when to start or suspend the SafeBrowsing operations.
   // These functions are always called on the IO thread.
