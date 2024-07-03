@@ -6,7 +6,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_deref.h"
-#include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -137,10 +136,6 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
  public:
   explicit SearchEngineChoiceDialogBrowserTest(bool use_spy_service = true)
       : use_spy_service_(use_spy_service) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
   }
 
   SearchEngineChoiceDialogBrowserTest(const SearchEngineChoiceDialogBrowserTest&) = delete;
@@ -277,7 +272,8 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
       SearchEngineChoiceDialogServiceFactory::
           ScopedChromeBuildOverrideForTesting(
               /*force_chrome_build=*/true);
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   bool use_spy_service_;
   base::CallbackListSubscription create_services_subscription_;
   base::HistogramTester histogram_tester_;
@@ -717,166 +713,14 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
       1);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-class TaggedOnlySearchEngineChoiceDialogBrowserTest
-    : public SearchEngineChoiceDialogBrowserTest {
- public:
-  static constexpr base::FilePath::CharType kSecondProfileBaseName[] =
-      FILE_PATH_LITERAL("second_test_profile");
-  static constexpr base::FilePath::CharType kThirdProfileBaseName[] =
-      FILE_PATH_LITERAL("third_test_profile");
-
-  TaggedOnlySearchEngineChoiceDialogBrowserTest()
-      : SearchEngineChoiceDialogBrowserTest(
-            // The testing factory instantiates the service too early in the
-            // initialization flow.
-            /*use_spy_service=*/false) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "true"}});
-  }
-
-  Browser* CreateBrowserAndLoadNtp(Profile* profile) {
-    Browser* browser = CreateBrowser(profile);
-    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, GURL(chrome::kChromeUINewTabPageURL),
-        WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    return browser;
-  }
-
-  Profile* CreateOrLoadProfile(base::FilePath profile_base_name) {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    base::FilePath third_profile_path =
-        profile_manager->user_data_dir().Append(profile_base_name);
-    return &profiles::testing::CreateProfileSync(profile_manager,
-                                                 third_profile_path);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// For a first run, all profiles should be tagged, and the dialog should
-// trigger.
-IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceDialogBrowserTest,
-                       PRE_DialogTriggers) {
-  // -- First profile ---------------------------------------------------------
-
-  Profile* profile = browser()->profile();
-  ASSERT_TRUE(profile->IsNewProfile());
-  EXPECT_TRUE(profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-
-  auto* service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
-  ASSERT_TRUE(service);
-  EXPECT_TRUE(service->CanShowDialog(*browser()));
-
-  // Navigate to a URL. The first load happened while the dialog was
-  // force-disabled for testing.
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabPageURL),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_TRUE(service->IsShowingDialog(browser()));
-
-  // -- Second profile --------------------------------------------------------
-
-  // Create another profile, it should be tagged and show the dialog like the
-  // first one
-  Profile* second_profile =
-      CreateOrLoadProfile(base::FilePath(kSecondProfileBaseName));
-  EXPECT_TRUE(second_profile->IsNewProfile());
-  EXPECT_TRUE(second_profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-  auto* second_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(second_profile);
-  ASSERT_TRUE(second_service);
-
-  Browser* second_browser = CreateBrowserAndLoadNtp(second_profile);
-  EXPECT_TRUE(second_service->IsShowingDialog(second_browser));
-
-  // Remove the tag and exit here without making a choice.
-  second_profile->GetPrefs()->ClearPref(
-      prefs::kDefaultSearchProviderChoicePending);
-}
-
-IN_PROC_BROWSER_TEST_F(TaggedOnlySearchEngineChoiceDialogBrowserTest,
-                       DialogTriggers) {
-  // -- First profile ---------------------------------------------------------
-
-  // Due to having more than one profile from the PRE_test, we explicitly load
-  // the first profile instead of relying on the default opened one, to avoid
-  // potential issues related to showing the profile picker or the last used
-  // profile being the second one.
-  Profile* first_profile =
-      CreateOrLoadProfile(base::FilePath::FromASCII(chrome::kInitialProfile));
-  ASSERT_TRUE(first_profile);
-  Browser* first_browser = CreateBrowserAndLoadNtp(first_profile);
-  ASSERT_TRUE(first_browser);
-
-  // The profile is not new but still tagged.
-  EXPECT_FALSE(first_profile->IsNewProfile());
-  EXPECT_TRUE(first_profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-
-  auto* first_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(first_profile);
-  ASSERT_TRUE(first_service);
-  EXPECT_TRUE(first_service->IsShowingDialog(first_browser));
-
-  // Make a choice by grabbing the ID for one of the search engines in the
-  // displayed list.
-  int prepopulate_id =
-      first_service->GetSearchEngines().at(0)->prepopulate_id();
-  first_service->NotifyChoiceMade(prepopulate_id, EntryPoint::kDialog);
-
-  // The tag should have been cleared.
-  EXPECT_FALSE(first_profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-
-  // -- Second profile --------------------------------------------------------
-  // This profile is not new either. Is was not tagged on startup, so the
-  // service will not even be created for it.
-  Profile* second_profile =
-      CreateOrLoadProfile(base::FilePath(kSecondProfileBaseName));
-
-  EXPECT_FALSE(second_profile->IsNewProfile());
-  EXPECT_FALSE(second_profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-
-  auto* second_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(second_profile);
-  ASSERT_FALSE(second_service);
-
-  // -- Third profile ---------------------------------------------------------
-  // The third is new, even if not at first run, and it should be tagged.
-  Profile* third_profile =
-      CreateOrLoadProfile(base::FilePath(kThirdProfileBaseName));
-  EXPECT_TRUE(third_profile->IsNewProfile());
-  EXPECT_TRUE(third_profile->GetPrefs()->GetBoolean(
-      prefs::kDefaultSearchProviderChoicePending));
-  auto* third_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(third_profile);
-  ASSERT_TRUE(third_service);
-
-  Browser* third_browser = CreateBrowserAndLoadNtp(third_profile);
-  EXPECT_TRUE(third_service->IsShowingDialog(third_browser));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 struct RepromptTestParam {
   const std::string test_suffix;
-  const bool tagged_profiles_only = false;
   const bool select_google_in_pre = true;
   const bool skip_for_3p = false;
 };
 
 const RepromptTestParam kTestParams[] = {
     {.test_suffix = "AllProfiles"},
-    {.test_suffix = "TaggedProfilesOnly", .tagged_profiles_only = true},
     {.test_suffix = "Skip3p",
      .select_google_in_pre = false,
      .skip_for_3p = true},
@@ -899,15 +743,6 @@ class SearchEngineRepromptBrowserTest
     base::FieldTrialParams field_trial_params = {
         {switches::kSearchEngineChoiceTriggerRepromptParams.name,
          reprompt_param}};
-    if (tagged_profiles_only()) {
-      field_trial_params
-          [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
-              "true";
-    } else {
-      field_trial_params
-          [switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name] =
-              "false";
-    }
     if (skip_for_3p()) {
       field_trial_params[switches::kSearchEngineChoiceTriggerSkipFor3p.name] =
           "true";
@@ -920,7 +755,6 @@ class SearchEngineRepromptBrowserTest
         switches::kSearchEngineChoiceTrigger, std::move(field_trial_params));
   }
 
-  bool tagged_profiles_only() const { return GetParam().tagged_profiles_only; }
   bool skip_for_3p() const { return GetParam().skip_for_3p; }
   bool select_google_in_pre() const { return GetParam().select_google_in_pre; }
 
@@ -974,12 +808,6 @@ IN_PROC_BROWSER_TEST_P(SearchEngineRepromptBrowserTest, Reprompt) {
 
   auto* service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
-  if (tagged_profiles_only()) {
-    // Do not re-trigger when `tagged_profiles_only()` is set.
-    EXPECT_EQ(service, nullptr);
-    return;
-  }
-
   EXPECT_TRUE(service);
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),

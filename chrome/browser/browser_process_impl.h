@@ -54,7 +54,6 @@ class DevToolsAutoOpener;
 class GlobalFeatures;
 class RemoteDebuggingServer;
 class PrefRegistrySimple;
-class SearchEngineChoiceProfileTagger;
 class SecureOriginPrefsObserver;
 class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
@@ -465,9 +464,6 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 
   BuildState build_state_;
-
-  std::unique_ptr<SearchEngineChoiceProfileTagger>
-      search_engine_choice_profile_tagger_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

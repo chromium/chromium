@@ -438,11 +438,8 @@ TEST_F(SearchEngineTableViewControllerNonEEATest,
 // SearchEngineChoiceTriggerDisabled is enabled.
 TEST_F(SearchEngineTableViewControllerNonEEATest,
        DeleteItems_SearchEngineChoiceTriggerEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"}});
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSearchEngineChoiceTrigger};
   AddPriorSearchEngine(prepopulated_search_engine_[2], 1003,
                        /*set_default=*/false);
   AddPriorSearchEngine(prepopulated_search_engine_[0], 1001,
@@ -584,11 +581,8 @@ TEST_F(
 TEST_F(
     SearchEngineTableViewControllerNonEEATest,
     EditModeWithCustomSearchEngineAsDefault_SearchEngineChoiceTriggerEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"}});
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSearchEngineChoiceTrigger};
   AddPriorSearchEngine(prepopulated_search_engine_[0], 1001,
                        /*default=*/false);
   AddPriorSearchEngine(prepopulated_search_engine_[1], 1002,
@@ -658,11 +652,8 @@ TEST_F(SearchEngineTableViewControllerNonEEATest,
 TEST_F(
     SearchEngineTableViewControllerNonEEATest,
     EditButtonWithSelectedCustomSearchEngine_SearchEngineChoiceTriggerEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"}});
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kSearchEngineChoiceTrigger};
   AddPriorSearchEngine(prepopulated_search_engine_[1], 1002,
                        /*default=*/false);
   AddCustomSearchEngine(custom_search_engine_[0],

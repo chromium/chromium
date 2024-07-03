@@ -83,10 +83,6 @@ const TestParam kTestParams[] = {
 class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  public:
   SearchEngineChoiceDialogServiceTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
     scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
         SearchEngineChoiceDialogServiceFactory::
             ScopedChromeBuildOverrideForTesting(
@@ -145,7 +141,8 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;

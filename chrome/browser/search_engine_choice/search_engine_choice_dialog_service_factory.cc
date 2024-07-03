@@ -96,9 +96,6 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceDialogService(
               &profile));
 
   if (!IsProfileEligibleForChoiceScreen(profile)) {
-    DVLOG(1) << "Profile not eligible, removing tag for profile "
-             << profile.GetBaseName();
-    profile.GetPrefs()->ClearPref(prefs::kDefaultSearchProviderChoicePending);
     return nullptr;
   }
 

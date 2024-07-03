@@ -53,10 +53,6 @@ BASE_FEATURE(kPersistentSearchEngineChoiceImport,
 #endif
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-const base::FeatureParam<bool> kSearchEngineChoiceTriggerForTaggedProfilesOnly{
-    &kSearchEngineChoiceTrigger, /*name=*/"for_tagged_profiles_only", false};
-
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 const base::FeatureParam<bool> kSearchEngineChoiceTriggerWithForceEeaCountry{
     &kSearchEngineChoiceTrigger, /*name=*/"with_force_eea_country", false};
 

@@ -43,11 +43,6 @@ const int kFranceCountryId = country_codes::CountryStringToCountryID("FR");
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
-
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -59,7 +54,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
  private:
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
@@ -99,28 +95,11 @@ TEST_F(SearchEngineChoiceUtilsTest, IsChoiceScreenFlagEnabled) {
   EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
 
   feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"}});
+  feature_list()->InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
 
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
   EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
-
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "true"}});
-
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kAny));
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kFre));
-#if BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
-#else
-  EXPECT_TRUE(IsChoiceScreenFlagEnabled(ChoicePromo::kDialog));
-#endif
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_ToDict) {

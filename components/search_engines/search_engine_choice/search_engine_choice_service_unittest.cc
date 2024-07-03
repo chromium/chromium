@@ -11,7 +11,6 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -89,10 +88,6 @@ const int kBelgiumCountryId = country_codes::CountryCharsToCountryID('B', 'E');
 class SearchEngineChoiceServiceTest : public ::testing::Test {
  public:
   SearchEngineChoiceServiceTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
     DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
@@ -170,7 +165,8 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
     ASSERT_FALSE(default_search_provider_search_url);
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
@@ -472,85 +468,6 @@ TEST_F(SearchEngineChoiceServiceTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   );
 }
 
-TEST_F(SearchEngineChoiceServiceTest, ShowChoiceScreenWithTriggerFeature) {
-  // SearchEngineChoiceTrigger is enabled and not set to trigger only for
-  // tagged profiles: the dialog should trigger.
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"}});
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
-#else
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-#endif
-
-  // When the param is set and the profile untagged, the dialog will not be
-  // displayed.
-  base::FieldTrialParams tagged_only_params{
-      {switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name, "true"}};
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger, tagged_only_params);
-
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
-#else
-#if BUILDFLAG(IS_IOS)
-  // The profile tag check is not performed for iOS, so the dialog can be
-  // displayed.
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-#else
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kProfileOutOfScope);
-#endif
-  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-#endif
-
-  // When the profile is tagged, the dialog can also be displayed.
-  pref_service()->SetBoolean(prefs::kDefaultSearchProviderChoicePending, true);
-  EXPECT_TRUE(search_engine_choice_service().ShouldShowUpdatedSettings());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(CHROME_FOR_TESTING)
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kUnsupportedBrowserType);
-#else
-  EXPECT_EQ(search_engine_choice_service().GetStaticChoiceScreenConditions(
-                policy_service(), /*is_regular_profile=*/true,
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-  EXPECT_EQ(search_engine_choice_service().GetDynamicChoiceScreenConditions(
-                template_url_service()),
-            SearchEngineChoiceScreenConditions::kEligible);
-#endif
-}
-
 // Test that the choice screen does not get displayed if the command line
 // argument for disabling it is set.
 TEST_F(SearchEngineChoiceServiceTest,
@@ -709,9 +626,7 @@ TEST_F(SearchEngineChoiceServiceTest, ChoiceScreenConditions_SkipFor3p) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
 
   // First, check the state with Google as the default search engine
   ASSERT_TRUE(
@@ -765,9 +680,7 @@ TEST_F(SearchEngineChoiceServiceTest,
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
@@ -801,9 +714,7 @@ TEST_F(SearchEngineChoiceServiceTest,
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
@@ -837,9 +748,7 @@ TEST_F(SearchEngineChoiceServiceTest,
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
 
   // A distribution custom search engine will have a `prepopulate_id` > 1000.
   const int kDistributionCustomSearchEnginePrepopulateId = 1001;
@@ -875,9 +784,7 @@ TEST_F(SearchEngineChoiceServiceTest,
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
 
   // We don't have a prepopulated search engine with ID 20, but at some point
   // in the past, we did. So some profiles might still have it.
@@ -1712,10 +1619,6 @@ TEST_F(SearchEngineChoiceUtilsResourceIdsTest, GetIconResourceId) {
 class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
  public:
   SearchEngineChoiceServiceWithVariationsTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
 
@@ -1728,7 +1631,8 @@ class SearchEngineChoiceServiceWithVariationsTest : public ::testing::Test {
   PrefService& local_state() { return local_state_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   TestingPrefServiceSimple local_state_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 };

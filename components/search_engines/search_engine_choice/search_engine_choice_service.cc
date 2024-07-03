@@ -213,17 +213,6 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kFeatureSuppressed;
   }
 
-#if !BUILDFLAG(IS_IOS)
-  // `prefs::kDefaultSearchProviderChoicePending` does not get set on
-  // iOS. Instead, the iOS-specific wrapper
-  // `ShouldDisplaySearchEngineChoiceScreen()` handles checking whether
-  // the screen should be displayed based on the promo type.
-  if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
-      !profile_prefs_->GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
-    return SearchEngineChoiceScreenConditions::kProfileOutOfScope;
-  }
-#endif
-
   if (!is_regular_profile) {
     // Naming not exactly accurate, but still reflect the fact that incognito,
     // kiosk, etc. are not supported and belongs in this bucked more than in
@@ -379,11 +368,6 @@ void SearchEngineChoiceService::RecordChoiceMade(
   RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)));
   MarkSearchEngineChoiceCompleted(*profile_prefs_);
-
-  if (profile_prefs_->HasPrefPath(prefs::kDefaultSearchProviderChoicePending)) {
-    DVLOG(1) << "Choice made, removing profile tag.";
-    profile_prefs_->ClearPref(prefs::kDefaultSearchProviderChoicePending);
-  }
 }
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(

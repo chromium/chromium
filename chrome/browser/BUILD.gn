@@ -1915,8 +1915,6 @@ static_library("browser") {
       "search_engine_choice/search_engine_choice_dialog_service.h",
       "search_engine_choice/search_engine_choice_dialog_service_factory.cc",
       "search_engine_choice/search_engine_choice_dialog_service_factory.h",
-      "search_engine_choice/search_engine_choice_profile_tagger.cc",
-      "search_engine_choice/search_engine_choice_profile_tagger.h",
       "supervised_user/desktop/supervised_user_service_platform_delegate.cc",
       "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       "user_education/browser_feature_promo_storage_service.cc",

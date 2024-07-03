@@ -1074,6 +1074,10 @@ constexpr char kBirchUseMostVisited[] = "ash.birch.use_most_visited";
 constexpr char kBirchUseSelfShare[] = "ash.birch.use_self_share";
 #endif
 
+// Deprecated 06/2024
+constexpr char kDefaultSearchProviderChoicePending[] =
+    "default_search_provider.engine_choice_pending";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1491,6 +1495,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kBirchUseMostVisited, true);
   registry->RegisterBooleanPref(kBirchUseSelfShare, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 06/2024.
+  registry->RegisterBooleanPref(kDefaultSearchProviderChoicePending, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2813,6 +2820,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 06/2024
   feed::prefs::MigrateObsoleteFeedExperimentPref_Jun_2024(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Added 06/2024.
+  profile_prefs->ClearPref(kDefaultSearchProviderChoicePending);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

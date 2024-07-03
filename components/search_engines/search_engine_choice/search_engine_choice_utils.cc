@@ -176,20 +176,7 @@ ChoiceScreenData::~ChoiceScreenData() = default;
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
-  if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger)) {
-    return false;
-  }
-
-#if BUILDFLAG(IS_IOS)
-  // Chrome on iOS does not tag profiles, so this param instead determines
-  // whether we show the choice screen outside of the FRE or not.
-  if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
-      promo == ChoicePromo::kDialog) {
-    return false;
-  }
-#endif
-
-  return true;
+  return base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger);
 }
 
 bool IsEeaChoiceCountry(int country_id) {

@@ -182,7 +182,6 @@
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_profile_tagger.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1221,11 +1220,6 @@ void BrowserProcessImpl::CreateProfileManager() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   profile_manager_ = std::make_unique<ProfileManager>(user_data_dir);
-
-#if !BUILDFLAG(IS_ANDROID)
-  search_engine_choice_profile_tagger_ =
-      SearchEngineChoiceProfileTagger::Create(*profile_manager_.get());
-#endif
 }
 
 void BrowserProcessImpl::PreCreateThreads() {

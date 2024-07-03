@@ -16,13 +16,6 @@
 
 class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
  public:
-  TemplateURLServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
-  }
-
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
 
@@ -39,7 +32,8 @@ class TemplateURLServiceBrowserTest : public InProcessBrowserTest {
     return TemplateURLServiceFactory::GetForProfile(browser()->profile());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSearchEngineChoiceTrigger};
 };
 
 // Checks the logic associated with changing countries when reloading the

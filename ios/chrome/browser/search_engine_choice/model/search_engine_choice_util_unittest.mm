@@ -31,11 +31,6 @@
 class SearchEngineChoiceUtilTest : public PlatformTest {
  public:
   SearchEngineChoiceUtilTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoiceTrigger,
-        {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-          "false"}});
-
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
@@ -78,7 +73,8 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   policy::SchemaRegistry schema_registry_;
   IOSChromeScopedTestingLocalState local_state_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   // Owned by browser_state_.
   raw_ptr<TemplateURLService> template_url_service_;
@@ -147,9 +143,7 @@ TEST_F(SearchEngineChoiceUtilTest,
   feature_list().Reset();
   feature_list().InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "false"}});
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
@@ -175,9 +169,7 @@ TEST_F(SearchEngineChoiceUtilTest,
   feature_list().Reset();
   feature_list().InitAndEnableFeatureWithParameters(
       switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
-        "false"},
-       {switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
+      {{switches::kSearchEngineChoiceTriggerSkipFor3p.name, "true"}});
 
   // A custom search engine will have a `prepopulate_id` of 0.
   const int kCustomSearchEnginePrepopulateId = 0;
