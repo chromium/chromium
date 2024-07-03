@@ -423,6 +423,8 @@ void PickerView::StartSearch(const std::u16string& query) {
     } else {
       SetActivePage(zero_state_view_);
     }
+    delegate_->StopSearch();
+    clear_results_timer_.Stop();
     search_results_view_->ClearSearchResults();
     ResetEmojiBarToZeroState();
   }
