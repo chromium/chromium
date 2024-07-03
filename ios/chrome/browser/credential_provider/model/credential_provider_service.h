@@ -14,7 +14,9 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "ios/chrome/common/credential_provider/memory_credential_store.h"
 
 class FaviconLoader;
@@ -23,7 +25,7 @@ class FaviconLoader;
 
 namespace affiliations {
 class AffiliationService;
-}
+}  // namespace affiliations
 
 namespace password_manager {
 class AffiliatedMatchHelper;
@@ -31,7 +33,7 @@ class AffiliatedMatchHelper;
 
 namespace syncer {
 class SyncService;
-}
+}  // namespace syncer
 
 // A browser-context keyed service that is used to keep the Credential Provider
 // Extension data up to date.
@@ -40,7 +42,8 @@ class CredentialProviderService
       public password_manager::PasswordStoreConsumer,
       public password_manager::PasswordStoreInterface::Observer,
       public signin::IdentityManager::Observer,
-      public syncer::SyncServiceObserver {
+      public syncer::SyncServiceObserver,
+      public webauthn::PasskeyModel::Observer {
  public:
   // Initializes the service.
   CredentialProviderService(
@@ -49,6 +52,7 @@ class CredentialProviderService
           profile_password_store,
       scoped_refptr<password_manager::PasswordStoreInterface>
           account_password_store,
+      webauthn::PasskeyModel* passkey_model,
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -104,9 +108,19 @@ class CredentialProviderService
       MemoryCredentialStore* store,
       std::vector<password_manager::PasswordForm> forms);
 
+  // Add credentials from passkeys.
+  void AddCredentials(
+      MemoryCredentialStore* store,
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
+
   // Removes credentials from `forms`.
   void RemoveCredentials(MemoryCredentialStore* store,
                          std::vector<password_manager::PasswordForm> forms);
+
+  // Removes credentials from `passkeys`.
+  void RemoveCredentials(
+      MemoryCredentialStore* store,
+      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
 
   // Syncs account id for validation.
   void UpdateAccountId();
@@ -126,6 +140,11 @@ class CredentialProviderService
   void OnInjectedAffiliationAfterLoginsChanged(
       password_manager::PasswordStoreInterface* store,
       password_manager::LoginsResultOrError results_or_error);
+
+  // PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -147,6 +166,9 @@ class CredentialProviderService
       profile_password_store_;
   const scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store_;
+
+  // Passkey store.
+  webauthn::PasskeyModel* passkey_model_;
 
   // Identity manager to observe.
   const raw_ptr<signin::IdentityManager> identity_manager_;

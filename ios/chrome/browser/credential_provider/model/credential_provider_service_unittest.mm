@@ -28,6 +28,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -54,6 +55,21 @@ std::vector<std::string> GetServiceNames(NSArray<id<Credential>>* credentials) {
     service_names.push_back(base::SysNSStringToUTF8(credential.serviceName));
   }
   return service_names;
+}
+
+sync_pb::WebauthnCredentialSpecifics CreatePasskey(
+    const std::string& rp_id,
+    const std::string& user_id,
+    const std::string& user_name,
+    const std::string& user_display_name) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_credential_id(base::RandBytesAsString(16));
+  passkey.set_rp_id(rp_id);
+  passkey.set_user_id(user_id);
+  passkey.set_user_name(user_name);
+  passkey.set_user_display_name(user_display_name);
+  return passkey;
 }
 
 // Needed since FaviconLoader has no fake currently.
@@ -154,8 +170,9 @@ class CredentialProviderServiceTest : public PlatformTest {
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         &testing_pref_service_, password_store_,
         with_account_store ? account_password_store_ : nullptr,
-        credential_store_, identity_test_environment_.identity_manager(),
-        &sync_service_, &affiliation_service_, &favicon_loader_);
+        test_passkey_model_.get(), credential_store_,
+        identity_test_environment_.identity_manager(), &sync_service_,
+        &affiliation_service_, &favicon_loader_);
   }
 
  protected:
@@ -167,6 +184,8 @@ class CredentialProviderServiceTest : public PlatformTest {
   scoped_refptr<password_manager::TestPasswordStore> account_password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>(
           password_manager::IsAccountStore(true));
+  std::unique_ptr<webauthn::TestPasskeyModel> test_passkey_model_ =
+      std::make_unique<webauthn::TestPasskeyModel>();
   MemoryCredentialStore* credential_store_ =
       [[MemoryCredentialStore alloc] init];
   signin::IdentityTestEnvironment identity_test_environment_;
@@ -505,6 +524,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 
   ASSERT_EQ(credential_store_.credentials.count, 2u);
 }
+
 TEST_F(CredentialProviderServiceTest,
        OnLoginsChanged_WithPerformanceImprovements_SingleOperation) {
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -681,4 +701,95 @@ TEST_F(
   // There should have been only one write to disk.
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 0);
 }
+
+TEST_F(CredentialProviderServiceTest, AddPasskeys) {
+  CreateCredentialProviderService(/*with_account_store=*/true);
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Add passkey with valid URL to store.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(1);
+  sync_pb::WebauthnCredentialSpecifics valid_passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  test_passkey_model_->AddNewPasskeyForTesting(valid_passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Don't add passkey with invalid URL to store.
+  // No favicon should be fetched for invalid URLs.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
+  sync_pb::WebauthnCredentialSpecifics invalid_passkey = CreatePasskey(
+      "", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Add 2nd passkey with valid URL to store.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(1);
+  sync_pb::WebauthnCredentialSpecifics valid_passkey2 = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username2", "passkey_display_name2");
+  test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+}
+
+TEST_F(CredentialProviderServiceTest, DeletePasskey) {
+  CreateCredentialProviderService(/*with_account_store=*/true);
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Add passkey with valid URL to store.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(1);
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  test_passkey_model_->AddNewPasskeyForTesting(passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  test_passkey_model_->DeletePasskey(passkey.credential_id(), FROM_HERE);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+}
+
+TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
+  CreateCredentialProviderService(/*with_account_store=*/true);
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Add passkey with valid URL to store.
+  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  test_passkey_model_->AddNewPasskeyForTesting(passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  test_passkey_model_->UpdatePasskey(
+      passkey.credential_id(),
+      {
+          .user_name = "new_passkey_username",
+          .user_display_name = "new_passkey_display_name",
+      });
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  EXPECT_NSEQ(credential_store_.credentials[0].username,
+              @"new_passkey_username");
+  EXPECT_NSEQ(credential_store_.credentials[0].userDisplayName,
+              @"new_passkey_display_name");
+}
+
 }  // namespace

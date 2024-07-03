@@ -16,6 +16,8 @@ buildflag_header("buildflags") {
 if (ios_enable_credential_provider_extension) {
   source_set("model") {
     sources = [
+      "archivable_credential+passkey.h",
+      "archivable_credential+passkey.mm",
       "archivable_credential+password_form.h",
       "archivable_credential+password_form.mm",
       "credential_provider_migrator.h",
@@ -44,6 +46,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
+      "//components/webauthn/core/browser:passkey_model",
       "//ios/chrome/browser/affiliations/model",
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/passwords/model",
@@ -51,6 +54,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/signin/model",
       "//ios/chrome/browser/signin/model:system_identity",
       "//ios/chrome/browser/sync/model",
+      "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
@@ -84,6 +88,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/variations:test_support",
+      "//components/webauthn/core/browser:test_support",
       "//ios/chrome/browser/favicon/model",
       "//ios/chrome/browser/history/model",
       "//ios/chrome/browser/shared/model/application_context",
