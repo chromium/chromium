@@ -108,6 +108,10 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
+      ash::prefs::kMagicBoostEnabled,
+      base::BindRepeating(&MagicBoostStateAsh::OnMagicBoostEnabledUpdated,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
       ash::prefs::kHmrEnabled,
       base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
                           base::Unretained(this)));
@@ -126,9 +130,40 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   OnHMRConsentWindowDismissCountUpdated();
 }
 
+void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
+  bool enabled = pref_change_registrar_->prefs()->GetBoolean(
+      ash::prefs::kMagicBoostEnabled);
+
+  // Update both HMR and Orca accordingly when `kMagicBoostEnabled` is changed.
+  AsyncWriteHMREnabled(enabled);
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kOrcaEnabled,
+                                              enabled);
+}
+
 void MagicBoostStateAsh::OnHMREnabledUpdated() {
-  UpdateHMREnabled(
-      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled));
+  bool enabled =
+      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled);
+
+  UpdateHMREnabled(enabled);
+
+  auto consent_status =
+      hmr_consent_status().value_or(chromeos::HMRConsentStatus::kApproved);
+
+  // The feature can be enabled through the Settings page. In that case,
+  // `consent_status` can be unset or declined, and we need to flip it to
+  // `kPending` so that when users try to access the feature, we would show the
+  // disclaimer UI.
+  if (enabled && (consent_status == chromeos::HMRConsentStatus::kUnset ||
+                  consent_status == chromeos::HMRConsentStatus::kDeclined)) {
+    UpdateHMRConsentStatus(chromeos::HMRConsentStatus::kPending);
+  }
+
+  // `kHmrEnabled` can be flip back to disabled when consent status is
+  // `kPending`, in this case we flip consent status to `kUnset` so that opt-in
+  // flow can be shown.
+  if (!enabled && consent_status == chromeos::HMRConsentStatus::kPending) {
+    UpdateHMRConsentStatus(chromeos::HMRConsentStatus::kUnset);
+  }
 }
 
 void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {
