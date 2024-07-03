@@ -4,39 +4,12 @@
 
 #include "ui/base/ime/ash/ime_keyboard.h"
 
-#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 
-namespace ash {
-namespace input_method {
-
-namespace {
-
-constexpr const char* kISOLevel5ShiftLayoutIds[] = {
-    "ca(multix)",
-    "de(neo)",
-};
-
-constexpr const char* kAltGrLayoutIds[] = {
-    "be",         "be",           "be",
-    "bg",         "bg(phonetic)", "br",
-    "ca",         "ca(eng)",      "ca(multix)",
-    "ch",         "ch(fr)",       "cz",
-    "de",         "de(neo)",      "dk",
-    "ee",         "es",           "es(cat)",
-    "fi",         "fr",           "fr(oss)",
-    "gb(dvorak)", "gb(extd)",     "gr",
-    "hr",         "il",           "it",
-    "latam",      "lt",           "no",
-    "pl",         "pt",           "ro",
-    "se",         "si",           "sk",
-    "tr",         "ua",           "us(altgr-intl)",
-    "us(intl)",
-};
-
-}  // namespace
+namespace ash::input_method {
 
 ImeKeyboard::ImeKeyboard() = default;
 ImeKeyboard::~ImeKeyboard() = default;
@@ -84,12 +57,57 @@ bool ImeKeyboard::IsCapsLockEnabled() {
 }
 
 bool ImeKeyboard::IsISOLevel5ShiftAvailable() const {
-  return base::Contains(kISOLevel5ShiftLayoutIds, last_layout_);
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+      "ca(multix)",
+      "de(neo)",
+  });
+
+  return kSet.contains(last_layout_);
 }
 
 bool ImeKeyboard::IsAltGrAvailable() const {
-  return base::Contains(kAltGrLayoutIds, last_layout_);
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>({
+      "be",
+      "bg",
+      "bg(phonetic)",
+      "br",
+      "ca",
+      "ca(eng)",
+      "ca(multix)",
+      "ch",
+      "ch(fr)",
+      "cz",
+      "de",
+      "de(neo)",
+      "dk",
+      "ee",
+      "es",
+      "es(cat)",
+      "fi",
+      "fr",
+      "fr(oss)",
+      "gb(dvorak)",
+      "gb(extd)",
+      "gr",
+      "hr",
+      "il",
+      "it",
+      "latam",
+      "lt",
+      "no",
+      "pl",
+      "pt",
+      "ro",
+      "se",
+      "si",
+      "sk",
+      "tr",
+      "ua",
+      "us(altgr-intl)",
+      "us(intl)",
+  });
+
+  return kSet.contains(last_layout_);
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method

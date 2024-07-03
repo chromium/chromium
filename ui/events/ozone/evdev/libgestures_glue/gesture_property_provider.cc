@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -397,27 +398,6 @@ namespace {
 // The path that we will look for conf files.
 const char kConfigurationFilePath[] = "/etc/gesture";
 
-// We support only match types that have already been used. One should change
-// this if we start using new types in the future. Note that most unsupported
-// match types are either useless in CrOS or inapplicable to the non-X
-// environment.
-const char* kSupportedMatchTypes[] = {"MatchProduct",
-                                      "MatchDevicePath",
-                                      "MatchUSBID",
-                                      "MatchDMIProduct",
-                                      "MatchIsPointer",
-                                      "MatchIsTouchpad",
-                                      "MatchIsTouchscreen"};
-const char* kUnsupportedMatchTypes[] = {"MatchVendor",
-                                        "MatchOS",
-                                        "MatchPnPID",
-                                        "MatchDriver",
-                                        "MatchTag",
-                                        "MatchLayout",
-                                        "MatchIsKeyboard",
-                                        "MatchIsJoystick",
-                                        "MatchIsTablet"};
-
 // Special keywords for boolean values.
 const char* kTrue[] = {"on", "true", "yes"};
 const char* kFalse[] = {"off", "false", "no"};
@@ -479,19 +459,30 @@ std::string GetDeviceNodePath(
   return path.value();
 }
 
-// Check if a match criteria is currently implemented. Note that we didn't
-// implemented all of them as some are inapplicable in the non-X world.
 bool IsMatchTypeSupported(const std::string& match_type) {
-  for (size_t i = 0; i < std::size(kSupportedMatchTypes); ++i)
-    if (match_type == kSupportedMatchTypes[i])
-      return true;
-  for (size_t i = 0; i < std::size(kUnsupportedMatchTypes); ++i) {
-    if (match_type == kUnsupportedMatchTypes[i]) {
-      LOG(ERROR) << "Unsupported gestures input class match type: "
-                 << match_type;
-      return false;
-    }
+  // Check if a match criteria is currently implemented. We support only match
+  // types that have already been used. One should change this if we start using
+  // new types in the future. Note that most unsupported match types are either
+  // useless in CrOS or inapplicable to the non-X environment.
+  constexpr auto kSupportedMatchTypes =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"MatchProduct", "MatchDevicePath", "MatchUSBID", "MatchDMIProduct",
+           "MatchIsPointer", "MatchIsTouchpad", "MatchIsTouchscreen"});
+  constexpr auto kUnsupportedMatchTypes =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"MatchVendor", "MatchOS", "MatchPnPID", "MatchDriver", "MatchTag",
+           "MatchLayout", "MatchIsKeyboard", "MatchIsJoystick",
+           "MatchIsTablet"});
+
+  if (kSupportedMatchTypes.contains(match_type)) {
+    return true;
   }
+
+  if (kUnsupportedMatchTypes.contains(match_type)) {
+    LOG(ERROR) << "Unsupported gestures input class match type: " << match_type;
+    return false;
+  }
+
   return false;
 }
 

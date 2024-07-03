@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -44,87 +45,6 @@ const char* XcursorLibraryPath(void);
 namespace ui {
 
 namespace {
-
-// These cursor names are indexed by their ID in a cursor font.
-constexpr const char* cursor_names[] = {
-    "X_cursor",
-    "arrow",
-    "based_arrow_down",
-    "based_arrow_up",
-    "boat",
-    "bogosity",
-    "bottom_left_corner",
-    "bottom_right_corner",
-    "bottom_side",
-    "bottom_tee",
-    "box_spiral",
-    "center_ptr",
-    "circle",
-    "clock",
-    "coffee_mug",
-    "cross",
-    "cross_reverse",
-    "crosshair",
-    "diamond_cross",
-    "dot",
-    "dotbox",
-    "double_arrow",
-    "draft_large",
-    "draft_small",
-    "draped_box",
-    "exchange",
-    "fleur",
-    "gobbler",
-    "gumby",
-    "hand1",
-    "hand2",
-    "heart",
-    "icon",
-    "iron_cross",
-    "left_ptr",
-    "left_side",
-    "left_tee",
-    "leftbutton",
-    "ll_angle",
-    "lr_angle",
-    "man",
-    "middlebutton",
-    "mouse",
-    "pencil",
-    "pirate",
-    "plus",
-    "question_arrow",
-    "right_ptr",
-    "right_side",
-    "right_tee",
-    "rightbutton",
-    "rtl_logo",
-    "sailboat",
-    "sb_down_arrow",
-    "sb_h_double_arrow",
-    "sb_left_arrow",
-    "sb_right_arrow",
-    "sb_up_arrow",
-    "sb_v_double_arrow",
-    "shuttle",
-    "sizing",
-    "spider",
-    "spraycan",
-    "star",
-    "target",
-    "tcross",
-    "top_left_arrow",
-    "top_left_corner",
-    "top_right_corner",
-    "top_side",
-    "top_tee",
-    "trek",
-    "ul_angle",
-    "umbrella",
-    "ur_angle",
-    "watch",
-    "xterm",
-};
 
 std::string GetEnv(const std::string& var) {
   auto env = base::Environment::Create();
@@ -310,9 +230,6 @@ XCursorLoader::XCursorLoader(x11::Connection* connection,
 
   if (auto pf_reply = pf_cookie.Sync())
     pict_format_ = GetRenderARGBFormat(*pf_reply.reply);
-
-  for (uint16_t i = 0; i < std::size(cursor_names); i++)
-    cursor_name_to_char_[cursor_names[i]] = i;
 }
 
 XCursorLoader::~XCursorLoader() {
@@ -486,11 +403,95 @@ void XCursorLoader::ParseXResources(std::string_view resources) {
 uint16_t XCursorLoader::CursorNamesToChar(
     const std::vector<std::string>& names) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // These cursor names are indexed by their ID in a cursor font.
+  constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, uint16_t>({
+      {"X_cursor", 0u},
+      {"arrow", 1u},
+      {"based_arrow_down", 2u},
+      {"based_arrow_up", 3u},
+      {"boat", 4u},
+      {"bogosity", 5u},
+      {"bottom_left_corner", 6u},
+      {"bottom_right_corner", 7u},
+      {"bottom_side", 8u},
+      {"bottom_tee", 9u},
+      {"box_spiral", 10u},
+      {"center_ptr", 11u},
+      {"circle", 12u},
+      {"clock", 13u},
+      {"coffee_mug", 14u},
+      {"cross", 15u},
+      {"cross_reverse", 16u},
+      {"crosshair", 17u},
+      {"diamond_cross", 18u},
+      {"dot", 19u},
+      {"dotbox", 20u},
+      {"double_arrow", 21u},
+      {"draft_large", 22u},
+      {"draft_small", 23u},
+      {"draped_box", 24u},
+      {"exchange", 25u},
+      {"fleur", 26u},
+      {"gobbler", 27u},
+      {"gumby", 28u},
+      {"hand1", 29u},
+      {"hand2", 30u},
+      {"heart", 31u},
+      {"icon", 32u},
+      {"iron_cross", 33u},
+      {"left_ptr", 34u},
+      {"left_side", 35u},
+      {"left_tee", 36u},
+      {"leftbutton", 37u},
+      {"ll_angle", 38u},
+      {"lr_angle", 39u},
+      {"man", 40u},
+      {"middlebutton", 41u},
+      {"mouse", 42u},
+      {"pencil", 43u},
+      {"pirate", 44u},
+      {"plus", 45u},
+      {"question_arrow", 46u},
+      {"right_ptr", 47u},
+      {"right_side", 48u},
+      {"right_tee", 49u},
+      {"rightbutton", 50u},
+      {"rtl_logo", 51u},
+      {"sailboat", 52u},
+      {"sb_down_arrow", 53u},
+      {"sb_h_double_arrow", 54u},
+      {"sb_left_arrow", 55u},
+      {"sb_right_arrow", 56u},
+      {"sb_up_arrow", 57u},
+      {"sb_v_double_arrow", 58u},
+      {"shuttle", 59u},
+      {"sizing", 60u},
+      {"spider", 61u},
+      {"spraycan", 62u},
+      {"star", 63u},
+      {"target", 64u},
+      {"tcross", 65u},
+      {"top_left_arrow", 66u},
+      {"top_left_corner", 67u},
+      {"top_right_corner", 68u},
+      {"top_side", 69u},
+      {"top_tee", 70u},
+      {"trek", 71u},
+      {"ul_angle", 72u},
+      {"umbrella", 73u},
+      {"ur_angle", 74u},
+      {"watch", 75u},
+      {"xterm", 76u},
+  });
+
   for (const auto& name : names) {
-    auto it = cursor_name_to_char_.find(name);
-    if (it != cursor_name_to_char_.end())
+    auto it = kMap.find(name);
+    if (it != kMap.end()) {
       return it->second;
+    }
   }
+
   // Use a left pointer as a fallback.
   return 0;
 }

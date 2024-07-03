@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -38,13 +39,6 @@
 namespace ui {
 
 namespace {
-
-// Names of all known internal devices that should not be considered as
-// keyboards.
-// TODO(rsadam@): Identify these devices using udev rules. (Crbug.com/420728.)
-const char* kKnownInvalidKeyboardDeviceNames[] = {
-    "Power Button", "Sleep Button", "Video Bus",
-    "gpio-keys.5",  "gpio-keys.12", "ROCKCHIP-I2S Headset Jack"};
 
 enum DeviceType {
   DEVICE_TYPE_KEYBOARD,
@@ -163,13 +157,15 @@ struct DisplayState {
 // Returns true if |name| is the name of a known invalid keyboard device. Note,
 // this may return false negatives.
 bool IsKnownInvalidKeyboardDevice(const std::string& name) {
-  std::string trimmed(name);
+  // TODO(https://crbug.com/41135719): Identify these devices using udev rules.
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+      {"Power Button", "Sleep Button", "Video Bus", "gpio-keys.5",
+       "gpio-keys.12", "ROCKCHIP-I2S Headset Jack"});
+
+  std::string trimmed = name;
   base::TrimWhitespaceASCII(name, base::TRIM_TRAILING, &trimmed);
-  for (const char* device_name : kKnownInvalidKeyboardDeviceNames) {
-    if (trimmed == device_name)
-      return true;
-  }
-  return false;
+
+  return kSet.contains(trimmed);
 }
 
 // Returns true if |name| is the name of a known XTEST device. Note, this may
