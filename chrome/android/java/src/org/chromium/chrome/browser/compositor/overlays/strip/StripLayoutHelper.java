@@ -286,21 +286,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
                 @Override
                 public void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {
-                    final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-                    if (groupTitle == null) return;
-
-                    @ColorInt
-                    int color =
-                            ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                    mContext, newColor, mIncognito);
-                    groupTitle.updateTint(color);
-
-                    // Title may also need to change color.
-                    if (groupTitle.isVisible()) {
-                        mLayerTitleCache.getUpdatedGroupTitle(
-                                rootId, groupTitle.getTitle(), mIncognito);
-                        mRenderHost.requestRender();
-                    }
+                    updateGroupTitleTint(findGroupTitle(rootId), newColor);
                 }
 
                 @Override
@@ -316,7 +302,13 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     releaseResourcesForGroupTitle(oldRootId);
 
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldRootId);
-                    if (groupTitle != null) groupTitle.updateRootId(newRootId);
+                    if (groupTitle != null) {
+                        groupTitle.updateRootId(newRootId);
+                        // Refresh properties since removing the root tab may have cleared the ones
+                        // associated with the oldRootId before updating to the newRootId here.
+                        updateGroupTitleText(groupTitle);
+                        updateGroupTitleTint(groupTitle);
+                    }
 
                     // Update LastSyncedGroupId to prevent the IPH from being dismissed when the
                     // synced rootId changes.
@@ -2738,6 +2730,35 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     /**
+     * Called to refresh the group title bitmap when it may have changed (text, color, etc.).
+     *
+     * @param groupTitle The group title to refresh the bitmap for.
+     */
+    private void updateGroupTitleBitmapIfNeeded(@NonNull StripLayoutGroupTitle groupTitle) {
+        if (groupTitle.isVisible()) {
+            mLayerTitleCache.getUpdatedGroupTitle(
+                    groupTitle.getRootId(), groupTitle.getTitle(), mIncognito);
+            mRenderHost.requestRender();
+        }
+    }
+
+    private void updateGroupTitleTint(StripLayoutGroupTitle groupTitle) {
+        int colorId = mTabGroupModelFilter.getTabGroupColor(groupTitle.getRootId());
+        // If the color is invalid, temporarily assign a default placeholder color.
+        if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
+        updateGroupTitleTint(groupTitle, colorId);
+    }
+
+    private void updateGroupTitleTint(
+            StripLayoutGroupTitle groupTitle, @TabGroupColorId int newColor) {
+        if (groupTitle == null) return;
+
+        groupTitle.updateTint(
+                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, newColor, mIncognito));
+        updateGroupTitleBitmapIfNeeded(groupTitle);
+    }
+
+    /**
      * @param rootId The root ID of the relevant tab group.
      * @param titleText The tab group's title text, if any. Null otherwise.
      * @return The provided title text if it isn't empty. Otherwise, returns the default title.
@@ -2780,11 +2801,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         updateGroupAccessibilityDescription(groupTitle);
 
         // 2. Update title text bitmap if needed.
-        if (groupTitle.isVisible()) {
-            mLayerTitleCache.getUpdatedGroupTitle(
-                    groupTitle.getRootId(), groupTitle.getTitle(), mIncognito);
-            mRenderHost.requestRender();
-        }
+        updateGroupTitleBitmapIfNeeded(groupTitle);
 
         // 3. Handle indicator size change if needed.
         if (groupTitle.getWidth() != oldWidth) {
@@ -2813,19 +2830,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
-        int colorId = mTabGroupModelFilter.getTabGroupColor(rootId);
-        // If the color is invalid, temporarily assign a default placeholder color.
-        if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
-        @ColorInt
-        int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
-
         // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(/* delegate= */ this, mIncognito, rootId, color);
+                new StripLayoutGroupTitle(/* delegate= */ this, mIncognito, rootId);
         pushPropertiesToGroupTitle(groupTitle);
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
         // been added to mStripViews yet.
         updateGroupTitleText(groupTitle);
+        updateGroupTitleTint(groupTitle);
 
         return groupTitle;
     }

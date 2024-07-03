@@ -97,20 +97,15 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param delegate The delegate for additional strip group title functionality.
      * @param incognito Whether or not this tab group is Incognito.
      * @param rootId The root ID for the tab group.
-     * @param color The color of the tab group.
      */
     public StripLayoutGroupTitle(
-            StripLayoutGroupTitleDelegate delegate,
-            boolean incognito,
-            int rootId,
-            @ColorInt int color) {
+            StripLayoutGroupTitleDelegate delegate, boolean incognito, int rootId) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
         mDelegate = delegate;
         mIncognito = incognito;
 
         updateRootId(rootId);
-        updateTint(color);
     }
 
     @Override
