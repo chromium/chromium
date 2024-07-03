@@ -8,6 +8,7 @@
 
 #include <string_view>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -47,12 +48,6 @@ int GetSimilarLanguageGroupCode(const std::string& language) {
   }
   return 0;
 }
-
-// Well-known languages which often have wrong server configuration of
-// Content-Language: en.
-const char* const kWellKnownCodesOnWrongConfiguration[] = {
-    "es",    "pt", "ja", "ru", "de", "zh-CN",
-    "zh-TW", "ar", "id", "fr", "it", "th"};
 
 // Applies a series of language code modification in proper order.
 void ApplyLanguageCodeCorrection(std::string* code) {
@@ -333,11 +328,13 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
 }
 
 bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
-  for (size_t i = 0; i < std::size(kWellKnownCodesOnWrongConfiguration); ++i) {
-    if (language_code == kWellKnownCodesOnWrongConfiguration[i])
-      return true;
-  }
-  return false;
+  // Well-known languages which often have wrong server configuration of
+  // Content-Language: en.
+  constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
+      {"es", "pt", "ja", "ru", "de", "zh-CN", "zh-TW", "ar", "id", "fr", "it",
+       "th"});
+
+  return kSet.contains(language_code);
 }
 
 bool MaybeServerWrongConfiguration(const std::string& page_language,
