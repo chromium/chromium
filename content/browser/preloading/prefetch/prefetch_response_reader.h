@@ -248,6 +248,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `body_tee_` is set/used only when `features::kPrefetchReusable` is enabled.
   scoped_refptr<PrefetchDataPipeTee> body_tee_;
   std::optional<network::URLLoaderCompletionStatus> completion_status_;
+  // Recorded on `OnComplete` and used to check if the prefetch data is still
+  // fresh for use.
   std::optional<base::TimeTicks> response_complete_time_;
 
   // Only used temporarily to plumb the body `BindAndStart()` to

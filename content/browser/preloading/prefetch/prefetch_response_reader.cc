@@ -39,27 +39,31 @@ GetStatusForRecordingFromErrorOnResponseReceived(
 
 bool PrefetchResponseReader::Servable(
     base::TimeDelta cacheable_duration) const {
-  bool servable = false;
   switch (load_state_) {
     case LoadState::kResponseReceived:
+      // If the response hasn't been completed yet, we can still serve the
+      // prefetch (depending on |head_|).
+      CHECK(!response_complete_time_);
+      return true;
+
     case LoadState::kCompleted:
-      servable = true;
-      break;
+      // Prefetch is servable as long as it is fresh.
+      CHECK(response_complete_time_);
+      return base::TimeTicks::Now() <
+             response_complete_time_.value() + cacheable_duration;
 
     case LoadState::kStarted:
     case LoadState::kRedirectHandled:
     case LoadState::kFailedResponseReceived:
-    case LoadState::kFailed:
     case LoadState::kFailedRedirect:
-      servable = false;
-      break;
-  }
+      CHECK(!response_complete_time_)
+          << "LoadState: " << static_cast<int>(load_state_);
+      return false;
 
-  // If the response hasn't been completed yet (meaning response_complete_time_
-  // is std::nullopt), we can still serve the prefetch (depending on |head_|).
-  return servable && (!response_complete_time_.has_value() ||
-                      base::TimeTicks::Now() <
-                          response_complete_time_.value() + cacheable_duration);
+    case LoadState::kFailed:
+      CHECK(response_complete_time_);
+      return false;
+  }
 }
 
 bool PrefetchResponseReader::IsWaitingForResponse() const {
