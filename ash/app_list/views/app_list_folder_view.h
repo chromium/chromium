@@ -228,6 +228,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // the root grid view.
   void OnHideAnimationDone(bool hide_for_reparent);
 
+  void UpdateExpandedCollapsedAccessibleState() const;
+
   // Controller interface implemented by the container for this view.
   const raw_ptr<AppListFolderController> folder_controller_;
 

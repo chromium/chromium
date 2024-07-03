@@ -710,6 +710,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      views::LayerRegion::kBelow);
 
   AppListModelProvider::Get()->AddObserver(this);
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
@@ -826,6 +827,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   folder_visibility_animations_.clear();
 
   shown_ = show;
+  UpdateExpandedCollapsedAccessibleState();
   if (show) {
     // TODO(crbug.com/325137417): Investigate whether this line is necessary. It
     // probably isn't.
@@ -833,7 +835,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
         folder_item_view_->GetViewAccessibility().GetCachedName(),
         ax::mojom::NameFrom::kAttribute);
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 
   // Animate the background corner radius, opacity and bounds.
   folder_visibility_animations_.push_back(
@@ -1011,6 +1012,14 @@ void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
 
   if (animation_done_test_callback_)
     std::move(animation_done_test_callback_).Run();
+}
+
+void AppListFolderView::UpdateExpandedCollapsedAccessibleState() const {
+  if (shown_) {
+    GetViewAccessibility().SetIsExpanded();
+  } else {
+    GetViewAccessibility().SetIsCollapsed();
+  }
 }
 
 void AppListFolderView::UpdatePreferredBounds() {
@@ -1276,12 +1285,6 @@ void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
 
 void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
-
-  if (shown_) {
-    node_data->AddState(ax::mojom::State::kExpanded);
-  } else {
-    node_data->AddState(ax::mojom::State::kCollapsed);
-  }
 }
 
 void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {
