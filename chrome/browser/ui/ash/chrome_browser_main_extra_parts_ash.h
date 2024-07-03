@@ -56,6 +56,7 @@ class CastConfigControllerMediaRouter;
 class DesksClient;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
+class LobsterClientFactoryImpl;
 class LoginScreenClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
@@ -180,6 +181,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<PickerClientImpl> picker_client_;
   std::unique_ptr<ash::OobeDialogUtil> oobe_dialog_util_;
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
+  std::unique_ptr<LobsterClientFactoryImpl> lobster_client_factory_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;

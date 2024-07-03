@@ -96,6 +96,7 @@
 #include "ash/in_session_auth/webauthn_dialog_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
+#include "ash/lobster/lobster_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login_status.h"
@@ -1805,6 +1806,10 @@ void Shell::Init(
   if (features::IsPickerUpdateEnabled() &&
       PickerController::IsFeatureKeyMatched()) {
     picker_controller_ = std::make_unique<PickerController>();
+  }
+
+  if (features::IsLobsterEnabled() && LobsterController::IsEnabled()) {
+    lobster_controller_ = std::make_unique<LobsterController>();
   }
 
   if (features::IsTilingWindowResizeEnabled()) {

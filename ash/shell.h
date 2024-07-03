@@ -184,6 +184,7 @@ class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
 class KeyboardModifierMetricsRecorder;
 class LaserPointerController;
+class LobsterController;
 class LocalAuthenticationRequestController;
 class LocaleUpdateControllerImpl;
 class LockStateController;
@@ -631,6 +632,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   LaserPointerController* laser_pointer_controller() {
     return laser_pointer_controller_.get();
   }
+  LobsterController* lobster_controller() { return lobster_controller_.get(); }
   LocaleUpdateControllerImpl* locale_update_controller() {
     return locale_update_controller_.get();
   }
@@ -1076,6 +1078,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       in_session_auth_dialog_controller_;
   std::unique_ptr<KeyboardBrightnessControlDelegate>
       keyboard_brightness_control_delegate_;
+  std::unique_ptr<LobsterController> lobster_controller_;
   std::unique_ptr<LocaleUpdateControllerImpl> locale_update_controller_;
   std::unique_ptr<LoginScreenController> login_screen_controller_;
   std::unique_ptr<LogoutConfirmationController> logout_confirmation_controller_;

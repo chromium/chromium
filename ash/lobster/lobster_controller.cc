@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/lobster/lobster_client_factory.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 
@@ -21,6 +22,10 @@ constexpr std::string_view kLobsterKey(
 
 }  // namespace
 
+LobsterController::LobsterController() = default;
+
+LobsterController::~LobsterController() = default;
+
 bool LobsterController::IsEnabled() {
   // Command line looks like:
   //  out/Default/chrome --user-data-dir=/tmp/tmp123
@@ -30,6 +35,10 @@ bool LobsterController::IsEnabled() {
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kLobsterFeatureKey)) == kLobsterKey;
   return is_enabled;
+}
+
+void LobsterController::SetClientFactory(LobsterClientFactory* client_factory) {
+  client_factory_ = client_factory;
 }
 
 }  // namespace ash

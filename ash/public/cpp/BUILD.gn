@@ -195,6 +195,8 @@ component("cpp") {
     "keyboard/keyboard_types.h",
     "kiosk_app_menu.cc",
     "kiosk_app_menu.h",
+    "lobster/lobster_client.h",
+    "lobster/lobster_client_factory.h",
     "locale_update_controller.cc",
     "locale_update_controller.h",
     "lock_screen_widget_factory.cc",

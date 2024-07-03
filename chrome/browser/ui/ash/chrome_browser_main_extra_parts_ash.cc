@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
+#include "chrome/browser/ui/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
@@ -401,6 +402,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
     picker_client_ = std::make_unique<PickerClientImpl>(
         picker_controller, user_manager::UserManager::Get());
+  }
+
+  if (auto* lobster_controller = ash::Shell::Get()->lobster_controller()) {
+    lobster_client_factory_ =
+        std::make_unique<LobsterClientFactoryImpl>(lobster_controller);
   }
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
