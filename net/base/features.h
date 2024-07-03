@@ -540,6 +540,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(
 // issues from sites used in their organization.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
 
+// Optimize parsing data: URLs.
+NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

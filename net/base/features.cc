@@ -565,4 +565,8 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
              "ReportingApiEnableEnterpriseCookieIssues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOptimizeParsingDataUrls,
+             "OptimizeParsingDataUrls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

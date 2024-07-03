@@ -358,6 +358,23 @@ scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
       HttpUtil::AssembleRawHeaders(headers));
 }
 
+scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreateForDataURL(
+    std::string_view content_type) {
+  // Reject strings with nulls.
+  if (HasEmbeddedNulls(content_type) ||
+      content_type.size() > std::numeric_limits<int>::max()) {
+    return nullptr;
+  }
+
+  constexpr char kStatusLineAndHeaderName[] = "HTTP/1.1 200 OK\0Content-Type:";
+  std::string raw_headers =
+      base::StrCat({std::string_view(kStatusLineAndHeaderName,
+                                     sizeof(kStatusLineAndHeaderName) - 1),
+                    content_type, std::string_view("\0\0", 2)});
+
+  return base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
+}
+
 void HttpResponseHeaders::Persist(base::Pickle* pickle,
                                   PersistOptions options) {
   if (options == PERSIST_RAW) {

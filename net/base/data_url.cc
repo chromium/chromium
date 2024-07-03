@@ -14,6 +14,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -181,10 +182,14 @@ Error DataURL::BuildResponse(const GURL& url,
   if (!charset->empty())
     content_type.append(";charset=" + *charset);
   // The terminal double CRLF isn't needed by TryToCreate().
-  *headers = HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type:" +
-      content_type);
+  if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
+    *headers = HttpResponseHeaders::TryToCreateForDataURL(content_type);
+  } else {
+    *headers = HttpResponseHeaders::TryToCreate(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type:" +
+        content_type);
+  }
   // Above line should always succeed - TryToCreate() only fails when there are
   // nulls in the string, and DataURL::Parse() can't return nulls in anything
   // but the |data| argument.

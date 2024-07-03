@@ -150,6 +150,13 @@ class NET_EXPORT HttpResponseHeaders
   static scoped_refptr<HttpResponseHeaders> TryToCreate(
       std::string_view headers);
 
+  // Takes content_type as an ASCII string and tries to combine it with the HTTP
+  // status line for data: URLs. Returns nullptr on failure. Unlike TryToCreate,
+  // HttpUtil::AssembleRawHeaders does not need to be called as the raw headers
+  // are already known.
+  static scoped_refptr<HttpResponseHeaders> TryToCreateForDataURL(
+      std::string_view content_type);
+
   HttpResponseHeaders(const HttpResponseHeaders&) = delete;
   HttpResponseHeaders& operator=(const HttpResponseHeaders&) = delete;
 

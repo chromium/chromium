@@ -5,6 +5,8 @@
 #include "net/base/data_url.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_version.h"
@@ -170,7 +172,26 @@ TEST(DataURLTest, Parse) {
   }
 }
 
-TEST(DataURLTest, BuildResponseSimple) {
+class DataURLBuildResponseTest : public testing::Test,
+                                 public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kOptimizeParsingDataUrls);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kOptimizeParsingDataUrls);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(DataURLTest,
+                         DataURLBuildResponseTest,
+                         testing::Bool());
+
+TEST_P(DataURLBuildResponseTest, BuildResponseSimple) {
   std::string mime_type;
   std::string charset;
   std::string data;
@@ -194,7 +215,7 @@ TEST(DataURLTest, BuildResponseSimple) {
   value.clear();
 }
 
-TEST(DataURLTest, BuildResponseHead) {
+TEST_P(DataURLBuildResponseTest, BuildResponseHead) {
   for (const char* method : {"HEAD", "head", "hEaD"}) {
     SCOPED_TRACE(method);
 
@@ -221,7 +242,7 @@ TEST(DataURLTest, BuildResponseHead) {
   }
 }
 
-TEST(DataURLTest, BuildResponseInput) {
+TEST_P(DataURLBuildResponseTest, BuildResponseInput) {
   std::string mime_type;
   std::string charset;
   std::string data;
@@ -236,7 +257,7 @@ TEST(DataURLTest, BuildResponseInput) {
   EXPECT_TRUE(data.empty());
 }
 
-TEST(DataURLTest, BuildResponseInvalidMimeType) {
+TEST_P(DataURLBuildResponseTest, BuildResponseInvalidMimeType) {
   std::string mime_type;
   std::string charset;
   std::string data;
@@ -253,7 +274,7 @@ TEST(DataURLTest, BuildResponseInvalidMimeType) {
   EXPECT_EQ(value, "text/plain;charset=US-ASCII");
 }
 
-TEST(DataURLTest, InvalidCharset) {
+TEST_P(DataURLBuildResponseTest, InvalidCharset) {
   std::string mime_type;
   std::string charset;
   std::string data;
@@ -270,7 +291,7 @@ TEST(DataURLTest, InvalidCharset) {
 }
 
 // Test a slightly larger data URL.
-TEST(DataURLTest, Image) {
+TEST_P(DataURLBuildResponseTest, Image) {
   // Use our nice little Chrome logo.
   GURL image_url(
       "data:image/png;base64,"
