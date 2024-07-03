@@ -21,6 +21,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace aura {
 class Window;
@@ -54,6 +55,7 @@ class SavedDeskLibraryView;
 class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
+class WindowOcclusionCalculator;
 
 // An instance of this class is created during the initialization of an overview
 // session which manages and positions the overview UI on a per root window
@@ -78,7 +80,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewGrid(
       aura::Window* root_window,
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list,
-      OverviewSession* overview_session);
+      OverviewSession* overview_session,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   OverviewGrid(const OverviewGrid&) = delete;
   OverviewGrid& operator=(const OverviewGrid&) = delete;
@@ -799,6 +802,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   std::optional<OverviewController::ScopedOcclusionPauser> rotation_pauser_;
   std::optional<OverviewController::ScopedOcclusionPauser> scroll_pauser_;
+
+  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
 
   base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };

@@ -556,14 +556,16 @@ bool ShouldShowPineDialog(aura::Window* root_window) {
 OverviewGrid::OverviewGrid(
     aura::Window* root_window,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
-    OverviewSession* overview_session)
+    OverviewSession* overview_session,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
     : root_window_(root_window),
       overview_session_(overview_session),
       split_view_drag_indicators_(
           ShouldAllowSplitView()
               ? std::make_unique<SplitViewDragIndicators>(root_window)
               : nullptr),
-      bounds_(GetGridBoundsInScreen(root_window)) {
+      bounds_(GetGridBoundsInScreen(root_window)),
+      window_occlusion_calculator_(window_occlusion_calculator) {
   TRACE_EVENT0("ui", "OverviewGrid::OverviewGrid");
 
   for (aura::Window* window : windows) {
@@ -2814,8 +2816,9 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // must be called before OverviewDeskBarView:: Init(). This is needed because
   // the desks mini views need to access the widget to get the root window in
   // order to know how to layout themselves.
-  desks_bar_view_ = desks_widget_->SetContentsView(
-      std::make_unique<OverviewDeskBarView>(weak_ptr_factory_.GetWeakPtr()));
+  desks_bar_view_ =
+      desks_widget_->SetContentsView(std::make_unique<OverviewDeskBarView>(
+          weak_ptr_factory_.GetWeakPtr(), window_occlusion_calculator_));
   desks_bar_view_->Init();
 
   // If the feature ContinuousOverviewScrollAnimation is enabled and a

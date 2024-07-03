@@ -12,6 +12,8 @@
 
 namespace ash {
 
+class WindowOcclusionCalculator;
+
 // A bar that resides at the top portion of the overview, which contains desk
 // mini views, the new desk button, the library button, and the scroll arrow
 // buttons.
@@ -19,7 +21,9 @@ class ASH_EXPORT OverviewDeskBarView : public DeskBarViewBase {
   METADATA_HEADER(OverviewDeskBarView, DeskBarViewBase)
 
  public:
-  explicit OverviewDeskBarView(base::WeakPtr<OverviewGrid> overview_grid);
+  OverviewDeskBarView(
+      base::WeakPtr<OverviewGrid> overview_grid,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   OverviewDeskBarView(const OverviewDeskBarView&) = delete;
   OverviewDeskBarView& operator=(const OverviewDeskBarView&) = delete;

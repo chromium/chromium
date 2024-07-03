@@ -495,22 +495,8 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
                   &layers_data);
   }
 
-  const bool is_active_desk = desks_util::IsActiveDeskContainer(desk_container);
-  if (window_occlusion_calculator_ && is_active_desk &&
-      mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview) {
-    // Previewing the active desk in overview mode is a special case. When the
-    // active desk's windows get transformed to their new positions in the
-    // overview grid shortly after entering overview, a bunch of
-    // `OnWindowOcclusionChanged()` calls get triggered because the windows are
-    // now technically visible. This undoes the optimization performed by the
-    // `window_occlusion_calculator_`. To fix, don't observe future window
-    // occlusion changes; this effectively "snapshots" the visual state of the
-    // active desk right before entering overview mode, which is the intention.
-    window_occlusion_calculator_->RemoveObserver(this);
-  }
-
   base::flat_set<aura::Window*> visible_on_all_desks_windows_to_mirror;
-  if (!is_active_desk) {
+  if (!desks_util::IsActiveDeskContainer(desk_container)) {
     // Since visible on all desks windows reside on the active desk, only mirror
     // them in the layer tree if |this| is not the preview view for the active
     // desk.

@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_types.h"
+#include "ash/wm/overview/overview_window_occlusion_calculator.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
@@ -252,6 +253,8 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // overview mode as finished its enter animation. Otherwise, we must mark
   // all windows as visible immediately.
   bool windows_have_snapshot_ = false;
+
+  OverviewWindowOcclusionCalculator overview_window_occlusion_calculator_;
 
   base::WeakPtrFactory<OverviewController> weak_ptr_factory_{this};
 };

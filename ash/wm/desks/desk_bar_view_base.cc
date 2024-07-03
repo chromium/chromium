@@ -33,7 +33,6 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -502,18 +501,15 @@ class DeskBarHoverObserver : public ui::EventObserver {
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
-DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
-    : type_(type), state_(GetPreferredState(type)), root_(root) {
+DeskBarViewBase::DeskBarViewBase(
+    aura::Window* root,
+    Type type,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    : type_(type),
+      state_(GetPreferredState(type)),
+      root_(root),
+      window_occlusion_calculator_(window_occlusion_calculator) {
   CHECK(root && root->IsRootWindow());
-
-  if (features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
-    window_occlusion_calculator_ =
-        std::make_unique<WindowOcclusionCalculator>();
-    if (type_ == Type::kOverview) {
-      overview_controller_observation_.Observe(
-          Shell::Get()->overview_controller());
-    }
-  }
 
   // Background layer is needed for desk bar animation.
   if (type_ == Type::kDeskButton) {
@@ -1190,8 +1186,8 @@ void DeskBarViewBase::InitDragDesk(DeskMiniView* mini_view,
       location_in_screen.x() - preview_origin_in_screen.x();
 
   // Create a drag proxy for the dragged desk.
-  drag_proxy_ = std::make_unique<DeskDragProxy>(
-      this, drag_view_, init_offset_x, GetWindowOcclusionCalculatorWeakPtr());
+  drag_proxy_ = std::make_unique<DeskDragProxy>(this, drag_view_, init_offset_x,
+                                                window_occlusion_calculator_);
 }
 
 void DeskBarViewBase::StartDragDesk(DeskMiniView* mini_view,
@@ -1447,7 +1443,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
     if (!FindMiniViewForDesk(desk.get())) {
       DeskMiniView* mini_view = scroll_view_contents_->AddChildViewAt(
           std::make_unique<DeskMiniView>(this, root_window, desk.get(),
-                                         GetWindowOcclusionCalculatorWeakPtr()),
+                                         window_occlusion_calculator_),
           mini_view_index);
       mini_views_.insert(mini_views_.begin() + mini_view_index, mini_view);
       new_mini_views.push_back(mini_view);
@@ -1502,14 +1498,6 @@ void DeskBarViewBase::OnUiUpdateDone() {
   if (on_update_ui_closure_for_testing_) {
     std::move(on_update_ui_closure_for_testing_).Run();
   }
-}
-
-void DeskBarViewBase::OnOverviewModeEnding(OverviewSession* overview_session) {
-  // Restoring windows to their original position on overview exit causes lots
-  // of occlusion calculations and changes. These are unnecessary since the desk
-  // bar is going to be destroyed imminently, and they slow down overview exit
-  // so the calculator is destroyed early here.
-  window_occlusion_calculator_.reset();
 }
 
 void DeskBarViewBase::UpdateBarBounds() {}
@@ -1816,13 +1804,6 @@ void DeskBarViewBase::RecordDeskProfileAdoption() {
   }
 
   base::UmaHistogramEnumeration(kDeskProfilesUsageStatusHistogramName, status);
-}
-
-base::WeakPtr<WindowOcclusionCalculator>
-DeskBarViewBase::GetWindowOcclusionCalculatorWeakPtr() const {
-  return window_occlusion_calculator_
-             ? window_occlusion_calculator_->AsWeakPtr()
-             : nullptr;
 }
 
 BEGIN_METADATA(DeskBarViewBase)

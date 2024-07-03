@@ -2921,6 +2921,8 @@ component("ash") {
     "wm/overview/overview_utils.h",
     "wm/overview/overview_window_drag_controller.cc",
     "wm/overview/overview_window_drag_controller.h",
+    "wm/overview/overview_window_occlusion_calculator.cc",
+    "wm/overview/overview_window_occlusion_calculator.h",
     "wm/overview/scoped_float_container_stacker.cc",
     "wm/overview/scoped_float_container_stacker.h",
     "wm/overview/scoped_overview_animation_settings.cc",

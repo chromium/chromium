@@ -184,8 +184,10 @@ OverviewSession::~OverviewSession() {
 // NOTE: The work done in Init() is not done in the constructor because it may
 // cause other, unrelated classes, to make indirect method calls on a partially
 // constructed object.
-void OverviewSession::Init(const aura::Window::Windows& windows,
-                           const aura::Window::Windows& hide_windows) {
+void OverviewSession::Init(
+    const aura::Window::Windows& windows,
+    const aura::Window::Windows& hide_windows,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator) {
   TRACE_EVENT0("ui", "OverviewSession::Init");
 
   Shell::Get()->AddShellObserver(this);
@@ -233,7 +235,8 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
             });
 
   for (aura::Window* root : root_windows) {
-    auto grid = std::make_unique<OverviewGrid>(root, windows, this);
+    auto grid = std::make_unique<OverviewGrid>(root, windows, this,
+                                               window_occlusion_calculator);
     grid_list_.push_back(std::move(grid));
   }
 

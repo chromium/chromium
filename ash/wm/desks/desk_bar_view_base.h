@@ -14,7 +14,6 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
-#include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -31,15 +30,13 @@ class Rect;
 namespace ash {
 
 class DeskBarHoverObserver;
-class OverviewController;
 class OverviewGrid;
 class WindowOcclusionCalculator;
 
 // Base class for desk bar views, including desk bar view within overview and
 // desk bar view for the desk button.
 class ASH_EXPORT DeskBarViewBase : public views::View,
-                                   public DesksController::Observer,
-                                   public OverviewObserver {
+                                   public DesksController::Observer {
   METADATA_HEADER(DeskBarViewBase, views::View)
 
  public:
@@ -264,9 +261,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void OnDeskNameChanged(const Desk* desk,
                          const std::u16string& new_name) override;
 
-  // OverviewObserver:
-  void OnOverviewModeEnding(OverviewSession* overview_session) override;
-
   // This is used for the initialization, the expansion, or just the update of
   // child components.
   // Given input parameter values of {`initializing_bar_view`,
@@ -307,7 +301,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   friend class DeskBarScrollViewLayout;
   friend class DesksTestApi;
 
-  DeskBarViewBase(aura::Window* root, Type type);
+  DeskBarViewBase(
+      aura::Window* root,
+      Type type,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
   ~DeskBarViewBase() override;
 
   // Return the X offset of the first mini_view on the left (if there's one),
@@ -366,9 +363,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Records UMA histograms on desk profile adoption.
   void RecordDeskProfileAdoption();
-
-  base::WeakPtr<WindowOcclusionCalculator> GetWindowOcclusionCalculatorWeakPtr()
-      const;
 
   const Type type_ = Type::kOverview;
 
@@ -451,9 +445,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Test closure that runs after the UI has been updated asynchronously.
   base::OnceClosure on_update_ui_closure_for_testing_;
 
-  std::unique_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
-  base::ScopedObservation<OverviewController, OverviewObserver>
-      overview_controller_observation_{this};
+  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
 };
 
 }  // namespace ash

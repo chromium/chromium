@@ -18,8 +18,12 @@ namespace ash {
 // -----------------------------------------------------------------------------
 // DeskBarView:
 
-DeskBarView::DeskBarView(aura::Window* root)
-    : DeskBarViewBase(root, DeskBarViewBase::Type::kDeskButton) {}
+DeskBarView::DeskBarView(
+    aura::Window* root,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    : DeskBarViewBase(root,
+                      DeskBarViewBase::Type::kDeskButton,
+                      window_occlusion_calculator) {}
 
 gfx::Size DeskBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {

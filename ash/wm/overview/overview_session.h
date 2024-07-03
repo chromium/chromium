@@ -23,6 +23,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -60,6 +61,7 @@ class OverviewWindowDragController;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
 class ScopedFloatContainerStacker;
+class WindowOcclusionCalculator;
 
 // The Overview shows a grid of all of your windows, allowing to select
 // one by clicking or tapping on it.
@@ -79,8 +81,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   ~OverviewSession() override;
 
   // Initialize with the windows that can be selected.
-  void Init(const aura::Window::Windows& windows,
-            const aura::Window::Windows& hide_windows);
+  void Init(
+      const aura::Window::Windows& windows,
+      const aura::Window::Windows& hide_windows,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   // Perform cleanup that cannot be done in the destructor.
   void Shutdown();

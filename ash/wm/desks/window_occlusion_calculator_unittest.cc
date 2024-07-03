@@ -488,5 +488,31 @@ TEST_F(WindowOcclusionCalculatorTest,
   Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_F(WindowOcclusionCalculatorTest, SnapshotsWindows) {
+  aura::Window* parent_window =
+      CreateWindow(gfx::Rect(100, 100), root_window());
+  aura::Window* child_window_1 =
+      CreateWindow(parent_window->bounds(), parent_window);
+  aura::Window* child_window_2 =
+      CreateWindow(parent_window->bounds(), parent_window);
+  parent_window->StackChildAtTop(child_window_1);
+
+  occlusion_calculator_->SnapshotOcclusionStateForWindows({parent_window});
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(child_window_1),
+            aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(child_window_2),
+            aura::Window::OcclusionState::OCCLUDED);
+
+  ScopedMockObserver observer(occlusion_calculator_.get(), {parent_window});
+
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(_)).Times(0);
+  parent_window->StackChildAtTop(child_window_2);
+  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(child_window_1),
+            aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(child_window_2),
+            aura::Window::OcclusionState::OCCLUDED);
+}
+
 }  // namespace
 }  // namespace ash

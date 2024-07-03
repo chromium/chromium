@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -91,6 +92,20 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   // Removes `observer`; this is a no-op if `observer` has not been added.
   void RemoveObserver(Observer* observer);
 
+  // Internally records a snapshot of the occlusion state for all
+  // `parent_windows_to_snapshot` and their descendants. All subsequent calls
+  // to `GetOcclusionState()` for any of the `parent_windows_to_snapshot` or
+  // their descendants will reflect the occlusion state at the time of this call
+  // and will not be updated in the future. Calling
+  // `SnapshotOcclusionStateForWindows()` for the same window multiple times
+  // is not supported simply because there's no use case currently.
+  //
+  // If `AddObserver()` is called for a window that has been snapshotted, it
+  // will effectively be a no-op (the observer by definition should not get any
+  // `OnWindowOcclusionChanged()` calls).
+  void SnapshotOcclusionStateForWindows(
+      const aura::Window::Windows& parent_windows_to_snapshot);
+
   base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr();
 
  private:
@@ -107,11 +122,13 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
                                const void* key,
                                intptr_t old) override;
 
+  void RegisterWindows(const aura::Window::Windows& parent_windows_to_track);
   void SetOcclusionState(aura::Window* window,
                          aura::Window::OcclusionState occlusion_state);
   void TrackOcclusionChangesForAllDescendants(aura::Window* window);
   void ObserveWindow(aura::Window* window);
   void ExcludeWindowFromOcclusionCalculation(aura::Window* window);
+  bool IsSnapshotWindow(aura::Window* window) const;
 
   // Holds the current occlusion state for all tracked windows. This includes
   // parent windows being observed and their descendants.
@@ -153,6 +170,10 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
   base::flat_map<raw_ptr<aura::Window>,
                  std::unique_ptr<aura::WindowOcclusionTracker::ScopedExclude>>
       excluded_windows_;
+
+  // Set of all parent windows for which `SnapshotOcclusionStateForWindows()`
+  // has been called.
+  base::flat_set<raw_ptr<aura::Window>> snapshot_parent_windows_;
 
   base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
 };

@@ -145,7 +145,8 @@ OverviewController::OverviewController()
       // behavior may be a bit worse than ash windows. Keep this snapshot code
       // until we confirm it is fine to show lacros snapshotted windows all the
       // time.
-      windows_have_snapshot_(true) {
+      windows_have_snapshot_(true),
+      overview_window_occlusion_calculator_(this) {
   Shell::Get()->activation_client()->AddObserver(this);
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
@@ -538,7 +539,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     for (auto& observer : observers_)
       observer.OnOverviewModeStarting();
 
-    overview_session_->Init(windows, hide_windows);
+    overview_session_->Init(
+        windows, hide_windows,
+        overview_window_occlusion_calculator_.GetCalculator());
 
     overview_session_->UpdateFrameThrottling();
 

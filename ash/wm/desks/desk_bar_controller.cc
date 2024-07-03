@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
@@ -344,6 +345,11 @@ bool DeskBarController::IsShowingDeskBar() const {
 void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
+  if (!window_occlusion_calculator_ &&
+      features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
+    window_occlusion_calculator_.emplace();
+  }
+
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       root->layer()->GetCompositor(), kDeskBarEnterPresentationHistogram, "",
       kDeskBarEnterExitPresentationMaxLatency);
@@ -367,7 +373,10 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
     // before setting the contents view to prevent the wrong layer being
     // mirrored in `DeskPreviewView`. See b/287116737#comment6 for more details.
     bar_widget->Show();
-    bar_view = bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
+    bar_view = bar_widget->SetContentsView(std::make_unique<DeskBarView>(
+        root, window_occlusion_calculator_
+                  ? window_occlusion_calculator_->AsWeakPtr()
+                  : nullptr));
     bar_view->Init();
 
     // Ownership transfer and bookkeeping.
@@ -392,6 +401,10 @@ void DeskBarController::CloseDeskBar(aura::Window* root) {
       it++;
     }
   }
+
+  if (desk_bars_.empty()) {
+    window_occlusion_calculator_.reset();
+  }
 }
 
 void DeskBarController::CloseAllDeskBars() {
@@ -406,6 +419,7 @@ void DeskBarController::CloseAllDeskBars() {
   }
 
   desk_bars_.clear();
+  window_occlusion_calculator_.reset();
 }
 
 void DeskBarController::MoveFocus(const BarWidgetAndView& desk_bar,

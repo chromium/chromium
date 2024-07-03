@@ -10,9 +10,12 @@
 
 namespace ash {
 
-OverviewDeskBarView::OverviewDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
+OverviewDeskBarView::OverviewDeskBarView(
+    base::WeakPtr<OverviewGrid> overview_grid,
+    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
     : DeskBarViewBase(overview_grid->root_window(),
-                      DeskBarViewBase::Type::kOverview) {
+                      DeskBarViewBase::Type::kOverview,
+                      window_occlusion_calculator) {
   SetProperty(views::kElementIdentifierKey, kOverviewDeskBarElementId);
   overview_grid_ = overview_grid;
 }

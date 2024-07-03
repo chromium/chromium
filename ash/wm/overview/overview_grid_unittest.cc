@@ -7,6 +7,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_test_base.h"
@@ -51,7 +52,8 @@ class OverviewGridTest : public AshTestBase {
   void InitializeGrid(
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
     aura::Window* root = Shell::GetPrimaryRootWindow();
-    grid_ = std::make_unique<OverviewGrid>(root, windows, nullptr);
+    grid_ = std::make_unique<OverviewGrid>(
+        root, windows, nullptr, window_occlusion_calculator_.AsWeakPtr());
   }
 
   void CheckAnimationStates(
@@ -106,6 +108,7 @@ class OverviewGridTest : public AshTestBase {
   OverviewGrid* grid() { return grid_.get(); }
 
  private:
+  WindowOcclusionCalculator window_occlusion_calculator_;
   std::unique_ptr<OverviewGrid> grid_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
