@@ -18,6 +18,11 @@ build_webui("build") {
     "pages/telemetry.ts",
   ]
 
+  non_web_component_files = [
+    "constants.ts",
+    "externs.ts",
+  ]
+
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",

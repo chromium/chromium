@@ -3161,6 +3161,8 @@ static_library("ui") {
       "webui/ash/extended_updates/extended_updates_page_handler.h",
       "webui/ash/extended_updates/extended_updates_ui.cc",
       "webui/ash/extended_updates/extended_updates_ui.h",
+      "webui/ash/healthd_internals/healthd_internals_message_handler.cc",
+      "webui/ash/healthd_internals/healthd_internals_message_handler.h",
       "webui/ash/healthd_internals/healthd_internals_ui.cc",
       "webui/ash/healthd_internals/healthd_internals_ui.h",
       "webui/ash/human_presence_internals_ui.cc",

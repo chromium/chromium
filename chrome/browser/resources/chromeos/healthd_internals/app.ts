@@ -10,10 +10,13 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
 import './pages/telemetry.js';
 
+import {sendWithPromise} from '//resources/js/cr.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {UPDATE_PERIOD} from './constants.js';
+import {HealthdApiTelemetryResult} from './externs.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
@@ -46,6 +49,7 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     const router = CrRouter.getInstance();
     this.updateSelectedIndex(router.getPath());
+    this.startFetchDataRequests();
   }
 
   private updateSelectedIndex(newPath: string) {
@@ -73,6 +77,22 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
   private selectedIndexChanged() {
     this.currentPath = this.pageList[this.selectedIndex]!.path;
+  }
+
+  // Set up periodic fetch data requests to the backend to get required info.
+  private startFetchDataRequests(): void {
+    const fetchData = () => {
+      sendWithPromise('getHealthdTelemetryInfo')
+          .then((data: HealthdApiTelemetryResult) => {
+            this.handleHealthdTelemetryInfo(data);
+          });
+    };
+    fetchData();
+    setInterval(fetchData, UPDATE_PERIOD);
+  }
+
+  private handleHealthdTelemetryInfo(_: HealthdApiTelemetryResult): void {
+    // TODO(b/350423216): Handle the response.
   }
 }
 
