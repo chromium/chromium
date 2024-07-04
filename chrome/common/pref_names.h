@@ -4212,8 +4212,9 @@ inline constexpr char kToolbarAvatarLabelSettings[] =
 // Url to an image representing the enterprise logo.
 inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
 
-// String value of the custom label of a managed profile.
-inline constexpr char kCustomProfileLabel[] = "profile.label.custom_value";
+// String value of the custom label for the entity managing the profile.
+inline constexpr char kEnterpriseCustomLabel[] =
+    "enterprise_label.custom_value";
 
 // IntegerValue of the custom label preset of a managed profile.
 inline constexpr char kProfileLabelPreset[] = "profile.label.preset";

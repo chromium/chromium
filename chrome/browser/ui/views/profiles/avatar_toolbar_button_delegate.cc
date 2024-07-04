@@ -693,10 +693,6 @@ class ManagementStateProvider : public StateProvider,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
     profile_pref_change_registrar_.Add(
-        prefs::kCustomProfileLabel,
-        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
-    profile_pref_change_registrar_.Add(
         prefs::kProfileLabelPreset,
         base::BindRepeating(&ManagementStateProvider::RequestUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -1293,13 +1289,9 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
       break;
     }
     case ButtonState::kManagement: {
-      const std::string custom_managed_label =
-          profile_->GetPrefs()->GetString(prefs::kCustomProfileLabel);
-      if (!custom_managed_label.empty()) {
-        text = base::UTF8ToUTF16(custom_managed_label);
-      } else if (profile_->GetPrefs()
-                     ->FindPreference(prefs::kProfileLabelPreset)
-                     ->IsManaged()) {
+      if (profile_->GetPrefs()
+              ->FindPreference(prefs::kProfileLabelPreset)
+              ->IsManaged()) {
         const int profile_label_preset =
             profile_->GetPrefs()->GetInteger(prefs::kProfileLabelPreset);
         if (profile_label_preset ==

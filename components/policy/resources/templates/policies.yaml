@@ -1236,7 +1236,7 @@ policies:
   1235: PrivacySandboxIpProtectionEnabled
   1236: OrcaEnabled
   1237: EnterpriseLogoUrl
-  1238: CustomProfileLabel
+  1238: EnterpriseCustomLabel
   1239: ProfileLabel
   1240: PrivacySandboxFingerprintingProtectionEnabled
   1241: MultiScreenCaptureAllowedForUrls

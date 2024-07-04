@@ -1263,7 +1263,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkBrowserShowsBadgeWithLabelPresets) {
-  auto* prefs = browser()->profile()->GetPrefs();
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
@@ -1272,33 +1271,11 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kWork);
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK));
-  prefs->SetString(prefs::kCustomProfileLabel, "Custom Label");
-  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
 
   // School label
-  prefs->ClearPref(prefs::kCustomProfileLabel);
   SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kSchool);
   EXPECT_EQ(avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL));
-  prefs->SetString(prefs::kCustomProfileLabel, "Custom Label");
-  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkNewBrowserShowsBadgeWithCustomLabel) {
-  browser()->profile()->GetPrefs()->SetString(prefs::kCustomProfileLabel,
-                                              "Custom Label");
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
-      browser()->profile(), true);
-
-  Browser* second_browser = CreateBrowser(browser()->profile());
-  AvatarToolbarButton* second_browser_avatar_button =
-      GetAvatarToolbarButton(second_browser);
-  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Custom Label");
-
-  browser()->profile()->GetPrefs()->SetString(prefs::kCustomProfileLabel,
-                                              "Updated Label");
-  EXPECT_EQ(second_browser_avatar_button->GetText(), u"Updated Label");
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,

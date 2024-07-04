@@ -1938,6 +1938,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserSwitcherDelay,
     browser_switcher::prefs::kDelay,
     base::Value::Type::INTEGER },
+  { key::kEnterpriseCustomLabel,
+    prefs::kEnterpriseCustomLabel,
+    base::Value::Type::STRING },
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2634,31 +2637,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
-      std::make_unique<URLPolicyHandler>(key::kEnterpriseLogoUrl,
-                                         prefs::kEnterpriseLogoUrl)));
+  handlers->AddHandler(std::make_unique<URLPolicyHandler>(
+      key::kEnterpriseLogoUrl, prefs::kEnterpriseLogoUrl));
 
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
-      std::make_unique<SimplePolicyHandler>(key::kCustomProfileLabel,
-                                            prefs::kCustomProfileLabel,
-                                            base::Value::Type::STRING)));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
-      std::make_unique<PolicyWithDependencyHandler>(
-          key::kCustomProfileLabel,
-          PolicyWithDependencyHandler::DependencyRequirement::
-              kPolicyUnsetOrSetWithvalue,
-          base::Value(""),
-          std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-              key::kProfileLabel, prefs::kProfileLabelPreset, chrome_schema,
-              SchemaOnErrorStrategy::SCHEMA_STRICT,
-              SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
-              SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED))));
-
-  handlers->AddHandler(std::make_unique<PolicyWithDependencyHandler>(
-      key::kCustomProfileLabel,
-      PolicyWithDependencyHandler::DependencyRequirement::
-          kPolicyUnsetOrSetWithvalue,
-      base::Value(""),
       std::make_unique<SimpleSchemaValidatingPolicyHandler>(
           key::kProfileLabel, prefs::kProfileLabelPreset, chrome_schema,
           SchemaOnErrorStrategy::SCHEMA_STRICT,
