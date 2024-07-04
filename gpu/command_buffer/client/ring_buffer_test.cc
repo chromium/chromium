@@ -78,12 +78,12 @@ class BaseRingBufferTest : public testing::Test {
 
   int32_t GetToken() { return command_buffer_->GetLastState().token; }
 
-  std::unique_ptr<CommandBufferDirect> command_buffer_;
-  std::unique_ptr<AsyncAPIMock> api_mock_;
-  std::unique_ptr<CommandBufferHelper> helper_;
   std::vector<raw_ptr<const volatile void, VectorExperimental>>
       set_token_arguments_;
   bool delay_set_token_;
+  std::unique_ptr<CommandBufferDirect> command_buffer_;
+  std::unique_ptr<AsyncAPIMock> api_mock_;
+  std::unique_ptr<CommandBufferHelper> helper_;
 
   std::unique_ptr<int8_t[]> buffer_;
   raw_ptr<int8_t> buffer_start_ = nullptr;
