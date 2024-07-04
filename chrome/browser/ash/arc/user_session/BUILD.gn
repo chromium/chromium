@@ -39,3 +39,23 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_user_session_service_browsertest.cc" ]
+
+  deps = [
+    ":user_session",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/arc:arc_test_support",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+  ]
+}

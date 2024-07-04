@@ -66,3 +66,27 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_vmm_manager_browsertest.cc" ]
+
+  deps = [
+    ":vmm",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -74,3 +74,41 @@ source_set("unit_tests") {
     "//testing/gmock",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "arc_settings_service_browsertest.cc",
+    "custom_tab_session_impl_browsertest.cc",
+  ]
+
+  deps = [
+    ":intent_helper",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//components/arc:arc_test_support",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

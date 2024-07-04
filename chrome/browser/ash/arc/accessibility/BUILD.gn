@@ -77,3 +77,32 @@ source_set("unit_tests") {
     "//ui/wm",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_accessibility_helper_bridge_browsertest.cc" ]
+
+  deps = [
+    ":accessibility",
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//services/accessibility/android:test_support",
+    "//ui/accessibility",
+    "//ui/compositor",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}

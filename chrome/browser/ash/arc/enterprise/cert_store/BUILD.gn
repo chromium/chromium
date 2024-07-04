@@ -59,3 +59,39 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "cert_store_service_browsertest.cc" ]
+
+  deps = [
+    ":cert_store",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/arc/keymaster",
+    "//chrome/browser/ash/arc/keymint",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/services/keymaster/public/mojom",
+    "//chrome/services/keymint/public/mojom",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto",
+    "//extensions/browser",
+    "//net",
+    "//testing/gtest",
+  ]
+}

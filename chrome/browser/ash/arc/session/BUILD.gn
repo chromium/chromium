@@ -155,3 +155,39 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_session_manager_browsertest.cc" ]
+
+  deps = [
+    ":session",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/policy/test_support:test_support",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/user_manager",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+    "//url",
+  ]
+}

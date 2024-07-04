@@ -179,3 +179,18 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/wallpaper:unit_tests",
   ]
 }
+
+group("browser_tests") {
+  testonly = true
+
+  deps = [
+    # Gather browser tests from subdirectories.
+    "//chrome/browser/ash/arc/accessibility:browser_tests",
+    "//chrome/browser/ash/arc/auth:browser_tests",
+    "//chrome/browser/ash/arc/enterprise/cert_store:browser_tests",
+    "//chrome/browser/ash/arc/intent_helper:browser_tests",
+    "//chrome/browser/ash/arc/session:browser_tests",
+    "//chrome/browser/ash/arc/user_session:browser_tests",
+    "//chrome/browser/ash/arc/vmm:browser_tests",
+  ]
+}
