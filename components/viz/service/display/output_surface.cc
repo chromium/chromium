@@ -20,6 +20,7 @@
 namespace viz {
 
 OutputSurface::Capabilities::Capabilities() = default;
+OutputSurface::Capabilities::~Capabilities() = default;
 OutputSurface::Capabilities::Capabilities(const Capabilities& capabilities) =
     default;
 OutputSurface::Capabilities& OutputSurface::Capabilities::operator=(

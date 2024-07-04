@@ -46,9 +46,9 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
   DCHECK(context_state_->gr_context());
   DCHECK(context_state_->context());
 
-  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kRGBA_8888] =
       kSurfaceColorType;
-  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kBGRA_8888] =
       kSurfaceColorType;
 }
 

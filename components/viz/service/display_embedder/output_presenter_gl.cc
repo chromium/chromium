@@ -157,25 +157,23 @@ void OutputPresenterGL::InitializeCapabilities(
 
   // TODO(crbug.com/40141277): only add supported formats base on
   // platform, driver, etc.
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGR_565)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kBGR_565] =
       kRGB_565_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_4444)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_4444] =
       kARGB_4444_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBX_8888] =
       kRGB_888x_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_8888] =
       kRGBA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kBGRX_8888] =
       kBGRA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kBGRA_8888] =
       kBGRA_8888_SkColorType;
-  capabilities
-      ->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_1010102)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kBGRA_1010102] =
       kBGRA_1010102_SkColorType;
-  capabilities
-      ->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_1010102)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_1010102] =
       kRGBA_1010102_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_F16)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_F16] =
       kRGBA_F16_SkColorType;
 }
 

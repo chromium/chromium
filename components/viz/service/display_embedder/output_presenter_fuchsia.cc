@@ -58,9 +58,9 @@ void OutputPresenterFuchsia::InitializeCapabilities(
   capabilities->supports_post_sub_buffer = false;
   capabilities->supports_surfaceless = true;
 
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kRGBA_8888] =
       kRGBA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+  capabilities->sk_color_type_map[SinglePlaneFormat::kBGRA_8888] =
       kRGBA_8888_SkColorType;
 }
 

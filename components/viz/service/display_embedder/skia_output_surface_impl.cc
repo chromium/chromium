@@ -407,12 +407,12 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   format_ = params.format;
   alpha_type_ = static_cast<SkAlphaType>(params.alpha_type);
 
-  const auto format_index =
-      static_cast<int>(gpu::ToBufferFormat(params.format));
-  // TODO(hitawala): Update sk_color_types to have array of si formats.
-  color_type_ = capabilities_.sk_color_types[format_index];
-  DCHECK(color_type_ != kUnknown_SkColorType)
-      << "SkColorType is invalid for buffer format_index: " << format_index;
+  auto it = capabilities_.sk_color_type_map.find(params.format);
+  if (it != capabilities_.sk_color_type_map.end()) {
+    color_type_ = it->second;
+  }
+  CHECK_NE(color_type_, kUnknown_SkColorType)
+      << "SkColorType is invalid for format: " << params.format.ToString();
 
   sk_color_space_ = params.color_space.ToSkColorSpace();
 

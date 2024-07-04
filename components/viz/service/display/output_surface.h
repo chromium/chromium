@@ -60,6 +60,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   };
   struct Capabilities {
     Capabilities();
+    ~Capabilities();
     Capabilities(const Capabilities& capabilities);
     Capabilities& operator=(const Capabilities& capabilities);
 
@@ -142,9 +143,8 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // Whether make current needs to be called for swap buffers.
     bool present_requires_make_current = true;
 
-    // SkColorType for all supported buffer formats.
-    SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =
-        {};
+    // Map from SharedImageFormat to its associated SkColorType.
+    base::flat_map<SharedImageFormat, SkColorType> sk_color_type_map;
 
     // Max size for textures.
     int max_texture_size = 0;

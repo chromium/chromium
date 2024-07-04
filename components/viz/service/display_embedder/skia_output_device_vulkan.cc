@@ -335,12 +335,12 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   auto sk_color_type = surface_format == VK_FORMAT_R8G8B8A8_UNORM
                            ? kRGBA_8888_SkColorType
                            : kBGRA_8888_SkColorType;
-  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kRGBA_8888] =
       sk_color_type;
-  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kBGRA_8888] =
       sk_color_type;
   // BGRX_8888 is used on Windows.
-  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
+  capabilities_.sk_color_type_map[SinglePlaneFormat::kBGRX_8888] =
       sk_color_type;
   return true;
 }
