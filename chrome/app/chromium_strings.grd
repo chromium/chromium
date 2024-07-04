@@ -1092,7 +1092,7 @@ Permissions you've already given to websites and apps may apply to this account.
           This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with it's first account.">
-          To save and use your passwords and more on all your devices, sign in to Chromium
+          To get your passwords and more on all your devices, sign in to Chromium
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED" desc="Subtitle of the Chromium Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
           Sign in to Chromium so that your parents can help you stay safe on the web
@@ -1152,7 +1152,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
         <!-- Autofill Sign In Promo Bubble -->
         <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD" desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chromium and is after the 'Password saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chromium' button at the bottom of this message. The tone should be motivating.">
-          To save and use passwords and more on all your devices, sign in to Chromium. This password will be saved in your Google Account after you sign in.
+          To get your passwords and more on all your devices, sign in to Chromium. This password will be saved in your Google Account after you sign in.
         </message>
       </if>
 
