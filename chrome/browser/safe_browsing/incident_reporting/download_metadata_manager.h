@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "content/public/browser/download_manager.h"
+#include "components/download/public/common/all_download_event_notifier.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -18,10 +18,12 @@ class SequencedTaskRunner;
 
 namespace content {
 class BrowserContext;
+class DownloadManager;
 }
 
 namespace download {
 class DownloadItem;
+class SimpleDownloadManagerCoordinator;
 }
 
 namespace safe_browsing {
@@ -31,7 +33,8 @@ class ClientIncidentReport_DownloadDetails;
 
 // A browser-wide object that manages the persistent state of metadata
 // pertaining to a download.
-class DownloadMetadataManager : public content::DownloadManager::Observer {
+class DownloadMetadataManager
+    : public download::AllDownloadEventNotifier::Observer {
  public:
   // A callback run when the results of a call to GetDownloadDetails are ready.
   // The supplied parameter may be null, indicating that there are no persisted
@@ -47,7 +50,8 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
 
   ~DownloadMetadataManager() override;
 
-  // Adds |download_manager| to the set observed by the metadata manager.
+  // Adds the coordinator for `download_manager` to the set observed by the
+  // metadata manager.
   void AddDownloadManager(content::DownloadManager* download_manager);
 
   // Sets |request| as the relevant metadata to persist for |download| upon
@@ -62,28 +66,35 @@ class DownloadMetadataManager : public content::DownloadManager::Observer {
   virtual void GetDownloadDetails(content::BrowserContext* browser_context,
                                   GetDownloadDetailsCallback callback);
 
- protected:
-  // Returns the DownloadManager for a given BrowserContext. Virtual for tests.
-  virtual content::DownloadManager* GetDownloadManagerForBrowserContext(
-      content::BrowserContext* context);
+  // download::AllDownloadEventNotifier::Observer:
+  void OnManagerGoingDown(
+      download::SimpleDownloadManagerCoordinator* coordinator) override;
+  void OnDownloadUpdated(
+      download::SimpleDownloadManagerCoordinator* coordinator,
+      download::DownloadItem* download) override;
+  void OnDownloadOpened(download::SimpleDownloadManagerCoordinator* coordinator,
+                        download::DownloadItem* download) override;
+  void OnDownloadRemoved(
+      download::SimpleDownloadManagerCoordinator* coordinator,
+      download::DownloadItem* download) override;
 
-  // content::DownloadManager:Observer methods.
-  void OnDownloadCreated(content::DownloadManager* download_manager,
-                         download::DownloadItem* item) override;
-  void ManagerGoingDown(content::DownloadManager* download_manager) override;
+ protected:
+  // Returns the coordinator for a given BrowserContext. Virtual for tests.
+  virtual download::SimpleDownloadManagerCoordinator*
+  GetCoordinatorForBrowserContext(content::BrowserContext* context);
 
  private:
   class ManagerContext;
 
-  // A mapping of DownloadManagers to their corresponding contexts.
-  typedef std::map<content::DownloadManager*, ManagerContext*>
+  // A mapping of DownloadManagerCoordinators to their corresponding contexts.
+  typedef std::map<download::SimpleDownloadManagerCoordinator*, ManagerContext*>
       ManagerToContextMap;
 
   // A task runner to which IO tasks are posted.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // Contexts for each DownloadManager that has been added and has not yet
-  // "gone down".
+  // Contexts for each coordinator that has been added and has not yet "gone
+  // down".
   ManagerToContextMap contexts_;
 };
 
