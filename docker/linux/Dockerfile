@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     pkgconf \
     libglib2.0-0 \
     libnss3 \
+    gperf \
     && rm -rf /var/lib/apt/lists/*
 
 ADD files/sccache /usr/local/bin

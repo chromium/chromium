@@ -1,0 +1,59 @@
+cc_wrapper = "sccache"
+enable_nacl=false
+use_dawn=false
+skia_use_dawn=false
+# enable_vulkan=false
+
+
+enable_print_content_analysis=false
+# enterprise_client_certificates=false
+enterprise_cloud_content_analysis=false
+enterprise_content_analysis=false
+enterprise_data_controls=false
+enterprise_local_content_analysis=false
+enterprise_watermark=false
+
+
+optional_trace_events_enabled = false
+enable_plugins = false
+enable_pdf = false
+enable_printing = false
+enable_cast_receiver = false
+enable_paint_preview=false
+cast_streaming_enable_remoting = false
+
+# 
+enable_background_contents=false
+enable_background_mode=false
+enable_chrome_notifications=false
+enable_click_to_call=false
+
+enable_system_notifications=false
+
+enable_webui_certificate_viewer=false
+
+enable_hidpi = false
+
+enable_library_cdms = false
+
+# swiftshader disable
+enable_swiftshader = false
+enable_swiftshader_vulkan = false
+swiftshader_optimized_debug_build=false
+use_swiftshader_with_subzero=false
+angle_enable_swiftshader=false
+dawn_use_swiftshader=false
+
+# Disable webnn | tflite
+webnn_use_tflite = false
+enable_maldoca = false
+enable_oop_printing = false
+enable_reading_list = false
+enable_remoting = no
+enable_screen_ai_service = false
+use_bluez = false
+use_cups = false
+use_dbus = false
+use_mpris = false
+use_qt = false
+use_qt6 = false
