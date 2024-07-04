@@ -16,23 +16,20 @@
 namespace content {
 namespace leveldb_scopes {
 
-// TODO(dmurph): Replace all of the 'static' keywords with 'inline' when
-// chromium is updated to C++17.
-
-static constexpr uint8_t kGlobalMetadataByte = 0x00;
-static constexpr uint8_t kScopesMetadataByte = 0x01;
-static constexpr uint8_t kLogByte = 0x02;
+inline constexpr uint8_t kGlobalMetadataByte = 0x00;
+inline constexpr uint8_t kScopesMetadataByte = 0x01;
+inline constexpr uint8_t kLogByte = 0x02;
 
 // One of these bytes follows the |kLogByte| to specify whether the log is for
 // undo tasks or a cleanup tasks.
-static constexpr uint8_t kUndoTasksByte = 0x00;
-static constexpr uint8_t kCleanupTasksByte = 0x01;
+inline constexpr uint8_t kUndoTasksByte = 0x00;
+inline constexpr uint8_t kCleanupTasksByte = 0x01;
 
-static constexpr int64_t kMinSupportedVersion = 1;
-static constexpr int64_t kCurrentVersion = 1;
+inline constexpr int64_t kMinSupportedVersion = 1;
+inline constexpr int64_t kCurrentVersion = 1;
 
-static constexpr int64_t kFirstScopeNumber = 0;
-static constexpr int64_t kFirstSequenceNumberToWrite =
+inline constexpr int64_t kFirstScopeNumber = 0;
+inline constexpr int64_t kFirstSequenceNumberToWrite =
     std::numeric_limits<int64_t>::max();
 
 std::tuple<bool /*success*/, int64_t /*scope_id*/> ParseScopeMetadataId(
