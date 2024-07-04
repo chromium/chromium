@@ -132,7 +132,7 @@ void ResolvedFrameData::UpdateForActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
   // If there are modified render passes they need to be rebuilt based on
   // current active CompositorFrame.
-  offset_tag_render_passes.clear();
+  offset_tag_render_passes_.clear();
 
   auto& compositor_frame = surface_->GetActiveFrame();
   auto& resource_list = compositor_frame.resource_list;
@@ -282,16 +282,16 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
 
   if (offset_tag_values_changed_from_last_frame_) {
     tag_values_ = std::move(new_tag_values);
-    offset_tag_render_passes.clear();
+    offset_tag_render_passes_.clear();
     has_non_zero_offset_tag_value_ = std::ranges::any_of(
         tag_values_, [](auto& entry) { return !entry.second.IsZero(); });
-  } else if (!offset_tag_render_passes.empty()) {
+  } else if (!offset_tag_render_passes_.empty()) {
     // If offset tag values haven't changed and the copied render passes weren't
     // cleared elsewhere they can be reused.
-    CHECK_EQ(offset_tag_render_passes.size(), resolved_passes_.size());
-    for (size_t i = 0; i < offset_tag_render_passes.size(); ++i) {
+    CHECK_EQ(offset_tag_render_passes_.size(), resolved_passes_.size());
+    for (size_t i = 0; i < offset_tag_render_passes_.size(); ++i) {
       resolved_passes_[i].SetCompositorRenderPass(
-          offset_tag_render_passes[i].get());
+          offset_tag_render_passes_[i].get());
     }
     return;
   }
@@ -300,7 +300,7 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
 }
 
 void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
-  CHECK(offset_tag_render_passes.empty());
+  CHECK(offset_tag_render_passes_.empty());
 
   if (!has_non_zero_offset_tag_value_) {
     // No modifications are required so don't make a copy of render passes.
@@ -311,7 +311,7 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
   // adjusting `quad_to_target_transform` transform.
   // TODO(kylechar): This only needs to make a copy of render passes that have
   // tagged quads.
-  offset_tag_render_passes.reserve(resolved_passes_.size());
+  offset_tag_render_passes_.reserve(resolved_passes_.size());
   for (auto& resolved_pass : resolved_passes_) {
     CHECK(resolved_pass.fixed_.render_pass);
 
@@ -335,7 +335,7 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
     // Replace the CompositorRenderPass pointer so that modified frame is used
     // during aggregation.
     resolved_pass.fixed_.render_pass = modified_pass.get();
-    offset_tag_render_passes.push_back(std::move(modified_pass));
+    offset_tag_render_passes_.push_back(std::move(modified_pass));
   }
 }
 

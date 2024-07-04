@@ -355,7 +355,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool offset_tag_values_changed_from_last_frame_ = false;
 
   // Holds a modified copy of render passes from current active CompositorFrame.
-  std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes;
+  std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
 
   std::vector<ResolvedPassData> resolved_passes_;
   base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;

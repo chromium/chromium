@@ -358,6 +358,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
   {
     // First aggregation.
     resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+    resolved_frame.MarkAsUsedInAggregation();
     EXPECT_TRUE(resolved_frame.is_valid());
 
     resolved_frame.UpdateOffsetTags(
@@ -388,6 +389,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
 
   {
     // Next aggregation with no updated CompositorFrame.
+    resolved_frame.MarkAsUsedInAggregation();
     resolved_frame.SetRenderPassPointers();
 
     // Send the same OffsetTagValues. This should reuse the
@@ -401,6 +403,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
 
   {
     // Next aggregation with no updated CompositorFrame.
+    resolved_frame.MarkAsUsedInAggregation();
     resolved_frame.SetRenderPassPointers();
 
     // Change the offset. This should require a new copy of the render passes.
@@ -436,6 +439,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTags) {
     SubmitCompositorFrame(std::move(new_frame));
 
     resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+    resolved_frame.MarkAsUsedInAggregation();
     EXPECT_TRUE(resolved_frame.is_valid());
 
     resolved_frame.UpdateOffsetTags(
@@ -484,6 +488,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTagValueIsClamped) {
   EXPECT_EQ(clamped_offset, tag_def.constraints.Clamp(offset));
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.MarkAsUsedInAggregation();
   EXPECT_TRUE(resolved_frame.is_valid());
 
   resolved_frame.UpdateOffsetTags(
@@ -520,6 +525,7 @@ TEST_F(ResolvedFrameDataTest, OffsetTagWithCopyRequest) {
                                    AggregatedRenderPassId());
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.MarkAsUsedInAggregation();
   EXPECT_TRUE(resolved_frame.is_valid());
   ASSERT_THAT(resolved_frame.GetResolvedPasses(), testing::SizeIs(1));
 
