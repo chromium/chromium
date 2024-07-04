@@ -1222,7 +1222,7 @@ targets.mixin(
         dimensions = {
             "cpu": "x86-64",
             "gpu": "8086:3e9b",
-            "os": "Mac-14.4.1",
+            "os": "Mac-14.5",
             "display_attached": "1",
         },
     ),
