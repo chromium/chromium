@@ -8,6 +8,7 @@
 # - skia:     //gn/BUILDCONFIG.gn
 # - chromium: //build/config/BUILDCONFIG.gn
 
+is_partition_alloc_standalone = true
 build_with_chromium = false
 is_asan = false
 

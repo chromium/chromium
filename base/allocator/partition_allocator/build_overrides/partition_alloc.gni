@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# By definition, PartitionAlloc standalone builds outside of chromium.
-build_with_chromium = false
+import("//build_overrides/build.gni")
 
 # This is the default build configuration when building PartitionAlloc
 # as a standalone library.
