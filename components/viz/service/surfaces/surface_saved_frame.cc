@@ -22,7 +22,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -197,9 +197,9 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
     const auto& display_color_spaces = directive_.display_color_spaces();
     bool has_transparent_background = render_pass.has_transparent_background;
 
-    auto image_format = SinglePlaneFormat::FromBufferFormat(
-        display_color_spaces.GetOutputBufferFormat(content_color_usage,
-                                                   has_transparent_background));
+    auto image_format =
+        GetSharedImageFormat(display_color_spaces.GetOutputBufferFormat(
+            content_color_usage, has_transparent_background));
     auto color_space = ColorSpaceUtils::CompositingColorSpace(
         display_color_spaces, content_color_usage, has_transparent_background);
 

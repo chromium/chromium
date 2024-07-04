@@ -524,44 +524,4 @@ SharedImageFormat::SharedImageFormatUnion::MultiplanarFormat::operator<=>(
          std::tie(o.plane_config, o.subsampling, o.channel_format);
 }
 
-// static
-SharedImageFormat SinglePlaneFormat::FromBufferFormat(
-    gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return SinglePlaneFormat::kR_8;
-    case gfx::BufferFormat::R_16:
-      return SinglePlaneFormat::kR_16;
-    case gfx::BufferFormat::RG_88:
-      return SinglePlaneFormat::kRG_88;
-    case gfx::BufferFormat::RG_1616:
-      return SinglePlaneFormat::kRG_1616;
-    case gfx::BufferFormat::BGR_565:
-      return SinglePlaneFormat::kBGR_565;
-    case gfx::BufferFormat::RGBA_4444:
-      return SinglePlaneFormat::kRGBA_4444;
-    case gfx::BufferFormat::RGBX_8888:
-      return SinglePlaneFormat::kRGBX_8888;
-    case gfx::BufferFormat::RGBA_8888:
-      return SinglePlaneFormat::kRGBA_8888;
-    case gfx::BufferFormat::BGRX_8888:
-      return SinglePlaneFormat::kBGRX_8888;
-    case gfx::BufferFormat::BGRA_1010102:
-      return SinglePlaneFormat::kBGRA_1010102;
-    case gfx::BufferFormat::RGBA_1010102:
-      return SinglePlaneFormat::kRGBA_1010102;
-    case gfx::BufferFormat::BGRA_8888:
-      return SinglePlaneFormat::kBGRA_8888;
-    case gfx::BufferFormat::RGBA_F16:
-      return SinglePlaneFormat::kRGBA_F16;
-    case gfx::BufferFormat::YVU_420:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-    case gfx::BufferFormat::P010:
-      // Don't support multiplane formats.
-      break;
-  }
-  NOTREACHED();
-}
-
 }  // namespace viz
