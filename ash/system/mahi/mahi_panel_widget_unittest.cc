@@ -4,13 +4,17 @@
 
 #include "ash/system/mahi/mahi_panel_widget.h"
 
+#include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/keyboard/virtual_keyboard_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -93,6 +97,49 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom() -
           kPanelBoundsShelfPadding,
       widget->GetRestoredBounds().bottom());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetPositionAfterWorkAreaBoundsChange) {
+  auto default_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  // Create a widget that has the same size as the work area and show it at the
+  // bottom of the work area bounds.
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/
+      gfx::Rect(
+          gfx::Point(default_work_area.x(), default_work_area.bottom()),
+          gfx::Size(default_work_area.width(), default_work_area.height())),
+      &ui_controller_);
+
+  // Reduce the user work area bounds by force-showing the virtual keyboard.
+  Shell::Get()
+      ->keyboard_controller()
+      ->virtual_keyboard_controller()
+      ->ForceShowKeyboard();
+  base::RunLoop().RunUntilIdle();
+
+  auto current_work_area = WorkAreaInsets::ForWindow(widget->GetNativeWindow())
+                               ->user_work_area_bounds();
+  EXPECT_LT(current_work_area.bottom(), default_work_area.bottom());
+
+  // The panel's bottom should be `kPanelBoundsShelfPadding` pixels above the
+  // work_area's bottom.
+  EXPECT_EQ(current_work_area.bottom() - kPanelBoundsShelfPadding,
+            widget->GetRestoredBounds().bottom());
+
+  // Hide the virtual keyboard. The work area bounds should return to their
+  // default value.
+  Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kSystem);
+  current_work_area = WorkAreaInsets::ForWindow(widget->GetNativeWindow())
+                          ->user_work_area_bounds();
+  EXPECT_EQ(current_work_area.bottom(), default_work_area.bottom());
+
+  // The panel's top should be `kPanelBoundsShelfPadding` pixels below the
+  // work_area's top.
+  EXPECT_EQ(current_work_area.y() + kPanelBoundsShelfPadding,
+            widget->GetRestoredBounds().y());
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedRightSpace) {
