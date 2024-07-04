@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_settings_action.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 namespace {
 // The time range's expected min and max values for custom histograms.
@@ -271,6 +273,45 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
       sceneState.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState();
   if ([self isContentNotificationAvailable:browserState]) {
+    ContentNotificationService* contentNotificationService =
+        ContentNotificationServiceFactory::GetForBrowserState(browserState);
+    int maxNauSentPerSession = base::GetFieldTrialParamByFeatureAsInt(
+        kContentNotificationDeliveredNAU, kDeliveredNAUMaxPerSession,
+        kDeliveredNAUMaxSendsPerSession);
+    // Check if there are notifications received in the background to send the
+    // respective NAUs.
+    NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+    if ([defaults objectForKey:@"kContentNotificationContentArray"] != nil) {
+      NSMutableArray* contentArray = [[defaults
+          objectForKey:@"kContentNotificationContentArray"] mutableCopy];
+      // Report in 5 item increments.
+      NSMutableArray* uploadedItems = [NSMutableArray array];
+      for (NSData* item in contentArray) {
+        ContentNotificationNAUConfiguration* config =
+            [[ContentNotificationNAUConfiguration alloc] init];
+        config.actionType = NAUActionTypeDisplayed;
+        UNNotificationContent* content = [NSKeyedUnarchiver
+            unarchivedObjectOfClass:UNMutableNotificationContent.class
+                           fromData:item
+                              error:nil];
+        config.content = content;
+        contentNotificationService->SendNAUForConfiguration(config);
+        [uploadedItems addObject:item];
+        base::UmaHistogramEnumeration(
+            kContentNotificationActionHistogramName,
+            NotificationActionType::kNotificationActionTypeDisplayed);
+        if ((int)uploadedItems.count == maxNauSentPerSession) {
+          break;
+        }
+      }
+      [contentArray removeObjectsInArray:uploadedItems];
+      if (contentArray.count > 0) {
+        [defaults setObject:contentArray
+                     forKey:@"kContentNotificationContentArray"];
+      } else {
+        [defaults setObject:nil forKey:@"kContentNotificationContentArray"];
+      }
+    }
     // Send an NAU every time the OS authorization status changes.
     [PushNotificationUtil
         getPermissionSettings:^(UNNotificationSettings* settings) {
@@ -285,9 +326,6 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
             settingsAction.currentAuthorizationStatus =
                 settings.authorizationStatus;
             config.settingsAction = settingsAction;
-            ContentNotificationService* contentNotificationService =
-                ContentNotificationServiceFactory::GetForBrowserState(
-                    browserState);
             contentNotificationService->SendNAUForConfiguration(config);
           }
         }];

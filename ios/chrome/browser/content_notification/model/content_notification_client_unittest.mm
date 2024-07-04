@@ -101,12 +101,6 @@ TEST_F(ContentNotificationClientTest, HandleNotificationReception) {
             UIBackgroundFetchResultNoData);
 }
 
-// Tests that HandleNotificationReception does nothing and returns "NewData".
-TEST_F(ContentNotificationClientTest, HandleContentNotificationReception) {
-  EXPECT_EQ(client_->HandleNotificationReception(CreatePayload(YES)),
-            UIBackgroundFetchResultNewData);
-}
-
 // Tests the appropriate secondary actions are registered.
 TEST_F(ContentNotificationClientTest, RegisterActionableNotifications) {
   NSArray<UNNotificationCategory*>* secondaryActions =

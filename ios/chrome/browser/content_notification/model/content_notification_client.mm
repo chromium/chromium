@@ -86,36 +86,10 @@ void ContentNotificationClient::HandleNotificationInteraction(
 }
 
 // TODO(crbug.com/338875261): Add background refresh support.
-// Log a Delivered NAU from here. Only works when not in the background. This
-// method doesn't modify the payload and doesn't pass it forward, it is
-// readonly.
+// Delivered NAUs are currently being sent from the push_notification_delegate,
+// and in the future they should be here once background refresh is available.
 UIBackgroundFetchResult ContentNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* payload) {
-  ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(
-          GetLastUsedBrowserState());
-  NSString* notificationBody =
-      [payload objectForKey:kContentNotificationNAUBodyParameter];
-  if (notificationBody) {
-    // Send NAU.
-    ContentNotificationNAUConfiguration* config =
-        [[ContentNotificationNAUConfiguration alloc] init];
-    config.actionType = NAUActionTypeDisplayed;
-    base::UmaHistogramEnumeration(
-        kContentNotificationActionHistogramName,
-        NotificationActionType::kNotificationActionTypeDisplayed);
-    // Create a new payload without the parameter to mimic the original payload,
-    // to be sent with the NAU.
-    NSMutableDictionary<NSString*, id>* newPayload = [payload mutableCopy];
-    [newPayload removeObjectForKey:kContentNotificationNAUBodyParameter];
-    UNMutableNotificationContent* content =
-        [[UNMutableNotificationContent alloc] init];
-    content.body = notificationBody;
-    content.userInfo = [newPayload copy];
-    config.content = content;
-    contentNotificationService->SendNAUForConfiguration(config);
-    return UIBackgroundFetchResultNewData;
-  }
   return UIBackgroundFetchResultNoData;
 }
 

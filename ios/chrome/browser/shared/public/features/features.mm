@@ -374,6 +374,12 @@ bool IsContentNotificationProvisionalIgnoreConditions() {
       kContentNotificationProvisionalIgnoreConditions);
 }
 
+BASE_FEATURE(kContentNotificationDeliveredNAU,
+             "ContentNotificationDeliveredNAU",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDeliveredNAUMaxPerSession[] = "DeliveredNAUMaxPerSession";
+
 BASE_FEATURE(kIOSLargeFakebox,
              "IOSLargeFakebox",
              base::FEATURE_DISABLED_BY_DEFAULT);

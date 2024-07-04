@@ -85,6 +85,7 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/tips_notifications/model:client",
+    "//ios/chrome/common/app_group",
   ]
 }
 

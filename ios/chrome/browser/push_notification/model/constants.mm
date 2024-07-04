@@ -16,8 +16,13 @@ NSString* const kContentNotificationFeedbackCategoryIdentifier =
 NSString* const kContentNotificationNAUBodyParameter =
     @"kContentNotificationNAUBodyParameter";
 
+NSString* const kContentNotificationContentArrayKey =
+    @"kContentNotificationContentArray";
+
 const char kNAUHistogramName[] =
     "ContentNotifications.NotificationActionUpload.Success";
 
 const char kContentNotificationActionHistogramName[] =
     "ContentNotifications.Notification.Action";
+
+const int kDeliveredNAUMaxSendsPerSession = 30;
