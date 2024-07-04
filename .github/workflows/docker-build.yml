@@ -117,6 +117,10 @@ jobs:
         run: |
           cd src
           ninja -C out/Default blink_unittests
+      - name: ninja content_shell
+        run: |
+          cd src
+          ninja -C out/Default content_shell
       - name: sccache check
         run: sccache -s
       - name: Any speed
