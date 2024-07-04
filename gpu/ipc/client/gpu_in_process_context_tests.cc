@@ -11,12 +11,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gl_in_process_context.h"
-#include "gpu/ipc/in_process_gpu_thread_holder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -28,7 +28,7 @@ class ContextTestBase : public testing::Test {
     attributes.bind_generates_resource = false;
 
     auto context = std::make_unique<gpu::GLInProcessContext>();
-    auto result = context->Initialize(gpu_thread_holder_.GetTaskExecutor(),
+    auto result = context->Initialize(gpu_thread_holder_.task_executor(),
                                       attributes, gpu::SharedMemoryLimits());
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     return context;
@@ -51,7 +51,7 @@ class ContextTestBase : public testing::Test {
   raw_ptr<gpu::ContextSupport> context_support_;
 
  private:
-  gpu::InProcessGpuThreadHolder gpu_thread_holder_;
+  viz::TestGpuServiceHolder gpu_thread_holder_;
   std::unique_ptr<gpu::GLInProcessContext> context_;
 };
 
