@@ -502,11 +502,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Tests the ungrouping of a group from its context menu in the grid.
 - (void)testUngroupingGroupUsingGridContextMenu {
-  // TODO(crbug.com/348224987): Re-enable the test on iPad once fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
-  }
-
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
