@@ -682,7 +682,7 @@ group("gn_all") {
       # name to resolve.
       deps += [ "//third_party/breakpad:symupload" ]
     }
-    if (is_mac) {
+    if (is_mac && host_cpu == "arm64") {
       # TODO(crbug.com/349268750): This alias exists because the official Mac
       # arm64 builders (which cross-build the x64 binaries) use the hardcoded
       # path of the `$host_toolchain/symupload` to build and run the symupload
