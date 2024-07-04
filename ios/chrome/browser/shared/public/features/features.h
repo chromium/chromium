@@ -49,6 +49,20 @@ extern const char kModernTabStripParameterName[];
 extern const char kModernTabStripNTBDynamicParam[];
 extern const char kModernTabStripNTBStaticParam[];
 
+// Feature parameter for V2 of Modern Tab Strip and its params.
+extern const char kModernTabStripV2ParameterName[];
+extern const char kModernTabStripCloserNTBParam[];
+extern const char kModernTabStripDarkerBackgroundParam[];
+extern const char kModernTabStripCloserNTBDarkerBackgroundParam[];
+extern const char kModernTabStripNTBNoBackgroundParam[];
+extern const char kModernTabStripBlackBackgroundParam[];
+
+// Feature parameter (bool) for the bigger close target.
+extern const char kModernTabStripBiggerCloseTargetName[];
+
+// Whether the close button should have a bigger close target.
+bool TabStripBiggerCloseTargetEnabled();
+
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 

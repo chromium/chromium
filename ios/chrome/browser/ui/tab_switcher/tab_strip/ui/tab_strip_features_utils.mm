@@ -21,4 +21,39 @@
   return IsTabGroupInGridEnabled();
 }
 
++ (BOOL)isTabStripCloserNTBEnabled {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kModernTabStrip, kModernTabStripV2ParameterName);
+  return feature_param == kModernTabStripCloserNTBParam;
+}
+
++ (BOOL)isTabStripDarkerBackgroundEnabled {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kModernTabStrip, kModernTabStripV2ParameterName);
+  return feature_param == kModernTabStripDarkerBackgroundParam;
+}
+
++ (BOOL)isTabStripCloserNTBDarkerBackgroundEnabled {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kModernTabStrip, kModernTabStripV2ParameterName);
+  return feature_param == kModernTabStripCloserNTBDarkerBackgroundParam;
+}
+
++ (BOOL)isTabStripNTBNoBackgroundEnabled {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kModernTabStrip, kModernTabStripV2ParameterName);
+  return feature_param == kModernTabStripNTBNoBackgroundParam;
+}
+
++ (BOOL)isTabStripBlackBackgroundEnabled {
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kModernTabStrip, kModernTabStripV2ParameterName);
+  return feature_param == kModernTabStripBlackBackgroundParam;
+}
+
++ (BOOL)isTabStripBiggerCloseTargetEnabled {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripBiggerCloseTargetName, false);
+}
+
 @end

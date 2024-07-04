@@ -59,6 +59,17 @@ const char kModernTabStripParameterName[] = "modern-tab-strip-new-tab-button";
 const char kModernTabStripNTBDynamicParam[] = "dynamic";
 const char kModernTabStripNTBStaticParam[] = "static";
 
+const char kModernTabStripV2ParameterName[] = "modern-tab-strip-v2";
+const char kModernTabStripCloserNTBParam[] = "closer-ntb";
+const char kModernTabStripDarkerBackgroundParam[] = "darker-background";
+const char kModernTabStripCloserNTBDarkerBackgroundParam[] =
+    "closer-ntb-darker-background";
+const char kModernTabStripNTBNoBackgroundParam[] = "ntb-no-background";
+const char kModernTabStripBlackBackgroundParam[] = "black-background";
+
+const char kModernTabStripBiggerCloseTargetName[] =
+    "modern-tab-strip-bigger-close-target";
+
 BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);

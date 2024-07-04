@@ -690,12 +690,39 @@ const FeatureEntry::FeatureParam kModernTabStripNTBDynamic[] = {
     {kModernTabStripParameterName, kModernTabStripNTBDynamicParam}};
 const FeatureEntry::FeatureParam kModernTabStripNTBStatic[] = {
     {kModernTabStripParameterName, kModernTabStripNTBStaticParam}};
+const FeatureEntry::FeatureParam kModernTabStripCloserNTB[] = {
+    {kModernTabStripV2ParameterName, kModernTabStripCloserNTBParam}};
+const FeatureEntry::FeatureParam kModernTabStripDarkerBackground[] = {
+    {kModernTabStripV2ParameterName, kModernTabStripDarkerBackgroundParam}};
+const FeatureEntry::FeatureParam kModernTabStripCloserNTBDarkerBackground[] = {
+    {kModernTabStripV2ParameterName,
+     kModernTabStripCloserNTBDarkerBackgroundParam}};
+const FeatureEntry::FeatureParam kModernTabStripNTBNoBackground[] = {
+    {kModernTabStripV2ParameterName, kModernTabStripNTBNoBackgroundParam}};
+const FeatureEntry::FeatureParam kModernTabStripBlackBackground[] = {
+    {kModernTabStripV2ParameterName, kModernTabStripBlackBackgroundParam}};
+const FeatureEntry::FeatureParam kModernTabStripBiggerCloseTarget[] = {
+    {kModernTabStripBiggerCloseTargetName, "true"},
+    {kModernTabStripV2ParameterName, kModernTabStripNTBNoBackgroundParam}};
 
 const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
     {"New tab button dynamic", kModernTabStripNTBDynamic,
      std::size(kModernTabStripNTBDynamic), nullptr},
     {"New tab button static", kModernTabStripNTBStatic,
      std::size(kModernTabStripNTBStatic), nullptr},
+    {"Closer NTB", kModernTabStripCloserNTB,
+     std::size(kModernTabStripCloserNTB), nullptr},
+    {"Darker background", kModernTabStripDarkerBackground,
+     std::size(kModernTabStripDarkerBackground), nullptr},
+    {"Closer NTB + darker background", kModernTabStripCloserNTBDarkerBackground,
+     std::size(kModernTabStripCloserNTBDarkerBackground), nullptr},
+    {"NTB no background", kModernTabStripNTBNoBackground,
+     std::size(kModernTabStripNTBNoBackground), nullptr},
+    {"Black background", kModernTabStripBlackBackground,
+     std::size(kModernTabStripBlackBackground), nullptr},
+    {"Bigger close target", kModernTabStripBiggerCloseTarget,
+     std::size(kModernTabStripBiggerCloseTarget), nullptr},
+
 };
 
 const FeatureEntry::FeatureVariation
