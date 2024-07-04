@@ -208,7 +208,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetInstance()
             ->SetTestingSubclassFactoryAndUse(
-                profile(), base::BindRepeating([](content::BrowserContext*) {
+                profile(), base::BindOnce([](content::BrowserContext*) {
                   return std::make_unique<TestPersonalDataManager>();
                 }));
 

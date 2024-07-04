@@ -270,7 +270,7 @@ class DISABLED_FastCheckoutClientImplTest
         base::BindRepeating(&BuildTestPersonalDataManager));
     FastCheckoutCapabilitiesFetcherFactory::GetInstance()
         ->SetTestingSubclassFactoryAndUse(
-            profile(), base::BindRepeating([](content::BrowserContext*) {
+            profile(), base::BindOnce([](content::BrowserContext*) {
               return std::make_unique<
                   NiceMock<MockFastCheckoutCapabilitiesFetcher>>();
             }));

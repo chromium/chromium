@@ -27,6 +27,12 @@ class FirstPartySetsPolicyService;
 // associated FirstPartySetsPolicyService.
 class FirstPartySetsPolicyServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  // A repeating factory that can be installed globally for all `context`
+  // objects (thus needs to be repeating factory).
+  using GlobalTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<KeyedService>(
+          content::BrowserContext*)>;
+
   FirstPartySetsPolicyServiceFactory(
       const FirstPartySetsPolicyServiceFactory&) = delete;
   FirstPartySetsPolicyServiceFactory& operator=(
@@ -38,7 +44,7 @@ class FirstPartySetsPolicyServiceFactory : public ProfileKeyedServiceFactory {
   static FirstPartySetsPolicyServiceFactory* GetInstance();
 
   // Stores `test_factory` to inject test logic into BuildServiceInstanceFor.
-  void SetTestingFactoryForTesting(TestingFactory test_factory);
+  void SetTestingFactoryForTesting(GlobalTestingFactory test_factory);
 
  private:
   friend base::NoDestructor<FirstPartySetsPolicyServiceFactory>;

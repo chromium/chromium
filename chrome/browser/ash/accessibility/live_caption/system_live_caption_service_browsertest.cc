@@ -127,8 +127,7 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
     fake_speech_recognition_service_ =
         CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
             ->SetTestingSubclassFactoryAndUse(
-                primary_profile_,
-                base::BindRepeating([](content::BrowserContext*) {
+                primary_profile_, base::BindOnce([](content::BrowserContext*) {
                   return std::make_unique<
                       speech::FakeSpeechRecognitionService>();
                 }));

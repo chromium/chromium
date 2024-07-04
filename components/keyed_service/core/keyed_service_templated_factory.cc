@@ -98,7 +98,8 @@ KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
   if (auto factory_iterator = testing_factories_.find(context);
       factory_iterator != testing_factories_.end()) {
     if (factory_iterator->second) {
-      service = factory_iterator->second.Run(context);
+      service = std::move(factory_iterator->second).Run(context);
+      testing_factories_.erase(factory_iterator);
     }
   } else {
     service = BuildServiceInstanceFor(context);

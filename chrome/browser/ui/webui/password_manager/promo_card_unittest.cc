@@ -116,7 +116,7 @@ class PromoCardBaseTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     profile_store_ = CreateAndUseTestPasswordStore(profile());
     AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-        profile(), base::BindRepeating([](content::BrowserContext*) {
+        profile(), base::BindOnce([](content::BrowserContext*) {
           return std::make_unique<affiliations::FakeAffiliationService>();
         }));
   }

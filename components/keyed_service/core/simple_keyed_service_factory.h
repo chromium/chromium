@@ -62,8 +62,8 @@ class KEYED_SERVICE_EXPORT SimpleKeyedServiceFactory
   // A callback that supplies the instance of a KeyedService for a given
   // SimpleFactoryKey. This is used primarily for testing, where we want to feed
   // a specific test double into the SKSF system.
-  using TestingFactory = base::RepeatingCallback<std::unique_ptr<KeyedService>(
-      SimpleFactoryKey* key)>;
+  using TestingFactory =
+      base::OnceCallback<std::unique_ptr<KeyedService>(SimpleFactoryKey* key)>;
 
   SimpleKeyedServiceFactory(const SimpleKeyedServiceFactory&) = delete;
   SimpleKeyedServiceFactory& operator=(const SimpleKeyedServiceFactory&) =

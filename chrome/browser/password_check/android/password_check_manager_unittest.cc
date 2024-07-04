@@ -102,16 +102,20 @@ BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
     Profile* profile) {
   return BulkLeakCheckServiceFactory::GetInstance()
       ->SetTestingSubclassFactoryAndUse(
-          profile, base::BindLambdaForTesting([=](content::BrowserContext*) {
-            return std::make_unique<BulkLeakCheckService>(
-                identity_manager,
-                base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
-          }));
+          profile, base::BindOnce(
+                       [](signin::IdentityManager* identity_manager,
+                          content::BrowserContext*) {
+                         return std::make_unique<BulkLeakCheckService>(
+                             identity_manager,
+                             base::MakeRefCounted<
+                                 network::TestSharedURLLoaderFactory>());
+                       },
+                       base::Unretained(identity_manager)));
 }
 
 syncer::TestSyncService* CreateAndUseSyncService(Profile* profile) {
   return SyncServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      profile, base::BindLambdaForTesting([](content::BrowserContext*) {
+      profile, base::BindOnce([](content::BrowserContext*) {
         return std::make_unique<syncer::TestSyncService>();
       }));
 }

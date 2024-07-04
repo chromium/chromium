@@ -47,8 +47,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceTemplatedFactory
   // A callback that creates the instance of a KeyedService for a given
   // context. This is primarily used for testing, where we want to feed
   // a specific test double into the system.
-  using TestingFactory =
-      base::RepeatingCallback<OwnedServicePtr(void* context)>;
+  using TestingFactory = base::OnceCallback<OwnedServicePtr(void* context)>;
 
   // Inherit super class constructor.
   using KeyedServiceBaseFactory::KeyedServiceBaseFactory;

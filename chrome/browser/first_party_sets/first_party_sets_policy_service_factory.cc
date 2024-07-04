@@ -21,8 +21,9 @@ namespace first_party_sets {
 
 namespace {
 
-BrowserContextKeyedServiceFactory::TestingFactory* GetTestingFactory() {
-  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+FirstPartySetsPolicyServiceFactory::GlobalTestingFactory* GetTestingFactory() {
+  static base::NoDestructor<
+      FirstPartySetsPolicyServiceFactory::GlobalTestingFactory>
       instance;
   return instance.get();
 }
@@ -46,7 +47,7 @@ FirstPartySetsPolicyServiceFactory::GetInstance() {
 }
 
 void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
-    TestingFactory test_factory) {
+    GlobalTestingFactory test_factory) {
   *GetTestingFactory() = std::move(test_factory);
 }
 

@@ -33,7 +33,7 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserStateKeyedServiceFactory
   // BrowserState. This is used primarily for testing, where we want to feed
   // a specific mock into the BSKSF system.
   using TestingFactory =
-      base::RepeatingCallback<scoped_refptr<RefcountedKeyedService>(
+      base::OnceCallback<scoped_refptr<RefcountedKeyedService>(
           web::BrowserState* context)>;
 
   RefcountedBrowserStateKeyedServiceFactory(

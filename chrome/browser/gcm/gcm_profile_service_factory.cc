@@ -67,8 +67,8 @@ void RequestProxyResolvingSocketFactory(
 }
 #endif
 
-BrowserContextKeyedServiceFactory::TestingFactory& GetTestingFactory() {
-  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+GCMProfileServiceFactory::GlobalTestingFactory& GetTestingFactory() {
+  static base::NoDestructor<GCMProfileServiceFactory::GlobalTestingFactory>
       testing_factory;
   return *testing_factory;
 }
@@ -76,14 +76,14 @@ BrowserContextKeyedServiceFactory::TestingFactory& GetTestingFactory() {
 }  // namespace
 
 GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
-    ScopedTestingFactoryInstaller(TestingFactory testing_factory) {
+    ScopedTestingFactoryInstaller(GlobalTestingFactory testing_factory) {
   DCHECK(!GetTestingFactory());
   GetTestingFactory() = std::move(testing_factory);
 }
 
 GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
     ~ScopedTestingFactoryInstaller() {
-  GetTestingFactory() = BrowserContextKeyedServiceFactory::TestingFactory();
+  GetTestingFactory() = GlobalTestingFactory();
 }
 
 // static
@@ -135,9 +135,9 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
   DCHECK(!profile->IsOffTheRecord());
 #endif
 
-  TestingFactory& testing_factory = GetTestingFactory();
-  if (testing_factory)
+  if (GlobalTestingFactory& testing_factory = GetTestingFactory()) {
     return testing_factory.Run(context).release();
+  }
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
       base::ThreadPool::CreateSequencedTaskRunner(

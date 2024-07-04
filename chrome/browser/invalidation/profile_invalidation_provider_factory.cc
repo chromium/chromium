@@ -111,7 +111,7 @@ ProfileInvalidationProviderFactory::~ProfileInvalidationProviderFactory() =
     default;
 
 void ProfileInvalidationProviderFactory::RegisterTestingFactory(
-    TestingFactory testing_factory) {
+    GlobalTestingFactory testing_factory) {
   testing_factory_ = std::move(testing_factory);
 }
 

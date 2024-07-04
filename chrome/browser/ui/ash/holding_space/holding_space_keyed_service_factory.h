@@ -20,10 +20,16 @@ class HoldingSpaceKeyedService;
 class HoldingSpaceKeyedServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  // A repeating factory that can be installed globally for all `context`
+  // objects (thus needs to be repeating factory).
+  using GlobalTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<KeyedService>(
+          content::BrowserContext*)>;
+
   static HoldingSpaceKeyedServiceFactory* GetInstance();
 
   static TestingFactory GetDefaultTestingFactory();
-  static void SetTestingFactory(TestingFactory testing_factory);
+  static void SetTestingFactory(GlobalTestingFactory testing_factory);
 
   HoldingSpaceKeyedService* GetService(content::BrowserContext* context);
 

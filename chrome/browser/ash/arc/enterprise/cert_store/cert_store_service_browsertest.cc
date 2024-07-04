@@ -464,24 +464,30 @@ void CertStoreServiceTest::SetUpOnMainThread() {
     // Use fake ArcKeyMintBridge.
     keymint_bridge_ =
         ArcKeyMintBridge::GetFactory()->SetTestingSubclassFactoryAndUse(
-            profile(), base::BindRepeating(&BuildFakeArcKeyMintBridge));
+            profile(), base::BindOnce(&BuildFakeArcKeyMintBridge));
   } else {
     // Use fake ArcKeymasterBridge.
     keymaster_bridge_ =
         ArcKeymasterBridge::GetFactory()->SetTestingSubclassFactoryAndUse(
-            profile(), base::BindRepeating(&BuildFakeArcKeymasterBridge));
+            profile(), base::BindOnce(&BuildFakeArcKeymasterBridge));
   }
 
   // Use fake ArcCertInstaller in CertStoreService.
   CertStoreService::GetFactory()->SetTestingSubclassFactoryAndUse(
-      profile(), base::BindLambdaForTesting([&](content::BrowserContext*) {
-        auto installer = std::make_unique<FakeArcCertInstaller>(
-            profile(), std::make_unique<policy::RemoteCommandsQueue>());
-        CHECK(!installer_);
-        installer_ = installer.get();
-        return std::make_unique<CertStoreService>(profile(),
-                                                  std::move(installer));
-      }));
+      profile(),
+      base::BindOnce(
+          [](raw_ptr<FakeArcCertInstaller, DanglingUntriaged>* out_installer,
+             content::BrowserContext* context) {
+            Profile* profile = Profile::FromBrowserContext(context);
+            auto installer = std::make_unique<FakeArcCertInstaller>(
+                profile, std::make_unique<policy::RemoteCommandsQueue>());
+            CHECK(out_installer);
+            CHECK(!*out_installer);
+            *out_installer = installer.get();
+            return std::make_unique<CertStoreService>(profile,
+                                                      std::move(installer));
+          },
+          base::Unretained(&installer_)));
 
   ASSERT_TRUE(IsSystemSlotAvailable(profile()));
 }

@@ -241,7 +241,8 @@ void AffiliatedInvalidationServiceProviderImplTest::TearDown() {
 
   invalidation::ProfileInvalidationProviderFactory::GetInstance()
       ->RegisterTestingFactory(
-          BrowserContextKeyedServiceFactory::TestingFactory());
+          invalidation::ProfileInvalidationProviderFactory::
+              GlobalTestingFactory());
   DeviceOAuth2TokenServiceFactory::Shutdown();
   ash::SystemSaltGetter::Shutdown();
   ash::CryptohomeMiscClient::Shutdown();

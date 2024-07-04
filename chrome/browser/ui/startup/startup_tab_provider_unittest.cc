@@ -183,8 +183,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   TestingProfile profile;
   // Set up and inject a real instance for the profile.
   TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      &profile,
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+      &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
 
   // Empty arguments case.
   {
@@ -322,8 +321,7 @@ TEST(StartupTabProviderTest, MAYBE_GetCommandLineTabsFileUrl) {
   TestingProfile profile;
   // Set up and inject a real instance for the profile.
   TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      &profile,
-      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+      &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
 
   // "file:" path fix up.
   {

@@ -280,7 +280,7 @@ TestingProfile::TestingProfile(
   }
 
   // Set any testing factories prior to initializing the services.
-  for (const auto& f : testing_factories) {
+  for (auto& f : testing_factories) {
     absl::visit(
         [this](auto& p) {
           p.first->SetTestingFactory(this, std::move(p.second));

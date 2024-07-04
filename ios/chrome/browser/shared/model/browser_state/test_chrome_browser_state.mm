@@ -54,13 +54,13 @@ TestChromeBrowserState::TestingFactory::TestingFactory(
     BrowserStateKeyedServiceFactory* service_factory,
     BrowserStateKeyedServiceFactory::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
-          std::make_pair(service_factory, testing_factory)) {}
+          std::make_pair(service_factory, std::move(testing_factory))) {}
 
 TestChromeBrowserState::TestingFactory::TestingFactory(
     RefcountedBrowserStateKeyedServiceFactory* service_factory,
     RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory)
     : service_factory_and_testing_factory(
-          std::make_pair(service_factory, testing_factory)) {}
+          std::make_pair(service_factory, std::move(testing_factory))) {}
 
 TestChromeBrowserState::TestingFactory::TestingFactory(TestingFactory&&) =
     default;

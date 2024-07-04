@@ -449,7 +449,7 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
   account_store_ = CreateAndUseTestAccountPasswordStore(profile());
   test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
   AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
-      profile(), base::BindRepeating([](content::BrowserContext*) {
+      profile(), base::BindOnce([](content::BrowserContext*) {
         return std::make_unique<affiliations::FakeAffiliationService>();
       }));
   SetUpRouters();

@@ -31,7 +31,7 @@ class KEYED_SERVICE_EXPORT BrowserStateKeyedServiceFactory
   // A callback that supplies the instance of a KeyedService for a given
   // BrowserState. This is used primarily for testing, where we want to feed
   // a specific test double into the BSKSF system.
-  using TestingFactory = base::RepeatingCallback<std::unique_ptr<KeyedService>(
+  using TestingFactory = base::OnceCallback<std::unique_ptr<KeyedService>(
       web::BrowserState* context)>;
 
   BrowserStateKeyedServiceFactory(const BrowserStateKeyedServiceFactory&) =

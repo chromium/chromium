@@ -95,25 +95,20 @@ class FaviconSourceTestBase : public testing::Test {
   explicit FaviconSourceTestBase(chrome::FaviconUrlFormat format)
       : source_(format, &profile_, &theme_) {
     // Setup testing factories for main dependencies.
-    BrowserContextKeyedServiceFactory::TestingFactory
-        history_ui_favicon_request_handler_factory =
-            base::BindRepeating([](content::BrowserContext*) {
-              return base::WrapUnique<KeyedService>(
-                  new NiceMock<MockHistoryUiFaviconRequestHandler>());
-            });
     mock_history_ui_favicon_request_handler_ =
         static_cast<NiceMock<MockHistoryUiFaviconRequestHandler>*>(
             HistoryUiFaviconRequestHandlerFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
-                    &profile_, history_ui_favicon_request_handler_factory));
-    BrowserContextKeyedServiceFactory::TestingFactory favicon_service_factory =
-        base::BindRepeating([](content::BrowserContext*) {
-          return static_cast<std::unique_ptr<KeyedService>>(
-              std::make_unique<NiceMock<favicon::MockFaviconService>>());
-        });
+                    &profile_, base::BindOnce([](content::BrowserContext*) {
+                      return base::WrapUnique<KeyedService>(
+                          new NiceMock<MockHistoryUiFaviconRequestHandler>());
+                    })));
     mock_favicon_service_ = static_cast<NiceMock<favicon::MockFaviconService>*>(
         FaviconServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            &profile_, favicon_service_factory));
+            &profile_, base::BindOnce([](content::BrowserContext*) {
+              return static_cast<std::unique_ptr<KeyedService>>(
+                  std::make_unique<NiceMock<favicon::MockFaviconService>>());
+            })));
 
     // Setup TestWebContents.
     test_web_contents_ =

@@ -11,18 +11,30 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 
+namespace {
+
+// Wraps `factory` as a KeyedServiceFactory::TestingFactory.
+base::OnceCallback<std::unique_ptr<KeyedService>(void*)> WrapFactory(
+    SimpleKeyedServiceFactory::TestingFactory factory) {
+  if (!factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](SimpleKeyedServiceFactory::TestingFactory factory,
+         void* context) -> std::unique_ptr<KeyedService> {
+        return std::move(factory).Run(static_cast<SimpleFactoryKey*>(context));
+      },
+      std::move(factory));
+}
+
+}  // namespace
+
 void SimpleKeyedServiceFactory::SetTestingFactory(
     SimpleFactoryKey* key,
     TestingFactory testing_factory) {
-  KeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](const TestingFactory& testing_factory, void* context) {
-          return testing_factory.Run(static_cast<SimpleFactoryKey*>(context));
-        },
-        std::move(testing_factory));
-  }
-  KeyedServiceFactory::SetTestingFactory(key, std::move(wrapped_factory));
+  KeyedServiceFactory::SetTestingFactory(
+      key, WrapFactory(std::move(testing_factory)));
 }
 
 KeyedService* SimpleKeyedServiceFactory::SetTestingFactoryAndUse(
@@ -30,12 +42,7 @@ KeyedService* SimpleKeyedServiceFactory::SetTestingFactoryAndUse(
     TestingFactory testing_factory) {
   DCHECK(testing_factory);
   return KeyedServiceFactory::SetTestingFactoryAndUse(
-      key,
-      base::BindRepeating(
-          [](const TestingFactory& testing_factory, void* context) {
-            return testing_factory.Run(static_cast<SimpleFactoryKey*>(context));
-          },
-          std::move(testing_factory)));
+      key, WrapFactory(std::move(testing_factory)));
 }
 
 SimpleKeyedServiceFactory::SimpleKeyedServiceFactory(

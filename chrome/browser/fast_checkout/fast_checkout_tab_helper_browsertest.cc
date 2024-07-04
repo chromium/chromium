@@ -51,7 +51,7 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
     fetcher_ =
         FastCheckoutCapabilitiesFetcherFactory::GetInstance()
             ->SetTestingSubclassFactoryAndUse(
-                profile, base::BindRepeating([](content::BrowserContext*) {
+                profile, base::BindOnce([](content::BrowserContext*) {
                   return std::make_unique<
                       StrictMock<MockFastCheckoutCapabilitiesFetcher>>();
                 }));
