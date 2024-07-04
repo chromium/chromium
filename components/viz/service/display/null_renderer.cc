@@ -49,4 +49,9 @@ void NullRenderer::CopyDrawnRenderPass(
     const copy_output::RenderPassGeometry& geometry,
     std::unique_ptr<CopyOutputRequest> request) {}
 
+gfx::Rect NullRenderer::GetRenderPassBackingDrawnRect(
+    const AggregatedRenderPassId& render_pass_id) const {
+  return gfx::Rect();
+}
+
 }  // namespace viz

@@ -22,6 +22,14 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
                OverlayProcessorInterface* overlay_processor);
   ~NullRenderer() override;
 
+ protected:
+  void SetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id,
+      const gfx::Rect& drawn_rect) override {}
+
+  gfx::Rect GetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id) const override;
+
  private:
   void SwapBuffers(SwapFrameData swap_frame_data) override;
   bool CanPartialSwap() override;

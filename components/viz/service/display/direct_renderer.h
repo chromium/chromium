@@ -277,10 +277,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
 
   virtual void SetRenderPassBackingDrawnRect(
       const AggregatedRenderPassId& render_pass_id,
-      const gfx::Rect& drawn_rect) {}
+      const gfx::Rect& drawn_rect) = 0;
 
   virtual gfx::Rect GetRenderPassBackingDrawnRect(
-      const AggregatedRenderPassId& render_pass_id) const;
+      const AggregatedRenderPassId& render_pass_id) const = 0;
 
   // Private interface implemented by subclasses for use by DirectRenderer.
   virtual bool CanPartialSwap() = 0;

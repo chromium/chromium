@@ -13,6 +13,7 @@
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -66,7 +67,19 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
                            std::unique_ptr<CopyOutputRequest> request) override;
   void DidChangeVisibility() override;
 
+ protected:
+  void SetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id,
+      const gfx::Rect& drawn_rect) override;
+
+  gfx::Rect GetRenderPassBackingDrawnRect(
+      const AggregatedRenderPassId& render_pass_id) const override;
+
  private:
+  struct RenderPassBitmapBacking {
+    SkBitmap bitmap;
+    gfx::Rect drawn_rect;
+  };
   void ClearCanvas(SkColor color);
   void ClearFramebuffer();
   void SetClipRect(const gfx::Rect& rect);
@@ -107,7 +120,8 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   }
 
   // A map from RenderPass id to the bitmap used to draw the RenderPass from.
-  base::flat_map<AggregatedRenderPassId, SkBitmap> render_pass_bitmaps_;
+  base::flat_map<AggregatedRenderPassId, RenderPassBitmapBacking>
+      render_pass_bitmaps_;
 
   bool is_scissor_enabled_ = false;
   gfx::Rect scissor_rect_;

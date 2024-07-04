@@ -85,7 +85,9 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
       resource_provider_(resource_provider),
       overlay_processor_(overlay_processor),
       allow_undamaged_nonroot_render_pass_to_skip_(base::FeatureList::IsEnabled(
-          features::kAllowUndamagedNonrootRenderPassToSkip)) {
+          features::kAllowUndamagedNonrootRenderPassToSkip)),
+      use_render_pass_drawn_rect_(
+          base::FeatureList::IsEnabled(features::kRenderPassDrawnRect)) {
   DCHECK(output_surface_);
 }
 
@@ -1205,11 +1207,6 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   NOTREACHED_IN_MIGRATION();
   return gpu::Mailbox();
-}
-
-gfx::Rect DirectRenderer::GetRenderPassBackingDrawnRect(
-    const AggregatedRenderPassId& render_pass_id) const {
-  return gfx::Rect();
 }
 
 }  // namespace viz

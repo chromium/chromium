@@ -1060,8 +1060,6 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
 #endif
       lock_set_for_external_use_(resource_provider, skia_output_surface_),
       is_using_raw_draw_(features::IsUsingRawDraw()) {
-  use_render_pass_drawn_rect_ =
-      base::FeatureList::IsEnabled(features::kRenderPassDrawnRect);
 #if BUILDFLAG(IS_WIN)
   // |OverlayProcessorWin| can cause a render pass to reallocate during partial
   // delegation, so we need to ensure the contents of all render passes are
