@@ -284,8 +284,11 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
         credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
         is_cross_origin.value());
     suggestion.is_acceptable = on_password_form.value();
-    suggestion.custom_icon = Suggestion::FaviconDetails(
-        domain_info.url, favicon_can_be_requested_from_google);
+    if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
+            .IsValidWebFacetURI()) {
+      suggestion.custom_icon = Suggestion::FaviconDetails(
+          domain_info.url, favicon_can_be_requested_from_google);
+    }
 
     if (!replaced) {
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);

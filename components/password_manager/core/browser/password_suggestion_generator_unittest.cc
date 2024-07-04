@@ -97,7 +97,9 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
     const std::u16string& username_label,
     Suggestion::Icon icon,
     bool is_acceptable,
-    Suggestion::FaviconDetails favicon_details,
+    absl::variant<gfx::Image,
+                  Suggestion::CustomIconUrl,
+                  Suggestion::FaviconDetails> custom_icon,
     const Suggestion::Payload& payload) {
   return AllOf(
       EqualsSuggestion(id, main_text, icon),
@@ -105,7 +107,7 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
           "labels", &Suggestion::labels,
           ElementsAre(ElementsAre(autofill::Suggestion::Text(username_label)))),
       Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable),
-      Field("custom_icon", &Suggestion::custom_icon, favicon_details),
+      Field("custom_icon", &Suggestion::custom_icon, custom_icon),
       Field("payload", &Suggestion::payload, payload));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -861,9 +863,7 @@ TEST_F(PasswordSuggestionGeneratorTest,
                       SuggestionType::kPasswordEntry, u"Netflix",
                       u"username@example.com", Suggestion::Icon::kGlobe,
                       /*is_acceptable=*/true,
-                      Suggestion::FaviconDetails(/*domain_url=*/GURL(
-                          "https://play.google.com/store/apps/"
-                          "details?id=com.netflix.mediaclient")),
+                      /*custom_icon=*/gfx::Image(),
                       Suggestion::PasswordSuggestionDetails(
                           u"password", u"Netflix", /*is_cross_domain=*/true)),
                   EqualsSuggestion(SuggestionType::kSeparator),
