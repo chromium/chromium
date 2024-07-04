@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libnss3 \
     gperf \
+    libdbus-1-3 \
     libxcomposite1 \
     libxdamage1 \
     libxext6 \
