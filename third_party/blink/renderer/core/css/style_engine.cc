@@ -4390,10 +4390,11 @@ void StyleEngine::UpdateViewportSize() {
 
 namespace {
 
-bool UpdateLastSuccessfulPositionOption(Element& element) {
+bool UpdateLastSuccessfulPositionFallback(Element& element) {
   if (OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData()) {
     LayoutObject* layout_object = element.GetLayoutObject();
-    if (out_of_flow_data->ApplyPendingSuccessfulPositionOption(layout_object) &&
+    if (out_of_flow_data->ApplyPendingSuccessfulPositionFallback(
+            layout_object) &&
         layout_object) {
       layout_object->SetNeedsLayoutAndFullPaintInvalidation(
           layout_invalidation_reason::kAnchorPositioning);
@@ -4432,7 +4433,7 @@ bool InvalidatePositionTryNames(Element* root,
 
 }  // namespace
 
-bool StyleEngine::UpdateLastSuccessfulPositionOptions() {
+bool StyleEngine::UpdateLastSuccessfulPositionFallbacks() {
   if (!RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
     CHECK(dirty_position_try_names_.empty());
     CHECK(last_successful_option_dirty_set_.empty());
@@ -4442,7 +4443,7 @@ bool StyleEngine::UpdateLastSuccessfulPositionOptions() {
   if (!dirty_position_try_names_.empty()) {
     // Added, removed, or modified @position-try rules.
     // Walk the whole tree and invalidate last successful position for elements
-    // with position-try-options referring those names.
+    // with position-try-fallbacks referring those names.
     if (InvalidatePositionTryNames(GetDocument().documentElement(),
                                    dirty_position_try_names_)) {
       invalidated = true;
@@ -4452,7 +4453,7 @@ bool StyleEngine::UpdateLastSuccessfulPositionOptions() {
 
   if (!last_successful_option_dirty_set_.empty()) {
     for (Element* element : last_successful_option_dirty_set_) {
-      if (UpdateLastSuccessfulPositionOption(*element)) {
+      if (UpdateLastSuccessfulPositionFallback(*element)) {
         invalidated = true;
       }
     }

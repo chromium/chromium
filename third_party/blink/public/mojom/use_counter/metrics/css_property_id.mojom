@@ -850,6 +850,7 @@ enum CSSSampleId {
     kAnchorScope = 794,
     kRubyAlign = 795,
     kBoxDecorationBreak = 796,
+    kPositionTryFallbacks = 797,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

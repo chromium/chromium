@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>CSS Anchor Positioning: changing position-try-options invalidates last successful position option</title>
-<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#last-successful-position-option">
+<title>CSS Anchor Positioning: changing position-try-fallbacks invalidates last successful position fallback</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position/#last-successful-position-fallback">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/test-common.js"></script>
@@ -22,7 +22,7 @@
   }
   #anchored {
     position-anchor: --a;
-    position-try-options: flip-block;
+    position-try-fallbacks: flip-block;
     position: absolute;
     width: 100px;
     height: 200px;
@@ -49,9 +49,9 @@
   }, "No successful position, keep flip-block");
 
   promise_test(async () => {
-    anchored.style.positionTryOptions = "flip-block, --foo";
+    anchored.style.positionTryFallbacks = "flip-block, --foo";
     await waitUntilNextAnimationFrame();
     await waitUntilNextAnimationFrame();
     assert_equals(anchored.offsetTop, -50);
-  }, "No successful position, last successful invalidated by position-try-options change");
+  }, "No successful position, last successful invalidated by position-try-fallbacks change");
 </script>

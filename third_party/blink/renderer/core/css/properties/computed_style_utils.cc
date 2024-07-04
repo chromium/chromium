@@ -4316,37 +4316,37 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
                                             CSSValuePhase::kComputedValue);
 }
 
-CSSValue* ComputedStyleUtils::ValueForPositionTryOptions(
-    const PositionTryOptions& options) {
-  CSSValueList* option_list = CSSValueList::CreateCommaSeparated();
-  for (const PositionTryOption& option : options.GetOptions()) {
-    if (!option.GetInsetArea().IsNone()) {
+CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
+    const PositionTryFallbacks& fallbacks) {
+  CSSValueList* fallback_list = CSSValueList::CreateCommaSeparated();
+  for (const PositionTryFallback& fallback : fallbacks.GetFallbacks()) {
+    if (!fallback.GetInsetArea().IsNone()) {
       if (RuntimeEnabledFeatures::CSSInsetAreaValueEnabled()) {
         // <inset-area>
-        option_list->Append(*ValueForInsetArea(option.GetInsetArea()));
+        fallback_list->Append(*ValueForInsetArea(fallback.GetInsetArea()));
       } else {
         // inset-area( <inset-area> )
         auto* function =
             MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kInsetArea);
-        function->Append(*ValueForInsetArea(option.GetInsetArea()));
-        option_list->Append(*function);
+        function->Append(*ValueForInsetArea(fallback.GetInsetArea()));
+        fallback_list->Append(*function);
       }
       continue;
     }
     // [<dashed-ident> || <try-tactic>]
-    CSSValueList* option_value = CSSValueList::CreateSpaceSeparated();
-    if (const ScopedCSSName* name = option.GetPositionTryName()) {
-      option_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
+    CSSValueList* fallback_value = CSSValueList::CreateSpaceSeparated();
+    if (const ScopedCSSName* name = fallback.GetPositionTryName()) {
+      fallback_value->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
     }
-    const TryTacticList& tactic_list = option.GetTryTactic();
+    const TryTacticList& tactic_list = fallback.GetTryTactic();
     for (TryTactic tactic : tactic_list) {
       if (tactic != TryTactic::kNone) {
-        option_value->Append(*CSSIdentifierValue::Create(tactic));
+        fallback_value->Append(*CSSIdentifierValue::Create(tactic));
       }
     }
-    option_list->Append(*option_value);
+    fallback_list->Append(*fallback_value);
   }
-  return option_list;
+  return fallback_list;
 }
 
 }  // namespace blink

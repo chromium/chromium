@@ -2800,7 +2800,7 @@ bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
 bool ComputedStyle::IsInterleavingRoot(const ComputedStyle* style) {
   const ComputedStyle* unensured = ComputedStyle::NullifyEnsured(style);
   return unensured && (unensured->IsContainerForSizeContainerQueries() ||
-                       unensured->GetPositionTryOptions() ||
+                       unensured->GetPositionTryFallbacks() ||
                        unensured->HasAnchorFunctions());
 }
 

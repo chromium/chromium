@@ -8491,7 +8491,7 @@ namespace {
 //
 // Returns true if anything was set in `flip`.
 //
-// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
 bool ConsumeFlipsInto(CSSParserTokenStream& stream, CSSValue* (&flips)[3]) {
   bool seen_flip_block = false;
   bool seen_flip_inline = false;
@@ -8582,8 +8582,8 @@ CSSValue* ConsumeInsetAreaFunction(CSSParserTokenStream& stream) {
 
 }  // namespace
 
-CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenStream& stream,
-                                         const CSSParserContext& context) {
+CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
+                                           const CSSParserContext& context) {
   // // <dashed-ident> || <try-tactic>
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
@@ -8596,13 +8596,13 @@ CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenStream& stream,
   return ConsumeInsetAreaFunction(stream);
 }
 
-CSSValue* ConsumePositionTryOptions(CSSParserTokenStream& stream,
-                                    const CSSParserContext& context) {
+CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,
+                                      const CSSParserContext& context) {
   // none | [ [<dashed-ident> || <try-tactic>] | <'inset-area'> ]#
   if (stream.Peek().Id() == CSSValueID::kNone) {
     return ConsumeIdent(stream);
   }
-  return ConsumeCommaSeparatedList(ConsumeSinglePositionTryOption, stream,
+  return ConsumeCommaSeparatedList(ConsumeSinglePositionTryFallback, stream,
                                    context);
 }
 

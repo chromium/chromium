@@ -2993,7 +2993,7 @@ TEST_F(StyleResolverTest, PositionTryStylesBasic_Cascade) {
       @position-try --f3 { inset: 50px; }
       #target {
         position: absolute;
-        position-try-options: --f1, --f2, --f3;
+        position-try-fallbacks: --f1, --f2, --f3;
       }
     </style>
     <div id="target"></div>
@@ -3041,7 +3041,7 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveLogicalProperties_Cascade) {
         writing-mode: vertical-rl;
         direction: rtl;
         inset: 50px;
-        position-try-options: --f1, --f2;
+        position-try-fallbacks: --f1, --f2;
       }
     </style>
     <div id="target"></div>
@@ -3085,7 +3085,7 @@ TEST_F(StyleResolverTest, PositionTryStylesResolveRelativeLengthUnits_Cascade) {
       #target {
         position: absolute;
         font-size: 20px;
-        position-try-options: --f1;
+        position-try-fallbacks: --f1;
       }
     </style>
     <div id="target"></div>
@@ -3115,7 +3115,7 @@ TEST_F(StyleResolverTest, PositionTryStylesInBeforePseudoElement_Cascade) {
         display: block;
         content: 'before';
         position: absolute;
-        position-try-options: --f1;
+        position-try-fallbacks: --f1;
       }
     </style>
     <div id="target"></div>
@@ -3131,7 +3131,7 @@ TEST_F(StyleResolverTest, PositionTryStylesInBeforePseudoElement_Cascade) {
   ASSERT_TRUE(base_style);
   EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
-  // 'position-try-options' applies to ::before pseudo-element.
+  // 'position-try-fallbacks' applies to ::before pseudo-element.
   UpdateStyleForOutOfFlow(*before, AtomicString("--f1"));
   const ComputedStyle* try1 = before->GetComputedStyle();
   ASSERT_TRUE(try1);
@@ -3150,7 +3150,7 @@ TEST_F(StyleResolverTest, PositionTryStylesCSSWideKeywords_Cascade) {
       #target {
         position: absolute;
         inset: 50px;
-        position-try-options: --f1, --f2, --f3;
+        position-try-fallbacks: --f1, --f2, --f3;
       }
       #container {
         position: absolute;
@@ -3206,7 +3206,7 @@ TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
       @position-try --bar { left: 100px }
       #target {
         position: absolute;
-        position-try-options: --foo;
+        position-try-fallbacks: --foo;
       }
     </style>
     <div id="target"></div>
@@ -3229,7 +3229,7 @@ TEST_F(StyleResolverTest, PositionTryPropertyValueChange_Cascade) {
     EXPECT_EQ(Length::Auto(), GetLeft(*fallback));
   }
 
-  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryOptions, "--bar");
+  target->SetInlineStyleProperty(CSSPropertyID::kPositionTryFallbacks, "--bar");
   UpdateAllLifecyclePhasesForTest();
 
   {
@@ -3258,7 +3258,7 @@ TEST_F(StyleResolverTest, PositionTry_PaintInvalidation) {
       #target {
         position: absolute;
         left: 1111111px;
-        position-try-options: --f1, --f2, --f3;
+        position-try-fallbacks: --f1, --f2, --f3;
       }
     </style>
     <div id="target"></div>

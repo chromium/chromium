@@ -1864,7 +1864,7 @@
     "most-block-size",
     "most-inline-size",
 
-    // position-try-options
+    // position-try-fallbacks
     // none
     "flip-block",
     "flip-inline",

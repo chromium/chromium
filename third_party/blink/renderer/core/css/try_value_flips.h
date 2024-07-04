@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
-#include "third_party/blink/renderer/core/style/position_try_options.h"
+#include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -18,7 +18,7 @@ class CSSValue;
 class WritingDirectionMode;
 class TryTacticTransform;
 
-// A single position-try-option can specify a number of "flips" called
+// A single position-try-fallback can specify a number of "flips" called
 // try-tactics. This makes it easy for authors to try mirrored versions
 // of manually specified positions.
 //
@@ -26,7 +26,7 @@ class TryTacticTransform;
 // generating CSSPropertyValueSets which carry out those flips
 // using CSSFlipRevertValues.
 //
-// https://drafts.csswg.org/css-anchor-position-1/#propdef-position-try-options
+// https://drafts.csswg.org/css-anchor-position-1/#propdef-position-try-fallbacks
 class CORE_EXPORT TryValueFlips {
   DISALLOW_NEW();
 

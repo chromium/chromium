@@ -1301,9 +1301,9 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
     return nullptr;
   }
 
-  const PositionTryOptions* position_try_options =
-      style->GetPositionTryOptions();
-  if (!position_try_options) {
+  const PositionTryFallbacks* position_try_fallbacks_ =
+      style->GetPositionTryFallbacks();
+  if (!position_try_fallbacks_) {
     return nullptr;
   }
 
@@ -1311,17 +1311,17 @@ InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
   std::optional<size_t> active_position_try_index;
   if (OutOfFlowData* out_of_flow_data = element->GetOutOfFlowData()) {
     active_position_try_index =
-        out_of_flow_data->GetNewSuccessfulPositionOptionIndex();
+        out_of_flow_data->GetNewSuccessfulPositionFallbackIndex();
   }
 
   auto css_position_try_rules =
       std::make_unique<protocol::Array<protocol::CSS::CSSPositionTryRule>>();
   StyleResolver& style_resolver = document.GetStyleResolver();
-  const HeapVector<PositionTryOption>& options =
-      position_try_options->GetOptions();
-  for (wtf_size_t i = 0; i < options.size(); ++i) {
-    const PositionTryOption& option = options[i];
-    if (const ScopedCSSName* scoped_name = option.GetPositionTryName()) {
+  const HeapVector<PositionTryFallback>& fallbacks =
+      position_try_fallbacks_->GetFallbacks();
+  for (wtf_size_t i = 0; i < fallbacks.size(); ++i) {
+    const PositionTryFallback& fallback = fallbacks[i];
+    if (const ScopedCSSName* scoped_name = fallback.GetPositionTryName()) {
       const TreeScope* tree_scope = scoped_name->GetTreeScope();
       if (!tree_scope) {
         tree_scope = &document;

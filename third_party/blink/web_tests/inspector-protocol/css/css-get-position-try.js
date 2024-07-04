@@ -15,7 +15,7 @@
   width: 300px;
   height: 300px;
   position: absolute;
-  position-try-options: --top, --bottom;
+  position-try-fallbacks: --top, --bottom;
 }
 
 @position-try --top {

@@ -499,7 +499,7 @@ enum class CompositingOperator : unsigned {
   kPlusLighter
 };
 
-// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
 enum class TryTactic : uint8_t {
   kNone,
   kFlipBlock,

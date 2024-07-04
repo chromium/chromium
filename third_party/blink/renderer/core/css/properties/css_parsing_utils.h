@@ -932,10 +932,10 @@ bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
   return true;
 }
 
-CORE_EXPORT CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenStream&,
-                                                     const CSSParserContext&);
-CSSValue* ConsumePositionTryOptions(CSSParserTokenStream&,
-                                    const CSSParserContext&);
+CORE_EXPORT CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream&,
+                                                       const CSSParserContext&);
+CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
+                                      const CSSParserContext&);
 
 // If the stream starts with “!important”, consumes it and returns true.
 // If the stream is at EOF, returns false.

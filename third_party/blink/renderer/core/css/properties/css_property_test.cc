@@ -65,12 +65,17 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
 class CSSPropertyTest : public PageTestBase {
  public:
   const CSSValue* Parse(String name, String value) {
-    auto* set = css_test_helpers::ParseDeclarationBlock(name + ":" + value);
+    const CSSPropertyValueSet* set =
+        css_test_helpers::ParseDeclarationBlock(name + ":" + value);
     DCHECK(set);
     if (set->PropertyCount() != 1) {
       return nullptr;
     }
     return &set->PropertyAt(0).Value();
+  }
+
+  const CSSPropertyValueSet* ParseShorthand(String name, String value) {
+    return css_test_helpers::ParseDeclarationBlock(name + ":" + value);
   }
 
   String ComputedValue(String property_str,
@@ -446,6 +451,28 @@ TEST_F(CSSPropertyTest, AnchorModeSize) {
             ComputedValue("max-width", "anchor-size(width, 0px)", context));
   EXPECT_EQ("1px",
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
+}
+
+TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
+  ScopedCSSPositionTryFallbacksForTest enabled(true);
+  const CSSPropertyValueSet* declarations =
+      ParseShorthand("position-try", "most-width flip-block");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 2u);
+  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
+  EXPECT_EQ(declarations->PropertyAt(1).Id(),
+            CSSPropertyID::kPositionTryFallbacks);
+}
+
+TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
+  ScopedCSSPositionTryFallbacksForTest enabled(false);
+  const CSSPropertyValueSet* declarations =
+      ParseShorthand("position-try", "most-width flip-block");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 2u);
+  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
+  EXPECT_EQ(declarations->PropertyAt(1).Id(),
+            CSSPropertyID::kPositionTryOptions);
 }
 
 }  // namespace blink

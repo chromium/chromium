@@ -31,7 +31,7 @@ namespace cssvalue {
 // and therefore we have no CSSValueID for CSSFlipRevertValue.
 //
 // [1]
-// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+// https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
 class CORE_EXPORT CSSFlipRevertValue : public CSSValue {
  public:
   explicit CSSFlipRevertValue(CSSPropertyID property_id,

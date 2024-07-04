@@ -135,21 +135,21 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // Storing the old style is only relevant if we risk computing the style
   // more than once for the same element. This can happen if we are currently
   // inside a size query container, or doing multiple style resolutions for
-  // position-try-options.
+  // position-try-fallbacks.
   //
   // If we are not inside a size query container or an element with
-  // position-try-options, we can fall back to the default behavior (in
+  // position-try-fallbacks, we can fall back to the default behavior (in
   // CSSAnimations) of using the current style on Element as the old style.
   //
   // TODO(crbug.com/40943044): We also need to check whether we are a descendant
-  // of an element with position-try-options to cover the case where the
+  // of an element with position-try-fallbacks to cover the case where the
   // descendant explicitly inherits insets or other valid @position-try
-  // properties from the element with position-try-options. This applies to
+  // properties from the element with position-try-fallbacks. This applies to
   // descendants of elements with anchor queries as well.
   return (style_recalc_context.container ||
           state.StyleBuilder().HasAnchorFunctions() ||
           state.StyleBuilder().PositionAnchor() ||
-          state.StyleBuilder().GetPositionTryOptions() != nullptr) &&
+          state.StyleBuilder().GetPositionTryFallbacks() != nullptr) &&
          state.CanAffectAnimations();
 }
 
@@ -2544,7 +2544,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // TODO(crbug.com/40943044): If we need to disable the optimization for
   // elements with position-fallback/anchor(), we probably need to disable
   // for descendants of such elements as well.
-  if (base_style->GetPositionTryOptions() != nullptr) {
+  if (base_style->GetPositionTryFallbacks() != nullptr) {
     return false;
   }
 

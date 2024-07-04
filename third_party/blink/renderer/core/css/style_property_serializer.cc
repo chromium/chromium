@@ -699,7 +699,9 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kScrollStartTarget:
       return ScrollStartTargetValue();
     case CSSPropertyID::kPositionTry:
-      return PositionTryValue();
+      return PositionTryValue(positionTryShorthand());
+    case CSSPropertyID::kAlternativePositionTry:
+      return PositionTryValue(alternativePositionTryShorthand());
     default:
       NOTREACHED_IN_MIGRATION()
           << "Shorthand property "
@@ -2432,27 +2434,25 @@ String StylePropertySerializer::ScrollStartTargetValue() const {
   return list->CssText();
 }
 
-String StylePropertySerializer::PositionTryValue() const {
-  CHECK_EQ(positionTryShorthand().length(), 2u);
-  CHECK_EQ(positionTryShorthand().properties()[0],
-           &GetCSSPropertyPositionTryOrder());
-  CHECK_EQ(positionTryShorthand().properties()[1],
-           &GetCSSPropertyPositionTryOptions());
+String StylePropertySerializer::PositionTryValue(
+    const StylePropertyShorthand& shorthand) const {
+  CHECK_EQ(shorthand.length(), 2u);
+  CHECK_EQ(shorthand.properties()[0], &GetCSSPropertyPositionTryOrder());
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   const CSSValue* order_value =
       property_set_.GetPropertyCSSValue(GetCSSPropertyPositionTryOrder());
-  const CSSValue* options_value =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyPositionTryOptions());
+  const CSSValue* fallbacks_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
 
   CHECK(order_value);
-  CHECK(options_value);
+  CHECK(fallbacks_value);
 
   if (To<CSSIdentifierValue>(*order_value).GetValueID() !=
       CSSValueID::kNormal) {
     list->Append(*order_value);
   }
-  list->Append(*options_value);
+  list->Append(*fallbacks_value);
   return list->CssText();
 }
 

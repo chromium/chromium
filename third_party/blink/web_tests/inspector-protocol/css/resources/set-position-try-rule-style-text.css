@@ -4,7 +4,7 @@
 
 #anchored {
     position: absolute;
-    position-try-options: --fallback;
+    position-try-fallbacks: --fallback;
 }
 
 @position-try --fallback {

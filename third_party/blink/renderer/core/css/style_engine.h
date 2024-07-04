@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/core/style/position_try_options.h"
+#include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -572,7 +572,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkCounterStylesNeedUpdate();
   void UpdateCounterStyles();
 
-  // Set a flag to invalidate elements using position-try-options on next
+  // Set a flag to invalidate elements using position-try-fallbacks on next
   // lifecycle update when @position-try rules are added or removed.
   void MarkPositionTryStylesDirty(
       const HeapHashSet<Member<RuleSet>>& changed_rule_sets);
@@ -580,7 +580,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Mark elements affected by @position-try rules for style and layout update.
   void InvalidatePositionTryStyles();
 
-  void MarkLastSuccessfulPositionOptionDirtyForElement(Element& element) {
+  void MarkLastSuccessfulPositionFallbackDirtyForElement(Element& element) {
     CHECK(RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled());
     last_successful_option_dirty_set_.insert(&element);
   }
@@ -726,7 +726,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
   // Returns true if marked dirty for layout
-  bool UpdateLastSuccessfulPositionOptions();
+  bool UpdateLastSuccessfulPositionFallbacks();
 
  private:
   void UpdateCounters(const Element& element,
@@ -1112,14 +1112,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // CSS Anchor Positioning.
   TryValueFlips try_value_flips_;
 
-  // Elements which had their computed position-try-options changed since last
+  // Elements which had their computed position-try-fallbacks changed since last
   // time resize observers were considered. May need to have their last
   // successful option invalidated.
   HeapHashSet<Member<Element>> last_successful_option_dirty_set_;
 
   // Names of @position-try rules which were added, removed, or modified since
   // last time resize observers were considered. Anchored elements with a last
-  // successful option with position-try-options referring any of these names
+  // successful option with position-try-fallbacks referring any of these names
   // will be invalidated.
   HashSet<AtomicString> dirty_position_try_names_;
 };

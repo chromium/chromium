@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html class=test-wait>
-  <title>CSS Anchor Positioning: Don't crash when animating position and position-try-options in grid</title>
+  <title>CSS Anchor Positioning: Don't crash when animating position and position-try-fallbacks in grid</title>
   <link rel="help" href="https://crbug.com/339686368">
   <style>
     @keyframes --anim {
       from {
         position: absolute;
-        position-try-options: flip-block;
+        position-try-fallbacks: flip-block;
       }
     }
     #parent {

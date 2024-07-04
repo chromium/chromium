@@ -361,6 +361,7 @@ popoverShowDelay
 position
 positionAnchor
 positionTry
+positionTryFallbacks
 positionTryOptions
 positionTryOrder
 positionVisibility

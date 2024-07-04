@@ -1953,7 +1953,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void DeprecatedInvalidateIntersectionObserverCachedRects();
 
-  // Mark elements with a principal box and a computed position-try-options
+  // Mark elements with a principal box and a computed position-try-fallbacks
   // different from 'none' for layout when @position-try rules are removed or
   // added. mark_style_dirty is true if the element should be marked dirty as
   // well. mark_style_dirty is typically set to false if we are inside a subtree

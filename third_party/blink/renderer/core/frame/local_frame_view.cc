@@ -157,7 +157,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/position_try_options.h"
+#include "third_party/blink/renderer/core/style/position_try_fallbacks.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -2426,7 +2426,7 @@ bool LocalFrameView::RunResizeObserverSteps(
   disconnected_elements_with_remembered_size_.clear();
 
   // https://drafts.csswg.org/css-anchor-position-1/#last-successful-position-option
-  bool re_run_lifecycles = UpdateLastSuccessfulPositionOptions();
+  bool re_run_lifecycles = UpdateLastSuccessfulPositionFallbacks();
 
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
@@ -5056,11 +5056,11 @@ void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
   disconnected_elements_with_remembered_size_.insert(element);
 }
 
-bool LocalFrameView::UpdateLastSuccessfulPositionOptions() {
+bool LocalFrameView::UpdateLastSuccessfulPositionFallbacks() {
   return GetFrame()
       .GetDocument()
       ->GetStyleEngine()
-      .UpdateLastSuccessfulPositionOptions();
+      .UpdateLastSuccessfulPositionFallbacks();
 }
 
 }  // namespace blink

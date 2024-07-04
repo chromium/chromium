@@ -5152,7 +5152,7 @@ void LayoutObject::SetSVGSelfOrDescendantHasViewportDependency() {
 void LayoutObject::InvalidateSubtreePositionTry(bool mark_style_dirty) {
   NOT_DESTROYED();
 
-  bool invalidate = StyleRef().GetPositionTryOptions() != nullptr;
+  bool invalidate = StyleRef().GetPositionTryFallbacks() != nullptr;
   if (invalidate) {
     // Invalidate layout as @position-fallback styles are applied during layout.
     SetNeedsLayout(layout_invalidation_reason::kStyleChange);

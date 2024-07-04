@@ -88,7 +88,7 @@ class CORE_EXPORT StylePropertySerializer {
   String WhiteSpaceValue() const;
   String ScrollStartValue() const;
   String ScrollStartTargetValue() const;
-  String PositionTryValue() const;
+  String PositionTryValue(const StylePropertyShorthand&) const;
   String GetPropertyText(const CSSPropertyName&,
                          const String& value,
                          bool is_important,

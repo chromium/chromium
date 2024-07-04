@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <title>CSS Anchor Positioning: <'inset-area'> value</title>
-<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-try-options">
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#position-try-fallbacks">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -49,7 +49,7 @@ function test_inset_area_fn(inset_area) {
     });
     style.textContent = `
       #target {
-        position-try-options: ${inset_area};
+        position-try-fallbacks: ${inset_area};
       }
       #ref {
         inset-area: ${inset_area};

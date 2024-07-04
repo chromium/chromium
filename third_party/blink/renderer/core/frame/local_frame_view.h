@@ -1001,7 +1001,7 @@ class CORE_EXPORT LocalFrameView final
   bool RunScrollSnapshotClientSteps();
   bool ShouldDeferLayoutSnap() const;
 
-  bool UpdateLastSuccessfulPositionOptions();
+  bool UpdateLastSuccessfulPositionFallbacks();
   bool NotifyResizeObservers();
   bool RunResizeObserverSteps(DocumentLifecycle::LifecycleState target_state);
   void ClearResizeObserverLimit();

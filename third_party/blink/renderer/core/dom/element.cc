@@ -3324,7 +3324,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     } else if (data->GetOutOfFlowData()) {
       GetDocument()
           .GetStyleEngine()
-          .MarkLastSuccessfulPositionOptionDirtyForElement(*this);
+          .MarkLastSuccessfulPositionFallbackDirtyForElement(*this);
     }
 
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
@@ -3493,7 +3493,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
   }
 
   if (style->DependsOnSizeContainerQueries() ||
-      style->GetPositionTryOptions() || style->HasAnchorFunctions()) {
+      style->GetPositionTryFallbacks() || style->HasAnchorFunctions()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
 
@@ -4182,13 +4182,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
     if (diff != ComputedStyle::Difference::kEqual && GetOutOfFlowData() &&
         (!new_style->HasOutOfFlowPosition() ||
-         !base::ValuesEquivalent(old_style->GetPositionTryOptions().Get(),
-                                 new_style->GetPositionTryOptions().Get()))) {
-      // position-try-options or positioning changed, which both invalidate last
-      // successful try option.
+         !base::ValuesEquivalent(old_style->GetPositionTryFallbacks().Get(),
+                                 new_style->GetPositionTryFallbacks().Get()))) {
+      // position-try-fallbacks or positioning changed, which both invalidate
+      // last successful try option.
       GetDocument()
           .GetStyleEngine()
-          .MarkLastSuccessfulPositionOptionDirtyForElement(*this);
+          .MarkLastSuccessfulPositionFallbackDirtyForElement(*this);
     }
 
     const ComputedStyle* layout_style = new_style;

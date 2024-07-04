@@ -908,8 +908,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPositionTryOrder:
       return a.PositionTryOrder() == b.PositionTryOrder();
     case CSSPropertyID::kPositionTryOptions:
-      return base::ValuesEquivalent(a.GetPositionTryOptions(),
-                                    b.GetPositionTryOptions());
+    case CSSPropertyID::kPositionTryFallbacks:
+      return base::ValuesEquivalent(a.GetPositionTryFallbacks(),
+                                    b.GetPositionTryFallbacks());
     case CSSPropertyID::kPositionVisibility:
       return a.GetPositionVisibility() == b.GetPositionVisibility();
 
@@ -1236,6 +1237,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceItems:
     case CSSPropertyID::kPlaceSelf:
     case CSSPropertyID::kPositionTry:
+    case CSSPropertyID::kAlternativePositionTry:
     case CSSPropertyID::kScrollMargin:
     case CSSPropertyID::kScrollPadding:
     case CSSPropertyID::kScrollStart:

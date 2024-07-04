@@ -38,7 +38,7 @@ select::select-fallback-datalist {
   min-block-size: 1lh;
   inset-block-start: anchor(self-end);
   inset-inline-start: anchor(self-start);
-  position-try-options:
+  position-try-fallbacks:
     -internal-selectlist-datalist-reverse-block,
     -internal-selectlist-datalist-reverse-inline,
     -internal-selectlist-datalist-reverse-both,

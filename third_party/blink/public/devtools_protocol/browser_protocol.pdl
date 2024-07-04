@@ -2207,7 +2207,7 @@ experimental domain CSS
       optional array of CSSKeyframesRule cssKeyframesRules
       # A list of CSS position fallbacks matching this node.
       deprecated optional array of CSSPositionFallbackRule cssPositionFallbackRules
-      # A list of CSS @position-try rules matching this node, based on the position-try-options property.
+      # A list of CSS @position-try rules matching this node, based on the position-try-fallbacks property.
       optional array of CSSPositionTryRule cssPositionTryRules
       # A list of CSS at-property rules matching this node.
       optional array of CSSPropertyRule cssPropertyRules

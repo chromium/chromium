@@ -314,6 +314,7 @@ All changes to this list should go through Blink's feature review process: http:
     popover-show-delay
     position
     position-anchor
+    position-try-fallbacks
     position-try-options
     position-try-order
     position-visibility
@@ -759,7 +760,7 @@ All changes to this list should go through Blink's feature review process: http:
         align-self
         justify-self
     position-try
-        position-try-options
+        position-try-fallbacks
         position-try-order
     scroll-margin
         scroll-margin-bottom

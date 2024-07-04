@@ -66,11 +66,11 @@ struct CORE_EXPORT MatchedProperties {
     // https://drafts.csswg.org/css-cascade-5/#layer-ordering
     uint16_t layer_order;
     bool is_inline_style;
-    // Try styles come from position-try-options.
+    // Try styles come from position-try-fallbacks.
     // https://drafts.csswg.org/css-anchor-position-1/#fallback
     bool is_try_style;
     // Try-tactics style come from <try-tactic>.
-    // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-options-try-tactic
+    // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
     bool is_try_tactics_style;
     // See CSSSelector::IsInvisible.
     bool is_invisible;

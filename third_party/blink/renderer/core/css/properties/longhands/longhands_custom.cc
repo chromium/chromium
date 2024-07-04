@@ -7082,57 +7082,57 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.PositionInternal());
 }
 
-const CSSValue* PositionTryOptions::ParseSingleValue(
+const CSSValue* PositionTryFallbacks::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumePositionTryOptions(stream, context);
+  return css_parsing_utils::ConsumePositionTryFallbacks(stream, context);
 }
 
-const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
+const CSSValue* PositionTryFallbacks::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (const blink::PositionTryOptions* options =
-          style.GetPositionTryOptions()) {
-    return ComputedStyleUtils::ValueForPositionTryOptions(*options);
+  if (const blink::PositionTryFallbacks* fallbacks =
+          style.GetPositionTryFallbacks()) {
+    return ComputedStyleUtils::ValueForPositionTryFallbacks(*fallbacks);
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
-void PositionTryOptions::ApplyValue(StyleResolverState& state,
-                                    const CSSValue& value,
-                                    ValueMode) const {
+void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
+                                      const CSSValue& value,
+                                      ValueMode) const {
   if (value.IsIdentifierValue()) {
     DCHECK(To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone);
     // Just represent as nullptr.
     return;
   }
-  HeapVector<PositionTryOption> options;
-  for (const auto& option : To<CSSValueList>(value)) {
+  HeapVector<PositionTryFallback> fallbacks;
+  for (const auto& fallback : To<CSSValueList>(value)) {
     // inset-area( <inset-area> )
-    if (const auto* function = DynamicTo<CSSFunctionValue>(option.Get())) {
+    if (const auto* function = DynamicTo<CSSFunctionValue>(fallback.Get())) {
       CHECK(!RuntimeEnabledFeatures::CSSInsetAreaValueEnabled());
       CHECK_EQ(1u, function->length());
       blink::InsetArea inset_area =
           StyleBuilderConverter::ConvertInsetArea(state, function->First());
-      options.push_back(PositionTryOption(inset_area));
+      fallbacks.push_back(PositionTryFallback(inset_area));
       continue;
     }
     // <'inset-area'>
-    if (IsA<CSSValuePair>(option.Get()) ||
-        IsA<CSSIdentifierValue>(option.Get())) {
+    if (IsA<CSSValuePair>(fallback.Get()) ||
+        IsA<CSSIdentifierValue>(fallback.Get())) {
       blink::InsetArea inset_area =
-          StyleBuilderConverter::ConvertInsetArea(state, *option.Get());
-      options.push_back(PositionTryOption(inset_area));
+          StyleBuilderConverter::ConvertInsetArea(state, *fallback.Get());
+      fallbacks.push_back(PositionTryFallback(inset_area));
       continue;
     }
     // [<dashed-ident> || <try-tactic>]
     const ScopedCSSName* scoped_name = nullptr;
     TryTacticList tactic_list = {TryTactic::kNone};
     wtf_size_t tactic_index = 0;
-    for (const auto& name_or_tactic : To<CSSValueList>(*option)) {
+    for (const auto& name_or_tactic : To<CSSValueList>(*fallback)) {
       if (const auto* name = DynamicTo<CSSCustomIdentValue>(*name_or_tactic)) {
         scoped_name = StyleBuilderConverter::ConvertCustomIdent(state, *name);
         continue;
@@ -7141,11 +7141,27 @@ void PositionTryOptions::ApplyValue(StyleResolverState& state,
       tactic_list[tactic_index++] =
           To<CSSIdentifierValue>(*name_or_tactic).ConvertTo<TryTactic>();
     }
-    options.push_back(PositionTryOption(scoped_name, tactic_list));
+    fallbacks.push_back(PositionTryFallback(scoped_name, tactic_list));
   }
-  DCHECK(!options.empty());
-  state.StyleBuilder().SetPositionTryOptions(
-      MakeGarbageCollected<blink::PositionTryOptions>(options));
+  DCHECK(!fallbacks.empty());
+  state.StyleBuilder().SetPositionTryFallbacks(
+      MakeGarbageCollected<blink::PositionTryFallbacks>(fallbacks));
+}
+
+const CSSValue* PositionTryOptions::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumePositionTryFallbacks(stream, context);
+}
+
+const CSSValue* PositionTryOptions::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return GetCSSPropertyPositionTryFallbacks().CSSValueFromComputedStyleInternal(
+      style, layout_object, allow_visited_style, value_phase);
 }
 
 const CSSValue* PositionTryOrder::InitialValue() const {

@@ -4550,19 +4550,24 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "position-try-options",
+      name: "position-try-fallbacks",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value"],
       field_group: "*",
       field_template: "external",
       keywords: ["none", "flip-block", "flip-inline", "flip-start"],
       typedom_types: ["Keyword"],
-      include_paths: ["third_party/blink/renderer/core/style/position_try_options.h"],
+      include_paths: ["third_party/blink/renderer/core/style/position_try_fallbacks.h"],
       wrapper_pointer_name: "Member",
-      type_name: "PositionTryOptions",
+      type_name: "PositionTryFallbacks",
       default_value: "nullptr",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionTryFallbacks",
+    },
+    {
+      name: "position-try-options",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      surrogate_for: "position-try-fallbacks",
     },
     {
       name: "position-try-order",
@@ -8153,6 +8158,15 @@
       longhands: ["position-try-order", "position-try-options"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSPositionTryOrder",
+    },
+    {
+      // Variant of the "position-try" shorthand which has the new
+      // position-try-fallbacks instead of position-try-options.
+      name: "-alternative-position-try",
+      alternative_of: "position-try",
+      longhands: ["position-try-order", "position-try-fallbacks"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSPositionTryFallbacks",
     },
     {
       name: "scroll-margin",

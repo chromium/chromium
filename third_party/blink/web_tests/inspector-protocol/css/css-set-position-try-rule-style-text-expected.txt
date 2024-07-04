@@ -6,7 +6,7 @@ The test verifies functionality of protocol method CSS.setStyleTexts for editing
 
 #anchored {
     position: absolute;
-    position-try-options: --fallback;
+    position-try-fallbacks: --fallback;
 }
 
 @position-try --fallback {
@@ -23,7 +23,7 @@ Running test: testBasicSetStyle
 
 #anchored {
     position: absolute;
-    position-try-options: --fallback;
+    position-try-fallbacks: --fallback;
 }
 
 @position-try --fallback {
