@@ -743,7 +743,8 @@ class BrowserUserEducationServiceCommandLineTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam()) {
-      command_line->AppendSwitch("--disable-user-education-rate-limiting");
+      command_line->AppendSwitch(
+          user_education::features::kDisableRateLimitingCommandLine);
     }
   }
 };

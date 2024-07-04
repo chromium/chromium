@@ -57,9 +57,6 @@ inline constexpr int kDefaultNewBadgeFeatureUsedCount = 2;
 inline constexpr char kNewBadgeDisplayWindow[] = "new_badge_display_window";
 inline constexpr base::TimeDelta kDefaultNewBadgeDisplayWindow = base::Days(60);
 
-inline constexpr char kDisableRateLimitingCommandLine[] =
-    "disable-user-education-rate-limiting";
-
 }  // namespace
 
 BASE_FEATURE(kUserEducationExperienceVersion2,

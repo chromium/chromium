@@ -10,6 +10,15 @@
 
 namespace user_education::features {
 
+// Command-line switch that disables rate limiting in User Education, like the
+// new profile grace period and the heavyweight IPH cooldown.
+//
+// For testing purposes, strongly prefer to inherit from
+// `InteractiveFeaturePromoTest`, but this is not possible for unit tests, so
+// this is provided as a public constant for convenience.
+inline constexpr char kDisableRateLimitingCommandLine[] =
+    "disable-user-education-rate-limiting";
+
 BASE_DECLARE_FEATURE(kUserEducationExperienceVersion2);
 BASE_DECLARE_FEATURE(kNewBadgeTestFeature);
 BASE_DECLARE_FEATURE(kWhatsNewVersion2);
