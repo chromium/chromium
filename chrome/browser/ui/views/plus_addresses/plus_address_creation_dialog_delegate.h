@@ -36,7 +36,8 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
       base::WeakPtr<PlusAddressCreationController> controller,
       content::WebContents* web_contents,
       const std::string& primary_email_address,
-      bool offer_refresh);
+      bool offer_refresh,
+      bool show_notice);
   PlusAddressCreationDialogDelegate(const PlusAddressCreationDialogDelegate&) =
       delete;
   PlusAddressCreationDialogDelegate& operator=(
@@ -49,6 +50,8 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   // PlusAddressCreationView:
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile) override;
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
+  // TODO: crbug.com/350660518 - remove from interface and move into anonymous
+  // namespace of the implementation file.
   void OpenSettingsLink(content::WebContents* web_contents) override;
   void OpenErrorReportLink(content::WebContents* web_contents) override;
   void HideRefreshButton() override;

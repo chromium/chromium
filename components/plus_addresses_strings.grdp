@@ -112,6 +112,18 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a refresh is ongoing" translateable="false">
       Refreshing ...
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE" desc="Title of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+      First time usage title placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE" desc="Description of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+      First time usage feature description placeholder.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE" desc="The notice text on the creation modal on Desktop that is used on the first run and thus contains a notice." translateable="false">
+      First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link. <ph name="LEARN_MORE_LINK">$2</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT" desc="The text of the link to learn more about plus addresses." translateable="false">
+      Learn more
+    </message>
 
     <!-- Settings strings -->
     <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">

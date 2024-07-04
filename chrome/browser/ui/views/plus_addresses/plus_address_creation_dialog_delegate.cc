@@ -84,11 +84,28 @@ const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kLogoLargeIcon = vector_icons::kProductIcon;
 #endif
 
+// Opens a link to learn more about plus addresses.
+void OpenLearnMoreLink(content::WebContents* web_contents) {
+  if (web_contents && !features::kPlusAddressLearnMoreUrl.Get().empty()) {
+    web_contents->OpenURL(
+        content::OpenURLParams(GURL(features::kPlusAddressLearnMoreUrl.Get()),
+                               content::Referrer(),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui::PageTransition::PAGE_TRANSITION_LINK,
+                               /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
+  }
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView, kTopViewId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressTitleElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressDescriptionTextElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
+                                      kPlusAddressNoticeElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
                                       kPlusAddressErrorTextElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PlusAddressCreationView,
@@ -104,7 +121,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     base::WeakPtr<PlusAddressCreationController> controller,
     content::WebContents* web_contents,
     const std::string& primary_email_address,
-    bool offer_refresh)
+    bool offer_refresh,
+    bool show_notice)
     : views::BubbleDialogDelegate(/*anchor_view=*/nullptr,
                                   views::BubbleBorder::Arrow::NONE),
       controller_(controller),
@@ -141,8 +159,12 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // The title.
   primary_view->AddChildView(
       views::Builder<views::StyledLabel>()
+          .SetProperty(views::kElementIdentifierKey, kPlusAddressTitleElementId)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetText(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE))
+          .SetTextContext(views::style::STYLE_PRIMARY)
+          .SetText(l10n_util::GetStringUTF16(
+              show_notice ? IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE
+                          : IDS_PLUS_ADDRESS_MODAL_TITLE))
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetDefaultTextStyle(views::style::STYLE_BODY_1_BOLD)
           .Build());
@@ -159,9 +181,12 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
                            views::LayoutProvider::Get()->GetDistanceMetric(
                                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
                            0, 0, 0))
-          .SetText(l10n_util::GetStringFUTF16(
-              IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
-              {base::UTF8ToUTF16(primary_email_address)}))
+          .SetText(show_notice
+                       ? l10n_util::GetStringUTF16(
+                             IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)
+                       : l10n_util::GetStringFUTF16(
+                             IDS_PLUS_ADDRESS_MODAL_DESCRIPTION,
+                             {base::UTF8ToUTF16(primary_email_address)}))
           .Build());
 
   // Create a bubble for the plus address to be displayed in.
@@ -252,12 +277,45 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // Update style for error link.
   gfx::Range error_link_range(error_link_offsets[0],
                               error_link_offsets[0] + error_link_text.length());
-  views::StyledLabel::RangeStyleInfo error_link_text_style =
+  const auto error_link_text_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &PlusAddressCreationDialogDelegate::OpenErrorReportLink,
           // Safe because this delegate outlives the Widget (and this view).
           base::Unretained(this), web_contents));
   error_report_label_->AddStyleRange(error_link_range, error_link_text_style);
+
+  if (show_notice) {
+    std::vector<size_t> replacement_offsets;
+    const std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT);
+    auto* notice_label = primary_view->AddChildView(
+        views::Builder<views::StyledLabel>()
+            .SetProperty(views::kElementIdentifierKey,
+                         kPlusAddressNoticeElementId)
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_5)
+            .SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary)
+            .SetText(l10n_util::GetStringFUTF16(
+                IDS_PLUS_ADDRESS_MODAL_NOTICE,
+                /*replacements=*/
+                {base::UTF8ToUTF16(primary_email_address),
+                 learn_more_link_text},
+                &replacement_offsets))
+            .SetProperty(
+                views::kMarginsKey,
+                gfx::Insets::TLBR(0, 0, kPlusAddressLabelVerticalMargin, 0))
+            .Build());
+    auto learn_more_link_text_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(
+            base::BindRepeating(&OpenLearnMoreLink, web_contents));
+    // TODO: crbug.com/350660518 - Investigate missing underline.
+    learn_more_link_text_style.text_style =
+        views::style::TextStyle::STYLE_LINK_5;
+    notice_label->AddStyleRange(
+        gfx::Range(replacement_offsets[1],
+                   replacement_offsets[1] + learn_more_link_text.length()),
+        learn_more_link_text_style);
+  }
 
   // Avoid using the builtin DialogDelegate buttons so that we can use
   // GetWidget()->Close() to close the UI when ready.

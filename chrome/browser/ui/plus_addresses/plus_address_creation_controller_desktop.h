@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -18,6 +19,7 @@ namespace plus_addresses {
 class PlusAddressCreationDialogDelegate;
 class PlusAddressCreationView;
 class PlusAddressService;
+class PlusAddressSettingService;
 
 class PlusAddressCreationControllerDesktop
     : public PlusAddressCreationController,
@@ -55,6 +57,12 @@ class PlusAddressCreationControllerDesktop
       PlusAddressCreationControllerDesktop>;
 
   PlusAddressService* GetPlusAddressService();
+  PlusAddressSettingService* GetPlusAddressSettingService();
+
+  // Returns whether we should show a notice. This is true iff the user has
+  // never created a plus address before (and the feature for showing the notice
+  // is enabled).
+  bool ShouldShowNotice() const;
 
   // Populates `plus_profile_` with `maybe_plus_profile` if it's not an error.
   void OnPlusAddressReserved(const PlusProfileOrError& maybe_plus_profile);

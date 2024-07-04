@@ -620,6 +620,7 @@ static_library("ui") {
     "//components/plus_addresses",
     "//components/plus_addresses:features",
     "//components/plus_addresses/metrics",
+    "//components/plus_addresses/settings",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/pref_registry",

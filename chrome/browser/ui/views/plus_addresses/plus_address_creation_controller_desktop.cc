@@ -11,11 +11,14 @@
 #include <utility>
 
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 
 namespace plus_addresses {
 // static
@@ -54,6 +57,12 @@ PlusAddressCreationControllerDesktop::GetPlusAddressService() {
       GetWebContents().GetBrowserContext());
 }
 
+PlusAddressSettingService*
+PlusAddressCreationControllerDesktop::GetPlusAddressSettingService() {
+  return PlusAddressSettingServiceFactory::GetForBrowserContext(
+      GetWebContents().GetBrowserContext());
+}
+
 void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {
@@ -82,7 +91,8 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
         GetWeakPtr(), &GetWebContents(), maybe_email.value(),
-        plus_address_service->IsRefreshingSupported(relevant_origin_));
+        plus_address_service->IsRefreshingSupported(relevant_origin_),
+        ShouldShowNotice());
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
   }
@@ -187,8 +197,15 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
+    // Autofill the plus address.
     std::move(callback_).Run(maybe_plus_profile->plus_address);
-    // PlusAddress successfully confirmed, closing the modal.
+
+    // If this was a first run dialog, record that the user has accepted the
+    // notice.
+    if (ShouldShowNotice()) {
+      GetPlusAddressSettingService()->SetHasAcceptedNotice();
+    }
+
     RecordModalShownOutcome(
         metrics::PlusAddressModalCompletionStatus::kModalConfirmed);
   } else {
@@ -201,6 +218,17 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   if (dialog_delegate_) {
     dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
   }
+}
+
+bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {
+  // `this` is never created as a `const` member - therefore the cast is safe.
+  const PlusAddressSettingService* setting_service =
+      const_cast<PlusAddressCreationControllerDesktop*>(this)
+          ->GetPlusAddressSettingService();
+
+  // TODO: crbug.com/350660518 - query the setting service.
+  return setting_service && base::FeatureList::IsEnabled(
+                                features::kPlusAddressUserOnboardingEnabled);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PlusAddressCreationControllerDesktop);

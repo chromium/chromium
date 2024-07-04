@@ -4,11 +4,13 @@
 
 #include "base/i18n/base_i18n_switches.h"
 #include "base/json/json_reader.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -22,10 +24,13 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/settings/mock_plus_address_setting_service.h"
+#include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -48,6 +53,7 @@ constexpr char kFakeEmailAddress[] = "alice@email.example";
 constexpr char kFakeManagementUrl[] = "https://manage.example/";
 constexpr char kFakeOauthScope[] = "https://foo.example";
 constexpr char kFakeErrorReportUrl[] = "https://error-link.example/";
+constexpr char kFakeLearnMoreUrl[] = "https://learn-more.stuff";
 constexpr char kReservePath[] = "/v1/profiles/reserve";
 constexpr char kConfirmPath[] = "/v1/profiles/create";
 
@@ -84,6 +90,17 @@ std::string FormatRefreshHistogramNameFor(
       /*offsets=*/nullptr);
 }
 
+void RegisterTestingFactories(content::BrowserContext* context) {
+  // Required to use IdentityTestEnvironmentAdaptor.
+  IdentityTestEnvironmentProfileAdaptor::
+      SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  PlusAddressSettingServiceFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+        return std::make_unique<MockPlusAddressSettingService>();
+      }));
+}
+
 }  // namespace
 
 class ScopedPlusAddressFeatureList {
@@ -96,22 +113,34 @@ class ScopedPlusAddressFeatureList {
          {"server-url", {"https://override-me-please.example"}},
          {"oauth-scope", {kFakeOauthScope}},
          {"manage-url", {kFakeManagementUrl}},
-         {"error-report-url", {kFakeErrorReportUrl}}});
+         {"error-report-url", {kFakeErrorReportUrl}},
+         {"learn-more", {kFakeLearnMoreUrl}}});
   }
 
-  void Reinit(const std::string& server_url) {
+  void Reinit(const std::string& server_url, bool enable_onboarding = false) {
     CHECK(!server_url.empty());
     features_.Reset();
       // Don't enable the 'sync-with-server' param so that the dialog is the
       // only way to trigger requests to the server.
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kPlusAddressesEnabled,
-                               {{"server-url", {server_url}},
-                                {"oauth-scope", {kFakeOauthScope}},
-                                {"manage-url", {kFakeManagementUrl}},
-                                {"error-report-url", {kFakeErrorReportUrl}}}},
-                              {features::kPlusAddressRefresh, {}}},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kPlusAddressesEnabled,
+         {{"server-url", {server_url}},
+          {"oauth-scope", {kFakeOauthScope}},
+          {"manage-url", {kFakeManagementUrl}},
+          {"error-report-url", {kFakeErrorReportUrl}},
+          {"learn-more", {kFakeLearnMoreUrl}}}},
+        {features::kPlusAddressRefresh, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (enable_onboarding) {
+      enabled_features.push_back(
+          {features::kPlusAddressUserOnboardingEnabled, {}});
+    } else {
+      disabled_features.push_back(features::kPlusAddressUserOnboardingEnabled);
+    }
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
   }
 
  private:
@@ -129,12 +158,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     unused_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  // Required to use IdentityTestEnvironmentAdaptor.
-                  IdentityTestEnvironmentProfileAdaptor::
-                      SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-                          context);
-                }));
+                base::BindRepeating(&RegisterTestingFactories));
   }
 
   void SetUpOnMainThread() override {
@@ -645,6 +669,128 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
       }),
       CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
                                       /*canceled=*/0));
+}
+
+// A test fixture that has the feature to show the onboarding notice turned on.
+class PlusAddressCreationDialogWithNoticeTest
+    : public PlusAddressCreationDialogInteractiveTest {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    // Reinit `feature_list_` here since the test server URL isn't ready at the
+    // time we must first initialize the ScopedFeatureList.
+    feature_list_.Reinit(embedded_test_server()->base_url().spec(),
+                         /*enable_onboarding=*/true);
+    InteractiveBrowserTest::SetUp();
+  }
+
+ protected:
+  MockPlusAddressSettingService& setting_service() {
+    return static_cast<MockPlusAddressSettingService&>(
+        *PlusAddressSettingServiceFactory::GetForBrowserContext(
+            browser()->profile()));
+  }
+};
+
+// Tests showing and cancelling the creation dialog for a user that has not yet
+// accepted the notice.
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
+                       ShowNoticeAndCancel) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
+      base::Unretained(this)));
+  embedded_test_server()->StartAcceptingConnections();
+
+  EXPECT_CALL(setting_service(), SetHasAcceptedNotice).Times(0);
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForViewProperty(
+          PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+          views::View, Enabled, true)),
+      InSameContext(Steps(
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              &views::Label::GetText, kFakePlusAddressU16),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressTitleElementId,
+              &views::StyledLabel::GetText,
+              l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE)),
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId,
+              &views::StyledLabel::GetText,
+              l10n_util::GetStringUTF16(
+                  IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE)),
+          EnsurePresent(PlusAddressCreationView::kPlusAddressNoticeElementId),
+          SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                                  kSuppressedScreenshotError),
+          Screenshot(PlusAddressCreationView::kTopViewId,
+                     /*screenshot_name=*/"notice",
+                     /*baseline_cl=*/"5671781"),
+          PressButton(
+              PlusAddressCreationView::kPlusAddressCancelButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
+      FlushEvents(),
+      CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/0,
+                                      /*canceled=*/1));
+}
+
+// Tests showing and accepting the creation dialog for a user that has not yet
+// accepted the notice.
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
+                       ShowNoticeAndAccept) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
+      base::Unretained(this)));
+  embedded_test_server()->StartAcceptingConnections();
+
+  EXPECT_CALL(setting_service(), SetHasAcceptedNotice);
+
+  RunTestSequence(
+      ShowModal(),
+      InAnyContext(WaitForViewProperty(
+          PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+          views::View, Enabled, true)),
+      InSameContext(Steps(
+          CheckViewProperty(
+              PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
+              &views::Label::GetText, kFakePlusAddressU16),
+          PressButton(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId),
+          WaitForHide(
+              PlusAddressCreationView::kPlusAddressDescriptionTextElementId))),
+      FlushEvents(),
+      CheckModalEventHistogramBuckets(/*shown=*/1, /*confirmed=*/1,
+                                      /*canceled=*/0));
+}
+
+// Tests that clicking the "learn more" link on the notice screen opens a new
+// tab with the correct URL.
+IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogWithNoticeTest,
+                       ClickLearnMoreLink) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &PlusAddressCreationDialogInteractiveTest::HandleRequestWithSuccess,
+      base::Unretained(this)));
+  embedded_test_server()->StartAcceptingConnections();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabElementId);
+  RunTestSequence(
+      InstrumentNextTab(kTabElementId, AnyBrowser()), ShowModal(),
+      InAnyContext(Steps(
+          WaitForShow(PlusAddressCreationView::kPlusAddressNoticeElementId),
+          // EnsurePresent here is necessary to ensure that the link can be
+          // clicked.
+          EnsurePresent(PlusAddressCreationView::kPlusAddressNoticeElementId))),
+      InAnyContext(
+          WithElement(
+              PlusAddressCreationView::kPlusAddressNoticeElementId,
+              [](ui::TrackedElement* el) {
+                AsView<views::StyledLabel>(el)->ClickFirstLinkForTesting();
+              })
+              .SetMustRemainVisible(false)),
+      InAnyContext(WaitForWebContentsNavigation(kTabElementId,
+                                                GURL(kFakeLearnMoreUrl))));
 }
 
 class PlusAddressCreationDialogUiVariationsTest

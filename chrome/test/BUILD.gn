@@ -11332,6 +11332,8 @@ if (!is_android && !is_chromeos_device) {
       "//components/password_manager/content/browser",
       "//components/plus_addresses",
       "//components/plus_addresses:test_support",
+      "//components/plus_addresses/settings",
+      "//components/plus_addresses/settings:test_support",
       "//components/privacy_sandbox:privacy_sandbox",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
       "//components/privacy_sandbox:tracking_protection_prefs",
