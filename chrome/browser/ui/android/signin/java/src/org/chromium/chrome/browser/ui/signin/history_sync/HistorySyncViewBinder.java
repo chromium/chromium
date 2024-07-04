@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -12,23 +13,27 @@ class HistorySyncViewBinder {
         if (key == HistorySyncProperties.PROFILE_DATA) {
             view.getAccountImageView()
                     .setImageDrawable(model.get(HistorySyncProperties.PROFILE_DATA).getImage());
-        } else if (key == HistorySyncProperties.ON_ACCEPT_CLICKED) {
-            if (view.getAcceptButton() != null) {
-                view.getAcceptButton()
-                        .setOnClickListener(model.get(HistorySyncProperties.ON_ACCEPT_CLICKED));
-            }
-        } else if (key == HistorySyncProperties.ON_DECLINE_CLICKED) {
-            if (view.getDeclineButton() != null) {
-                view.getDeclineButton()
-                        .setOnClickListener(model.get(HistorySyncProperties.ON_DECLINE_CLICKED));
-            }
         } else if (key == HistorySyncProperties.FOOTER_STRING) {
             view.getDetailsDescription().setText(model.get(HistorySyncProperties.FOOTER_STRING));
         } else if (key == HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS
-                || key == HistorySyncProperties.USE_LANDSCAPE_LAYOUT) {
+                || key == HistorySyncProperties.USE_LANDSCAPE_LAYOUT
+                || key == HistorySyncProperties.ON_ACCEPT_CLICKED
+                || key == HistorySyncProperties.ON_DECLINE_CLICKED) {
             view.maybeCreateButtons(
                     model.get(HistorySyncProperties.USE_LANDSCAPE_LAYOUT),
                     model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS));
+
+            if (view.getAcceptButton() == null || view.getDeclineButton() == null) {
+                assert model.get(HistorySyncProperties.MINOR_MODE_RESTRICTION_STATUS)
+                        == ScreenMode.PENDING;
+                return;
+            }
+
+            view.getAcceptButton()
+                    .setOnClickListener(model.get(HistorySyncProperties.ON_ACCEPT_CLICKED));
+            view.getDeclineButton()
+                    .setOnClickListener(model.get(HistorySyncProperties.ON_DECLINE_CLICKED));
+
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }

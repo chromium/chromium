@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -80,6 +81,7 @@ public class HistorySyncTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
+    private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;
@@ -484,6 +486,108 @@ public class HistorySyncTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    /**
+     * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
+     * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
+     * View is set.
+     */
+    public void testOnClickListenersAttachedWithMinorModeAccount() {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHistorySyncCoordinator =
+                            new HistorySyncCoordinator(
+                                    mActivityTestRule.getActivity(),
+                                    mHistorySyncDelegateMock,
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    SIGNIN_ACCESS_POINT,
+                                    false,
+                                    false,
+                                    null);
+                });
+
+        // Wait for MinorModeHelper to resolve
+        new FakeTimeTestRule().sleepMillis(MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .setContentView(mHistorySyncCoordinator.maybeRecreateView());
+                });
+
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.button_primary_minor_mode), isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            mHistorySyncCoordinator
+                                    .getView()
+                                    .getAcceptButton()
+                                    .hasOnClickListeners());
+                    Assert.assertTrue(
+                            mHistorySyncCoordinator
+                                    .getView()
+                                    .getDeclineButton()
+                                    .hasOnClickListeners());
+                });
+    }
+
+    @Test
+    @MediumTest
+    /**
+     * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
+     * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
+     * View is set.
+     */
+    public void testOnClickListenersAttachedWithNonMinorModeAccount() {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHistorySyncCoordinator =
+                            new HistorySyncCoordinator(
+                                    mActivityTestRule.getActivity(),
+                                    mHistorySyncDelegateMock,
+                                    ProfileManager.getLastUsedRegularProfile(),
+                                    SIGNIN_ACCESS_POINT,
+                                    false,
+                                    false,
+                                    null);
+                });
+
+        // Wait for MinorModeHelper to resolve
+        new FakeTimeTestRule().sleepMillis(MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .setContentView(mHistorySyncCoordinator.maybeRecreateView());
+                });
+
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withId(R.id.button_primary), isDisplayed()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            mHistorySyncCoordinator
+                                    .getView()
+                                    .getAcceptButton()
+                                    .hasOnClickListeners());
+                    Assert.assertTrue(
+                            mHistorySyncCoordinator
+                                    .getView()
+                                    .getDeclineButton()
+                                    .hasOnClickListeners());
+                });
+    }
+
     private void buildHistorySyncCoordinator() {
         buildHistorySyncCoordinator(false, false);
     }
@@ -503,7 +607,7 @@ public class HistorySyncTest {
                                     null);
                     mActivityTestRule
                             .getActivity()
-                            .setContentView(mHistorySyncCoordinator.getView());
+                            .setContentView(mHistorySyncCoordinator.maybeRecreateView());
                 });
         ViewUtils.waitForVisibleView(allOf(withId(R.id.history_sync_title), isDisplayed()));
     }
