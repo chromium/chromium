@@ -5508,10 +5508,7 @@ if (!is_android) {
       }
 
       if (is_chromeos_ash) {
-        sources += [
-          "../browser/ash/crosapi/extension_printer_service_ash_browsertest.cc",
-          "../browser/ui/webui/print_preview/extension_printer_handler_adapter_ash_browsertest.cc",
-        ]
+        sources += [ "../browser/ui/webui/print_preview/extension_printer_handler_adapter_ash_browsertest.cc" ]
       }
 
       if (is_chromeos_lacros) {
