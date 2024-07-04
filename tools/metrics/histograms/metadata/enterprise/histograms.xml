@@ -675,6 +675,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceLocalAccountCount" units="accounts"
+    expires_after="M130">
+  <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>Logs the number of device local accounts on the device.</summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceLocalAccountPolicyInvalidations2"
     enum="EnterprisePolicyInvalidations" expires_after="2024-12-01">
   <owner>asumaneev@google.com</owner>

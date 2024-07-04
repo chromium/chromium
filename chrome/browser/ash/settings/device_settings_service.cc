@@ -44,6 +44,8 @@ constexpr char kDeviceIdValidityNewEnrollmentEnterprise[] =
     "Enterprise.DevicePolicyDeviceIdValidity2.NewEnrollmentEnterprise";
 constexpr char kDeviceIdValidityNewEnrollmentDemo[] =
     "Enterprise.DevicePolicyDeviceIdValidity2.NewEnrollmentDemo";
+constexpr char kDeviceLocalAccountCount[] =
+    "Enterprise.DeviceLocalAccountCount";
 
 void RecordDeviceIdValidityMetric(em::PolicyData* policy_data) {
   // The enrollment version pref was added in M121. All the devices enrolled
@@ -73,6 +75,16 @@ void RecordDeviceIdValidityMetric(em::PolicyData* policy_data) {
     histogram_name = kDeviceIdValidityOldEnrollmentEnterprise;
   }
   base::UmaHistogramEnumeration(histogram_name, device_id_validity);
+}
+
+void RecordDeviceLocalAccountsMetric(
+    const em::ChromeDeviceSettingsProto& settings) {
+  base::UmaHistogramCustomCounts(
+      kDeviceLocalAccountCount,
+      settings.device_local_accounts().account().size(),
+      /*min=*/1,
+      /*exclusive_max=*/500,
+      /*buckets=*/100);
 }
 
 }  // namespace
@@ -387,13 +399,14 @@ void DeviceSettingsService::HandleCompletedOperation(
   if (status == STORE_SUCCESS) {
     policy_fetch_response_ = std::move(operation->policy_fetch_response());
     policy_data_ = std::move(operation->policy_data());
-    // Log device_id validity histogram only if the device is managed and the
-    // policy is in good state.
+    device_settings_ = std::move(operation->device_settings());
+    // Log histograms only if the device is managed and the policy is in
+    // good state.
     if (policy_data_ && policy_data_->has_request_token() &&
         InstallAttributes::Get()->IsEnterpriseManaged()) {
       RecordDeviceIdValidityMetric(policy_data_.get());
+      RecordDeviceLocalAccountsMetric(*device_settings_);
     }
-    device_settings_ = std::move(operation->device_settings());
     // Update "OffHours" policy state and apply "OffHours" policy to current
     // proto only during "OffHours" mode. When "OffHours" mode begins and ends
     // DeviceOffHoursController requests DeviceSettingsService to asynchronously
