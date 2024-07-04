@@ -240509,6 +240509,19 @@
         {}
        ]
       ],
+      "svg-viewBox.html": [
+       "d5c2336bdd0402259ce94e9f83c69ce794fb2d1e",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/svg-viewBox-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "svg.html": [
        "826ce5a80a3b9c06b3c14678704daffd3e2faf7b",
        [
@@ -287952,6 +287965,19 @@
       ],
       "non-scaling-stroke-002.html": [
        "bdb31c286097825c0af01d990a4019d6242bf2c8",
+       [
+        null,
+        [
+         [
+          "/svg/painting/reftests/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "non-scaling-stroke-003.html": [
+       "147bf814d30f10094b77aeb4eb0fc25396cda00e",
        [
         null,
         [
@@ -346866,6 +346892,10 @@
       "svg-ref.html": [
        "10bf2decaa74ae0108c86d5b97ad0480f85bf307",
        []
+      ],
+      "svg-viewBox-ref.html": [
+       "b58eb47a23c4a0531e6ec6f690cebbd2dfb46afc",
+       []
       ]
      }
     },
@@ -398163,6 +398193,10 @@
      "use-element-transitions-ref.html": [
       "f564b90de8cd962a19a6205338afdfa9a24e461f",
       []
+     ],
+     "vector-effect-valid-expected.txt": [
+      "b0bef9c6c6459362959ef2a974240472e5e36fa3",
+      []
      ]
     },
     "text": {
@@ -403967,6 +404001,10 @@
     ],
     "RTCDataChannel-bufferedAmount-expected.txt": [
      "356b2fc7c3bd13bd8945398d68f1f4af6e5de022",
+     []
+    ],
+    "RTCDataChannel-close-expected.txt": [
+     "2e9c6736fdd4f18c3726bae9596dd68112e53a70",
      []
     ],
     "RTCDataChannel-send-blob-order-expected.txt": [
@@ -660447,6 +660485,20 @@
        null,
        {}
       ]
+     ],
+     "vector-effect-invalid.html": [
+      "ec49b88c59959ce33b6b3914026b25003cf74ee8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "vector-effect-valid.html": [
+      "9563db0523ba741a94887c9e98d1db37b6da327b",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "text": {
@@ -696748,7 +696800,7 @@
      ]
     ],
     "RTCDataChannel-close.html": [
-     "64534fc50707747f2835671c638cb6ba16e317b0",
+     "e215d95ed9a932692d066a06c05dc84d36db8215",
      [
       null,
       {
