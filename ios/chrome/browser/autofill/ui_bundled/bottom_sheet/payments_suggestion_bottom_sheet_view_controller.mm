@@ -40,7 +40,7 @@ CGFloat const kSpacingBeforeImage = 16;
 CGFloat const kSpacingAfterImage = 4;
 
 // Height of the logo used as the title of the bottom sheet.
-CGFloat const kTitleLogoHeight = 50;
+CGFloat const kTitleLogoHeight = 32;
 
 }  // namespace
 
