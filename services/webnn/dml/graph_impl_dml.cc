@@ -258,7 +258,6 @@ struct UploadAndDefaultBuffers {
 // for uploading and binding separately.
 std::optional<std::map<uint64_t, DML_BUFFER_BINDING>>
 UploadAndCreateConstantBufferBinding(
-    CommandQueue* command_queue,
     CommandRecorder* command_recorder,
     const base::flat_map<uint64_t, mojo_base::BigBuffer>& key_to_buffer_map,
     const AlignedByteLength<uint64_t>& aligned_byte_length,
@@ -313,7 +312,8 @@ UploadAndCreateConstantBufferBinding(
 
   if (absl::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
     CHECK(cpu_buffer);
-    command_queue->ReferenceUntilCompleted(std::move(cpu_buffer));
+    command_recorder->command_queue()->ReferenceUntilCompleted(
+        std::move(cpu_buffer));
   } else {
     CHECK(default_buffer);
     CHECK(upload_buffer);
@@ -5378,6 +5378,7 @@ HRESULT GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread(
                "dml::GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread");
   RETURN_IF_FAILED(init_command_recorder_for_npu->Execute());
   RETURN_IF_FAILED(init_command_recorder_for_npu->command_queue()->WaitSync());
+  // Release the resources used for graph initialization.
   init_command_recorder_for_npu->command_queue()->ReleaseCompletedResources();
   return S_OK;
 }
@@ -5498,9 +5499,8 @@ void GraphImplDml::OnCompilationComplete(
     }
 
     auto constant_buffer_binding = UploadAndCreateConstantBufferBinding(
-        adapter->command_queue(), initialization_command_recorder.get(),
-        constant_id_to_buffer_map, aligned_byte_length_of_constants.value(),
-        std::move(buffer_variant));
+        initialization_command_recorder.get(), constant_id_to_buffer_map,
+        aligned_byte_length_of_constants.value(), std::move(buffer_variant));
     if (!constant_buffer_binding) {
       HandleGraphCreationFailure("Failed to upload constant weight data.",
                                  std::move(callback));
@@ -5593,7 +5593,7 @@ void GraphImplDml::OnCompilationComplete(
   // needed for graph initialization to the command queue to hold onto until
   // they're no longer needed, it won't need to be passed to
   // `OnInitializationComplete()`.
-  adapter->command_queue()->WaitAsync(base::BindOnce(
+  initialization_command_recorder->command_queue()->WaitAsync(base::BindOnce(
       &GraphImplDml::OnInitializationComplete, std::move(adapter),
       std::move(context), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
@@ -5618,8 +5618,12 @@ void GraphImplDml::OnInitializationComplete(
     return;
   }
 
-  // Release the resources used for graph initialization.
-  adapter->command_queue()->ReleaseCompletedResources();
+  // Release the resources used for graph initialization. For NPU adapter, the
+  // resources have been released in `ExecuteAndWaitSyncOnBackgroundThread`
+  // method.
+  if (!adapter->IsNPU()) {
+    adapter->command_queue()->ReleaseCompletedResources();
+  }
 
   base::expected<std::unique_ptr<ComputeResources>, HRESULT>
       compute_resources_allocation_result = AllocateComputeResources(
@@ -6206,9 +6210,10 @@ void GraphImplDml::ComputeImpl(
     return;
   }
 
-  adapter_->command_queue()->WaitAsync(base::BindOnce(
-      &GraphImplDml::OnComputationComplete, weak_factory_.GetWeakPtr(),
-      std::move(callback), std::move(compute_resources)));
+  compute_resources->command_recorder->command_queue()->WaitAsync(
+      base::BindOnce(&GraphImplDml::OnComputationComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(compute_resources)));
 }
 
 void GraphImplDml::OnComputationComplete(
@@ -6252,13 +6257,15 @@ void GraphImplDml::OnComputationComplete(
 
   buffer_to_map->Unmap(0, nullptr);
 
+  compute_resources->command_recorder->command_queue()
+      ->ReleaseCompletedResources();
+
   // If there is an existing available compute resource, release this compute
   // resource. Otherwise, recycle this compute resource for the next call.
   if (!compute_resources_) {
     compute_resources_ = std::move(compute_resources);
   }
 
-  adapter_->command_queue()->ReleaseCompletedResources();
   std::move(callback).Run(
       ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
@@ -6421,7 +6428,7 @@ void GraphImplDml::DispatchImpl(
   }
 
   // Prepare for the next dispatch.
-  adapter_->command_queue()->WaitAsync(
+  command_recorder_->command_queue()->WaitAsync(
       base::BindOnce(&GraphImplDml::OnDispatchComplete,
                      weak_factory_.GetWeakPtr(), std::move(graph_resources)));
 }
@@ -6441,6 +6448,6 @@ void GraphImplDml::OnDispatchComplete(
     graph_resources_ = std::move(graph_resources);
   }
 
-  adapter_->command_queue()->ReleaseCompletedResources();
+  command_recorder_->command_queue()->ReleaseCompletedResources();
 }
 }  // namespace webnn::dml
