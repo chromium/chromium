@@ -665,6 +665,7 @@ void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
   search_field_view_->SetQueryText(u"");
   search_field_view_->SetBackButtonVisible(false);
+  selected_category_ = std::nullopt;
   SetActivePage(zero_state_view_);
 }
 
