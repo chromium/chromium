@@ -19,13 +19,17 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -45,6 +49,7 @@ constexpr auto kBorderInsetsWithBadge = gfx::Insets::TLBR(8, 16, 8, 12);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
 constexpr int kImageDisplayHeight = 72;
+constexpr int kImageRadius = 8;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr auto kBadgeLeftPadding = gfx::Insets::TLBR(0, 8, 0, 0);
 
@@ -118,6 +123,7 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   auto* main_container = item_contents->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
           .Build());
   item_contents->SetFlexForView(main_container, 1);
   primary_container_ = main_container->AddChildView(
@@ -163,9 +169,15 @@ void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image) {
   image_view->SetCanProcessEventsWithinSubtree(false);
   const gfx::Size original_size = image_view->GetImageModel().Size();
   if (original_size.height() > 0) {
-    image_view->SetImageSize(gfx::ScaleToRoundedSize(
+    const gfx::Size image_display_size = gfx::ScaleToRoundedSize(
         original_size,
-        static_cast<float>(kImageDisplayHeight) / original_size.height()));
+        static_cast<float>(kImageDisplayHeight) / original_size.height());
+    image_view->SetImageSize(image_display_size);
+    SkPath path;
+    path.addRoundRect(
+        gfx::RectToSkRect(gfx::Rect(gfx::Point(), image_display_size)),
+        SkIntToScalar(kImageRadius), SkIntToScalar(kImageRadius));
+    image_view->SetClipPath(path);
   }
   UpdateAccessibleName();
 }
