@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
+
 #~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=
 # BEFORE ADDING A TEST HERE: If this is a consistent failure in Chrome on
 # ChromeOS CI builders, you should try to find and revert CLs causing new
@@ -149,4 +151,12 @@ if (!is_official_build) {
   # b/274341001: By design, ui.ChromeCrashEarly.strict fails on non-official
   # builds.
   tast_disabled_tests_from_lacros_all += [ "ui.ChromeCrashEarly.strict_lacros" ]
+}
+
+if (is_cfi) {
+  # b/350872890: pending investigation and fixes for is_cfi builders on betty.
+  tast_disabled_tests_from_chrome_all += [
+    "crostini.BackupRestore.bookworm_stable@betty",
+    "crostini.FsCorruption.bookworm_stable@betty",
+  ]
 }
