@@ -2592,9 +2592,9 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac14 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
-[ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Crash Failure ]
-[ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Timeout ]
+crbug.com/350770678 [ Mac14 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
+crbug.com/350779641 [ Webview ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Crash Failure ]
+crbug.com/350823140 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Timeout ]
 crbug.com/350792702 external/wpt/trusted-types/trusted-types-reporting.html [ Skip Timeout ]
 [ Win11-arm64 ] virtual/async-script-scheduling-finished-parsing/wpt_internal/async-script-scheduling/execution-order.sub.html?reload [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/revoke-service-workers.https.html [ Timeout ]
