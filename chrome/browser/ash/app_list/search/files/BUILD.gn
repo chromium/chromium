@@ -28,6 +28,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash/app_list/search/ranking:proto",
     "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/file_suggest",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/holding_space:test_support",
