@@ -3393,6 +3393,59 @@
       "features": [
         "disable_webnn_for_npu"
       ]
+    },
+    {
+      "id": 431,
+      "cr_bugs": [
+        1501767
+      ],
+      "description": "Disable VP9 temporal layer encoding acceleration on Intel GPUs preceding Rocket Lake",
+      "comment":[
+        "In MFVEA, the Intel MFT driver issue affects the reference structure of",
+        "VP9 L1T2/L1T3 encoding. Currently, the issue is fixed in latest driver",
+        "version 31.0.101.5590 and released on rocketlake+ GPUs, the hw",
+        "acceleration can be enabled on these devices with specified drivers."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "intel_gpu_series": [
+            "icelake",
+            "elkhartlake",
+            "jasperlake",
+            "tigerlake",
+            "dg1"
+      ],
+      "features": [
+        "disable_vp9_hmft_temporal_encoding"
+      ]
+    },
+    {
+      "id": 432,
+      "cr_bugs": [
+        1501767
+      ],
+      "description": "Disable VP9 temporal layer encoding acceleration on Intel GPUs with older drivers",
+      "comment":[
+        "In MFVEA, the Intel MFT driver issue affects the reference structure of",
+        "VP9 L1T2/L1T3 encoding. Currently, the issue is fixed in latest driver",
+        "version 31.0.101.5590 and released on rocketlake+ GPUs, the hw",
+        "acceleration can be enabled on these devices with specified drivers."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+            "op": "<",
+            "value": "31.0.101.5590"
+      },
+      "features": [
+        "disable_vp9_hmft_temporal_encoding"
+      ]
     }
   ]
 }

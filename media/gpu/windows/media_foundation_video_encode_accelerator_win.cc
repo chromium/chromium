@@ -222,7 +222,8 @@ MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
 // reduce this limit to avoid bad or untested drivers.
 int GetMaxTemporalLayerVendorLimit(
     MediaFoundationVideoEncodeAccelerator::DriverVendor vendor,
-    VideoCodec codec) {
+    VideoCodec codec,
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
 #if defined(ARCH_CPU_X86)
   // x86 systems sometimes crash in video drivers here.
   // More info: https://crbug.com/1253748
@@ -252,6 +253,11 @@ int GetMaxTemporalLayerVendorLimit(
   // - See https://crbug.com/1425117 for temporal layer foundation (L1T2/L1T3).
   // - See https://crbug.com/1501767 for L1T2 rollout (not L1T3).
   if (codec == VideoCodec::kVP9) {
+    if (vendor == DriverVendor::kIntel &&
+        workarounds.disable_vp9_hmft_temporal_encoding) {
+      return 1;
+    }
+
     if (base::FeatureList::IsEnabled(kMediaFoundationVP9L1T3Support)) {
       return 3;
     }
@@ -266,10 +272,13 @@ int GetMaxTemporalLayerVendorLimit(
 #endif
 }
 
-int GetNumSupportedTemporalLayers(IMFActivate* activate, VideoCodec codec) {
+int GetNumSupportedTemporalLayers(
+    IMFActivate* activate,
+    VideoCodec codec,
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   auto vendor = GetDriverVendor(activate);
   int max_temporal_layer_vendor_limit =
-      GetMaxTemporalLayerVendorLimit(vendor, codec);
+      GetMaxTemporalLayerVendorLimit(vendor, codec, workarounds);
   if (max_temporal_layer_vendor_limit == 1) {
     return 1;
   }
@@ -364,7 +373,10 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   return count - excluded_encoders;
 }
 
-bool IsCodecSupportedForEncoding(VideoCodec codec, int* num_temporal_layers) {
+bool IsCodecSupportedForEncoding(
+    VideoCodec codec,
+    int* num_temporal_layers,
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   *num_temporal_layers = 1;
 
   base::win::ScopedCoMem<IMFActivate*> activates;
@@ -376,9 +388,9 @@ bool IsCodecSupportedForEncoding(VideoCodec codec, int* num_temporal_layers) {
   }
 
   for (UINT32 i = 0; i < encoder_count; i++) {
-    *num_temporal_layers =
-        std::max(GetNumSupportedTemporalLayers(activates[i], codec),
-                 *num_temporal_layers);
+    *num_temporal_layers = std::max(
+        GetNumSupportedTemporalLayers(activates[i], codec, workarounds),
+        *num_temporal_layers);
     activates[i]->Release();
   }
 
@@ -524,7 +536,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles profiles;
   for (auto codec : supported_codecs) {
     int num_temporal_layers = 1;
-    if (!IsCodecSupportedForEncoding(codec, &num_temporal_layers)) {
+    if (!IsCodecSupportedForEncoding(codec, &num_temporal_layers,
+                                     workarounds_)) {
       continue;
     }
 
@@ -1282,8 +1295,9 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       continue;
     }
 
-    if (num_temporal_layers_ > GetMaxTemporalLayerVendorLimit(vendor, codec_)) {
-      DLOG(WARNING) << "Skipped GPUs due to not support temporal layer";
+    if (num_temporal_layers_ >
+        GetMaxTemporalLayerVendorLimit(vendor, codec_, workarounds_)) {
+      DLOG(WARNING) << "Skipped GPUs due to not supporting temporal layer";
       continue;
     }
 
