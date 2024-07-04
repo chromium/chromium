@@ -3194,6 +3194,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "enable-generic-oidc-auth-profile-management",
+    "owners": [ "hmare@google.com", "cbe-device-trust-eng@google.com"],
+    "expiry_milestone": 137
+  },
+  {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
     "expiry_milestone": 132

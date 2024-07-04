@@ -4864,6 +4864,9 @@ extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
 
 extern const char kSyncEnableContactInfoDataTypeInTransportModeName[];
 extern const char kSyncEnableContactInfoDataTypeInTransportModeDescription[];
+
+extern const char kEnableGenericOidcAuthProfileManagementName[];
+extern const char kEnableGenericOidcAuthProfileManagementDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

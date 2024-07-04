@@ -8315,6 +8315,11 @@ const char kSyncEnableContactInfoDataTypeInTransportModeName[] =
 const char kSyncEnableContactInfoDataTypeInTransportModeDescription[] =
     "Allows the 'Sync Enable Contact Info Data Type in Transport Mode' feature "
     "to be used with the 'Explicit Browser Signin UI On Desktop' feature.";
+
+const char kEnableGenericOidcAuthProfileManagementName[] =
+    "Enable generic OIDC profile management";
+const char kEnableGenericOidcAuthProfileManagementDescription[] =
+    "Enables profile management triggered by generic OIDC authentications.";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
