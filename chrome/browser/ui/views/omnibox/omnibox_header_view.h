@@ -26,7 +26,6 @@ class Label;
 
 namespace ui {
 class MouseEvent;
-struct AXNodeData;
 }  // namespace ui
 
 class OmniboxHeaderView : public views::View {
@@ -45,7 +44,6 @@ class OmniboxHeaderView : public views::View {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Updates the UI state for the new hover or selection state.
   void UpdateUI();
@@ -60,6 +58,8 @@ class OmniboxHeaderView : public views::View {
 
   // Convenience method to get the OmniboxPopupSelection for this view.
   OmniboxPopupSelection GetHeaderSelection() const;
+
+  void UpdateExpandedCollapsedAccessibleState() const;
 
   // The parent view.
   const raw_ptr<OmniboxPopupViewViews> popup_view_;

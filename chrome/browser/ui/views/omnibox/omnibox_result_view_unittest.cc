@@ -9,7 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
@@ -306,6 +308,39 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
   EXPECT_FALSE(
       popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
+}
+
+TEST_F(OmniboxResultViewTest, ExpandedCollapsedAccessibilityState) {
+  std::unique_ptr<OmniboxRowView> row =
+      std::make_unique<OmniboxRowView>(0, popup_view());
+  row->ShowHeader(u"Omnibox Header", false);
+  OmniboxHeaderView* header = row->header_view();
+
+  ui::AXNodeData node_data;
+  // Initially, it shouldn't be set.
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  header->SetSuggestionGroupVisibility(true);
+  node_data = ui::AXNodeData();
+  // Initially, it shouldn't be set.
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+
+  header->SetSuggestionGroupVisibility(false);
+  node_data = ui::AXNodeData();
+  // Initially, it shouldn't be set.
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
 }
 
 TEST_F(OmniboxResultViewTest, StarterPackMatch) {

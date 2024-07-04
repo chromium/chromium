@@ -76,6 +76,8 @@ OmniboxHeaderView::OmniboxHeaderView(OmniboxPopupViewViews* popup_view,
           base::Unretained(this)));
   views::FocusRing::Get(header_toggle_button_)
       ->SetOutsetFocusRingDisabled(true);
+
+  UpdateExpandedCollapsedAccessibleState();
 }
 
 void OmniboxHeaderView::SetHeader(const std::u16string& header_text,
@@ -131,17 +133,6 @@ void OmniboxHeaderView::OnThemeChanged() {
   // When the theme is updated, also refresh the hover-specific UI, which is
   // all of the UI.
   UpdateUI();
-}
-
-void OmniboxHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Hidden OmniboxHeaderView instances are not associated with any group ID, so
-  // they are neither collapsed or expanded.s
-  if (!GetVisible()) {
-    return;
-  }
-
-  node_data->AddState(suggestion_group_hidden_ ? ax::mojom::State::kCollapsed
-                                               : ax::mojom::State::kExpanded);
 }
 
 void OmniboxHeaderView::UpdateUI() {
@@ -201,7 +192,7 @@ void OmniboxHeaderView::SetSuggestionGroupVisibility(
     bool suggestion_group_hidden) {
   suggestion_group_hidden_ = suggestion_group_hidden;
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+  UpdateExpandedCollapsedAccessibleState();
 
   // Because this view doesn't have true focus (it stays on the textfield),
   // we also need to manually announce state changes.
@@ -217,6 +208,21 @@ void OmniboxHeaderView::SetSuggestionGroupVisibility(
 OmniboxPopupSelection OmniboxHeaderView::GetHeaderSelection() const {
   return OmniboxPopupSelection(model_index_,
                                OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
+}
+
+void OmniboxHeaderView::UpdateExpandedCollapsedAccessibleState() const {
+  // Hidden OmniboxHeaderView instances are not associated with any group ID, so
+  // they are neither collapsed or expanded.
+  if (!GetVisible()) {
+    GetViewAccessibility().RemoveExpandCollapseState();
+    return;
+  }
+
+  if (suggestion_group_hidden_) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().SetIsExpanded();
+  }
 }
 
 BEGIN_METADATA(OmniboxHeaderView)
