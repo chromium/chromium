@@ -2048,6 +2048,25 @@
             ]
         }
     ],
+    "AutofillForUnclassifiedFieldsAvailable": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillForUnclassifiedFieldsAvailable"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillGranularFillingAvailable": [
         {
             "platforms": [
@@ -2181,25 +2200,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillLogUKMEventsWithSampleRate"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillManualFallbackForUnclassifiedFieldsAvailable": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillForUnclassifiedFieldsAvailable"
                     ]
                 }
             ]
