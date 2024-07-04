@@ -20,16 +20,11 @@
 #include "components/policy/core/common/schema.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/feature_list.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 
 using base::win::RegistryKeyIterator;
 using base::win::RegistryValueIterator;
-
-BASE_FEATURE(kRegistryDictExpandValue,
-             "RegistryDictExpandValue",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace policy {
@@ -258,12 +253,10 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
     const std::string name = base::WideToUTF8(it.Name());
     switch (it.Type()) {
       case REG_EXPAND_SZ:
-        if (base::FeatureList::IsEnabled(kRegistryDictExpandValue)) {
-          if (auto expanded_path = base::win::ExpandEnvironmentVariables(
-                  base::wcstring_view{it.Value(), wcslen(it.Value())})) {
-            SetValue(name, base::Value(base::WideToUTF8(*expanded_path)));
-            continue;
-          }
+        if (auto expanded_path = base::win::ExpandEnvironmentVariables(
+                base::wcstring_view{it.Value(), wcslen(it.Value())})) {
+          SetValue(name, base::Value(base::WideToUTF8(*expanded_path)));
+          continue;
         }
         [[fallthrough]];
       case REG_SZ:
