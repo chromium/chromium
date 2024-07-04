@@ -183,8 +183,6 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
     bool allow,
     const std::string& user_input) {
-  // The <webview> embedder has allowed the permission. We now need to make sure
-  // that the embedder has geolocation permission.
   if (!allow || !web_view_guest()->attached()) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;
@@ -204,6 +202,8 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
     }
   }
 
+  // The <webview> embedder has responded to the permission request. We now need
+  // to make sure that the embedder has geolocation permission.
   web_view_guest()
       ->browser_context()
       ->GetPermissionController()
@@ -223,7 +223,8 @@ void ChromeWebViewPermissionHelperDelegate::RequestHidPermission(
   WebViewPermissionHelper::PermissionResponseCallback permission_callback =
       base::BindOnce(
           &ChromeWebViewPermissionHelperDelegate::OnHidPermissionResponse,
-          weak_factory_.GetWeakPtr(), std::move(callback));
+          weak_factory_.GetWeakPtr(), std::move(callback),
+          requesting_frame_url);
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_HID, std::move(request_info),
       std::move(permission_callback), false /* allowed_by_default */);
@@ -231,8 +232,22 @@ void ChromeWebViewPermissionHelperDelegate::RequestHidPermission(
 
 void ChromeWebViewPermissionHelperDelegate::OnHidPermissionResponse(
     base::OnceCallback<void(bool)> callback,
+    const GURL& requesting_frame_url,
     bool allow,
     const std::string& user_input) {
+  if (web_view_guest()->attached() &&
+      web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    const blink::PermissionsPolicy* permissions_policy =
+        web_view_guest()->embedder_rfh()->GetPermissionsPolicy();
+    CHECK(permissions_policy);
+    if (!permissions_policy->IsFeatureEnabledForOrigin(
+            blink::mojom::PermissionsPolicyFeature::kHid,
+            url::Origin::Create(requesting_frame_url))) {
+      std::move(callback).Run(false);
+      return;
+    }
+  }
+
   std::move(callback).Run(allow && web_view_guest()->attached());
 }
 

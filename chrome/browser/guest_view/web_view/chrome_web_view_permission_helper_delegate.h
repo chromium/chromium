@@ -88,6 +88,7 @@ class ChromeWebViewPermissionHelperDelegate
       const std::string& user_input);
 
   void OnHidPermissionResponse(base::OnceCallback<void(bool)> callback,
+                               const GURL& requesting_frame_url,
                                bool allow,
                                const std::string& user_input);
 

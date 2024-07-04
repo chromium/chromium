@@ -5,18 +5,28 @@
 #include <set>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
+#include "chrome/browser/hid/chrome_hid_delegate.h"
+#include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/mock_chooser_controller_view.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/common/extension_features.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -274,6 +284,121 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestTest, Geolocation) {
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFramePermissionRequestTest,
+                         testing::ValuesIn(kTestParams),
+                         [](const testing::TestParamInfo<
+                             PermissionRequestTestParam>& info) {
+                           return info.param.name;
+                         });
+
+class MockHidDelegate : public ChromeHidDelegate {
+ public:
+  // Simulates opening the HID device chooser dialog and selecting an item. The
+  // chooser automatically selects the device under index 0.
+  void OnWebViewHidPermissionRequestCompleted(
+      base::WeakPtr<HidChooser> chooser,
+      content::GlobalRenderFrameHostId embedder_rfh_id,
+      std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+      content::HidChooser::Callback callback,
+      bool allow) override {
+    if (!allow) {
+      std::move(callback).Run(std::vector<device::mojom::HidDeviceInfoPtr>());
+      return;
+    }
+
+    auto* render_frame_host = content::RenderFrameHost::FromID(embedder_rfh_id);
+    ASSERT_TRUE(render_frame_host);
+
+    chooser_controller_ = std::make_unique<HidChooserController>(
+        render_frame_host, std::move(filters), std::move(exclusion_filters),
+        std::move(callback));
+
+    mock_chooser_view_ =
+        std::make_unique<permissions::MockChooserControllerView>();
+    chooser_controller_->set_view(mock_chooser_view_.get());
+
+    EXPECT_CALL(*mock_chooser_view_.get(), OnOptionsInitialized)
+        .WillOnce(
+            testing::Invoke([this] { chooser_controller_->Select({0}); }));
+  }
+
+ private:
+  std::unique_ptr<HidChooserController> chooser_controller_;
+  std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+};
+
+class TestContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  // ContentBrowserClient:
+  content::HidDelegate* GetHidDelegate() override { return &delegate_; }
+
+ private:
+  MockHidDelegate delegate_;
+};
+
+class ControlledFramePermissionRequestWebHidTest
+    : public ControlledFramePermissionRequestTest {
+ public:
+  void SetUpOnMainThread() override {
+    ControlledFramePermissionRequestTest::SetUpOnMainThread();
+
+    original_client_ = content::SetBrowserClientForTesting(&overriden_client_);
+
+    mojo::PendingRemote<device::mojom::HidManager> pending_remote;
+    hid_manager_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+    base::test::TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>>
+        devices_future;
+    auto* chooser_context = HidChooserContextFactory::GetForProfile(profile());
+    chooser_context->SetHidManagerForTesting(std::move(pending_remote),
+                                             devices_future.GetCallback());
+    ASSERT_TRUE(devices_future.Wait());
+
+    hid_manager_.CreateAndAddDevice("1", 0, 0, "Test HID Device", "",
+                                    device::mojom::HidBusType::kHIDBusTypeUSB);
+  }
+
+  ~ControlledFramePermissionRequestWebHidTest() override {
+    content::SetBrowserClientForTesting(original_client_.get());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kEnableWebHidInWebView};
+  TestContentBrowserClient overriden_client_;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
+  device::FakeHidManager hid_manager_;
+};
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest, WebHid) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function () {
+      try {
+        const device_filters = [{vendorId: 0}];
+        const device = await navigator.hid.requestDevice({
+          filters: device_filters});
+        if (device.length > 0){
+          return 'SUCCESS';
+        }
+        return 'FAIL: device length ' + device.length;
+      } catch (error) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+  test_case.permission_name = "hid";
+
+  test_case.policy_features.insert(
+      {blink::mojom::PermissionsPolicyFeature::kHid});
+  // No embedder content settings for WebHid.
+
+  PermissionRequestTestParam test_param = GetParam();
+  RunTestAndVerify(test_case, test_param);
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/
+                         ,
+                         ControlledFramePermissionRequestWebHidTest,
                          testing::ValuesIn(kTestParams),
                          [](const testing::TestParamInfo<
                              PermissionRequestTestParam>& info) {
