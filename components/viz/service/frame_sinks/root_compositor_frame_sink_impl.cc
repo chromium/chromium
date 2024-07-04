@@ -581,7 +581,6 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),
                                                support_->frame_sink_id());
   display_->Initialize(this, support_->frame_sink_manager()->surface_manager(),
-                       Display::kEnableSharedImages,
                        hw_support_for_multiple_refresh_rates);
   support_->SetUpHitTest(display_.get());
 #if BUILDFLAG(IS_IOS)

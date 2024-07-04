@@ -242,7 +242,7 @@ HardwareRenderer::OnViz::OnViz(
       output_surface_provider->debug_settings(), frame_sink_id_,
       std::move(display_controller), std::move(output_surface),
       GetFrameSinkManager(), without_gpu_.get());
-  display_->Initialize(this, GetFrameSinkManager()->surface_manager(), true);
+  display_->Initialize(this, GetFrameSinkManager()->surface_manager());
   overlay_processor_webview_ = display_->overlay_processor();
 
   display_->SetVisible(true);

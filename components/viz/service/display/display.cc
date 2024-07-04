@@ -287,7 +287,6 @@ Display::~Display() {
 
 void Display::Initialize(DisplayClient* client,
                          SurfaceManager* surface_manager,
-                         bool enable_shared_images,
                          bool hw_support_for_multiple_refresh_rates) {
   DCHECK(client);
   DCHECK(surface_manager);
@@ -303,7 +302,7 @@ void Display::Initialize(DisplayClient* client,
       surface_manager_, this, hw_support_for_multiple_refresh_rates,
       SupportsSetFrameRate(output_surface_.get()));
 
-  InitializeRenderer(enable_shared_images);
+  InitializeRenderer();
 
   damage_tracker_ = std::make_unique<DisplayDamageTracker>(surface_manager_,
                                                            aggregator_.get());
@@ -441,7 +440,7 @@ void Display::SetOutputIsSecure(bool secure) {
   }
 }
 
-void Display::InitializeRenderer(bool enable_shared_images) {
+void Display::InitializeRenderer() {
   if (skia_output_surface_) {
     auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
     renderer_ = std::make_unique<SkiaRenderer>(

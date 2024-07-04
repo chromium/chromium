@@ -107,16 +107,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   static constexpr base::TimeDelta kDrawToSwapMax = base::Milliseconds(50);
   static constexpr uint32_t kDrawToSwapUsBuckets = 50;
 
-  // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
-  // solution that unblocks us until SharedImages are threadsafe in WebView.
-#if defined(ANDROID)
-  static constexpr bool kEnableSharedImages = false;
-#else
-  static constexpr bool kEnableSharedImages = true;
-#endif
   void Initialize(DisplayClient* client,
                   SurfaceManager* surface_manager,
-                  bool enable_shared_images = kEnableSharedImages,
                   bool hw_support_for_multiple_refresh_rates = false);
 
   void AddObserver(DisplayObserver* observer);
@@ -264,9 +256,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     HintSession::BoostType boost_type_;
   };
 
-  // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
-  // solution that unblocks us until SharedImages are threadsafe in WebView.
-  void InitializeRenderer(bool enable_shared_images = true);
+  void InitializeRenderer();
 
   // ContextLostObserver implementation.
   void OnContextLost() override;
