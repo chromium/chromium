@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +20,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
@@ -129,6 +131,21 @@ void PasswordStoreBuiltInBackend::InitBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   affiliated_match_helper_ = affiliated_match_helper;
+
+#if !BUILDFLAG(IS_ANDROID)
+  auto clearing_undecryptable_passwords_cb = base::BindPostTaskToCurrentDefault(
+      base::BindRepeating(&PasswordStoreBuiltInBackend::
+                              SetClearingUndecryptablePasswordsIsEnabledPref,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb,
+          base::Unretained(helper_.get()),
+          std::move(clearing_undecryptable_passwords_cb)));
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   auto init_database_callback = base::BindOnce(
       &PasswordStoreBuiltInBackend::OnEncryptorReceived,
@@ -450,5 +467,13 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
       base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void PasswordStoreBuiltInBackend::
+    SetClearingUndecryptablePasswordsIsEnabledPref(bool value) {
+  CHECK(pref_service_);
+  pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, value);
+}
+#endif
 
 }  // namespace password_manager

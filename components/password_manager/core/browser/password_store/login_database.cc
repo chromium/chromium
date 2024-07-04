@@ -1021,7 +1021,9 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
       should_delete_status);
 }
 
-bool ShouldDeleteUndecryptablePasswords() {
+bool ShouldDeleteUndecryptablePasswords(
+    LoginDatabase::ClearingUndecryptablePasswordsCallback
+        clearing_undecryptable_passwords) {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -1064,6 +1066,12 @@ bool ShouldDeleteUndecryptablePasswords() {
 
   RecordShouldDeleteUndecryptablePasswordsMetric(
       ShouldDeleteUndecryptablePasswordsResult::kShouldDelete);
+
+  // Needed in order to maintain kClearUndecryptablePasswords experiment groups
+  // population.
+  if (clearing_undecryptable_passwords) {
+    clearing_undecryptable_passwords.Run(true);
+  }
   return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
 
@@ -1988,6 +1996,12 @@ void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
   is_empty_cb_ = std::move(is_empty_cb);
 }
 
+void LoginDatabase::SetClearingUndecryptablePasswordsCb(
+    ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords) {
+  clearing_undecryptable_passwords_ =
+      std::move(clearing_undecryptable_passwords);
+}
+
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
     : db_(db) {
   CHECK(db);
@@ -2349,7 +2363,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     return FormRetrievalResult::kDbError;
   }
   if (failed) {
-    if (ShouldDeleteUndecryptablePasswords()) {
+    if (ShouldDeleteUndecryptablePasswords(clearing_undecryptable_passwords_)) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;

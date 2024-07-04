@@ -65,6 +65,8 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   using IsEmptyCallback =
       base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
+  using ClearingUndecryptablePasswordsCallback =
+      base::RepeatingCallback<void(bool)>;
 
   LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
   LoginDatabase(const LoginDatabase&) = delete;
@@ -196,6 +198,13 @@ class LoginDatabase : public EncryptDecryptInterface {
   // logins. The call happens when initializing the database and when
   // adding/removing entries, regardless of success.
   void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
+
+  // `clearing_undecryptable_passwords`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balaced. This method will be deleted
+  // after a successful rollout.
+  void SetClearingUndecryptablePasswordsCb(
+      ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
 
   StatisticsTable& stats_table() { return stats_table_; }
   InsecureCredentialsTable& insecure_credentials_table() {
@@ -364,6 +373,9 @@ class LoginDatabase : public EncryptDecryptInterface {
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
   IsEmptyCallback is_empty_cb_ = base::NullCallback();
+  // TODO(b/40286735): Remove after this feature is launched.
+  ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords_ =
+      base::NullCallback();
 
   mutable sql::Database db_;
   sql::MetaTable meta_table_;

@@ -378,6 +378,15 @@ LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   return password_sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
+void LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb(
+    base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (login_db_) {
+    login_db_->SetClearingUndecryptablePasswordsCb(
+        std::move(clearing_undecryptable_passwords));
+  }
+}
+
 PasswordStoreChangeList LoginDatabaseAsyncHelper::AddCredentialSync(
     const sync_pb::PasswordSpecificsData& password,
     AddCredentialError* error) {

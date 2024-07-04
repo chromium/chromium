@@ -2389,6 +2389,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
+  EXPECT_CALL(callback, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2422,6 +2428,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
+  EXPECT_CALL(callback, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2454,6 +2466,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
+  EXPECT_CALL(callback, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2489,6 +2507,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
+  EXPECT_CALL(callback, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2519,9 +2543,15 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
   // Make authentication not available.
   OSCryptMocker::SetBackendLocked(true);
 
+  EXPECT_CALL(callback, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2603,7 +2633,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
+    EXPECT_CALL(callback, Run(true));
     EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
     EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                             HasPrimaryKeyAndEquals(form3)));
@@ -2616,12 +2652,14 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
       EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                               HasPrimaryKeyAndEquals(form3)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2643,7 +2681,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
   std::vector<PasswordForm> result;
   PasswordForm form = GenerateExamplePasswordForm();
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
+    EXPECT_CALL(callback, Run(true));
     EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/false, &result));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
@@ -2656,12 +2700,14 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
                                /*should_PSL_matching_apply=*/false, &result));
       EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
                                 /*should_PSL_matching_apply=*/false, &result));
       histogram_tester.ExpectTotalCount(
@@ -2688,7 +2734,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
   LoginDatabase db(database_path(), IsAccountStore(false));
   ASSERT_TRUE(db.Init(nullptr));
 
+  NiceMock<
+      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
+      callback;
+  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
+    EXPECT_CALL(callback, Run(true));
     EXPECT_TRUE(db.GetAutofillableLogins(&result));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
     histogram_tester.ExpectUniqueSample(
@@ -2700,11 +2752,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_TRUE(db.GetAutofillableLogins(&result));
       EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
+      EXPECT_CALL(callback, Run(true));
       EXPECT_FALSE(db.GetAutofillableLogins(&result));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);

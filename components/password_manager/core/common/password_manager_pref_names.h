@@ -367,6 +367,13 @@ inline constexpr char kRelaunchChromeBubbleDismissedCounter[] =
     "password_manager.relaunch_chrome_bubble_dismissed_counter";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Boolean pref indicating if the user is in one of the groups of the
+// kClearUndecryptablePasswords experiment.
+inline constexpr char kClearingUndecryptablePasswords[] =
+    "password_manager.clearing_undecryptable_passwords";
+#endif
+
 }  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

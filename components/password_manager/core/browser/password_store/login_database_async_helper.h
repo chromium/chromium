@@ -89,6 +89,13 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
+  // `clearing_undecryptable_passwords`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balaced. This method will be deleted
+  // after a successful rollout.
+  void SetClearingUndecryptablePasswordsCb(
+      base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords);
+
  private:
   // Implements PasswordStoreSync interface.
   PasswordStoreChangeList AddCredentialSync(
