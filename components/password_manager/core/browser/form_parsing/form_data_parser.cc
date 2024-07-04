@@ -526,8 +526,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (prediction.type == autofill::ONE_TIME_CODE ||
         prediction.type == autofill::NOT_PASSWORD ||
         prediction.type == autofill::NOT_USERNAME ||
-        prediction.type == autofill::CREDIT_CARD_NUMBER ||
-        prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE) {
+        GroupTypeOfFieldType(prediction.type) ==
+            autofill::FieldTypeGroup::kCreditCard) {
       current_field->server_hints_non_credential_field = true;
     }
   }

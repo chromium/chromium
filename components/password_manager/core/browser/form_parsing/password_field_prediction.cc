@@ -32,18 +32,17 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
   // send additional predictions in `field.server_predictions()`. This function
   // chooses the relevant one for Password Manager predictions.
 
-  // 1. If there is cvc or credit card number prediction returns the prediction.
+  // 1. If there is credit card related prediction, return the prediction.
   for (const auto& server_predictions : prediction.server_predictions) {
-    if (server_predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE ||
-        server_predictions.type() == autofill::CREDIT_CARD_NUMBER) {
-      return static_cast<FieldType>(server_predictions.type());
+    FieldType type = static_cast<FieldType>(server_predictions.type());
+    if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+      return type;
     }
   }
 
   // 2. If there is password related prediction returns it.
   for (const auto& server_predictions : prediction.server_predictions) {
-    FieldType type =
-        ToSafeFieldType(server_predictions.type(), FieldType::NO_SERVER_DATA);
+    FieldType type = static_cast<FieldType>(server_predictions.type());
     if (DeriveFromFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }
