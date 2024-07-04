@@ -88,10 +88,21 @@ bool ExpandOneDrivePolicyVariable(Profile* profile,
 
   base::FilePath onedrive_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  onedrive_path = ash::cloud_upload::GetODFSFuseboxMount(profile);
-  if (onedrive_path.empty()) {  // failed to get OneDrive path.
-    return false;
+  if (base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+    std::optional<ash::file_system_provider::ProvidedFileSystemInfo>
+        file_system_info = ash::cloud_upload::GetODFSInfo(profile);
+    if (!file_system_info.has_value()) {
+      return false;
+    }
+
+    onedrive_path = file_system_info->mount_path();
+  } else {
+    onedrive_path = ash::cloud_upload::GetODFSFuseboxMount(profile);
+    if (onedrive_path.empty()) {  // failed to get OneDrive path.
+      return false;
+    }
   }
+
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   bool onedrive_mounted = chrome::GetOneDriveMountPointPath(&onedrive_path);
   if (!onedrive_mounted) {
