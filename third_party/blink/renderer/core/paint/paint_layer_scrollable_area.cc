@@ -3239,6 +3239,9 @@ void PaintLayerScrollableArea::
   if (!container_data) {
     return;
   }
+
+  CreateAndSetSnappedQueryScrollSnapshotIfNeeded(new_target_ids);
+
   auto& rare_data = EnsureRareData();
   bool scrollsnapchanging =
       (rare_data.scrollsnapchanging_target_ids_
