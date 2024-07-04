@@ -113,6 +113,10 @@ jobs:
         run: |
           cd src
           ninja -C out/Default gin_unittests
+      - name: ninja blink_unittests
+        run: |
+          cd src
+          ninja -C out/Default blink_unittests
       - name: sccache check
         run: sccache -s
       - name: Any speed
