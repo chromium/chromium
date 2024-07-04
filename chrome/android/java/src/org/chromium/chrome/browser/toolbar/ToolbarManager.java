@@ -29,8 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.appbar.AppBarLayout;
-
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.JavaExceptionReporter;
@@ -114,7 +112,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -159,7 +156,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -236,8 +232,6 @@ public class ToolbarManager
     private BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
 
-    private boolean mIsStartSurfaceEnabled;
-
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
@@ -296,15 +290,7 @@ public class ToolbarManager
 
     private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
 
-    /**
-     * Runnable for the home and search accelerator button when Start Surface home page is enabled.
-     */
-    private Supplier<Boolean> mShowStartSurfaceSupplier;
-
     private final ScrimCoordinator mScrimCoordinator;
-
-    private StartSurface mStartSurface;
-    private AppBarLayout.OnOffsetChangedListener mStartSurfaceHeaderOffsetChangeListener;
 
     private OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
@@ -680,7 +666,6 @@ public class ToolbarManager
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
 
         mActivityTabProvider = tabProvider;
-        mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
 
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
@@ -886,7 +871,7 @@ public class ToolbarManager
                     public void onObservingDifferentTab(Tab tab, boolean hint) {
                         // ActivityTabProvider will null out the tab passed to
                         // onObservingDifferentTab when the tab is non-interactive (e.g. when
-                        // entering the TabSwitcher or Start surface).
+                        // entering the TabSwitcher).
                         // In those cases we actually still want to use the most recently selected
                         // tab, but will update the URL.
                         onBackPressStateChanged();
@@ -1193,8 +1178,7 @@ public class ToolbarManager
 
                     @Override
                     public void onStartedHiding(@LayoutType int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER
-                                || layoutType == LayoutType.START_SURFACE) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
                             mLocationBarModel.updateForNonStaticLayout();
                             mToolbar.setTabSwitcherMode(false);
                             updateButtonStatus();
@@ -1207,8 +1191,7 @@ public class ToolbarManager
 
                     @Override
                     public void onFinishedHiding(@LayoutType int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER
-                                || layoutType == LayoutType.START_SURFACE) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
                             mToolbar.onTabSwitcherTransitionFinished();
                             updateButtonStatus();
 
@@ -1390,14 +1373,6 @@ public class ToolbarManager
 
         @Override
         public boolean isLocationBarShown() {
-            // Without this check, ToolbarPhone#computeVisualState may return
-            // VisualState.NEW_TAB_NORMAL even if it's in start surface homepage, which leads
-            // ToolbarPhone#getToolbarColorForVisualState to return transparent color.
-            if (mLayoutStateProvider != null
-                    && mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE) {
-                return false;
-            }
-
             NewTabPage ntp = getNewTabPageForCurrentTab();
             return ntp != null && ntp.isLocationBarShownInNtp();
         }
@@ -1859,12 +1834,6 @@ public class ToolbarManager
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
-        }
-
-        if (mStartSurface != null) {
-            mStartSurface.removeHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
-            mStartSurface = null;
-            mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
         if (mReadAloudControllerSupplier.get() != null) {
@@ -2371,10 +2340,6 @@ public class ToolbarManager
             mControlContainer.post(
                     mCallbackController.makeCancelable(
                             () -> updateForLayout(LayoutType.TAB_SWITCHER)));
-        } else if (mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE)) {
-            mControlContainer.post(
-                    mCallbackController.makeCancelable(
-                            () -> updateForLayout(LayoutType.START_SURFACE)));
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);

@@ -242,14 +242,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private PhoneCaptureStateToken mPhoneCaptureStateToken;
     private ButtonData mButtonData;
-    private boolean mIsShowingStartSurfaceHomepage;
-
-    /**
-     * Whether the tab switcher is currently showing and controlled by the start surface. For legacy
-     * reasons this bypasses the normal tab switcher state logic. TODO(crbug.com/40221888): revisit
-     * the need for this once the tab switcher and start surface are decoupled.
-     */
-    private boolean mIsShowingStartSurfaceTabSwitcher;
 
     private @ColorInt int mHomeSurfaceToolbarBackgroundColor;
     private @ColorInt int mHomeSurfaceLocationBarBackgroundColor;
@@ -292,7 +284,7 @@ public class ToolbarPhone extends ToolbarLayout
     // appearance (G logo background, search text color and style) of the real search box after it's
     // pinned at top when scrolling up the surface. This variable distinguishes whether the current
     // page is Start Surface / NTP, to indicate that the appearance of the real search box changed.
-    private boolean mIsStartOrNtpWithSurfacePolish;
+    private boolean mIsNtpWithSurfacePolish;
 
     // Added due to https://crbug.com/323888159 to mark the loading phase while navigating from NTP
     // to webpages.
@@ -474,7 +466,7 @@ public class ToolbarPhone extends ToolbarLayout
      * @return The location bar color.
      */
     private @ColorInt int getLocationBarColorForToolbarColor(@ColorInt int toolbarColor) {
-        if (isLocationBarShownInGeneralNtpOrStartSurface() || mIsInLoadingPhaseFromNtpToWebpage) {
+        if (isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage) {
             assert mHomeSurfaceLocationBarBackgroundColor != 0;
             return mHomeSurfaceLocationBarBackgroundColor;
         }
@@ -890,9 +882,6 @@ public class ToolbarPhone extends ToolbarLayout
                 if (mLocationBar.getPhoneCoordinator().hasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
                 }
-                if (mIsSurfacePolishEnabled && mIsShowingStartSurfaceHomepage) {
-                    return mHomeSurfaceToolbarBackgroundColor;
-                }
                 return getToolbarDataProvider().getPrimaryColor();
             default:
                 assert false;
@@ -1032,7 +1021,6 @@ public class ToolbarPhone extends ToolbarLayout
     private float getExpansionFractionForVisualState(@VisualState int visualState) {
         if (mIsSurfacePolishEnabled) {
             return visualState == VisualState.NEW_TAB_NORMAL && mTabSwitcherState == STATIC_TAB
-                            || mIsShowingStartSurfaceHomepage
                     ? mUrlFocusChangeFraction
                     : mUrlExpansionFraction;
         }
@@ -1104,10 +1092,9 @@ public class ToolbarPhone extends ToolbarLayout
         int currentLeftMargin = locationBarLayoutParams.leftMargin;
         int currentWidth = locationBarLayoutParams.width;
 
-        boolean isInNtpOrStartSurface =
-                mVisualState == VisualState.NEW_TAB_NORMAL || mIsShowingStartSurfaceHomepage;
+        boolean isInNtp = mVisualState == VisualState.NEW_TAB_NORMAL;
         float locationBarBaseTranslationX =
-                (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress && isInNtpOrStartSurface
+                (mIsSurfacePolishEnabled && mUrlFocusChangeInProgress && isInNtp
                                 ? getFocusedLeftPositionOfLocationBarBackground()
                                 : mUnfocusedLocationBarLayoutLeft)
                         - currentLeftMargin;
@@ -1197,8 +1184,7 @@ public class ToolbarPhone extends ToolbarLayout
             if ((mLocationBar.getPhoneCoordinator().hasFocus() || !isLocationBarShownInNtp)
                     && mTabSwitcherState == STATIC_TAB) {
                 boolean usePolishedLocationBar =
-                        isLocationBarShownInGeneralNtpOrStartSurface()
-                                || mIsInLoadingPhaseFromNtpToWebpage;
+                        isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
                 // Add a special case for general NTP and Start Surface to the defaultColor to
                 // ensure that the color is right and changes smoothly during the un-focus
                 // animation.
@@ -1790,7 +1776,7 @@ public class ToolbarPhone extends ToolbarLayout
             // TODO(crbug.com/40860241): It may be possible to remove the above null check.
             return CaptureReadinessResult.notReady(
                     TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
-        } else if (isInTabSwitcherMode() || mIsShowingStartSurfaceTabSwitcher) {
+        } else if (isInTabSwitcherMode()) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE);
         } else if (mNtpSearchBoxTranslation.y != 0) {
             return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.NTP_Y_TRANSLATION);
@@ -1982,11 +1968,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateProgressBarVisibility() {
-        getProgressBar()
-                .setVisibility(
-                        (mTabSwitcherState != STATIC_TAB || mIsShowingStartSurfaceTabSwitcher)
-                                ? INVISIBLE
-                                : VISIBLE);
+        getProgressBar().setVisibility(mTabSwitcherState != STATIC_TAB ? INVISIBLE : VISIBLE);
     }
 
     @Override
@@ -1998,7 +1980,7 @@ public class ToolbarPhone extends ToolbarLayout
     public void setTabSwitcherMode(boolean inTabSwitcherMode) {
         // On entering the tab switcher, set the focusability of the url bar to be false. This will
         // occur at the start of the enter event, and will later be reset to true upon finishing the
-        // exit event only in #onStartSurfaceStateChanged.
+        // exit event.
         if (inTabSwitcherMode) {
             mLocationBar.setUrlBarFocusable(false);
         }
@@ -2055,7 +2037,7 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private void updateTabSwitcherButtonRipple() {
         if (mToggleTabStackButton == null) return;
-        if (mTabSwitcherState == ENTERING_TAB_SWITCHER || mIsShowingStartSurfaceTabSwitcher) {
+        if (mTabSwitcherState == ENTERING_TAB_SWITCHER) {
             Drawable drawable = mToggleTabStackButton.getBackground();
             // drawable may not be a RippleDrawable if IPH is showing. Ignore that scenario since
             // it is rare.
@@ -2064,44 +2046,6 @@ public class ToolbarPhone extends ToolbarLayout
                 ((RippleDrawable) drawable).jumpToCurrentState();
             }
         }
-    }
-
-    @Override
-    void onStartSurfaceStateChanged(
-            boolean shouldBeVisible,
-            boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher) {
-        if (mLocationBar == null || mLocationBar.isDestroyed()) return;
-        super.onStartSurfaceStateChanged(
-                shouldBeVisible, isShowingStartSurfaceHomepage, isShowingStartSurfaceTabSwitcher);
-
-        mIsShowingStartSurfaceHomepage = isShowingStartSurfaceHomepage;
-        mIsShowingStartSurfaceTabSwitcher = isShowingStartSurfaceTabSwitcher;
-        // Update visibilities of toolbar layout, progress bar, shadow and ripple.
-        setVisibility(shouldBeVisible ? VISIBLE : GONE);
-        updateProgressBarVisibility();
-        updateShadowVisibility();
-        updateTabSwitcherButtonRipple();
-        if (mIsShowingStartSurfaceHomepage) {
-            // Makes sure the loading phase from NTP to webpage is not turned on when showing Start
-            // Surface homepage.
-            mIsInLoadingPhaseFromNtpToWebpage = false;
-        }
-        // Url bar should be focusable. This will be set in UrlBar#onDraw but there's a delay which
-        // may cause focus to fail, so set here too. Only set to true if the GTS is NOT showing,
-        // such as during the exit tab switcher event.
-        if (!isShowingStartSurfaceTabSwitcher) {
-            mLocationBar.setUrlBarFocusable(true);
-        }
-
-        // Toolbar should be expanded when it's shown on the start surface homepage.
-        float startSurfaceScrollFraction =
-                shouldBeVisible && isShowingStartSurfaceHomepage ? 1.0f : 0.0f;
-        if (mStartSurfaceScrollFraction != startSurfaceScrollFraction) {
-            mStartSurfaceScrollFraction = startSurfaceScrollFraction;
-            updateUrlExpansionFraction();
-        }
-        updateVisualsForLocationBarState();
     }
 
     @Override
@@ -2118,8 +2062,7 @@ public class ToolbarPhone extends ToolbarLayout
             mTabSwitcherState = TAB_SWITCHER;
             mToggleTabStackButton.setClickable(false);
         }
-        // Ensure clickable if in STATIC_TAB mode. This handles both when the state transitions
-        // are ignored in favor of onStartSurfaceStateChanged() and when normal transitions occur.
+        // Ensure clickable if in STATIC_TAB mode.
         if (mTabSwitcherState == STATIC_TAB) {
             mToggleTabStackButton.setClickable(true);
         }
@@ -2463,7 +2406,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         final @ColorInt int initialColor = mToolbarBackground.getColor();
         final @ColorInt int finalColor =
-                isLocationBarShownInGeneralNtpOrStartSurface()
+                isLocationBarShownInGeneralNtp()
                         ? mHomeSurfaceToolbarBackgroundColor
                         : getToolbarDataProvider().getPrimaryColor();
         if (initialColor == finalColor) return;
@@ -2579,18 +2522,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     boolean isLocationBarShownInGeneralNtp() {
-        return !isIncognito()
-                && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl())
-                && !mIsShowingStartSurfaceHomepage;
-    }
-
-    /**
-     * Returns whether the location bar is shown in the NTP with or without single url bar mode or
-     * shown in Start Surface and should change its appearance due to surface polish enabled.
-     */
-    private boolean isLocationBarShownInGeneralNtpOrStartSurface() {
-        return mIsSurfacePolishEnabled
-                && (isLocationBarShownInGeneralNtp() || mIsShowingStartSurfaceHomepage);
+        return !isIncognito() && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());
     }
 
     private boolean isLocationBarCurrentlyShown() {
@@ -2616,8 +2548,7 @@ public class ToolbarPhone extends ToolbarLayout
         return mTabSwitcherState == STATIC_TAB
                 && !hideShadowForIncognitoNtp()
                 && !hideShadowForInterstitial()
-                && getVisibility() == View.VISIBLE
-                && !mIsShowingStartSurfaceTabSwitcher;
+                && getVisibility() == View.VISIBLE;
     }
 
     private boolean hideShadowForIncognitoNtp() {
@@ -2666,7 +2597,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         // Detect whether state has changed and update only when that happens.
-        boolean prevIsStartOrNtpWithSurfacePolish = mIsStartOrNtpWithSurfacePolish;
+        boolean prevIsNtpWithSurfacePolish = mIsNtpWithSurfacePolish;
 
         // Check whether the current page is NTP (the focus state is not included) and the
         // real omnibox is pinned on the top of the screen. We need to make sure the real omnibox is
@@ -2676,14 +2607,13 @@ public class ToolbarPhone extends ToolbarLayout
         // Surface.
         boolean isNtpShowingWithRealOmnibox =
                 visualState == VisualState.NEW_TAB_NORMAL && mNtpSearchBoxScrollFraction > 0;
-        mIsStartOrNtpWithSurfacePolish =
-                (isNtpShowingWithRealOmnibox || mIsShowingStartSurfaceHomepage) && !hasFocus;
+        mIsNtpWithSurfacePolish = isNtpShowingWithRealOmnibox && !hasFocus;
 
-        if (mIsStartOrNtpWithSurfacePolish == prevIsStartOrNtpWithSurfacePolish) {
+        if (mIsNtpWithSurfacePolish == prevIsNtpWithSurfacePolish) {
             return;
         }
 
-        if (mIsStartOrNtpWithSurfacePolish) {
+        if (mIsNtpWithSurfacePolish) {
             updateLocationBarForSurfacePolishImpl(
                     !ColorUtils.inNightMode(getContext()),
                     /* useDefaultUrlBarAndUrlActionContainerAppearance= */ false);
@@ -2749,7 +2679,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         @ColorInt
         int currentPrimaryColor =
-                isLocationBarShownInGeneralNtpOrStartSurface()
+                isLocationBarShownInGeneralNtp()
                         ? mHomeSurfaceToolbarBackgroundColor
                         : getToolbarDataProvider().getPrimaryColor();
         @ColorInt int themeColorForProgressBar = getProgressBarColor();
@@ -2848,7 +2778,6 @@ public class ToolbarPhone extends ToolbarLayout
         boolean hasVisibleNtp = getToolbarDataProvider().getNewTabPageDelegate().wasShowingNtp();
         if (ChromeFeatureList.sSurfacePolishForToolbarKillSwitch.isEnabled()
                 && isStartLoadingPhaseFromNtpToWebpage
-                && !mIsShowingStartSurfaceHomepage
                 && hasVisibleNtp) {
             mIsInLoadingPhaseFromNtpToWebpage = true;
         }

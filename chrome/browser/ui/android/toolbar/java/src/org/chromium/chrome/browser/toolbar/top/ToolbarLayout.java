@@ -636,19 +636,6 @@ public abstract class ToolbarLayout extends FrameLayout
     void onTabSwitcherTransitionFinished() {}
 
     /**
-     * Called when start surface state is changed.
-     *
-     * @param shouldBeVisible Whether toolbar layout should be visible.
-     * @param isShowingStartSurfaceHomepage Whether start surface homepage is showing.
-     * @param isShowingStartSurfaceTabSwitcher Whether the StartSurface-controlled TabSwitcher is
-     *     showing.
-     */
-    void onStartSurfaceStateChanged(
-            boolean shouldBeVisible,
-            boolean isShowingStartSurfaceHomepage,
-            boolean isShowingStartSurfaceTabSwitcher) {}
-
-    /**
      * Gives inheriting classes the chance to observe tab count changes.
      *
      * @param tabCountSupplier The observable supplier subclasses can observe.
