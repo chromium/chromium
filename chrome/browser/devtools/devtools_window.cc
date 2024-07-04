@@ -493,13 +493,6 @@ DevToolsWindow::~DevToolsWindow() {
         FROM_HERE, std::move(owned_main_web_contents_));
   }
 
-  // This should be run after we remove |this| from
-  // |g_devtools_window_instances| as |reattach_complete_callback| may try to
-  // access it.
-  if (reattach_complete_callback_) {
-    std::move(reattach_complete_callback_).Run();
-  }
-
   // If window gets destroyed during a test run, need to stop the test.
   if (!ready_for_test_callback_.is_null()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -951,23 +944,6 @@ DevToolsWindow::MaybeCreateNavigationThrottle(
     return nullptr;
 
   return std::make_unique<Throttle>(handle, window);
-}
-
-// TODO(caseq): this method should be removed once we switch to
-// using tab target, so we don't currently use tab target here.
-void DevToolsWindow::UpdateInspectedWebContents(
-    content::WebContents* new_web_contents,
-    base::OnceCallback<void()> callback) {
-  DCHECK(!reattach_complete_callback_);
-  reattach_complete_callback_ = std::move(callback);
-
-  Observe(new_web_contents);
-  bindings_->AttachTo(
-      content::DevToolsAgentHost::GetOrCreateFor(new_web_contents));
-  bindings_->CallClientMethod(
-      "DevToolsAPI", "reattachMainTarget", {}, {}, {},
-      base::BindOnce(&DevToolsWindow::OnReattachMainTargetComplete,
-                     base::Unretained(this)));
 }
 
 void DevToolsWindow::ScheduleShow(const DevToolsToggleAction& action) {
@@ -1970,10 +1946,6 @@ void DevToolsWindow::RegisterModalDialogManager(Browser* browser) {
       main_web_contents_);
   web_modal::WebContentsModalDialogManager::FromWebContents(main_web_contents_)
       ->SetDelegate(browser);
-}
-
-void DevToolsWindow::OnReattachMainTargetComplete(base::Value) {
-  std::move(reattach_complete_callback_).Run();
 }
 
 void DevToolsWindow::OnLocaleChanged() {

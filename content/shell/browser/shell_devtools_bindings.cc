@@ -191,18 +191,6 @@ ShellDevToolsBindings::~ShellDevToolsBindings() {
   std::erase(*bindings, this);
 }
 
-// static
-std::vector<ShellDevToolsBindings*>
-ShellDevToolsBindings::GetInstancesForWebContents(WebContents* web_contents) {
-  std::vector<ShellDevToolsBindings*> result;
-  base::ranges::copy_if(*GetShellDevtoolsBindingsInstances(),
-                        std::back_inserter(result),
-                        [web_contents](ShellDevToolsBindings* binding) {
-                          return binding->inspected_contents() == web_contents;
-                        });
-  return result;
-}
-
 void ShellDevToolsBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -249,20 +237,6 @@ void ShellDevToolsBindings::AttachInternal() {
 
 void ShellDevToolsBindings::Attach() {
   AttachInternal();
-}
-
-void ShellDevToolsBindings::UpdateInspectedWebContents(
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  inspected_contents_ = new_contents;
-  if (!agent_host_)
-    return;
-  AttachInternal();
-  CallClientFunction(
-      "DevToolsAPI", "reattachMainTarget", {}, {}, {},
-      base::BindOnce([](base::OnceCallback<void()> callback,
-                        base::Value) { std::move(callback).Run(); },
-                     std::move(callback)));
 }
 
 void ShellDevToolsBindings::WebContentsDestroyed() {

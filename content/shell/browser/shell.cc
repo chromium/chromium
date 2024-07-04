@@ -712,19 +712,6 @@ class PendingCallback : public base::RefCounted<PendingCallback> {
 };
 }  // namespace
 
-void Shell::UpdateInspectedWebContentsIfNecessary(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  scoped_refptr<PendingCallback> pending_callback =
-      base::MakeRefCounted<PendingCallback>(std::move(callback));
-  for (auto* shell_devtools_bindings :
-       ShellDevToolsBindings::GetInstancesForWebContents(old_contents)) {
-    shell_devtools_bindings->UpdateInspectedWebContents(
-        new_contents, base::DoNothingWithBoundArgs(pending_callback));
-  }
-}
-
 bool Shell::ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                               bool allowed_per_prefs,
                                               const url::Origin& origin,

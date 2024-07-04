@@ -814,10 +814,6 @@ class Browser : public TabStripModelObserver,
   bool IsBackForwardCacheSupported(content::WebContents& web_contents) override;
   content::PreloadingEligibility IsPrerender2Supported(
       content::WebContents& web_contents) override;
-  void UpdateInspectedWebContentsIfNecessary(
-      content::WebContents* old_contents,
-      content::WebContents* new_contents,
-      base::OnceCallback<void()> callback) override;
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
   void MediaWatchTimeChanged(
       const content::MediaPlayerWatchTime& watch_time) override;

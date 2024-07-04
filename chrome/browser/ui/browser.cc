@@ -1717,20 +1717,6 @@ content::PreloadingEligibility Browser::IsPrerender2Supported(
   return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
-void Browser::UpdateInspectedWebContentsIfNecessary(
-    content::WebContents* old_contents,
-    content::WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  DevToolsWindow* dev_tools_window =
-      DevToolsWindow::GetInstanceForInspectedWebContents(old_contents);
-  if (dev_tools_window) {
-    dev_tools_window->UpdateInspectedWebContents(new_contents,
-                                                 std::move(callback));
-  } else {
-    std::move(callback).Run();
-  }
-}
-
 bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return source == tab_strip_model_->GetActiveWebContents();

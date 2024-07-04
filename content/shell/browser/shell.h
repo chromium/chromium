@@ -181,10 +181,6 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   bool IsBackForwardCacheSupported(WebContents& contents) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
-  void UpdateInspectedWebContentsIfNecessary(
-      WebContents* old_contents,
-      WebContents* new_contents,
-      base::OnceCallback<void()> callback) override;
   bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,
                                          const url::Origin& origin,

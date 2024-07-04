@@ -133,12 +133,4 @@ PreloadingEligibility PrerenderWebContentsDelegate::IsPrerender2Supported(
   NOTREACHED_NORETURN();
 }
 
-void PrerenderWebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  // This is called only for Portal that is not available on a prerendered page.
-  NOTREACHED_NORETURN();
-}
-
 }  // namespace content

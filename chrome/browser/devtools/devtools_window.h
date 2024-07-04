@@ -183,12 +183,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   static std::unique_ptr<content::NavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
 
-  // Updates the WebContents inspected by the DevToolsWindow by reattaching
-  // the binding to |new_web_contents|. Called when swapping an outer
-  // WebContents with its inner WebContents.
-  void UpdateInspectedWebContents(content::WebContents* new_web_contents,
-                                  base::OnceCallback<void()> callback);
-
   // Sets closure to be called after load is done. If already loaded, calls
   // closure immediately.
   void SetLoadCompletedCallback(base::OnceClosure closure);
@@ -471,8 +465,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // display web modal dialogs triggered by it.
   void RegisterModalDialogManager(Browser* browser);
 
-  void OnReattachMainTargetComplete(base::Value);
-
   // Called when the accepted language changes. |navigator.language| of the
   // DevTools window should match the application language. When the user
   // changes the accepted language then this listener flips the language back
@@ -533,8 +525,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   bool open_new_window_for_popups_ = false;
   raw_ptr<infobars::InfoBar> sharing_infobar_ = nullptr;
   int checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
-
-  base::OnceCallback<void()> reattach_complete_callback_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

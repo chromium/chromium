@@ -390,13 +390,6 @@ bool WebContentsDelegate::ShouldAllowPartialParamMismatchOfPrerender2(
   return false;
 }
 
-void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  std::move(callback).Run();
-}
-
 bool WebContentsDelegate::ShouldShowStaleContentOnEviction(
     WebContents* source) {
   return false;

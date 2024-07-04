@@ -62,10 +62,6 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                                          const GURL& resource_url) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
-  void UpdateInspectedWebContentsIfNecessary(
-      WebContents* old_contents,
-      WebContents* new_contents,
-      base::OnceCallback<void()> callback) override;
 };
 
 }  // namespace content

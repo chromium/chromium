@@ -745,18 +745,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool ShouldAllowPartialParamMismatchOfPrerender2(
       NavigationHandle& navigation_handle);
 
-  // If |old_contents| is being inspected by a DevTools window, it updates the
-  // window to inspect |new_contents| instead and calls |callback| after it
-  // finishes asynchronously. If no window is present, or no update is
-  // necessary, |callback| is run synchronously (immediately on the same stack).
-  //
-  // TODO(crbug.com/40287334): This has no remaining call sites and can be
-  // removed.
-  virtual void UpdateInspectedWebContentsIfNecessary(
-      WebContents* old_contents,
-      WebContents* new_contents,
-      base::OnceCallback<void()> callback);
-
   // Returns true if the widget's frame content needs to be stored before
   // eviction and displayed until a new frame is generated. If false, a white
   // solid color is displayed instead.
