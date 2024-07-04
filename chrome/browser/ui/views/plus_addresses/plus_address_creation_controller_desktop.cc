@@ -71,15 +71,11 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   }
   PlusAddressService* plus_address_service = GetPlusAddressService();
   if (!plus_address_service) {
-    // TODO(crbug.com/40276862): Verify expected behavior in this case and the
-    // missing email case below.
     return;
   }
   std::optional<std::string> maybe_email =
       plus_address_service->GetPrimaryEmail();
   if (maybe_email == std::nullopt) {
-    // TODO(b/295075403): Validate that early return is desired behavior for
-    // the optional not-present case.
     return;
   }
 

@@ -40,8 +40,6 @@ class PlusAddressCreationControllerDesktop
   PlusAddressCreationView* get_view_for_testing();
   // A mechanism to avoid view entanglements, reducing the need for view
   // mocking, etc., while still allowing tests of specific business logic.
-  // TODO(crbug.com/40276862): Add more end-to-end coverage as the modal
-  // behavior comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
   // Used to validate storage and clearing of `maybe_plus_profile_`.
   std::optional<PlusProfile> get_plus_profile_for_testing();
