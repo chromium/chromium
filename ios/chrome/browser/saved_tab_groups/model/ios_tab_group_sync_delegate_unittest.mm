@@ -19,6 +19,8 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/sessions/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -70,6 +72,9 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        SessionRestorationServiceFactory::GetInstance(),
+        TestSessionRestorationService::GetTestingFactory());
     browser_state_ = builder.Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
@@ -101,11 +106,12 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
 
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
+    auto local_observer = std::make_unique<TabGroupLocalUpdateObserver>(
+        browser_list_.get(), mock_service_);
+
     browser_list_->AddBrowser(browser_);
     browser_list_->AddBrowser(browser_same_browser_state_);
 
-    auto local_observer = std::make_unique<TabGroupLocalUpdateObserver>(
-        browser_list_.get(), mock_service_);
     delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(
         browser_list_, mock_service_, std::move(local_observer));
   }

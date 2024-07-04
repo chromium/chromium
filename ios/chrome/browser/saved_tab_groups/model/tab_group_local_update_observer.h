@@ -8,12 +8,15 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
+#import "ios/chrome/browser/sessions/session_restoration_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
+
+class SessionRestorationService;
 
 namespace tab_groups {
 
@@ -22,10 +25,38 @@ class TabGroupSyncService;
 // Service for propagating local updates of Tab Group to the sync service.
 class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                     public WebStateListObserver,
-                                    public web::WebStateObserver {
+                                    public web::WebStateObserver,
+                                    public SessionRestorationObserver {
  public:
+  // Scoped type representing a sync operation in progress.
+  class ScopedPauseSyncOperation {
+   public:
+    ~ScopedPauseSyncOperation();
+
+   private:
+    friend class TabGroupLocalUpdateObserver;
+
+    ScopedPauseSyncOperation(TabGroupLocalUpdateObserver* observer);
+
+    // The TabGroupLocalUpdateObserver on which the sync is in pause.
+    raw_ptr<TabGroupLocalUpdateObserver> observer_ = nullptr;
+  };
+
+  TabGroupLocalUpdateObserver(BrowserList* browser_list,
+                              TabGroupSyncService* sync_service);
+  ~TabGroupLocalUpdateObserver() override;
+
+  TabGroupLocalUpdateObserver(const TabGroupLocalUpdateObserver&) = delete;
+  TabGroupLocalUpdateObserver& operator=(const TabGroupLocalUpdateObserver&) =
+      delete;
+
   // Ignores the synchronisation of `web_state` for its first navigation.
   void IgnoreNavigationForWebState(web::WebState* web_state);
+
+  // Pauses the propagation of local updates and returns a
+  // ScopedPauseSyncOperation. The pause will end when th
+  // ScopedPauseSyncOperation is destroyed.
+  ScopedPauseSyncOperation PauseSyncUpdate();
 
   // BrowserListObserver.
   void OnBrowserAdded(const BrowserList* browser_list,
@@ -38,7 +69,6 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-  void BatchOperationEnded(WebStateList* web_state_list) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // WebStateObserver.
@@ -47,15 +77,18 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  TabGroupLocalUpdateObserver(BrowserList* browser_list,
-                             TabGroupSyncService* sync_service);
-  ~TabGroupLocalUpdateObserver() override;
-
-  TabGroupLocalUpdateObserver(const TabGroupLocalUpdateObserver&) = delete;
-  TabGroupLocalUpdateObserver& operator=(const TabGroupLocalUpdateObserver&) =
-      delete;
+  // SessionRestorationObserver.
+  void WillStartSessionRestoration(Browser* browser) override;
+  void SessionRestorationFinished(
+      Browser* browser,
+      const std::vector<web::WebState*>& restored_web_states) override;
 
  private:
+  friend class ScopedPauseSyncOperation;
+
+  // Pauses the propagation of local updates..
+  void SetSyncUpdatePaused(bool paused);
+
   // Start observing the web state list associated with `browser`, if browser is
   // active and its webstates.
   void StartObservingBrowser(Browser* browser);
@@ -66,12 +99,24 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
   void StartObservingWebState(web::WebState* web_state);
   void StopObservingWebState(web::WebState* web_state);
 
+  // Called when a `web_state_list` changed during a batch update.
+  void WebStateListDidChangeDuringBatchUpdate(WebStateList* web_state_list,
+                                              const WebStateListChange& change,
+                                              const WebStateListStatus& status);
+
+  // Propagates the creation of `tab_group`.
+  void CreateSyncedGroup(WebStateList* web_state_list,
+                         const TabGroup* tab_group);
+
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   raw_ptr<BrowserList> browser_list_ = nullptr;
 
-  // Vector that contains identifiers that should be ignored for their first
+  // If `true`, don't propagate local updates.
+  int sync_update_paused_ = 0;
+
+  // Tracks WebState identifiers that should be ignored for their first
   // navigation.
-  std::set<web::WebStateID> ignored_identifiers_;
+  std::set<web::WebStateID> ignored_web_state_identifiers_;
 
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
@@ -79,6 +124,8 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
       web_state_list_observation_{this};
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+  base::ScopedObservation<SessionRestorationService, SessionRestorationObserver>
+      session_restoration_service_observation_{this};
 };
 
 }  // namespace tab_groups

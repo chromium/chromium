@@ -30,6 +30,8 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+using ScopedPauseSyncOperation =
+    tab_groups::TabGroupLocalUpdateObserver::ScopedPauseSyncOperation;
 using tab_groups::utils::GetLocalTabGroupInfo;
 using tab_groups::utils::LocalTabGroupInfo;
 
@@ -71,6 +73,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
     return;
   }
 
+  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
   WebStateList* web_state_list = browser->GetWebStateList();
 
   TabInsertionBrowserAgent* tab_insertion_browser_agent =
@@ -108,6 +111,8 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
 
 void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
+  ScopedPauseSyncOperation lock = local_update_observer_->PauseSyncUpdate();
+
   LocalTabGroupInfo tab_group_info =
       GetLocalTabGroupInfo(browser_list_, local_tab_group_id);
   if (!tab_group_info.tab_group) {
@@ -128,6 +133,8 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
     // The group is closed locally.
     return;
   }
+  ScopedPauseSyncOperation observer_lock =
+      local_update_observer_->PauseSyncUpdate();
 
   const TabGroup* tab_group = tab_group_info.tab_group;
   const TabGroupRange& tab_group_range = tab_group->range();
