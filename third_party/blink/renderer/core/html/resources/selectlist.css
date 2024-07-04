@@ -149,7 +149,7 @@ selectlist > listbox {
   min-block-size: 1lh;
   inset-block-start: anchor(self-end);
   inset-inline-start: anchor(self-start);
-  position-try-fallbacks:
+  position-try:
     -internal-selectlist-listbox-reverse-block,
     -internal-selectlist-listbox-reverse-inline,
     -internal-selectlist-listbox-reverse-both,
@@ -212,7 +212,7 @@ selectlist::-internal-selectlist-preview {
   min-block-size: anchor-size(self-block);
   inset-block-start: anchor(self-start);
   inset-inline-start: anchor(self-start);
-  position-try-fallbacks:
+  position-try:
     -internal-selectlist-preview-reverse-block,
     -internal-selectlist-preview-reverse-inline,
     -internal-selectlist-preview-reverse-both;
