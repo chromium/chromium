@@ -124,6 +124,12 @@ void EventRewriterControllerImpl::Initialize(
           event_rewriter_ash.get(), accessibility_event_rewriter_delegate);
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
+  // EventRewriters are notified in the order they are added.
+  if (features::IsPeripheralCustomizationEnabled() ||
+      ::features::IsShortcutCustomizationEnabled()) {
+    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
+  }
+  AddEventRewriter(std::move(prerewritten_event_forwarder));
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   if (features::IsKeyboardRewriterFixEnabled()) {
     auto keyboard_modifier_event_rewriter =
@@ -145,12 +151,6 @@ void EventRewriterControllerImpl::Initialize(
         Shell::Get()->keyboard_capability(),
         ash::input_method::InputMethodManager::Get()->GetImeKeyboard()));
   }
-  // EventRewriters are notified in the order they are added.
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    AddEventRewriter(std::move(peripheral_customization_event_rewriter));
-  }
-  AddEventRewriter(std::move(prerewritten_event_forwarder));
   // Accessibility rewriter is applied between modifier event rewriters and
   // EventRewriterAsh. Specifically, Search modifier is captured by the
   // accessibility rewriter, that should be the ones after modifier remapping.
