@@ -24,13 +24,13 @@
 #include "ui/events/event.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zcr_extended_text_input.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_text_input.h"
-#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -312,7 +312,7 @@ class WaylandInputMethodContextTestBase : public WaylandTest {
     input_method_context_->Init(true);
     connection_->Flush();
 
-    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
     // Unset Keyboard focus.
     connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
@@ -1671,7 +1671,7 @@ TEST_P(WaylandInputMethodContextTest,
 
 TEST_P(WaylandInputMethodContextTest, OnClearGrammarFragments) {
   input_method_context_->OnClearGrammarFragments(gfx::Range(1, 5));
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_clear_grammar_fragments_called());
 }
@@ -1679,7 +1679,7 @@ TEST_P(WaylandInputMethodContextTest, OnClearGrammarFragments) {
 TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
   input_method_context_->OnAddGrammarFragment(
       ui::GrammarFragment(gfx::Range(1, 5), "test"));
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_add_grammar_fragment_called());
 }
@@ -1687,13 +1687,13 @@ TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
 TEST_P(WaylandInputMethodContextTest, OnInsertImage) {
   const GURL some_image_url = GURL("");
   input_method_context_->OnInsertImage(some_image_url);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_TRUE(input_method_context_delegate_->was_on_insert_image_called());
 }
 
 TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
   input_method_context_->OnSetAutocorrectRange(gfx::Range(1, 5));
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_set_autocorrect_range_called());
 }
@@ -1701,7 +1701,7 @@ TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
 TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
   constexpr gfx::Rect kBounds(10, 20, 300, 400);
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), kBounds);
 }
 
@@ -1727,7 +1727,8 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_CALL(*client1, EnsureCaretNotInRect(kBounds));
   EXPECT_CALL(*client2, EnsureCaretNotInRect(kBounds));
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi test_api(connection_.get());
+  test_api.SyncDisplay();
   Mock::VerifyAndClearExpectations(client1.get());
   Mock::VerifyAndClearExpectations(client2.get());
 
@@ -1736,7 +1737,7 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_CALL(*client1, EnsureCaretNotInRect(kBoundsEmpty));
   EXPECT_CALL(*client2, EnsureCaretNotInRect(kBoundsEmpty));
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBoundsEmpty);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  test_api.SyncDisplay();
   Mock::VerifyAndClearExpectations(client1.get());
   Mock::VerifyAndClearExpectations(client2.get());
 
@@ -1745,7 +1746,7 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_CALL(*client1, EnsureCaretNotInRect).Times(0);
   EXPECT_CALL(*client2, EnsureCaretNotInRect).Times(0);
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds2);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  test_api.SyncDisplay();
   Mock::VerifyAndClearExpectations(client1.get());
   Mock::VerifyAndClearExpectations(client2.get());
 }
@@ -1764,12 +1765,13 @@ TEST_P(WaylandInputMethodContextTest,
   const gfx::Rect kBounds(10, 20, 300, 400);
   EXPECT_CALL(*client, EnsureCaretNotInRect(kBounds));
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi test_api(connection_.get());
+  test_api.SyncDisplay();
   Mock::VerifyAndClearExpectations(client.get());
 
   client.reset();
   input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  test_api.SyncDisplay();
 }
 
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
@@ -1780,7 +1782,7 @@ TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
   });
   EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
   connection_->Flush();
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 }
 
 TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
@@ -1790,7 +1792,7 @@ TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
   });
   input_method_context_->DismissVirtualKeyboard();
   connection_->Flush();
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 }
 
 TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {

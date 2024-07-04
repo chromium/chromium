@@ -485,8 +485,6 @@ source_set("test_support") {
     "test/test_surface_augmenter.h",
     "test/test_touch.cc",
     "test/test_touch.h",
-    "test/test_util.cc",
-    "test/test_util.h",
     "test/test_viewport.cc",
     "test/test_viewport.h",
     "test/test_viewporter.cc",

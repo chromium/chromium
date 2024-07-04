@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -46,7 +47,6 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
-#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
@@ -1234,7 +1234,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
   wayland_extension->StartWindowDraggingSessionIfNeeded(
       DragEventSource::kMouse,
       /*allow_system_drag=*/false);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_EQ(State::kAttached, drag_controller_state());
 
   // Emulate a [motion => leave] event sequence and make sure the correct
@@ -1488,7 +1488,7 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   GetWaylandToplevelExtension(*dragged_window)
       ->StartWindowDraggingSessionIfNeeded(DragEventSource::kMouse,
                                            /*allow_system_drag=*/false);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   EXPECT_EQ(State::kAttached, drag_controller_state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*dragged_window);
@@ -1572,7 +1572,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   wayland_extension->StartWindowDraggingSessionIfNeeded(
       DragEventSource::kMouse,
       /*allow_system_drag=*/false);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   // Starting a DnD session results in a server sending a Enter event, which
   // enters the window at 0x0.
   EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
@@ -1688,7 +1688,7 @@ TEST_P(WaylandWindowDragControllerTest,
   // server events arrive at the client before proceeding to ensure tests are
   // asserting on a consistent expected ordering of events.
   EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   // 4. Destroy the dragged window just after quitting move loop.
   const auto* dangling_window_ptr = window_.get();
@@ -1737,7 +1737,7 @@ TEST_P(WaylandWindowDragControllerTest,
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   window_2->Show(/*inactive=*/false);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   // Spin the nested move loop and schedule a sequence of test steps to be
   // pefomed while it is running.
@@ -1951,7 +1951,7 @@ TEST_P(WaylandWindowDragControllerTest,
       delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
   window_2->Show(/*inactive=*/false);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   // Spin the nested move loop and schedule a sequence of test steps to be
   // pefomed while it is running.

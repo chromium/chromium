@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
+
 #include <linux/input.h>
 #include <wayland-server.h>
 
@@ -31,10 +33,10 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -47,7 +49,6 @@
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
-#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -1134,7 +1135,7 @@ TEST_P(WaylandDataDragControllerTest, SuppressPointerButtonReleasesAfterEnter) {
   // Ensure start_drag request is processed at compositor side and a first enter
   // is received by the client. From that point onwards, any pointer button
   // event must be no-op.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   ASSERT_TRUE(drag_controller()->has_received_enter_);
 
   // Emulates a spurious pointer button release and ensure it is no-op.
@@ -1376,7 +1377,7 @@ TEST_P(WaylandDataDragControllerTest,
   // Wait for the full data fetching flow to finish before checking all
   // expectations.
   WaitForDragDropTasks();
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   EXPECT_EQ(drag_controller_state(),
             WaylandDataDragController::State::kStarted);
@@ -1427,7 +1428,7 @@ TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
   // Wait for the full data fetching flow and requests/events to finish before
   // checking all expectations.
   WaitForDragDropTasks();
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
@@ -1514,7 +1515,7 @@ TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
   bool started = drag_controller()->StartSession(
       os_exchange_data, DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
       DragEventSource::kMouse);
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
   ASSERT_TRUE(started);
 
   SendDndFinished();

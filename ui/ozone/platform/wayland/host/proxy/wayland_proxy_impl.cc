@@ -26,12 +26,8 @@ void WaylandProxyImpl::SetDelegate(WaylandProxy::Delegate* delegate) {
   delegate_ = delegate;
 }
 
-wl_display* WaylandProxyImpl::GetDisplay() {
-  return connection_->display();
-}
-
-wl_display* WaylandProxyImpl::GetDisplayWrapper() {
-  return connection_->display_wrapper();
+struct wl_registry* WaylandProxyImpl::GetRegistry() {
+  return connection_->GetRegistry();
 }
 
 void WaylandProxyImpl::RoundTripQueue() {

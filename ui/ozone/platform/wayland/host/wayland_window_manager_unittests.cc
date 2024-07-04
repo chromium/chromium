@@ -4,12 +4,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
-#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
@@ -86,7 +86,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   // When window is shown, it automatically gets keyboard focus. Reset it.
   connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
@@ -137,7 +137,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   // When window is shown, it automatically gets keyboard focus. Reset it.
   connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
 

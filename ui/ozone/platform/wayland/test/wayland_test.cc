@@ -12,13 +12,13 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/common/features.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/scoped_wl_array.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
-#include "ui/ozone/platform/wayland/test/test_util.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -81,7 +81,7 @@ void WaylandTestBase::SetUp() {
   window_->Show(false);
 
   // Wait for the client to flush all pending requests from initialization.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 
   // The surface must be activated before buffers are attached.
   ActivateSurface(window_->root_surface()->get_surface_id());
@@ -96,8 +96,9 @@ void WaylandTestBase::SetUp() {
 }
 
 void WaylandTestBase::TearDown() {
-  if (initialized_)
-    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  if (initialized_) {
+    WaylandConnectionTestApi(connection_.get()).SyncDisplay();
+  }
 }
 
 void WaylandTestBase::PostToServerAndWait(
@@ -123,13 +124,14 @@ void WaylandTestBase::PostToServerAndWait(base::OnceClosure closure,
     task_environment_.RunUntilIdle();
   } else {
     // Sync with the display to ensure client's requests are processed.
-    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+    WaylandConnectionTestApi test_api(connection_.get());
+    test_api.SyncDisplay();
 
     server_.RunAndWait(std::move(closure));
 
     // Sync with the display to ensure server's events are received and
     // processed
-    wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+    test_api.SyncDisplay();
   }
 }
 
@@ -244,7 +246,7 @@ void WaylandTestBase::WaitForAllDisplaysReady() {
   loop.Run();
 
   // Secondly, make sure all events after 'done' are processed.
-  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  WaylandConnectionTestApi(connection_.get()).SyncDisplay();
 }
 
 std::unique_ptr<WaylandWindow> WaylandTestBase::CreateWaylandWindowWithParams(

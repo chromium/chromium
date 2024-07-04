@@ -205,7 +205,7 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
   event_queue_.reset(wl_display_create_queue(display()));
   wl_proxy_set_queue(wrapped_display_.get(), event_queue_.get());
 
-  registry_.reset(wl_display_get_registry(display_wrapper()));
+  registry_.reset(GetRegistry());
   if (!registry_) {
     LOG(ERROR) << "Failed to get Wayland registry";
     return false;
@@ -366,7 +366,7 @@ bool WaylandConnection::WlObjectsReady() const {
 }
 
 void WaylandConnection::Flush() {
-  wl_display_flush(display_.get());
+  wl_display_flush(display());
 }
 
 void WaylandConnection::UpdateInputDevices() {
@@ -768,6 +768,19 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
 
   available_globals_.emplace_back(interface, version);
   Flush();
+}
+
+struct wl_callback* WaylandConnection::GetSyncCallback() {
+  return wl_display_sync(display_wrapper());
+}
+
+gl::EGLDisplayPlatform WaylandConnection::GetNativeDisplay() {
+  return gl::EGLDisplayPlatform(
+      reinterpret_cast<EGLNativeDisplayType>(display()));
+}
+
+struct wl_registry* WaylandConnection::GetRegistry() {
+  return wl_display_get_registry(display_wrapper());
 }
 
 }  // namespace ui
