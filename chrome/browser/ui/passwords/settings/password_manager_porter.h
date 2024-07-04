@@ -62,23 +62,40 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
       std::unique_ptr<password_manager::PasswordImporter> importer);
 
  private:
-  enum Type {
-    PASSWORD_IMPORT,
-    PASSWORD_EXPORT,
+  // These two helper classes are used to listen for results from the
+  // import/export file pickers respectively. They delegate most of their
+  // behavior back to the containing class (PasswordManagerPorter).
+  class ImportFileSelectListener : public ui::SelectFileDialog::Listener {
+   public:
+    explicit ImportFileSelectListener(PasswordManagerPorter* owner);
+    ~ImportFileSelectListener() override;
+
+    // ui::SelectFileDialog::Listener:
+    void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+    void FileSelectionCanceled() override;
+
+   private:
+    raw_ptr<PasswordManagerPorter> owner_;
   };
 
-  // Display the file-picker dialogue for either importing or exporting
-  // passwords.
-  void PresentFileSelector(base::WeakPtr<content::WebContents> web_contents,
-                           Type type);
+  class ExportFileSelectListener : public ui::SelectFileDialog::Listener {
+   public:
+    explicit ExportFileSelectListener(PasswordManagerPorter* owner);
+    ~ExportFileSelectListener() override;
 
-  // Callback from the file selector dialogue when a file has been picked (for
-  // either import or export).
-  // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+    // ui::SelectFileDialog::Listener:
+    void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+    void FileSelectionCanceled() override;
+
+   private:
+    raw_ptr<PasswordManagerPorter> owner_;
+  };
+
+  // Show the platform file selection dialog as appropriate for either importing
+  // or exporting. These deliver callbacks via ImportFileSelectListener
+  // (import_listener_) and ExportFileSelectListener (export_listener_).
+  void PresentImportFileSelector(content::WebContents* web_contents);
+  void PresentExportFileSelector(content::WebContents* web_contents);
 
   void ImportPasswordsFromPath(const base::FilePath& path);
 
@@ -103,6 +120,9 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   // while the file is being selected.
   ImportResultsCallback import_results_callback_;
   password_manager::PasswordForm::Store to_store_;
+
+  ImportFileSelectListener import_listener_{this};
+  ExportFileSelectListener export_listener_{this};
 
   base::WeakPtrFactory<PasswordManagerPorter> weak_ptr_factory_{this};
 };
