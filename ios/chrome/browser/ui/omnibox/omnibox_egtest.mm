@@ -1380,6 +1380,40 @@ void FocusFakebox() {
       assert:[OmniboxAppInterface displaysInlineAutocompleteText:YES]];
 }
 
+// Verifies that tapping an autocomplete suggestion in the omnibox successfully
+// completes the user's query.
+- (void)testTapBehaviors {
+  // Disable all autocomplete providers except the history url provider.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  omnibox::DisableAutocompleteProviders(config, 524279);
+
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self populateHistory];
+
+  // Clears the url and replace it with local url prefix.
+  // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"127")];
+
+  // We expect to have an autocomplete.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:YES]];
+  // Tapping the inline autocomplete should accept it.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_tap()];
+
+  // Inline autocomplete gets accepted and it is not presented anymore.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assert:[OmniboxAppInterface displaysInlineAutocompleteText:NO]];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingAutocompleteText(
+                            @"")];
+}
+
 #pragma mark - Helpers
 
 // Taps the fake omnibox and waits for the real omnibox to be visible.
