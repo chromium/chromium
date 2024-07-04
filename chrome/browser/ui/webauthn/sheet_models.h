@@ -714,9 +714,9 @@ class AuthenticatorPriorityMechanismSheetModel
 
 class AuthenticatorGpmPinSheetModelBase : public AuthenticatorSheetModelBase {
  public:
-  // Indicates whether the view should accommodate changing an existing pin,
-  // creating a new one or entering an existing one.
-  enum class Mode { kPinChange, kPinCreate, kPinEntry };
+  // Indicates whether the view should accommodate creating a new pin or
+  // entering an existing one.
+  enum class Mode { kPinCreate, kPinEntry };
 
   explicit AuthenticatorGpmPinSheetModelBase(
       AuthenticatorRequestDialogModel* dialog_model,

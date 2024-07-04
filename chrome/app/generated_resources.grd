@@ -16463,11 +16463,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PIN_OPTION_ALPHANUMERIC" desc="A label on the pin options dropdown menu that allows to choose an alphanumeric Google Password Manager pin.">
         Letters &amp;&amp; Numbers
       </message>
-      <message name="IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE" desc="The title of a dialog that is shown when a user is changing their Google Password Manager PIN.">
-        Create a new PIN for Google Password Manager
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE" desc="The title of a dialog that is shown when a user is creating a Google Password Manager PIN for the first time. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Protect all your passkeys with a recovery PIN
+      <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE" desc="The title of a dialog that is shown when a user is creating a new Google Password Manager PIN. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Create a recovery PIN for Google Password Manager
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         A recovery PIN helps you access your saved passkeys on any device

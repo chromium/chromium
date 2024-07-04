@@ -350,11 +350,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorGPMConnectingSheetModel>(dialog_model));
       break;
     case Step::kGPMChangePin:
-      sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
-          std::make_unique<AuthenticatorGpmPinSheetModel>(
-              dialog_model, kPinDigitCount,
-              AuthenticatorGpmPinSheetModelBase::Mode::kPinChange));
-      break;
     case Step::kGPMCreatePin:
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGpmPinSheetModel>(
@@ -368,11 +363,6 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               AuthenticatorGpmPinSheetModelBase::Mode::kPinEntry));
       break;
     case Step::kGPMChangeArbitraryPin:
-      sheet_view = std::make_unique<AuthenticatorGPMArbitraryPinSheetView>(
-          std::make_unique<AuthenticatorGpmArbitraryPinSheetModel>(
-              dialog_model,
-              AuthenticatorGpmPinSheetModelBase::Mode::kPinChange));
-      break;
     case Step::kGPMCreateArbitraryPin:
       sheet_view = std::make_unique<AuthenticatorGPMArbitraryPinSheetView>(
           std::make_unique<AuthenticatorGpmArbitraryPinSheetModel>(

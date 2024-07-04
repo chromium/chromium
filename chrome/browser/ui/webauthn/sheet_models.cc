@@ -1666,8 +1666,6 @@ bool AuthenticatorGpmPinSheetModelBase::ui_disabled() const {
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetStepTitle() const {
   switch (mode_) {
-    case Mode::kPinChange:
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE);
     case Mode::kPinCreate:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE);
     case Mode::kPinEntry:
@@ -1677,7 +1675,6 @@ std::u16string AuthenticatorGpmPinSheetModelBase::GetStepTitle() const {
 
 std::u16string AuthenticatorGpmPinSheetModelBase::GetStepDescription() const {
   switch (mode_) {
-    case Mode::kPinChange:
     case Mode::kPinCreate:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_DESC);
     case Mode::kPinEntry:
@@ -1701,7 +1698,7 @@ bool AuthenticatorGpmPinSheetModelBase::IsForgotGPMPinButtonVisible() const {
 }
 
 bool AuthenticatorGpmPinSheetModelBase::IsGPMPinOptionsButtonVisible() const {
-  return mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange;
+  return mode_ == Mode::kPinCreate;
 }
 
 void AuthenticatorGpmPinSheetModelBase::OnAccept() {
@@ -1757,7 +1754,7 @@ void AuthenticatorGpmPinSheetModel::SetPin(std::u16string pin) {
   // to confirm.
   if (mode_ == Mode::kPinEntry && full_pin_typed) {
     dialog_model()->OnGPMPinEntered(pin_);
-  } else if ((mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange) &&
+  } else if (mode_ == Mode::kPinCreate &&
              full_pin_typed_before != full_pin_typed) {
     dialog_model()->OnButtonsStateChanged();
   }
@@ -1768,12 +1765,11 @@ bool AuthenticatorGpmPinSheetModel::FullPinTyped() const {
 }
 
 bool AuthenticatorGpmPinSheetModel::IsAcceptButtonVisible() const {
-  return mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange;
+  return mode_ == Mode::kPinCreate;
 }
 
 bool AuthenticatorGpmPinSheetModel::IsAcceptButtonEnabled() const {
-  return (mode_ == Mode::kPinCreate || mode_ == Mode::kPinChange) &&
-         FullPinTyped() && !ui_disabled();
+  return mode_ == Mode::kPinCreate && FullPinTyped() && !ui_disabled();
 }
 
 std::u16string AuthenticatorGpmPinSheetModel::GetAcceptButtonLabel() const {
