@@ -57,7 +57,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryText) {
 TEST_F(PickerListItemViewTest, SetsPrimaryImage) {
   PickerListItemView item_view(base::DoNothing());
 
-  item_view.SetPrimaryImage(std::make_unique<views::ImageView>());
+  item_view.SetPrimaryImage(ui::ImageModel());
 
   ASSERT_THAT(item_view.primary_container_for_testing()->children(), SizeIs(1));
   EXPECT_TRUE(views::IsViewClass<views::ImageView>(

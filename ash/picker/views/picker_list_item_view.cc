@@ -155,11 +155,11 @@ void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetPrimaryImage(
-    std::unique_ptr<views::ImageView> primary_image) {
+void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image) {
   primary_label_ = nullptr;
   primary_container_->RemoveAllChildViews();
-  auto* image_view = primary_container_->AddChildView(std::move(primary_image));
+  auto* image_view = primary_container_->AddChildView(
+      std::make_unique<views::ImageView>((primary_image)));
   image_view->SetCanProcessEventsWithinSubtree(false);
   const gfx::Size original_size = image_view->GetImageModel().Size();
   if (original_size.height() > 0) {

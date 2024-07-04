@@ -198,8 +198,7 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                   return nullptr;
                 }
                 icon = &chromeos::kFiletypeImageIcon;
-                item_view->SetPrimaryImage(
-                    std::make_unique<views::ImageView>(*data.display_image));
+                item_view->SetPrimaryImage(*data.display_image);
                 break;
               case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
                 icon = &vector_icons::kCodeIcon;

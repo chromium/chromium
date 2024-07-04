@@ -47,7 +47,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   // Sets the primary text or image of the list item. This replaces any existing
   // contents in the primary container.
   void SetPrimaryText(const std::u16string& primary_text);
-  void SetPrimaryImage(std::unique_ptr<views::ImageView> primary_image);
+  void SetPrimaryImage(const ui::ImageModel& primary_image);
 
   void SetSecondaryText(const std::u16string& secondary_text);
 
