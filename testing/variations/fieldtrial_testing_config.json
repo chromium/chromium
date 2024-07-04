@@ -21436,7 +21436,7 @@
             ]
         }
     ],
-    "SuppressesNetworkActivitiesOnSlowNetworks": [
+    "SuppressesLoadingPredictorOnSlowNetwork": [
         {
             "platforms": [
                 "android",
@@ -21453,7 +21453,7 @@
                         "slow_network_threshold": "208ms"
                     },
                     "enable_features": [
-                        "SuppressesNetworkActivitiesOnSlowNetworks"
+                        "SuppressesLoadingPredictorOnSlowNetwork"
                     ]
                 }
             ]
