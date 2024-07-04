@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_KEYCODES_DOM_US_LAYOUT_DATA_H_
 #define UI_EVENTS_KEYCODES_DOM_US_LAYOUT_DATA_H_
 
+#include <array>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -15,7 +17,7 @@ namespace ui {
 // interpretation when there is no other way to map a physical key.
 const struct PrintableCodeEntry {
   DomCode dom_code;
-  char16_t character[2];  // normal, shift
+  std::array<char16_t, 2> character;  // normal, shifted
 } kPrintableCodeMap[] = {
     {DomCode::US_A, {'a', 'A'}},
     {DomCode::US_B, {'b', 'B'}},
