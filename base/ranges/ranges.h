@@ -15,9 +15,6 @@
 #include <type_traits>
 #include <utility>
 
-// TODO(dcheng): Remove this in a followup.
-#include "base/template_util.h"
-
 namespace base::ranges {
 
 // Implementation of C++20's std::ranges::iterator_t.
