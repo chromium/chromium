@@ -62,11 +62,11 @@ namespace blink {
 #define REPORT_OVERFLOW(doesOverflow) ((void)0)
 #endif
 
-static const unsigned kLayoutUnitFractionalBits = 6;
-static const int kFixedPointDenominator = 1 << kLayoutUnitFractionalBits;
+inline constexpr unsigned kLayoutUnitFractionalBits = 6;
+inline constexpr int kFixedPointDenominator = 1 << kLayoutUnitFractionalBits;
 
-const int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
-const int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
+inline constexpr int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
+inline constexpr int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
 
 // TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
 class PLATFORM_EXPORT LayoutUnit;
@@ -404,7 +404,7 @@ class LayoutUnit {
 // It is common to clamp these indefinite values to zero.
 // |LayoutUnit::ClampIndefiniteToZero| provides this functionality, and
 // additionally DCHECKs that it isn't some other negative value.
-constexpr LayoutUnit kIndefiniteSize(-1);
+inline constexpr LayoutUnit kIndefiniteSize(-1);
 
 constexpr bool operator<=(const LayoutUnit& a, const LayoutUnit& b) {
   return a.RawValue() <= b.RawValue();
