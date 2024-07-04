@@ -15,11 +15,14 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -261,6 +264,7 @@ void AddViewPasswordDetailsChildSuggestion(Suggestion& suggestion) {
 void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
                                      IsTriggeredOnPasswordForm on_password_form,
                                      IsCrossDomain is_cross_origin,
+                                     bool favicon_can_be_requested_from_google,
                                      std::vector<Suggestion>* suggestions) {
   // A separate suggestion with the same (username, password) pair is displayed
   // for every affiliated domain. For example, if the credential was saved on
@@ -280,9 +284,8 @@ void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
         credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
         is_cross_origin.value());
     suggestion.is_acceptable = on_password_form.value();
-    suggestion.custom_icon = Suggestion::FaviconDetails(domain_info.url);
-    // TODO(crbug.com/325246516): Based on sync status and credentials storage,
-    // calculate `FaviconDetails::can_be_requested_from_google`.
+    suggestion.custom_icon = Suggestion::FaviconDetails(
+        domain_info.url, favicon_can_be_requested_from_google);
 
     if (!replaced) {
       AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
@@ -408,11 +411,25 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         SuggestionType::kTitle);
   }
 
+  auto* sync_service = password_client_->GetSyncService();
+  const bool is_sync_passwords_enabled =
+      sync_service &&
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          sync_service);
+  const bool is_passphrase_user =
+      sync_service &&
+      sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
   std::set<std::string> suggested_signon_realms;
   for (const auto& form : suggested_credentials) {
     suggested_signon_realms.insert(form.signon_realm);
-    AppendManualFallbackSuggestions(CredentialUIEntry(form), on_password_form,
-                                    IsCrossDomain(false), &suggestions);
+    const CredentialUIEntry ui_entry = CredentialUIEntry(form);
+    const bool is_from_account =
+        ui_entry.stored_in.contains(PasswordForm::Store::kAccountStore);
+    const bool favicon_can_be_requested_from_google =
+        (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
+    AppendManualFallbackSuggestions(
+        ui_entry, on_password_form, IsCrossDomain(false),
+        favicon_can_be_requested_from_google, &suggestions);
   }
 
   if (generate_sections) {
@@ -434,9 +451,13 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
           return suggested_signon_realms.count(signon_realm);
         },
         &CredentialFacet::signon_realm);
-    AppendManualFallbackSuggestions(credential, on_password_form,
-                                    IsCrossDomain(!has_suggested_realm),
-                                    &suggestions);
+    const bool is_from_account =
+        credential.stored_in.contains(PasswordForm::Store::kAccountStore);
+    const bool favicon_can_be_requested_from_google =
+        (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
+    AppendManualFallbackSuggestions(
+        credential, on_password_form, IsCrossDomain(!has_suggested_realm),
+        favicon_can_be_requested_from_google, &suggestions);
   }
 
   base::ranges::sort(
