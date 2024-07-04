@@ -19,10 +19,6 @@ struct PictureInPictureWindowOptions {
   // it is less than or equal to 0.
   double initial_aspect_ratio;
 
-  // True if the picture-in-picture window should be locked to the initial
-  // aspect ratio.
-  bool lock_aspect_ratio;
-
   // When true, hints to the user agent that a button for returning to
   // the opener does not make sense for the given document picture-in-picture
   // experience.

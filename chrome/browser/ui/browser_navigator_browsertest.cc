@@ -1941,7 +1941,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Create the params for the PiP request.
   auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
   pip_options->initial_aspect_ratio = 0.5;
-  pip_options->lock_aspect_ratio = true;
 
   // The WebContents holds the parameters from the PiP request.
   WebContents::CreateParams web_contents_params(browser()->profile());

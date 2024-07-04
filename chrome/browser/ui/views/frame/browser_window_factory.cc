@@ -77,11 +77,6 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   }
 #endif  // IS_MAC
 
-  if (view->GetIsPictureInPictureType() && view->GetLockAspectRatio()) {
-    gfx::SizeF aspect_ratio(view->GetInitialAspectRatio(), 1.0f);
-    view->GetWidget()->SetAspectRatio(aspect_ratio);
-  }
-
 #if defined(USE_AURA)
   // For now, all browser windows are true. This only works when USE_AURA
   // because it requires gfx::NativeWindow to be an aura::Window*.

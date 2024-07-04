@@ -343,10 +343,6 @@ class BrowserView : public BrowserWindow,
   std::optional<blink::mojom::PictureInPictureWindowOptions>
   GetDocumentPictureInPictureOptions() const;
 
-  // Returns the lock_aspect_ratio parameter from |browser_|'s CreateParams.
-  // Valid only for PictureInPicture browsers.
-  bool GetLockAspectRatio() const;
-
   // Returns true if the top browser controls (a.k.a. top-chrome UIs) are
   // allowed to slide up and down with the gesture scrolls on the current tab's
   // page.

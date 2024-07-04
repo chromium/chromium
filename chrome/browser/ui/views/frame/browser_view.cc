@@ -1280,12 +1280,6 @@ BrowserView::GetDocumentPictureInPictureOptions() const {
   return browser_->create_params().pip_options;
 }
 
-bool BrowserView::GetLockAspectRatio() const {
-  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
-      browser_->create_params().pip_options;
-  return pip_options.has_value() ? pip_options->lock_aspect_ratio : false;
-}
-
 bool BrowserView::GetTopControlsSlideBehaviorEnabled() const {
   return top_controls_slide_controller_ &&
          top_controls_slide_controller_->IsEnabled();
