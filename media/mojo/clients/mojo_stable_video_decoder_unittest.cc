@@ -319,6 +319,10 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 };
 
+}  // namespace
+
+// NOTE: This needs to be outside of an anonymous namespace to allow it to be
+// friended by SharedImageInterface.
 class MockSharedImageInterface : public gpu::SharedImageInterface {
  public:
   // gpu::SharedImageInterface implementation.
@@ -389,6 +393,8 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
  protected:
   ~MockSharedImageInterface() override = default;
 };
+
+namespace {
 
 // TestEndpoints groups a few members that result from creating and initializing
 // a MojoStableVideoDecoder so that tests can use them to set expectations

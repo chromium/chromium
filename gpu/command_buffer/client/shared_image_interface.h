@@ -40,12 +40,20 @@ class D3DSharedFence;
 #endif
 }  // namespace gfx
 
+namespace media {
+class MockSharedImageInterface;
+}
+
 namespace gpu {
 class ClientSharedImage;
+class ClientSharedImageInterface;
 struct ExportedSharedImage;
+class GpuChannelSharedImageInterface;
 class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
+class SharedImageInterfaceInProcess;
+class TestSharedImageInterface;
 
 struct SharedImageMetadata {
   viz::SharedImageFormat format;
@@ -106,8 +114,6 @@ struct SharedImageInfo {
 class GPU_EXPORT SharedImageInterface
     : public base::RefCountedThreadSafe<SharedImageInterface> {
  public:
-  SharedImageInterface();
-
   // Creates a shared image of requested |format|, |size| and |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with.
@@ -420,6 +426,20 @@ class GPU_EXPORT SharedImageInterface
   virtual ~SharedImageInterface();
 
   scoped_refptr<SharedImageInterfaceHolder> holder_;
+
+ private:
+  friend class ClientSharedImageInterface;
+  friend class GpuChannelSharedImageInterface;
+  friend class SharedImageInterfaceInProcess;
+  friend class TestSharedImageInterface;
+  friend class media::MockSharedImageInterface;
+
+  // Make the constructor private to ensure that any new subclassing of this
+  // interface gets explicit approval from //gpu OWNERS (by adding to the list
+  // of friends above). In particular, do not subclass this interface for
+  // testing purposes - use (and extend if necessary) TestSharedImageInterface
+  // instead.
+  SharedImageInterface();
 };
 
 // |SharedImageInterfaceHolder| provides thread-safe access to
