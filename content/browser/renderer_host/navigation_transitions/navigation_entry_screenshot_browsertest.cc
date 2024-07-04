@@ -28,8 +28,10 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_transition_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -1099,6 +1101,117 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationEntryScreenshotBrowserTest,
+                         ::testing::ValuesIn(kNavTypes),
+                         &DescribeNavType);
+
+class NavigationEntryScreenshotBrowserTestWithWebUI
+    : public NavigationEntryScreenshotBrowserTest {
+ public:
+  ~NavigationEntryScreenshotBrowserTestWithWebUI() override = default;
+
+ private:
+  // Used to make the "web-ui" prefixed documents being rendered as WebUIs.
+  TestWebUIControllerFactory factory_;
+  ScopedWebUIControllerFactoryRegistration factory_registration_{&factory_};
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithWebUI,
+                       PrimaryMainFrameNavWebUI) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetScaledViewportSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  GURL webui_red(GetWebUIURL("web-ui/red.html"));
+  GURL webui_green(GetWebUIURL("web-ui/green.html"));
+
+  {
+    SCOPED_TRACE("[red*] -> [red&, webui_green*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          webui_green);
+    AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 1 * page_size);
+  }
+  {
+    SCOPED_TRACE("[red&, webui_green*] -> [red&, webui_green&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  }
+  {
+    SCOPED_TRACE(
+        "[red&, webui_green&, blue*] -> "
+        "[red&, webui_green&, blue&, webui_green*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          webui_green);
+    AssertOrderedScreenshotsAre(
+        controller, {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+  {
+    SCOPED_TRACE(
+        "[red&, webui_green&, blue&, webui_green*] -> "
+        "[red, webui_green&, blue&, webui_green&, webui_red*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          webui_red);
+    AssertOrderedScreenshotsAre(
+        controller, {std::nullopt, SK_ColorGREEN, SK_ColorBLUE, SK_ColorGREEN,
+                     std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+  {
+    SCOPED_TRACE(
+        "[red, webui_green&, blue&, webui_green&, webui_red*] -> "
+        "[red, webui_green, blue&, webui_green&, webui_red&, red*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/red.html"));
+    AssertOrderedScreenshotsAre(
+        controller, {std::nullopt, std::nullopt, SK_ColorBLUE, SK_ColorGREEN,
+                     SK_ColorRED, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+  {
+    SCOPED_TRACE(
+        "[red, webui_green&, blue&, webui_green&, webui_red*] -> "
+        "[red, webui_green, blue&, webui_green&, webui_red*, red&]");
+    {
+      std::unique_ptr<NavigationEntryScreenshot> screenshot =
+          controller.GetNavigationEntryScreenshotCache()->RemoveScreenshot(
+              controller.GetEntryAtOffset(-1));
+      ExpectScreenshotIsColor(screenshot.get(), SK_ColorRED);
+    }
+    HistoryNavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                                 -1);
+    AssertOrderedScreenshotsAre(
+        controller, {std::nullopt, std::nullopt, SK_ColorBLUE, SK_ColorGREEN,
+                     std::nullopt, SK_ColorRED});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+  {
+    SCOPED_TRACE(
+        "[red, webui_green&, blue&, webui_green&, webui_red*] -> "
+        "[red, webui_green, blue*, webui_green&, webui_red&, red&]");
+    {
+      std::unique_ptr<NavigationEntryScreenshot> screenshot =
+          controller.GetNavigationEntryScreenshotCache()->RemoveScreenshot(
+              controller.GetEntryAtOffset(-2));
+      ExpectScreenshotIsColor(screenshot.get(), SK_ColorBLUE);
+    }
+    HistoryNavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                                 -2);
+    AssertOrderedScreenshotsAre(
+        controller, {std::nullopt, std::nullopt, std::nullopt, SK_ColorGREEN,
+                     SK_ColorRED, SK_ColorRED});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationEntryScreenshotBrowserTestWithWebUI,
                          ::testing::ValuesIn(kNavTypes),
                          &DescribeNavType);
 
