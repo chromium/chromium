@@ -437,14 +437,12 @@ void CardUnmaskPromptViews::ClosePrompt() {
 
 void CardUnmaskPromptViews::UpdateButtons() {
   // In permanent error state, only the "close" button is shown.
-  AutofillClient::PaymentsRpcResult result =
-      controller_->GetVerificationResult();
-  bool has_ok =
-      result != AutofillClient::PaymentsRpcResult::kPermanentFailure &&
-      result != AutofillClient::PaymentsRpcResult::kNetworkError &&
-      result !=
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure &&
-      result != AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
+  using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+  PaymentsRpcResult result = controller_->GetVerificationResult();
+  bool has_ok = result != PaymentsRpcResult::kPermanentFailure &&
+                result != PaymentsRpcResult::kNetworkError &&
+                result != PaymentsRpcResult::kVcnRetrievalPermanentFailure &&
+                result != PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
 
   SetButtons(has_ok ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
                     : ui::DIALOG_BUTTON_CANCEL);

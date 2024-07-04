@@ -118,13 +118,16 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
     return base::Milliseconds(10);
   }
 
-  AutofillClient::PaymentsRpcResult GetVerificationResult() const override {
+  payments::PaymentsAutofillClient::PaymentsRpcResult GetVerificationResult()
+      const override {
     if (expected_failure_temporary_)
-      return AutofillClient::PaymentsRpcResult::kTryAgainFailure;
+      return payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kTryAgainFailure;
     if (expected_failure_permanent_)
-      return AutofillClient::PaymentsRpcResult::kPermanentFailure;
+      return payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kPermanentFailure;
 
-    return AutofillClient::PaymentsRpcResult::kSuccess;
+    return payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   }
 
   void set_expected_verification_failure(bool allow_retry) {
@@ -254,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
                                        /*was_checkbox_visible=*/false);
   EXPECT_EQ(u"123", delegate()->details().cvc);
   controller()->OnVerificationResult(
-      AutofillClient::PaymentsRpcResult::kSuccess);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
 
   // Simulate the user clicking [x] before the "Success!" message disappears.
   CardUnmaskPromptViewTester::For(controller()->view())->Close();
