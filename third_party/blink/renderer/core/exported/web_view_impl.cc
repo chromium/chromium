@@ -485,7 +485,6 @@ WebView* WebView::Create(
     WebViewClient* client,
     bool is_hidden,
     blink::mojom::PrerenderParamPtr prerender_param,
-    bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool compositing_enabled,
@@ -502,18 +501,17 @@ WebView* WebView::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
-      std::move(prerender_param), is_inside_portal, fenced_frame_mode,
-      compositing_enabled, widgets_never_composited, To<WebViewImpl>(opener),
-      std::move(page_handle), agent_group_scheduler,
-      session_storage_namespace_id, std::move(page_base_background_color),
-      browsing_context_group_info, color_provider_colors);
+      std::move(prerender_param), fenced_frame_mode, compositing_enabled,
+      widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
+      agent_group_scheduler, session_storage_namespace_id,
+      std::move(page_base_background_color), browsing_context_group_info,
+      color_provider_colors);
 }
 
 WebViewImpl* WebViewImpl::Create(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
     blink::mojom::PrerenderParamPtr prerender_param,
-    bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool compositing_enabled,
@@ -526,8 +524,8 @@ WebViewImpl* WebViewImpl::Create(
     const BrowsingContextGroupInfo& browsing_context_group_info,
     const ColorProviderColorMaps* color_provider_colors) {
   return new WebViewImpl(
-      client, visibility, std::move(prerender_param), is_inside_portal,
-      fenced_frame_mode, compositing_enabled, widgets_never_composited, opener,
+      client, visibility, std::move(prerender_param), fenced_frame_mode,
+      compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
       browsing_context_group_info, color_provider_colors);
@@ -584,7 +582,6 @@ WebViewImpl::WebViewImpl(
     WebViewClient* client,
     mojom::blink::PageVisibilityState visibility,
     blink::mojom::PrerenderParamPtr prerender_param,
-    bool is_inside_portal,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
         fenced_frame_mode,
     bool does_composite,

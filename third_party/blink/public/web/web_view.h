@@ -139,7 +139,6 @@ class BLINK_EXPORT WebView {
       WebViewClient*,
       bool is_hidden,
       blink::mojom::PrerenderParamPtr prerender_param,
-      bool is_inside_portal,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
           fenced_frame_mode,
       bool compositing_enabled,

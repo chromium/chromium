@@ -150,7 +150,6 @@ class WebRtcAudioRendererTest : public testing::Test {
             /*client=*/nullptr,
             /*is_hidden=*/false,
             /*prerender_param=*/nullptr,
-            /*is_inside_portal=*/false,
             /*fenced_frame_mode=*/std::nullopt,
             /*compositing_enabled=*/false,
             /*widgets_never_composited=*/false,
