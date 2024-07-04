@@ -22,9 +22,10 @@
 namespace {
 
 // Size specs of a pin cell.
-constexpr int kCellWidth = 28;
+constexpr int kCellWidth = 30;
 constexpr int kCellHeight = 36;
 constexpr int kCellSpacing = 8;
+constexpr float kCellRadius = 8.0;
 
 // Creates obscured render text for displaying a glyph in a specific pin cell.
 std::unique_ptr<gfx::RenderText> CreatePinDigitRenderText(
@@ -150,7 +151,7 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
     // Draw cell border.
     gfx::RectF cell_rect_f(cell_rect);
     cell_rect_f.Inset(stroke_width / 2.f);
-    canvas->DrawRoundRect(cell_rect_f, 2.f, paint_flags);
+    canvas->DrawRoundRect(cell_rect_f, kCellRadius, paint_flags);
     // Draw cell text.
     render_texts_[i]->SetDisplayRect(cell_rect);
     render_texts_[i]->Draw(canvas);
