@@ -2291,6 +2291,14 @@ crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/cs
 crbug.com/40241779 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 crbug.com/40241779 virtual/threaded/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 
+# This test requests a screenshot capture inside the updateDOMCallback assuming
+# this will end the test. The ViewTransition API suppresses rendering while this
+# callback is running but apparently WebKit's test hooks do allow it to generate
+# a frame here. In Blink, the test infra cannot generate a frame in this state
+# so skip this test.
+crbug.com/346368831 virtual/threaded/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Skip ]
+crbug.com/346368831 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Skip ]
+crbug.com/346368831 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Skip ]
 
 # Skip manual tests in external/wpt/file-system-access on Windows and Mac
 crbug.com/346991169 [ Win ] external/wpt/file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html [ Skip ]
