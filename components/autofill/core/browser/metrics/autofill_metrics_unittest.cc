@@ -6398,13 +6398,11 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
         {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
-        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
         {UFIT::kFieldLogEventCountName, field_log_events_count + 3},
 #else
         {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
         {UFIT::kFieldLogEventCountName, field_log_events_count + 2},
 #endif
     };
@@ -6812,14 +6810,12 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
           {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
           {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
-          {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
       }));
       field_log_events_count += 3;
 #else
           {UFIT::kHeuristicTypeLegacyName, heuristic_types[i]},
           {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-          {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
       }));
       field_log_events_count += 2;
 #endif
@@ -7370,13 +7366,11 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
-        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
         {UFIT::kFieldLogEventCountName, 3},
 #else
         {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
         {UFIT::kFieldLogEventCountName, 2},
 #endif
         {UFIT::kRankInFieldSignatureGroupName, 1},

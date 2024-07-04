@@ -82,10 +82,7 @@ enum class PatternSource : uint8_t {
   kDefault,
   // Patterns that are being verified experimentally.
   kExperimental,
-  // One step before `kExperimental`. These patterns are used only for
-  // non-user-visible metrics.
-  kNextGen,
-  kMaxValue = kNextGen
+  kMaxValue = kExperimental
 #endif
 };
 

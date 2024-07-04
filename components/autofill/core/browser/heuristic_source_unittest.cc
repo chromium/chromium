@@ -112,7 +112,7 @@ INSTANTIATE_TEST_SUITE_P(
         HeuristicSourceParams{
             .pattern_provider_feature = "experimental",
             .expected_active_source = HeuristicSource::kExperimental,
-            .expected_nonactive_sources = {HeuristicSource::kNextGen}}
+            .expected_nonactive_sources = {}}
 #endif
         ));
 

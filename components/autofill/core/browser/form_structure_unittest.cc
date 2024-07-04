@@ -69,8 +69,7 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
 #else
-    PatternSource::kDefault, PatternSource::kExperimental,
-    PatternSource::kNextGen
+    PatternSource::kDefault, PatternSource::kExperimental
 #endif
 };
 
@@ -130,8 +129,6 @@ class FormStructureTest_ForPatternSource
         return "default";
       case PatternSource::kExperimental:
         return "experimental";
-      case PatternSource::kNextGen:
-        return "nextgen";
 #endif
     }
   }

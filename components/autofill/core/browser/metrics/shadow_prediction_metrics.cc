@@ -44,34 +44,21 @@ void LogRegexShadowPredictions(const AutofillField& field) {
           features::kAutofillDisableShadowHeuristics)) {
     return;
   }
-  // If a `PatternSource` is active, emit shadow predictions against the
-  // `PatternSource` of the prior rollout stage.
+  // If the default `PatternSource` is active, emit shadow predictions against
+  // the experimental patterns.
   // `GetNonActiveHeuristicSources()` ensures that they were computed.
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  switch (GetActiveHeuristicSource()) {
-    case HeuristicSource::kDefault:
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
-          GetShadowPrediction(field.heuristic_type(), field.server_type(),
-                              field.possible_types()));
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.ExperimentalToDefault",
-          GetShadowPrediction(
-              field.heuristic_type(),
-              field.heuristic_type(HeuristicSource::kExperimental),
-              field.possible_types()));
-      break;
-    case HeuristicSource::kExperimental:
-      base::UmaHistogramSparse(
-          "Autofill.ShadowPredictions.NextGenToExperimental",
-          GetShadowPrediction(field.heuristic_type(),
-                              field.heuristic_type(HeuristicSource::kNextGen),
-                              field.possible_types()));
-      break;
-    case HeuristicSource::kLegacy:
-    case HeuristicSource::kNextGen:
-    case HeuristicSource::kMachineLearning:
-      break;
+  if (GetActiveHeuristicSource() == HeuristicSource::kDefault) {
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.DefaultHeuristicToDefaultServer",
+        GetShadowPrediction(field.heuristic_type(), field.server_type(),
+                            field.possible_types()));
+    base::UmaHistogramSparse(
+        "Autofill.ShadowPredictions.ExperimentalToDefault",
+        GetShadowPrediction(
+            field.heuristic_type(),
+            field.heuristic_type(HeuristicSource::kExperimental),
+            field.possible_types()));
   }
 #endif
 }

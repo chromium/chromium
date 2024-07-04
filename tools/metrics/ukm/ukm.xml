@@ -3850,6 +3850,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="HeuristicTypeNextGen" enum="AutofillFieldType">
+    <obsolete>
+      Deprecated as of 07/2024, since next-gen patterns were removed.
+    </obsolete>
     <summary>
       The type of the field predicted from the heuristics that uses patterns
       only for non-user-visible metrics, one step before experimental, the types

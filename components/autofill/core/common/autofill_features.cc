@@ -520,7 +520,7 @@ BASE_FEATURE(kAutofillParsingPatternProvider,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The specific pattern set from which regexes are loaded for the active
-// predictions. One of "default", "experimental", "nextgen".
+// predictions. One of "default", "experimental".
 // This parameter is only supported in Chrome-branded builds. Non-Chrome branded
 // builds default to the legacy patterns.
 // TODO(crbug.com/40280853): Remove once there is a decision what to do about

@@ -180,12 +180,10 @@ TEST_F(AutofillShadowPredictionMetricsTest,
       form,
       {// Field 0
        {{HeuristicSource::kDefault, NAME_FULL},
-        {HeuristicSource::kExperimental, NAME_FULL},
-        {HeuristicSource::kNextGen, NAME_FIRST}},
+        {HeuristicSource::kExperimental, NAME_FULL}},
        // Field 1
        {{HeuristicSource::kDefault, SEARCH_TERM},
-        {HeuristicSource::kExperimental, EMAIL_ADDRESS},
-        {HeuristicSource::kNextGen, SEARCH_TERM}}},
+        {HeuristicSource::kExperimental, EMAIL_ADDRESS}}},
       server_types);
 
   // Simulate form submission.

@@ -47,7 +47,6 @@ action("regex_patterns_inl_h") {
     sources += [
       "form_parsing/internal_resources/0_default_regex_patterns.json",
       "form_parsing/internal_resources/1_experimental_regex_patterns.json",
-      "form_parsing/internal_resources/2_nextgen_regex_patterns.json",
     ]
   }
 

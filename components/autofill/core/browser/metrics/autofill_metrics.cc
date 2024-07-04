@@ -2292,9 +2292,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   // The type of the field predicted from the heuristics that uses experimental
   // patterns.
   FieldType heuristic_experimental_type = UNKNOWN_TYPE;
-  // The type of the field predicted from the heuristics that uses patterns
-  // only for non-user-visible metrics, one step before experimental.
-  FieldType heuristic_next_gen_type = UNKNOWN_TYPE;
 
   // Field types from Autocomplete attribute.
   // Information of the HTML autocomplete attribute, see
@@ -2406,9 +2403,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
           break;
         case PatternSource::kExperimental:
           heuristic_experimental_type = event->field_type;
-          break;
-        case PatternSource::kNextGen:
-          heuristic_next_gen_type = event->field_type;
           break;
       }
 #else
@@ -2530,8 +2524,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     builder.SetHeuristicType(heuristic_type)
         .SetHeuristicTypeLegacy(heuristic_legacy_type)
         .SetHeuristicTypeDefault(heuristic_default_type)
-        .SetHeuristicTypeExperimental(heuristic_experimental_type)
-        .SetHeuristicTypeNextGen(heuristic_next_gen_type);
+        .SetHeuristicTypeExperimental(heuristic_experimental_type);
   }
 
   if (had_html_type) {

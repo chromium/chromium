@@ -255,8 +255,6 @@ chromium-metrics-reviews@google.com.
   <variant name="LegacyPatternSourceToMLModel"
       summary="the legacy pattern source, the machine learning model
                prediction"/>
-  <variant name="NextGenToExperimental"
-      summary="the next-gen heuristics, the experimental heuristics"/>
 </variants>
 
 <variants name="Autofill.Snackbar.Type">

@@ -28,7 +28,6 @@ enum class HeuristicSource {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   kDefault,
   kExperimental,
-  kNextGen,
 #endif
   kMachineLearning,
   kMaxValue = kMachineLearning
