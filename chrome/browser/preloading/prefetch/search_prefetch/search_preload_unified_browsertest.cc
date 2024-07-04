@@ -333,14 +333,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     }
   }
 
-  void SetLoaderDestructionCallbackForTesting(
-      const GURL& canonical_search_url,
-      base::OnceClosure streaming_url_loader_destruction_callback) {
-    search_prefetch_service()->SetLoaderDestructionCallbackForTesting(
-        canonical_search_url,
-        std::move(streaming_url_loader_destruction_callback));
-  }
-
   // `WaitEvent::kLoadStopped` is the default value for a
   // TestNavigationObserver. Pass another event type to not wait until it
   // finishes loading.
@@ -1755,7 +1747,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   EXPECT_TRUE(prefetch_status.has_value());
 
   base::RunLoop run_loop;
-  SetLoaderDestructionCallbackForTesting(
+  search_prefetch_service()->SetLoaderDestructionCallbackForTesting(
       GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
@@ -1816,7 +1808,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
   base::RunLoop run_loop;
-  SetLoaderDestructionCallbackForTesting(
+  search_prefetch_service()->SetLoaderDestructionCallbackForTesting(
       GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
   NavigateToPrerenderedResult(expected_prerender_url);
   run_loop.Run();
@@ -2201,7 +2193,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
     content::test::PrerenderHostObserver prerender_observer(
         *GetActiveWebContents(), expected_prerender_url);
     base::RunLoop run_loop;
-    SetLoaderDestructionCallbackForTesting(
+    search_prefetch_service()->SetLoaderDestructionCallbackForTesting(
         GetCanonicalSearchURL(expected_prerender_url), run_loop.QuitClosure());
     NavigateToPrerenderedResult(expected_prerender_url);
     prerender_observer.WaitForActivation();
