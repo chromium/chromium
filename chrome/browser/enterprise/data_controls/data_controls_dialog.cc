@@ -92,7 +92,7 @@ void DataControlsDialog::Show(
 }
 
 DataControlsDialog::~DataControlsDialog() {
-  CurrentDialogsStorage().erase({web_contents_, type_});
+  CurrentDialogsStorage().erase({web_contents(), type_});
 
   if (observer_for_testing_) {
     observer_for_testing_->OnDestructed(this);
@@ -158,16 +158,34 @@ void DataControlsDialog::OnWidgetInitialized() {
   }
 }
 
+void DataControlsDialog::WebContentsDestroyed() {
+  // If the WebContents the dialog is showing on gets destroyed, then the dialog
+  // was neither bypassed or accepted so it should close without calling
+  // anything in `callbacks_`.
+  callbacks_.clear();
+  AcceptDialog();
+}
+
+void DataControlsDialog::PrimaryPageChanged(content::Page& page) {
+  // If the primary page is changed, the triggered Data Controls rules that lead
+  // to this current dialog showing are not necessarily still applicable. Data
+  // shouldn't be allowed through since there might be higher severity rules
+  // that trigger on the new page, so `callbacks_` must be cleared before
+  // closing the dialog.
+  callbacks_.clear();
+  AcceptDialog();
+}
+
 DataControlsDialog::DataControlsDialog(
     Type type,
-    content::WebContents* web_contents,
+    content::WebContents* contents,
     base::OnceCallback<void(bool bypassed)> callback)
-    : type_(type), web_contents_(web_contents) {
+    : content::WebContentsObserver(contents), type_(type) {
   SetOwnedByWidget(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  CurrentDialogsStorage()[{web_contents_, type_}] = this;
+  CurrentDialogsStorage()[{web_contents(), type_}] = this;
   if (callback) {
     callbacks_.push_back(std::move(callback));
   }

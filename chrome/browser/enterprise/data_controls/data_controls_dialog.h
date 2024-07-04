@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/data_controls/rule.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -42,7 +43,8 @@ namespace data_controls {
 // * The "E" box represents the enterprise logo that looks like a building.
 // * The "Cancel"/"Proceed" choice is only available for warnings, blocked
 //   actions only have a "Close" button.
-class DataControlsDialog : public views::DialogDelegate {
+class DataControlsDialog : public views::DialogDelegate,
+                           public content::WebContentsObserver {
  public:
   // Represents the type of dialog, based on the action that triggered it and
   // severity of the triggered rule. This will change the strings in the dialog,
@@ -91,6 +93,10 @@ class DataControlsDialog : public views::DialogDelegate {
   bool ShouldShowCloseButton() const override;
   void OnWidgetInitialized() override;
 
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void PrimaryPageChanged(content::Page& page) override;
+
   Type type() const;
 
  private:
@@ -109,7 +115,6 @@ class DataControlsDialog : public views::DialogDelegate {
   std::unique_ptr<views::Label> CreateMessage() const;
 
   Type type_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
 
   // Called when the dialog closes, with `true` in the case of a bypassed
