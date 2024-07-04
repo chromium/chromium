@@ -100,6 +100,14 @@ jobs:
         run: |
           cd src
           ninja -C out/Default ipc_tests
+      - name: ninja mojo_unittests
+        run: |
+          cd src
+          ninja -C out/Default mojo_unittests
+      - name: ninja gpu_unittests
+        run: |
+          cd src
+          ninja -C out/Default gpu_unittests
       - name: sccache check
         run: sccache -s
       - name: Any speed
