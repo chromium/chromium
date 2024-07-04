@@ -28,7 +28,7 @@ struct GPU_EXPORT SharedImageCapabilities {
   bool shared_image_swap_chain = false;
 
 #if BUILDFLAG(IS_MAC)
-  uint32_t texture_target_for_io_surfaces;
+  uint32_t texture_target_for_io_surfaces = 0;
 #endif
 };
 
