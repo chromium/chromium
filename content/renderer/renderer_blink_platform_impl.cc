@@ -529,6 +529,10 @@ RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider(
       dark_mode_filter);
 }
 
+bool RendererBlinkPlatformImpl::IsGpuRemoteDisconnected() {
+  return RenderThreadImpl::current()->IsGpuRemoteDisconnected();
+}
+
 scoped_refptr<gpu::GpuChannelHost>
 RendererBlinkPlatformImpl::EstablishGpuChannelSync() {
   return RenderThreadImpl::current()->EstablishGpuChannelSync();

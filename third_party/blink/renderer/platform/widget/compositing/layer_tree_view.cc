@@ -369,9 +369,16 @@ void LayerTreeView::DidFailToInitializeLayerTreeFrameSink() {
   }
 
   frame_sink_state_ = FrameSinkState::kNoFrameSink;
-  layer_tree_host_->GetTaskRunnerProvider()->MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&LayerTreeView::RequestNewLayerTreeFrameSink,
-                                weak_factory_.GetWeakPtr()));
+  // The GPU channel cannot be established when gpu_remote is disconnected. Stop
+  // calling RequestNewLayerTreeFrameSink because it's going to fail again and
+  // it will be stuck in a forever loop of retries. This makes the processes
+  // unable to be killed after Chrome is closed.
+  // https://issues.chromium.org/336164423
+  if (!Platform::Current()->IsGpuRemoteDisconnected()) {
+    layer_tree_host_->GetTaskRunnerProvider()->MainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&LayerTreeView::RequestNewLayerTreeFrameSink,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void LayerTreeView::WillCommit(const cc::CommitState&) {

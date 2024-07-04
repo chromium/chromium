@@ -1413,6 +1413,9 @@ void RenderThreadImpl::CompositingModeFallbackToSoftware() {
   is_gpu_compositing_disabled_ = true;
 }
 
+bool RenderThreadImpl::IsGpuRemoteDisconnected() {
+  return gpu_->gpu_remote_disconnected();
+}
 scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync() {
   TRACE_EVENT0("gpu", "RenderThreadImpl::EstablishGpuChannelSync");
 

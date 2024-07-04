@@ -212,6 +212,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // the appropriate mode.
   bool IsGpuCompositingDisabled() const { return is_gpu_compositing_disabled_; }
 
+  bool IsGpuRemoteDisconnected();
+
   // Synchronously establish a channel to the GPU plugin if not previously
   // established or if it has been lost (for example if the GPU plugin crashed).
   // If there is a pending asynchronous request, it will be completed by the

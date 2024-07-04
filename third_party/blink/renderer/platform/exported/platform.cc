@@ -317,6 +317,10 @@ scoped_refptr<gpu::GpuChannelHost> Platform::EstablishGpuChannelSync() {
   return nullptr;
 }
 
+bool Platform::IsGpuRemoteDisconnected() {
+  return false;
+}
+
 void Platform::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   std::move(callback).Run(nullptr);
 }

@@ -579,6 +579,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   // time this routine returns.
   virtual scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync();
 
+  // Is mojo::Remote<mojom::Gpu> disconnected?
+  virtual bool IsGpuRemoteDisconnected();
+
   // Same as above, but asynchronous.
   using EstablishGpuChannelCallback =
       base::OnceCallback<void(scoped_refptr<gpu::GpuChannelHost>)>;
