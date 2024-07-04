@@ -86,11 +86,6 @@ template("rust_unit_test") {
     _env_out_dir = target_gen_dir
   }
 
-  # TODO(crbug.com/40778298): Arrange to run test executables on try bots.
-  # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source
-  # sets.
-  # This is important in cases where Rust tests may depend upon C/C++
-  # dependencies.
   executable(_exe_target_name) {
     testonly = true
     forward_variables_from(invoker,

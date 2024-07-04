@@ -1,0 +1,9 @@
+include_rules = [
+  "-base",
+]
+
+specific_include_rules = {
+  "remap_alloc.cc" : [
+    "+partition_alloc"
+  ]
+}
