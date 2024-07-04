@@ -1327,8 +1327,7 @@ IN_PROC_BROWSER_TEST_F(HTTPCacheSearchPreloadUnifiedBrowserTest,
                              PrerenderHint::kEnabled, PrefetchHint::kEnabled);
     registry_observer.WaitForTrigger(expected_prerender_url);
     WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
-                             {SearchPrefetchStatus::kCanBeServed,
-                              SearchPrefetchStatus::kPrerendered});
+                             {SearchPrefetchStatus::kCanBeServed});
     // No prerender requests went through network, so there should be only one
     // request and it is with the prefetch flag attached.
     EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -1729,7 +1728,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       search_prefetch_service()->GetSearchPrefetchStatusForTesting(
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
-  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+  EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kComplete);
 
   // 3. Cancel the prerenders
   int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
@@ -1803,7 +1802,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       search_prefetch_service()->GetSearchPrefetchStatusForTesting(
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
-  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+  EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kComplete);
 
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
@@ -2160,7 +2159,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       search_prefetch_service()->GetSearchPrefetchStatusForTesting(
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
-  EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
+  EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kComplete);
 
   // 3. Turns to another prediction.
   {

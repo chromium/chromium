@@ -107,8 +107,7 @@ enum class SearchPrefetchServingReason {
   kNotServedOtherReason = 8,
   // The navigation was a POST request, reload or link navigation.
   kPostReloadFormOrLink = 9,
-  // A prerender navigation request has taken this response away.
-  kPrerendered = 10,
+  // kPrerendered = 10,  // No longer used.
   // The prefetch is not ready as it was in-flight.
   kRequestInFlightNotReady = 11,
   kMaxValue = kRequestInFlightNotReady,

@@ -35,37 +35,40 @@ enum class SearchPrefetchStatus {
   // recorded as Start() should be called on the same stack as creating the
   // fetcher (as of now).
   kNotStarted = 0,
+
   // The request is on the network and may move to any other state.
   kInFlight = 1,
+
   // The request can be served to the navigation stack, but may still encounter
   // errors and move to |kRequestFailed| or it may complete and move to
-  // |kComplete|. It may also move to |kCanBeServedAndUserClicked| when the user
-  // navigates to the result in omnibox.
+  // |kComplete|.
   kCanBeServed = 2,
-  // The request can be served to the navigation stack, and is marked as being
-  // clicked by the user. At this point, it may move to |kComplete| or
-  // |kRequestFailed|.
-  kCanBeServedAndUserClicked = 3,
+
+  // Obsolete: After updating the cancellation logic, we no longer need this
+  // status to prevent a clicked prefetch from being deleted.
+  // kCanBeServedAndUserClicked = 3,
+
   // The request can be served to the navigation stack, and has fully streamed
   // the response with no errors.
   kComplete = 4,
+
   // The request hit an error and cannot be served.
   kRequestFailed = 5,
-  // kRequestCancelled = 6,  // No longer used.
+
+  // Obsolete: After updating the cancellation logic, we no longer cancel
+  // in-flight prefetch requests on autocomplete result changed.
+  // kRequestCancelled = 6,
+
   kPrefetchServedForRealNavigation = 7,
-  // The request was served to the prerender navigation stack. It may move to
-  // |kPrerenderedAndClicked| when the user navigates to the result in omnibox
-  // or |kRequestCancelled| if the user closes omnibox.
-  kPrerendered = 8,
-  // Similar to |kCanBeServedAndUserClicked|, the request was served to the
-  // prerender navigation stack, and is marked as being
-  // clicked by the user. It is expected to move to |kPrerenderActivated| after
-  // the corresponding prerender is fully activated by the user.
-  kPrerenderedAndClicked = 9,
-  // The request was served to the prerender navigation stack, and the prerender
-  // page is fully activated by the user. This is a terminal state.
-  kPrerenderActivated = 10,
-  kMaxValue = kPrerenderActivated,
+
+  // Obsolete: Now search prefetch requests are reusable, i.e., can be served to
+  // both real navigation and prerender navigation, so we no longer track these
+  // statuses.
+  // kPrerendered = 8,
+  // kPrerenderedAndClicked = 9,
+  // kPrerenderActivated = 10,
+
+  kMaxValue = kPrefetchServedForRealNavigation,
 };
 
 // A class representing a prefetch used by the Search Prefetch Service.
@@ -115,9 +118,6 @@ class SearchPrefetchRequest {
 
   // Update the status when the request is complete.
   void MarkPrefetchAsComplete();
-
-  // Update the status when the relevant search item is clicked in omnibox.
-  void MarkPrefetchAsClicked();
 
   // Update the status when the request is actually served to the navigation
   // stack of a real navigation request.

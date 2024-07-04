@@ -516,13 +516,6 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   }
   SearchPrefetchRequest& prefetch = *prefetches_[canonical_search_url];
   prefetch.RecordClickTime();
-
-  if (prefetch.current_status() != SearchPrefetchStatus::kCanBeServed &&
-      prefetch.current_status() != SearchPrefetchStatus::kPrerendered) {
-    return;
-  }
-
-  prefetch.MarkPrefetchAsClicked();
 }
 
 void SearchPrefetchService::OnPrerenderedRequestUsed(
@@ -596,10 +589,6 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 
   bool is_servable =
       status == SearchPrefetchStatus::kComplete ||
-      status == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
-      (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-       (status == SearchPrefetchStatus::kPrerendered ||
-        status == SearchPrefetchStatus::kPrerenderedAndClicked)) ||
       status == SearchPrefetchStatus::kCanBeServed;
 
   if (!is_servable) {
@@ -1189,10 +1178,6 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
       // Set the corresponding failure reason.
       iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
           SearchPrefetchServingReason::kRequestFailed));
-      break;
-    case SearchPrefetchStatus::kPrerendered:
-    case SearchPrefetchStatus::kPrerenderedAndClicked:
-      recorder.reason_ = SearchPrefetchServingReason::kPrerendered;
       break;
     default:
       break;

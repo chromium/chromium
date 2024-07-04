@@ -187,7 +187,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Another reason (unexpected)"/>
   <int value="9" label="POST, reload, form, link, or other non-cache loads."/>
   <int value="10"
-      label="A prerender navigation request has taken this response away."/>
+      label="A prerender navigation request has taken this response away
+             (Obsolete)."/>
 </enum>
 
 <enum name="SearchPrefetchStatus">
@@ -196,16 +197,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Headers received (for streaming responses)"/>
   <int value="3"
       label="Headers received and user navigated to search terms (for
-             streaming responses)"/>
+             streaming responses) (Obsolete)"/>
   <int value="4" label="Completed the prefetch"/>
   <int value="5" label="Request failed"/>
   <int value="6" label="Request cancelled (Obsolete)"/>
   <int value="7" label="Prefetch request served for real navigation"/>
-  <int value="8" label="Was served to prerender navigation stack"/>
+  <int value="8" label="Was served to prerender navigation stack (Obsolete)"/>
   <int value="9"
       label="Serving to prerender navigation stack and user navigated to
-             search terms"/>
-  <int value="10" label="Upgraded to prerender and succeeded"/>
+             search terms (Obsolete)"/>
+  <int value="10" label="Upgraded to prerender and succeeded (Obsolete)"/>
 </enum>
 
 <enum name="SearchPreloadForwardingResult">

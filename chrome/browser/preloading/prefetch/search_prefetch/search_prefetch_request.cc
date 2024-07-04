@@ -98,20 +98,12 @@ const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
       return "InFlight";
     case SearchPrefetchStatus::kCanBeServed:
       return "CanBeServed";
-    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
-      return "CanBeServedAndUserClicked";
     case SearchPrefetchStatus::kComplete:
       return "Complete";
     case SearchPrefetchStatus::kRequestFailed:
       return "RequestFailed";
-    case SearchPrefetchStatus::kPrerendered:
-      return "Prerendered";
-    case SearchPrefetchStatus::kPrerenderedAndClicked:
-      return "PrerenderedAndClicked";
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
       return "kPrefetchServedForRealNavigation";
-    case SearchPrefetchStatus::kPrerenderActivated:
-      return "PrerenderActivated";
   }
 }
 }  // namespace
@@ -330,7 +322,6 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       return;
     case SearchPrefetchStatus::kInFlight:
     case SearchPrefetchStatus::kCanBeServed:
-    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
     case SearchPrefetchStatus::kComplete:
       break;
     case SearchPrefetchStatus::kRequestFailed:
@@ -340,15 +331,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       attempt.SetEligibility(ToPreloadingEligibility(
           ChromePreloadingEligibility::kPrefetchFailed));
       return;
-    case SearchPrefetchStatus::kPrerendered:
-    case SearchPrefetchStatus::kPrerenderedAndClicked:
-      // Case 4: Prerender has started and taken the response away. No action is
-      // needed.
-      attempt.SetEligibility(ToPreloadingEligibility(
-          ChromePreloadingEligibility::kPrerenderConsumed));
-      return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
-    case SearchPrefetchStatus::kPrerenderActivated:
       NOTREACHED_IN_MIGRATION();
   }
 
@@ -369,10 +352,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
 }
 
 void SearchPrefetchRequest::ErrorEncountered() {
-  // When prerender fails, don't set the prefetch status to failure.
-  if (current_status_ != SearchPrefetchStatus::kPrerendered) {
-    SetSearchPrefetchStatus(SearchPrefetchStatus::kRequestFailed);
-  }
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kRequestFailed);
   StopPrefetch();
   StopPrerender();
 }
@@ -402,12 +382,6 @@ void SearchPrefetchRequest::ResetPrerenderUpgrader() {
 
 void SearchPrefetchRequest::MarkPrefetchAsComplete() {
   SetSearchPrefetchStatus(SearchPrefetchStatus::kComplete);
-}
-
-void SearchPrefetchRequest::MarkPrefetchAsClicked() {
-  if (current_status_ == SearchPrefetchStatus::kPrerendered) {
-    SetSearchPrefetchStatus(SearchPrefetchStatus::kPrerenderedAndClicked);
-  }
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsServed() {
@@ -518,34 +492,14 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
             SearchPrefetchStatus::kRequestFailed}},
 
           {SearchPrefetchStatus::kCanBeServed,
-           {SearchPrefetchStatus::kCanBeServedAndUserClicked,
-            SearchPrefetchStatus::kComplete,
+           {SearchPrefetchStatus::kComplete,
             SearchPrefetchStatus::kRequestFailed,
-            SearchPrefetchStatus::kPrerendered,
             SearchPrefetchStatus::kPrefetchServedForRealNavigation}},
 
-          {SearchPrefetchStatus::kCanBeServedAndUserClicked,
-           {SearchPrefetchStatus::kComplete,
-            SearchPrefetchStatus::kPrefetchServedForRealNavigation,
-            SearchPrefetchStatus::kRequestFailed,
-            // TODO(crbug.com/40250486): Add a test to cover this.
-            SearchPrefetchStatus::kPrerenderActivated}},
-
           {SearchPrefetchStatus::kComplete,
-           {SearchPrefetchStatus::kPrefetchServedForRealNavigation,
-            SearchPrefetchStatus::kPrerendered,
-            SearchPrefetchStatus::kPrerenderActivated}},
+           {SearchPrefetchStatus::kPrefetchServedForRealNavigation}},
 
           {SearchPrefetchStatus::kPrefetchServedForRealNavigation, {}},
-
-          {SearchPrefetchStatus::kPrerendered,
-           {SearchPrefetchStatus::kPrerenderedAndClicked,
-            SearchPrefetchStatus::kPrerenderActivated}},
-
-          {SearchPrefetchStatus::kPrerenderedAndClicked,
-           {SearchPrefetchStatus::kPrerenderActivated}},
-
-          {SearchPrefetchStatus::kPrerenderActivated, {}},
 
           {SearchPrefetchStatus::kRequestFailed, {}},
       }));
@@ -573,7 +527,6 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
       SetPrefetchAttemptTriggeringOutcome(
           content::PreloadingTriggeringOutcome::kReady);
       return;
-    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
     case SearchPrefetchStatus::kComplete:
       // Don't update the TriggeringOutcome here as we have already set the
       // TriggeringOutcome when the status was updated to kCanServed.
@@ -584,19 +537,10 @@ void SearchPrefetchRequest::SetSearchPrefetchStatus(
       SetPrefetchAttemptTriggeringOutcome(
           content::PreloadingTriggeringOutcome::kFailure);
       return;
-    case SearchPrefetchStatus::kPrerendered:
-      SetPrefetchAttemptTriggeringOutcome(content::PreloadingTriggeringOutcome::
-                                              kTriggeredButUpgradedToPrerender);
-      return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
       // Once prefetch is served mark it as success.
       SetPrefetchAttemptTriggeringOutcome(
           content::PreloadingTriggeringOutcome::kSuccess);
-      return;
-    case SearchPrefetchStatus::kPrerenderedAndClicked:
-    case SearchPrefetchStatus::kPrerenderActivated:
-      // In case of prerender we don't update the triggering outcome to success
-      // because we measure this with prerender attempt.
       return;
   }
 }
