@@ -29,7 +29,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -108,29 +107,6 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         @Override
         public Promise<byte[]> get(Activity activity, String origin, String request) {
             return Promise.fulfilled("token".getBytes());
-        }
-    }
-
-    /**
-     * {@link MockIdentityCredentialsDelegate} implementation which provides the ability to control
-     * when the {@link #get()} promise is resolved.
-     */
-    private static class DelayedReturnIdentityCredentialsDelegate
-            extends MockIdentityCredentialsDelegate {
-        private Promise<byte[]> mPromise;
-
-        @Override
-        public Promise<byte[]> get(Activity activity, String origin, String request) {
-            mPromise = new Promise<byte[]>();
-            return mPromise;
-        }
-
-        public boolean hasPromiseToFulfill() {
-            return mPromise != null;
-        }
-
-        public void fulfillPromise() {
-            mPromise.fulfill("token".getBytes());
         }
     }
 
@@ -296,78 +272,6 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     public void testFeatureParamTakesPrecedence() throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 "request_age_and_name_button", /* expectedInterstitialParagraph1ResourceId= */ -1);
-    }
-
-    /**
-     * Test that no interstitial is shown if the BF cache is enabled and the page navigates while
-     * the Android OS system prompt is being shown.
-     */
-    @Test
-    @LargeTest
-    @DisableFeatures({"BackForwardCacheMemoryControls"})
-    @EnableFeatures("WebIdentityDigitalCredentials:dialog/high_risk")
-    public void testNoDialogIfNavigationDuringAndroidOsCall() throws TimeoutException {
-        DelayedReturnIdentityCredentialsDelegate delegate =
-                new DelayedReturnIdentityCredentialsDelegate();
-        DigitalIdentityProvider.setDelegateForTesting(delegate);
-        addModalDialogObserver(
-                /* expectedInterstitialParagraph1ResourceId= */ -1, /* pressButtonOnShow= */ false);
-
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    return delegate.hasPromiseToFulfill();
-                });
-
-        // Do page navigation during the Android OS call.
-        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    delegate.fulfillPromise();
-                });
-
-        // An interstitial should not have been shown.
-        assertFalse(mModalDialogObserver.wasAnyDialogShown());
-        assertFalse(mModalDialogObserver.wasDialogShown());
-    }
-
-    /**
-     * Test that no interestitial is shown if the user switches to a different tab prior to the
-     * browser determining whether an interstitial should be shown.
-     *
-     * <p>This scenario is unlikely because it is difficult for a user to open a tab in this very
-     * short period of time.
-     */
-    @Test
-    @LargeTest
-    @EnableFeatures("WebIdentityDigitalCredentials:dialog/high_risk")
-    public void testNoDialogIfTabSwitchedDuringAndroidOsCall() throws TimeoutException {
-        DelayedReturnIdentityCredentialsDelegate delegate =
-                new DelayedReturnIdentityCredentialsDelegate();
-        DigitalIdentityProvider.setDelegateForTesting(delegate);
-        addModalDialogObserver(
-                /* expectedInterstitialParagraph1ResourceId= */ -1, /* pressButtonOnShow= */ false);
-
-        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "request_age_only_button");
-
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    return delegate.hasPromiseToFulfill();
-                });
-
-        // Open new tab.
-        mActivityTestRule.loadUrlInNewTab(
-                mTestServer.getURL("/chrome/test/data/android/simple.html"));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    delegate.fulfillPromise();
-                });
-
-        // An interstitial should not have been shown.
-        assertFalse(mModalDialogObserver.wasAnyDialogShown());
     }
 
     /**

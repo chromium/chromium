@@ -44,7 +44,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
   DigitalIdentityProvider& operator=(const DigitalIdentityProvider&) = delete;
 
   using DigitalIdentityCallback = base::OnceCallback<void(
-      base::expected<std::string, RequestStatusForMetrics>)>;
+      const base::expected<std::string, RequestStatusForMetrics>&)>;
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
                        const std::string& request,

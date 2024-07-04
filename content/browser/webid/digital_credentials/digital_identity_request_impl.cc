@@ -313,20 +313,6 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
 
   bool is_only_requesting_age =
       parsed_result.has_value() && IsOnlyRequestingAge(*parsed_result);
-  provider_->Request(
-      WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
-      request_to_send,
-      base::BindOnce(&DigitalIdentityRequestImpl::ShowInterstitialIfNeeded,
-                     weak_ptr_factory_.GetWeakPtr(), is_only_requesting_age));
-}
-
-void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
-    bool is_only_requesting_age,
-    base::expected<std::string, RequestStatusForMetrics> response) {
-  if (!response.has_value()) {
-    CompleteRequest(response);
-    return;
-  }
 
   if (!render_frame_host().IsActive() ||
       render_frame_host().GetVisibilityState() !=
@@ -339,7 +325,7 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
       ComputeInterstitialType(is_only_requesting_age);
 
   if (!interstitial_type) {
-    CompleteRequest(response);
+    OnInterstitialDone(request_to_send, RequestStatusForMetrics::kSuccess);
     return;
   }
 
@@ -348,16 +334,22 @@ void DigitalIdentityRequestImpl::ShowInterstitialIfNeeded(
           *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
           *interstitial_type,
           base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                         weak_ptr_factory_.GetWeakPtr(), response.value()));
+                         weak_ptr_factory_.GetWeakPtr(), request_to_send));
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
-    const std::string& response,
+    const std::string& request_to_send,
     RequestStatusForMetrics status_after_interstitial) {
-  CompleteRequest(
-      status_after_interstitial == RequestStatusForMetrics::kSuccess
-          ? base::expected<std::string, RequestStatusForMetrics>(response)
-          : base::unexpected(status_after_interstitial));
+  if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {
+    CompleteRequest(base::unexpected(status_after_interstitial));
+    return;
+  }
+
+  provider_->Request(
+      WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+      request_to_send,
+      base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace content

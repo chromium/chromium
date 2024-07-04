@@ -99,9 +99,9 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
           response);
 
   // Called when the user has fulfilled the interstitial requirement. Will be
-  // called immediately after ShowInterstitialIfNeeded() if no interstitial is
+  // called immediately after OnRequestJsonParsed() if no interstitial is
   // needed.
-  void OnInterstitialDone(const std::string& response,
+  void OnInterstitialDone(const std::string& request_to_send,
                           DigitalIdentityProvider::RequestStatusForMetrics
                               status_after_interstitial);
 

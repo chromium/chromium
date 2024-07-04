@@ -32,11 +32,11 @@ namespace {
 
 // Callback for when a views::Widget is shown. Sets `was_dialog_shown` if the
 // shown views::Widget has `expected_dialog_title`.
-void OnDialogShown(bool* was_dialog_shown,
+void OnDialogShown(base::RepeatingClosure dialog_shown_callback,
                    std::u16string expected_dialog_title,
                    views::Widget* widget) {
   if (widget->widget_delegate()->GetWindowTitle() == expected_dialog_title) {
-    *was_dialog_shown = true;
+    dialog_shown_callback.Run();
   }
 }
 
@@ -169,11 +169,12 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
   std::u16string kExpectedDialogTitle = l10n_util::GetStringUTF16(
       IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE);
 
+  base::RunLoop run_loop;
+
   auto dialog_observer = std::make_unique<views::AnyWidgetObserver>(
       views::test::AnyWidgetTestPasskey());
-  bool was_dialog_shown = false;
   dialog_observer->set_shown_callback(base::BindRepeating(
-      &OnDialogShown, &was_dialog_shown, kExpectedDialogTitle));
+      &OnDialogShown, run_loop.QuitClosure(), kExpectedDialogTitle));
 
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(),
@@ -183,8 +184,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
       web_contents,
       "document.getElementById('request_age_and_name_button').click();"));
 
-  WaitTillRequestCredential();
-  EXPECT_TRUE(was_dialog_shown);
+  run_loop.Run();
 }
 
 /**
@@ -202,8 +202,15 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
       views::test::AnyWidgetTestPasskey());
   base::RunLoop run_loop;
   bool was_dialog_shown = false;
+
+  auto dialog_shown_action = [](bool& was_dialog_shown) {
+    was_dialog_shown = true;
+  };
+
   dialog_observer->set_shown_callback(base::BindRepeating(
-      &OnDialogShown, &was_dialog_shown, kExpectedDialogTitle));
+      &OnDialogShown,
+      base::BindRepeating(dialog_shown_action, std::ref(was_dialog_shown)),
+      kExpectedDialogTitle));
 
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(),
