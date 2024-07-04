@@ -4235,7 +4235,9 @@ class DevToolsSelfXssTest : public DevToolsTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsSelfXssTest, FooFoo) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
+
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
   EXPECT_TRUE(hasQueryParam(wc, "&disableSelfXssWarnings=true"));
+
   CloseDevToolsWindow();
 }
