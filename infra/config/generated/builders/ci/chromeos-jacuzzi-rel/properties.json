@@ -57,7 +57,7 @@
           "group": "tryserver.chromium.chromiumos"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": false
     }
   },
   "$build/reclient": {

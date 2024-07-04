@@ -575,6 +575,11 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             gs_extra = "ash",
         ),
     ),
+    builder_config_settings = builder_config.ci_settings(
+        # Disabling shard-level-retry-on-chromium-recipe for skylab builders,
+        # since a failed shard is retried even on CTP, which is more efficient.
+        retry_failed_shards = False,
+    ),
     gn_args = gn_args.config(
         configs = [
             "also_build_lacros_chrome_for_architecture_arm64",
@@ -633,6 +638,11 @@ This builder builds chromium and tests it on the public CrOS image on skylab DUT
             gs_bucket = "chromium-skylab-try",
             gs_extra = "ash",
         ),
+    ),
+    builder_config_settings = builder_config.ci_settings(
+        # Disabling shard-level-retry-on-chromium-recipe for skylab builders,
+        # since a failed shard is retried even on CTP, which is more efficient.
+        retry_failed_shards = False,
     ),
     gn_args = gn_args.config(
         configs = [
