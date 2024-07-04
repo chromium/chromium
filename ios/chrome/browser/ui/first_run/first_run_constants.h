@@ -9,18 +9,8 @@
 
 namespace first_run {
 
-// The accessibility identifier for the Welcome screen shown in first run.
-extern NSString* const kFirstRunWelcomeScreenAccessibilityIdentifier;
-
 // The accessibility identifier for the Sign in screen shown in first run.
 extern NSString* const kFirstRunSignInScreenAccessibilityIdentifier;
-
-// The accessibility identifier for the Legacy Sign in screen shown in first
-// run.
-extern NSString* const kFirstRunLegacySignInScreenAccessibilityIdentifier;
-
-// The accessibility identifier for the Sync screen shown in first run.
-extern NSString* const kFirstRunSyncScreenAccessibilityIdentifier;
 
 // The accessibility identifier for the Choice screen title;
 extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;

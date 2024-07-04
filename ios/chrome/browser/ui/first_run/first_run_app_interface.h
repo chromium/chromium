@@ -12,17 +12,8 @@
 // test code.
 @interface FirstRunAppInterface : NSObject
 
-// Resets the UMA collection enabled pref to `enabled`.
-+ (void)setUMACollectionEnabled:(BOOL)enabled;
-
 // Returns whether UMA collection is enabled.
 + (BOOL)isUMACollectionEnabled;
-
-// Resets the UMA collection enabled by default pref to UNKNOWN.
-+ (void)resetUMACollectionEnabledByDefault;
-
-// Returns whether sync has finished its first run setup.
-+ (BOOL)isInitialSyncFeatureSetupComplete;
 
 // Returns whether the omnibox position choice is enabled.
 + (BOOL)isOmniboxPositionChoiceEnabled;
