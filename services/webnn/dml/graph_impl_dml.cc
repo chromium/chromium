@@ -4715,6 +4715,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       break;
     }
     case OperandDataType::kFloat16: {
+      // Here we create a mask with float16 data type since WebNN doesn't define
+      // uint16.
       webnn_mask_data_type = OperandDataType::kFloat16;
       dml_mask_data_type = DML_TENSOR_DATA_TYPE_UINT16;
       std::array<uint16_t, 2> values = {static_cast<uint16_t>(lower_mask),
@@ -4886,15 +4888,22 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
 
   // Fifth step: using bit_and_operator to do the bit computation between
   // input and mask.
+  // Here we need to cast the input and mask tensor data type to the data type
+  // that DML elementwise-bit-and operator supports and has the same bit width.
+  // For example casting float16 to uint16, float32 to uint32.
   TensorDesc bit_and_operator_input_tensor_desc =
       TensorDesc(dml_mask_data_type, input_tensor_desc.GetFlags(),
                  input_tensor_desc.GetDimensions());
+  TensorDesc bit_and_operator_mask_tensor_desc =
+      TensorDesc(dml_mask_data_type, slice_output_tensor_desc.GetFlags(),
+                 slice_output_tensor_desc.GetDimensions(),
+                 slice_output_tensor_desc.GetStrides());
   TensorDesc bit_and_operator_output_tensor_desc =
       TensorDesc(dml_mask_data_type, output_tensor_desc.GetFlags(),
                  output_tensor_desc.GetDimensions());
   DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC bit_and_operator_desc{
       .ATensor = &bit_and_operator_input_tensor_desc.GetDMLTensorDesc(),
-      .BTensor = &slice_output_tensor_desc.GetDMLTensorDesc(),
+      .BTensor = &bit_and_operator_mask_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &bit_and_operator_output_tensor_desc.GetDMLTensorDesc()};
 
   std::array<const NodeOutput*, 2> inputs{input, slice_output};
