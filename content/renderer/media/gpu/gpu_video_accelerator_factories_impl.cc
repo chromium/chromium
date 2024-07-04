@@ -35,26 +35,6 @@
 #include "third_party/skia/include/core/SkTypes.h"
 
 namespace content {
-namespace {
-
-#if !BUILDFLAG(IS_FUCHSIA)
-// Controls if this should always use a single NV12 GMB with multiplanar path.
-bool UseSingleNV12() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Mac + Windows + Linux have used this path for an extended period so no need
-  // for kill switch.
-  return true;
-#else
-  static BASE_FEATURE(kUseSingleNV12ForSoftwareGMB,
-                      "UseSingleNV12ForSoftwareGMB",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
-
-  return base::FeatureList::IsEnabled(kUseSingleNV12ForSoftwareGMB);
-#endif
-}
-#endif
-
-}  // namespace
 
 // static
 std::unique_ptr<GpuVideoAcceleratorFactoriesImpl>
@@ -386,8 +366,14 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
 #endif
 
   if (capabilities.texture_rg) {
-    return UseSingleNV12() ? OutputFormat::NV12_SINGLE_GMB
-                           : OutputFormat::NV12_DUAL_GMB;
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/40283225): NV12_DUAL_GMB is used on ChromeOS only if above
+    // feature is disabled. Remove this codepath once above feature is launched.
+    return OutputFormat::NV12_DUAL_GMB;
+#else
+    // Use NV12_SINGLE_GMB for Mac, Windows, Linux and CastOS platforms.
+    return OutputFormat::NV12_SINGLE_GMB;
+#endif
   }
   return OutputFormat::UNDEFINED;
 #endif  // BUILDFLAG(IS_FUCHSIA)
