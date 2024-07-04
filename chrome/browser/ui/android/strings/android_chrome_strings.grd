@@ -1757,14 +1757,23 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY" translateable="false">
         You're getting standard protection
       </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY_MANAGED" translateable="false">
+        Your organization turned on Safe Browsing
+      </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_TITLE" translateable="false">
         Enhanced Safe Browsing is on
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY" translateable="false">
         You have Chrome's strongest security
       </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY_MANAGED" translateable="false">
+        Your organization turned on Enhanced Safe Browsing
+      </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY" translateable="false">
         Turn on Safe Browsing to get protection against dangerous sites
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY_MANAGED" translateable="false">
+        Your organization turned off Safe Browsing
       </message>
       <message name="IDS_SAFETY_HUB_VIEW_SITES_BUTTON" translateable="false">
         View sites

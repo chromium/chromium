@@ -41,7 +41,7 @@ found in the LICENSE file.
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_toEndOf="@id/icon_frame"
-            android:layout_toStartOf="@id/checkable_image_view"
+            android:layout_toStartOf="@id/managed_icon"
             android:layout_centerVertical="true">
 
             <TextView
@@ -63,12 +63,23 @@ found in the LICENSE file.
                 style="@style/PreferenceSummary" />
         </RelativeLayout>
 
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/managed_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:maxHeight="24dp"
+            app:maxWidth="24dp"
+            app:srcCompat="@drawable/ic_business_small"
+            android:layout_toStartOf="@id/checkable_image_view"
+            android:layout_centerVertical="true"/>
+
         <org.chromium.ui.widget.CheckableImageView
             android:id="@+id/checkable_image_view"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:padding="12dp"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <RelativeLayout

@@ -22,6 +22,9 @@ public class SafetyHubModuleViewBinder {
             PropertyKey propertyKey) {
         if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
             preference.setVisible(model.get(SafetyHubModuleProperties.IS_VISIBLE));
+        } else if (SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
+            preference.setControlledByPolicy(
+                    model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY));
         }
     }
 
@@ -70,7 +73,8 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference,
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
-        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey) {
+        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey
+                || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey) {
             updateSafeBrowsingModule(preference, model);
         }
     }
@@ -79,6 +83,7 @@ public class SafetyHubModuleViewBinder {
             SafetyHubExpandablePreference preference, PropertyModel model) {
         @SafeBrowsingState
         int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
+        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
 
         String title;
         String summary;
@@ -95,50 +100,79 @@ public class SafetyHubModuleViewBinder {
                         preference
                                 .getContext()
                                 .getString(R.string.safety_hub_safe_browsing_on_title);
-                summary =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_safe_browsing_on_summary);
                 iconDrawable = getCheckmarkIcon(preference);
-                secondaryButtonText =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_go_to_security_settings_button);
-                secondaryButtonListener =
-                        model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+
+                if (managed) {
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(
+                                            R.string.safety_hub_safe_browsing_on_summary_managed);
+                } else {
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_safe_browsing_on_summary);
+                    secondaryButtonText =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_go_to_security_settings_button);
+                    secondaryButtonListener =
+                            model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                }
                 break;
             case SafeBrowsingState.ENHANCED_PROTECTION:
                 title =
                         preference
                                 .getContext()
                                 .getString(R.string.safety_hub_safe_browsing_enhanced_title);
-                summary =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_safe_browsing_enhanced_summary);
                 iconDrawable = getCheckmarkIcon(preference);
-                secondaryButtonText =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_go_to_security_settings_button);
-                secondaryButtonListener =
-                        model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+
+                if (managed) {
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(
+                                            R.string
+                                                    .safety_hub_safe_browsing_enhanced_summary_managed);
+                } else {
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_safe_browsing_enhanced_summary);
+                    secondaryButtonText =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_go_to_security_settings_button);
+                    secondaryButtonListener =
+                            model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
+                }
                 break;
             default:
                 title =
                         preference
                                 .getContext()
                                 .getString(R.string.prefs_safe_browsing_no_protection_summary);
-                summary =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_safe_browsing_off_summary);
-                iconDrawable = getErrorIcon(preference);
-                primaryButtonText =
-                        preference.getContext().getString(R.string.safety_hub_turn_on_button);
-                primaryButtonListener =
-                        model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-                expanded = true;
+
+                if (managed) {
+                    iconDrawable = getCheckmarkIcon(preference);
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(
+                                            R.string.safety_hub_safe_browsing_off_summary_managed);
+                } else {
+                    iconDrawable = getErrorIcon(preference);
+                    summary =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_safe_browsing_off_summary);
+                    primaryButtonText =
+                            preference.getContext().getString(R.string.safety_hub_turn_on_button);
+                    primaryButtonListener =
+                            model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
+                    expanded = true;
+                }
         }
 
         preference.setIcon(iconDrawable);

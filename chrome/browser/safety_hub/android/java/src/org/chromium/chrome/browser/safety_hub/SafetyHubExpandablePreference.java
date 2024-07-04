@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.ChromeImageView;
 
 public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private String mPrimaryButtonText;
@@ -34,6 +35,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private View.OnClickListener mPrimaryButtonClickListener;
     private View.OnClickListener mSecondaryButtonClickListener;
     private boolean mExpanded = true;
+    private boolean mControlledByPolicy;
     private Drawable mDrawable;
     private PreferenceViewHolder mHolder;
 
@@ -86,6 +88,10 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         TextView summary = (TextView) holder.findViewById(android.R.id.summary);
         assert summary != null;
         summary.setVisibility(getSummary() != null && isExpanded() ? View.VISIBLE : View.GONE);
+
+        ChromeImageView managedIcon = (ChromeImageView) holder.findViewById(R.id.managed_icon);
+        assert managedIcon != null;
+        managedIcon.setVisibility(mControlledByPolicy ? View.VISIBLE : View.GONE);
 
         mHolder = holder;
     }
@@ -185,5 +191,12 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
                 AppCompatResources.getColorStateList(
                         context, R.color.default_icon_color_tint_list));
         return tintableDrawable;
+    }
+
+    void setControlledByPolicy(boolean controlledByPolicy) {
+        if (mControlledByPolicy != controlledByPolicy) {
+            mControlledByPolicy = controlledByPolicy;
+            notifyChanged();
+        }
     }
 }

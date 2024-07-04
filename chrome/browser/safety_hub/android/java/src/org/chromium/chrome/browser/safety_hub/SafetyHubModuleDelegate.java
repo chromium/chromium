@@ -45,4 +45,9 @@ public interface SafetyHubModuleDelegate {
      */
     @SafeBrowsingState
     int getSafeBrowsingState();
+
+    /**
+     * @return Whether the Safe Browsing preference is managed.
+     */
+    boolean isSafeBrowsingManaged();
 }

@@ -329,6 +329,16 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
+
+        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_safe_browsing_on_summary_managed);
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
+        assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
+        assertFalse(mSafeBrowsingPreference.isExpanded());
     }
 
     @Test
@@ -350,6 +360,16 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
         assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
         assertFalse(mSafeBrowsingPreference.isExpanded());
+
+        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary_managed);
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
+        assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
+        assertFalse(mSafeBrowsingPreference.isExpanded());
     }
 
     @Test
@@ -369,5 +389,15 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
         assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
         assertTrue(mSafeBrowsingPreference.isExpanded());
+
+        mSafeBrowsingPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_safe_browsing_off_summary_managed);
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
+        assertNull(mSafeBrowsingPreference.getSecondaryButtonText());
+        assertFalse(mSafeBrowsingPreference.isExpanded());
     }
 }

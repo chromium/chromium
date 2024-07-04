@@ -14,6 +14,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class SafetyHubModuleProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTROLLED_BY_POLICY =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
             PRIMARY_BUTTON_LISTENER = new PropertyModel.ReadableObjectPropertyKey<>();
     public static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener>
@@ -34,7 +36,11 @@ public class SafetyHubModuleProperties {
             NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT = new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
-        IS_VISIBLE, PRIMARY_BUTTON_LISTENER, SECONDARY_BUTTON_LISTENER, SAFE_STATE_BUTTON_LISTENER
+        IS_VISIBLE,
+        IS_CONTROLLED_BY_POLICY,
+        PRIMARY_BUTTON_LISTENER,
+        SECONDARY_BUTTON_LISTENER,
+        SAFE_STATE_BUTTON_LISTENER
     };
 
     public static final PropertyKey[] PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS =

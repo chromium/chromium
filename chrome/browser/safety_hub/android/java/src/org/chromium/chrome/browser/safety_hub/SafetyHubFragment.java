@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.safety_hub;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -196,8 +195,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void updateSafeBrowsingPreference() {
-        @SafeBrowsingState int safeBrowsingState = mDelegate.getSafeBrowsingState();
         mSafeBrowsingPropertyModel.set(
-                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+                SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY,
+                mDelegate.isSafeBrowsingManaged());
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, mDelegate.getSafeBrowsingState());
     }
 }

@@ -85,4 +85,9 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     public int getSafeBrowsingState() {
         return new SafeBrowsingBridge(mProfile).getSafeBrowsingState();
     }
+
+    @Override
+    public boolean isSafeBrowsingManaged() {
+        return new SafeBrowsingBridge(mProfile).isSafeBrowsingManaged();
+    }
 }
