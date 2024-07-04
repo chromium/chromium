@@ -12,6 +12,8 @@
 #import "components/saved_tab_groups/string_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_state_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
@@ -57,6 +59,8 @@ NSString* CreationText(base::Time creation_date) {
   UICollectionView* _collectionView;
   UICollectionViewDiffableDataSource<NSString*, TabGroupsPanelItem*>*
       _dataSource;
+  TabGridEmptyStateView* _emptyStateView;
+  UIViewPropertyAnimator* _emptyStateAnimator;
 }
 
 - (void)viewDidLoad {
@@ -73,6 +77,8 @@ NSString* CreationText(base::Time creation_date) {
   // collectionView contentInset manually to fit in the safe area instead.
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
+  _collectionView.backgroundView = [[UIView alloc] init];
+  _collectionView.backgroundColor = UIColor.clearColor;
   _collectionView.delegate = self;
   _collectionView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -100,6 +106,27 @@ NSString* CreationText(base::Time creation_date) {
                                                        forIndexPath:indexPath
                                                                item:item];
                 }];
+
+  _emptyStateView =
+      [[TabGridEmptyStateView alloc] initWithPage:TabGridPageTabGroups];
+  _emptyStateView.scrollViewContentInsets =
+      _collectionView.adjustedContentInset;
+  _emptyStateView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_collectionView.backgroundView addSubview:_emptyStateView];
+  UILayoutGuide* safeAreaGuide =
+      _collectionView.backgroundView.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [_collectionView.backgroundView.centerYAnchor
+        constraintEqualToAnchor:_emptyStateView.centerYAnchor],
+    [safeAreaGuide.leadingAnchor
+        constraintEqualToAnchor:_emptyStateView.leadingAnchor],
+    [safeAreaGuide.trailingAnchor
+        constraintEqualToAnchor:_emptyStateView.trailingAnchor],
+    [_emptyStateView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:safeAreaGuide.topAnchor],
+    [_emptyStateView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:safeAreaGuide.bottomAnchor],
+  ]];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -148,7 +175,11 @@ NSString* CreationText(base::Time creation_date) {
     [_collectionView.collectionViewLayout invalidateLayout];
   }
 
-  // TODO(crbug.com/349788953): Show the empty state view if needed.
+  if ([self shouldShowEmptyState]) {
+    [self animateEmptyStateIn];
+  } else {
+    [self removeEmptyStateAnimated:YES];
+  }
 }
 
 #pragma mark UICollectionViewDelegate
@@ -163,6 +194,10 @@ NSString* CreationText(base::Time creation_date) {
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   [self.UIDelegate tabGroupsPanelViewControllerDidScroll:self];
+}
+
+- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView*)scrollView {
+  _emptyStateView.scrollViewContentInsets = scrollView.contentInset;
 }
 
 #pragma mark Private
@@ -241,6 +276,49 @@ NSString* CreationText(base::Time creation_date) {
       sectionVerticalInset, self.contentInsets.left, sectionVerticalInset,
       self.contentInsets.right);
   return section;
+}
+
+// Whether to show the empty state view.
+- (BOOL)shouldShowEmptyState {
+  return _dataSource.snapshot.numberOfItems == 0;
+}
+
+// Animates the empty state into view.
+- (void)animateEmptyStateIn {
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
+  [_emptyStateAnimator stopAnimation:YES];
+  UIView* emptyStateView = _emptyStateView;
+  _emptyStateAnimator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:1.0 - _emptyStateView.alpha
+          dampingRatio:1.0
+            animations:^{
+              emptyStateView.alpha = 1.0;
+              emptyStateView.transform = CGAffineTransformIdentity;
+            }];
+  [_emptyStateAnimator startAnimation];
+}
+
+// Removes the empty state out of view, with animation if `animated` is YES.
+- (void)removeEmptyStateAnimated:(BOOL)animated {
+  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
+  // they belong.
+  [_emptyStateAnimator stopAnimation:YES];
+  UIView* emptyStateView = _emptyStateView;
+  auto removeEmptyState = ^{
+    emptyStateView.alpha = 0.0;
+    emptyStateView.transform = CGAffineTransformScale(CGAffineTransformIdentity,
+                                                      /*sx=*/0.9, /*sy=*/0.9);
+  };
+  if (animated) {
+    _emptyStateAnimator =
+        [[UIViewPropertyAnimator alloc] initWithDuration:_emptyStateView.alpha
+                                            dampingRatio:1.0
+                                              animations:removeEmptyState];
+    [_emptyStateAnimator startAnimation];
+  } else {
+    removeEmptyState();
+  }
 }
 
 @end

@@ -139,9 +139,7 @@
       item11, item12
     ];
   } else {
-    TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
-    item.title = @"Vacation";
-    return @[ item ];
+    return @[];
   }
 }
 
