@@ -14411,6 +14411,27 @@
             ]
         }
     ],
+    "OmniboxFeaturedEnterpriseSiteSearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowFeaturedEnterpriseSiteSearch",
+                        "ShowFeaturedEnterpriseSiteSearchIPH",
+                        "SiteSearchSettingsPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxInspireMePhase2": [
         {
             "platforms": [
