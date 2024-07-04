@@ -48,18 +48,11 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
     return;
   }
 
-  bool page_distillable =
-      ::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable();
-
-  // Records metric of whether the page is distillable when Mahi menu is
-  // requested to show.
-  base::UmaHistogramBoolean(kMahiContextMenuDistillableHistogram,
-                            page_distillable);
-
   // Only shows mahi menu for distillable pages or when the switch
   // `kUseFakeMahiManager` is enabled.
-  if (!page_distillable && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                               chromeos::switches::kUseFakeMahiManager)) {
+  if (!::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kUseFakeMahiManager)) {
     return;
   }
 
@@ -105,6 +98,23 @@ void MahiMenuController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
 
 void MahiMenuController::OnPdfContextMenuHide() {
   OnDismiss(false);
+}
+
+bool MahiMenuController::IsFocusedPageDistillable() {
+  if (is_distillable_for_testing_.has_value()) {
+    return is_distillable_for_testing_.value();
+  }
+
+  return ::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable() ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             chromeos::switches::kUseFakeMahiManager);
+}
+
+void MahiMenuController::RecordPageDistillable() {
+  // Records metric of whether the page is distillable when Mahi menu is
+  // requested to show.
+  base::UmaHistogramBoolean(kMahiContextMenuDistillableHistogram,
+                            IsFocusedPageDistillable());
 }
 
 base::WeakPtr<MahiMenuController> MahiMenuController::GetWeakPtr() {

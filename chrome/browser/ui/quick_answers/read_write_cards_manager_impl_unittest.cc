@@ -140,6 +140,39 @@ TEST_P(ReadWriteCardsManagerImplTest, InputPassword) {
                      std::vector<ReadWriteCardController*>{}));
 }
 
+TEST_P(ReadWriteCardsManagerImplTest, MahiNotDistillable) {
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+
+  if (IsMahiEnabled()) {
+    mahi_menu_controller()->set_is_distillable_for_testing(false);
+  }
+
+  TestingProfile profile;
+
+  content::ContextMenuParams params;
+
+  // Mahi controller should not be fetched when the page is not distillable.
+  manager_->FetchController(
+      params, &profile,
+      base::BindOnce(
+          &ExpectControllersEqual,
+          "Wrong quick answers/mahi controller is fetched when no text is "
+          "selected and Mahi is enabled",
+          std::vector<ReadWriteCardController*>{}));
+
+  // When Mahi is enabled and text is selected, both Mahi and quick answers
+  // controller should be fetched.
+  params.selection_text = u"text";
+  manager_->FetchController(
+      params, &profile,
+      base::BindOnce(
+          &ExpectControllersEqual,
+          "Wrong quick answers/mahi controller is fetched when text is "
+          "selected and Mahi is enabled",
+          std::vector<ReadWriteCardController*>{quick_answers_controller()}));
+}
+
 TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
@@ -150,6 +183,8 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
   content::ContextMenuParams params;
 
   if (IsMahiEnabled()) {
+    mahi_menu_controller()->set_is_distillable_for_testing(true);
+
     // When Mahi is enabled and no text is selected, Mahi controller should be
     // fetched.
     manager_->FetchController(
@@ -206,6 +241,8 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
   content::ContextMenuParams params;
 
   if (IsMahiEnabled()) {
+    mahi_menu_controller()->set_is_distillable_for_testing(true);
+
     // When Mahi is enabled and Magic Boost consent is declined, no controller
     // should be fetched.
     manager_->FetchController(
@@ -263,6 +300,8 @@ TEST_P(ReadWriteCardsManagerImplTest,
   // When Mahi is enabled and consent status is unset, the opt in card
   // controller should be fetched.
   if (IsMahiEnabled()) {
+    mahi_menu_controller()->set_is_distillable_for_testing(true);
+
     manager_->FetchController(
         params, &profile,
         base::BindOnce(
@@ -296,6 +335,8 @@ TEST_P(ReadWriteCardsManagerImplTest,
   params.selection_text = u"text";
 
   if (IsMahiEnabled()) {
+    mahi_menu_controller()->set_is_distillable_for_testing(true);
+
     manager_->FetchController(
         params, &profile,
         base::BindOnce(

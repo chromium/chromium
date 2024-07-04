@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
@@ -44,12 +45,25 @@ class MahiMenuController : public chromeos::ReadWriteCardController,
   void OnPdfContextMenuShown(const gfx::Rect& anchor) override;
   void OnPdfContextMenuHide() override;
 
+  // Returns true if the current focused page is distillable.
+  bool IsFocusedPageDistillable();
+
+  // Records metrics of whether the focus page is distillable or not.
+  void RecordPageDistillable();
+
   views::Widget* menu_widget_for_test() { return menu_widget_.get(); }
   base::WeakPtr<MahiMenuController> GetWeakPtr();
+
+  void set_is_distillable_for_testing(bool is_distillable_for_testing) {
+    is_distillable_for_testing_ = is_distillable_for_testing;
+  }
 
  private:
   const raw_ref<ReadWriteCardsUiController> read_write_cards_ui_controller_;
   views::UniqueWidgetPtr menu_widget_;
+
+  std::optional<bool> is_distillable_for_testing_;
+
   base::WeakPtrFactory<MahiMenuController> weak_factory_{this};
 };
 

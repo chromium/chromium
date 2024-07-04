@@ -98,7 +98,8 @@ ReadWriteCardsManagerImpl::GetControllers(
                               !params.selection_text.empty() &&
                               quick_answers_controller_;
   const bool should_show_mahi =
-      mahi_menu_controller_ && chromeos::features::IsMahiEnabled();
+      chromeos::features::IsMahiEnabled() && mahi_menu_controller_ &&
+      mahi_menu_controller_->IsFocusedPageDistillable();
 
   std::optional<HMRConsentStatus> hmr_consent_status;
   if (chromeos::features::IsMagicBoostEnabled()) {
@@ -172,8 +173,11 @@ ReadWriteCardsManagerImpl::GetControllers(
     controllers.emplace_back(quick_answers_controller_->GetWeakPtr());
   }
 
-  if (should_show_mahi) {
-    controllers.emplace_back(mahi_menu_controller_->GetWeakPtr());
+  if (mahi_menu_controller_) {
+    mahi_menu_controller_->RecordPageDistillable();
+    if (should_show_mahi) {
+      controllers.emplace_back(mahi_menu_controller_->GetWeakPtr());
+    }
   }
 
   return controllers;

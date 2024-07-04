@@ -237,9 +237,7 @@ TEST_P(MahiMenuControllerTest, DistillableMetrics) {
                                      false, 0);
 
   ChangePageDistillability(false);
-  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
-                                     /*selected_text=*/"",
-                                     /*surrounding_text=*/"");
+  menu_controller()->RecordPageDistillable();
 
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
                                      0);
@@ -248,9 +246,7 @@ TEST_P(MahiMenuControllerTest, DistillableMetrics) {
 
   // If page is not distillable, then menu widget should not be triggered.
   ChangePageDistillability(true);
-  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
-                                     /*selected_text=*/"",
-                                     /*surrounding_text=*/"");
+  menu_controller()->RecordPageDistillable();
 
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
                                      1);
