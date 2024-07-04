@@ -3213,7 +3213,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.SafeBrowsing.Enhanced.Infobar.Interaction"
     enum="IOSEnhancedSafeBrowseringInfobarInteraction"
-    expires_after="2024-05-23">
+    expires_after="2025-06-26">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@google.com</owner>
   <summary>
