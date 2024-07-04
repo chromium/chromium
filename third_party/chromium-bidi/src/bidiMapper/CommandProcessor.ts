@@ -264,6 +264,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         return await this.#networkProcessor.removeIntercept(
           this.#parser.parseRemoveInterceptParams(command.params)
         );
+      case 'network.setCacheBehavior':
+        throw new UnknownErrorException(
+          "Method 'network.setCacheBehavior' is not implemented."
+        );
       // keep-sorted end
 
       // Permissions domain

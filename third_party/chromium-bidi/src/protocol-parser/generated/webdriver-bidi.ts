@@ -999,6 +999,7 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.FailRequestSchema,
     Network.ProvideResponseSchema,
     Network.RemoveInterceptSchema,
+    Network.SetCacheBehaviorSchema,
   ])
 );
 export const NetworkEventSchema = z.lazy(() =>
@@ -1371,6 +1372,25 @@ export namespace Network {
   export const RemoveInterceptParametersSchema = z.lazy(() =>
     z.object({
       intercept: Network.InterceptSchema,
+    })
+  );
+}
+export namespace Network {
+  export const SetCacheBehaviorSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.setCacheBehavior'),
+      params: Network.SetCacheBehaviorParametersSchema,
+    })
+  );
+}
+export namespace Network {
+  export const SetCacheBehaviorParametersSchema = z.lazy(() =>
+    z.object({
+      cacheBehavior: z.enum(['default', 'bypass']),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
     })
   );
 }
