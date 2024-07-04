@@ -209,6 +209,7 @@ steps:
     build:
       commit: "${REPLAY_BACKEND_REV}"
     depends_on:
+      - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
 
   - label: "📝 Live Tests"
@@ -236,6 +237,7 @@ steps:
   - label: "📝 E2E Tests (macos-arm64)"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
+      - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
     build:
       env:
