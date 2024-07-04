@@ -191,12 +191,21 @@ export class CdpTarget {
 
   #restoreFrameTreeState(frameTree: Protocol.Page.FrameTree) {
     const frame = frameTree.frame;
-    if (
-      this.#browsingContextStorage.findContext(frame.id) === undefined &&
-      frame.parentId !== undefined
-    ) {
-      // Can restore only not yet known nested frames. The top-level frame is created
-      // when the target is attached.
+    const maybeContext = this.#browsingContextStorage.findContext(frame.id);
+    if (maybeContext !== undefined) {
+      // Restoring parent of already known browsing context. This means the target is
+      // OOPiF and the BiDi session was connected to already existing browser instance.
+      if (
+        maybeContext.parentId === null &&
+        frame.parentId !== null &&
+        frame.parentId !== undefined
+      ) {
+        maybeContext.parentId = frame.parentId;
+      }
+    }
+    if (maybeContext === undefined && frame.parentId !== undefined) {
+      // Restore not yet known nested frames. The top-level frame is created when the
+      // target is attached.
       const parentBrowsingContext = this.#browsingContextStorage.getContext(
         frame.parentId
       );
