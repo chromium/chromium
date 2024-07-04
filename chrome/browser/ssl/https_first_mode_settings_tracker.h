@@ -54,11 +54,6 @@ class HttpsFirstModeService
       public safe_browsing::AdvancedProtectionStatusManager::
           StatusChangedObserver {
  public:
-  // Reset user prefs if they were accidentally enabled previously. See
-  // crbug.com/1475747 for details. Only has as effect if
-  // kHttpsFirstModeV2ForTypicallySecureUsers is not enabled.
-  static void FixTypicallySecureUserPrefs(Profile* profile);
-
   explicit HttpsFirstModeService(Profile* profile, base::Clock* clock);
   ~HttpsFirstModeService() override;
 
