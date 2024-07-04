@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_AS_PASSWORD_CREDENTIAL_IDENTITY_CREDENTIAL_H_
-#define IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_AS_PASSWORD_CREDENTIAL_IDENTITY_CREDENTIAL_H_
+#ifndef IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_ASPASSWORDCREDENTIALIDENTITY_CREDENTIAL_H_
+#define IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_ASPASSWORDCREDENTIALIDENTITY_CREDENTIAL_H_
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
@@ -14,8 +14,8 @@
 @interface ASPasswordCredentialIdentity (Credential)
 
 // Create instance from `credential` data.
-- (instancetype)initWithCredential:(id<Credential>)credential;
+- (instancetype)cr_initWithCredential:(id<Credential>)credential;
 
 @end
 
-#endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_AS_PASSWORD_CREDENTIAL_IDENTITY_CREDENTIAL_H_
+#endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_ASPASSWORDCREDENTIALIDENTITY_CREDENTIAL_H_

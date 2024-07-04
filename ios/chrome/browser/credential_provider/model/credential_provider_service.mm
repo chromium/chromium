@@ -33,8 +33,9 @@
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
+#import "ios/chrome/common/credential_provider/ASPasswordCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
-#import "ios/chrome/common/credential_provider/as_password_credential_identity+credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_store.h"
 
@@ -82,17 +83,6 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
 #endif  // !defined(NDEBUG)
     if (state.enabled) {
       NSArray<id<Credential>>* credentials = credential_store.credentials;
-      NSMutableArray<ASPasswordCredentialIdentity*>* storeIdentities =
-          [NSMutableArray arrayWithCapacity:credentials.count];
-      for (id<Credential> credential in credentials) {
-        if (credential.isPasskey) {
-          // TODO(crbug.com/330355124): Store passkeys for the CPE here.
-          continue;
-        }
-
-        [storeIdentities addObject:[[ASPasswordCredentialIdentity alloc]
-                                       initWithCredential:credential]];
-      }
       auto replaceCompletion = ^(BOOL success, NSError* error) {
         // Sometimes ASCredentialIdentityStore fails. Log this to measure the
         // impact of these failures and move on.
@@ -107,9 +97,32 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
               errorForReporting);
         }
       };
-      [ASCredentialIdentityStore.sharedStore
-          replaceCredentialIdentitiesWithIdentities:storeIdentities
-                                         completion:replaceCompletion];
+      if (@available(iOS 17.0, *)) {
+        NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
+            [NSMutableArray arrayWithCapacity:credentials.count];
+        for (id<Credential> credential in credentials) {
+          if (credential.isPasskey) {
+            [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
+                                           cr_initWithCredential:credential]];
+          } else {
+            [storeIdentities addObject:[[ASPasswordCredentialIdentity alloc]
+                                           cr_initWithCredential:credential]];
+          }
+        }
+        [ASCredentialIdentityStore.sharedStore
+            replaceCredentialIdentityEntries:storeIdentities
+                                  completion:replaceCompletion];
+      } else {
+        NSMutableArray<ASPasswordCredentialIdentity*>* storeIdentities =
+            [NSMutableArray arrayWithCapacity:credentials.count];
+        for (id<Credential> credential in credentials) {
+          [storeIdentities addObject:[[ASPasswordCredentialIdentity alloc]
+                                         cr_initWithCredential:credential]];
+        }
+        [ASCredentialIdentityStore.sharedStore
+            replaceCredentialIdentitiesWithIdentities:storeIdentities
+                                           completion:replaceCompletion];
+      }
     }
   };
   [ASCredentialIdentityStore.sharedStore

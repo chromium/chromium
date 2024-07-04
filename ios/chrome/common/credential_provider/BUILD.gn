@@ -7,14 +7,16 @@ import("//build/config/ios/ios_sdk.gni")
 
 source_set("credential_provider") {
   sources = [
+    "ASPasskeyCredentialIdentity+credential.h",
+    "ASPasskeyCredentialIdentity+credential.mm",
+    "ASPasswordCredentialIdentity+credential.h",
+    "ASPasswordCredentialIdentity+credential.mm",
     "archivable_credential.h",
     "archivable_credential.mm",
     "archivable_credential_store.h",
     "archivable_credential_store.mm",
     "archivable_credential_util.h",
     "archivable_credential_util.mm",
-    "as_password_credential_identity+credential.h",
-    "as_password_credential_identity+credential.mm",
     "constants.h",
     "constants.mm",
     "memory_credential_store.h",
@@ -49,7 +51,7 @@ source_set("unit_tests") {
   sources = [
     "archivable_credential_store_unittest.mm",
     "archivable_credential_unittest.mm",
-    "as_password_credential_identity+credential_unittests.mm",
+    "as_credential_identity_categories_unittests.mm",
     "memory_credential_store_unittests.mm",
     "multi_store_credential_store_unittests.mm",
     "user_defaults_credential_store_unittests.mm",
