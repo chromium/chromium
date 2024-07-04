@@ -4,10 +4,19 @@
   feature = "nightly_slice_partition_dedup",
   feature(slice_partition_dedup)
 )]
+#![cfg_attr(
+  feature = "debugger_visualizer",
+  feature(debugger_visualizer),
+  debugger_visualizer(natvis_file = "../debug_metadata/tinyvec.natvis")
+)]
 #![cfg_attr(docs_rs, feature(doc_cfg))]
 #![warn(clippy::missing_inline_in_public_items)]
 #![warn(clippy::must_use_candidate)]
 #![warn(missing_docs)]
+#![allow(clippy::borrow_deref_ref)]
+#![allow(unused_imports)]
+#![allow(clippy::write_with_newline)]
+#![allow(clippy::needless_return)]
 
 //! `tinyvec` provides 100% safe vec-like data structures.
 //!
@@ -36,8 +45,6 @@
 //! ## Other Features
 //! * `grab_spare_slice` lets you get access to the "inactive" portions of an
 //!   ArrayVec.
-//! * `rustc_1_40` makes the crate assume a minimum rust version of `1.40.0`,
-//!   which allows some better internal optimizations.
 //! * `serde` provides a `Serialize` and `Deserialize` implementation for
 //!   [`TinyVec`] and [`ArrayVec`] types, provided the inner item also has an
 //!   implementation.
@@ -99,9 +106,3 @@ pub use slicevec::*;
 mod tinyvec;
 #[cfg(feature = "alloc")]
 pub use crate::tinyvec::*;
-
-// TODO MSRV(1.40.0): Just call the normal `core::mem::take`
-#[inline(always)]
-fn take<T: Default>(from: &mut T) -> T {
-  replace(from, T::default())
-}

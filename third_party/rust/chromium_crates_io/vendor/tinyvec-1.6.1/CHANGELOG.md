@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+* [e00E](https://github.com/e00E) fixed the Arbitrary impl to work on Stable
+  without using a feature gate.
+  [pr 180](https://github.com/Lokathor/tinyvec/pull/180)
+
 ## 1.6.0
 
 * [i509VCB](https://github.com/i509VCB) added the `try_` functions for fallable reallocation.

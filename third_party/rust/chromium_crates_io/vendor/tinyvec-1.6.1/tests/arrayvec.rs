@@ -1,4 +1,5 @@
 #![allow(bad_style)]
+#![allow(clippy::clone_on_copy)]
 
 #[cfg(feature = "serde")]
 use serde_test::{assert_tokens, Token};
@@ -383,7 +384,7 @@ fn iter_last_nth() {
   av.push(2);
   av.push(3);
 
-  assert_eq!(av.into_iter().nth(0), Some(1));
+  assert_eq!(av.into_iter().next(), Some(1));
 }
 
 #[test]
@@ -460,9 +461,9 @@ fn ArrayVec_try_from_slice() {
   assert!(fits.is_ok());
   assert_eq!(fits.unwrap().as_slice(), &[1, 2]);
 
-  let doesnt_fit: Result<ArrayVec<[i32; 2]>, _> =
+  let does_not_fit: Result<ArrayVec<[i32; 2]>, _> =
     ArrayVec::try_from(&nums[..4]);
-  assert!(doesnt_fit.is_err());
+  assert!(does_not_fit.is_err());
 }
 
 #[test]

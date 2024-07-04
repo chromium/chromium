@@ -12,8 +12,19 @@
 [package]
 edition = "2018"
 name = "tinyvec"
-version = "1.6.0"
+version = "1.6.1"
 authors = ["Lokathor <zefria@gmail.com>"]
+build = false
+exclude = [
+    "/.github",
+    "/*.py",
+    "/*.sh",
+    "/src-backup",
+]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "`tinyvec` provides 100% safe vec-like data structures."
 readme = "README.md"
 keywords = [
@@ -33,7 +44,6 @@ features = [
     "alloc",
     "std",
     "grab_spare_slice",
-    "rustc_1_40",
     "rustc_1_55",
     "serde",
 ]
@@ -47,7 +57,6 @@ features = [
     "alloc",
     "std",
     "grab_spare_slice",
-    "rustc_1_40",
     "rustc_1_55",
     "serde",
 ]
@@ -55,23 +64,37 @@ features = [
 [profile.bench]
 debug = 2
 
-[profile.test]
-opt-level = 3
+[lib]
+name = "tinyvec"
+path = "src/lib.rs"
 
 [[test]]
 name = "tinyvec"
+path = "tests/tinyvec.rs"
 required-features = [
     "alloc",
     "std",
 ]
 
+[[test]]
+name = "debugger_visualizer"
+path = "tests/debugger_visualizer.rs"
+test = false
+required-features = ["debugger_visualizer"]
+
+[[test]]
+name = "arrayvec"
+path = "tests/arrayvec.rs"
+
 [[bench]]
 name = "macros"
+path = "benches/macros.rs"
 harness = false
 required-features = ["alloc"]
 
 [[bench]]
 name = "smallvec"
+path = "benches/smallvec.rs"
 harness = false
 required-features = [
     "alloc",
@@ -94,6 +117,12 @@ optional = true
 [dev-dependencies.criterion]
 version = "0.3.0"
 
+[dev-dependencies.debugger_test]
+version = "0.1"
+
+[dev-dependencies.debugger_test_parser]
+version = "0.1"
+
 [dev-dependencies.serde_test]
 version = "1.0"
 
@@ -102,12 +131,13 @@ version = "1"
 
 [features]
 alloc = ["tinyvec_macros"]
+debugger_visualizer = []
 default = []
 experimental_write_impl = []
 grab_spare_slice = []
 nightly_slice_partition_dedup = []
 real_blackbox = ["criterion/real_blackbox"]
 rustc_1_40 = []
-rustc_1_55 = ["rustc_1_40"]
+rustc_1_55 = []
 rustc_1_57 = ["rustc_1_55"]
 std = ["alloc"]

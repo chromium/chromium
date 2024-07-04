@@ -1,13 +1,14 @@
 [package]
 name = "tinyvec"
 description = "`tinyvec` provides 100% safe vec-like data structures."
-version = "1.6.0"
+version = "1.6.1"
 authors = ["Lokathor <zefria@gmail.com>"]
 edition = "2018"
 license = "Zlib OR Apache-2.0 OR MIT"
 keywords = ["vec", "no_std", "no-std"]
 categories = ["data-structures", "no-std"]
 repository = "https://github.com/Lokathor/tinyvec"
+exclude = ["/.github", "/*.py", "/*.sh", "/src-backup"]
 
 [dependencies]
 tinyvec_macros = { version = "0.1", optional = true }
@@ -29,14 +30,12 @@ std = ["alloc"]
 # "active" portion of an `ArrayVec` or `SliceVec`.
 grab_spare_slice = []
 
-# features that require rustc 1.40
-# use Vec::append if possible in TinyVec::append - 1.37
-# DoubleEndedIterator::nth_back - 1.40
+# obsolete feature that has to stay for semver reasons
 rustc_1_40 = []
 
 # features that require rustc 1.55
 # use const generics to implement Array for all array lengths
-rustc_1_55 = ["rustc_1_40"]
+rustc_1_55 = []
 
 # features that require rustc 1.57
 # add try_reserve functions to types that heap allocate.
@@ -46,6 +45,11 @@ rustc_1_57 = ["rustc_1_55"]
 # will become useless once that is stabilized:
 # https://github.com/rust-lang/rust/issues/54279
 nightly_slice_partition_dedup = []
+
+# allow use of nightly feature `debugger_visualizer`,
+# will become useless once that is stabilized:
+# https://github.com/rust-lang/rust/issues/95939
+debugger_visualizer = []
 
 # EXPERIMENTAL: Not part of SemVer. It adds `core::fmt::Write` to `ArrayVec`
 # and `SliceVec`. It works on Stable Rust, but Vec normally supports the
@@ -59,14 +63,11 @@ experimental_write_impl = []
 real_blackbox = ["criterion/real_blackbox"]
 
 [package.metadata.docs.rs]
-features = ["alloc", "std", "grab_spare_slice", "rustc_1_40", "rustc_1_55", "serde"]
+features = ["alloc", "std", "grab_spare_slice", "rustc_1_55", "serde"]
 rustdoc-args = ["--cfg","docs_rs"]
 
 [package.metadata.playground]
-features = ["alloc", "std", "grab_spare_slice", "rustc_1_40", "rustc_1_55", "serde"]
-
-[profile.test]
-opt-level = 3
+features = ["alloc", "std", "grab_spare_slice", "rustc_1_55", "serde"]
 
 [profile.bench]
 debug = 2
@@ -78,6 +79,8 @@ members = ["fuzz"]
 criterion = "0.3.0"
 serde_test = "1.0"
 smallvec = "1"
+debugger_test = "0.1"
+debugger_test_parser = "0.1"
 
 [[test]]
 name = "tinyvec"
@@ -92,3 +95,9 @@ required-features = ["alloc"]
 name = "smallvec"
 harness = false
 required-features = ["alloc", "real_blackbox"]
+
+[[test]]
+path = "tests/debugger_visualizer.rs"
+name = "debugger_visualizer"
+required-features = ["debugger_visualizer"]
+test = false

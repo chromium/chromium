@@ -51,7 +51,9 @@ macro_rules! array_vec {
 
 /// An array-backed, vector-like data structure.
 ///
-/// * `ArrayVec` has a fixed capacity, equal to the array size.
+/// * `ArrayVec` has a fixed capacity, equal to the minimum of the array size
+/// and `u16::MAX`. Note that not all capacities are necessarily supported by
+/// default. See comments in [`Array`].
 /// * `ArrayVec` has a variable length, as you add and remove elements. Attempts
 ///   to fill the vec beyond its capacity will cause a panic.
 /// * All of the vec's array slots are always initialized in terms of Rust's
@@ -130,7 +132,7 @@ where
     if let Some(to_drop) =
       self.data.as_slice_mut().get_mut((o.len as usize)..(self.len as usize))
     {
-      to_drop.iter_mut().for_each(|x| drop(take(x)));
+      to_drop.iter_mut().for_each(|x| drop(core::mem::take(x)));
     }
     self.len = o.len;
   }
@@ -144,6 +146,7 @@ where
 }
 
 impl<A: Array> Default for ArrayVec<A> {
+  #[inline]
   fn default() -> Self {
     Self { len: 0, data: A::default() }
   }
@@ -216,19 +219,29 @@ where
   }
 }
 
-#[cfg(all(feature = "arbitrary", feature = "nightly_const_generics"))]
-#[cfg_attr(
-  docs_rs,
-  doc(cfg(all(feature = "arbitrary", feature = "nightly_const_generics")))
-)]
-impl<'a, T, const N: usize> arbitrary::Arbitrary<'a> for ArrayVec<[T; N]>
+#[cfg(feature = "arbitrary")]
+#[cfg_attr(docs_rs, doc(cfg(feature = "arbitrary")))]
+impl<'a, A> arbitrary::Arbitrary<'a> for ArrayVec<A>
 where
-  T: arbitrary::Arbitrary<'a> + Default,
+  A: Array,
+  A::Item: arbitrary::Arbitrary<'a>,
 {
   fn arbitrary(u: &mut arbitrary::Unstructured<'a>) -> arbitrary::Result<Self> {
-    let v = <[T; N]>::arbitrary(u)?;
-    let av = ArrayVec::from(v);
-    Ok(av)
+    let max_len = A::CAPACITY.min(u16::MAX as usize) as u16;
+    let len = u.int_in_range::<u16>(0..=max_len)?;
+    let mut self_: Self = Default::default();
+    for _ in 0..len {
+      self_.push(u.arbitrary()?);
+    }
+    Ok(self_)
+  }
+
+  fn size_hint(depth: usize) -> (usize, Option<usize>) {
+    arbitrary::size_hint::recursion_guard(depth, |depth| {
+      let max_len = A::CAPACITY.min(u16::MAX as usize);
+      let inner = A::Item::size_hint(depth).1;
+      (0, inner.map(|inner| 2 + max_len * inner))
+    })
   }
 }
 
@@ -282,7 +295,7 @@ impl<A: Array> ArrayVec<A> {
       return Some(other);
     }
 
-    let iter = other.iter_mut().map(take);
+    let iter = other.iter_mut().map(core::mem::take);
     for item in iter {
       self.push(item);
     }
@@ -338,7 +351,7 @@ impl<A: Array> ArrayVec<A> {
     // Note: This shouldn't use A::CAPACITY, because unsafe code can't rely on
     // any Array invariants. This ensures that at the very least, the returned
     // value is a valid length for a subslice of the backing array.
-    self.data.as_slice().len()
+    self.data.as_slice().len().min(u16::MAX as usize)
   }
 
   /// Truncates the `ArrayVec` down to length 0.
@@ -603,7 +616,8 @@ impl<A: Array> ArrayVec<A> {
   pub fn pop(&mut self) -> Option<A::Item> {
     if self.len > 0 {
       self.len -= 1;
-      let out = take(&mut self.data.as_slice_mut()[self.len as usize]);
+      let out =
+        core::mem::take(&mut self.data.as_slice_mut()[self.len as usize]);
       Some(out)
     } else {
       None
@@ -678,7 +692,7 @@ impl<A: Array> ArrayVec<A> {
   #[inline]
   pub fn remove(&mut self, index: usize) -> A::Item {
     let targets: &mut [A::Item] = &mut self.deref_mut()[index..];
-    let item = take(&mut targets[0]);
+    let item = core::mem::take(&mut targets[0]);
 
     // A previous implementation used rotate_left
     // rotate_right and rotate_left generate a huge amount of code and fail to
@@ -792,7 +806,7 @@ impl<A: Array> ArrayVec<A> {
     for idx in 0..len {
       // Loop start invariant: idx = rest.done_end + rest.tail_start
       if !acceptable(&rest.items[idx]) {
-        let _ = take(&mut rest.items[idx]);
+        let _ = core::mem::take(&mut rest.items[idx]);
         self.len -= 1;
         rest.tail_start += 1;
       } else {
@@ -981,7 +995,7 @@ impl<A: Array> ArrayVec<A> {
       let len = self.len as usize;
       self.data.as_slice_mut()[new_len..len]
         .iter_mut()
-        .map(take)
+        .map(core::mem::take)
         .for_each(drop);
     }
 
@@ -1206,6 +1220,7 @@ where
 impl<'p, A: Array, I: Iterator<Item = A::Item>> Drop
   for ArrayVecSplice<'p, A, I>
 {
+  #[inline]
   fn drop(&mut self) {
     for _ in self.by_ref() {}
 
@@ -1282,6 +1297,7 @@ impl<A: Array> From<A> for ArrayVec<A> {
 pub struct TryFromSliceError(());
 
 impl core::fmt::Display for TryFromSliceError {
+  #[inline]
   fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
     f.write_str("could not convert slice to ArrayVec")
   }
@@ -1298,7 +1314,6 @@ where
   type Error = TryFromSliceError;
 
   #[inline]
-  #[must_use]
   /// The output has a length equal to that of the slice, with the same capacity
   /// as `A`.
   fn try_from(slice: &[T]) -> Result<Self, Self::Error> {
@@ -1356,7 +1371,7 @@ impl<A: Array> Iterator for ArrayVecIterator<A> {
       &mut self.data.as_slice_mut()[self.base as usize..self.tail as usize];
     let itemref = slice.first_mut()?;
     self.base += 1;
-    return Some(take(itemref));
+    return Some(core::mem::take(itemref));
   }
   #[inline(always)]
   #[must_use]
@@ -1381,7 +1396,7 @@ impl<A: Array> Iterator for ArrayVecIterator<A> {
     if let Some(x) = slice.get_mut(n) {
       /* n is in range [0 .. self.tail - self.base) so in u16 range */
       self.base += n as u16 + 1;
-      return Some(take(x));
+      return Some(core::mem::take(x));
     }
 
     self.base = self.tail;
@@ -1396,9 +1411,9 @@ impl<A: Array> DoubleEndedIterator for ArrayVecIterator<A> {
       &mut self.data.as_slice_mut()[self.base as usize..self.tail as usize];
     let item = slice.last_mut()?;
     self.tail -= 1;
-    return Some(take(item));
+    return Some(core::mem::take(item));
   }
-  #[cfg(feature = "rustc_1_40")]
+
   #[inline]
   fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
     let base = self.base as usize;
@@ -1410,11 +1425,18 @@ impl<A: Array> DoubleEndedIterator for ArrayVecIterator<A> {
       let item = &mut slice[n];
       /* n is in [0..self.tail - self.base] range, so in u16 range */
       self.tail = self.base + n as u16;
-      return Some(take(item));
+      return Some(core::mem::take(item));
     }
 
     self.tail = self.base;
     return None;
+  }
+}
+
+impl<A: Array> ExactSizeIterator for ArrayVecIterator<A> {
+  #[inline]
+  fn len(&self) -> usize {
+    self.size_hint().0
   }
 }
 
@@ -1573,7 +1595,7 @@ where
   #[allow(clippy::missing_inline_in_public_items)]
   fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
     write!(f, "[")?;
-    if f.alternate() {
+    if f.alternate() && !self.is_empty() {
       write!(f, "\n    ")?;
     }
     for (i, elem) in self.iter().enumerate() {
@@ -1582,7 +1604,7 @@ where
       }
       Debug::fmt(elem, f)?;
     }
-    if f.alternate() {
+    if f.alternate() && !self.is_empty() {
       write!(f, ",\n")?;
     }
     write!(f, "]")
@@ -1769,7 +1791,7 @@ impl<A: Array> ArrayVec<A> {
   pub fn drain_to_vec_and_reserve(&mut self, n: usize) -> Vec<A::Item> {
     let cap = n + self.len();
     let mut v = Vec::with_capacity(cap);
-    let iter = self.iter_mut().map(take);
+    let iter = self.iter_mut().map(core::mem::take);
     v.extend(iter);
     self.set_len(0);
     return v;
@@ -1797,7 +1819,7 @@ impl<A: Array> ArrayVec<A> {
     let cap = n + self.len();
     let mut v = Vec::new();
     v.try_reserve(cap)?;
-    let iter = self.iter_mut().map(take);
+    let iter = self.iter_mut().map(core::mem::take);
     v.extend(iter);
     self.set_len(0);
     return Ok(v);

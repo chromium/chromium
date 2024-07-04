@@ -1555,6 +1555,11 @@ This crate has been added to Chromium in
 https://source.chromium.org/chromium/chromium/src/+/24773c33e1b7a1b5069b9399fd034375995f290b
 """
 
+[[audits.tinyvec]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.6.0 -> 1.6.1"
+
 [[audits.unicode-ident]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

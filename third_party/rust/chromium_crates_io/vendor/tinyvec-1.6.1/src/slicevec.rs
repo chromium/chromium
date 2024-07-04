@@ -326,7 +326,7 @@ impl<'s, T> SliceVec<'s, T> {
   {
     if self.len > 0 {
       self.len -= 1;
-      let out = take(&mut self.data[self.len]);
+      let out = core::mem::take(&mut self.data[self.len]);
       Some(out)
     } else {
       None
@@ -383,7 +383,7 @@ impl<'s, T> SliceVec<'s, T> {
     T: Default,
   {
     let targets: &mut [T] = &mut self.deref_mut()[index..];
-    let item = take(&mut targets[0]);
+    let item = core::mem::take(&mut targets[0]);
     targets.rotate_left(1);
     self.len -= 1;
     item
@@ -500,7 +500,7 @@ impl<'s, T> SliceVec<'s, T> {
     for idx in 0..self.len {
       // Loop start invariant: idx = rest.done_end + rest.tail_start
       if !acceptable(&rest.items[idx]) {
-        let _ = take(&mut rest.items[idx]);
+        let _ = core::mem::take(&mut rest.items[idx]);
         self.len -= 1;
         rest.tail_start += 1;
       } else {
@@ -558,7 +558,7 @@ impl<'s, T> SliceVec<'s, T> {
   #[inline]
   pub fn split_off<'a>(&'a mut self, at: usize) -> SliceVec<'s, T> {
     let mut new = Self::default();
-    let backing: &'s mut [T] = replace(&mut self.data, &mut []);
+    let backing: &'s mut [T] = core::mem::take(&mut self.data);
     let (me, other) = backing.split_at_mut(at);
     new.len = self.len - at;
     new.data = other;
@@ -686,6 +686,7 @@ impl<'s, T> From<&'s mut [T]> for SliceVec<'s, T> {
   /// let mut arr = [0_i32; 2];
   /// let mut sv = SliceVec::from(&mut arr[..]);
   /// ```
+  #[inline]
   fn from(data: &'s mut [T]) -> Self {
     let len = data.len();
     Self { data, len }
@@ -703,6 +704,7 @@ where
   /// let mut arr = [0, 0];
   /// let mut sv = SliceVec::from(&mut arr);
   /// ```
+  #[inline]
   fn from(a: &'s mut A) -> Self {
     let data = a.as_mut();
     let len = data.len();
@@ -724,7 +726,7 @@ impl<'p, 's, T: Default> Iterator for SliceVecDrain<'p, 's, T> {
   #[inline]
   fn next(&mut self) -> Option<Self::Item> {
     if self.target_index != self.target_end {
-      let out = take(&mut self.parent[self.target_index]);
+      let out = core::mem::take(&mut self.parent[self.target_index]);
       self.target_index += 1;
       Some(out)
     } else {
@@ -902,7 +904,7 @@ where
   #[allow(clippy::missing_inline_in_public_items)]
   fn fmt(&self, f: &mut Formatter) -> core::fmt::Result {
     write!(f, "[")?;
-    if f.alternate() {
+    if f.alternate() && !self.is_empty() {
       write!(f, "\n    ")?;
     }
     for (i, elem) in self.iter().enumerate() {
@@ -911,7 +913,7 @@ where
       }
       Debug::fmt(elem, f)?;
     }
-    if f.alternate() {
+    if f.alternate() && !self.is_empty() {
       write!(f, ",\n")?;
     }
     write!(f, "]")
