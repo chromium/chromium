@@ -119,6 +119,12 @@ static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
 static constexpr content::PreloadingPredictor
     kMouseHoverOrMouseDownOnBookmarkBar(113,
                                         "MouseHoverOrMouseDownOnBookmarkBar");
+
+// When a touch event happens on a new tab page link to an HTTPS origin,
+// we may attempt to preload the link.
+static constexpr content::PreloadingPredictor kTouchOnNewTabPage(
+    114,
+    "TouchOnNewTabPage");
 }  // namespace chrome_preloading_predictor
 // LINT.ThenChange()
 

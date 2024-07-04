@@ -42,7 +42,7 @@ bool AndroidPrerenderManager::StartPrerendering(
   auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
   CHECK(prerender_manager);
   prerender_handle_ = prerender_manager->StartPrerenderNewTabPage(
-      prerender_url, chrome_preloading_predictor::kMouseHoverOnNewTabPage);
+      prerender_url, chrome_preloading_predictor::kTouchOnNewTabPage);
   return prerender_handle_ != nullptr;
 }
 

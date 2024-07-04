@@ -72,6 +72,8 @@ chromium-metrics-reviews@google.com.
       summary="When preloading is triggered by an ML model prediction."/>
   <variant name="SpeculationRules"
       summary="When preloading is triggered by the speculation rules."/>
+  <variant name="TouchOnNewTabPage"
+      summary="When preloading is triggered by Touch events on Android."/>
   <variant name="Unspecified" summary=""/>
   <variant name="UrlPointerDownOnAnchor"
       summary="When preloading is triggered by OnPointerDown."/>
