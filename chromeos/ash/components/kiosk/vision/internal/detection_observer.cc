@@ -117,6 +117,7 @@ void DetectionObserver::EmitFakeDetection() {
   constexpr float kRollFaceAngle = 10;
   constexpr float kPanFaceAngle = 20;
   constexpr float kTiltFaceAngle = 30;
+  constexpr float kLowAngle = 4;
 
   // Makes 2 or 3 fake appearances depending on `fake_detection_flag_`.
   auto fake_detection = cros::mojom::KioskVisionDetection::New();
@@ -130,8 +131,10 @@ void DetectionObserver::EmitFakeDetection() {
         cros::mojom::KioskVisionFaceDetection::New(
             /*confidence=*/kConfidence,
             /*roll=*/kRollFaceAngle,
-            /*pan=*/kPanFaceAngle,
-            /*tilt=*/kTiltFaceAngle,
+            // Set low face angles for index 1. Useful to test the case when the
+            // person faces the device.
+            /*pan=*/i == 1 ? kLowAngle : kPanFaceAngle,
+            /*tilt=*/i == 1 ? kLowAngle : kTiltFaceAngle,
             /*box=*/
             cros::mojom::KioskVisionBoundingBox::New(
                 /*x=*/20 + 50 * (offset % kBoxesPerRow),

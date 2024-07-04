@@ -9,6 +9,7 @@ import {
   Status,
   type State,
   type Box,
+  type Face,
 } from './kiosk_vision_internals.mojom-webui.js';
 import {
   PolymerElement,
@@ -49,7 +50,7 @@ export class KioskVisionInternalsAppElement extends PolymerElement {
     this.browserProxy_ = BrowserProxy.getInstance();
     this.browserProxy_.callbackRouter.display.addListener(
       (state: State) => { this.state_ = state; });
-    this.state_ = { status: Status.kUnknown, boxes: [] };
+    this.state_ = { status: Status.kUnknown, boxes: [], faces: [] };
     this.resizeObserver_ = new ResizeObserver(this.resizeCallback_());
   }
 
@@ -101,14 +102,72 @@ function draw(state: State, overlay: HTMLCanvasElement) {
 
   ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-  for (const box of state.boxes) {
-    const { x, y, width, height } = toCanvasCoordinates(overlay, box);
-    ctx.beginPath();
-    ctx.rect(x, y, width, height);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "red";
-    ctx.stroke();
+  for (const box of state.boxes) { drawBox(ctx, overlay, box); }
+  for (const face of state.faces) { drawFace(ctx, overlay, face); }
+}
+
+const RED = "#f87171";
+const GREEN = "#a3e635";
+
+function drawBox(
+  ctx: CanvasRenderingContext2D,
+  overlay: HTMLCanvasElement,
+  box: Box,
+  color: string = RED,
+) {
+  const { x, y } = toCanvasCoordinates(overlay, box.x, box.y);
+  const { x: width, y: height } =
+    toCanvasCoordinates(overlay, box.width, box.height);
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.closePath();
+}
+
+function drawFace(
+  ctx: CanvasRenderingContext2D,
+  overlay: HTMLCanvasElement,
+  face: Face,
+) {
+  // Draw a green box if the person is looking at the camera.
+  if (isLookingAtTheCamera(face)) {
+    return drawBox(ctx, overlay, face.box, GREEN);
   }
+
+  // Draw a red box and an arrow if the person is not looking at the camera.
+  drawBox(ctx, overlay, face.box);
+  const { x: centerX, y: centerY } = boxCenter(face.box);
+  const { x: x0, y: y0 } = toCanvasCoordinates(overlay, centerX, centerY);
+  const { x: x1, y: y1 } =
+    toCanvasCoordinates(overlay, centerX + face.pan, centerY - face.tilt);
+  const headLength = 10;
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const angle = Math.atan2(dy, dx);
+  ctx.beginPath();
+  ctx.strokeStyle = RED;
+  ctx.lineWidth = 4;
+  // Draw the arrow body.
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  // Draw the arrow head.
+  ctx.lineTo(
+    x1 - headLength * Math.cos(angle - Math.PI / 6),
+    y1 - headLength * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(
+    x1 - headLength * Math.cos(angle + Math.PI / 6),
+    y1 - headLength * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.stroke();
+  ctx.closePath();
+}
+
+function boxCenter({ x, y, width, height }: Box): { x: number, y: number } {
+  return { x: x + width / 2, y: y + height / 2 };
 }
 
 function getCameraStream(): Promise<MediaStream | null> {
@@ -123,16 +182,26 @@ function getCameraStream(): Promise<MediaStream | null> {
 
 // Chrome emits Box dimensions on a 569x320 grid. This maps dimensions to
 // `canvas.width` x `canvas.height` sizes.
-function toCanvasCoordinates(canvas: HTMLCanvasElement, box: Box): Box {
+function toCanvasCoordinates(
+  canvas: HTMLCanvasElement,
+  x: number,
+  y: number,
+): { x: number, y: number } {
   const FRAME_WIDTH = 569;
   const FRAME_HEIGHT = 320;
-  box.x = scaleCoordinate(box.x, FRAME_WIDTH, canvas.width);
-  box.y = scaleCoordinate(box.y, FRAME_HEIGHT, canvas.height);
-  box.width = scaleCoordinate(box.width, FRAME_WIDTH, canvas.width);
-  box.height = scaleCoordinate(box.height, FRAME_HEIGHT, canvas.height);
-  return box;
+  return {
+    x: scaleCoordinate(x, FRAME_WIDTH, canvas.width),
+    y: scaleCoordinate(y, FRAME_HEIGHT, canvas.height),
+  }
 }
 
 function scaleCoordinate(x: number, currentMax: number, newMax: number) {
   return x / currentMax * newMax;
+}
+
+function isLookingAtTheCamera(face: Face): boolean {
+  const HORIZONTAL_THRESHOLD = 10;
+  const VERTICAL_THRESHOLD = 6;
+  return Math.abs(face.pan) < HORIZONTAL_THRESHOLD
+    && Math.abs(face.tilt) < VERTICAL_THRESHOLD;
 }

@@ -26,6 +26,7 @@ interface Page {
 struct State {
   Status status;
   array<Box> boxes;
+  array<Face> faces;
 };
 
 // The status of the feature as reported from the C++ side.
@@ -49,4 +50,14 @@ struct Box {
   int32 y;
   int32 width;
   int32 height;
+};
+
+// A face includes the angles used to display the face direction arrows, and
+// the face bounding box.
+struct Face {
+  // `roll`, `pan`, and `tilt` are the face pose angles.
+  float roll;
+  float pan;
+  float tilt;
+  Box box;
 };

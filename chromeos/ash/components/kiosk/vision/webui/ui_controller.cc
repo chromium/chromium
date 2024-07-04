@@ -32,7 +32,8 @@ namespace ash::kiosk_vision {
 namespace {
 
 mojom::StatePtr ToState(mojom::Status status) {
-  return mojom::State::New(status, std::vector<mojom::BoxPtr>{});
+  return mojom::State::New(status, std::vector<mojom::BoxPtr>{},
+                           std::vector<mojom::FacePtr>{});
 }
 
 }  // namespace

@@ -18,8 +18,9 @@ namespace ash::kiosk_vision {
 namespace {
 
 mojom::StatePtr NewState(mojom::Status status,
-                         std::vector<mojom::BoxPtr> boxes = {}) {
-  return mojom::State::New(status, std::move(boxes));
+                         std::vector<mojom::BoxPtr> boxes = {},
+                         std::vector<mojom::FacePtr> faces = {}) {
+  return mojom::State::New(status, std::move(boxes), std::move(faces));
 }
 
 mojom::BoxPtr ToPageBox(const cros::mojom::KioskVisionBoundingBox& box) {
@@ -43,6 +44,25 @@ std::vector<mojom::BoxPtr> ToBoxes(
   return boxes;
 }
 
+mojom::FacePtr ToPageFace(const cros::mojom::KioskVisionFaceDetection& face) {
+  return mojom::Face::New(
+      /*roll=*/face.roll,
+      /*pan=*/face.pan,
+      /*tilt=*/face.tilt,
+      /*box=*/ToPageBox(*face.box));
+}
+
+std::vector<mojom::FacePtr> ToFaces(
+    const std::vector<cros::mojom::KioskVisionAppearancePtr>& appearances) {
+  std::vector<mojom::FacePtr> faces;
+  for (const auto& appearance : appearances) {
+    if (appearance->face) {
+      faces.push_back(ToPageFace(*appearance->face));
+    }
+  }
+  return faces;
+}
+
 }  // namespace
 
 InternalsPageProcessor::InternalsPageProcessor()
@@ -52,8 +72,9 @@ InternalsPageProcessor::~InternalsPageProcessor() = default;
 
 void InternalsPageProcessor::OnFrameProcessed(
     const cros::mojom::KioskVisionDetection& detection) {
-  NotifyStateChange(
-      NewState(mojom::Status::kRunning, ToBoxes(detection.appearances)));
+  NotifyStateChange(NewState(mojom::Status::kRunning,
+                             ToBoxes(detection.appearances),
+                             ToFaces(detection.appearances)));
 }
 
 void InternalsPageProcessor::OnTrackCompleted(
