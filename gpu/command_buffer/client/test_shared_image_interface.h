@@ -130,6 +130,8 @@ class TestSharedImageInterface : public SharedImageInterface {
   ~TestSharedImageInterface() override;
 
  private:
+  void InitializeSharedImageCapabilities();
+
   mutable base::Lock lock_;
 
   uint64_t release_id_ = 0;

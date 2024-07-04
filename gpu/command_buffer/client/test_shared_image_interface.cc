@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2extchromium.h>
+
 #include <utility>
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -130,7 +133,10 @@ class TestBufferCollection {
 };
 #endif
 
-TestSharedImageInterface::TestSharedImageInterface() = default;
+TestSharedImageInterface::TestSharedImageInterface() {
+  InitializeSharedImageCapabilities();
+}
+
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
 scoped_refptr<ClientSharedImage>
@@ -426,6 +432,21 @@ TestSharedImageInterface::GetCapabilities() {
 void TestSharedImageInterface::SetCapabilities(
     const SharedImageCapabilities& caps) {
   shared_image_capabilities_ = caps;
+  InitializeSharedImageCapabilities();
+}
+
+void TestSharedImageInterface::InitializeSharedImageCapabilities() {
+#if BUILDFLAG(IS_MAC)
+  // Initialize `texture_target_for_io_surfaces` to a value that is valid for
+  // ClientSharedImage to use, as unittests broadly create and use
+  // SharedImageCapabilities instances without initializing this field. The
+  // specific value is chosen to match the historical default value that was
+  // used when this state was accessed via a global variable.
+  if (!shared_image_capabilities_.texture_target_for_io_surfaces) {
+    shared_image_capabilities_.texture_target_for_io_surfaces =
+        GL_TEXTURE_RECTANGLE_ARB;
+  }
+#endif
 }
 
 }  // namespace gpu
