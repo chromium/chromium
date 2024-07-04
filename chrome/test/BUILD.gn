@@ -11628,14 +11628,6 @@ if (!is_android && !is_chromeos_device) {
       }
       if (is_chromeos_ash) {
         sources += [
-          "../browser/ash/child_accounts/child_user_flags_page_interactive_uitest.cc",
-          "../browser/ash/child_accounts/child_user_interactive_base_test.cc",
-          "../browser/ash/child_accounts/child_user_interactive_base_test.h",
-          "../browser/ash/child_accounts/child_user_shelf_interactive_uitest.cc",
-          "../browser/ash/file_manager/file_manager_interactive_uitest.cc",
-          "../browser/ash/growth/campaigns_manager_interactive_uitest.cc",
-          "../browser/ash/os_feedback/os_feedback_interactive_uitest.cc",
-          "../browser/ash/printing/print_management/print_management_printer_settings_interactive_uitest.cc",
           "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
           "../browser/ui/ash/desks/desks_interactive_uitest.cc",
           "../browser/ui/ash/picker/picker_interactive_uitest.cc",
@@ -11660,6 +11652,7 @@ if (!is_android && !is_chromeos_device) {
           "//ash:interactive_ui_test_support",
           "//ash/webui/print_management:print_management",
           "//chrome/browser/apps/app_service",
+          "//chrome/browser/ash:interactive_ui_tests",
           "//chrome/browser/ash/accessibility",
           "//chrome/browser/ash/accessibility:test_support",
           "//chrome/browser/ash/app_restore",

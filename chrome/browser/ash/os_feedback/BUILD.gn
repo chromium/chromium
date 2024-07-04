@@ -92,3 +92,26 @@ source_set("browser_tests") {
     "//url",
   ]
 }
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "os_feedback_interactive_uitest.cc" ]
+
+    deps = [
+      ":os_feedback",
+      "//ash/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//components/feedback",
+      "//ui/base",
+      "//ui/events",
+    ]
+  }
+}

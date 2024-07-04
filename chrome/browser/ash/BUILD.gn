@@ -4871,6 +4871,46 @@ if (is_chromeos_device) {
       "//chrome/browser/ash/system_web_apps:integration_tests",
     ]
   }
+} else {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      # TODO(b/335292921): Move to //chrome/browser/ash/file_manager.
+      "file_manager/file_manager_interactive_uitest.cc",
+
+      # TODO(b/335294351): Move to //chrome/browser/ash/printing.
+      "printing/print_management/print_management_printer_settings_interactive_uitest.cc",
+    ]
+
+    deps = [
+      "//ash",
+      "//ash/public/cpp",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash",
+      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+      "//content/test:test_support",
+      "//ui/aura",
+      "//ui/base",
+      "//ui/events:test_support",
+      "//url",
+
+      # Gather tests from subdirectories.
+      "//chrome/browser/ash/child_accounts:interactive_ui_tests",
+      "//chrome/browser/ash/growth:interactive_ui_tests",
+      "//chrome/browser/ash/os_feedback:interactive_ui_tests",
+    ]
+  }
 }
 
 proto_library("app_install_events_proto") {

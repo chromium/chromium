@@ -93,3 +93,37 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "campaigns_manager_interactive_uitest.cc" ]
+
+    deps = [
+      ":growth",
+      "//ash",
+      "//ash/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/test:test_support",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/ash/components/growth",
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/test:test_support",
+      "//testing/gmock",
+      "//ui/aura",
+      "//ui/base",
+      "//ui/compositor",
+      "//ui/display",
+      "//ui/message_center",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+}
