@@ -766,7 +766,7 @@
     "bases": ["fast/forms/color-scheme"],
     "args": ["--enable-features=ForcedColors",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "forced-high-contrast-colors",
@@ -777,7 +777,7 @@
     "exclusive_tests": ["external/wpt/forced-colors-mode"],
     "args": ["--force-high-contrast",
              "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   "This never expires because it tests rendering of form controls when the",
   "preferred color-scheme is dark. It should now be possible to render",
