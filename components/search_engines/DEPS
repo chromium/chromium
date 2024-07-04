@@ -35,4 +35,8 @@ include_rules = [
   "+third_party/lens_server_proto",
   "+ui/base",
   "+ui/gfx",
+
+  # From https://crsrc.org/c/docs/debugging_with_crash_keys.md
+  # TODO(b/344899110): Cleanup when fixing the bug.
+  "+components/crash/core/common/crash_key.h",
 ]

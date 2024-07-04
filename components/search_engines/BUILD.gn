@@ -75,6 +75,7 @@ static_library("search_engines") {
   deps = [
     "//base:i18n",
     "//components/country_codes",
+    "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/infobars/core",
     "//components/lens:lens",

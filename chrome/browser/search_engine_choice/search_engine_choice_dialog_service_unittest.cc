@@ -260,7 +260,7 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyDialogOpened) {
       user_action_tester().GetActionCount("SearchEngineChoiceScreenShown"), 1);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Dialog) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
 
@@ -274,11 +274,11 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+}
 
-  // Need to cleanup trailing prefs to avoid crashes.
-  // TODO(b/337114717): Improve APIs so that we don't need to do this.
-  profile()->GetPrefs()->ClearPref(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Fre) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
@@ -286,9 +286,14 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+}
 
-  profile()->GetPrefs()->ClearPref(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_ProfileCreation) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
 
   search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
@@ -298,6 +303,9 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
       search_engines::SearchEngineChoiceScreenEvents::
           kProfileCreationDefaultWasSet,
       1);
+  histogram_tester().ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,

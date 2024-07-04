@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/debug/stack_trace.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -88,7 +89,7 @@ class SearchEngineChoiceService : public KeyedService {
   // not record anything.
   void MaybeRecordChoiceScreenDisplayState(
       const ChoiceScreenDisplayState& display_state,
-      bool is_from_cached_state = false) const;
+      bool is_from_cached_state = false);
 
  private:
   // Checks if the search engine choice should be prompted again, based on
@@ -110,6 +111,10 @@ class SearchEngineChoiceService : public KeyedService {
   // Used to ensure that the value returned from `GetCountryId` never changes
   // in runtime (different runs can still return different values, though).
   std::optional<int> country_id_cache_;
+
+  // Used to track caller of `MaybeRecordChoiceScreenDisplayState()` to debug
+  // some unmet expectations, see b/344899110.
+  std::unique_ptr<base::debug::StackTrace> display_state_record_caller_;
 
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
