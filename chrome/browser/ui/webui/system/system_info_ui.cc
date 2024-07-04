@@ -73,9 +73,9 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto other_system_page_url = base::UTF8ToUTF16(chrome::kChromeUISystemURL);
+  std::u16string other_system_page_url(chrome::kChromeUISystemURL16);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto other_system_page_url = base::UTF8ToUTF16(chrome::kOsUISystemURL);
+  std::u16string other_system_page_url(chrome::kOsUISystemURL);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto os_link_container = l10n_util::GetStringFUTF16(

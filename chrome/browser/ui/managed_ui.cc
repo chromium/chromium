@@ -275,35 +275,30 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 
   switch (GetManagementStringType(profile)) {
     case BROWSER_MANAGED:
-      return l10n_util::GetStringFUTF16(
-          IDS_MANAGED_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+      return l10n_util::GetStringFUTF16(IDS_MANAGED_WITH_HYPERLINK,
+                                        chrome::kChromeUIManagementURL16);
     case BROWSER_MANAGED_BY:
-      return l10n_util::GetStringFUTF16(
-          IDS_MANAGED_BY_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
-          base::UTF8ToUTF16(*device_manager));
+      return l10n_util::GetStringFUTF16(IDS_MANAGED_BY_WITH_HYPERLINK,
+                                        chrome::kChromeUIManagementURL16,
+                                        base::UTF8ToUTF16(*device_manager));
     case BROWSER_PROFILE_SAME_MANAGED_BY:
       return l10n_util::GetStringFUTF16(
           IDS_BROWSER_AND_PROFILE_SAME_MANAGED_BY_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
-          base::UTF8ToUTF16(*device_manager));
+          chrome::kChromeUIManagementURL16, base::UTF8ToUTF16(*device_manager));
     case BROWSER_PROFILE_DIFFERENT_MANAGED_BY:
       return l10n_util::GetStringFUTF16(
           IDS_BROWSER_AND_PROFILE_DIFFERENT_MANAGED_BY_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
-          base::UTF8ToUTF16(*device_manager),
+          chrome::kChromeUIManagementURL16, base::UTF8ToUTF16(*device_manager),
           base::UTF8ToUTF16(*account_manager));
     case BROWSER_MANAGED_PROFILE_MANAGED_BY:
       return l10n_util::GetStringFUTF16(
           IDS_BROWSER_MANAGED_AND_PROFILE_MANAGED_BY_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
+          chrome::kChromeUIManagementURL16,
           base::UTF8ToUTF16(*account_manager));
     case PROFILE_MANAGED_BY:
-      return l10n_util::GetStringFUTF16(
-          IDS_PROFILE_MANAGED_BY_WITH_HYPERLINK,
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL),
-          base::UTF8ToUTF16(*account_manager));
+      return l10n_util::GetStringFUTF16(IDS_PROFILE_MANAGED_BY_WITH_HYPERLINK,
+                                        chrome::kChromeUIManagementURL16,
+                                        base::UTF8ToUTF16(*account_manager));
     case SUPERVISED:
       return l10n_util::GetStringFUTF16(
           IDS_MANAGED_BY_PARENT_WITH_HYPERLINK,
@@ -343,7 +338,7 @@ std::u16string GetDeviceManagedUiHelpLabel(Profile* profile) {
 std::u16string GetDeviceManagedUiWebUILabel() {
   int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
   std::vector<std::u16string> replacements;
-  replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+  replacements.push_back(chrome::kChromeUIManagementURL16);
   replacements.push_back(ui::GetChromeOSDeviceName());
 
   const std::optional<std::string> device_manager = GetDeviceManagerIdentity();

@@ -288,8 +288,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "manageTopicsPageLearnMoreLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK,
-          base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL),
+          chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL),
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
@@ -297,39 +296,34 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "topicsPageDisclaimerDesktop",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_DESKTOP,
-          base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL),
+          chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
   html_source->AddString(
       "topicsPageFooter",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TOPICS_PAGE_FOOTER,
-          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
-          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_TOPICS_PAGE_FOOTER,
+                                 chrome::kChromeUIPrivacySandboxFledgeURL,
+                                 chrome::kChromeUICookieSettingsURL));
   html_source->AddString(
       "topicsPageFooterV2",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_TOPICS_PAGE_FOOTER_V2,
-          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
-          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL),
-          base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
+          chrome::kChromeUIPrivacySandboxFledgeURL,
+          chrome::kChromeUICookieSettingsURL,
+          chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL));
   html_source->AddString(
       "fledgePageFooter",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_FLEDGE_PAGE_FOOTER,
-          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxTopicsURL),
-          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_FLEDGE_PAGE_FOOTER,
+                                 chrome::kChromeUIPrivacySandboxTopicsURL,
+                                 chrome::kChromeUICookieSettingsURL));
   html_source->AddString(
       "fledgePageFooterV2",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_FLEDGE_PAGE_FOOTER_V2,
-          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxTopicsURL),
-          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL),
-          base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
+          chrome::kChromeUIPrivacySandboxTopicsURL,
+          chrome::kChromeUICookieSettingsURL,
+          chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL));
   html_source->AddBoolean(
       "firstPartySetsUIEnabled",
       base::FeatureList::IsEnabled(

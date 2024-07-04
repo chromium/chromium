@@ -142,9 +142,9 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto device_log_url = base::UTF8ToUTF16(chrome::kChromeUIDeviceLogUrl);
+  std::u16string device_log_url(chrome::kChromeUIDeviceLogUrl16);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto device_log_url = base::UTF8ToUTF16(chrome::kOsUIDeviceLogURL);
+  std::u16string device_log_url(chrome::kOsUIDeviceLogURL);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto os_link_container = l10n_util::GetStringFUTF16(
       IDS_DEVICE_LOG_OS_LINK_CONTAINER, device_log_url);

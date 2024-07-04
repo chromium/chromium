@@ -287,8 +287,8 @@ std::vector<std::u16string> ChromeAutocompleteProviderClient::GetBuiltinURLs() {
     builtins.push_back(base::ASCIIToUTF16(*i));
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::u16string settings(base::ASCIIToUTF16(chrome::kChromeUISettingsHost) +
-                          u"/");
+  std::u16string settings(chrome::kChromeUISettingsHost16);
+  settings += u"/";
   for (size_t i = 0; i < std::size(kChromeSettingsSubPages); i++) {
     builtins.push_back(settings +
                        base::ASCIIToUTF16(kChromeSettingsSubPages[i]));
@@ -301,15 +301,12 @@ std::vector<std::u16string> ChromeAutocompleteProviderClient::GetBuiltinURLs() {
 std::vector<std::u16string>
 ChromeAutocompleteProviderClient::GetBuiltinsToProvideAsUserTypes() {
   std::vector<std::u16string> builtins_to_provide;
-  builtins_to_provide.push_back(
-      base::ASCIIToUTF16(chrome::kChromeUIChromeURLsURL));
-  builtins_to_provide.push_back(base::ASCIIToUTF16(chrome::kChromeUIFlagsURL));
+  builtins_to_provide.push_back(chrome::kChromeUIChromeURLsURL16);
+  builtins_to_provide.push_back(chrome::kChromeUIFlagsURL16);
 #if !BUILDFLAG(IS_ANDROID)
-  builtins_to_provide.push_back(
-      base::ASCIIToUTF16(chrome::kChromeUISettingsURL));
+  builtins_to_provide.push_back(chrome::kChromeUISettingsURL16);
 #endif
-  builtins_to_provide.push_back(
-      base::ASCIIToUTF16(chrome::kChromeUIVersionURL));
+  builtins_to_provide.push_back(chrome::kChromeUIVersionURL16);
   return builtins_to_provide;
 }
 

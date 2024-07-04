@@ -360,7 +360,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 
   std::u16string license = l10n_util::GetStringFUTF16(
       IDS_VERSION_UI_LICENSE, chrome::kChromiumProjectURL,
-      base::ASCIIToUTF16(chrome::kChromeUICreditsURL));
+      chrome::kChromeUICreditsURL16);
   html_source->AddString("aboutProductLicense", license);
 
   html_source->AddBoolean("aboutObsoleteNowOrSoon",
@@ -661,7 +661,7 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
       "getTheMostOutOfChromeYourDataVisitChromeHistory",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_VISIT_CHROME_HISTORY,
-          base::ASCIIToUTF16(chrome::kChromeUIHistoryURL),
+          chrome::kChromeUIHistoryURL16,
           chrome::kClearBrowsingDataHelpCenterURL));
   html_source->AddString(
       "getTheMostOutOfChromeYourDataVisitSearchHistory",
@@ -672,7 +672,7 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
       "getTheMostOutOfChromeBeyondCookiesReviewPermissions",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES_REVIEW_PERMISSIONS,
-          base::ASCIIToUTF16(chrome::kChromeUIContentSettingsURL)));
+          chrome::kChromeUIContentSettingsURL16));
   html_source->AddString(
       "getTheMostOutOfChromeBeyondCookiesPlanningToPhaseOut",
       l10n_util::GetStringFUTF16(

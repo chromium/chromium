@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AltEnter) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  omnibox_view->SetUserText(ASCIIToUTF16(chrome::kChromeUIHistoryURL));
+  omnibox_view->SetUserText(chrome::kChromeUIHistoryURL16);
   int tab_count = browser()->tab_strip_model()->count();
   // alt-Enter opens a new tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, ui::EF_ALT_DOWN));
