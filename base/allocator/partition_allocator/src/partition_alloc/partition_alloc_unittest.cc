@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
 #include <algorithm>
 #include <bit>
 #include <cstddef>
@@ -16,8 +18,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/system/sys_info.h"
-#include "base/test/gtest_util.h"
 #include "partition_alloc/address_space_randomization.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
@@ -34,6 +34,8 @@
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
+#include "partition_alloc/partition_alloc_base/system/sys_info.h"
+#include "partition_alloc/partition_alloc_base/test/gtest_util.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -80,6 +82,18 @@
 #include <sys/syscall.h>
 #endif
 
+// Headers for the AmountOfPhysicalMemory() function.
+#if PA_BUILDFLAG(IS_FUCHSIA)
+#include <zircon/syscalls.h>
+#elif PA_BUILDFLAG(IS_WIN)
+#include <windows.h>
+#elif PA_BUILDFLAG(IS_APPLE)
+#include <mach/host_info.h>
+#include <mach/mach.h>
+#elif PA_BUILDFLAG(IS_POSIX)
+#include <unistd.h>
+#endif
+
 // In the MTE world, the upper bits of a pointer can be decorated with a tag,
 // thus allowing many versions of the same pointer to exist. These macros take
 // that into account when comparing.
@@ -88,9 +102,39 @@
 #define PA_EXPECT_PTR_NE(ptr1, ptr2) \
   { EXPECT_NE(UntagPtr(ptr1), UntagPtr(ptr2)); }
 
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-
 namespace {
+
+// Best effort to get the amount of physical memory available to the system.
+// Returns 0 on failure.
+uint64_t AmountOfPhysicalMemory() {
+#if PA_BUILDFLAG(IS_FUCHSIA)
+  return zx_system_get_physmem();
+#elif PA_BUILDFLAG(IS_WIN)
+  MEMORYSTATUSEX mem_status = {.dwLength = sizeof(mem_status)};
+  if (GlobalMemoryStatusEx(&mem_status)) {
+    return mem_status.ullTotalPhys;
+  }
+  return 0;
+#elif PA_BUILDFLAG(IS_APPLE)
+  struct host_basic_info host_basic_info;
+  mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
+  if (host_info(mach_host_self(), HOST_BASIC_INFO,
+                reinterpret_cast<host_info_t>(&host_basic_info),
+                &count) == KERN_SUCCESS) {
+    return host_basic_info.max_mem;
+  }
+  return 0;
+#elif PA_BUILDFLAG(IS_POSIX)
+  long pages = sysconf(_SC_PHYS_PAGES);
+  long page_size = sysconf(_SC_PAGESIZE);
+  if (pages >= 0 && page_size >= 0) {
+    return static_cast<uint64_t>(pages) * static_cast<uint64_t>(page_size);
+  }
+  return 0;
+#else
+  return 0;
+#endif
+}
 
 bool IsLargeMemoryDevice() {
   // Treat any device with 4GiB or more of physical memory as a "large memory
@@ -99,7 +143,7 @@ bool IsLargeMemoryDevice() {
   //
   // Set to 4GiB, since we have 2GiB Android devices where tests flakily fail
   // (e.g. Nexus 5X, crbug.com/1191195).
-  return base::SysInfo::AmountOfPhysicalMemory() >= 4000ULL * 1024 * 1024;
+  return AmountOfPhysicalMemory() >= 4000ULL * 1024 * 1024;
 }
 
 bool SetAddressSpaceLimit() {
@@ -4805,7 +4849,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
       allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   in_slot_metadata->Acquire();
   EXPECT_FALSE(in_slot_metadata->Release());
-  EXPECT_DCHECK_DEATH(in_slot_metadata->Release());
+  PA_EXPECT_DCHECK_DEATH(in_slot_metadata->Release());
   allocator.root()->Free(ptr);
 }
 
@@ -4821,7 +4865,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
       allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   in_slot_metadata->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(in_slot_metadata->ReleaseFromUnprotectedPtr());
-  EXPECT_DCHECK_DEATH(in_slot_metadata->ReleaseFromUnprotectedPtr());
+  PA_EXPECT_DCHECK_DEATH(in_slot_metadata->ReleaseFromUnprotectedPtr());
   allocator.root()->Free(ptr);
 }
 
@@ -5038,7 +5082,7 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
-  EXPECT_DCHECK_DEATH_WITH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
+  PA_EXPECT_DCHECK_DEATH_WITH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
   EXPECT_DEATH(PA_CHECK(5 == 7), "Check failed.*5 == 7");
 }
 
@@ -5689,28 +5733,30 @@ TEST_P(PartitionAllocTest, FastReclaim) {
                          PurgeFlags::kDiscardUnusedSystemPages;
   allocator.root()->PurgeMemory(kFlags);
   ASSERT_GT(now, base::TimeTicks());
-  // Here and below, using TS_UNCHECKED_READ since the root is not used
+  // Here and below, using PA_TS_UNCHECKED_READ since the root is not used
   // conccurently.
   //
   // Went around all buckets.
-  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            0u);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Ran out of time.
   unsigned int next_bucket =
-      TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
+      PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
   EXPECT_NE(next_bucket, 0u);
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Make some progress, but not through all buckets yet.
-  EXPECT_GT(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+  EXPECT_GT(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
             next_bucket);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Ran out of time.
-  EXPECT_NE(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+  EXPECT_NE(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            0u);
 
   // But eventually we make it through all buckets.
-  while (TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index) != 0) {
+  while (PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index) != 0) {
     allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   }
   // No expectation, test will time out if it's incorrect.
@@ -5730,33 +5776,36 @@ TEST_P(PartitionAllocTest, FastReclaimEventuallyLooksAtAllBuckets) {
                          PurgeFlags::kDiscardUnusedSystemPages;
   allocator.root()->PurgeMemory(kFlags);
   ASSERT_GT(now, base::TimeTicks());
-  // Here and below, using TS_UNCHECKED_READ since the root is not used
+  // Here and below, using PA_TS_UNCHECKED_READ since the root is not used
   // conccurently.
   //
   // Went around all buckets, generation is incremented.
-  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
-  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            0u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Ran out of time.
   unsigned int next_bucket =
-      TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
+      PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index);
   EXPECT_NE(next_bucket, 0u);
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Make some progress, but not through all buckets yet.
-  EXPECT_GT(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+  EXPECT_GT(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
             next_bucket);
-  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_generation), 1u);
 
   allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   // Ran out of time.
-  EXPECT_NE(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+  EXPECT_NE(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            0u);
 
   // But eventually we make it through all generations.
-  while (TS_UNCHECKED_READ(allocator.root()->purge_generation) != 0) {
+  while (PA_TS_UNCHECKED_READ(allocator.root()->purge_generation) != 0) {
     allocator.root()->PurgeMemory(kFlags | PurgeFlags::kLimitDuration);
   }
-  EXPECT_EQ(TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index), 0u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(allocator.root()->purge_next_bucket_index),
+            0u);
 
   allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
 }
