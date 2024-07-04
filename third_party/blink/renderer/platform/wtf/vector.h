@@ -28,6 +28,7 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
@@ -1074,20 +1075,6 @@ inline constexpr bool kVectorNeedsDestructor<T, 0, true> = false;
 template <typename T, wtf_size_t InlineCapacity>
 inline constexpr bool kVectorNeedsDestructor<T, InlineCapacity, true> = true;
 
-namespace internal {
-
-template <typename Collection>
-concept VectorCanConstructFromCollection = requires(Collection c) {
-  // TODO(crbug.com/1502036): In theory we should be able to require that these
-  // conform to std::input_iterator, but HashTableConstIteratorAdapter actually
-  // doesn't.
-  c.begin();
-  c.end();
-  { c.size() } -> std::unsigned_integral;
-};
-
-}  // namespace internal
-
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   USE_ALLOCATOR(Vector, Allocator);
@@ -1149,15 +1136,15 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Creates a vector with items copied from a collection. |Collection| must
   // have size(), begin() and end() methods.
-  template <typename Collection>
-    requires internal::VectorCanConstructFromCollection<Collection>
-  explicit Vector(const Collection& collection) : Vector() {
-    assign(collection);
+  template <typename Range>
+    requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
+  explicit Vector(const Range& range) : Vector() {
+    assign(range);
   }
   // Replaces the vector with items copied from a collection.
-  template <typename Collection>
-    requires internal::VectorCanConstructFromCollection<Collection>
-  void assign(const Collection&);
+  template <typename Range>
+    requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
+  void assign(const Range&);
 
   // Moving.
   Vector(Vector&&);
@@ -1658,20 +1645,20 @@ Vector<T, InlineCapacity, Allocator>::operator=(
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename Collection>
-  requires internal::VectorCanConstructFromCollection<Collection>
-void Vector<T, InlineCapacity, Allocator>::assign(const Collection& other) {
+template <typename Range>
+  requires std::ranges::input_range<Range> && std::ranges::sized_range<Range>
+void Vector<T, InlineCapacity, Allocator>::assign(const Range& range) {
   static_assert(
-      !std::is_same_v<Vector<T, InlineCapacity, Allocator>, Collection>,
+      !std::is_same_v<Vector<T, InlineCapacity, Allocator>, Range>,
       "This method is for copying from a collection of a different type.");
 
   {
     // Disallow GC across resize allocation, see crbug.com/568173.
     GCForbiddenScope scope;
-    resize(base::checked_cast<wtf_size_t>(other.size()));
+    resize(base::checked_cast<wtf_size_t>(std::ranges::size(range)));
   }
 
-  base::ranges::copy(other, begin());
+  base::ranges::copy(range, begin());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
