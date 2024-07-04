@@ -9,7 +9,6 @@ import static android.os.Build.VERSION_CODES.N_MR1;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUND;
@@ -69,7 +68,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -93,14 +91,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
-    @Mock private StartSurface mStartSurface;
-
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private TabModelSelector mTabModelSelector;
-    private Supplier<StartSurface> mStartSurfaceSupplier;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private LayoutManagerChrome mManager;
@@ -183,8 +178,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
-        when(mStartSurface.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
-
         mTabModelSelector =
                 new MockTabModelSelector(
                         ProfileManager.getLastUsedRegularProfile(),
@@ -219,7 +212,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 new LayoutManagerChromePhone(
                         layoutManagerHost,
                         container,
-                        mStartSurfaceSupplier,
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mBrowserControlsStateProvider,
@@ -636,7 +628,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
 
-        mStartSurfaceSupplier = () -> mStartSurface;
         mTabModelSelectorSupplier = () -> mTabModelSelector;
     }
 

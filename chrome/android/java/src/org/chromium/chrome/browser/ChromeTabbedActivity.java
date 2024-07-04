@@ -801,7 +801,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new LayoutManagerChromePhone(
                             compositorViewHolder,
                             mContentContainer,
-                            mStartSurfaceSupplier,
                             mTabSwitcherSupplier,
                             getTabModelSelectorSupplier(),
                             getBrowserControlsManager(),
@@ -840,7 +839,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new LayoutManagerChromeTablet(
                             compositorViewHolder,
                             mContentContainer,
-                            mStartSurfaceSupplier,
                             mTabSwitcherSupplier,
                             getTabModelSelectorSupplier(),
                             getBrowserControlsManager(),

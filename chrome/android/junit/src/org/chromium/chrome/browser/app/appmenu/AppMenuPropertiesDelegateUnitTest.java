@@ -1093,37 +1093,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void testStartSurfaceMenu() {
-        @LayoutType int layoutType = LayoutType.START_SURFACE;
-        setUpMocksForOverviewMenu(layoutType);
-        doReturn(true).when(mAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
-
-        when(mIncognitoTabModel.getCount()).thenReturn(0);
-        Assert.assertTrue(mAppMenuPropertiesDelegate.shouldShowPageMenu());
-        Assert.assertTrue(mAppMenuPropertiesDelegate.isInStartSurfaceHomepage());
-        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
-
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        Integer[] expectedItems = {
-            R.id.new_tab_menu_id,
-            R.id.new_incognito_tab_menu_id,
-            R.id.divider_line_id,
-            R.id.open_history_menu_id,
-            R.id.quick_delete_menu_id,
-            R.id.quick_delete_divider_line_id,
-            R.id.downloads_menu_id,
-            R.id.all_bookmarks_menu_id,
-            R.id.recent_tabs_menu_id,
-            R.id.divider_line_id,
-            R.id.preferences_id,
-            R.id.help_id
-        };
-        assertMenuItemsAreEqual(menu, expectedItems);
-    }
-
-    @Test
     public void testShouldShowNewMenu_alreadyMaxWindows_returnsFalse() {
         assertFalse(
                 doTestShouldShowNewMenu(

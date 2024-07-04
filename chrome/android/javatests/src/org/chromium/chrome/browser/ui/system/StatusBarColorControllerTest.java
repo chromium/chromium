@@ -36,13 +36,11 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -51,7 +49,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
-import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -175,37 +172,6 @@ public class StatusBarColorControllerTest {
         // Scroll the toolbar up and let it pinned on top.
         scrollUpToolbarUntilPinnedAtTop(activity);
         waitForStatusBarColor(activity, expectedColor);
-    }
-
-    /** Test the color of status bar when used in Start surface and Tab switcher. */
-    @Test
-    @LargeTest
-    @Feature({"StatusBar"})
-    @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
-    public void testBrandColorNotIgnoredInStartSurface() throws Exception {
-        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedColor =
-                ChromeColors.getSurfaceColor(
-                        activity, R.dimen.home_surface_background_color_elevation);
-        final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
-
-        // Verifies that the status bar color uses a correct color for Start surface.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.getLayoutManager()
-                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
-                });
-        StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
-        waitForStatusBarColor(activity, expectedColor);
-
-        // Verifies that the status bar color unchanged on Tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.getLayoutManager()
-                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
-                });
-        waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
     /** Test that the status indicator color is included in the color calculation correctly. */
