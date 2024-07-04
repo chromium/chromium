@@ -7958,24 +7958,6 @@
             ]
         }
     ],
-    "DisconnectExtensionMessagePortWhenPageEntersBFCache": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20231030",
-                    "enable_features": [
-                        "DisconnectExtensionMessagePortWhenPageEntersBFCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiscountConsentV2": [
         {
             "platforms": [
