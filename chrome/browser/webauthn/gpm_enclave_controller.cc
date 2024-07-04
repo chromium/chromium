@@ -844,6 +844,7 @@ void GPMEnclaveController::OnGPMSelected() {
       break;
 
     case AccountState::kRecoverable:
+    case AccountState::kIrrecoverable:
       model_->SetStep(Step::kTrustThisComputerCreation);
       break;
 
@@ -864,11 +865,6 @@ void GPMEnclaveController::OnGPMSelected() {
 
     case AccountState::kNone:
       model_->SetStep(Step::kGPMError);
-      break;
-
-    case AccountState::kIrrecoverable:
-      // TODO(enclave): show the reset flow.
-      NOTIMPLEMENTED();
       break;
   }
 }
@@ -912,6 +908,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       break;
 
     case AccountState::kRecoverable:
+    case AccountState::kIrrecoverable:
       if (model_->priority_phone_name.has_value()) {
         model_->SetStep(Step::kTrustThisComputerAssertion);
       } else {
@@ -938,11 +935,6 @@ void GPMEnclaveController::OnGPMPasskeySelected(
         // This can happen if a passkey is selected after the enclave times out.
         model_->SetStep(Step::kGPMError);
       }
-      break;
-
-    case AccountState::kIrrecoverable:
-      // TODO(enclave): show the reset flow.
-      NOTIMPLEMENTED();
       break;
 
     case AccountState::kEmpty:
@@ -1091,7 +1083,6 @@ void GPMEnclaveController::OnTouchIDComplete(bool success) {
 
 void GPMEnclaveController::OnForgotGPMPinPressed() {
   changing_gpm_pin_ = true;
-  // TODO(enclave): Use biometrics instead of GAIA reauth (if available).
   model_->SetStep(Step::kGPMReauthForPinReset);
   ChangePinControllerImpl::RecordHistogram(
       ChangePinEvent::kFlowStartedFromPinDialog);
