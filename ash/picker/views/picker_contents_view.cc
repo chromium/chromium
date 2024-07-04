@@ -50,7 +50,7 @@ class PickerScrollView : public views::ScrollView {
 
  public:
   PickerScrollView()
-      : views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled) {
+      : views::ScrollView(views::ScrollView::ScrollWithLayers::kDisabled) {
     views::Builder<views::ScrollView>(this)
         .ClipHeightTo(0, std::numeric_limits<int>::max())
         .SetDrawOverflowIndicator(false)
