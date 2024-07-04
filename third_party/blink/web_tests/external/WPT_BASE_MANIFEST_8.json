@@ -231476,7 +231476,7 @@
       ]
      ],
      "transparent-accent-color-001.html": [
-      "6801c5eab9b21bee04401486316b9ba95904c1de",
+      "5a5ad4f0a41dcd7f4690b684269a2746cf58d65a",
       [
        null,
        [
@@ -231496,7 +231496,7 @@
            ],
            [
             0,
-            225
+            450
            ]
           ]
          ]
@@ -231505,7 +231505,7 @@
       ]
      ],
      "transparent-accent-color-002.html": [
-      "46d43293f9d7663d85300612208111f2d097d18a",
+      "9bc5022c562d98d95423b994fc0f67a7fb6e546f",
       [
        null,
        [
@@ -231525,7 +231525,7 @@
            ],
            [
             0,
-            225
+            450
            ]
           ]
          ]
@@ -357111,7 +357111,7 @@
       []
      ],
      "continue_on.py": [
-      "0195e478e2975d37cbe8aaa58141caf15aa797bc",
+      "5447ab96e4f23b905dad685c2233e3ba8b9a954b",
       []
      ],
      "disconnect.py": [
@@ -411664,46 +411664,83 @@
       {}
      ]
     ],
-    "idbcursor_continue_objectstore.htm": [
-     "f82aa99949d9e9ed47b50c05bfea994dbca2bbb0",
+    "idbcursor_continue_objectstore.any.js": [
+     "76e1c7afe79c966cec9cbbf8632dcda807f32ff6",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_objectstore2.htm": [
-     "8b79c64615bc4dd8d0e0d2b30056e86a171ca5c1",
+      "IndexedDB/idbcursor_continue_objectstore.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_objectstore3.htm": [
-     "7d96d7fec9e4eeedbc7273ff9ac87370894da325",
+      "IndexedDB/idbcursor_continue_objectstore.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_objectstore4.htm": [
-     "5056a7364fdb568196ee0b7e488b3248397bc9cd",
+      "IndexedDB/idbcursor_continue_objectstore.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_objectstore5.htm": [
-     "a0c3663ab401913b00ea2dc14199af2b210df372",
-     [
-      null,
-      {}
-     ]
-    ],
-    "idbcursor_continue_objectstore6.htm": [
-     "7a2b50752ce1e8862c72b8d6246616a0f6e3c20f",
-     [
-      null,
-      {}
+      "IndexedDB/idbcursor_continue_objectstore.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBCursor.continue() - object store"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbcursor_delete_index.any.js": [
@@ -412208,39 +412245,83 @@
       }
      ]
     ],
-    "idbdatabase_transaction.htm": [
-     "8e8264f8eab9ab2f890e38cfe9c18b7a3f1b7428",
+    "idbdatabase_transaction.any.js": [
+     "17859ec99e68f5191f56597014a74943bc28c86f",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_transaction2.htm": [
-     "37b11229194debd6f13cc645e8d0df64a51c14d8",
+      "IndexedDB/idbdatabase_transaction.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.transaction()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_transaction3.htm": [
-     "1eea31f764a7736b9de8152e500e52545d85a1f2",
+      "IndexedDB/idbdatabase_transaction.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.transaction()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_transaction4.htm": [
-     "3a164c25f59ced647599d3cc33bdcd063b9edff9",
+      "IndexedDB/idbdatabase_transaction.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.transaction()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbdatabase_transaction5.htm": [
-     "451939731faa24afe7a7a1d703b5d5eadbd54062",
-     [
-      null,
-      {}
+      "IndexedDB/idbdatabase_transaction.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDBDatabase.transaction()"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbfactory-databases-opaque-origin.html": [
@@ -445289,6 +445370,15 @@
      ],
      "fedcm-userinfo-after-resolve.https.html": [
       "0521f4a2ab5d82aeaca1f603b297e1199b886af8",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "resolve-after-preventsilentaccess.https.html": [
+      "7223a722fe2fb4e533acb3e4777a53669fdb1d5c",
       [
        null,
        {
