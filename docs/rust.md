@@ -178,10 +178,6 @@ version, then follow the steps below:
    * `git add -f third_party/rust/chromium_crates_io/vendor`
    * The `-f` is important, as files may be skipped otherwise from a
      `.gitignore` inside the crate.
-1. If a crate in `//third_party/rust/chromium_crates_io/patches` was updated
-   as part of vendoring, then reapply patches to it:
-   * Go to the `//third_party/rust/chromium_crates_io` directory.
-   * `./apply_patches.sh` (this currently requires linux).
 1. Generate the `BUILD.gn` files
    * `vpython3 ./tools/crates/run_gnrt.py gen`
    * Or, directly through (nightly) cargo:
