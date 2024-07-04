@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 
 #include <optional>
+#include <ranges>
 
 #include "base/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
@@ -56,8 +57,9 @@ mojom::SupportsLoadingModePtr ParseSupportsLoadingMode(
     const auto& token = item.item.GetString();
     const auto* it =
         base::ranges::find(kKnownLoadingModes, token, &KnownLoadingMode::token);
-    if (it == base::ranges::end(kKnownLoadingModes))
+    if (it == std::ranges::end(kKnownLoadingModes)) {
       continue;
+    }
 
     modes.push_back(it->enumerator);
   }

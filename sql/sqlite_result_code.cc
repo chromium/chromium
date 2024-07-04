@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <ostream>  // Needed to compile CHECK() with operator <<.
+#include <ranges>
 #include <set>
 #include <string>
 #include <string_view>
@@ -318,7 +319,7 @@ SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
         return sqlite_result_code == rhs.result_code;
       });
 
-  CHECK(mapping_it != base::ranges::end(kResultCodeMapping))
+  CHECK(mapping_it != std::ranges::end(kResultCodeMapping))
       << "Unsupported SQLite result code: " << sqlite_result_code;
   return *mapping_it;
 }
@@ -419,7 +420,7 @@ void CheckSqliteLoggedResultCodeForTesting() {
       [](SqliteResultCodeMappingEntry lhs, SqliteResultCodeMappingEntry rhs) {
         return lhs.result_code >= rhs.result_code;
       });
-  DCHECK_EQ(unordered_it, base::ranges::end(kResultCodeMapping))
+  DCHECK_EQ(unordered_it, std::ranges::end(kResultCodeMapping))
       << "Mapping ordering broken at {" << unordered_it->result_code << ", "
       << static_cast<int>(unordered_it->logged_code) << "}";
 

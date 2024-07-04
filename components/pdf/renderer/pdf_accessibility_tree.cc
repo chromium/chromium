@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -720,7 +721,7 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
     }
 
     auto iter = ranges::find(doc_node_->child_ids, last_page_node_id);
-    CHECK(iter != std::end(doc_node_->child_ids));
+    CHECK(iter != std::ranges::end(doc_node_->child_ids));
     doc_node_->child_ids.insert(++iter, page_id);
     postamble_page_tree_update_->nodes[0] = *doc_node_;
   } else {
@@ -771,7 +772,7 @@ void PdfAccessibilityTree::AddPostamblePageIfNeeded(
 
     postamble_page->root_id = doc_node_->id;
     auto iter = ranges::find(doc_node_->child_ids, last_page_node_id);
-    CHECK(iter != std::end(doc_node_->child_ids));
+    CHECK(iter != std::ranges::end(doc_node_->child_ids));
     doc_node_->child_ids.insert(iter, page.id);
     postamble_page->nodes = {*doc_node_, std::move(page), std::move(paragraph),
                              std::move(static_text),
@@ -1142,7 +1143,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
             [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
               return node->id == ocr_request.image_node_id;
             });
-        CHECK(image_node_iter != ranges::end(nodes_));
+        CHECK(image_node_iter != std::ranges::end(nodes_));
         if (ocr_request.image.alt_text.empty()) {
           // TODO(crbug.com/289010799): Add a CHECK to ensure that the image
           // node was labeled with `IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE`
@@ -1195,7 +1196,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
                  nodes_,
                  [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
                    return node->id == ocr_request.image_node_id;
-                 }) != ranges::end(nodes_));
+                 }) != std::ranges::end(nodes_));
     }
 #endif
 
@@ -1269,7 +1270,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
           nodes_, [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
             return node->id == ocr_request.parent_node_id;
           });
-      CHECK(parent_node_iter != ranges::end(nodes_));
+      CHECK(parent_node_iter != std::ranges::end(nodes_));
       num_erased =
           std::erase((*parent_node_iter)->child_ids, ocr_request.image_node_id);
       CHECK_EQ(num_erased, 1);

@@ -14,6 +14,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <random>
+#include <ranges>
 #include <utility>
 
 #include "base/ranges/functional.h"
@@ -111,9 +112,9 @@ TEST(RangesTest, AllOf) {
   static_assert(!ranges::all_of(array, is_non_zero), "");
 
   constexpr Int values[] = {0, 2, 4, 5};
-  static_assert(
-      ranges::all_of(values + 1, ranges::end(values), is_non_zero, &Int::value),
-      "");
+  static_assert(ranges::all_of(values + 1, std::ranges::end(values),
+                               is_non_zero, &Int::value),
+                "");
   static_assert(!ranges::all_of(values, is_non_zero, &Int::value), "");
 }
 
@@ -124,9 +125,9 @@ TEST(RangesTest, AnyOf) {
   static_assert(ranges::any_of(array, is_even), "");
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
-  static_assert(
-      !ranges::any_of(values + 3, ranges::end(values), is_even, &Int::value),
-      "");
+  static_assert(!ranges::any_of(values + 3, std::ranges::end(values), is_even,
+                                &Int::value),
+                "");
   static_assert(ranges::any_of(values, is_even, &Int::value), "");
 }
 
@@ -142,9 +143,9 @@ TEST(RangesTest, NoneOf) {
   static_assert(!ranges::none_of(array, is_zero), "");
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
-  static_assert(
-      ranges::none_of(values + 1, ranges::end(values), is_zero, &Int::value),
-      "");
+  static_assert(ranges::none_of(values + 1, std::ranges::end(values), is_zero,
+                                &Int::value),
+                "");
   static_assert(!ranges::none_of(values, is_zero, &Int::value), "");
 }
 
@@ -210,8 +211,8 @@ TEST(RangesTest, Find) {
 
   constexpr Int values[] = {{0}, {2}, {4}, {5}};
   static_assert(values == ranges::find(values, values, 0, &Int::value), "");
-  static_assert(ranges::end(values) == ranges::find(values, 3, &Int::value),
-                "");
+  static_assert(
+      std::ranges::end(values) == ranges::find(values, 3, &Int::value), "");
 }
 
 TEST(RangesTest, FindIf) {
@@ -246,19 +247,20 @@ TEST(RangesTest, FindEnd) {
   int array3[] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4,
                   0, 1, 2, 3, 0, 1, 2, 0, 1, 0};
 
-  EXPECT_EQ(array3 + 15, ranges::find_end(array3, ranges::end(array3), array1,
-                                          ranges::end(array1)));
-  EXPECT_EQ(ranges::end(array3), ranges::find_end(array3, ranges::end(array3),
-                                                  array2, ranges::end(array2)));
-  EXPECT_EQ(array3 + 4,
-            ranges::find_end(array3, ranges::end(array3), array2, array2 + 2));
+  EXPECT_EQ(array3 + 15, ranges::find_end(array3, std::ranges::end(array3),
+                                          array1, std::ranges::end(array1)));
+  EXPECT_EQ(std::ranges::end(array3),
+            ranges::find_end(array3, std::ranges::end(array3), array2,
+                             std::ranges::end(array2)));
+  EXPECT_EQ(array3 + 4, ranges::find_end(array3, std::ranges::end(array3),
+                                         array2, array2 + 2));
 
   Int ints1[] = {{0}, {1}, {2}};
   Int ints2[] = {{4}, {5}, {6}};
 
   EXPECT_EQ(array3 + 15, ranges::find_end(array3, ints1, ranges::equal_to{},
                                           std::identity{}, &Int::value));
-  EXPECT_EQ(ranges::end(array3),
+  EXPECT_EQ(std::ranges::end(array3),
             ranges::find_end(array3, ints2, ranges::equal_to{}, std::identity{},
                              &Int::value));
 }
@@ -268,33 +270,34 @@ TEST(RangesTest, FindFirstOf) {
   int array2[] = {7, 8, 9};
   int array3[] = {0, 1, 2, 3, 4, 5, 0, 1, 2, 3};
 
-  EXPECT_EQ(array3 + 1, ranges::find_first_of(array3, ranges::end(array3),
-                                              array1, ranges::end(array1)));
-  EXPECT_EQ(ranges::end(array3),
-            ranges::find_first_of(array3, ranges::end(array3), array2,
-                                  ranges::end(array2)));
+  EXPECT_EQ(array3 + 1,
+            ranges::find_first_of(array3, std::ranges::end(array3), array1,
+                                  std::ranges::end(array1)));
+  EXPECT_EQ(std::ranges::end(array3),
+            ranges::find_first_of(array3, std::ranges::end(array3), array2,
+                                  std::ranges::end(array2)));
   Int ints1[] = {{1}, {2}, {3}};
   Int ints2[] = {{7}, {8}, {9}};
 
   EXPECT_EQ(array3 + 1, ranges::find_first_of(array3, ints1, ranges::equal_to{},
                                               std::identity{}, &Int::value));
-  EXPECT_EQ(ranges::end(array3),
+  EXPECT_EQ(std::ranges::end(array3),
             ranges::find_first_of(array3, ints2, ranges::equal_to{},
                                   std::identity{}, &Int::value));
 }
 
 TEST(RangesTest, AdjacentFind) {
   constexpr int array[] = {1, 2, 3, 3};
-  static_assert(array + 2 == ranges::adjacent_find(array, ranges::end(array)),
-                "");
   static_assert(
-      array == ranges::adjacent_find(array, ranges::end(array), ranges::less{}),
-      "");
+      array + 2 == ranges::adjacent_find(array, std::ranges::end(array)), "");
+  static_assert(array == ranges::adjacent_find(array, std::ranges::end(array),
+                                               ranges::less{}),
+                "");
 
   constexpr Int ints[] = {{6}, {6}, {5}, {4}};
   static_assert(
       ints == ranges::adjacent_find(ints, ranges::equal_to{}, &Int::value), "");
-  static_assert(ranges::end(ints) ==
+  static_assert(std::ranges::end(ints) ==
                     ranges::adjacent_find(ints, ranges::less{}, &Int::value),
                 "");
 }

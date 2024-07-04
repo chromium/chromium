@@ -5,10 +5,12 @@
 #ifndef BASE_CONTAINERS_CONTAINS_H_
 #define BASE_CONTAINERS_CONTAINS_H_
 
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
+// TODO(dcheng): Remove this after fixing any IWYU errors.
 #include "base/ranges/ranges.h"
 
 namespace base {
@@ -41,7 +43,7 @@ constexpr bool Contains(const Container& container, const Value& value) {
         "Error: About to perform linear search on an associative container. "
         "Either use a more generic comparator (e.g. std::less<>) or, if a "
         "linear search is desired, provide an explicit projection parameter.");
-    return ranges::find(container, value) != ranges::end(container);
+    return ranges::find(container, value) != std::ranges::end(container);
   }
 }
 
@@ -53,7 +55,7 @@ constexpr bool Contains(const Container& container,
                         const Value& value,
                         Proj proj) {
   return ranges::find(container, value, std::move(proj)) !=
-         ranges::end(container);
+         std::ranges::end(container);
 }
 
 }  // namespace base

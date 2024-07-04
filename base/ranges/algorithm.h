@@ -14,6 +14,7 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
@@ -233,7 +234,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr bool all_of(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::all_of(ranges::begin(range), ranges::end(range),
+  return ranges::all_of(std::ranges::begin(range), std::ranges::end(range),
                         std::move(pred), std::move(proj));
 }
 
@@ -280,7 +281,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr bool any_of(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::any_of(ranges::begin(range), ranges::end(range),
+  return ranges::any_of(std::ranges::begin(range), std::ranges::end(range),
                         std::move(pred), std::move(proj));
 }
 
@@ -327,7 +328,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr bool none_of(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::none_of(ranges::begin(range), ranges::end(range),
+  return ranges::none_of(std::ranges::begin(range), std::ranges::end(range),
                          std::move(pred), std::move(proj));
 }
 
@@ -377,7 +378,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto for_each(Range&& range, Fun f, Proj proj = {}) {
-  return ranges::for_each(ranges::begin(range), ranges::end(range),
+  return ranges::for_each(std::ranges::begin(range), std::ranges::end(range),
                           std::move(f), std::move(proj));
 }
 
@@ -453,7 +454,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto find(Range&& range, const T& value, Proj proj = {}) {
-  return ranges::find(ranges::begin(range), ranges::end(range), value,
+  return ranges::find(std::ranges::begin(range), std::ranges::end(range), value,
                       std::move(proj));
 }
 
@@ -492,7 +493,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto find_if(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::find_if(ranges::begin(range), ranges::end(range),
+  return ranges::find_if(std::ranges::begin(range), std::ranges::end(range),
                          std::move(pred), std::move(proj));
 }
 
@@ -531,7 +532,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto find_if_not(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::find_if_not(ranges::begin(range), ranges::end(range),
+  return ranges::find_if_not(std::ranges::begin(range), std::ranges::end(range),
                              std::move(pred), std::move(proj));
 }
 
@@ -613,8 +614,8 @@ constexpr auto find_end(Range1&& range1,
                         Pred pred = {},
                         Proj1 proj1 = {},
                         Proj2 proj2 = {}) {
-  return ranges::find_end(ranges::begin(range1), ranges::end(range1),
-                          ranges::begin(range2), ranges::end(range2),
+  return ranges::find_end(std::ranges::begin(range1), std::ranges::end(range1),
+                          std::ranges::begin(range2), std::ranges::end(range2),
                           std::move(pred), std::move(proj1), std::move(proj2));
 }
 
@@ -687,8 +688,9 @@ constexpr auto find_first_of(Range1&& range1,
                              Proj1 proj1 = {},
                              Proj2 proj2 = {}) {
   return ranges::find_first_of(
-      ranges::begin(range1), ranges::end(range1), ranges::begin(range2),
-      ranges::end(range2), std::move(pred), std::move(proj1), std::move(proj2));
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), std::move(pred),
+      std::move(proj1), std::move(proj2));
 }
 
 // [alg.adjacent.find] Adjacent find
@@ -749,8 +751,9 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto adjacent_find(Range&& range, Pred pred = {}, Proj proj = {}) {
-  return ranges::adjacent_find(ranges::begin(range), ranges::end(range),
-                               std::move(pred), std::move(proj));
+  return ranges::adjacent_find(std::ranges::begin(range),
+                               std::ranges::end(range), std::move(pred),
+                               std::move(proj));
 }
 
 // [alg.count] Count
@@ -794,8 +797,8 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto count(Range&& range, const T& value, Proj proj = {}) {
-  return ranges::count(ranges::begin(range), ranges::end(range), value,
-                       std::move(proj));
+  return ranges::count(std::ranges::begin(range), std::ranges::end(range),
+                       value, std::move(proj));
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *i)))`.
@@ -833,7 +836,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto count_if(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::count_if(ranges::begin(range), ranges::end(range),
+  return ranges::count_if(std::ranges::begin(range), std::ranges::end(range),
                           std::move(pred), std::move(proj));
 }
 
@@ -903,8 +906,8 @@ constexpr auto mismatch(Range1&& range1,
                         Pred pred = {},
                         Proj1 proj1 = {},
                         Proj2 proj2 = {}) {
-  return ranges::mismatch(ranges::begin(range1), ranges::end(range1),
-                          ranges::begin(range2), ranges::end(range2),
+  return ranges::mismatch(std::ranges::begin(range1), std::ranges::end(range1),
+                          std::ranges::begin(range2), std::ranges::end(range2),
                           std::move(pred), std::move(proj1), std::move(proj2));
 }
 
@@ -990,8 +993,8 @@ constexpr bool equal(Range1&& range1,
                      Pred pred = {},
                      Proj1 proj1 = {},
                      Proj2 proj2 = {}) {
-  return ranges::equal(ranges::begin(range1), ranges::end(range1),
-                       ranges::begin(range2), ranges::end(range2),
+  return ranges::equal(std::ranges::begin(range1), std::ranges::end(range1),
+                       std::ranges::begin(range2), std::ranges::end(range2),
                        std::move(pred), std::move(proj1), std::move(proj2));
 }
 
@@ -1071,8 +1074,9 @@ constexpr bool is_permutation(Range1&& range1,
                               Proj1 proj1 = {},
                               Proj2 proj2 = {}) {
   return ranges::is_permutation(
-      ranges::begin(range1), ranges::end(range1), ranges::begin(range2),
-      ranges::end(range2), std::move(pred), std::move(proj1), std::move(proj2));
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), std::move(pred),
+      std::move(proj1), std::move(proj2));
 }
 
 // [alg.search] Search
@@ -1142,8 +1146,8 @@ constexpr auto search(Range1&& range1,
                       Pred pred = {},
                       Proj1 proj1 = {},
                       Proj2 proj2 = {}) {
-  return ranges::search(ranges::begin(range1), ranges::end(range1),
-                        ranges::begin(range2), ranges::end(range2),
+  return ranges::search(std::ranges::begin(range1), std::ranges::end(range1),
+                        std::ranges::begin(range2), std::ranges::end(range2),
                         std::move(pred), std::move(proj1), std::move(proj2));
 }
 
@@ -1206,8 +1210,8 @@ constexpr auto search_n(Range&& range,
                         const T& value,
                         Pred pred = {},
                         Proj proj = {}) {
-  return ranges::search_n(ranges::begin(range), ranges::end(range), count,
-                          value, std::move(pred), std::move(proj));
+  return ranges::search_n(std::ranges::begin(range), std::ranges::end(range),
+                          count, value, std::move(pred), std::move(proj));
 }
 
 // [alg.modifying.operations] Mutating sequence operations
@@ -1258,7 +1262,8 @@ template <typename Range,
           typename = internal::range_category_t<Range>,
           typename = internal::iterator_category_t<OutputIterator>>
 constexpr auto copy(Range&& range, OutputIterator result) {
-  return ranges::copy(ranges::begin(range), ranges::end(range), result);
+  return ranges::copy(std::ranges::begin(range), std::ranges::end(range),
+                      result);
 }
 
 // Let `N` be `max(0, n)`.
@@ -1341,8 +1346,8 @@ constexpr auto copy_if(Range&& range,
                        OutputIterator result,
                        Pred pred,
                        Proj proj = {}) {
-  return ranges::copy_if(ranges::begin(range), ranges::end(range), result,
-                         std::move(pred), std::move(proj));
+  return ranges::copy_if(std::ranges::begin(range), std::ranges::end(range),
+                         result, std::move(pred), std::move(proj));
 }
 
 // Let `N` be `last - first`.
@@ -1386,8 +1391,8 @@ template <typename Range,
           typename = internal::range_category_t<Range>,
           typename = internal::iterator_category_t<BidirectionalIterator>>
 constexpr auto copy_backward(Range&& range, BidirectionalIterator result) {
-  return ranges::copy_backward(ranges::begin(range), ranges::end(range),
-                               result);
+  return ranges::copy_backward(std::ranges::begin(range),
+                               std::ranges::end(range), result);
 }
 
 // [alg.move] Move
@@ -1438,7 +1443,8 @@ template <typename Range,
           typename = internal::range_category_t<Range>,
           typename = internal::iterator_category_t<OutputIterator>>
 constexpr auto move(Range&& range, OutputIterator result) {
-  return ranges::move(ranges::begin(range), ranges::end(range), result);
+  return ranges::move(std::ranges::begin(range), std::ranges::end(range),
+                      result);
 }
 
 // Let `E(n)` be `std::move(*(last - n))`.
@@ -1486,8 +1492,8 @@ template <typename Range,
           typename = internal::range_category_t<Range>,
           typename = internal::iterator_category_t<BidirectionalIterator>>
 constexpr auto move_backward(Range&& range, BidirectionalIterator result) {
-  return ranges::move_backward(ranges::begin(range), ranges::end(range),
-                               result);
+  return ranges::move_backward(std::ranges::begin(range),
+                               std::ranges::end(range), result);
 }
 
 // [alg.swap] Swap
@@ -1539,8 +1545,9 @@ template <typename Range1,
           typename = internal::range_category_t<Range1>,
           typename = internal::range_category_t<Range2>>
 constexpr auto swap_ranges(Range1&& range1, Range2&& range2) {
-  return ranges::swap_ranges(ranges::begin(range1), ranges::end(range1),
-                             ranges::begin(range2), ranges::end(range2));
+  return ranges::swap_ranges(
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2));
 }
 
 // [alg.transform] Transform
@@ -1611,8 +1618,8 @@ constexpr auto transform(Range&& range,
                          OutputIterator result,
                          UnaryOperation op,
                          Proj proj = {}) {
-  return ranges::transform(ranges::begin(range), ranges::end(range), result,
-                           std::move(op), std::move(proj));
+  return ranges::transform(std::ranges::begin(range), std::ranges::end(range),
+                           result, std::move(op), std::move(proj));
 }
 
 // Let:
@@ -1706,9 +1713,9 @@ constexpr auto transform(Range1&& range1,
                          BinaryOperation binary_op,
                          Proj1 proj1 = {},
                          Proj2 proj2 = {}) {
-  return ranges::transform(ranges::begin(range1), ranges::end(range1),
-                           ranges::begin(range2), ranges::end(range2), result,
-                           std::move(binary_op), std::move(proj1),
+  return ranges::transform(std::ranges::begin(range1), std::ranges::end(range1),
+                           std::ranges::begin(range2), std::ranges::end(range2),
+                           result, std::move(binary_op), std::move(proj1),
                            std::move(proj2));
 }
 
@@ -1769,8 +1776,8 @@ constexpr auto replace(Range&& range,
                        const T& old_value,
                        const T& new_value,
                        Proj proj = {}) {
-  return ranges::replace(ranges::begin(range), ranges::end(range), old_value,
-                         new_value, std::move(proj));
+  return ranges::replace(std::ranges::begin(range), std::ranges::end(range),
+                         old_value, new_value, std::move(proj));
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *i)))`.
@@ -1823,7 +1830,7 @@ constexpr auto replace_if(Range&& range,
                           Predicate pred,
                           const T& new_value,
                           Proj proj = {}) {
-  return ranges::replace_if(ranges::begin(range), ranges::end(range),
+  return ranges::replace_if(std::ranges::begin(range), std::ranges::end(range),
                             std::move(pred), new_value, std::move(proj));
 }
 
@@ -1898,8 +1905,9 @@ constexpr auto replace_copy(Range&& range,
                             const T& old_value,
                             const T& new_value,
                             Proj proj = {}) {
-  return ranges::replace_copy(ranges::begin(range), ranges::end(range), result,
-                              old_value, new_value, std::move(proj));
+  return ranges::replace_copy(std::ranges::begin(range),
+                              std::ranges::end(range), result, old_value,
+                              new_value, std::move(proj));
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *(first + (i - result)))))`.
@@ -1969,8 +1977,9 @@ constexpr auto replace_copy_if(Range&& range,
                                Predicate pred,
                                const T& new_value,
                                Proj proj = {}) {
-  return ranges::replace_copy_if(ranges::begin(range), ranges::end(range),
-                                 result, pred, new_value, std::move(proj));
+  return ranges::replace_copy_if(std::ranges::begin(range),
+                                 std::ranges::end(range), result, pred,
+                                 new_value, std::move(proj));
 }
 
 // [alg.fill] Fill
@@ -2011,7 +2020,8 @@ template <typename Range,
           typename T,
           typename = internal::range_category_t<Range>>
 constexpr auto fill(Range&& range, const T& value) {
-  return ranges::fill(ranges::begin(range), ranges::end(range), value);
+  return ranges::fill(std::ranges::begin(range), std::ranges::end(range),
+                      value);
 }
 
 // Let `N` be `max(0, n)`.
@@ -2071,7 +2081,7 @@ template <typename Range,
           typename Generator,
           typename = internal::range_category_t<Range>>
 constexpr auto generate(Range&& range, Generator gen) {
-  return ranges::generate(ranges::begin(range), ranges::end(range),
+  return ranges::generate(std::ranges::begin(range), std::ranges::end(range),
                           std::move(gen));
 }
 
@@ -2144,8 +2154,8 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto remove(Range&& range, const T& value, Proj proj = {}) {
-  return ranges::remove(ranges::begin(range), ranges::end(range), value,
-                        std::move(proj));
+  return ranges::remove(std::ranges::begin(range), std::ranges::end(range),
+                        value, std::move(proj));
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *i)))`.
@@ -2190,7 +2200,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto remove_if(Range&& range, Predicate pred, Proj proj = {}) {
-  return ranges::remove_if(ranges::begin(range), ranges::end(range),
+  return ranges::remove_if(std::ranges::begin(range), std::ranges::end(range),
                            std::move(pred), std::move(proj));
 }
 
@@ -2263,8 +2273,8 @@ constexpr auto remove_copy(Range&& range,
                            OutputIterator result,
                            const T& value,
                            Proj proj = {}) {
-  return ranges::remove_copy(ranges::begin(range), ranges::end(range), result,
-                             value, std::move(proj));
+  return ranges::remove_copy(std::ranges::begin(range), std::ranges::end(range),
+                             result, value, std::move(proj));
 }
 
 // Let `E(i)` be `bool(invoke(pred, invoke(proj, *i)))`.
@@ -2333,8 +2343,9 @@ constexpr auto remove_copy_if(Range&& range,
                               OutputIterator result,
                               Pred pred,
                               Proj proj = {}) {
-  return ranges::remove_copy_if(ranges::begin(range), ranges::end(range),
-                                result, std::move(pred), std::move(proj));
+  return ranges::remove_copy_if(std::ranges::begin(range),
+                                std::ranges::end(range), result,
+                                std::move(pred), std::move(proj));
 }
 
 // [alg.unique] Unique
@@ -2391,7 +2402,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto unique(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::unique(ranges::begin(range), ranges::end(range),
+  return ranges::unique(std::ranges::begin(range), std::ranges::end(range),
                         std::move(comp), std::move(proj));
 }
 
@@ -2453,8 +2464,8 @@ constexpr auto unique_copy(Range&& range,
                            OutputIterator result,
                            Comp comp = {},
                            Proj proj = {}) {
-  return ranges::unique_copy(ranges::begin(range), ranges::end(range), result,
-                             std::move(comp), std::move(proj));
+  return ranges::unique_copy(std::ranges::begin(range), std::ranges::end(range),
+                             result, std::move(comp), std::move(proj));
 }
 
 // [alg.reverse] Reverse
@@ -2487,7 +2498,7 @@ constexpr auto reverse(BidirectionalIterator first,
 // Reference: https://wg21.link/alg.reverse#:~:text=ranges::reverse(R
 template <typename Range, typename = internal::range_category_t<Range>>
 constexpr auto reverse(Range&& range) {
-  return ranges::reverse(ranges::begin(range), ranges::end(range));
+  return ranges::reverse(std::ranges::begin(range), std::ranges::end(range));
 }
 
 // Let `N` be `last - first`.
@@ -2533,7 +2544,8 @@ template <typename Range,
           typename = internal::range_category_t<Range>,
           typename = internal::iterator_category_t<OutputIterator>>
 constexpr auto reverse_copy(Range&& range, OutputIterator result) {
-  return ranges::reverse_copy(ranges::begin(range), ranges::end(range), result);
+  return ranges::reverse_copy(std::ranges::begin(range),
+                              std::ranges::end(range), result);
 }
 
 // [alg.rotate] Rotate
@@ -2572,7 +2584,8 @@ constexpr auto rotate(ForwardIterator first,
 // Reference: https://wg21.link/alg.rotate#:~:text=ranges::rotate(R
 template <typename Range, typename = internal::range_category_t<Range>>
 constexpr auto rotate(Range&& range, iterator_t<Range> middle) {
-  return ranges::rotate(ranges::begin(range), middle, ranges::end(range));
+  return ranges::rotate(std::ranges::begin(range), middle,
+                        std::ranges::end(range));
 }
 
 // Let `N` be `last - first`.
@@ -2621,8 +2634,8 @@ template <typename Range,
 constexpr auto rotate_copy(Range&& range,
                            iterator_t<Range> middle,
                            OutputIterator result) {
-  return ranges::rotate_copy(ranges::begin(range), middle, ranges::end(range),
-                             result);
+  return ranges::rotate_copy(std::ranges::begin(range), middle,
+                             std::ranges::end(range), result);
 }
 
 // [alg.random.sample] Sample
@@ -2678,7 +2691,7 @@ template <typename Range,
           typename UniformRandomBitGenerator,
           typename = internal::range_category_t<Range>>
 constexpr auto shuffle(Range&& range, UniformRandomBitGenerator&& g) {
-  return ranges::shuffle(ranges::begin(range), ranges::end(range),
+  return ranges::shuffle(std::ranges::begin(range), std::ranges::end(range),
                          std::forward<UniformRandomBitGenerator>(g));
 }
 
@@ -2733,8 +2746,8 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto sort(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::sort(ranges::begin(range), ranges::end(range), std::move(comp),
-                      std::move(proj));
+  return ranges::sort(std::ranges::begin(range), std::ranges::end(range),
+                      std::move(comp), std::move(proj));
 }
 
 // [stable.sort] stable_sort
@@ -2789,7 +2802,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto stable_sort(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::stable_sort(ranges::begin(range), ranges::end(range),
+  return ranges::stable_sort(std::ranges::begin(range), std::ranges::end(range),
                              std::move(comp), std::move(proj));
 }
 
@@ -2853,8 +2866,9 @@ constexpr auto partial_sort(Range&& range,
                             iterator_t<Range> middle,
                             Comp comp = {},
                             Proj proj = {}) {
-  return ranges::partial_sort(ranges::begin(range), middle, ranges::end(range),
-                              std::move(comp), std::move(proj));
+  return ranges::partial_sort(std::ranges::begin(range), middle,
+                              std::ranges::end(range), std::move(comp),
+                              std::move(proj));
 }
 
 // [partial.sort.copy] partial_sort_copy
@@ -2948,10 +2962,10 @@ constexpr auto partial_sort_copy(Range1&& range,
                                  Comp comp = {},
                                  Proj1 proj1 = {},
                                  Proj2 proj2 = {}) {
-  return ranges::partial_sort_copy(ranges::begin(range), ranges::end(range),
-                                   ranges::begin(result_range),
-                                   ranges::end(result_range), std::move(comp),
-                                   std::move(proj1), std::move(proj2));
+  return ranges::partial_sort_copy(
+      std::ranges::begin(range), std::ranges::end(range),
+      std::ranges::begin(result_range), std::ranges::end(result_range),
+      std::move(comp), std::move(proj1), std::move(proj2));
 }
 
 // [is.sorted] is_sorted
@@ -3009,8 +3023,9 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto is_sorted_until(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::is_sorted_until(ranges::begin(range), ranges::end(range),
-                                 std::move(comp), std::move(proj));
+  return ranges::is_sorted_until(std::ranges::begin(range),
+                                 std::ranges::end(range), std::move(comp),
+                                 std::move(proj));
 }
 
 // Returns: Whether the range `[first, last)` is sorted with respect to `comp`
@@ -3049,7 +3064,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto is_sorted(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::is_sorted(ranges::begin(range), ranges::end(range),
+  return ranges::is_sorted(std::ranges::begin(range), std::ranges::end(range),
                            std::move(comp), std::move(proj));
 }
 
@@ -3115,8 +3130,9 @@ constexpr auto nth_element(Range&& range,
                            iterator_t<Range> nth,
                            Comp comp = {},
                            Proj proj = {}) {
-  return ranges::nth_element(ranges::begin(range), nth, ranges::end(range),
-                             std::move(comp), std::move(proj));
+  return ranges::nth_element(std::ranges::begin(range), nth,
+                             std::ranges::end(range), std::move(comp),
+                             std::move(proj));
 }
 
 // [alg.binary.search] Binary search
@@ -3172,8 +3188,8 @@ constexpr auto lower_bound(Range&& range,
                            const T& value,
                            Comp comp = {},
                            Proj proj = {}) {
-  return ranges::lower_bound(ranges::begin(range), ranges::end(range), value,
-                             std::move(comp), std::move(proj));
+  return ranges::lower_bound(std::ranges::begin(range), std::ranges::end(range),
+                             value, std::move(comp), std::move(proj));
 }
 
 // [upper.bound] upper_bound
@@ -3226,8 +3242,8 @@ constexpr auto upper_bound(Range&& range,
                            const T& value,
                            Comp comp = {},
                            Proj proj = {}) {
-  return ranges::upper_bound(ranges::begin(range), ranges::end(range), value,
-                             std::move(comp), std::move(proj));
+  return ranges::upper_bound(std::ranges::begin(range), std::ranges::end(range),
+                             value, std::move(comp), std::move(proj));
 }
 
 // [equal.range] equal_range
@@ -3281,8 +3297,8 @@ constexpr auto equal_range(Range&& range,
                            const T& value,
                            Comp comp = {},
                            Proj proj = {}) {
-  return ranges::equal_range(ranges::begin(range), ranges::end(range), value,
-                             std::move(comp), std::move(proj));
+  return ranges::equal_range(std::ranges::begin(range), std::ranges::end(range),
+                             value, std::move(comp), std::move(proj));
 }
 
 // [binary.search] binary_search
@@ -3333,8 +3349,9 @@ constexpr auto binary_search(Range&& range,
                              const T& value,
                              Comp comp = {},
                              Proj proj = {}) {
-  return ranges::binary_search(ranges::begin(range), ranges::end(range), value,
-                               std::move(comp), std::move(proj));
+  return ranges::binary_search(std::ranges::begin(range),
+                               std::ranges::end(range), value, std::move(comp),
+                               std::move(proj));
 }
 
 // [alg.partitions] Partitions
@@ -3370,8 +3387,9 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto is_partitioned(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::is_partitioned(ranges::begin(range), ranges::end(range),
-                                std::move(pred), std::move(proj));
+  return ranges::is_partitioned(std::ranges::begin(range),
+                                std::ranges::end(range), std::move(pred),
+                                std::move(proj));
 }
 
 // Let `E(x)` be `bool(invoke(pred, invoke(proj, x)))`.
@@ -3421,7 +3439,7 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto partition(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::partition(ranges::begin(range), ranges::end(range),
+  return ranges::partition(std::ranges::begin(range), std::ranges::end(range),
                            std::move(pred), std::move(proj));
 }
 
@@ -3474,8 +3492,9 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto stable_partition(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::stable_partition(ranges::begin(range), ranges::end(range),
-                                  std::move(pred), std::move(proj));
+  return ranges::stable_partition(std::ranges::begin(range),
+                                  std::ranges::end(range), std::move(pred),
+                                  std::move(proj));
 }
 
 // Let `E(x)` be `bool(invoke(pred, invoke(proj, x)))`.
@@ -3544,9 +3563,9 @@ constexpr auto partition_copy(Range&& range,
                               OutputIterator2 out_false,
                               Pred pred,
                               Proj proj = {}) {
-  return ranges::partition_copy(ranges::begin(range), ranges::end(range),
-                                out_true, out_false, std::move(pred),
-                                std::move(proj));
+  return ranges::partition_copy(std::ranges::begin(range),
+                                std::ranges::end(range), out_true, out_false,
+                                std::move(pred), std::move(proj));
 }
 
 // let `E(x)` be `bool(invoke(pred, invoke(proj, x)))`.
@@ -3589,8 +3608,9 @@ template <typename Range,
           typename Proj = std::identity,
           typename = internal::range_category_t<Range>>
 constexpr auto partition_point(Range&& range, Pred pred, Proj proj = {}) {
-  return ranges::partition_point(ranges::begin(range), ranges::end(range),
-                                 std::move(pred), std::move(proj));
+  return ranges::partition_point(std::ranges::begin(range),
+                                 std::ranges::end(range), std::move(pred),
+                                 std::move(proj));
 }
 
 // [alg.merge] Merge
@@ -3691,9 +3711,10 @@ constexpr auto merge(Range1&& range1,
                      Comp comp = {},
                      Proj1 proj1 = {},
                      Proj2 proj2 = {}) {
-  return ranges::merge(ranges::begin(range1), ranges::end(range1),
-                       ranges::begin(range2), ranges::end(range2), result,
-                       std::move(comp), std::move(proj1), std::move(proj2));
+  return ranges::merge(std::ranges::begin(range1), std::ranges::end(range1),
+                       std::ranges::begin(range2), std::ranges::end(range2),
+                       result, std::move(comp), std::move(proj1),
+                       std::move(proj2));
 }
 
 // Preconditions: `[first, middle)` and `[middle, last)` are valid ranges sorted
@@ -3751,8 +3772,9 @@ constexpr auto inplace_merge(Range&& range,
                              iterator_t<Range> middle,
                              Comp comp = {},
                              Proj proj = {}) {
-  return ranges::inplace_merge(ranges::begin(range), middle, ranges::end(range),
-                               std::move(comp), std::move(proj));
+  return ranges::inplace_merge(std::ranges::begin(range), middle,
+                               std::ranges::end(range), std::move(comp),
+                               std::move(proj));
 }
 
 // [alg.set.operations] Set operations on sorted structures
@@ -3830,8 +3852,8 @@ constexpr auto includes(Range1&& range1,
                         Comp comp = {},
                         Proj1 proj1 = {},
                         Proj2 proj2 = {}) {
-  return ranges::includes(ranges::begin(range1), ranges::end(range1),
-                          ranges::begin(range2), ranges::end(range2),
+  return ranges::includes(std::ranges::begin(range1), std::ranges::end(range1),
+                          std::ranges::begin(range2), std::ranges::end(range2),
                           std::move(comp), std::move(proj1), std::move(proj2));
 }
 
@@ -3930,9 +3952,10 @@ constexpr auto set_union(Range1&& range1,
                          Comp comp = {},
                          Proj1 proj1 = {},
                          Proj2 proj2 = {}) {
-  return ranges::set_union(ranges::begin(range1), ranges::end(range1),
-                           ranges::begin(range2), ranges::end(range2), result,
-                           std::move(comp), std::move(proj1), std::move(proj2));
+  return ranges::set_union(std::ranges::begin(range1), std::ranges::end(range1),
+                           std::ranges::begin(range2), std::ranges::end(range2),
+                           result, std::move(comp), std::move(proj1),
+                           std::move(proj2));
 }
 
 // [set.intersection] set_intersection
@@ -4030,10 +4053,10 @@ constexpr auto set_intersection(Range1&& range1,
                                 Comp comp = {},
                                 Proj1 proj1 = {},
                                 Proj2 proj2 = {}) {
-  return ranges::set_intersection(ranges::begin(range1), ranges::end(range1),
-                                  ranges::begin(range2), ranges::end(range2),
-                                  result, std::move(comp), std::move(proj1),
-                                  std::move(proj2));
+  return ranges::set_intersection(
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), result,
+      std::move(comp), std::move(proj1), std::move(proj2));
 }
 
 // [set.difference] set_difference
@@ -4133,10 +4156,10 @@ constexpr auto set_difference(Range1&& range1,
                               Comp comp = {},
                               Proj1 proj1 = {},
                               Proj2 proj2 = {}) {
-  return ranges::set_difference(ranges::begin(range1), ranges::end(range1),
-                                ranges::begin(range2), ranges::end(range2),
-                                result, std::move(comp), std::move(proj1),
-                                std::move(proj2));
+  return ranges::set_difference(
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), result,
+      std::move(comp), std::move(proj1), std::move(proj2));
 }
 
 // [set.symmetric.difference] set_symmetric_difference
@@ -4244,9 +4267,9 @@ constexpr auto set_symmetric_difference(Range1&& range1,
                                         Proj1 proj1 = {},
                                         Proj2 proj2 = {}) {
   return ranges::set_symmetric_difference(
-      ranges::begin(range1), ranges::end(range1), ranges::begin(range2),
-      ranges::end(range2), result, std::move(comp), std::move(proj1),
-      std::move(proj2));
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), result,
+      std::move(comp), std::move(proj1), std::move(proj2));
 }
 
 // [alg.heap.operations] Heap operations
@@ -4305,7 +4328,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto push_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::push_heap(ranges::begin(range), ranges::end(range),
+  return ranges::push_heap(std::ranges::begin(range), std::ranges::end(range),
                            std::move(comp), std::move(proj));
 }
 
@@ -4364,7 +4387,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto pop_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::pop_heap(ranges::begin(range), ranges::end(range),
+  return ranges::pop_heap(std::ranges::begin(range), std::ranges::end(range),
                           std::move(comp), std::move(proj));
 }
 
@@ -4414,7 +4437,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto make_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::make_heap(ranges::begin(range), ranges::end(range),
+  return ranges::make_heap(std::ranges::begin(range), std::ranges::end(range),
                            std::move(comp), std::move(proj));
 }
 
@@ -4470,7 +4493,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto sort_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::sort_heap(ranges::begin(range), ranges::end(range),
+  return ranges::sort_heap(std::ranges::begin(range), std::ranges::end(range),
                            std::move(comp), std::move(proj));
 }
 
@@ -4513,7 +4536,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto is_heap(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::is_heap(ranges::begin(range), ranges::end(range),
+  return ranges::is_heap(std::ranges::begin(range), std::ranges::end(range),
                          std::move(comp), std::move(proj));
 }
 
@@ -4554,8 +4577,9 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto is_heap_until(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::is_heap_until(ranges::begin(range), ranges::end(range),
-                               std::move(comp), std::move(proj));
+  return ranges::is_heap_until(std::ranges::begin(range),
+                               std::ranges::end(range), std::move(comp),
+                               std::move(proj));
 }
 
 // [alg.min.max] Minimum and maximum
@@ -4610,7 +4634,7 @@ template <typename Range,
           typename = internal::range_category_t<Range>>
 constexpr auto min(Range&& range, Comp comp = {}, Proj proj = {}) {
   return *std::min_element(
-      ranges::begin(range), ranges::end(range),
+      std::ranges::begin(range), std::ranges::end(range),
       internal::ProjectedBinaryPredicate(comp, proj, proj));
 }
 
@@ -4663,7 +4687,7 @@ template <typename Range,
           typename = internal::range_category_t<Range>>
 constexpr auto max(Range&& range, Comp comp = {}, Proj proj = {}) {
   return *std::max_element(
-      ranges::begin(range), ranges::end(range),
+      std::ranges::begin(range), std::ranges::end(range),
       internal::ProjectedBinaryPredicate(comp, proj, proj));
 }
 
@@ -4699,7 +4723,7 @@ constexpr auto minmax(std::initializer_list<T> ilist,
                       Comp comp = {},
                       Proj proj = {}) {
   auto it =
-      std::minmax_element(ranges::begin(ilist), ranges::end(ilist),
+      std::minmax_element(std::ranges::begin(ilist), std::ranges::end(ilist),
                           internal::ProjectedBinaryPredicate(comp, proj, proj));
   return std::pair<T, T>{*it.first, *it.second};
 }
@@ -4721,7 +4745,7 @@ template <typename Range,
 constexpr auto minmax(Range&& range, Comp comp = {}, Proj proj = {}) {
   using T = range_value_t<Range>;
   auto it =
-      std::minmax_element(ranges::begin(range), ranges::end(range),
+      std::minmax_element(std::ranges::begin(range), std::ranges::end(range),
                           internal::ProjectedBinaryPredicate(comp, proj, proj));
   return std::pair<T, T>{*it.first, *it.second};
 }
@@ -4768,7 +4792,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto min_element(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::min_element(ranges::begin(range), ranges::end(range),
+  return ranges::min_element(std::ranges::begin(range), std::ranges::end(range),
                              std::move(comp), std::move(proj));
 }
 
@@ -4814,7 +4838,7 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto max_element(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::max_element(ranges::begin(range), ranges::end(range),
+  return ranges::max_element(std::ranges::begin(range), std::ranges::end(range),
                              std::move(comp), std::move(proj));
 }
 
@@ -4864,8 +4888,9 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto minmax_element(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::minmax_element(ranges::begin(range), ranges::end(range),
-                                std::move(comp), std::move(proj));
+  return ranges::minmax_element(std::ranges::begin(range),
+                                std::ranges::end(range), std::move(comp),
+                                std::move(proj));
 }
 
 // [alg.clamp] Bounded value
@@ -4992,8 +5017,9 @@ constexpr bool lexicographical_compare(Range1&& range1,
                                        Proj1 proj1 = {},
                                        Proj2 proj2 = {}) {
   return ranges::lexicographical_compare(
-      ranges::begin(range1), ranges::end(range1), ranges::begin(range2),
-      ranges::end(range2), std::move(comp), std::move(proj1), std::move(proj2));
+      std::ranges::begin(range1), std::ranges::end(range1),
+      std::ranges::begin(range2), std::ranges::end(range2), std::move(comp),
+      std::move(proj1), std::move(proj2));
 }
 
 // [alg.permutation.generators] Permutation generators
@@ -5048,8 +5074,9 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto next_permutation(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::next_permutation(ranges::begin(range), ranges::end(range),
-                                  std::move(comp), std::move(proj));
+  return ranges::next_permutation(std::ranges::begin(range),
+                                  std::ranges::end(range), std::move(comp),
+                                  std::move(proj));
 }
 
 // Effects: Takes a sequence defined by the range `[first, last)` and transforms
@@ -5101,8 +5128,9 @@ template <
                                       std::projected<iterator_t<Range>, Proj>,
                                       std::projected<iterator_t<Range>, Proj>>>
 constexpr auto prev_permutation(Range&& range, Comp comp = {}, Proj proj = {}) {
-  return ranges::prev_permutation(ranges::begin(range), ranges::end(range),
-                                  std::move(comp), std::move(proj));
+  return ranges::prev_permutation(std::ranges::begin(range),
+                                  std::ranges::end(range), std::move(comp),
+                                  std::move(proj));
 }
 
 }  // namespace ranges

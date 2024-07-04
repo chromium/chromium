@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <map>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -359,7 +360,8 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   const auto formatting_context_start =
       std::cbegin(word_boxes) + start_from_word_index;
   const auto formatting_context_end =
-      ranges::find_if_not(formatting_context_start, ranges::end(word_boxes),
+      ranges::find_if_not(formatting_context_start,
+                          std::ranges::end(word_boxes),
                           [formatting_context_start](const auto& word_box) {
                             return HaveIdenticalFormattingStyle(
                                 *formatting_context_start, word_box);
@@ -608,11 +610,13 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   // Filter out invalid / unrecognized / unused nodes from the update.
   update.nodes.resize(nodes.size());
   const auto end_node_iter = ranges::copy_if(
-      nodes, ranges::begin(update.nodes), [](const ui::AXNodeData& node_data) {
+      nodes, std::ranges::begin(update.nodes),
+      [](const ui::AXNodeData& node_data) {
         return node_data.role != ax::mojom::Role::kUnknown &&
                node_data.id != ui::kInvalidAXNodeID;
       });
-  update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
+  update.nodes.resize(
+      std::distance(std::ranges::begin(update.nodes), end_node_iter));
 
   return update;
 }

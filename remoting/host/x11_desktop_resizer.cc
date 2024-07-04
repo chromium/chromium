@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -632,7 +633,7 @@ void X11DesktopResizer::OnGnomeDisplayConfigReceived(
       base::ranges::find_if(config.monitors, [](const auto& entry) {
         return entry.second.GetCurrentMode() != nullptr;
       });
-  if (monitor_iter == base::ranges::end(config.monitors)) {
+  if (monitor_iter == std::ranges::end(config.monitors)) {
     LOG(ERROR) << "No enabled monitor found in GNOME config.";
     return;
   }

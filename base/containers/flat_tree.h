@@ -16,6 +16,7 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
@@ -43,7 +44,8 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return ranges::adjacent_find(range, std::not_fn(comp)) == ranges::end(range);
+  return ranges::adjacent_find(range, std::not_fn(comp)) ==
+         std::ranges::end(range);
 }
 
 // Helper inspired by C++20's std::to_array to convert a C-style array to a
@@ -539,7 +541,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     std::initializer_list<value_type> ilist,
     const KeyCompare& comp)
-    : flat_tree(std::begin(ilist), std::end(ilist), comp) {}
+    : flat_tree(std::ranges::begin(ilist), std::ranges::end(ilist), comp) {}
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <class InputIterator>
@@ -575,7 +577,10 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     std::initializer_list<value_type> ilist,
     const KeyCompare& comp)
-    : flat_tree(sorted_unique, std::begin(ilist), std::end(ilist), comp) {}
+    : flat_tree(sorted_unique,
+                std::ranges::begin(ilist),
+                std::ranges::end(ilist),
+                comp) {}
 
 // ----------------------------------------------------------------------------
 // Assignments.
@@ -647,7 +652,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
     const -> const_iterator {
-  return ranges::begin(body_);
+  return std::ranges::begin(body_);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -664,7 +669,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end() -> iterator {
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end()
     const -> const_iterator {
-  return ranges::end(body_);
+  return std::ranges::end(body_);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -79,7 +80,7 @@ bool IsItemPinned(const std::string& item_id) {
       base::ranges::find_if(shelf_items, [&item_id](const auto& shelf_item) {
         return shelf_item.id.app_id == item_id;
       });
-  return pinned_item != base::ranges::end(shelf_items);
+  return pinned_item != std::ranges::end(shelf_items);
 }
 
 class AppServicePromiseAppItemBrowserTest
