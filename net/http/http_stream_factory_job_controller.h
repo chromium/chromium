@@ -293,9 +293,9 @@ class HttpStreamFactory::JobController
            (dns_alpn_h3_job_ ? 1 : 0);
   }
 
-  raw_ptr<HttpStreamFactory> factory_;
-  raw_ptr<HttpNetworkSession> session_;
-  raw_ptr<JobFactory> job_factory_;
+  const raw_ptr<HttpStreamFactory> factory_;
+  const raw_ptr<HttpNetworkSession> session_;
+  const raw_ptr<JobFactory> job_factory_;
 
   // Request will be handed out to factory once created. This just keeps an
   // reference and is safe as |request_| will notify |this| JobController

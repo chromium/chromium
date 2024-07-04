@@ -151,7 +151,9 @@ HttpStreamFactory::JobController::JobController(
       net_log_(NetLogWithSource::Make(
           session->net_log(),
           NetLogSourceType::HTTP_STREAM_JOB_CONTROLLER)) {
-  DCHECK(factory);
+  DCHECK(factory_);
+  DCHECK(session_);
+  DCHECK(job_factory_);
   DCHECK(base::EqualsCaseInsensitiveASCII(origin_url_.scheme_piece(),
                                           url::kHttpScheme) ||
          base::EqualsCaseInsensitiveASCII(origin_url_.scheme_piece(),
@@ -193,7 +195,6 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::JobController::Start(
     const NetLogWithSource& source_net_log,
     HttpStreamRequest::StreamType stream_type,
     RequestPriority priority) {
-  DCHECK(factory_);
   DCHECK(!request_);
 
   stream_type_ = stream_type;
@@ -771,7 +772,6 @@ int HttpStreamFactory::JobController::DoLoop(int rv) {
 
 int HttpStreamFactory::JobController::DoResolveProxy() {
   DCHECK(!proxy_resolve_request_);
-  DCHECK(session_);
 
   next_state_ = STATE_RESOLVE_PROXY_COMPLETE;
 
@@ -1416,7 +1416,6 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
   // ReconsiderProxyAfterError() should only be called when the last job fails.
   DCHECK_EQ(1, GetJobCount());
   DCHECK(!proxy_resolve_request_);
-  DCHECK(session_);
 
   if (!job->should_reconsider_proxy()) {
     return error;
