@@ -19,6 +19,7 @@
 #include "ash/picker/views/picker_main_container_view.h"
 #include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
+#include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
@@ -638,6 +639,11 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
     return;
   }
 
+  if (view == nullptr) {
+    SetPseudoFocusedView(search_field_view_->textfield());
+    return;
+  }
+
   if (IsContainedInSubmenu(view)) {
     active_item_container_ = submenu_controller_.GetSubmenuView();
   } else {
@@ -654,11 +660,9 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
   pseudo_focused_view_ = view;
   search_field_view_->SetTextfieldActiveDescendant(view);
 
-  if (view != nullptr) {
-    pseudo_focused_view_observation_.Observe(view);
-    view->ScrollViewToVisible();
-    ApplyPickerPseudoFocusToView(view);
-  }
+  pseudo_focused_view_observation_.Observe(view);
+  view->ScrollViewToVisible();
+  ApplyPickerPseudoFocusToView(view);
 }
 
 void PickerView::OnSearchBackButtonPressed() {

@@ -177,6 +177,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // the emoji bar and the main container.
   void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
 
+  // Sets `view` as the pseudo focused view, i.e. the view which responds to
+  // user actions that trigger `DoPseudoFocusedAction`. If `view` is null,
+  // pseudo focus instead moves back to the search field.
   void SetPseudoFocusedView(views::View* view);
 
   // Called when the search field back button is pressed.

@@ -88,6 +88,8 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
 
   void SetShouldShowFocusIndicator(bool should_show_focus_indicator);
 
+  PickerSearchBarTextfield* textfield() { return textfield_; }
+
   PickerSearchBarTextfield& textfield_for_testing() { return *textfield_; }
   views::ImageButton& back_button_for_testing() { return *back_button_; }
   views::ImageButton& clear_button_for_testing() { return *clear_button_; }
