@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/google/core/common/google_util.h",
+  "+google_apis/google_api_keys.h",
+  "+services/data_decoder/public/cpp/data_decoder.h",
+  "+services/data_decoder/public/cpp/test_support/in_process_data_decoder.h",
+  "+ui/accessibility/ax_text_utils.h",
+]

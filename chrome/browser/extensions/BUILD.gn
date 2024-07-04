@@ -1282,6 +1282,7 @@ source_set("extensions") {
       "//chromeos/ash/components/dbus/image_burner",
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/enhanced_network_tts",
       "//chromeos/ash/components/enhanced_network_tts/mojom",
       "//chromeos/ash/components/language_packs",
       "//chromeos/ash/components/language_packs/public/mojom",

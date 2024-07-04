@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_utils.h"
 
 #include <memory>
 
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 
 using EnhancedNetworkTtsUtilsTest = testing::Test;
 
@@ -203,5 +202,4 @@ TEST_F(EnhancedNetworkTtsUtilsTest,
             mojom::TtsRequestError::kReceivedUnexpectedData);
 }
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts

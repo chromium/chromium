@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_
-#define CHROME_BROWSER_ASH_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_
 
 #include <stddef.h>
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/values.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 
 // The accuracy used to compare two doubles.
 inline constexpr double kDoubleCompareAccuracy = 0.000001;
@@ -77,24 +77,27 @@ inline constexpr char kTemplateResponse[] =
       ])";
 
 // Create a correct request based on the |kFullRequestTemplate|.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
 std::string CreateCorrectRequest(const std::string& input_text,
                                  float rate,
                                  const std::string& voice_name,
                                  const std::string& lang);
 
 // Create a correct request based on the |kSimpleRequestTemplate|.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
 std::string CreateCorrectRequest(const std::string& input_text, float rate);
 
 // Create a server response based on the |kTemplateResponse|.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
 std::string CreateServerResponse(const std::vector<uint8_t>& expected_output);
 
 // Check if two request strings are equal. Use the |kDoubleCompareAccuracy| when
 // checking speech rates. This assumes the two strings follow
 // |kFullRequestTemplate| or |kSimpleRequestTemplate|, and speech rates have one
 // decimal digit only.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
 bool AreRequestsEqual(const std::string& json_a, const std::string& json_b);
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts
 
-#endif  // CHROME_BROWSER_ASH_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS_ENHANCED_NETWORK_TTS_TEST_UTILS_H_

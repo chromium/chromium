@@ -333,7 +333,7 @@ Refer to README.md for content description and update process.
  <item id="cryptauth_get_my_devices" added_in_milestone="112" type="partial" second_id="oauth2_api_call_flow" content_hash_code="04b33199" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="chromeos/ash/services/device_sync/cryptauth_device_manager_impl.cc" />
  <item id="favicon_fetcher_get_favicon" added_in_milestone="106" content_hash_code="0640ce11" os_list="android" file_path="chrome/browser/supervised_user/android/favicon_fetcher.cc" />
  <item id="k_anonymity_service_get_token" added_in_milestone="106" content_hash_code="02bc56b0" os_list="linux,windows,android,chromeos" file_path="chrome/browser/k_anonymity_service/k_anonymity_trust_token_getter.cc" />
- <item id="enhanced_network_tts" added_in_milestone="103" content_hash_code="03c12345" os_list="chromeos" file_path="chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc" />
+ <item id="enhanced_network_tts" added_in_milestone="103" content_hash_code="03c12345" os_list="chromeos" file_path="chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.cc" />
  <item id="chrome_commerce_price_email_pref_fetcher" added_in_milestone="107" content_hash_code="03bbefb2" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="chrome_commerce_price_email_pref_sender" added_in_milestone="107" content_hash_code="02ff3431" os_list="linux,windows,android,chromeos" file_path="components/commerce/core/account_checker.cc" />
  <item id="receive_messages_express" added_in_milestone="108" content_hash_code="032122e0" os_list="chromeos" file_path="chrome/browser/nearby_sharing/instantmessaging/receive_messages_express.cc" />

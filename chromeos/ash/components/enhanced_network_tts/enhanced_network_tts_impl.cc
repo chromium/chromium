@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 
 #include <iterator>
 #include <utility>
@@ -13,16 +13,15 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 
 BASE_FEATURE(kEnhancedNetworkTtsOverride,
              "EnhancedNetworkTtsOverride",
@@ -271,5 +270,4 @@ void EnhancedNetworkTtsImpl::ResetAndSendErrorResponse(
   ResetServerRequestsAndObserver();
 }
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts

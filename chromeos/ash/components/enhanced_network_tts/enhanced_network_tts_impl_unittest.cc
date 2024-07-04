@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 
 #include <map>
 #include <vector>
@@ -10,8 +10,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_test_utils.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -24,8 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 namespace {
 
 // A fake server that supports test URL loading.
@@ -539,5 +538,4 @@ TEST_F(EnhancedNetworkTtsImplTest, JsonDecodingError) {
   EXPECT_EQ(error, mojom::TtsRequestError::kReceivedUnexpectedData);
 }
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_utils.h"
 
 #include <algorithm>
 #include <utility>
@@ -12,11 +12,10 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_constants.h"
 #include "ui/accessibility/ax_text_utils.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 namespace {
 
 // The offsets computed by |ui::GetSentenceEndOffsets| and
@@ -273,5 +272,4 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value::List& list_data,
   return mojom::TtsResponse::NewData(std::move(tts_data));
 }
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts

@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_test_utils.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_test_utils.h"
 
 #include <memory>
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_constants.h"
 
-namespace ash {
-namespace enhanced_network_tts {
+namespace ash::enhanced_network_tts {
 namespace {
 
 bool HasOneDecimalDigit(std::optional<double> rate) {
@@ -66,5 +65,4 @@ bool AreRequestsEqual(const std::string& json_a, const std::string& json_b) {
   return dict_a == dict_b;
 }
 
-}  // namespace enhanced_network_tts
-}  // namespace ash
+}  // namespace ash::enhanced_network_tts
