@@ -1686,7 +1686,7 @@ TEST_F(RulesetMatcherResponseHeadersTest, OnHeadersReceivedAction_Regex) {
 TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
   std::vector<TestHeaderCondition> header_condition(
       {TestHeaderCondition("key1", {}, {}),
-       TestHeaderCondition("key2", {"value1", "value2"}, {"excludedValue"})});
+       TestHeaderCondition("key2", {"Value1", "value2"}, {"excludedValue"})});
 
   // `rule_1` will match if:
   //   - the key1 header is present, or:
@@ -1744,8 +1744,8 @@ TEST_F(RulesetMatcherResponseHeadersTest, MatchOnResponseHeaders) {
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
                                      kMinValidID)},
 
-      // Test matching the key2 header by its value.
-      {"http://google.com", "HTTP/1.0 200 OK\r\nkey2: value1\r\n",
+      // Test matching the key2 header by its value (case-insensitive).
+      {"http://google.com", "HTTP/1.0 200 OK\r\nkey2: VALUE1\r\n",
        CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
                                      kMinValidID)},
 

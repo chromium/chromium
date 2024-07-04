@@ -145,7 +145,8 @@ table ModifyHeaderInfo {
 table HeaderCondition {
   /// The name of the header to be matched on.
   header: string;
-  /// Header values to include or exclude for matching, if non-empty.
+  /// Header values to include or exclude for matching, if non-empty. This is
+  /// converted into lowercase.
   values: [string];
   excluded_values: [string];
 }

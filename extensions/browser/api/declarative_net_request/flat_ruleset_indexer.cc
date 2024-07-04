@@ -41,6 +41,22 @@ bool IsBeforeRequestRule(const IndexedRule& indexed_rule) {
          indexed_rule.excluded_response_headers.empty();
 }
 
+template <typename T>
+FlatStringListOffset BuildVectorOfSharedStringsImpl(
+    flatbuffers::FlatBufferBuilder* builder,
+    const T& container,
+    bool is_lower_case) {
+  if (container.empty())
+    return FlatStringListOffset();
+
+  std::vector<FlatStringOffset> offsets;
+  offsets.reserve(container.size());
+  for (const std::string& str : container)
+    offsets.push_back(builder->CreateSharedString(
+        is_lower_case ? base::ToLowerASCII(str) : str));
+  return builder->CreateVector(offsets);
+}
+
 // Writes to `builder` a flatbuffer vector of shared strings corresponding to
 // `container` and returns the offset to it. If `container` is empty, returns an
 // empty offset.
@@ -48,14 +64,18 @@ template <typename T>
 FlatStringListOffset BuildVectorOfSharedStrings(
     flatbuffers::FlatBufferBuilder* builder,
     const T& container) {
-  if (container.empty())
-    return FlatStringListOffset();
+  return BuildVectorOfSharedStringsImpl(builder, container,
+                                        /*is_lower_case=*/false);
+}
 
-  std::vector<FlatStringOffset> offsets;
-  offsets.reserve(container.size());
-  for (const std::string& str : container)
-    offsets.push_back(builder->CreateSharedString(str));
-  return builder->CreateVector(offsets);
+// Same as `BuildVectorOfSharedStrings` except all strings are converted to
+// lower-case in the offset.
+template <typename T>
+FlatStringListOffset BuildVectorOfSharedLowercaseStrings(
+    flatbuffers::FlatBufferBuilder* builder,
+    const T& container) {
+  return BuildVectorOfSharedStringsImpl(builder, container,
+                                        /*is_lower_case=*/true);
 }
 
 FlatIntListOffset BuildIntVector(flatbuffers::FlatBufferBuilder* builder,
@@ -216,12 +236,12 @@ FlatVectorOffset<flat::HeaderCondition> BuildHeaderConditionsOffset(
   for (const dnr_api::HeaderInfo& info : header_infos) {
     FlatStringOffset header = builder->CreateSharedString(info.header);
     FlatStringListOffset values =
-        info.values ? BuildVectorOfSharedStrings(builder, *info.values)
+        info.values ? BuildVectorOfSharedLowercaseStrings(builder, *info.values)
                     : FlatStringListOffset();
     FlatStringListOffset excluded_values =
-        info.excluded_values
-            ? BuildVectorOfSharedStrings(builder, *info.excluded_values)
-            : FlatStringListOffset();
+        info.excluded_values ? BuildVectorOfSharedLowercaseStrings(
+                                   builder, *info.excluded_values)
+                             : FlatStringListOffset();
 
     flat_header_infos.push_back(
         flat::CreateHeaderCondition(*builder, header, values, excluded_values));

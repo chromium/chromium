@@ -71,11 +71,7 @@ content::GlobalRenderFrameHostId GetFrameRoutingId(
 bool HasHeaderValue(const net::HttpResponseHeaders& response_headers,
                     std::string_view header,
                     const flatbuffers::String* flat_pattern) {
-  // TODO(crbug.com/40727004): Store response header value matching patterns as
-  // lowercase in FlatRulesetIndexer to prevent this copying every time a
-  // request needs to be matched.
-  auto pattern =
-      base::ToLowerASCII(CreateString<std::string_view>(*flat_pattern));
+  auto pattern = CreateString<std::string_view>(*flat_pattern);
 
   size_t iter = 0;
   std::string temp;
