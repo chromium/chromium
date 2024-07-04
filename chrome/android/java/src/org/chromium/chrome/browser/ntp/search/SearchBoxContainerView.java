@@ -12,10 +12,12 @@ import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 
 /** Provides the additional capabilities needed for the SearchBox container layout. */
 public class SearchBoxContainerView extends LinearLayout {
+    private static final String TAG = "SearchBoxContainer";
 
     /** Constructor for inflating from XML. */
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
@@ -26,9 +28,14 @@ public class SearchBoxContainerView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
+        Log.i(TAG, "SearchBoxContainerView.onFinishInflate before set typeface");
+
         TextView searchBoxTextView = findViewById(R.id.search_box_text);
         Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
         searchBoxTextView.setTypeface(typeface);
+
+        Log.i(TAG, "SearchBoxContainerView.onFinishInflate after set typeface");
     }
 
     @Override
