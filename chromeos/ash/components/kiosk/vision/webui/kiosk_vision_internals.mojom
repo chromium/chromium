@@ -25,6 +25,7 @@ interface Page {
 // State contains the information the page needs to display itself.
 struct State {
   Status status;
+  array<Label> labels;
   array<Box> boxes;
   array<Face> faces;
 };
@@ -41,6 +42,14 @@ enum Status {
   kRunning = 3,
   // The feature is enabled but some error happened.
   kError = 4,
+};
+
+// The label to be displayed above a `Box`. Useful to identify the box visually
+// over time.
+struct Label {
+  int32 id;
+  int32 x;
+  int32 y;
 };
 
 // A Box represents a rectangular area that should be highlighted in the camera

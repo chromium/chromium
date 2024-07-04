@@ -18,9 +18,32 @@ namespace ash::kiosk_vision {
 namespace {
 
 mojom::StatePtr NewState(mojom::Status status,
+                         std::vector<mojom::LabelPtr> labels = {},
                          std::vector<mojom::BoxPtr> boxes = {},
                          std::vector<mojom::FacePtr> faces = {}) {
-  return mojom::State::New(status, std::move(boxes), std::move(faces));
+  return mojom::State::New(status, std::move(labels), std::move(boxes),
+                           std::move(faces));
+}
+
+mojom::LabelPtr ToPageLabel(int person_id,
+                            const cros::mojom::KioskVisionBoundingBox& box) {
+  return mojom::Label::New(person_id, box.x, box.y);
+}
+
+std::vector<mojom::LabelPtr> ToLabels(
+    const std::vector<cros::mojom::KioskVisionAppearancePtr>& appearances) {
+  std::vector<mojom::LabelPtr> labels;
+  for (const auto& appearance : appearances) {
+    // An appearance can have two boxes. Add a label for one of the two.
+    if (appearance->body) {
+      labels.push_back(
+          ToPageLabel(appearance->person_id, *appearance->body->box));
+    } else if (appearance->face) {
+      labels.push_back(
+          ToPageLabel(appearance->person_id, *appearance->face->box));
+    }
+  }
+  return labels;
 }
 
 mojom::BoxPtr ToPageBox(const cros::mojom::KioskVisionBoundingBox& box) {
@@ -72,15 +95,16 @@ InternalsPageProcessor::~InternalsPageProcessor() = default;
 
 void InternalsPageProcessor::OnFrameProcessed(
     const cros::mojom::KioskVisionDetection& detection) {
-  NotifyStateChange(NewState(mojom::Status::kRunning,
-                             ToBoxes(detection.appearances),
-                             ToFaces(detection.appearances)));
+  NotifyStateChange(
+      NewState(mojom::Status::kRunning, ToLabels(detection.appearances),
+               ToBoxes(detection.appearances), ToFaces(detection.appearances)));
 }
 
 void InternalsPageProcessor::OnTrackCompleted(
     const cros::mojom::KioskVisionTrack& track) {
-  NotifyStateChange(
-      NewState(mojom::Status::kRunning, ToBoxes(track.appearances)));
+  NotifyStateChange(NewState(mojom::Status::kRunning,
+                             ToLabels(track.appearances),
+                             ToBoxes(track.appearances)));
 }
 
 void InternalsPageProcessor::OnError(cros::mojom::KioskVisionError error) {

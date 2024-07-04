@@ -10,6 +10,7 @@ import {
   type State,
   type Box,
   type Face,
+  type Label,
 } from './kiosk_vision_internals.mojom-webui.js';
 import {
   PolymerElement,
@@ -50,7 +51,7 @@ export class KioskVisionInternalsAppElement extends PolymerElement {
     this.browserProxy_ = BrowserProxy.getInstance();
     this.browserProxy_.callbackRouter.display.addListener(
       (state: State) => { this.state_ = state; });
-    this.state_ = { status: Status.kUnknown, boxes: [], faces: [] };
+    this.state_ = { status: Status.kUnknown, labels: [], boxes: [], faces: [] };
     this.resizeObserver_ = new ResizeObserver(this.resizeCallback_());
   }
 
@@ -104,10 +105,12 @@ function draw(state: State, overlay: HTMLCanvasElement) {
 
   for (const box of state.boxes) { drawBox(ctx, overlay, box); }
   for (const face of state.faces) { drawFace(ctx, overlay, face); }
+  for (const label of state.labels) { drawLabel(ctx, overlay, label); }
 }
 
 const RED = "#f87171";
 const GREEN = "#a3e635";
+const WHITE = "#e2e8f0";
 
 function drawBox(
   ctx: CanvasRenderingContext2D,
@@ -123,6 +126,34 @@ function drawBox(
   ctx.lineWidth = 4;
   ctx.strokeStyle = color;
   ctx.stroke();
+  ctx.closePath();
+}
+
+function drawLabel(
+  ctx: CanvasRenderingContext2D,
+  overlay: HTMLCanvasElement,
+  label: Label,
+) {
+  const MARGIN = 7, PADDING = 8;
+  const { x, y } = toCanvasCoordinates(overlay, label.x, label.y);
+  const text = `#${label.id}`;
+  ctx.beginPath();
+  ctx.fillStyle = RED;
+  ctx.font = "18px Roboto";
+  ctx.textBaseline = "alphabetic";
+  const { width, actualBoundingBoxAscent: height } = ctx.measureText(text);
+  // Draw a background box behind the label text.
+  ctx.roundRect(
+    x,
+    y - MARGIN - height - 2 * PADDING,
+    width + 2 * PADDING,
+    height + 2 * PADDING,
+    [6]
+  );
+  ctx.fill();
+  // Draw the actual label text on top of the box.
+  ctx.fillStyle = WHITE;
+  ctx.fillText(text, x + PADDING, y - MARGIN - PADDING);
   ctx.closePath();
 }
 
@@ -142,10 +173,7 @@ function drawFace(
   const { x: x0, y: y0 } = toCanvasCoordinates(overlay, centerX, centerY);
   const { x: x1, y: y1 } =
     toCanvasCoordinates(overlay, centerX + face.pan, centerY - face.tilt);
-  const headLength = 10;
-  const dx = x1 - x0;
-  const dy = y1 - y0;
-  const angle = Math.atan2(dy, dx);
+  const { arrowX0, arrowY0, arrowX1, arrowY1 } = arrowHeadEnds(x0, y0, x1, y1);
   ctx.beginPath();
   ctx.strokeStyle = RED;
   ctx.lineWidth = 4;
@@ -153,21 +181,28 @@ function drawFace(
   ctx.moveTo(x0, y0);
   ctx.lineTo(x1, y1);
   // Draw the arrow head.
-  ctx.lineTo(
-    x1 - headLength * Math.cos(angle - Math.PI / 6),
-    y1 - headLength * Math.sin(angle - Math.PI / 6)
-  );
+  ctx.lineTo(arrowX0, arrowY0);
   ctx.moveTo(x1, y1);
-  ctx.lineTo(
-    x1 - headLength * Math.cos(angle + Math.PI / 6),
-    y1 - headLength * Math.sin(angle + Math.PI / 6)
-  );
+  ctx.lineTo(arrowX1, arrowY1);
   ctx.stroke();
   ctx.closePath();
 }
 
 function boxCenter({ x, y, width, height }: Box): { x: number, y: number } {
   return { x: x + width / 2, y: y + height / 2 };
+}
+
+function arrowHeadEnds(x0: number, y0: number, x1: number, y1: number)
+  : { arrowX0: number, arrowY0: number, arrowX1: number, arrowY1: number } {
+  const HEAD_LENGTH = 10, THIRTY_DEGREES = Math.PI / 6;
+  const dx = x1 - x0, dy = y1 - y0;
+  const angle = Math.atan2(dy, dx);
+  return {
+    arrowX0: x1 - HEAD_LENGTH * Math.cos(angle - THIRTY_DEGREES),
+    arrowY0: y1 - HEAD_LENGTH * Math.sin(angle - THIRTY_DEGREES),
+    arrowX1: x1 - HEAD_LENGTH * Math.cos(angle + THIRTY_DEGREES),
+    arrowY1: y1 - HEAD_LENGTH * Math.sin(angle + THIRTY_DEGREES),
+  };
 }
 
 function getCameraStream(): Promise<MediaStream | null> {
