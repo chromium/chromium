@@ -88,25 +88,8 @@ std::unique_ptr<TestingProfile> CreateTestingProfile(
   return profile;
 }
 
-TEST(EditorFeedback, DoesNotSendFeedbackWhenFlagIsOff) {
-  content::BrowserTaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{features::kOrcaFeedback});
-  base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
-  std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
-      "test@email.com", on_report_sent_future.GetRepeatingCallback());
-
-  EXPECT_FALSE(SendEditorFeedback(profile.get(), "test description"));
-
-  task_environment.FastForwardBy(base::Milliseconds(100));
-  EXPECT_FALSE(on_report_sent_future.IsReady());
-}
-
 TEST(EditorFeedback, SendFeedbackDoesNotSendEmail) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
@@ -120,7 +103,6 @@ TEST(EditorFeedback, SendFeedbackDoesNotSendEmail) {
 
 TEST(EditorFeedback, SendFeedbackRedactsDescription) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;
   std::unique_ptr<TestingProfile> profile = CreateTestingProfile(
       "test@email.com", on_report_sent_future.GetRepeatingCallback());
@@ -138,7 +120,6 @@ TEST(EditorFeedback, SendFeedbackRedactsDescription) {
 // information.
 TEST(EditorFeedback, SendFeedbackOnlyContainsNecessaryInformation) {
   content::BrowserTaskEnvironment task_environment;
-  base::test::ScopedFeatureList feature_list(features::kOrcaFeedback);
   base::test::ScopedChromeOSVersionInfo scoped_version_info(
       "CHROMEOS_RELEASE_VERSION=42", base::Time::Now());
   base::test::TestFuture<userfeedback::ExtensionSubmit> on_report_sent_future;

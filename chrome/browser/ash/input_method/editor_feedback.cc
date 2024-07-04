@@ -66,10 +66,6 @@ void RedactThenSendFeedback(
 }  // namespace
 
 bool SendEditorFeedback(Profile* profile, std::string_view description) {
-  if (!base::FeatureList::IsEnabled(features::kOrcaFeedback)) {
-    return false;
-  }
-
   auto feedback_data = base::MakeRefCounted<feedback::FeedbackData>(
       GetFeedbackUploaderFromContext(profile), nullptr);
   feedback_data->set_product_id(feedback::kOrcaFeedbackProductId);

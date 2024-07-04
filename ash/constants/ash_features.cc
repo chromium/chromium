@@ -2212,9 +2212,6 @@ BASE_FEATURE(kOrcaControlledByPolicy,
              "OrcaControlledByPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables sending feedback for Orca.
-BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables formalize for Orca.
 BASE_FEATURE(kOrcaFormalize, "OrcaFormalize", base::FEATURE_ENABLED_BY_DEFAULT);
 
