@@ -7,19 +7,55 @@
 #import <optional>
 
 #import "base/feature_list.h"
+#import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_data.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/image/image_skia_util_ios.h"
 
+namespace {
+
+// Bridges the C++ Observer interface to the Objective-C mediator. Uses scoped
+// observation to add and remove itself as the observer of the
+// VirtualCardEnrollUiModel.
+class UiModelObserverBridge
+    : public autofill::VirtualCardEnrollUiModel::Observer {
+ public:
+  UiModelObserverBridge(
+      autofill::VirtualCardEnrollUiModel* model,
+      __weak VirtualCardEnrollmentBottomSheetMediator* mediator)
+      : mediator_(mediator) {
+    scoped_model_observation_.Observe(model);
+  }
+  ~UiModelObserverBridge() override = default;
+  void OnEnrollmentProgressChanged(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress
+          enrollment_progress) override {
+    [mediator_ modelDidChangeEnrollmentProgress:enrollment_progress];
+  }
+
+ private:
+  __weak VirtualCardEnrollmentBottomSheetMediator* mediator_;
+  base::ScopedObservation<autofill::VirtualCardEnrollUiModel,
+                          UiModelObserverBridge>
+      scoped_model_observation_{this};
+};
+
+}  // namespace
+
 @interface VirtualCardEnrollmentBottomSheetMediator () {
   VirtualCardEnrollmentBottomSheetData* _bottomSheetData;
+
+  // The following members will be destroyed in reverse order. So that
+  // the C++ observer object is destroyed, before the model is destroyed.
   std::unique_ptr<autofill::VirtualCardEnrollUiModel> _model;
+  std::unique_ptr<UiModelObserverBridge> _uiModelObserverBridge;
+
   std::optional<autofill::VirtualCardEnrollmentCallbacks> _callbacks;
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
 }
@@ -67,6 +103,12 @@
     _model = std::move(model);
     _callbacks = std::move(callbacks);
     _browserCoordinatorCommands = browserCoordinatorCommands;
+    if (base::FeatureList::IsEnabled(
+            autofill::features::
+                kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+      _uiModelObserverBridge =
+          std::make_unique<UiModelObserverBridge>(_model.get(), self);
+    }
   }
   return self;
 }
@@ -82,8 +124,6 @@
 #pragma mark VirtualCardEnrollmentBottomSheetMutator
 
 - (void)didAccept {
-  // TODO(crbug.com/339887700): Implement dismissing when enrollment has
-  // completed and show a loading state meanwhile.
   CHECK(_callbacks) << "Callbacks_ are not set. Callbacks_ should have been "
                        "set and called only once.";
   _callbacks->OnAccepted();
@@ -106,6 +146,28 @@
   [self logResultMetric:autofill::VirtualCardEnrollmentBubbleResult::
                             VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED];
   [_browserCoordinatorCommands dismissVirtualCardEnrollmentBottomSheet];
+}
+
+#pragma mark - VirtualCardEnrollUiModel Observer
+
+- (void)modelDidChangeEnrollmentProgress:
+    (autofill::VirtualCardEnrollUiModel::EnrollmentProgress)enrollmentProgress {
+  switch (enrollmentProgress) {
+    case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled:
+      [self.consumer showConfirmationState];
+      // TODO(crbug.com/339887700): Additionally, dismiss automatically after a
+      // set duration.
+      break;
+    case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed:
+      // Dismiss the virtual card enrollment bottom sheet. Failure messages are
+      // expected to be initiated by the IOSChromePaymentsAutofillClient.
+      [_browserCoordinatorCommands dismissVirtualCardEnrollmentBottomSheet];
+      break;
+    case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
+      // The enrollment progress is set by IOSChromePaymentsAutofillClient to
+      // either kEnrolled or kFailed and cannot transition back to kOffered.
+      NOTREACHED_NORETURN();
+  }
 }
 
 #pragma mark - Private

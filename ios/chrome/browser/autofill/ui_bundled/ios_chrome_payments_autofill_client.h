@@ -40,6 +40,7 @@ class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+class VirtualCardEnrollUiModel;
 
 namespace payments {
 
@@ -82,6 +83,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
+  void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
   void ShowCardUnmaskOtpInputDialog(
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
@@ -161,6 +163,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
+
+  base::WeakPtr<VirtualCardEnrollUiModel> virtual_card_enroll_ui_model_;
 
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
 

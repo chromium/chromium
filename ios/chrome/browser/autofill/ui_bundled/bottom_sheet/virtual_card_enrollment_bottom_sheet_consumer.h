@@ -15,6 +15,9 @@
 // Shows the loading stating indicating that enrollment is in progress.
 - (void)showLoadingState;
 
+// Shows the confirmation checkmark indicating that enrollment has completed.
+- (void)showConfirmationState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_CONSUMER_H_

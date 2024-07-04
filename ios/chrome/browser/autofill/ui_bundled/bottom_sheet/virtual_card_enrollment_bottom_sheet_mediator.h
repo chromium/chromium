@@ -28,6 +28,11 @@
      browserCoordinatorCommands:
          (id<BrowserCoordinatorCommands>)browserCoordinatorCommands;
 
+#pragma mark - VirtualCardEnrollUiModel Observer methods
+
+- (void)modelDidChangeEnrollmentProgress:
+    (autofill::VirtualCardEnrollUiModel::EnrollmentProgress)enrollmentProgress;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_MEDIATOR_H_

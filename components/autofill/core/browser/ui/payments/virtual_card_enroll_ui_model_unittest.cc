@@ -101,4 +101,59 @@ TEST(VirtualCardEnrollUiModelEnrollmentFieldsTest, CopiesEnrollmentFields) {
   EXPECT_EQ(model->enrollment_fields(), enrollment_fields);
 }
 
+class MockVirtualCardEnrollUiModelObserver
+    : public VirtualCardEnrollUiModel::Observer {
+ public:
+  MOCK_METHOD(
+      void,
+      OnEnrollmentProgressChanged,
+      (VirtualCardEnrollUiModel::EnrollmentProgress enrollment_progress),
+      (override));
+};
+
+class VirtualCardEnrollUiModelObserverTest : public ::testing::Test {
+ public:
+  void SetUp() override { model_->AddObserver(&observer_); }
+
+  void TearDown() override { model_->RemoveObserver(&observer_); }
+
+ protected:
+  MockVirtualCardEnrollUiModelObserver observer_;
+  std::unique_ptr<VirtualCardEnrollUiModel> model_ =
+      std::make_unique<VirtualCardEnrollUiModel>(VirtualCardEnrollmentFields());
+};
+
+// Ensure enrollment progress notifies observers.
+TEST_F(VirtualCardEnrollUiModelObserverTest,
+       SetEnrollmentProgressNotifiesWhenChanged) {
+  // This tests assumes the initial value is kOffered.
+  ASSERT_EQ(model_->enrollment_progress(),
+            VirtualCardEnrollUiModel::EnrollmentProgress::kOffered);
+
+  EXPECT_CALL(observer_,
+              OnEnrollmentProgressChanged(
+                  VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled));
+
+  // Set the enrollment progress to a different value.
+  model_->SetEnrollmentProgress(
+      VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
+}
+
+// Ensure enrollment progress notifies observers.
+TEST_F(VirtualCardEnrollUiModelObserverTest,
+       SetEnrollmentProgressDoesNotNotifyWhenUnchanged) {
+  // This tests assumes the initial value is kOffered.
+  ASSERT_EQ(model_->enrollment_progress(),
+            VirtualCardEnrollUiModel::EnrollmentProgress::kOffered);
+
+  EXPECT_CALL(observer_,
+              OnEnrollmentProgressChanged(
+                  VirtualCardEnrollUiModel::EnrollmentProgress::kOffered))
+      .Times(0);
+
+  // Set the enrollment progress to the same value.
+  model_->SetEnrollmentProgress(
+      VirtualCardEnrollUiModel::EnrollmentProgress::kOffered);
+}
+
 }  // namespace autofill

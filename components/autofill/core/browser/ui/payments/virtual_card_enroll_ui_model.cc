@@ -9,6 +9,8 @@
 
 namespace autofill {
 
+VirtualCardEnrollUiModel::Observer::~Observer() = default;
+
 VirtualCardEnrollUiModel::VirtualCardEnrollUiModel(
     const VirtualCardEnrollmentFields& enrollment_fields)
     : window_title_(l10n_util::GetStringUTF16(
@@ -31,8 +33,5 @@ VirtualCardEnrollUiModel::VirtualCardEnrollUiModel(
 }
 
 VirtualCardEnrollUiModel::~VirtualCardEnrollUiModel() = default;
-
-bool VirtualCardEnrollUiModel::operator==(
-    const VirtualCardEnrollUiModel& other) const = default;
 
 }  // namespace autofill

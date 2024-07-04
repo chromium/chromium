@@ -29,6 +29,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_expiration_date_fix_flow_view_bridge.h"
@@ -149,11 +150,29 @@ void IOSChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
     base::OnceClosure decline_virtual_card_callback) {
   AutofillBottomSheetTabHelper* bottom_sheet_tab_helper =
       AutofillBottomSheetTabHelper::FromWebState(web_state_);
-  bottom_sheet_tab_helper->ShowVirtualCardEnrollmentBottomSheet(
+  std::unique_ptr<VirtualCardEnrollUiModel> model =
       std::make_unique<VirtualCardEnrollUiModel>(
-          virtual_card_enrollment_fields),
+          virtual_card_enrollment_fields);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    virtual_card_enroll_ui_model_ = model->GetWeakPtr();
+  }
+  bottom_sheet_tab_helper->ShowVirtualCardEnrollmentBottomSheet(
+      std::move(model),
       VirtualCardEnrollmentCallbacks(std::move(accept_virtual_card_callback),
                                      std::move(decline_virtual_card_callback)));
+}
+
+void IOSChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
+    bool is_vcn_enrolled) {
+  if (virtual_card_enroll_ui_model_ &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    virtual_card_enroll_ui_model_->SetEnrollmentProgress(
+        is_vcn_enrolled
+            ? VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled
+            : VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
+  }
 }
 
 void IOSChromePaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(

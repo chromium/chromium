@@ -280,10 +280,8 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollCompleted(
     bool is_vcn_enrolled) {
-#if !BUILDFLAG(IS_IOS)
   autofill_client_->GetPaymentsAutofillClient()->VirtualCardEnrollCompleted(
       /*is_vcn_enrolled=*/is_vcn_enrolled);
-#endif
 }
 
 void VirtualCardEnrollmentManager::Reset() {

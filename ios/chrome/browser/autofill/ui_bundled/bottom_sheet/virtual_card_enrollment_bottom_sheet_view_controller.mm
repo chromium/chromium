@@ -90,6 +90,11 @@ CGFloat const kCreditCardCellHeight = 64;
   self.isLoading = YES;
 }
 
+- (void)showConfirmationState {
+  // TODO(crbug.com/339887700): Implement the confirmation state showing a
+  // checkmark on the primary button.
+}
+
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {

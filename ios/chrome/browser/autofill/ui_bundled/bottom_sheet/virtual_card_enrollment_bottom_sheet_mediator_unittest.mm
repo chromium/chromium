@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_mediator.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/weak_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
@@ -33,6 +34,9 @@
 @implementation TestVirtualCardEnrollmentBottomSheetConsumer
 
 - (void)showLoadingState {
+}
+
+- (void)showConfirmationState {
 }
 
 @end
@@ -64,6 +68,7 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
   // commands.
   VirtualCardEnrollmentBottomSheetMediator* MakeMediator(
       std::unique_ptr<autofill::VirtualCardEnrollUiModel> model) {
+    model_ = model->GetWeakPtr();
     return [[VirtualCardEnrollmentBottomSheetMediator alloc]
                    initWithUiModel:std::move(model)
                          callbacks:MakeFakeCallbacks()
@@ -87,6 +92,8 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
   base::HistogramTester histogram_tester_;
   gfx::ImageSkia fake_card_art_;
   id<BrowserCoordinatorCommands> mock_commands_;
+  VirtualCardEnrollmentBottomSheetMediator* mediator_;
+  base::WeakPtr<autofill::VirtualCardEnrollUiModel> model_;
 };
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, SetsCardDataOnConsumer) {
@@ -280,4 +287,38 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest, LogsCancelledMetric) {
       autofill::VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
       /*expected_count=*/1);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       ShowsConfirmationWhenEnrolled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  id<VirtualCardEnrollmentBottomSheetConsumer> mock_consumer =
+      OCMProtocolMock(@protocol(VirtualCardEnrollmentBottomSheetConsumer));
+  VirtualCardEnrollmentBottomSheetMediator* mediator =
+      MakeMediator(MakeModel());
+  mediator.consumer = mock_consumer;
+
+  OCMExpect([mock_consumer showConfirmationState]);
+
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
+
+  EXPECT_OCMOCK_VERIFY((id)mock_consumer);
+}
+
+TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
+       DismissesWhenEnrollmentFailed) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+  // Hold a strong reference to the mediator during the duration of the test.
+  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
+      MakeMediator(MakeModel());
+
+  OCMExpect([mock_commands_ dismissVirtualCardEnrollmentBottomSheet]);
+
+  model_->SetEnrollmentProgress(
+      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
+
+  EXPECT_OCMOCK_VERIFY((id)mock_commands_);
 }
