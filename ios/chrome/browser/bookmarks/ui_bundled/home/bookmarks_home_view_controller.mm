@@ -732,7 +732,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                          indexPath:(NSIndexPath*)indexPath
                                        canEditNode:(BOOL)canEditNode {
   const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
-  DCHECK_EQ(bookmarkNode, FindNodeByNodeReference(nodeReference));
+  DCHECK_EQ(bookmarkNode, FindNodeByNodeReference(
+                              _localOrSyncableBookmarkModel->underlying_model(),
+                              nodeReference));
   DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
   GURL nodeURL = bookmarkNode->url();
   // Record that this context menu was shown to the user.
@@ -810,7 +812,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                        indexPath:(NSIndexPath*)indexPath
                                      canEditNode:(BOOL)canEditNode {
   const BookmarkNode* folderNode = [self nodeAtIndexPath:indexPath];
-  DCHECK_EQ(folderNode, FindNodeByNodeReference(nodeReference));
+  DCHECK_EQ(folderNode, FindNodeByNodeReference(
+                            _localOrSyncableBookmarkModel->underlying_model(),
+                            nodeReference));
   DCHECK_EQ(folderNode->type(), BookmarkNode::FOLDER);
   // Record that this context menu was shown to the user.
   RecordMenuShown(kMenuScenarioHistogramBookmarkFolder);
@@ -847,8 +851,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                             userAction:(const char*)userAction {
   DCHECK(!_folderChooserCoordinator);
   DCHECK(nodeReferences.size() > 0);
+  CHECK_EQ(_localOrSyncableBookmarkModel->underlying_model(),
+           _accountBookmarkModel->underlying_model());
   bookmark_utils_ios::NodeSet nodes =
-      bookmark_utils_ios::FindNodesByNodeReferences(nodeReferences);
+      bookmark_utils_ios::FindNodesByNodeReferences(
+          _localOrSyncableBookmarkModel->underlying_model(), nodeReferences);
   if (nodes.size() == 0) {
     // While the contextual menu was opened, the nodes might have been removed.
     // If the nodes don't exist anymore, there nothing to do.
@@ -869,7 +876,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Deletes the `nodeIDs` if they still exist and records `userAction`.
 - (void)deleteBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference
                              userAction:(const char*)userAction {
-  const bookmarks::BookmarkNode* node = FindNodeByNodeReference(nodeReference);
+  CHECK_EQ(_localOrSyncableBookmarkModel->underlying_model(),
+           _accountBookmarkModel->underlying_model());
+  const bookmarks::BookmarkNode* node = FindNodeByNodeReference(
+      _localOrSyncableBookmarkModel->underlying_model(), nodeReference);
   if (!node) {
     // While the contextual menu was opened, the nodes might have been removed.
     // If the nodes don't exist anymore, there nothing to do.
@@ -908,8 +918,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
 // a bookmark node.
 - (void)editBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference {
+  CHECK_EQ(_localOrSyncableBookmarkModel->underlying_model(),
+           _accountBookmarkModel->underlying_model());
   const bookmarks::BookmarkNode* bookmarkNode =
-      bookmark_utils_ios::FindNodeByNodeReference(nodeReference);
+      bookmark_utils_ios::FindNodeByNodeReference(
+          _localOrSyncableBookmarkModel->underlying_model(), nodeReference);
   if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
@@ -925,8 +938,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
 // a folder node.
 - (void)editFolderNodeWithReference:(BookmarkNodeReference)nodeReference {
+  CHECK_EQ(_localOrSyncableBookmarkModel->underlying_model(),
+           _accountBookmarkModel->underlying_model());
   const bookmarks::BookmarkNode* bookmarkNode =
-      bookmark_utils_ios::FindNodeByNodeReference(nodeReference);
+      bookmark_utils_ios::FindNodeByNodeReference(
+          _localOrSyncableBookmarkModel->underlying_model(), nodeReference);
   if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
@@ -1428,13 +1444,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Returns a bookmark node reference for `bookmarkNode`.
 - (BookmarkNodeReference)bookmarkNodeReferenceWithNode:
     (const bookmarks::BookmarkNode*)bookmarkNode {
-  LegacyBookmarkModel* bookmarkModel =
-      bookmark_utils_ios::GetBookmarkModelForNode(
-          bookmarkNode, _localOrSyncableBookmarkModel.get(),
-          _accountBookmarkModel.get());
-  BookmarkNodeReference bookmarkNodeReference(bookmarkNode->uuid(),
-                                              bookmarkModel);
-  return bookmarkNodeReference;
+  return BookmarkNodeReference(bookmarkNode->id());
 }
 
 - (BOOL)isDisplayingBookmarkRoot {
@@ -1816,8 +1826,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 // Triggers the URL sharing flow for `bookmarkNodeID` node, if it still exists.
 - (void)shareBookmarkNodeWithReference:(BookmarkNodeReference)nodeReference
                              indexPath:(NSIndexPath*)indexPath {
-  const bookmarks::BookmarkNode* bookmarkNode =
-      FindNodeByNodeReference(nodeReference);
+  CHECK_EQ(_localOrSyncableBookmarkModel->underlying_model(),
+           _accountBookmarkModel->underlying_model());
+  const bookmarks::BookmarkNode* bookmarkNode = FindNodeByNodeReference(
+      _localOrSyncableBookmarkModel->underlying_model(), nodeReference);
   if (!bookmarkNode) {
     // While the contextual menu was opened, the node might has been removed.
     // If the node doesn't exist anymore, there nothing to do.
@@ -2220,8 +2232,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                enabled:[self isIncognitoAvailable]];
 
   bookmark_utils_ios::NodeReferenceSet nodeReferences =
-      FindNodeReferenceByNodes(nodes, _localOrSyncableBookmarkModel.get(),
-                               _accountBookmarkModel.get());
+      FindNodeReferenceByNodes(nodes);
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator
       addItemWithTitle:titleString
@@ -2372,8 +2383,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       kBookmarksHomeContextMenuIdentifier;
 
   bookmark_utils_ios::NodeReferenceSet nodeReferences =
-      FindNodeReferenceByNodes(nodes, _localOrSyncableBookmarkModel.get(),
-                               _accountBookmarkModel.get());
+      FindNodeReferenceByNodes(nodes);
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator
       addItemWithTitle:titleString

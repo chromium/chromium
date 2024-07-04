@@ -28,6 +28,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/query_parser/query_parser.h"
@@ -92,10 +93,8 @@ void RemoveBookmarksRecursive(const std::set<const BookmarkNode*>& bookmarks,
 
 }  // namespace
 
-BookmarkNodeReference::BookmarkNodeReference(
-    const base::Uuid& uuid,
-    LegacyBookmarkModel* bookmark_model)
-    : uuid(uuid), bookmark_model(bookmark_model) {}
+BookmarkNodeReference::BookmarkNodeReference(int64_t node_id)
+    : node_id(node_id) {}
 
 BookmarkNodeReference::BookmarkNodeReference(
     const BookmarkNodeReference& other) = default;
@@ -104,35 +103,30 @@ BookmarkNodeReference::~BookmarkNodeReference() = default;
 
 bool BookmarkNodeReference::operator<(
     const BookmarkNodeReference reference) const {
-  return (bookmark_model == reference.bookmark_model)
-             ? (uuid < reference.uuid)
-             : (bookmark_model < reference.bookmark_model);
+  return node_id < reference.node_id;
 }
 
-NodeReferenceSet FindNodeReferenceByNodes(
-    NodeSet nodes,
-    LegacyBookmarkModel* profile_bookmark_model,
-    LegacyBookmarkModel* account_bookmark_model) {
+NodeReferenceSet FindNodeReferenceByNodes(const NodeSet& nodes) {
   NodeReferenceSet references;
   for (const BookmarkNode* node : nodes) {
-    LegacyBookmarkModel* model = GetBookmarkModelForNode(
-        node, profile_bookmark_model, account_bookmark_model);
-    references.insert(BookmarkNodeReference(node->uuid(), model));
+    references.emplace(node->id());
   }
   return references;
 }
 
-const BookmarkNode* FindNodeByNodeReference(BookmarkNodeReference reference) {
-  if (!reference.bookmark_model) {
-    return nullptr;
-  }
-  return reference.bookmark_model->GetNodeByUuid(reference.uuid);
+const BookmarkNode* FindNodeByNodeReference(
+    const bookmarks::BookmarkModel* model,
+    BookmarkNodeReference reference) {
+  CHECK(model);
+  return bookmarks::GetBookmarkNodeByID(model, reference.node_id);
 }
 
-NodeSet FindNodesByNodeReferences(NodeReferenceSet references) {
+NodeSet FindNodesByNodeReferences(const bookmarks::BookmarkModel* model,
+                                  const NodeReferenceSet& references) {
+  CHECK(model);
   NodeSet nodes;
   for (BookmarkNodeReference reference : references) {
-    const BookmarkNode* node = FindNodeByNodeReference(reference);
+    const BookmarkNode* node = FindNodeByNodeReference(model, reference);
     if (node) {
       nodes.insert(node);
     }
