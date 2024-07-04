@@ -14,7 +14,6 @@ it will ask you whether it is good or bad before continuing the search.
 
 import base64
 import bisect
-import http.client
 import importlib
 import json
 import optparse
@@ -144,6 +143,18 @@ PATH_CONTEXT = {
             'archive_name': None,
             'archive_extract_dir': 'android-arm64'
         },
+        'android-x86': {
+            'binary_name': None,
+            'listing_platform_dir': 'x86/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-x86'
+        },
+        'android-x64': {
+            'binary_name': None,
+            'listing_platform_dir': 'x86_64/',
+            'archive_name': None,
+            'archive_extract_dir': 'android-x64'
+        },
         'linux64': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'linux64/',
@@ -208,6 +219,7 @@ PATH_CONTEXT = {
         },
         'android-arm64': {
             'binary_name': None,
+            # See for why not high_end: https://crbug.com/350944660#comment7
             'listing_platform_dir': 'android_arm64-builder-perf/',
             'archive_name': 'full-build-linux.zip',
             'archive_extract_dir': 'full-build-linux'
@@ -1155,7 +1167,7 @@ def InstallRevisionForLacros(context, zip_file):
 def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   """Given a zipped revision, unzip it and run the test."""
   print('Trying revision %s...' % str(revision))
-  if context.platform in ['android-arm', 'android-arm64']:
+  if context.platform.startswith('android-'):
     return RunRevisionForAndroid(context, revision, zip_file)
 
   if context.platform in ['lacros64', 'lacros-arm32', 'lacros-arm64']:
@@ -1738,7 +1750,7 @@ def SetupEnvironment(options):
 
   # Catapult repo is required for Android bisect,
   # Update Catapult repo if it exists otherwise checkout repo.
-  if options.archive in ['android-arm', 'android-arm64']:
+  if options.archive.startswith('android-'):
     SetupAndroidEnvironment()
 
   # Set up verbose logging if requested.
@@ -1850,9 +1862,9 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   parser = optparse.OptionParser(usage=usage)
   # Strangely, the default help output doesn't include the choice list.
   choices = [
-      'android-arm', 'android-arm64', 'mac', 'mac64', 'mac-arm', 'win',
-      'win-clang', 'win64', 'win64-clang', 'linux64', 'linux-arm', 'chromeos',
-      'lacros64', 'lacros-arm32', 'lacros-arm64'
+      'android-arm', 'android-arm64', 'android-x86', 'android-x64', 'mac',
+      'mac64', 'mac-arm', 'win', 'win-clang', 'win64', 'win64-clang', 'linux64',
+      'linux-arm', 'chromeos', 'lacros64', 'lacros-arm32', 'lacros-arm64'
   ]
   parser.add_option('-a',
                     '--archive',
@@ -1987,7 +1999,7 @@ def ParseCommandLine(args=None):
     parser.print_help()
     sys.exit(1)
 
-  if opts.signed and opts.archive not in ['android-arm', 'android-arm64']:
+  if opts.signed and not opts.archive.startswith('android-'):
     print('Signed bisection is only supported for Android platform.')
     exit(1)
 
@@ -2048,7 +2060,7 @@ def main():
     sys.exit(1)
 
   device = None
-  if opts.archive in ['android-arm', 'android-arm64']:
+  if opts.archive.startswith('android-'):
     device = InitializeAndroidDevice(opts.device_id, opts.apk, args)
     if not device:
       raise BisectException('Failed to initialize device.')
