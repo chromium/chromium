@@ -6,6 +6,7 @@
 chrome_stdlib_sql_files = [
   "chrome_scrolls.sql",
   "cpu_powerups.sql",
+  "event_latency.sql",
   "event_latency_description.sql",
   "histograms.sql",
   "interactions.sql",

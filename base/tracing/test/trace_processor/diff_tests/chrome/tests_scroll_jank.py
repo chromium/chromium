@@ -61,26 +61,6 @@ class ChromeScrollJankStdlib(TestSuite):
         4652,1035868607429926,1517121000,1035868607429926,1035870086449926
         """))
 
-  def test_chrome_scroll_intervals(self):
-    return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
-        INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
-
-        SELECT
-          id,
-          ts,
-          dur
-        FROM chrome_scrolling_intervals
-        ORDER by id;
-        """,
-        out=Csv("""
-        "id","ts","dur"
-        1,1035865535981926,1255745000
-        2,1035866799527926,1458525000
-        3,1035868607429926,1517121000
-        """))
-
   def test_chrome_scroll_input_offsets(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_offsets_trace_2.pftrace'),

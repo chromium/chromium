@@ -37,10 +37,13 @@ SELECT
   s.name,
   e.cause_of_jank,
   e.sub_cause_of_jank,
-  CAST((e.delay_since_last_frame/e.vsync_interval) - 1 AS INT) AS delayed_frame_count,
-  CAST(s.ts + s.dur - ((e.delay_since_last_frame - e.vsync_interval) * 1e6) AS INT) AS frame_jank_ts,
-  CAST((e.delay_since_last_frame - e.vsync_interval) * 1e6 AS INT) AS frame_jank_dur
-FROM slice s
+  CAST((e.delay_since_last_frame/e.vsync_interval) - 1 AS INT)
+    AS delayed_frame_count,
+  CAST(s.ts + s.dur - ((e.delay_since_last_frame - e.vsync_interval) * 1e6)
+    AS INT) AS frame_jank_ts,
+  CAST((e.delay_since_last_frame - e.vsync_interval) * 1e6 AS INT)
+    AS frame_jank_dur
+FROM chrome_gesture_scroll_events s
 JOIN chrome_janky_frames e
   ON s.id = e. event_latency_id;
 
@@ -73,7 +76,7 @@ SELECT
 FROM chrome_janky_event_latencies_v3;
 
 -- Scroll jank frame presentation stats for individual scrolls.
-CREATE PERFETTO VIEW chrome_scroll_stats(
+CREATE PERFETTO TABLE chrome_scroll_stats(
   -- Id of the individual scroll.
   scroll_id INT,
   -- The number of frames in the scroll.
@@ -98,7 +101,8 @@ WITH vsyncs AS (
   GROUP BY scroll_id),
 missed_vsyncs AS (
   SELECT
-    CAST(SUM((delay_since_last_frame / vsync_interval) - 1) AS INT)  AS total_missed_vsyncs,
+    CAST(SUM((delay_since_last_frame / vsync_interval) - 1) AS INT)
+      AS total_missed_vsyncs,
     scroll_id
   FROM chrome_janky_frames
   GROUP BY scroll_id),
@@ -157,7 +161,8 @@ range_starts AS (
       -- This is a two-pass calculation to calculate the first event in the
       -- group. An event is considered the first event in a group if all events
       -- which started before it also finished the current one started.
-      WHEN start_ts <= 1 + LAG(max_end_ts_so_far) OVER (ORDER BY start_ts) THEN 0
+      WHEN start_ts <= 1 + LAG(max_end_ts_so_far) OVER (ORDER BY start_ts)
+        THEN 0
       ELSE 1
     END AS range_start
   FROM ordered_jank_end_ts),

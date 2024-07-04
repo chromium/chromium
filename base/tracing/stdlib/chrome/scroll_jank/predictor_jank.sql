@@ -69,6 +69,37 @@ SELECT
     ELSE 0
   END;
 
+CREATE PERFETTO TABLE _deltas_and_neighbors AS
+SELECT
+  scroll_id,
+  event_latency_id,
+  scroll_update_id,
+  ts,
+  delta_y,
+  relative_offset_y,
+  LAG(IFNULL(delta_y, 0.0))
+    OVER (PARTITION BY scroll_id ORDER BY ts ASC) AS prev_delta,
+  LEAD(IFNULL(delta_y, 0.0))
+    OVER (PARTITION BY scroll_id ORDER BY ts ASC) AS next_delta
+FROM chrome_presented_scroll_offsets;
+
+CREATE PERFETTO TABLE _deltas_and_neighbors_with_threshold AS
+SELECT
+  scroll_id,
+  event_latency_id,
+  scroll_update_id,
+  ts,
+  delta_y,
+  relative_offset_y,
+  prev_delta,
+  next_delta,
+  _get_scroll_jank_threshold(ABS(prev_delta), ABS(delta_y), ABS(next_delta))
+    AS delta_threshold
+FROM _deltas_and_neighbors
+WHERE delta_y IS NOT NULL
+  AND prev_delta IS NOT NULL
+  AND next_delta IS NOT NULL;
+
 -- The scrolling offsets and predictor jank values for the actual (applied)
 -- scroll events.
 CREATE PERFETTO TABLE chrome_predictor_jank(
@@ -100,38 +131,6 @@ CREATE PERFETTO TABLE chrome_predictor_jank(
   delta_threshold DOUBLE
 )
 AS
-WITH
-deltas_and_neighbors AS (
-  SELECT
-    scroll_id,
-    event_latency_id,
-    scroll_update_id,
-    ts,
-    delta_y,
-    relative_offset_y,
-    LAG(IFNULL(delta_y, 0.0))
-      OVER (PARTITION BY scroll_id ORDER BY ts ASC) AS prev_delta,
-    LEAD(IFNULL(delta_y, 0.0))
-      OVER (PARTITION BY scroll_id ORDER BY ts ASC) AS next_delta
-  FROM chrome_presented_scroll_offsets
-),
-deltas_and_neighbors_with_threshold AS (
-  SELECT
-    scroll_id,
-    event_latency_id,
-    scroll_update_id,
-    ts,
-    delta_y,
-    relative_offset_y,
-    prev_delta,
-    next_delta,
-    _get_scroll_jank_threshold(ABS(prev_delta), ABS(delta_y), ABS(next_delta))
-      AS delta_threshold
-  FROM deltas_and_neighbors
-  WHERE delta_y IS NOT NULL
-    AND prev_delta IS NOT NULL
-    AND next_delta IS NOT NULL
-)
 SELECT
   scroll_id,
   event_latency_id,
@@ -145,4 +144,4 @@ SELECT
     ABS(prev_delta), ABS(delta_y), ABS(next_delta), delta_threshold)
       AS predictor_jank,
   delta_threshold
-FROM deltas_and_neighbors_with_threshold;
+FROM _deltas_and_neighbors_with_threshold;

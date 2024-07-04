@@ -2,34 +2,11 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE deprecated.v42.common.slices;
-
 -- Hardware info is useful when using sql metrics for analysis
 -- in BTP.
 INCLUDE PERFETTO MODULE chrome.metadata;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3_cause;
 INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
-
--- Finds the end timestamp for a given slice's descendant with a given name.
--- If there are multiple descendants with a given name, the function will return the
--- first one, so it's most useful when working with a timeline broken down into phases,
--- where each subphase can happen only once.
-CREATE PERFETTO FUNCTION _descendant_slice_end(
-  -- Id of the parent slice.
-  parent_id INT,
-  -- Name of the child with the desired end TS.
-  child_name STRING
-)
--- End timestamp of the child or NULL if it doesn't exist.
-RETURNS INT AS
-SELECT
-  CASE WHEN s.dur
-    IS NOT -1 THEN s.ts + s.dur
-    ELSE NULL
-  END
-FROM descendant_slice($parent_id) s
-WHERE s.name = $child_name
-LIMIT 1;
 
 -- Given a slice id, returns the name of the slice.
 CREATE PERFETTO FUNCTION _slice_name_from_id(
@@ -67,29 +44,20 @@ CREATE PERFETTO TABLE chrome_gesture_scroll_updates(
   event_type INT
 ) AS
 SELECT
-  slice.ts,
-  slice.dur,
-  slice.id,
-  EXTRACT_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
-  chrome_get_most_recent_scroll_begin_id(slice.ts) AS scroll_id,
-  has_descendant_slice_with_name(slice.id, 'SubmitCompositorFrameToPresentationCompositorFrame')
-  AS is_presented,
-  CASE WHEN has_descendant_slice_with_name(slice.id, "SwapEndToPresentationCompositorFrame")
-    THEN _descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame")
-    ELSE _descendant_slice_end(slice.id, "LatchToSwapEnd")
-  END
-  AS presentation_timestamp,
-  EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS event_type
-FROM slice JOIN args USING(arg_set_id)
-WHERE name = "EventLatency"
-AND (
-  args.string_value GLOB '*GESTURE_SCROLL_UPDATE'
-  -- Pinches are only relevant if the frame was presented.
-  OR (args.string_value GLOB '*GESTURE_PINCH_UPDATE'
-    AND has_descendant_slice_with_name(
-      slice.id,
-      'SubmitCompositorFrameToPresentationCompositorFrame')
-  )
+  ts,
+  dur,
+  id,
+  scroll_update_id,
+  scroll_id,
+  is_presented,
+  presentation_timestamp,
+  event_type
+FROM chrome_gesture_scroll_events
+WHERE event_type IN (
+  'GESTURE_SCROLL_UPDATE',
+  'FIRST_GESTURE_SCROLL_UPDATE',
+  'INERTIAL_GESTURE_SCROLL_UPDATE',
+  'GESTURE_PINCH_UPDATE'
 );
 
 CREATE PERFETTO TABLE _presented_gesture_scrolls AS
