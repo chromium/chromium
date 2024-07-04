@@ -31,4 +31,17 @@ const char* TryToGetHttpReasonPhrase(HttpStatusCode code) {
   }
 }
 
+const std::optional<HttpStatusCode> TryToGetHttpStatusCode(int response_code) {
+  switch (response_code) {
+#define HTTP_STATUS_ENUM_VALUE(label, code, reason) \
+  case code:                                        \
+    return HTTP_##label;
+#include "net/http/http_status_code_list.h"
+#undef HTTP_STATUS_ENUM_VALUE
+
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace net

@@ -2140,6 +2140,19 @@ chromium-metrics-reviews@google.com.
   <summary>The count of HTTP Response codes encountered.</summary>
 </histogram>
 
+<histogram name="Net.HttpResponseCode2" enum="HttpResponseCode"
+    expires_after="never">
+<!-- expires-never: Core network stack health metric -->
+
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    The count of HTTP Response codes encountered, for codes registered in the
+    IANA HTTP Status Code Registry. Ignores unknown response codes. Recorded
+    when HttpResponseHeaders are constructed, after parsing.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpTimeToFirstByte" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 

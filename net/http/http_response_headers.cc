@@ -233,23 +233,30 @@ HttpResponseHeaders::HttpResponseHeaders(const std::string& raw_input)
     : response_code_(-1) {
   Parse(raw_input);
 
-  // The most important thing to do with this histogram is find out
-  // the existence of unusual HTTP status codes.  As it happens
-  // right now, there aren't double-constructions of response headers
-  // using this constructor, so our counts should also be accurate,
+  // As it happens right now, there aren't double-constructions of response
+  // headers using this constructor, so our counts should also be accurate,
   // without instantiating the histogram in two places.  It is also
   // important that this histogram not collect data in the other
   // constructor, which rebuilds an histogram from a pickle, since
   // that would actually create a double call between the original
   // HttpResponseHeader that was serialized, and initialization of the
   // new object from that pickle.
-  UMA_HISTOGRAM_CUSTOM_ENUMERATION(
-      "Net.HttpResponseCode",
-      HttpUtil::MapStatusCodeForHistogram(response_code_),
-      // Note the third argument is only
-      // evaluated once, see macro
-      // definition for details.
-      HttpUtil::GetStatusCodesForHistogram());
+  if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
+    std::optional<HttpStatusCode> status_code =
+        TryToGetHttpStatusCode(response_code_);
+    if (status_code.has_value()) {
+      UMA_HISTOGRAM_ENUMERATION("Net.HttpResponseCode2", status_code.value(),
+                                net::HttpStatusCode::HTTP_STATUS_CODE_MAX);
+    }
+  } else {
+    UMA_HISTOGRAM_CUSTOM_ENUMERATION(
+        "Net.HttpResponseCode",
+        HttpUtil::MapStatusCodeForHistogram(response_code_),
+        // Note the third argument is only
+        // evaluated once, see macro
+        // definition for details.
+        HttpUtil::GetStatusCodesForHistogram());
+  }
 }
 
 HttpResponseHeaders::HttpResponseHeaders(base::PickleIterator* iter)

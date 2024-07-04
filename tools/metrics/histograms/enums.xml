@@ -13075,6 +13075,7 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="HttpResponseCode">
   <int value="100" label="100: Continue"/>
   <int value="101" label="101: Switching Protocols"/>
+  <int value="102" label="102: Processing"/>
   <int value="103" label="103: Early Hints"/>
   <int value="200" label="200: OK"/>
   <int value="201" label="201: Created"/>
@@ -13083,6 +13084,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="204" label="204: No Content"/>
   <int value="205" label="205: Reset Content"/>
   <int value="206" label="206: Partial Content"/>
+  <int value="207" label="207: Multi-Status"/>
+  <int value="208" label="226: IM Used"/>
   <int value="300" label="300: Multiple Choices"/>
   <int value="301" label="301: Moved Permanently"/>
   <int value="302" label="302: Found"/>
@@ -13111,15 +13114,27 @@ Called by update_permissions_policy_enum.py.-->
   <int value="416" label="416: Requested Range Not Satisfiable"/>
   <int value="417" label="417: Expectation Failed"/>
   <int value="418" label="418: I'm a teapot"/>
+  <int value="421" label="421: Misdirected Request"/>
   <int value="422" label="422: Unprocessable Content"/>
+  <int value="423" label="423: Locked"/>
+  <int value="424" label="424: Failed Dependency"/>
   <int value="425" label="425: Too Early Experimental"/>
+  <int value="426" label="426: Upgrade Required"/>
+  <int value="428" label="428: Precondition Required"/>
   <int value="429" label="429: Too Many Requests"/>
+  <int value="431" label="431: Request Header Fields Too Large"/>
+  <int value="451" label="451: Unavailable For Legal Reasons"/>
   <int value="500" label="500: Internal Server Error"/>
   <int value="501" label="501: Not Implemented"/>
   <int value="502" label="502: Bad Gateway"/>
   <int value="503" label="503: Service Unavailable"/>
   <int value="504" label="504: Gateway Timeout"/>
   <int value="505" label="505: HTTP Version Not Supported"/>
+  <int value="506" label="506: Variant Also Negotiates"/>
+  <int value="507" label="507: Insufficient Storage"/>
+  <int value="508" label="508: Loop Detected"/>
+  <int value="510" label="510: Not Extended (Obsoleted)"/>
+  <int value="511" label="511: Network Authentication Required"/>
 </enum>
 
 <enum name="HwsecAttestationOpsStatus">
