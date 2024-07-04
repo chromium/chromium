@@ -133,6 +133,7 @@ public class UrlConstants {
     public static final String PDF_HOST = "pdf";
     public static final String PDF_URL = "chrome-native://pdf/";
     public static final String PDF_URL_PARAM = "link?url=";
+    public static final String PDF_URL_QUERY_PARAM = "url";
 
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =

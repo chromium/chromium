@@ -34,6 +34,7 @@ import org.chromium.url.GURL;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Objects;
@@ -225,6 +226,27 @@ public class PdfUtils {
             return pdfPageUrl;
         } catch (java.io.UnsupportedEncodingException e) {
             recordIsPdfDownloadUrlEncoded(false);
+            Log.e(TAG, "Unsupported encoding: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Decode the pdf page url.
+     *
+     * @param originalUrl The url to be decoded.
+     * @return the decoded download url; or null if the original url is not a pdf page url.
+     */
+    public static String decodePdfPageUrl(String originalUrl) {
+        if (!originalUrl.startsWith(UrlConstants.PDF_URL)) {
+            return null;
+        }
+        Uri uri = Uri.parse(originalUrl);
+        String encodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
+        // TODO(b/350771232): add metric to capture how often the decode fails.
+        try {
+            return URLDecoder.decode(encodedUrl, "UTF-8");
+        } catch (java.io.UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;
         }

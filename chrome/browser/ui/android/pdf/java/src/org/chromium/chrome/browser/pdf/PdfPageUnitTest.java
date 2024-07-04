@@ -323,4 +323,11 @@ public class PdfPageUnitTest {
         histogramExpectation.assertExpected(
                 "The recorded value should be true when the encoded url is not null.");
     }
+
+    @Test
+    public void testPdfPageUrlEncodeDecode() {
+        String encodedUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
+        String decodedUrl = PdfUtils.decodePdfPageUrl(encodedUrl);
+        Assert.assertEquals("The decoded url should match the original url", PDF_LINK, decodedUrl);
+    }
 }
