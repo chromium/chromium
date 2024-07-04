@@ -25,32 +25,34 @@ class Browser;
 // browser state's service instance.
 class BrowserList : public KeyedService {
  public:
+  enum BrowserType {
+    kRegular = 1 << 0,
+    kInactive = 1 << 1,
+    kIncognito = 1 << 2,
+  };
+
   explicit BrowserList() = default;
 
   BrowserList(const BrowserList&) = delete;
   BrowserList& operator=(const BrowserList&) = delete;
 
-  // Adds a regular browser to the list. It's an error to add an incognito
-  // browser with this method.
+  // Adds a regular browser to the list. It's an error to add a temporary
+  // browser.
   virtual void AddBrowser(Browser* browser) = 0;
 
-  // Adds an incognoito browser to the list.It's an error to add a regular
-  // (non-incognito) browser with this method.
-  virtual void AddIncognitoBrowser(Browser* browser) = 0;
-
   // Removes a regular browser from the list. Removing any browser not
-  // previously added is a no-op; observers are not informed. This includes
-  // calling RemoveBrowser() with an incognito browser.
+  // previously added is a no-op; observers are not informed.
   virtual void RemoveBrowser(Browser* browser) = 0;
 
-  // Removes an incognito browser from the list. Removing any incognito browser
-  // not previously added is a no-op; observers are not informed. This includes
-  // calling RemoveIncognitoBrowser() with a regular browser.
-  virtual void RemoveIncognitoBrowser(Browser* browser) = 0;
+  // Returns the current set of browsers in the list matching the `type`. `type`
+  // can be be used as a bitmask.
+  virtual std::set<Browser*> BrowsersOfType(int browser_type_mask) const = 0;
 
+  // DEPRECATED, use `BrowsersOfType` instead.
   // Returns the current set of regular browsers in the list.
   virtual std::set<Browser*> AllRegularBrowsers() const = 0;
 
+  // DEPRECATED, use `BrowsersOfType` instead.
   // Returns the current set of incognito browsers in the list.
   virtual std::set<Browser*> AllIncognitoBrowsers() const = 0;
 

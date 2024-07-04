@@ -54,12 +54,8 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
   // BrowserListObserver
   void OnBrowserAdded(const BrowserList* browser_list,
                       Browser* browser) override;
-  void OnIncognitoBrowserAdded(const BrowserList* browser_list,
-                               Browser* browser) override;
   void OnBrowserRemoved(const BrowserList* browser_list,
                         Browser* browser) override;
-  void OnIncognitoBrowserRemoved(const BrowserList* browser_list,
-                                 Browser* browser) override;
   void OnBrowserListShutdown(BrowserList* browser_list) override;
 
  private:

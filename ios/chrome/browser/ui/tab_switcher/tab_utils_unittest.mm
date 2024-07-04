@@ -28,7 +28,7 @@ class TabSwitcherUtilsTest : public PlatformTest {
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_regular_.get());
     browser_list_->AddBrowser(browser_inactive_.get());
-    browser_list_->AddIncognitoBrowser(browser_incognito_.get());
+    browser_list_->AddBrowser(browser_incognito_.get());
 
     browsers_.push_back(browser_regular_.get());
     browsers_.push_back(browser_inactive_.get());

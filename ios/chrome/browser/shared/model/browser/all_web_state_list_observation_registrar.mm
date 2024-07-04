@@ -7,6 +7,29 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 
+namespace {
+
+using ObservationMode = AllWebStateListObservationRegistrar::Mode;
+
+// Returns events for Browser of `type` should be propagated
+// or ignored, according to `mode`.
+bool ShouldPropagateEvent(Browser::Type type, ObservationMode mode) {
+  switch (type) {
+    case Browser::Type::kIncognito:
+      return (mode & ObservationMode::INCOGNITO) == ObservationMode::INCOGNITO;
+
+    case Browser::Type::kRegular:
+    case Browser::Type::kInactive:
+      return (mode & ObservationMode::REGULAR) == ObservationMode::REGULAR;
+
+    case Browser::Type::kTemporary:
+      // Never propagate temporary Browser events.
+      return false;
+  }
+}
+
+}  // namespace
+
 AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
     BrowserList* browser_list,
     std::unique_ptr<WebStateListObserver> web_state_list_observer,
@@ -51,15 +74,7 @@ AllWebStateListObservationRegistrar::~AllWebStateListObservationRegistrar() {
 void AllWebStateListObservationRegistrar::OnBrowserAdded(
     const BrowserList* browser_list,
     Browser* browser) {
-  if (mode_ & Mode::REGULAR) {
-    scoped_observations_.AddObservation(browser->GetWebStateList());
-  }
-}
-
-void AllWebStateListObservationRegistrar::OnIncognitoBrowserAdded(
-    const BrowserList* browser_list,
-    Browser* browser) {
-  if (mode_ & Mode::INCOGNITO) {
+  if (ShouldPropagateEvent(browser->type(), mode_)) {
     scoped_observations_.AddObservation(browser->GetWebStateList());
   }
 }
@@ -67,15 +82,7 @@ void AllWebStateListObservationRegistrar::OnIncognitoBrowserAdded(
 void AllWebStateListObservationRegistrar::OnBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
-  if (mode_ & Mode::REGULAR) {
-    scoped_observations_.RemoveObservation(browser->GetWebStateList());
-  }
-}
-
-void AllWebStateListObservationRegistrar::OnIncognitoBrowserRemoved(
-    const BrowserList* browser_list,
-    Browser* browser) {
-  if (mode_ & Mode::INCOGNITO) {
+  if (ShouldPropagateEvent(browser->type(), mode_)) {
     scoped_observations_.RemoveObservation(browser->GetWebStateList());
   }
 }

@@ -89,11 +89,11 @@ class TabsSearchServiceTest : public PlatformTest {
 
     incognito_browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-    browser_list_->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list_->AddBrowser(incognito_browser_.get());
 
     other_incognito_browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-    browser_list_->AddIncognitoBrowser(other_incognito_browser_.get());
+    browser_list_->AddBrowser(other_incognito_browser_.get());
   }
 
  protected:

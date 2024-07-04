@@ -64,7 +64,7 @@ class OTRWebStateObserverTest : public PlatformTest {
     otr_browser_ = std::make_unique<TestBrowser>(otr_browser_state_);
     BrowserList* otr_browser_list =
         BrowserListFactory::GetForBrowserState(otr_browser_state_);
-    otr_browser_list->AddIncognitoBrowser(otr_browser_.get());
+    otr_browser_list->AddBrowser(otr_browser_.get());
   }
 
   void TearDown() override {

@@ -192,6 +192,9 @@ const int kBatchSize = 100;
 
 - (void)browserList:(const BrowserList*)browserList
        browserAdded:(Browser*)browser {
+  if (browser->type() == Browser::Type::kIncognito) {
+    return;
+  }
   // If the initial indexing is still in progress, cancel it and restart.
   if (!_indexingQueue.empty()) {
     [self logReindexInterruption];
@@ -215,6 +218,9 @@ const int kBatchSize = 100;
 
 - (void)browserList:(const BrowserList*)browserList
      browserRemoved:(Browser*)browser {
+  if (browser->type() == Browser::Type::kIncognito) {
+    return;
+  }
   WebStateList* webStateList = browser->GetWebStateList();
   webStateList->RemoveObserver(_webStateListObserverBridge.get());
 

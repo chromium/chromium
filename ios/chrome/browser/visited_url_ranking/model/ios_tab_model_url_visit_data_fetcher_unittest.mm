@@ -33,7 +33,7 @@ class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list->AddBrowser(main_browser_.get());
-    browser_list->AddIncognitoBrowser(otr_browser_.get());
+    browser_list->AddBrowser(otr_browser_.get());
   }
 
   std::unique_ptr<web::FakeWebState> CreateFakeWebStateWithURL(

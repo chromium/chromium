@@ -77,7 +77,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
         chrome_browser_state_->GetOffTheRecordChromeBrowserState());
     browser_list->AddBrowser(regular_browser_1_.get());
     browser_list->AddBrowser(regular_browser_2_.get());
-    browser_list->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list->AddBrowser(incognito_browser_.get());
 
     // Finally, create the app agent being tested and attach it to the app
     // state.

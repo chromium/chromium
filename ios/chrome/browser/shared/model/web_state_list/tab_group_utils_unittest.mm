@@ -57,7 +57,7 @@ class GroupUtilsTest : public PlatformTest {
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
-    browser_list_->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list_->AddBrowser(incognito_browser_.get());
 
     web_state_list_ = browser_->GetWebStateList();
     incognito_web_state_list_ = incognito_browser_->GetWebStateList();
@@ -120,7 +120,7 @@ class GroupUtilsTest : public PlatformTest {
   // Adds the other browsers to the browser list.
   void AddOtherBrowsers() {
     browser_list_->AddBrowser(other_browser_.get());
-    browser_list_->AddIncognitoBrowser(other_incognito_browser_.get());
+    browser_list_->AddBrowser(other_incognito_browser_.get());
   }
 
  protected:

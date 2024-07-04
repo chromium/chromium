@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser_list_impl.h"
 
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 BrowserListImpl::BrowserListImpl() {}
@@ -19,14 +18,11 @@ void BrowserListImpl::Shutdown() {
   for (Browser* browser : browsers_) {
     browser->RemoveObserver(this);
   }
-  for (Browser* browser : incognito_browsers_) {
-    browser->RemoveObserver(this);
-  }
 }
 
 // BrowserList:
 void BrowserListImpl::AddBrowser(Browser* browser) {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!browsers_.contains(browser)) << "cannot insert the same Browser twice";
   browsers_.insert(browser);
   browser->AddObserver(this);
   for (auto& observer : observers_) {
@@ -34,17 +30,10 @@ void BrowserListImpl::AddBrowser(Browser* browser) {
   }
 }
 
-void BrowserListImpl::AddIncognitoBrowser(Browser* browser) {
-  DCHECK(browser->GetBrowserState()->IsOffTheRecord());
-  incognito_browsers_.insert(browser);
-  browser->AddObserver(this);
-  for (auto& observer : observers_) {
-    observer.OnIncognitoBrowserAdded(this, browser);
-  }
-}
-
 void BrowserListImpl::RemoveBrowser(Browser* browser) {
-  if (browsers_.erase(browser) > 0) {
+  auto iter = browsers_.find(browser);
+  if (iter != browsers_.end()) {
+    browsers_.erase(iter);
     browser->RemoveObserver(this);
     for (auto& observer : observers_) {
       observer.OnBrowserRemoved(this, browser);
@@ -52,21 +41,32 @@ void BrowserListImpl::RemoveBrowser(Browser* browser) {
   }
 }
 
-void BrowserListImpl::RemoveIncognitoBrowser(Browser* browser) {
-  if (incognito_browsers_.erase(browser) > 0) {
-    browser->RemoveObserver(this);
-    for (auto& observer : observers_) {
-      observer.OnIncognitoBrowserRemoved(this, browser);
-    }
-  }
+std::set<Browser*> BrowserListImpl::BrowsersOfType(
+    int browser_type_mask) const {
+  std::set<Browser*> browsers;
+  base::ranges::copy_if(browsers_, std::inserter(browsers, browsers.end()),
+                        [browser_type_mask](Browser* browser) {
+                          switch (browser->type()) {
+                            case Browser::Type::kRegular:
+                              return browser_type_mask & BrowserType::kRegular;
+                            case Browser::Type::kIncognito:
+                              return browser_type_mask &
+                                     BrowserType::kIncognito;
+                            case Browser::Type::kInactive:
+                              return browser_type_mask & BrowserType::kInactive;
+                            case Browser::Type::kTemporary:
+                              return 0;
+                          }
+                        });
+  return browsers;
 }
 
 std::set<Browser*> BrowserListImpl::AllRegularBrowsers() const {
-  return browsers_;
+  return BrowsersOfType(BrowserType::kRegular | BrowserType::kInactive);
 }
 
 std::set<Browser*> BrowserListImpl::AllIncognitoBrowsers() const {
-  return incognito_browsers_;
+  return BrowsersOfType(BrowserType::kIncognito);
 }
 
 // Adds an observer to the model.
@@ -81,10 +81,6 @@ void BrowserListImpl::RemoveObserver(BrowserListObserver* observer) {
 
 // BrowserObserver
 void BrowserListImpl::BrowserDestroyed(Browser* browser) {
-  if (browser->GetBrowserState()->IsOffTheRecord()) {
-    RemoveIncognitoBrowser(browser);
-  } else {
-    RemoveBrowser(browser);
-  }
+  RemoveBrowser(browser);
   browser->RemoveObserver(this);
 }

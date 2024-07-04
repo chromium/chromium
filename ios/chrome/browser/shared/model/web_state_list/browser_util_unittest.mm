@@ -62,8 +62,8 @@ class BrowserUtilTest : public PlatformTest {
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());
-    browser_list_->AddIncognitoBrowser(incognito_browser_.get());
-    browser_list_->AddIncognitoBrowser(other_incognito_browser_.get());
+    browser_list_->AddBrowser(incognito_browser_.get());
+    browser_list_->AddBrowser(other_incognito_browser_.get());
 
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());

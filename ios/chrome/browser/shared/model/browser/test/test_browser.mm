@@ -32,17 +32,25 @@ TestBrowser::TestBrowser(ChromeBrowserState* browser_state,
                          SceneState* scene_state)
     : TestBrowser(browser_state,
                   scene_state,
-                  std::make_unique<FakeWebStateListDelegate>()) {}
+                  std::make_unique<FakeWebStateListDelegate>(),
+                  browser_state->IsOffTheRecord() ? Type::kIncognito
+                                                  : Type::kRegular) {}
 
 TestBrowser::TestBrowser(
     ChromeBrowserState* browser_state,
     std::unique_ptr<WebStateListDelegate> web_state_list_delegate)
-    : TestBrowser(browser_state, nil, std::move(web_state_list_delegate)) {}
+    : TestBrowser(browser_state,
+                  nil,
+                  std::move(web_state_list_delegate),
+                  browser_state->IsOffTheRecord() ? Type::kIncognito
+                                                  : Type::kRegular) {}
 
 TestBrowser::TestBrowser(ChromeBrowserState* browser_state)
     : TestBrowser(browser_state,
                   nil,
-                  std::make_unique<FakeWebStateListDelegate>()) {}
+                  std::make_unique<FakeWebStateListDelegate>(),
+                  browser_state->IsOffTheRecord() ? Type::kIncognito
+                                                  : Type::kRegular) {}
 
 TestBrowser::~TestBrowser() {
   for (auto& observer : observers_) {

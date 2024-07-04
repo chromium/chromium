@@ -86,7 +86,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterAllLists) {
   browser_list_->AddBrowser(&regular_browser_0);
   TestBrowser incognito_browser_0(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_0);
+  browser_list_->AddBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(browser_list_,
                                                 std::move(owned_observer_));
@@ -106,7 +106,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterAllLists) {
   // Create a second incognito  browser and add it.
   TestBrowser incognito_browser_1(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_1);
+  browser_list_->AddBrowser(&incognito_browser_1);
   AppendNewWebState(&incognito_browser_1);
   // Expect observed insertion.
   EXPECT_EQ(4, observer_->insertion_count_);
@@ -118,7 +118,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterAllLists) {
   EXPECT_EQ(4, observer_->insertion_count_);
 
   // Remove an incognito browser
-  browser_list_->RemoveIncognitoBrowser(&incognito_browser_1);
+  browser_list_->RemoveBrowser(&incognito_browser_1);
   AppendNewWebState(&incognito_browser_1);
   // Expect no observed insertion.
   EXPECT_EQ(4, observer_->insertion_count_);
@@ -129,7 +129,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterRegularLists) {
   browser_list_->AddBrowser(&regular_browser_0);
   TestBrowser incognito_browser_0(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_0);
+  browser_list_->AddBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(
       browser_list_, std::move(owned_observer_),
@@ -150,7 +150,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterRegularLists) {
   // Create a second incognito  browser and add it.
   TestBrowser incognito_browser_1(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_1);
+  browser_list_->AddBrowser(&incognito_browser_1);
   AppendNewWebState(&incognito_browser_0);
   // Expect no observed insertion.
   EXPECT_EQ(2, observer_->insertion_count_);
@@ -161,7 +161,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterIncognitoLists) {
   browser_list_->AddBrowser(&regular_browser_0);
   TestBrowser incognito_browser_0(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_0);
+  browser_list_->AddBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(
       browser_list_, std::move(owned_observer_),
@@ -182,7 +182,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, RegisterIncognitoLists) {
   // Create a second incognito  browser and add it.
   TestBrowser incognito_browser_1(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_1);
+  browser_list_->AddBrowser(&incognito_browser_1);
   AppendNewWebState(&incognito_browser_0);
   // Expect observed insertion.
   EXPECT_EQ(2, observer_->insertion_count_);
@@ -206,7 +206,7 @@ TEST_F(AllWebStateListObservationRegistrarTest, DeleteBrowserState) {
   browser_list_->AddBrowser(&regular_browser_0);
   TestBrowser incognito_browser_0(
       chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-  browser_list_->AddIncognitoBrowser(&incognito_browser_0);
+  browser_list_->AddBrowser(&incognito_browser_0);
 
   AllWebStateListObservationRegistrar registrar(browser_list_,
                                                 std::move(owned_observer_));

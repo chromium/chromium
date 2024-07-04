@@ -288,11 +288,7 @@
   ChromeBrowserState* browserState = browser->GetBrowserState();
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  if (browserState->IsOffTheRecord()) {
-    browserList->AddIncognitoBrowser(browser);
-  } else {
-    browserList->AddBrowser(browser);
-  }
+  browserList->AddBrowser(browser);
 
   [self dispatchToEndpointsForBrowser:browser];
 
@@ -333,11 +329,7 @@
   ChromeBrowserState* browserState = browser->GetBrowserState();
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
-  if (browserState->IsOffTheRecord()) {
-    browserList->RemoveIncognitoBrowser(browser);
-  } else {
-    browserList->RemoveBrowser(browser);
-  }
+  browserList->RemoveBrowser(browser);
 
   // Stop serializing the state of `browser`.
   SessionRestorationServiceFactory::GetForBrowserState(browserState)

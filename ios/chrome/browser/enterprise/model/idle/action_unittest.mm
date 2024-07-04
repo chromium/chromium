@@ -90,7 +90,7 @@ class IdleActionTest : public PlatformTest {
     BrowserList* browser_list =
         BrowserListFactory::GetForBrowserState(browser_state());
     browser_list->AddBrowser(browser_.get());
-    browser_list->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list->AddBrowser(incognito_browser_.get());
 
     // Insert some web states in each browser.
     std::vector<std::string> urls{"https://foo/bar", "https://car/tar",

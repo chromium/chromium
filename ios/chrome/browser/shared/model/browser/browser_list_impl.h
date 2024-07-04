@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_IMPL_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_IMPL_H_
 
-#include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser/browser_list.h"
-#include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
-#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "base/containers/flat_map.h"
+#import "base/observer_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 // The concrete implementation of BrowserList returned by the
 // BrowserListFactory.
@@ -27,9 +29,8 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
 
   // BrowserList
   void AddBrowser(Browser* browser) override;
-  void AddIncognitoBrowser(Browser* browser) override;
   void RemoveBrowser(Browser* browser) override;
-  void RemoveIncognitoBrowser(Browser* browser) override;
+  std::set<Browser*> BrowsersOfType(int browser_type_mask) const override;
   std::set<Browser*> AllRegularBrowsers() const override;
   std::set<Browser*> AllIncognitoBrowsers() const override;
   void AddObserver(BrowserListObserver* observer) override;
@@ -40,7 +41,6 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
 
  private:
   std::set<Browser*> browsers_;
-  std::set<Browser*> incognito_browsers_;
 
   base::ObserverList<BrowserListObserver, true> observers_;
 };
