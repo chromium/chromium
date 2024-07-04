@@ -269,7 +269,7 @@ BASE_FEATURE(kFontSrcLocalMatching,
 // of using Fontations. See https://crbug.com/349952802
 BASE_FEATURE(kFontIndexingFontations,
              "FontIndexingFontations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Feature controlling whether or not memory pressure signals will be forwarded
