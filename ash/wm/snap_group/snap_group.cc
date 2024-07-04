@@ -64,6 +64,21 @@ SnapGroupExitPoint GetWindowStateChangeExitPoint(WindowState* window_state) {
   }
 }
 
+// Note this is different from `CalculateDividerPosition()` in
+// `split_view_utils` which subtracts `kSplitviewDividerShortSideLength` instead
+// of `kSplitviewDividerShortSideLength / 2`. Needed because of the different
+// calculations in `SnapGroup::GetSnappedWindowBoundsInScreen()`.
+// TODO(b/331304137): Remove the cyclic dependencies between snapped window
+// bounds calculation and divider position calculation.
+// TODO(b/347723336): See if we can unify the two `CalculateDividerPosition()`s.
+int CalculateDividerPosition(aura::Window* root_window,
+                             float primary_snap_ratio) {
+  const int upper_limit = GetDividerPositionUpperLimit(root_window);
+  const int requested_divider_position =
+      upper_limit * primary_snap_ratio - kSplitviewDividerShortSideLength / 2.f;
+  return requested_divider_position;
+}
+
 }  // namespace
 
 SnapGroup::SnapGroup(aura::Window* window1,
@@ -124,9 +139,19 @@ void SnapGroup::Shutdown() {
 gfx::Rect SnapGroup::GetSnappedWindowBoundsInRoot(
     aura::Window* window,
     const chromeos::WindowStateType state_type,
-    float snap_ratio) const {
+    float snap_ratio) {
   // TODO(b/347723336): Find a deterministic way to determine
   // `account_for_divider_width`.
+  // First update the divider position so we can get the correct bounds in
+  // `GetSnappedWindowBoundsInScreen()`.
+  // TODO(b/331304137): Remove the cyclic dependencies between snapped window
+  // bounds calculation and divider position calculation.
+  const float primary_snap_ratio =
+      state_type == chromeos::WindowStateType::kPrimarySnapped
+          ? snap_ratio
+          : 1.f - snap_ratio;
+  snap_group_divider_.SetDividerPosition(
+      CalculateDividerPosition(GetRootWindow(), primary_snap_ratio));
   gfx::Rect bounds_in_parent = GetSnappedWindowBoundsInScreen(
       ToSnapPosition(state_type), window, snap_ratio,
       /*account_for_divider_width=*/
@@ -449,9 +474,12 @@ gfx::Rect SnapGroup::GetSnappedWindowBoundsInScreen(
 
 SnapPosition SnapGroup::GetPositionOfSnappedWindow(
     const aura::Window* window) const {
-  // TODO(b/326288377): Make sure this works with ARC windows.
-  CHECK(window == window1_ || window == window2_);
-  return window == window1_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
+  const auto state_type = WindowState::Get(window)->GetStateType();
+  if (!chromeos::IsSnappedWindowStateType(state_type)) {
+    base::debug::DumpWithoutCrashing();
+    return SnapPosition::kPrimary;
+  }
+  return ToSnapPosition(state_type);
 }
 
 void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
@@ -548,15 +576,12 @@ void SnapGroup::UpdateSnappedWindowBounds(aura::Window* window,
 
 void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
   CHECK(CanWindowsFitInWorkArea(window1_, window2_));
-  const int upper_limit = GetDividerPositionUpperLimit(GetRootWindow());
-  const int requested_divider_position =
-      upper_limit * primary_snap_ratio - kSplitviewDividerShortSideLength / 2.f;
-
-  // TODO(b/5613837): Remove the cyclic dependencies between snapped window
+  // TODO(b/331304137): Remove the cyclic dependencies between snapped window
   // bounds calculation and divider position calculation.
   // `SplitViewDivider::SetDividerPosition()` will account for the windows'
   // minimum sizes.
-  snap_group_divider_.SetDividerPosition(requested_divider_position);
+  snap_group_divider_.SetDividerPosition(
+      CalculateDividerPosition(GetRootWindow(), primary_snap_ratio));
 
   UpdateSnappedWindowBounds(window1_, /*account_for_divider_width=*/true,
                             primary_snap_ratio);

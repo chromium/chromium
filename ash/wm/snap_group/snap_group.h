@@ -63,7 +63,7 @@ class SnapGroup : public aura::WindowObserver,
   gfx::Rect GetSnappedWindowBoundsInRoot(
       aura::Window* window,
       const chromeos::WindowStateType state_type,
-      float snap_ratio) const;
+      float snap_ratio);
 
   // These functions return the snapped window in the specified snap position
   // (left/top or right/bottom) based on the display's orientation.

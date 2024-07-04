@@ -240,41 +240,6 @@ gfx::Point GetDragPoint(aura::Window* window) {
   return frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
 }
 
-// Verifies that the union bounds of `w1`, `w2` and the divider are equal to
-// the bounds of the work area with no overlap.
-void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
-                                      aura::Window* w2,
-                                      SplitViewDivider* divider) {
-  gfx::Rect w1_bounds(w1->GetTargetBounds());
-  wm::ConvertRectToScreen(w1->GetRootWindow(), &w1_bounds);
-  gfx::Rect w2_bounds(w2->GetTargetBounds());
-  wm::ConvertRectToScreen(w2->GetRootWindow(), &w2_bounds);
-
-  const auto divider_bounds =
-      divider->GetDividerBoundsInScreen(/*is_dragging=*/false);
-  EXPECT_FALSE(w1_bounds.IsEmpty());
-  EXPECT_FALSE(w2_bounds.IsEmpty());
-  EXPECT_FALSE(divider_bounds.IsEmpty());
-
-  gfx::Rect union_bounds;
-  union_bounds.Union(w1_bounds);
-  union_bounds.Union(w2_bounds);
-  EXPECT_FALSE(w1_bounds.Contains(divider_bounds));
-  EXPECT_FALSE(w2_bounds.Contains(divider_bounds));
-  if (IsLayoutHorizontal(w1)) {
-    EXPECT_EQ(w1_bounds.right(), divider_bounds.x());
-    EXPECT_EQ(w2_bounds.x(), divider_bounds.right());
-  } else {
-    EXPECT_EQ(w1_bounds.bottom(), divider_bounds.y());
-    EXPECT_EQ(w2_bounds.y(), divider_bounds.bottom());
-  }
-
-  union_bounds.Union(divider_bounds);
-  EXPECT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
-      union_bounds);
-}
-
 // Verifies the windows and divider of `snap_group` are on `display_id`.
 void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
   aura::Window* root = snap_group->window1()->GetRootWindow();

@@ -20,6 +20,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -125,6 +126,39 @@ void VerifyNotSplitViewOrOverviewSession(aura::Window* window) {
       SplitViewController::Get(window->GetRootWindow())->InSplitViewMode());
   EXPECT_FALSE(
       RootWindowController::ForWindow(window)->split_view_overview_session());
+}
+
+void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
+                                      aura::Window* w2,
+                                      SplitViewDivider* divider) {
+  gfx::Rect w1_bounds(w1->GetTargetBounds());
+  wm::ConvertRectToScreen(w1->GetRootWindow(), &w1_bounds);
+  gfx::Rect w2_bounds(w2->GetTargetBounds());
+  wm::ConvertRectToScreen(w2->GetRootWindow(), &w2_bounds);
+
+  const auto divider_bounds =
+      divider->GetDividerBoundsInScreen(/*is_dragging=*/false);
+  EXPECT_FALSE(w1_bounds.IsEmpty());
+  EXPECT_FALSE(w2_bounds.IsEmpty());
+  EXPECT_FALSE(divider_bounds.IsEmpty());
+
+  gfx::Rect union_bounds;
+  union_bounds.Union(w1_bounds);
+  union_bounds.Union(w2_bounds);
+  EXPECT_FALSE(w1_bounds.Contains(divider_bounds));
+  EXPECT_FALSE(w2_bounds.Contains(divider_bounds));
+  if (IsLayoutHorizontal(w1)) {
+    EXPECT_EQ(w1_bounds.right(), divider_bounds.x());
+    EXPECT_EQ(w2_bounds.x(), divider_bounds.right());
+  } else {
+    EXPECT_EQ(w1_bounds.bottom(), divider_bounds.y());
+    EXPECT_EQ(w2_bounds.y(), divider_bounds.bottom());
+  }
+
+  union_bounds.Union(divider_bounds);
+  EXPECT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w1).work_area(),
+      union_bounds);
 }
 
 }  // namespace ash

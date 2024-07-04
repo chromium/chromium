@@ -52,6 +52,12 @@ void VerifySplitViewOverviewSession(aura::Window* window,
 // inactive for `window`.
 void VerifyNotSplitViewOrOverviewSession(aura::Window* window);
 
+// Verifies that the union bounds of `w1`, `w2` and the divider are equal to
+// the bounds of the work area with no overlap.
+void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
+                                      aura::Window* w2,
+                                      SplitViewDivider* divider);
+
 }  // namespace ash
 
 #endif  // ASH_WM_SPLITVIEW_SPLIT_VIEW_TEST_UTIL_H_

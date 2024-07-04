@@ -16,6 +16,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -25,9 +26,12 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -77,12 +81,7 @@ constexpr gfx::Rect kInitialBounds(0, 0, 100, 100);
 class TestClientControlledStateDelegate
     : public ClientControlledState::Delegate {
  public:
-  TestClientControlledStateDelegate() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  TestClientControlledStateDelegate() = default;
 
   TestClientControlledStateDelegate(const TestClientControlledStateDelegate&) =
       delete;
@@ -144,7 +143,6 @@ class TestClientControlledStateDelegate
   void mark_as_deleted() { deleted_ = true; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   WindowStateType old_state_ = WindowStateType::kDefault;
   WindowStateType new_state_ = WindowStateType::kDefault;
   int64_t display_id_ = display::kInvalidDisplayId;
@@ -216,8 +214,14 @@ void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
       (rotation == display::Display::ROTATE_180 && !is_primary) ||
       (rotation == display::Display::ROTATE_270 && is_primary);
 
+  // Also consider the divider width if the window is in a snap group.
+  const bool in_snap_group = [&]() {
+    auto* snap_group_controller = SnapGroupController::Get();
+    return snap_group_controller &&
+           snap_group_controller->GetSnapGroupForGivenWindow(window);
+  }();
   const int divider_margin =
-      in_tablet ? kSplitviewDividerShortSideLength / 2 : 0;
+      (in_tablet || in_snap_group) ? kSplitviewDividerShortSideLength / 2 : 0;
   const gfx::Size expected_size =
       is_landscape
           ? gfx::Size(work_area.width() * expected_snap_ratio - divider_margin,
@@ -237,7 +241,9 @@ void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
                            : work_area.bottom() - expected_size.height());
 
   const gfx::Rect bounds = window->GetTargetBounds();
-  // Allow 1px (3px in clamshell) rounding errors for partial snap.
+  // Allow 1px (3px in clamshell) rounding errors for partial snap. Note even if
+  // `SnapGroup` is enabled, the window may not be in a snap group, so allow 3px
+  // rounding errors.
   // TODO(b/319342277): Investigate why eps can't be 1 when clamshell mode.
   const int eps = in_tablet ? 1 : 3;
   EXPECT_NEAR(expected_size.width(), bounds.width(), is_landscape ? eps : 0);
@@ -375,6 +381,19 @@ class ClientControlledStateTest : public AshTestBase {
   raw_ptr<FakeWindowStateDelegate, DanglingUntriaged> window_state_delegate_ =
       nullptr;
   std::unique_ptr<views::Widget> widget_;
+};
+
+class SnapGroupClientControlledStateTest : public ClientControlledStateTest {
+ public:
+  SnapGroupClientControlledStateTest() = default;
+  SnapGroupClientControlledStateTest(
+      const SnapGroupClientControlledStateTest&) = delete;
+  SnapGroupClientControlledStateTest& operator=(
+      const SnapGroupClientControlledStateTest&) = delete;
+  ~SnapGroupClientControlledStateTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // This suite runs test cases both in clamshell mode and tablet mode.
@@ -638,6 +657,51 @@ TEST_F(ClientControlledStateTest, CycleSnapWindow) {
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+}
+
+// Tests that a client-controlled window in a snap group, when snapped to the
+// opposite side, will set the correct bounds. Regression test for
+// http://b/349774996.
+TEST_F(SnapGroupClientControlledStateTest, SnapToOppositeSide) {
+  UpdateDisplay("800x600");
+
+  // Create a snap group with a client-controlled and normal state window.
+  widget_delegate()->EnableSnap();
+  auto non_client_controlled_window = CreateAppWindow();
+  SnapOneTestWindow(non_client_controlled_window.get(),
+                    WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(non_client_controlled_window.get());
+  ClickOnOverviewItem(window());
+
+  // Apply pending requests. Test the bounds are at 1/2.
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(
+      window(), non_client_controlled_window.get()));
+  VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
+  VerifySnappedBounds(non_client_controlled_window.get(),
+                      chromeos::kDefaultSnapRatio);
+  auto* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(window());
+  ASSERT_TRUE(snap_group);
+  UnionBoundsEqualToWorkAreaBounds(window(), non_client_controlled_window.get(),
+                                   snap_group->snap_group_divider());
+
+  // Snap to secondary 1/3.
+  const WindowSnapWMEvent snap_partial_secondary(
+      WM_EVENT_SNAP_SECONDARY, chromeos::kOneThirdSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  window_state()->OnWMEvent(&snap_partial_secondary);
+
+  // Apply pending requests. Test the bounds are at 1/3.
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  VerifySnappedBounds(window(), chromeos::kOneThirdSnapRatio);
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, SnapWindow) {
