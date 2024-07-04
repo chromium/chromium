@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("japanese") {
+  sources = [
+    "japanese_legacy_config.cc",
+    "japanese_legacy_config.h",
+    "japanese_prefs.cc",
+    "japanese_prefs.h",
+    "japanese_prefs_constants.h",
+    "japanese_settings.cc",
+    "japanese_settings.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/ash/services/ime/public/mojom",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "japanese_legacy_config_unittest.cc",
+    "japanese_prefs_unittest.cc",
+    "japanese_settings_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/ash/input_method/japanese",
+    "//chrome/common:constants",
+    "//chromeos/ash/services/ime/public/mojom",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

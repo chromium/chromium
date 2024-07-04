@@ -63,7 +63,10 @@ source_set("editor_menu") {
       "editor_manager_ash.h",
     ]
 
-    deps += [ "//chrome/browser/ash" ]
+    deps += [
+      "//chrome/browser/ash",
+      "//chrome/browser/ash/input_method",
+    ]
   }
 
   if (is_chromeos_lacros) {

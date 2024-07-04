@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/notifications",
     "//chrome/test:test_support_unit",
     "//components/prefs",
