@@ -55,7 +55,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -1982,13 +1981,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public ActivityTabProvider getActivityTabProvider() {
         return mActivityTabProvider;
-    }
-
-    /**
-     * @return The provider of the instance of {@link TabReparentingController}.
-     */
-    protected OneshotSupplier<TabReparentingController> getTabReparentingControllerSupplier() {
-        return mTabReparentingControllerSupplier;
     }
 
     /** Gets the supplier of the {@link TabCreatorManager} instance. */

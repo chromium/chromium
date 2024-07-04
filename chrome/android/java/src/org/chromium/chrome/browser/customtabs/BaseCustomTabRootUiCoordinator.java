@@ -242,7 +242,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 appMenuDelegate,
                 statusBarColorProvider,
                 intentRequestTracker,
-                new OneshotSupplierImpl<>(),
                 ephemeralTabCoordinatorSupplier,
                 false,
                 backPressManager,

@@ -2118,7 +2118,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getIntentRequestTracker(),
                 getWindowAndroid().getInsetObserver(),
                 this::backShouldCloseTab,
-                getTabReparentingControllerSupplier(),
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.
                 // We should make it more robust by using more signals.
                 IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()),

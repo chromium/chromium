@@ -44,7 +44,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
@@ -274,7 +273,6 @@ public class ToolbarManager
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
     private final SnackbarManager mSnackbarManager;
     private OnAttachStateChangeListener mAttachStateChangeListener;
-    private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
     private final BackPressManager mBackPressManager;
     private final UserEducationHelper mUserEducationHelper;
 
@@ -527,7 +525,6 @@ public class ToolbarManager
      * @param snackbarManager Manages the display of snackbars.
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}.
-     * @param tabReparentingControllerSupplier Supplier of {@link TabReparentingController}.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      * @param backPressManager The {@link BackPressManager} handling back press gesture.
@@ -576,7 +573,6 @@ public class ToolbarManager
             @NonNull
                     Supplier<MerchantTrustSignalsCoordinator>
                             merchantTrustSignalsCoordinatorSupplier,
-            OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeWithIncognitoColors,
@@ -613,7 +609,6 @@ public class ToolbarManager
         mTabCreatorManager = tabCreatorManager;
         mTabObscuringHandler = tabObscuringHandler;
         mSnackbarManager = snackbarManager;
-        mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profileSupplier, mHandler);
         mDesktopWindowStateProvider = desktopWindowStateProvider;
@@ -1372,17 +1367,6 @@ public class ToolbarManager
             BrowserUiUtils.recordModuleLongClickHistogram(
                     HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.HOME_BUTTON);
         }
-    }
-
-    /**
-     * Recreates the activity with Tab reparenting, allowing fast restart without reloading Tabs'
-     * contents.
-     */
-    private void recreateActivityWithTabReparenting() {
-        if (mTabReparentingControllerSupplier.get() != null) {
-            mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
-        }
-        mActivity.recreate();
     }
 
     // Base abstract implementation of NewTabPageDelegate for phone/table toolbar layout.
