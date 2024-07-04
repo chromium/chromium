@@ -77,6 +77,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -24202,9 +24203,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0), "adSlot1");
 
   run_loop.Run();
-  EXPECT_EQ(maybe_config.has_value(),
-            root_ftn->current_frame_host()
-                ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    // With Origin Isolation enabled, the cross-origin, same-site navigation
+    // ends up being cross-process, so a config value is expected.
+    EXPECT_TRUE(maybe_config.has_value());
+  } else {
+    // Without Origin Isolation enabled, whether on not there is a config value
+    // depends on the RenderDocument status.
+    EXPECT_EQ(maybe_config.has_value(),
+              root_ftn->current_frame_host()
+                  ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
+  }
 }
 
 class InterestGroupCrossOriginTrustedSignalsBrowserTest
