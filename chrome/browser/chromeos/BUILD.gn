@@ -462,6 +462,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/arc/policy",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/cert_provisioning",
+      "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/mahi:mahi",
       "//chrome/browser/ash/platform_keys",
       "//chrome/browser/ash/platform_keys/key_permissions",

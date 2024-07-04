@@ -37,6 +37,7 @@ static_library("drive") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/chromeos/drivefs",
@@ -66,6 +67,7 @@ static_library("drive") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/extensions",

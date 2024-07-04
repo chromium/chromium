@@ -29,6 +29,7 @@ static_library("app_list") {
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
     "//build:branding_buildflags",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/constants",

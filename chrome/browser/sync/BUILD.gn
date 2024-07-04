@@ -162,6 +162,7 @@ source_set("sync") {
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/guest_os",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/sync_wifi",
       "//chromeos/ash/components/tether",

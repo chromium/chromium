@@ -77,6 +77,8 @@ static_library("session") {
     "//chrome/browser/ash/arc/video",
     "//chrome/browser/ash/arc/vmm",
     "//chrome/browser/ash/arc/wallpaper",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
@@ -119,6 +121,7 @@ static_library("session") {
     "//chrome/browser/ash/arc/metrics",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/arc/vmm",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/platform_keys/key_permissions",
   ]
 }

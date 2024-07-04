@@ -56,6 +56,9 @@ static_library("arc") {
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
@@ -109,6 +112,8 @@ static_library("arc") {
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/platform_keys/key_permissions",
   ]
 }

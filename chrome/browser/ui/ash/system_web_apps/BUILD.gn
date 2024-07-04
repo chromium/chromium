@@ -38,6 +38,7 @@ source_set("system_web_apps") {
   # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
   deps += [
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
@@ -46,6 +47,7 @@ source_set("system_web_apps") {
   # TODO(crbug.com/40251081): Remove circular includes.
   allow_circular_includes_from = [
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
