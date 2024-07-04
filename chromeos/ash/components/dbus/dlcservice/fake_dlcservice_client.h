@@ -53,6 +53,13 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
     extra_install_errs_ = std::move(errs);
   }
 
+  // When `true`, only record DLC `Install` calls that return `kErrorNone` in
+  // `dlcs_with_content_`. Otherwise, record all DLC `Install` calls as
+  // successful, even when it returns an error.
+  void set_skip_adding_dlc_info_on_error(bool skip) {
+    skip_adding_dlc_info_on_error_ = skip;
+  }
+
   void set_install_root_path(std::string_view path) {
     install_root_path_ = path;
   }
@@ -84,6 +91,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
 
   std::string install_err_ = dlcservice::kErrorNone;
   base::circular_deque<std::string> extra_install_errs_;
+  bool skip_adding_dlc_info_on_error_ = false;
   std::string uninstall_err_ = dlcservice::kErrorNone;
   std::string purge_err_ = dlcservice::kErrorNone;
   std::string get_existing_dlcs_err_ = dlcservice::kErrorNone;
