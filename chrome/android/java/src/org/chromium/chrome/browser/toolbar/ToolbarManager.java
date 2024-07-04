@@ -34,7 +34,6 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.JavaExceptionReporter;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -323,7 +322,6 @@ public class ToolbarManager
             new ObservableSupplierImpl<>();
 
     private boolean mIsDestroyed;
-    private static boolean sSkipRecreateForTesting;
 
     private final boolean mIsCustomTab;
 
@@ -2525,16 +2523,6 @@ public class ToolbarManager
 
     public ToolbarTabController getToolbarTabControllerForTesting() {
         return mToolbarTabController;
-    }
-
-    /**
-     * Sets whether to skip recreating the activity when the settings are changed. It should only be
-     * true in testing.
-     */
-    public static void setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(
-            boolean skipRecreating) {
-        sSkipRecreateForTesting = skipRecreating;
-        ResettersForTesting.register(() -> sSkipRecreateForTesting = false);
     }
 
     public BottomControlsCoordinator getBottomControlsCoordinatorForTesting() {

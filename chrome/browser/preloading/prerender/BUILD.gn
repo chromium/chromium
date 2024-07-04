@@ -21,10 +21,6 @@ source_set("browser_tests") {
     "//components/page_load_metrics/browser:browser",
   ]
 
-  if (is_android) {
-    deps += [ "//chrome/test:toolbar_manager_test_helper_android" ]
-  }
-
   data = [ "//chrome/test/data/" ]
 }
 

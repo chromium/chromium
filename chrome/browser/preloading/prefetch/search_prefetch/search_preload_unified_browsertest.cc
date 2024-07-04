@@ -54,7 +54,6 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/toolbar_manager_test_helper_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -91,14 +90,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
       : prerender_helper_(base::BindRepeating(
             &SearchPreloadUnifiedBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-#if BUILDFLAG(IS_ANDROID)
-    // Skips recreating the Android ChromeTabbedActivity when
-    // homepage settings are changed.
-    // This happens when the feature chrome::android::kStartSurfaceAndroid is
-    // enabled (currently enabled by default).
-    toolbar_manager::setSkipRecreateForTesting(true);
-#endif  // BUILDFLAG(IS_ANDROID)
-
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kSupportSearchSuggestionForPrerender2, {}},

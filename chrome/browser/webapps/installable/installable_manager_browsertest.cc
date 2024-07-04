@@ -43,7 +43,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/toolbar_manager_test_helper_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -254,12 +253,6 @@ class InstallableManagerBrowserTest : public PlatformBrowserTest {
                                 true),
         scoped_min_favicon_size_(&test::g_minimum_favicon_size_for_testing,
                                  32) {
-#if BUILDFLAG(IS_ANDROID)
-    // Skips recreating the Android activity when homepage settings are changed.
-    // This happens when the feature chrome::android::kStartSurfaceAndroid is
-    // enabled.
-    toolbar_manager::setSkipRecreateForTesting(true);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUpOnMainThread() override {

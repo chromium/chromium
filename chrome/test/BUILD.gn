@@ -102,16 +102,12 @@ if (is_android) {
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
-      "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
   }
 
   generate_jni("test_support_jni_headers") {
     testonly = true
-    sources = [
-      "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
-      "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
-    ]
+    sources = [ "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java" ]
   }
   generate_jni("payment_test_support_jni_headers") {
     testonly = true
@@ -1286,18 +1282,6 @@ if (is_chromeos && is_chromeos_device) {
 }
 
 if (is_android) {
-  static_library("toolbar_manager_test_helper_android") {
-    testonly = true
-    sources = [
-      "../browser/toolbar_manager_test_helper_android.cc",
-      "../browser/toolbar_manager_test_helper_android.h",
-    ]
-    deps = [
-      ":test_support_jni_headers",
-      "//base:base",
-    ]
-  }
-
   test("android_browsertests") {
     configs += [ "//build/config:precompiled_headers" ]
     defines = [
@@ -1320,7 +1304,6 @@ if (is_android) {
       ":test_support_java",
       ":test_support_jni_headers",
       ":test_support_ui_android",
-      ":toolbar_manager_test_helper_android",
       "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
