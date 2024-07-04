@@ -2437,12 +2437,10 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
 
   DCHECK(initial_replicated_state->origin->IsOpaque());
 
-  WebRemoteFrameImpl* remote_frame =
-      WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
-          mojom::blink::TreeScopeType::kDocument, frame_token,
-          devtools_frame_token, fenced_frame, std::move(remote_frame_host),
-          std::move(remote_frame_receiver),
-          std::move(initial_replicated_state));
+  WebRemoteFrameImpl* remote_frame = WebRemoteFrameImpl::CreateForFencedFrame(
+      mojom::blink::TreeScopeType::kDocument, frame_token, devtools_frame_token,
+      fenced_frame, std::move(remote_frame_host),
+      std::move(remote_frame_receiver), std::move(initial_replicated_state));
 
   client_->DidCreateFencedFrame(frame_token);
   return remote_frame->GetFrame();

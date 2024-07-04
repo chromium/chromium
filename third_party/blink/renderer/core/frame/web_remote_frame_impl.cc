@@ -141,7 +141,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   return frame;
 }
 
-WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
+WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForFencedFrame(
     mojom::blink::TreeScopeType scope,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
