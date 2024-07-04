@@ -53,15 +53,13 @@ uint32_t ComputeTextureTargetForSharedImage(
 #if !BUILDFLAG(IS_OZONE)
   // External sampling with GMBs is supported in Chromium only for Ozone.
   // Android uses a bespoke path for external sampling where the AHB doesn't get
-  // put in a GMB and multiplanar formats aren't used, and Windows doesn't use
-  // external sampling at all. It is not possible to set
+  // put in a GMB and multiplanar formats aren't used, and other platforms
+  // don't use external sampling at all. It is not possible to set
   // PrefersExternalSampler() on a MP SIF outside of Ozone, but legacy MP
   // formats could theoretically be used on any platform. Such usage would be
   // incorrect outside of Ozone as legacy MP formats work only with external
-  // sampling. This DUMP_WILL_BE_CHECK() is added in advance of adding the
-  // invariant via a CHECK that legacy MP formats are *actually* used only on
-  // Ozone.
-  DUMP_WILL_BE_CHECK(!metadata.format.IsLegacyMultiplanar());
+  // sampling. This CHECK ensures that it does not occur.
+  CHECK(!metadata.format.IsLegacyMultiplanar());
 #endif
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
