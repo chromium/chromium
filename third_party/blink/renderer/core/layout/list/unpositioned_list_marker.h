@@ -24,7 +24,6 @@ class ComputedStyle;
 class ConstraintSpace;
 class LayoutOutsideListMarker;
 class LayoutResult;
-class LayoutUnit;
 class PhysicalFragment;
 
 // Represents an unpositioned list marker.

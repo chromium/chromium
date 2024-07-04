@@ -30,7 +30,6 @@ class InlinePaintContext;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
-class LayoutUnit;
 class Node;
 class PhysicalBoxFragment;
 class ShapeResultView;

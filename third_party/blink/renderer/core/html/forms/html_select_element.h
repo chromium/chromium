@@ -45,7 +45,6 @@ class HTMLHRElement;
 class HTMLOptGroupElement;
 class HTMLOptionElement;
 class HTMLOptionsCollection;
-class LayoutUnit;
 class PopupMenu;
 class SelectType;
 class V8UnionHTMLElementOrLong;

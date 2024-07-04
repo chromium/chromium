@@ -13,8 +13,6 @@
 
 namespace blink {
 
-class LayoutUnit;
-
 class CORE_EXPORT MathRowLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:

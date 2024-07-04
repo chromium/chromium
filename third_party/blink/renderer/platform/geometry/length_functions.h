@@ -35,7 +35,6 @@ class SizeF;
 
 namespace blink {
 
-class LayoutUnit;
 class Length;
 class LengthSize;
 
