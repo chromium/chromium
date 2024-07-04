@@ -18,6 +18,8 @@ import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_int
 const AVATAR_URL: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
 
 const PARAMETERS: ChromeSigninInterceptionParameters = {
+  title: 'title',
+  subtitle: 'subtitle',
   fullName: 'full_name',
   givenName: 'given_name',
   email: 'email@example.com',
@@ -52,8 +54,10 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
   });
 
   test('AppContentValues', function() {
-    // TODO(b/301931570): check #title and #subtitle elements for both the
-    // regular and supervised account case.
+    const titleElement = app.shadowRoot!.querySelector('#title')!;
+    assertEquals(PARAMETERS.title, titleElement.textContent);
+    const subtitleElement = app.shadowRoot!.querySelector('#subtitle')!;
+    assertEquals(PARAMETERS.subtitle, subtitleElement.textContent);
     const nameElement = app.shadowRoot!.querySelector('#name')!;
     assertEquals(PARAMETERS.fullName, nameElement.textContent);
     const emailElement = app.shadowRoot!.querySelector('#email')!;

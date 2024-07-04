@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -12,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,7 +22,10 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -71,7 +77,7 @@ const AccountInfo primary_account = CreateAccount(
     /*email=*/"tessa.tester@primary.com",
     /*hosted_domain=*/kNoHostedDomainFound);
 
-const AccountInfo intercepted_account = CreateAccount(
+AccountInfo intercepted_account = CreateAccount(
     /*gaia_id=*/"intercepted_ID",
     /*given_name=*/"Sam",
     /*full_name=*/"Sam Sample",
@@ -194,15 +200,12 @@ const TestParam kTestParams[] = {
 
 }  // namespace
 
-class DiceWebSigninInterceptHandlerTest
-    : public testing::Test,
-      public testing::WithParamInterface<TestParam> {
+class DiceWebSigninInterceptHandlerTestBase : public testing::Test {
  public:
-  DiceWebSigninInterceptHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitWithFeatures(
-        {}, {switches::kExplicitBrowserSigninUIOnDesktop});
-  }
+  DiceWebSigninInterceptHandlerTestBase()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
   base::Value::Dict GetInterceptionParameters() {
     Profile* profile = profile_manager_.CreateTestingProfile("Primary Profile");
@@ -215,19 +218,43 @@ class DiceWebSigninInterceptHandlerTest
     policy::ScopedManagementServiceOverrideForTesting
         profile_management_authority_override(
             policy::ManagementServiceFactory::GetForProfile(profile),
-            GetParam().management_authority);
+            management_authority());
 
     web_ui_.set_web_contents(web_contents_factory_.CreateWebContents(profile));
 
     DiceWebSigninInterceptHandler handler(
-        {GetParam().interception_type, intercepted_account, primary_account},
+        {interception_type(), intercepted_account, primary_account},
         base::DoNothing(), base::DoNothing());
     handler.set_web_ui(&web_ui_);
+
+    if (interception_type() ==
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+      return handler.GetInterceptionChromeSigninParametersValue();
+    }
 
     return handler.GetInterceptionParametersValue();
   }
 
-  void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
+  // Returns the Management Authority that applies to the test case.
+  virtual policy::EnterpriseManagementAuthority management_authority() = 0;
+  // Returns the SigninInterceptionType that applies to the test case.
+  virtual WebSigninInterceptor::SigninInterceptionType interception_type() = 0;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  content::TestWebContentsFactory web_contents_factory_;
+  content::TestWebUI web_ui_;
+};
+
+class DiceWebSigninInterceptHandlerTest
+    : public DiceWebSigninInterceptHandlerTestBase,
+      public testing::WithParamInterface<TestParam> {
+ public:
+  DiceWebSigninInterceptHandlerTest() {
+    feature_list_.InitWithFeatures(
+        {}, {switches::kExplicitBrowserSigninUIOnDesktop});
+  }
 
  protected:
   void ExpectStringsMatch(const base::Value::Dict& parameters,
@@ -242,12 +269,16 @@ class DiceWebSigninInterceptHandlerTest
               expected_strings.cancel_button_label);
   }
 
+  // DiceWebSigninInterceptHandlerTestBase override:
+  policy::EnterpriseManagementAuthority management_authority() override {
+    return GetParam().management_authority;
+  }
+  WebSigninInterceptor::SigninInterceptionType interception_type() override {
+    return GetParam().interception_type;
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  TestingProfileManager profile_manager_;
-  content::TestWebContentsFactory web_contents_factory_;
-  content::TestWebUI web_ui_;
 };
 
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
@@ -263,3 +294,83 @@ TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceWebSigninInterceptHandlerTest,
                          testing::ValuesIn(kTestParams));
+
+// Tests the parameters of the Chrome Sign In interception bubble.
+class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
+    : public DiceWebSigninInterceptHandlerTestBase,
+      public testing::WithParamInterface<
+          std::tuple</*is_supervised_user=*/signin::Tribool,
+                     /*is_supervised_users_ui_feature_enabled=*/bool>> {
+ public:
+  DiceWebSigninInterceptHandlerChromeSigninInterceptionTest() {
+    CHECK(interception_type() ==
+          WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    if (IsSupervisedUsersUiFeatureEnabled()) {
+      feature_list_.InitWithFeatures(
+          {supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi});
+    }
+
+    AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
+    switch (IsSupervisedUser()) {
+      case signin::Tribool::kTrue:
+        mutator.set_is_subject_to_parental_controls(true);
+        break;
+      case signin::Tribool::kFalse:
+        mutator.set_is_subject_to_parental_controls(false);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void ExpectChromeSignInStringsMatch(const base::Value::Dict& parameters) {
+    std::string title = l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE);
+    std::string subtitle = l10n_util::GetStringUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);
+    if (IsSupervisedUsersUiFeatureEnabled() &&
+        IsSupervisedUser() == signin::Tribool::kTrue) {
+      title = l10n_util::GetStringUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
+      subtitle = l10n_util::GetStringUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+    }
+
+    EXPECT_EQ(*parameters.FindString("title"), title);
+    EXPECT_EQ(*parameters.FindString("subtitle"), subtitle);
+  }
+
+ protected:
+  // DiceWebSigninInterceptHandlerTestBase override:
+  policy::EnterpriseManagementAuthority management_authority() override {
+    return policy::EnterpriseManagementAuthority::NONE;
+  }
+  WebSigninInterceptor::SigninInterceptionType interception_type() override {
+    return WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
+  }
+
+ private:
+  bool IsSupervisedUsersUiFeatureEnabled() { return std::get<1>(GetParam()); }
+
+  signin::Tribool IsSupervisedUser() { return std::get<0>(GetParam()); }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(DiceWebSigninInterceptHandlerChromeSigninInterceptionTest,
+       CheckStrings) {
+  base::Value::Dict parameters = GetInterceptionParameters();
+  ExpectChromeSignInStringsMatch(parameters);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DiceWebSigninInterceptHandlerChromeSigninInterceptionTest,
+    testing::Combine(
+        /*is_supervised_user=*/testing::Values(signin::Tribool::kTrue,
+                                               signin::Tribool::kFalse,
+                                               signin::Tribool::kUnknown),
+        /*is_supervised_users_ui_feature_enabled=*/testing::Bool()));

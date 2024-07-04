@@ -37,6 +37,8 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
     };
 
     this.chromeSigninInterceptionParameters_ = {
+      title: '',
+      subtitle: '',
       fullName: '',
       givenName: '',
       email: '',

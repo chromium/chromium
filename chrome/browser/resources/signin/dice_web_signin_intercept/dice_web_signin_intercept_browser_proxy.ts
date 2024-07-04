@@ -31,6 +31,8 @@ export interface InterceptionParameters {
 }
 
 export interface ChromeSigninInterceptionParameters {
+  title: string;
+  subtitle: string;
   fullName: string;
   givenName: string;
   email: string;
