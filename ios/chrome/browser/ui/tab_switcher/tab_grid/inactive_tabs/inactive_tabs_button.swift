@@ -32,11 +32,6 @@ struct InactiveTabsButton: View {
       }
     }
     .buttonStyle(InactiveTabsButtonStyle())
-    // Make the accessibility label explicit.
-    .accessibilityElement(children: .ignore)
-    .accessibilityLabel([titleString, subtitleString, counterString]
-                          .compactMap { $0 }
-                          .joined(separator: ", "))
     .accessibilityIdentifier(kInactiveTabsButtonAccessibilityIdentifier)
   }
 
