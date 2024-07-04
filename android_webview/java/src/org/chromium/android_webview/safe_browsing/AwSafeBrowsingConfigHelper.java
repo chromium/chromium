@@ -5,6 +5,7 @@
 package org.chromium.android_webview.safe_browsing;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -48,7 +49,7 @@ public class AwSafeBrowsingConfigHelper {
                 "SafeBrowsing.WebView.AppOptIn", value, AppOptIn.COUNT);
     }
 
-    public static void setSafeBrowsingEnabledByManifest(boolean enabled) {
+    private static void setSafeBrowsingEnabledByManifest(boolean enabled) {
         sEnabledByManifest = enabled;
     }
 
@@ -120,6 +121,7 @@ public class AwSafeBrowsingConfigHelper {
         return PlatformServiceBridge.getInstance().canUseGms();
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setSafeBrowsingUserOptIn(boolean optin) {
         sUserOptInCallbackReturned = true;
         sSafeBrowsingUserOptIn = optin;
