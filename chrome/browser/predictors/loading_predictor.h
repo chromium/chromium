@@ -22,10 +22,20 @@
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 class Profile;
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork);
+
+extern const base::FeatureParam<base::TimeDelta>
+    kSuppressesLoadingPredictorOnSlowNetworkThreshold;
+
+}  // namespace features
 
 namespace predictors {
 

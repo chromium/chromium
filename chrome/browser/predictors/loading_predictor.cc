@@ -44,14 +44,14 @@ BASE_FEATURE(kNoNavigationPreconnectOnWeakSignal,
              "NoNavigationPreconnectOnWeakSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, suppresses network activities (https://crbug.com/350519234)
-BASE_FEATURE(kSuppressesNetworkActivitiesOnSlowNetwork,
-             "SuppressesNetworkActivitiesOnSlowNetwork",
+// If enabled, suppresses LoadingPredictor (https://crbug.com/350519234)
+BASE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork,
+             "SuppressesLoadingPredictorOnSlowNetwork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
-    kSuppressesNetworkActivitiesOnSlowNetworkThreshold{
-        &kSuppressesNetworkActivitiesOnSlowNetwork, "slow_network_threshold",
+    kSuppressesLoadingPredictorOnSlowNetworkThreshold{
+        &kSuppressesLoadingPredictorOnSlowNetwork, "slow_network_threshold",
         base::Milliseconds(208)};
 
 }  // namespace features
@@ -179,16 +179,16 @@ bool LoadingPredictor::PrepareForPageLoad(
     return true;
 
   // Suppresses network activities.
-  static const bool kSuppressesNetworkActivitiesOnSlowNetworkIsEnabled =
+  static const bool kSuppressesLoadingPredictorOnSlowNetworkIsEnabled =
       base::FeatureList::IsEnabled(
-          features::kSuppressesNetworkActivitiesOnSlowNetwork);
+          features::kSuppressesLoadingPredictorOnSlowNetwork);
   static const base::TimeDelta kSlowNetworkThreshold =
-      features::kSuppressesNetworkActivitiesOnSlowNetworkThreshold.Get();
-  if (kSuppressesNetworkActivitiesOnSlowNetworkIsEnabled && g_browser_process &&
+      features::kSuppressesLoadingPredictorOnSlowNetworkThreshold.Get();
+  if (kSuppressesLoadingPredictorOnSlowNetworkIsEnabled && g_browser_process &&
       g_browser_process->network_quality_tracker()) {
     base::TimeDelta last_http_rtt =
         g_browser_process->network_quality_tracker()->GetHttpRTT();
-    if (last_http_rtt >= kSlowNetworkThreshold) {
+    if (last_http_rtt > kSlowNetworkThreshold) {
       return true;
     }
   }

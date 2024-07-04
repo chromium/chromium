@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/predictors/loading_predictor.h"
+
 #include <map>
 #include <memory>
 #include <set>
@@ -23,12 +25,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
-#include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
@@ -71,6 +73,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -1057,6 +1060,57 @@ IN_PROC_BROWSER_TEST_F(LCPCriticalPathPredictorBrowserTest, LearnLCPPFont) {
   EXPECT_EQ(expected, GetLCPPFonts(kUrlA));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlB));
   EXPECT_EQ(std::vector<std::string>(), GetLCPPFonts(kUrlC));
+}
+
+class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
+    : public LoadingPredictorBrowserTest {
+ public:
+  SuppressesLoadingPredictorOnSlowNetworkBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSuppressesLoadingPredictorOnSlowNetwork,
+          {{features::kSuppressesLoadingPredictorOnSlowNetworkThreshold.name,
+            "500ms"}}}},
+        {});
+  }
+
+  network::NetworkQualityTracker& GetNetworkQualityTracker() const {
+    return *g_browser_process->network_quality_tracker();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that kSuppressesLoadingPredictorOnSlowNetwork feature suppresses
+// LoadingPredictor on slow network.
+IN_PROC_BROWSER_TEST_F(SuppressesLoadingPredictorOnSlowNetworkBrowserTest,
+                       SuppressesOnSlowNetwork) {
+  GURL url = embedded_test_server()->GetURL("/nocontent");
+  base::TimeDelta http_rtt = GetNetworkQualityTracker().GetHttpRTT();
+  int32_t downstream_throughput_kbps =
+      GetNetworkQualityTracker().GetDownstreamThroughputKbps();
+
+  {
+    // LoadingPredictor will be suppressed on slow networks.
+    GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
+        base::Milliseconds(501), downstream_throughput_kbps);
+    auto observer = NavigateToURLAsync(url);
+    ASSERT_TRUE(observer->WaitForNavigationFinished());
+    EXPECT_EQ(0u, loading_predictor()->GetTotalHintsActivatedForTesting());
+  }
+
+  {
+    // LoadingPredictor will not be suppressed on fast networks.
+    GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
+        base::Milliseconds(500), downstream_throughput_kbps);
+    auto observer = NavigateToURLAsync(url);
+    ASSERT_TRUE(observer->WaitForNavigationFinished());
+    EXPECT_EQ(1u, loading_predictor()->GetTotalHintsActivatedForTesting());
+  }
+
+  // Reset to the original values.
+  GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
+      http_rtt, downstream_throughput_kbps);
 }
 
 enum class NetworkIsolationKeyMode {
