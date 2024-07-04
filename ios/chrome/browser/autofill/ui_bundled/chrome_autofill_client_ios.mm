@@ -368,10 +368,6 @@ void ChromeAutofillClientIOS::DidFillOrPreviewForm(
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
-void ChromeAutofillClientIOS::DidFillOrPreviewField(
-    const std::u16string& autofilled_value,
-    const std::u16string& profile_full_name) {}
-
 bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }

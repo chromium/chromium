@@ -230,10 +230,6 @@ void AndroidAutofillClient::DidFillOrPreviewForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
-void AndroidAutofillClient::DidFillOrPreviewField(
-    const std::u16string& autofilled_value,
-    const std::u16string& profile_full_name) {}
-
 bool AndroidAutofillClient::IsContextSecure() const {
   content::SSLStatus ssl_status;
   content::NavigationEntry* navigation_entry =

@@ -130,7 +130,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
-#include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -720,15 +719,6 @@ void ChromeAutofillClient::DidFillOrPreviewForm(
     autofill::AnnounceTextForA11y(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM));
   }
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeAutofillClient::DidFillOrPreviewField(
-    const std::u16string& autofilled_value,
-    const std::u16string& profile_full_name) {
-#if BUILDFLAG(IS_ANDROID)
-  AutofillLoggerAndroid::DidFillOrPreviewField(autofilled_value,
-                                               profile_full_name);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

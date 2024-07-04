@@ -557,11 +557,6 @@ class AutofillClient {
                                     AutofillTriggerSource trigger_source,
                                     bool is_refill) = 0;
 
-  // Inform the client that the field has been filled.
-  virtual void DidFillOrPreviewField(
-      const std::u16string& autofilled_value,
-      const std::u16string& profile_full_name) = 0;
-
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;
 

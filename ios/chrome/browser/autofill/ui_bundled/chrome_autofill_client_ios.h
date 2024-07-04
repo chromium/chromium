@@ -122,8 +122,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
-  void DidFillOrPreviewField(const std::u16string& autofilled_value,
-                             const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetLogManager() const override;

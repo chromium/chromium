@@ -109,7 +109,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowPrompt.java",
-  "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowPrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSaveCardPromptBase.java",

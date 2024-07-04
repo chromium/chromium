@@ -654,15 +654,6 @@ void FormFiller::FillOrPreviewForm(
       filling_context->type_groups_originally_filled.insert(
           autofill_field->Type().group());
     }
-
-    // Must match ForEachMatchingFormField() in form_autofill_util.cc.
-    // Only notify autofilling of empty fields and the field that initiated the
-    // filling (note that <select> and <selectlist> controls may not be empty
-    // but will still be autofilled).
-    const bool should_notify =
-        filling_product != FillingProduct::kCreditCard &&
-        (result_fields[i].SameFieldAs(trigger_field) ||
-         result_fields[i].IsSelectOrSelectListElement() || !has_value_before);
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
         filling_context ? filling_context->forced_fill_values
@@ -675,7 +666,7 @@ void FormFiller::FillOrPreviewForm(
     // don't reach this code.
     const bool is_newly_autofilled =
         FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
-                  result_fields[i], should_notify, cvc.has_value() ? *cvc : u"",
+                  result_fields[i], cvc.has_value() ? *cvc : u"",
                   action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
@@ -942,8 +933,8 @@ void FormFiller::TriggerRefill(const FormData& form,
     FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
                       &absl::get<AutofillProfile>(
                           filling_context->profile_or_credit_card_with_cvc),
-                      /*cvc=*/std::nullopt, form_structure, autofill_field,
-                      trigger_details,
+                      /*optional_cvc=*/std::nullopt, form_structure,
+                      autofill_field, trigger_details,
                       /*is_refill=*/true);
   } else {
     NOTREACHED_IN_MIGRATION();
@@ -1052,7 +1043,6 @@ bool FormFiller::FillField(
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     FormFieldData& field_data,
-    bool should_notify,
     const std::u16string& cvc,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
@@ -1087,22 +1077,10 @@ bool FormFiller::FillField(
     }
     autofill_field.set_autofilled_type(filling_content.field_type);
   }
-
   // Mark the field as autofilled when a non-empty value is assigned to
   // it. This allows the renderer to distinguish autofilled fields from
   // fields with non-empty values, such as select-one fields.
   field_data.set_is_autofilled(true);
-
-  if (should_notify) {
-    DCHECK(absl::holds_alternative<const AutofillProfile*>(
-        profile_or_credit_card));
-    const AutofillProfile* profile =
-        absl::get<const AutofillProfile*>(profile_or_credit_card);
-    manager_->client().DidFillOrPreviewField(
-        /*autofilled_value=*/profile->GetInfo(autofill_field.Type(),
-                                              app_locale_),
-        /*profile_full_name=*/profile->GetInfo(NAME_FULL, app_locale_));
-  }
   return true;
 }
 

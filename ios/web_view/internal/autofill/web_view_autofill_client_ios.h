@@ -106,8 +106,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
-  void DidFillOrPreviewField(const std::u16string& autofilled_value,
-                             const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;

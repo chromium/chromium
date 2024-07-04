@@ -359,10 +359,6 @@ class TestAutofillClientTemplate : public T {
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override {}
 
-  void DidFillOrPreviewField(const std::u16string& autofilled_value,
-                             const std::u16string& profile_full_name) override {
-  }
-
   bool IsContextSecure() const override {
     // Simplified secure context check for tests.
     return form_origin_.SchemeIs("https");

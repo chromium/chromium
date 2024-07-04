@@ -275,8 +275,6 @@ class FormFiller {
       std::string* failure_to_fill);
 
   // Fills `field_data` and modifies `autofill_field` given all other states.
-  // Also logs metrics and, if `should_notify` is true, calls
-  // AutofillClient::DidFillOrPreviewField().
   // Returns true if the field has been filled, false otherwise. This is
   // independent of whether the field was filled or autofilled before.
   // TODO(crbug.com/40227071): Cleanup API and logic.
@@ -286,7 +284,6 @@ class FormFiller {
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
-      bool should_notify,
       const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);

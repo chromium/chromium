@@ -798,8 +798,6 @@ static_library("ui") {
       "android/autofill/autofill_error_dialog_view_android.h",
       "android/autofill/autofill_keyboard_accessory_view_impl.cc",
       "android/autofill/autofill_keyboard_accessory_view_impl.h",
-      "android/autofill/autofill_logger_android.cc",
-      "android/autofill/autofill_logger_android.h",
       "android/autofill/autofill_progress_dialog_view_android.cc",
       "android/autofill/autofill_progress_dialog_view_android.h",
       "android/autofill/autofill_save_card_bottom_sheet_bridge.cc",
