@@ -107,14 +107,7 @@ class ScopedPlusAddressFeatureList {
  public:
   ScopedPlusAddressFeatureList() {
     features_.InitAndEnableFeatureWithParameters(
-        features::kPlusAddressesEnabled,
-        {// This must be overridden by calling Reinit(server_url). A dummy is
-         // provided here to bypass any checks on this during service creation.
-         {"server-url", {"https://override-me-please.example"}},
-         {"oauth-scope", {kFakeOauthScope}},
-         {"manage-url", {kFakeManagementUrl}},
-         {"error-report-url", {kFakeErrorReportUrl}},
-         {"learn-more", {kFakeLearnMoreUrl}}});
+        features::kPlusAddressesEnabled, plus_addresses_enabled_params_);
   }
 
   void Reinit(const std::string& server_url, bool enable_onboarding = false) {
@@ -122,13 +115,12 @@ class ScopedPlusAddressFeatureList {
     features_.Reset();
       // Don't enable the 'sync-with-server' param so that the dialog is the
       // only way to trigger requests to the server.
+    base::FieldTrialParams plus_addresses_enabled_params_with_server =
+        plus_addresses_enabled_params_;
+    plus_addresses_enabled_params_with_server["server-url"] = server_url;
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kPlusAddressesEnabled,
-         {{"server-url", {server_url}},
-          {"oauth-scope", {kFakeOauthScope}},
-          {"manage-url", {kFakeManagementUrl}},
-          {"error-report-url", {kFakeErrorReportUrl}},
-          {"learn-more", {kFakeLearnMoreUrl}}}},
+         plus_addresses_enabled_params_with_server},
         {features::kPlusAddressRefresh, {}}};
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -144,6 +136,13 @@ class ScopedPlusAddressFeatureList {
   }
 
  private:
+  // Feature parameters used for the `kPlusAddressEnabled` feature.
+  const base::FieldTrialParams plus_addresses_enabled_params_ = {
+      {"server-url", {"https://override-me-please.example"}},
+      {"oauth-scope", {kFakeOauthScope}},
+      {"manage-url", {kFakeManagementUrl}},
+      {"error-report-url", {kFakeErrorReportUrl}},
+      {"learn-more", {kFakeLearnMoreUrl}}};
   base::test::ScopedFeatureList features_;
 };
 
@@ -200,7 +199,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
 
     bool is_refresh = [&]() {
       std::optional<base::Value> body = base::JSONReader::Read(request.content);
-      if (!body || !body->is_dict() || !body->GetIfDict()) {
+      if (!body || !body->is_dict()) {
         return false;
       }
       return body->GetIfDict()
