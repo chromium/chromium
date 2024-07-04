@@ -57,6 +57,8 @@ UIColor* GenerateColor(NSString* color) {
     return [UIColor colorNamed:kGrey800Color];
   } else if ([color isEqualToString:@"purple"]) {
     return [UIColor colorNamed:kPurple500Color];
+  } else if ([color isEqualToString:@"green"]) {
+    return [UIColor colorNamed:kGreen500Color];
   } else {
     return nil;
   }
