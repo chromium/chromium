@@ -31,9 +31,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
 owners:
 - ftirelo@chromium.org
 - pastarmovj@chromium.org
@@ -54,5 +51,8 @@ schema:
     - shortcut
     - name
     - url
+supported_on:
+- chrome.*:128-
+- chrome_os:128-
 tags: []
 type: dict
