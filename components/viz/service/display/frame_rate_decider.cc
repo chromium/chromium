@@ -65,11 +65,10 @@ FrameRateDecider::~FrameRateDecider() {
 }
 
 void FrameRateDecider::SetSupportedFrameIntervals(
-    std::vector<base::TimeDelta> supported_intervals) {
+    base::flat_set<base::TimeDelta> supported_intervals) {
   DCHECK(!inside_surface_aggregation_);
 
   supported_intervals_ = std::move(supported_intervals);
-  std::sort(supported_intervals_.begin(), supported_intervals_.end());
   UpdatePreferredFrameIntervalIfNeeded();
 }
 
@@ -296,7 +295,7 @@ ToggleFrameRateCase FrameRateDecider::GetToggleFrameRateCase(
   // For single video cases, check if it is a perfect cadence one.
   if (num_of_frame_sinks_with_fixed_interval == 1) {
     base::TimeDelta interval = fixed_interval_frame_sink_intervals.back();
-    if (AreAlmostEqual(supported_intervals_.front(), interval)) {
+    if (AreAlmostEqual(*supported_intervals_.begin(), interval)) {
       return ToggleFrameRateCase::kSingleVideoPerfectCadenceMatchesDisplay;
     }
     for (auto supported_interval : supported_intervals_) {

@@ -49,7 +49,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
   base::TimeDelta GetMaximumRefreshFrameInterval() override;
-  std::vector<base::TimeDelta> GetSupportedFrameIntervals(
+  base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
       base::TimeDelta interval) override;
 
   // CVDisplayLink Callback on the Viz thread.

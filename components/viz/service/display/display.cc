@@ -1317,7 +1317,7 @@ base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
 }
 
 void Display::SetSupportedFrameIntervals(
-    std::vector<base::TimeDelta> intervals) {
+    base::flat_set<base::TimeDelta> intervals) {
   frame_rate_decider_->SetSupportedFrameIntervals(std::move(intervals));
 }
 

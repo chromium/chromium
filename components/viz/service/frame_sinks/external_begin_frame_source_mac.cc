@@ -391,7 +391,7 @@ void ExternalBeginFrameSourceMac::SetUpdateVSyncParametersCallback(
   update_vsync_params_callback_ = callback;
 }
 
-std::vector<base::TimeDelta>
+base::flat_set<base::TimeDelta>
 ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     base::TimeDelta current_interval) {
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
@@ -403,7 +403,7 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     return {nominal_refresh_period_};
   }
 
-  std::vector<base::TimeDelta> supported_intervals;
+  base::flat_set<base::TimeDelta> supported_intervals;
 
   // Check if preferred interval is supported.
   if (display_link_mac_ && display_link_mac_->IsPreferredIntervalSupported()) {
@@ -420,9 +420,9 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     auto upper_bound = max_interval - granularity / 2;
     for (base::TimeDelta interval = min_interval; interval < upper_bound;
          interval += granularity) {
-      supported_intervals.push_back(interval);
+      supported_intervals.insert(interval);
     }
-    supported_intervals.push_back(max_interval);
+    supported_intervals.insert(max_interval);
 
     return supported_intervals;
   }
@@ -433,7 +433,7 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
   base::TimeDelta interval = nominal_refresh_period_;
   while (interval <= kMaxSupportedFrameInterval) {
     VLOG(kOutputLevel) << interval;
-    supported_intervals.push_back(interval);
+    supported_intervals.insert(interval);
     interval *= 2;
   }
 

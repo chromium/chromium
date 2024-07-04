@@ -77,7 +77,7 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   ~FrameRateDecider() override;
 
   void SetSupportedFrameIntervals(
-      std::vector<base::TimeDelta> supported_intervals);
+      base::flat_set<base::TimeDelta> supported_intervals);
   bool output_surface_supports_set_frame_rate() const {
     return output_surface_supports_set_frame_rate_;
   }
@@ -107,7 +107,7 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   base::flat_set<FrameSinkId> frame_sinks_drawn_in_previous_frame_;
   base::flat_map<SurfaceId, uint64_t> prev_surface_id_to_active_index_;
 
-  std::vector<base::TimeDelta> supported_intervals_;
+  base::flat_set<base::TimeDelta> supported_intervals_;
 
   size_t num_of_frames_since_preferred_interval_changed_ = 0u;
   base::TimeDelta last_computed_preferred_frame_interval_;

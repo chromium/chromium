@@ -603,7 +603,7 @@ base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
   return BeginFrameArgs::DefaultInterval();
 }
 
-std::vector<base::TimeDelta>
+base::flat_set<base::TimeDelta>
 ExternalBeginFrameSource::GetSupportedFrameIntervals(base::TimeDelta interval) {
   return {interval, interval * 2};
 }

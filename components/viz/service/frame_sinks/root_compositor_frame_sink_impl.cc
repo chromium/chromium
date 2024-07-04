@@ -372,7 +372,7 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
   UpdateVSyncParameters();
 }
 
-std::vector<base::TimeDelta>
+base::flat_set<base::TimeDelta>
 RootCompositorFrameSinkImpl::GetSupportedFrameIntervals(
     base::TimeDelta interval) {
   if (external_begin_frame_source_) {
@@ -420,11 +420,10 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
 
 void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
-  std::vector<base::TimeDelta> supported_frame_intervals(
-      supported_refresh_rates.size());
+  base::flat_set<base::TimeDelta> supported_frame_intervals;
   for (size_t i = 0; i < supported_refresh_rates.size(); ++i) {
-    supported_frame_intervals[i] =
-        base::Seconds(1 / supported_refresh_rates[i]);
+    supported_frame_intervals.insert(
+        base::Seconds(1 / supported_refresh_rates[i]));
   }
 
   display_->SetSupportedFrameIntervals(supported_frame_intervals);

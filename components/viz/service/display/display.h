@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -199,7 +200,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void ForceImmediateDrawAndSwapIfPossible();
   void SetNeedsOneBeginFrame();
 
-  void SetSupportedFrameIntervals(std::vector<base::TimeDelta> intervals);
+  void SetSupportedFrameIntervals(base::flat_set<base::TimeDelta> intervals);
   void PreserveChildSurfaceControls();
 
   base::ScopedClosureRunner GetCacheBackBufferCb();
