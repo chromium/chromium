@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -197,13 +198,17 @@
 #pragma mark - private
 
 - (void)startResultPage {
+  Browser* browser = self.browser;
   web::WebState::CreateParams params =
-      web::WebState::CreateParams(self.browser->GetBrowserState());
+      web::WebState::CreateParams(browser->GetBrowserState());
   web::WebStateDelegate* browserWebStateDelegate =
-      WebStateDelegateBrowserAgent::FromBrowser(self.browser);
+      WebStateDelegateBrowserAgent::FromBrowser(browser);
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
-      browserWebStateDelegate:browserWebStateDelegate];
+      browserWebStateDelegate:browserWebStateDelegate
+                  isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
+  _resultMediator.applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
