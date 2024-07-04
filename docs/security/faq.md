@@ -835,14 +835,20 @@ for more details.
 ### What's the story with certificate revocation?
 
 Chrome's primary mechanism for checking certificate revocation status is
-[CRLsets](https://dev.chromium.org/Home/chromium-security/crlsets).
+[CRLSets](https://dev.chromium.org/Home/chromium-security/crlsets).
 Additionally, by default, [stapled Online Certificate Status Protocol (OCSP)
 responses](https://en.wikipedia.org/wiki/OCSP_stapling) are honored.
 
-"Online" certificate revocation status checks using Certificate Revocation
-List (CRL) or OCSP URLs included in certificates are disabled by default. This
-is because unless a client, like Chrome, refuses to connect to a website if it
-cannot get a valid response, online checks offer limited security value.
+As of 2024, Chrome enforces most security-relevant certificate revocations that
+are visible via Certificate Revocation Lists (CRLs) published to the
+[CCADB](https://www.ccadb.org/) via CRLSets. There is some inherent delay in
+getting revocation information to Chrome clients, but most revocations should
+reach most users within a few days of appearing on a CA's CRL.
+
+Chrome clients do not, by default, perform "online" certificate revocation
+status checks using CRLs directly or via OCSP URLs included in certificates.
+This is because online checks offer limited security value unless a client, like
+Chrome, refuses to connect to a website if it cannot get a valid response, 
 
 Unfortunately, there are many widely-prevalent causes for why a client
 might be unable to get a valid certificate revocation status response to
@@ -859,10 +865,6 @@ OCSP responder (i.e., a third party). These details can be exposed accidentally
 (e.g., via data breach of logs) or intentionally (e.g., via subpoena). Chrome
 used to perform revocation checks for Extended Validation certificates, but that
 behavior was disabled in 2022 for [privacy reasons](https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/S6A14e_X-T0/m/T4WxWgajAAAJ).
-
-For more discussion on challenges with certificate revocation status checking,
-explained by Adam Langley, see [https://www.imperialviolet.org/2014/04/29/revocationagain.html](https://www.imperialviolet.org/2014/04/29/revocationagain.html)
-and [https://www.imperialviolet.org/2014/04/19/revchecking.html](https://www.imperialviolet.org/2014/04/19/revchecking.html).
 
 The following enterprise policies can be used to change the default revocation
 checking behavior in Chrome, though these may be removed in the future:
