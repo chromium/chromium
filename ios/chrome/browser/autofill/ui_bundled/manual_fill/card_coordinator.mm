@@ -109,10 +109,13 @@
   }];
 }
 
-- (void)openCardDetails:(const autofill::CreditCard*)card {
+- (void)openCardDetails:(const autofill::CreditCard*)card
+             inEditMode:(BOOL)editMode {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate cardCoordinator:weakSelf didTriggerOpenCardDetails:card];
+    [weakSelf.delegate cardCoordinator:weakSelf
+             didTriggerOpenCardDetails:card
+                            inEditMode:editMode];
   }];
 }
 

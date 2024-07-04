@@ -16,6 +16,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -28,6 +29,21 @@
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -49,20 +65,6 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_view_controller_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_all_password_coordinator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -549,12 +551,28 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 - (void)cardCoordinator:(CardCoordinator*)cardCoordinator
-    didTriggerOpenCardDetails:(const autofill::CreditCard*)card {
+    didTriggerOpenCardDetails:(const autofill::CreditCard*)card
+                   inEditMode:(BOOL)editMode {
   [self reset];
+
+  // Check if the card should be edited from the Payments web page.
+  if (editMode &&
+      [AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:card]) {
+    GURL paymentsURL =
+        autofill::payments::GetManageInstrumentUrl(card->instrument_id());
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+
+    return;
+  }
+
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SettingsCommands> settingsCommandsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
-  [settingsCommandsHandler showCreditCardDetails:card];
+  [settingsCommandsHandler showCreditCardDetails:card inEditMode:editMode];
 }
 
 #pragma mark - AddressCoordinatorDelegate

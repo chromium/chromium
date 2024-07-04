@@ -17,6 +17,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -448,8 +449,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       delegate:
                                           (id<SettingsNavigationControllerDelegate>)
                                               delegate
-                                    creditCard:(const autofill::CreditCard*)
-                                                   creditCard {
+                                    creditCard:
+                                        (const autofill::CreditCard*)creditCard
+                                    inEditMode:(BOOL)editMode {
   ChromeBrowserState* browserState =
       browser->GetBrowserState()->GetOriginalChromeBrowserState();
   autofill::PersonalDataManager* personalDataManager =
@@ -460,6 +462,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:*creditCard
           personalDataManager:personalDataManager];
+  if (editMode) {
+    // If `creditCard` needs to be edited from the Payments web page, then a
+    // command to open the Payments URL in a new tab should be dispatched. A
+    // SettingsNavigationController shouldn't be created in this case.
+    CHECK(
+        ![AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:creditCard]);
+    [controller editButtonPressed];
+  }
 
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
@@ -1141,7 +1151,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self pushViewController:controller animated:YES];
 }
 
-- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard {
+- (void)showCreditCardDetails:(const autofill::CreditCard*)creditCard
+                   inEditMode:(BOOL)editMode {
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   autofill::PersonalDataManager* personalDataManager =
@@ -1151,6 +1162,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:*creditCard
           personalDataManager:personalDataManager];
+  if (editMode) {
+    // If `creditCard` needs to be edited from the Payments web page, then a
+    // command to open the Payments URL in a new tab should be dispatched.
+    CHECK(
+        ![AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:creditCard]);
+    [controller editButtonPressed];
+  }
   ConfigureHandlers(controller, _browser->GetCommandDispatcher());
   [self pushViewController:controller animated:YES];
 }

@@ -6,7 +6,8 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_CREDIT_CARD_UTIL_H_
 
 #import <Foundation/Foundation.h>
-#include "components/autofill/core/browser/data_model/credit_card.h"
+
+#import "components/autofill/core/browser/data_model/credit_card.h"
 
 @interface AutofillCreditCardUtil : NSObject
 
@@ -48,6 +49,10 @@
 
 // Checks if a credit card has a valid `nickname`.
 + (BOOL)isValidCardNickname:(NSString*)cardNickname;
+
+// Evaluates whether the passed `card` should be edited from the Payments web
+// page.
++ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard*)card;
 
 @end
 

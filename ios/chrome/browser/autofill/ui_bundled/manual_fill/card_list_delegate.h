@@ -16,8 +16,10 @@
 // Opens feature to add a credit card.
 - (void)openAddCreditCard;
 
-// Opens the details of the given card.
-- (void)openCardDetails:(const autofill::CreditCard*)card;
+// Opens the details of the given card. `editMode` indicates whether the details
+// page should be opened in edit mode.
+- (void)openCardDetails:(const autofill::CreditCard*)card
+             inEditMode:(BOOL)editMode;
 
 // Opens cards settings.
 - (void)openCardSettings;

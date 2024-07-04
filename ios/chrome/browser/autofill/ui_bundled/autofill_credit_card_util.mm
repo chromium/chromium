@@ -103,6 +103,17 @@
       base::SysNSStringToUTF16(cardNickname));
 }
 
++ (BOOL)shouldEditCardFromPaymentsWebPage:(const autofill::CreditCard*)card {
+  switch (card->record_type()) {
+    case autofill::CreditCard::RecordType::kLocalCard:
+    case autofill::CreditCard::RecordType::kFullServerCard:
+    case autofill::CreditCard::RecordType::kVirtualCard:
+      return NO;
+    case autofill::CreditCard::RecordType::kMaskedServerCard:
+      return YES;
+  }
+}
+
 #pragma mark - Private
 
 // Updates the `AutofillUIType` of the `creditCard` with the value of

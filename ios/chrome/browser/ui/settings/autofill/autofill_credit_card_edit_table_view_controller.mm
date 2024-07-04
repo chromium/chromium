@@ -16,7 +16,6 @@
 #import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/credit_card_network_identifiers.h"
 #import "components/autofill/core/common/credit_card_number_validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
@@ -94,17 +93,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
-  // In the case of server cards, open the Payments editing page instead.
-  if (_creditCard.record_type() ==
-          autofill::CreditCard::RecordType::kMaskedServerCard) {
+  // Check if the card should be edited from the Payments web page.
+  if ([AutofillCreditCardUtil shouldEditCardFromPaymentsWebPage:&_creditCard]) {
     GURL paymentsURL =
         autofill::payments::GetManageInstrumentUrl(_creditCard.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     [self.applicationHandler closeSettingsUIAndOpenURL:command];
 
-    // Don't call [super editButtonPressed] because edit mode is not actually
-    // entered in this case.
     return;
   }
 

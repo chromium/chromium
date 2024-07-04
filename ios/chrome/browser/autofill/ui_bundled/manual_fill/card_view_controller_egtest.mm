@@ -35,6 +35,7 @@ using chrome_test_util::ManualFallbackFormSuggestionViewMatcher;
 using chrome_test_util::ManualFallbackKeyboardIconMatcher;
 using chrome_test_util::ManualFallbackManagePaymentMethodsMatcher;
 using chrome_test_util::NavigationBarCancelButton;
+using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsCreditCardMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::TapWebElementWithId;
@@ -1004,15 +1005,15 @@ void DismissPaymentBottomSheet() {
   }
 }
 
-// Tests the "Edit" action of the overflow menu button displays the card's
-// details in edit mode.
-- (void)testEditCardFromOverflowMenu {
+// Tests that the "Edit" action of a local card's overflow menu button displays
+// the card's details in edit mode.
+- (void)testEditLocalCardFromOverflowMenu {
   if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
                             @"Accessory Upgrade feature is disabled.")
   }
 
-  // Save a card.
+  // Save a  local card.
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard
@@ -1030,7 +1031,61 @@ void DismissPaymentBottomSheet() {
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
 
-  // TODO(crbug.com/326413453): Check that the card details opened.
+  // Verify that the card's details page is visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          AutofillCreditCardEditTableView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Edit the name.
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Test User")]
+      performAction:grey_replaceText(@"New Name")];
+
+  // Tap Done Button.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
+}
+
+// Tests that the "Edit" action of a server card overflow menu button opens a
+// new tab page.
+- (void)testEditServerCardFromOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Save a server card.
+  [AutofillAppInterface saveMaskedCreditCard];
+
+  [self loadURL];
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  DismissPaymentBottomSheet();
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // Tapping on "Edit" should have opened the Payments web page. Verify that the
+  // card's details page wasn't opened and that the card table view controller
+  // is no longer visible.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          AutofillCreditCardEditTableView()]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests the "Show Details" action of the overflow menu button displays the

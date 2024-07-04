@@ -210,11 +210,11 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
 
   __weak __typeof(self) weakSelf = self;
   UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-      // TODO(crbug.com/326413453): Handle tap.
+    [weakSelf.navigationDelegate openCardDetails:card inEditMode:YES];
   }];
 
   UIAction* showDetailsAction = [actionFactory actionToShowDetailsWithBlock:^{
-    [weakSelf.navigationDelegate openCardDetails:card];
+    [weakSelf.navigationDelegate openCardDetails:card inEditMode:NO];
   }];
 
   return @[ editAction, showDetailsAction ];

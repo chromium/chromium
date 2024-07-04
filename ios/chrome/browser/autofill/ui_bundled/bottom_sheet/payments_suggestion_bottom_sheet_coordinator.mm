@@ -132,7 +132,8 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
         dismissViewControllerAnimated:NO
                            completion:^{
                              [weakSelf.settingsHandler
-                                 showCreditCardDetails:creditCard];
+                                 showCreditCardDetails:creditCard
+                                            inEditMode:NO];
                              [weakSelf.browserCoordinatorCommandsHandler
                                      dismissPaymentSuggestions];
                            }];
