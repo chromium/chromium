@@ -20,9 +20,7 @@ export class SliderNode extends BasicNode {
    */
   constructor(baseNode, parent) {
     super(baseNode, parent);
-    // TODO(nektar): Scroll events are synthesized by Blink automatically.
-    // Remove this class after discussing with coworkers.
-    this.isCustomSlider_ = true;
+    this.isCustomSlider_ = Boolean(baseNode.htmlAttributes.role);
   }
 
   /** @override */

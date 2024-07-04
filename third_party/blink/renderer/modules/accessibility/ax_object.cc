@@ -118,7 +118,6 @@
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #if DCHECK_IS_ON()
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 #endif
@@ -553,26 +552,6 @@ void AddIntListAttributeFromOffsetVector(
   if (!offset_values.empty())
     node_data->AddIntListAttribute(attr, offset_values);
 }
-
-const QualifiedName& DeprecatedAriaColtextAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, aria_coltext_attr,
-                      (AtomicString("aria-coltext")));
-  return aria_coltext_attr;
-}
-
-const QualifiedName& DeprecatedAriaRowtextAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, aria_rowtext_attr,
-                      (AtomicString("aria-rowtext")));
-  return aria_rowtext_attr;
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-const QualifiedName& MathMLAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, mathml_attr,
-                      (AtomicString("data-mathml")));
-  return mathml_attr;
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -2011,23 +1990,15 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
 void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  const Element* element = GetElement();
-  if (!element) {
-    return;
-  }
-  if (const AtomicString& math_ml = GetAttribute(MathMLAttrName())) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kMathContent, math_ml,
-        kMaxStaticTextLength);
-    return;
-  }
   if (node_data->role == ax::mojom::blink::Role::kMath ||
       node_data->role == ax::mojom::blink::Role::kMathMLMath) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kMathContent,
-        element->innerHTML(), kMaxStaticTextLength);
+    const Element* element = GetElement();
+    DCHECK(element);
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kInnerHtml,
+                                  element->innerHTML(), kMaxStaticTextLength);
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif
 }
 
 void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) const {
@@ -2213,21 +2184,13 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
     }
 
     if (RuntimeEnabledFeatures::AriaRowColIndexTextEnabled()) {
-      AtomicString aria_cell_row_index_text =
+      const AtomicString& aria_cell_row_index_text =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRowIndexText);
-      if (!aria_cell_row_index_text || aria_cell_row_index_text.empty()) {
-        aria_cell_row_index_text =
-            GetAttribute(DeprecatedAriaRowtextAttrName());
-      }
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kAriaCellRowIndexText,
           aria_cell_row_index_text);
-      AtomicString aria_cell_column_index_text =
+      const AtomicString& aria_cell_column_index_text =
           GetAOMPropertyOrARIAAttribute(AOMStringProperty::kColIndexText);
-      if (!aria_cell_column_index_text || aria_cell_column_index_text.empty()) {
-        aria_cell_column_index_text =
-            GetAttribute(DeprecatedAriaColtextAttrName());
-      }
       TruncateAndAddStringAttribute(
           node_data,
           ax::mojom::blink::StringAttribute::kAriaCellColumnIndexText,

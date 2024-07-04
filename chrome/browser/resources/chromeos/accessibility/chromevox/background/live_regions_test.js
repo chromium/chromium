@@ -408,6 +408,7 @@ AX_TEST_F(
             root: this.desktop_,
             children: [],
             standardActions: [],
+            htmlAttributes: {},
             state: {},
             unclippedLocation: {},
             addEventListener() {},

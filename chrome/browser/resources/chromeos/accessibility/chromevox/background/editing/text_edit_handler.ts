@@ -61,7 +61,12 @@ export class TextEditHandler {
   private useRichText_(): boolean {
     // TODO(b/314203187): Not null asserted, check to make sure it's correct.
     return this.node.state![StateType.RICHLY_EDITABLE] ||
-        this.node.nonAtomicTextFieldRoot;
+        // This condition is a full proof way to ensure the node is editable
+        // and has the content editable attribute set to any valid value.
+        (this.node.state![StateType.EDITABLE] && this.node.htmlAttributes &&
+         this.node.htmlAttributes['contenteditable'] !== undefined &&
+         this.node.htmlAttributes['contenteditable'] !== 'false') ||
+        false;
   }
 
   private createEditableText_(): AutomationEditableText {

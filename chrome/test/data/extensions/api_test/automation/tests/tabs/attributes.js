@@ -289,6 +289,13 @@ var allTests = [
     chrome.test.succeed();
   },
 
+  function testHtmlAttributes() {
+    var editable = rootNode.find({ role: 'textField' });
+    assertTrue(editable !== undefined);
+    assertEq('text', editable.htmlAttributes.type);
+    chrome.test.succeed();
+  },
+
   function testNameFrom() {
     var link = rootNode.find({ role: 'link' });
     assertEq(chrome.automation.NameFromType.CONTENTS, link.nameFrom);

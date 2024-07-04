@@ -378,6 +378,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
   virtual void OnAccNameCalled() = 0;
   virtual void OnBasicUIAutomationUsed() = 0;
   virtual void OnAdvancedUIAutomationUsed() = 0;
+  virtual void OnUIAutomationIdRequested() = 0;
   virtual void OnProbableUIAutomationScreenReaderDetected() = 0;
   virtual void OnTextPatternRequested() = 0;
   virtual void StartFiringUIAEvents() = 0;

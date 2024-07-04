@@ -611,16 +611,16 @@ enum StringAttribute {
   // ax::mojom::Role::kImage. See kImageAnnotationStatus, too.
   kImageAnnotation = 15,
   kImageDataUrl = 16,
+  kInnerHtml = 17,
   kInputType = 18,
   kKeyShortcuts = 19,
   // Only present when different from parent.
   kLanguage = 20,
   [MinVersion=3] kLinkTarget = 35,  // E.g. "self", "blank", "top".
   [MinVersion=1] kLongClickLabel = 32, // Only for ARC
+  kName = 21,
   kLiveRelevant = 22,
   kLiveStatus = 23,
-  kMathContent = 17,
-  kName = 21,
   // Only if not already exposed in kName (NameFrom::kPlaceholder)
   kPlaceholder = 24,
   kRole = 25,

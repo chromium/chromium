@@ -11,6 +11,7 @@ import {ParagraphUtils} from '../paragraph_utils.js';
 export function createMockNode(properties) {
   const node = Object.assign(
       {
+        htmlAttributes: [],
         state: {},
         children: [],
         unclippedLocation: {left: 20, top: 10, width: 100, height: 50},

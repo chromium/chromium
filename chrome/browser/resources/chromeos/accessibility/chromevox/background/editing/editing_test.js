@@ -1836,13 +1836,13 @@ AX_TEST_F(
       // ensure we don't depend on Blink's behaviors which can change based
       // on style. We want to work directly with only the automation api
       // itself to ensure we have full coverage.
+      let htmlAttributes = {};
       let htmlTag = '';
       let state = {};
-      let nonAtomicTextFieldRoot = false;
+      Object.defineProperty(
+          input, 'htmlAttributes', {get: () => htmlAttributes});
       Object.defineProperty(input, 'htmlTag', {get: () => htmlTag});
       Object.defineProperty(input, 'state', {get: () => state});
-      Object.defineProperty(
-          input, 'nonAtomicTextFieldRoot', {get: () => nonAtomicTextFieldRoot});
 
       // An invalid editable.
       let didThrow = false;
@@ -1855,49 +1855,59 @@ AX_TEST_F(
       assertTrue(didThrow, 'Non-editable created editable handler.');
 
       // A simple editable.
+      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true};
-      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'AutomationEditableText', handler.editableText_.constructor.name,
           'Incorrect backing object for simple editable.');
 
       // A non-rich editable via multiline.
+      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true, multiline: true};
-      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'AutomationEditableText', handler.editableText_.constructor.name,
           'Incorrect object for multiline editable.');
 
       // A rich editable via textarea tag.
+      htmlAttributes = {};
       htmlTag = 'textarea';
       state = {editable: true};
-      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for textarea html tag.');
 
       // A rich editable via state.
+      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true, richlyEditable: true};
-      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for richly editable state.');
 
       // A rich editable via contenteditable. (aka <div contenteditable>).
-      htmlTag = 'div';
+      htmlAttributes = {contenteditable: ''};
+      htmlTag = '';
       state = {editable: true};
-      nonAtomicTextFieldRoot = true;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for content editable.');
+
+      // A rich editable via contenteditable. (aka <div
+      // contenteditable=true>).
+      htmlAttributes = {contenteditable: 'true'};
+      htmlTag = '';
+      state = {editable: true};
+      handler = new TextEditHandler(input);
+      assertEquals(
+          'RichEditableText', handler.editableText_.constructor.name,
+          'Incorrect object for content editable true.');
 
       // Note that it is not possible to have <div
       // contenteditable="someInvalidValue"> or <div contenteditable=false>

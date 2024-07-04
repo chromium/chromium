@@ -2005,6 +2005,13 @@ chrome.automation.AutomationNode.prototype.className;
 chrome.automation.AutomationNode.prototype.modal;
 
 /**
+ * A map containing all HTML attributes and their values
+ * @type {Object<string>}
+ * @see https://developer.chrome.com/extensions/automation#type-htmlAttributes
+ */
+chrome.automation.AutomationNode.prototype.htmlAttributes;
+
+/**
  * The input type of a text field, such as "text" or "email".
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-inputType
@@ -2078,11 +2085,11 @@ chrome.automation.AutomationNode.prototype.restriction;
 chrome.automation.AutomationNode.prototype.checked;
 
 /**
- * The "data:mathml" attribute or the inner html of this element.
+ * The inner html of this element. Only populated for math content.
  * @type {(string|undefined)}
- * @see https://developer.chrome.com/extensions/automation#type-mathContent
+ * @see https://developer.chrome.com/extensions/automation#type-innerHtml
  */
-chrome.automation.AutomationNode.prototype.mathContent;
+chrome.automation.AutomationNode.prototype.innerHtml;
 
 /**
  * The RGBA foreground color of this subtree, as an integer.

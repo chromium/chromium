@@ -108,6 +108,8 @@ void RecordAccessibilityModeHistograms(AXHistogramPrefix prefix,
     bundle = AXMode::BundleHistogramValue::kWebContentsOnly;
   } else if (mode == kAXModeComplete) {
     bundle = AXMode::BundleHistogramValue::kComplete;
+  } else if (mode == kAXModeCompleteNoHTML) {
+    bundle = AXMode::BundleHistogramValue::kCompleteNoHTML;
   } else if (mode == kAXModeFormControls) {
     bundle = AXMode::BundleHistogramValue::kFormControls;
   } else {

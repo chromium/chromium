@@ -26,8 +26,6 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom-shared-internal.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -1421,6 +1419,20 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                          "colindex", attributes);
     }
+
+    // Experimental: expose aria-rowtext / aria-coltext. Not standardized
+    // yet, but obscure enough that it's safe to expose.
+    // http://crbug.com/791634
+    for (const auto& attribute_value : GetHtmlAttributes()) {
+      const std::string& attr = attribute_value.first;
+      const std::string& value = attribute_value.second;
+      if (attr == "aria-coltext") {
+        AddAttributeToList("coltext", value, attributes);
+      }
+      if (attr == "aria-rowtext") {
+        AddAttributeToList("rowtext", value, attributes);
+      }
+    }
   }
 
   // Expose row or column header sort direction.
@@ -1447,14 +1459,16 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   if (IsCellOrTableHeader(GetRole())) {
-    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellColumnIndexText,
-                       "coltext", attributes);
-    AddAttributeToList(ax::mojom::StringAttribute::kAriaCellRowIndexText,
-                       "rowtext", attributes);
-    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnSpan, "colspan",
-                       attributes);
-    AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowSpan, "rowspan",
-                       attributes);
+    // Expose colspan attribute.
+    std::string colspan;
+    if (GetHtmlAttribute("aria-colspan", &colspan)) {
+      AddAttributeToList("colspan", colspan, attributes);
+    }
+    // Expose rowspan attribute.
+    std::string rowspan;
+    if (GetHtmlAttribute("aria-rowspan", &rowspan)) {
+      AddAttributeToList("rowspan", rowspan, attributes);
+    }
   }
 
   // Expose the value of a progress bar, slider, scroll bar or <select> element.
@@ -1491,9 +1505,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("id", id, attributes);
   }
 
+  // Expose src attribute.
   std::string src;
-  if (IsImage(GetRole()) &&
-      GetStringAttribute(ax::mojom::StringAttribute::kUrl, &src)) {
+  if (GetRole() == ax::mojom::Role::kImage && GetHtmlAttribute("src", &src)) {
     AddAttributeToList("src", src, attributes);
   }
 
