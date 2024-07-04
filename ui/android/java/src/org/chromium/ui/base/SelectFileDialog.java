@@ -1685,8 +1685,5 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 String[] displayNameArray);
 
         void onFileNotSelected(long nativeSelectFileDialogImpl, SelectFileDialog caller);
-
-        void onContactsSelected(
-                long nativeSelectFileDialogImpl, SelectFileDialog caller, String contacts);
     }
 }

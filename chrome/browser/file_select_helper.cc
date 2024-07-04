@@ -44,10 +44,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/file_select_helper_contacts_android.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "content/public/browser/site_instance.h"
@@ -67,11 +63,6 @@ using content::BrowserThread;
 using content::WebContents;
 
 namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-// The MIME type for selecting contacts.
-constexpr char16_t kContactsMimeType[] = u"text/json+contacts";
-#endif
 
 void DeleteFiles(std::vector<base::FilePath> paths) {
   for (auto& file_path : paths)
@@ -530,17 +521,6 @@ void FileSelectHelper::RunFileChooser(
     const FileChooserParams& params) {
   Profile* profile = Profile::FromBrowserContext(
       render_frame_host->GetProcess()->GetBrowserContext());
-
-#if BUILDFLAG(IS_ANDROID)
-  if (params.accept_types.size() == 1 &&
-      params.accept_types[0] == kContactsMimeType) {
-    scoped_refptr<FileSelectHelperContactsAndroid> file_select_helper_android(
-        new FileSelectHelperContactsAndroid(profile));
-    file_select_helper_android->RunFileChooser(
-        render_frame_host, std::move(listener), params.Clone());
-    return;
-  }
-#endif
 
   // FileSelectHelper will keep itself alive until it sends the result
   // message.

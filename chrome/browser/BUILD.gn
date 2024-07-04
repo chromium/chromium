@@ -3250,8 +3250,6 @@ static_library("browser") {
       "feed/android/web_feed_bridge.cc",
       "feedback/android/family_info_feedback_source.cc",
       "feedback/android/family_info_feedback_source.h",
-      "file_select_helper_contacts_android.cc",
-      "file_select_helper_contacts_android.h",
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
