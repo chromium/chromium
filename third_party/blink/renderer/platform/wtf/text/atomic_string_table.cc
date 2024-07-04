@@ -146,10 +146,11 @@ struct HashAndUTF8CharactersTranslator {
           StringImpl::CreateUninitialized(buffer.utf16_length(), target);
 
       const char* source = buffer.characters();
-      if (unicode::ConvertUTF8ToUTF16(&source, source + buffer.length(),
-                                      &target, target + buffer.utf16_length(),
-                                      &is_all_ascii) != unicode::kConversionOK)
+      if (unicode::ConvertUTF8ToUTF16(
+              &source, source + buffer.length(), &target,
+              target + buffer.utf16_length()) != unicode::kConversionOK) {
         NOTREACHED_IN_MIGRATION();
+      }
     } else {
       new_string = StringImpl::Create(buffer.characters(), buffer.length());
     }

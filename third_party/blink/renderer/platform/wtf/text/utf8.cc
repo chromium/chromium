@@ -294,12 +294,10 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
                                     const char* source_end,
                                     UChar** target_start,
                                     UChar* target_end,
-                                    bool* source_all_ascii,
                                     bool strict) {
   ConversionResult result = kConversionOK;
   const char* source = *source_start;
   UChar* target = *target_start;
-  UChar or_all_data = 0;
   while (source < source_end) {
     int utf8_sequence_length = InlineUTF8SequenceLength(*source);
     if (source_end - source < utf8_sequence_length) {
@@ -330,10 +328,8 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
           break;
         }
         *target++ = kReplacementCharacter;
-        or_all_data |= kReplacementCharacter;
       } else {
         *target++ = static_cast<UChar>(character);  // normal case
-        or_all_data |= character;
       }
     } else if (U_IS_SUPPLEMENTARY(character)) {
       // target is a character in range 0xFFFF - 0x10FFFF
@@ -344,7 +340,6 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
       }
       *target++ = U16_LEAD(character);
       *target++ = U16_TRAIL(character);
-      or_all_data = 0xffff;
     } else {
       // TODO(crbug.com/329702346): This should never happen;
       // InlineUTF8SequenceLength() can never return a value higher than 4, and
@@ -356,15 +351,11 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
         break;  // Bail out; shouldn't continue
       } else {
         *target++ = kReplacementCharacter;
-        or_all_data |= kReplacementCharacter;
       }
     }
   }
   *source_start = source;
   *target_start = target;
-
-  if (source_all_ascii)
-    *source_all_ascii = !(or_all_data & ~0x7f);
 
   return result;
 }

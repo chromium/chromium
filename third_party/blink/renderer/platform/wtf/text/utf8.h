@@ -58,13 +58,11 @@ typedef enum {
 // 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
 // higher than 0x10FFFF.
 
-WTF_EXPORT ConversionResult
-ConvertUTF8ToUTF16(const char** source_start,
-                   const char* source_end,
-                   UChar** target_start,
-                   UChar* target_end,
-                   bool* is_source_all_ascii = nullptr,
-                   bool strict = true);
+WTF_EXPORT ConversionResult ConvertUTF8ToUTF16(const char** source_start,
+                                               const char* source_end,
+                                               UChar** target_start,
+                                               UChar* target_end,
+                                               bool strict = true);
 
 WTF_EXPORT ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
                                                 const LChar* source_end,
