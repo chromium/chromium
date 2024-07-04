@@ -1064,9 +1064,10 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
     CHECK(model_->step() == Step::kGPMChangePin ||
           model_->step() == Step::kGPMChangeArbitraryPin);
     enclave_manager_->ChangePIN(
-        base::UTF16ToUTF8(pin), std::move(rapt_),
+        base::UTF16ToUTF8(pin), std::move(*rapt_),
         base::BindOnce(&GPMEnclaveController::OnGpmPinChanged,
                        weak_ptr_factory_.GetWeakPtr()));
+    rapt_.reset();
     ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinEntered);
   } else {
     model_->SetStep(Step::kGPMConnecting);

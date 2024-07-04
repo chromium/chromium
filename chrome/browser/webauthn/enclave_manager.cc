@@ -124,9 +124,9 @@ struct EnclaveManager::PendingAction {
   bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
-  std::string pin;                  // the PIN to add to an account.
-  std::string updated_pin;          // a new PIN, to replace the current PIN.
-  std::optional<std::string> rapt;  // ReAuthentication Proof Token.
+  std::string pin;          // the PIN to add to an account.
+  std::string updated_pin;  // a new PIN, to replace the current PIN.
+  std::string rapt;         // ReAuthentication Proof Token.
   bool update_wrapped_pin;  // copy `wrapped_pin` and `pin_public_key` to the
                             // state.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
@@ -1908,7 +1908,6 @@ class EnclaveManager::StateMachine {
   }
 
   void SendPINChangeRequest(std::string token) {
-    const bool has_rapt = rapt_.has_value();
     uint8_t counter_id[enclave::kCounterIDLen];
     crypto::RandBytes(counter_id);
     uint8_t vault_handle_without_type[enclave::kVaultHandleLen - 1];
@@ -1935,15 +1934,7 @@ class EnclaveManager::StateMachine {
                 hashed_pin_->hashed, std::move(*cert_xml_),
                 std::move(*sig_xml_), counter_id, vault_handle_without_type,
                 wrapped_secret)),
-        // These operations require more authentication than just the hardware
-        // key. Thus either we have a reauthentication proof token to send to
-        // the enclave, or else we need to use the UV key.
-        //
-        // (The default `UVKeyOptions` will cause the system UV prompt to appear
-        // on macOS. This isn't ideal, but changing the GPM PIN is an
-        // infrequent operation.)
-        has_rapt ? manager_->HardwareKeySigningCallback()
-                 : manager_->UserVerifyingKeySigningCallback(UVKeyOptions()),
+        manager_->HardwareKeySigningCallback(),
         base::BindOnce(&StateMachine::OnEnclaveResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -2582,14 +2573,11 @@ void EnclaveManager::AddDeviceAndPINToAccount(
 }
 
 void EnclaveManager::ChangePIN(std::string updated_pin,
-                               std::optional<std::string> rapt,
+                               std::string rapt,
                                EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->registered());
   CHECK(user_->has_wrapped_pin());
-  // TODO(enclave): remove the ability to change the PIN based on UV. We don't
-  // want to allow that.
-  CHECK(rapt.has_value() || uv_key_state(false) != UvKeyState::kNone);
 
   auto action = std::make_unique<PendingAction>();
   action->callback = std::move(callback);

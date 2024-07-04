@@ -103,9 +103,10 @@ void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
   model_->ui_disabled_ = true;
   model_->OnSheetModelChanged();
   enclave_manager_->ChangePIN(
-      base::UTF16ToUTF8(pin), std::move(rapt_),
+      base::UTF16ToUTF8(pin), std::move(*rapt_),
       base::BindOnce(&ChangePinControllerImpl::OnGpmPinChanged,
                      weak_ptr_factory_.GetWeakPtr()));
+  rapt_.reset();
   RecordHistogram(ChangePinEvent::kNewPinEntered);
 }
 
