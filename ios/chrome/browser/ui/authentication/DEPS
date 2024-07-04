@@ -15,5 +15,8 @@ include_rules = [
 specific_include_rules = {
   "signin_earl_grey_app_interface\.mm": [
     "+ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
-  ]
+  ],
+  ".*_egtest\.mm": [
+    "+components/signin/internal/identity_manager/account_capabilities_constants.h",
+  ],
 }

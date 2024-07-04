@@ -220,6 +220,7 @@ source_set("eg2_tests") {
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",
     "//components/search_engines",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/base",
     "//components/strings",
     "//components/supervised_user/core/common:features",

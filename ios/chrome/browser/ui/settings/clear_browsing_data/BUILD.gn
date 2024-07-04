@@ -178,6 +178,7 @@ source_set("eg2_tests") {
     ":features",
     "//base/test:test_support",
     "//components/browsing_data/core",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",

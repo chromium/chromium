@@ -12,6 +12,7 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -1511,11 +1512,13 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // The identity must exist in the test storage to be able to set capabilities
   // through the fake identity service.
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:identity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
 
-  [SigninEarlGrey signinWithFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Check that the feed label is not visible and if NTP is scrollable.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
@@ -1569,11 +1572,13 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   // The identity must exist in the test storage to be able to set capabilities
   // through the fake identity service.
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:identity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
 
-  [SigninEarlGrey signinWithFakeIdentity:identity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   // Check that the feed label is not visible and if NTP is scrollable.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]

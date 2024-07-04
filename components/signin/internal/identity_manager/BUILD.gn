@@ -9,12 +9,9 @@ import("//components/signin/features.gni")
 # (//components/signin/public/identity_manager/identity_manager.*).
 source_set("identity_manager") {
   sources = [
-    "account_capabilities_constants.cc",
-    "account_capabilities_constants.h",
     "account_capabilities_fetcher.cc",
     "account_capabilities_fetcher.h",
     "account_capabilities_fetcher_factory.h",
-    "account_capabilities_list.h",
     "account_fetcher_service.cc",
     "account_fetcher_service.h",
     "account_info_fetcher.cc",
@@ -49,6 +46,7 @@ source_set("identity_manager") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":capabilities",
     "//base",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
@@ -142,6 +140,14 @@ source_set("identity_manager") {
       "device_accounts_synchronizer_impl.h",
     ]
   }
+}
+
+source_set("capabilities") {
+  sources = [
+    "account_capabilities_constants.cc",
+    "account_capabilities_constants.h",
+    "account_capabilities_list.h",
+  ]
 }
 
 source_set("unit_tests") {

@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -58,8 +59,10 @@ static const char* kInterstitialFirstTimeBanner =
 
 - (void)signInSupervisedUser {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
@@ -738,8 +741,10 @@ static const char* kInterstitialFirstTimeBanner =
 // TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
 - (void)testSupervisedUserWithLegacySyncStaysSignedInAfterClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
   [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 

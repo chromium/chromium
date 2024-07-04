@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -595,9 +596,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Add a fake supervised identity to the device.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeSupervisedIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES
-                                     forIdentity:fakeSupervisedIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeSupervisedIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
 
   // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
@@ -627,11 +629,12 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testHistorySyncShownWithEquallyWeightedButtons {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Enforce minor mode restrictions.
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:NO
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @NO,
+      }];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
@@ -711,11 +714,12 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (void)testHistorySyncShownWithoutMinorModeRestrictions {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Set up capabilities.
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @YES,
+      }];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()

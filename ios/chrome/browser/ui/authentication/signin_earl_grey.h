@@ -34,6 +34,11 @@ class GURL;
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
     withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
+// Adds `fakeIdentity` and set the capabilities before firing the list changed
+// notification.
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+       withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities;
+
 // Calls -[SigninEarlGreyImpl
 // addFakeIdentityForSSOAuthAddAccountFlow:withUnknownCapabilities:NO].
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
@@ -47,17 +52,6 @@ class GURL;
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
             (FakeSystemIdentity*)fakeIdentity
                         withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
-
-// Maps capability to the `fakeIdentity`. Check fails if the
-// `fakeIdentity` has not been added to the fake identity service.
-- (void)setIsSubjectToParentalControls:(BOOL)value
-                           forIdentity:(FakeSystemIdentity*)fakeIdentity;
-- (void)setCanHaveEmailAddressDisplayed:(BOOL)value
-                            forIdentity:(FakeSystemIdentity*)fakeIdentity;
-- (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
-                                                    forIdentity:
-                                                        (FakeSystemIdentity*)
-                                                            fakeIdentity;
 
 // Removes `fakeIdentity` from the fake identity service asynchronously to
 // simulate identity removal from the device.

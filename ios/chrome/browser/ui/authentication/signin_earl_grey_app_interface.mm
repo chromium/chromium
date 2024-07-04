@@ -58,6 +58,15 @@
   }
 }
 
++ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+       withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities {
+  FakeSystemIdentityManager* systemIdentityManager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  systemIdentityManager->AddIdentityWithCapabilities(fakeIdentity,
+                                                     capabilities);
+}
+
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
             (FakeSystemIdentity*)fakeIdentity
                         withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
@@ -175,53 +184,6 @@
 
 + (void)presentSignInAccountsViewControllerIfNecessary {
   chrome_test_util::PresentSignInAccountsViewControllerIfNecessary();
-}
-
-#pragma mark - Capability Setters
-
-+ (void)setIsSubjectToParentalControls:(BOOL)value
-                           forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  FakeSystemIdentityManager* systemIdentityManager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  AccountCapabilitiesTestMutator* mutator =
-      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
-  mutator->set_is_subject_to_parental_controls(value);
-
-  // Update child account status to reflect parental controls support.
-  // TODO(b/276899041): Add support for test classes to listen to extended
-  // account info changes and reflect the new state in services.
-  PrefService* prefService =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
-  if (value) {
-    supervised_user::EnableParentalControls(*prefService);
-  } else {
-    supervised_user::DisableParentalControls(*prefService);
-  }
-  systemIdentityManager->FireIdentityUpdatedNotification(fakeIdentity);
-}
-
-+ (void)setCanHaveEmailAddressDisplayed:(BOOL)value
-                            forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  FakeSystemIdentityManager* systemIdentityManager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  AccountCapabilitiesTestMutator* mutator =
-      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
-  mutator->set_can_have_email_address_displayed(value);
-}
-
-+ (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
-                                                    forIdentity:
-                                                        (FakeSystemIdentity*)
-                                                            fakeIdentity {
-  FakeSystemIdentityManager* systemIdentityManager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  AccountCapabilitiesTestMutator* mutator =
-      systemIdentityManager->GetCapabilitiesMutator(fakeIdentity);
-  mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
-      value);
 }
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {

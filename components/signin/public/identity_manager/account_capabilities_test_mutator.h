@@ -39,6 +39,8 @@ class AccountCapabilitiesTestMutator {
 
   // Modifies all supported capabilities at once.
   void SetAllSupportedCapabilities(bool value);
+  // Set capability with `name` to `value`.
+  void SetCapability(const std::string& name, bool value);
 
  private:
   raw_ptr<AccountCapabilities> capabilities_;

@@ -89,6 +89,20 @@ void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
   FireIdentityListChanged(/*notify_user*/ false);
 }
 
+void FakeSystemIdentityManager::AddIdentityWithCapabilities(
+    id<SystemIdentity> identity,
+    NSDictionary<NSString*, NSNumber*>* capabilities) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [storage_ addIdentity:identity];
+  AccountCapabilitiesTestMutator* mutator = GetCapabilitiesMutator(identity);
+  for (NSString* name in capabilities) {
+    std::string stdString = base::SysNSStringToUTF8(name);
+    bool value = capabilities[name].boolValue;
+    mutator->SetCapability(stdString, value);
+  }
+  FireIdentityListChanged(/*notify_user*/ false);
+}
+
 void FakeSystemIdentityManager::AddIdentities(NSArray<NSString*>* names) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (NSString* name in names) {

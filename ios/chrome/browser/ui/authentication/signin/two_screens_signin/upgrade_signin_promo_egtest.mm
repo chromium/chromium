@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -127,10 +128,13 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 #endif
 - (void)MAYBE_testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @YES,
+      }];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -147,10 +151,13 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 - (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @YES,
+      }];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -166,10 +173,12 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 // with minor mode restrictions.
 - (void)testStartupSigninPromoNotShownForMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:NO
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @NO,
+      }];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -190,10 +199,12 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 #endif
 - (void)MAYBE_testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @YES,
+      }];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -216,10 +227,12 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:YES
-                                                  forIdentity:fakeIdentity];
+       addFakeIdentity:fakeIdentity
+      withCapabilities:@{
+        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
+            @YES,
+      }];
 
   OpenNTPAndBackgroundAndForegroundApp();
 

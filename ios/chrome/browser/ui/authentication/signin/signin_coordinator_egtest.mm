@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -88,11 +89,14 @@ NSString* const kPassphrase = @"hello";
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(5);
 
 // Sets parental control capability for the given identity.
-void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {
+void SetParentalControlsCapabilityForIdentity(
+    FakeSystemIdentity* fakeIdentity) {
   // The identity must exist in the test storage to be able to set capabilities
   // through the fake identity service.
-  [SigninEarlGrey addFakeIdentity:identity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
 }
 
 void ExpectSigninConsentHistogram(SigninAccountType signinAccountType) {

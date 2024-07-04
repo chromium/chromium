@@ -248,6 +248,7 @@ source_set("eg2_tests") {
     ":feature_flags",
     "//base",
     "//components/feature_engagement/public",
+    "//components/signin/internal/identity_manager:capabilities",
     "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",

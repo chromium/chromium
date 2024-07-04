@@ -110,3 +110,13 @@ void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
     capabilities_->capabilities_map_[name] = value;
   }
 }
+
+void AccountCapabilitiesTestMutator::SetCapability(const std::string& name,
+                                                   bool value) {
+  const std::vector<std::string>& capability_names =
+      AccountCapabilities::GetSupportedAccountCapabilityNames();
+  CHECK(std::find(capability_names.begin(), capability_names.end(), name) !=
+        capability_names.end())
+      << "Invalid capability name: " << name;
+  capabilities_->capabilities_map_[name] = value;
+}
