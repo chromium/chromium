@@ -65,7 +65,13 @@ class FixedTopicsContentBrowserClient
   StoragePartitionConfig GetStoragePartitionConfigForSite(
       BrowserContext* browser_context,
       const GURL& site) override {
-    if (site == GURL("https://b.test/")) {
+    // Use a different StoragePartition for URLs from b.test (to test the fix
+    // for crbug.com/40855090). Note that the port should be removed from site
+    // to simplify the comparison, because non-default ports are included in
+    // site URLs when kOriginKeyedProcessesByDefault is enabled.
+    GURL::Replacements replacements;
+    replacements.ClearPort();
+    if (site.ReplaceComponents(replacements) == GURL("https://b.test/")) {
       return StoragePartitionConfig::Create(browser_context,
                                             /*partition_domain=*/"b.test",
                                             /*partition_name=*/"test_partition",
