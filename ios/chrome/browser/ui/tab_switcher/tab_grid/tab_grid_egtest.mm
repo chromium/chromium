@@ -2216,13 +2216,20 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                toSelectMatcher:SearchSuggestedActionsSectionHeader()]
       assertWithMatcher:grey_notNil()];
 
+  id<GREYMatcher> recentTabsMatcher =
+      grey_descendant(SearchRecentTabsSuggestedAction());
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    // When Tab Group Sync is enabled, Recent Tabs is not reachable from
+    // Tab Grid.
+    recentTabsMatcher = grey_not(recentTabsMatcher);
+  }
+
   [[self
       scrollDownViewMatcher:RegularTabGrid()
             toSelectMatcher:grey_allOf(
                                 SearchSuggestedActionsSection(),
                                 grey_descendant(SearchOnWebSuggestedAction()),
-                                grey_descendant(
-                                    SearchRecentTabsSuggestedAction()),
+                                recentTabsMatcher,
                                 grey_descendant(SearchHistorySuggestedAction()),
                                 grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
