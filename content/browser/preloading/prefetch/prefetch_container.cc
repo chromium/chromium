@@ -746,7 +746,6 @@ bool PrefetchContainer::IsInitialPrefetchEligible() const {
 
 void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   CHECK(resource_request_);
-  CHECK(base::FeatureList::IsEnabled(features::kPrefetchRedirects));
 
   // There are sometimes other headers that are modified during navigation
   // redirects; see |NavigationRequest::OnRedirectChecksComplete| (including

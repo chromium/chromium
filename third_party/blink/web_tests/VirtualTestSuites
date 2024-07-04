@@ -1898,7 +1898,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchCookieIndices,CookieIndicesHeader",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2024"
@@ -1927,7 +1927,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2024"
@@ -1976,7 +1976,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint",
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],

@@ -57,7 +57,6 @@ class ContaminationDelayBrowserTest : public ContentBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchStateContaminationMitigation,
           {{"swaps_bcg", "true"}}},
-         {features::kPrefetchRedirects, {}},
          // This is needed specifically for CrOS MSAN, where we apply a 10x
          // multiplier to all test timeouts, which happens to be enough to push
          // the response delay in this test (which is scaled in that way to

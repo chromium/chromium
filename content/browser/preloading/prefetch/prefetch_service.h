@@ -42,7 +42,7 @@ class ServiceWorkerContext;
 enum class PrefetchRedirectResult {
   kSuccessRedirectFollowed = 0,
   kFailedNullPrefetch = 1,
-  kFailedRedirectsDisabled = 2,
+  // OBSOLETE: kFailedRedirectsDisabled = 2,
   kFailedInvalidMethod = 3,
   kFailedInvalidResponseCode = 4,
   kFailedInvalidChangeInNetworkContext = 5,

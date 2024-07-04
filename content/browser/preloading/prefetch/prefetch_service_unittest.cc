@@ -2607,8 +2607,7 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "1"},
-           {"prefetch_container_lifetime_s", "-1"}}},
-         {features::kPrefetchRedirects, {}}},
+           {"prefetch_container_lifetime_s", "-1"}}}},
         {});
   }
 };
@@ -2973,68 +2972,6 @@ TEST_F(PrefetchServiceTest, MAYBE_NoVarySearchSuccessCase) {
   ExpectServingMetricsSuccess();
 }
 
-class PrefetchServiceRedirectsDisabledTest : public PrefetchServiceTest {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitAndDisableFeature(features::kPrefetchRedirects);
-  }
-};
-
-TEST_F(PrefetchServiceRedirectsDisabledTest, PrefetchNotEnabled) {
-  base::HistogramTester histogram_tester;
-
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager));
-  task_environment()->RunUntilIdle();
-
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = true});
-  VerifyFollowRedirectParams(0);
-
-  net::RedirectInfo redirect_info;
-  redirect_info.new_method = "GET";
-  redirect_info.new_referrer_policy =
-      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
-  redirect_info.new_url = GURL("https://redirect.com");
-  MakeSingleRedirectAndWait(
-      redirect_info,
-      CreateURLResponseHeadForPrefetch(
-          net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
-          /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com")));
-  VerifyFollowRedirectParams(0);
-
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Redirect.Result",
-      PrefetchRedirectResult::kFailedRedirectsDisabled, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Redirect.NetworkContextStateTransition",
-      PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 0);
-
-  ExpectPrefetchFailedBeforeResponseReceived(
-      histogram_tester, PrefetchStatus::kPrefetchFailedInvalidRedirect);
-
-  NavigateInitiatedByRenderer(GURL("https://example.com"));
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
-  ExpectServingMetrics(PrefetchStatus::kPrefetchFailedInvalidRedirect);
-}
-
-class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"ineligible_decoy_request_probability", "0"},
-           {"prefetch_container_lifetime_s", "-1"}}},
-         {features::kPrefetchRedirects, {}}},
-        {});
-  }
-};
 
 // TODO(crbug.com/40249481): Test flaky on lacros trybots.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3042,7 +2979,7 @@ class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
 #else
 #define MAYBE_PrefetchEligibleRedirect PrefetchEligibleRedirect
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
+TEST_F(PrefetchServiceTest, MAYBE_PrefetchEligibleRedirect) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3098,7 +3035,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
 #else
 #define MAYBE_IneligibleRedirectCookies IneligibleRedirectCookies
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
+TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectCookies) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3158,8 +3095,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
 #else
 #define MAYBE_IneligibleRedirectServiceWorker IneligibleRedirectServiceWorker
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
-       MAYBE_IneligibleRedirectServiceWorker) {
+TEST_F(PrefetchServiceTest, MAYBE_IneligibleRedirectServiceWorker) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3222,7 +3158,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #else
 #define MAYBE_InvalidRedirect InvalidRedirect
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
+TEST_F(PrefetchServiceTest, MAYBE_InvalidRedirect) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3276,8 +3212,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
 #define MAYBE_PrefetchSameOriginEligibleRedirect \
   PrefetchSameOriginEligibleRedirect
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
-       MAYBE_PrefetchSameOriginEligibleRedirect) {
+TEST_F(PrefetchServiceTest, MAYBE_PrefetchSameOriginEligibleRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
   base::HistogramTester histogram_tester;
@@ -3339,7 +3274,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #define MAYBE_IneligibleSameSiteCrossOriginRequiresProxyRedirect \
   IneligibleSameSiteCrossOriginRequiresProxyRedirect
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
+TEST_F(PrefetchServiceTest,
        MAYBE_IneligibleSameSiteCrossOriginRequiresProxyRedirect) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
@@ -3402,7 +3337,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #define MAYBE_RedirectDefaultToIsolatedNetworkContextTransition \
   RedirectDefaultToIsolatedNetworkContextTransition
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
+TEST_F(PrefetchServiceTest,
        MAYBE_RedirectDefaultToIsolatedNetworkContextTransition) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
@@ -3469,7 +3404,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #define MAYBE_RedirectDefaultToIsolatedNetworkContextTransitionWithProxy \
   RedirectDefaultToIsolatedNetworkContextTransitionWithProxy
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
+TEST_F(PrefetchServiceTest,
        MAYBE_RedirectDefaultToIsolatedNetworkContextTransitionWithProxy) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
@@ -3539,7 +3474,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #define MAYBE_RedirectIsolatedToDefaultNetworkContextTransition \
   RedirectIsolatedToDefaultNetworkContextTransition
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
+TEST_F(PrefetchServiceTest,
        MAYBE_RedirectIsolatedToDefaultNetworkContextTransition) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
@@ -3610,8 +3545,7 @@ class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
            {"prefetch_container_lifetime_s", "-1"},
            {"block_until_head_eager_prefetch", "true"},
            {"block_until_head_moderate_prefetch", "true"},
-           {"block_until_head_conservative_prefetch", "true"}}},
-         {features::kPrefetchRedirects, {}}},
+           {"block_until_head_conservative_prefetch", "true"}}}},
         {});
   }
 };
@@ -3701,8 +3635,7 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
 #define MAYBE_RedirectInsufficientReferrerPolicy \
   RedirectInsufficientReferrerPolicy
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
-       MAYBE_RedirectInsufficientReferrerPolicy) {
+TEST_F(PrefetchServiceTest, MAYBE_RedirectInsufficientReferrerPolicy) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://referrer.com"));
   base::HistogramTester histogram_tester;

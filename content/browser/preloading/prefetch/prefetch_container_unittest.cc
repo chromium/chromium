@@ -158,18 +158,9 @@ class PrefetchContainerTest
       public ::testing::WithParamInterface<PrefetchReusableForTests> {
  private:
   void SetUp() override {
-    // Enable `kPrefetchRedirects` here as `PrefetchContainerTest` contains
-    // several redirect-related tests.
-    switch (GetParam()) {
-      case PrefetchReusableForTests::kDisabled:
-        scoped_feature_list_.InitWithFeatures({features::kPrefetchRedirects},
-                                              {features::kPrefetchReusable});
-        break;
-      case PrefetchReusableForTests::kEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kPrefetchRedirects, features::kPrefetchReusable}, {});
-        break;
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kPrefetchReusable,
+        GetParam() == PrefetchReusableForTests::kEnabled);
     PrefetchContainerTestBase::SetUp();
   }
 
@@ -184,16 +175,8 @@ class PrefetchContainerXClientDataHeaderTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  private:
   void SetUp() override {
-    bool is_x_client_data_header_enabled = get<1>(GetParam());
-    if (is_x_client_data_header_enabled) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kPrefetchRedirects, features::kPrefetchXClientDataHeader},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kPrefetchRedirects},
-          {features::kPrefetchXClientDataHeader});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kPrefetchXClientDataHeader, get<1>(GetParam()));
     PrefetchContainerTestBase::SetUp();
   }
 

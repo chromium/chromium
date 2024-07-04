@@ -1199,9 +1199,7 @@ void PrefetchService::OnPrefetchRedirect(
           redirect_info.new_referrer_policy);
 
   std::optional<PrefetchRedirectResult> failure;
-  if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
-    failure = PrefetchRedirectResult::kFailedRedirectsDisabled;
-  } else if (redirect_info.new_method != "GET") {
+  if (redirect_info.new_method != "GET") {
     failure = PrefetchRedirectResult::kFailedInvalidMethod;
   } else if (!redirect_head->headers ||
              redirect_head->headers->response_code() < 300 ||

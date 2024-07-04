@@ -746,9 +746,6 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),
         Flag.baseFeature(
-                ContentFeatures.PREFETCH_REDIRECTS,
-                "Enables following redirects during speculation rules prefetch."),
-        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_MEMORY_RECLAIMER,
                 "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
                         + "system pages as much as possible so that other applications can "

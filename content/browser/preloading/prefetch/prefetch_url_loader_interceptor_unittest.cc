@@ -1293,9 +1293,6 @@ INSTANTIATE_TEST_SUITE_P(
                         NotServableReason::kAnotherRequestCompleted)));
 
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchRedirects);
-
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
@@ -1373,8 +1370,6 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(HandleRedirectsWithSwitchInNetworkContext)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchRedirects);
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
@@ -1453,9 +1448,6 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
 TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(HandleRedirectsWithCookieChange)) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPrefetchRedirects);
-
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
