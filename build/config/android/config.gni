@@ -141,12 +141,12 @@ if (is_android || is_chromeos) {
 
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_build_tools =
-      "${public_android_sdk_root}/build-tools/34.0.0"
-  public_android_sdk_version = "34"
-  if (android_sdk_release == "u") {
+      "${public_android_sdk_root}/build-tools/35.0.0"
+  public_android_sdk_version = "35"
+  if (android_sdk_release == "v") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_version = public_android_sdk_version
-    default_android_sdk_build_tools_version = "34.0.0"
+    default_android_sdk_build_tools_version = "35.0.0"
     public_android_sdk = true
   }
 
@@ -159,7 +159,7 @@ if (is_android || is_chromeos) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 34
+    default_lint_android_sdk_version = 35
   }
 
   if (!defined(default_extras_android_sdk_root)) {

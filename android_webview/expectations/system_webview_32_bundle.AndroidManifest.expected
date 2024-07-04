@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="34"
-    platformBuildVersionName="14"
+    platformBuildVersionCode="35"
+    platformBuildVersionName="15"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=0"
     android:versionName="#.#.#.#">
@@ -15,7 +15,7 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="false"
