@@ -10052,6 +10052,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-projector-gm3", flag_descriptions::kProjectorGm3Name,
      flag_descriptions::kProjectorGm3Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorGm3)},
+
+    {"enable-annotator-mode", flag_descriptions::kAnnotatorModeName,
+     flag_descriptions::kAnnotatorModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAnnotatorMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"omit-cors-client-cert", flag_descriptions::kOmitCorsClientCertName,

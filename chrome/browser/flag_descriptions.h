@@ -75,6 +75,11 @@ extern const char kAndroidBrowserControlsInVizDescription[];
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kAnnotatorModeName[];
+extern const char kAnnotatorModeDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 

@@ -86,6 +86,12 @@ const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
     "to catch up to the frame that should be drawn based on current time.";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kAnnotatorModeName[] = "Enable annotator tool";
+const char kAnnotatorModeDescription[] =
+    "Enables the tool for annotating across the OS.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "

@@ -119,6 +119,11 @@ BASE_FEATURE(kAllowApnModificationPolicy,
              "AllowApnModificationPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the annotator feature is enabled in ChromeOS.
+BASE_FEATURE(kAnnotatorMode,
+             "AnnotatorMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Adds Borealis support to Almanac app install URIs.
@@ -3322,6 +3327,10 @@ bool IsAmbientModePhotoPreviewEnabled() {
 
 bool IsAmbientModeThrottleAnimationEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
+}
+
+bool IsAnnotatorModeEnabled() {
+  return base::FeatureList::IsEnabled(kAnnotatorMode);
 }
 
 bool IsAllowApnModificationPolicyEnabled() {
