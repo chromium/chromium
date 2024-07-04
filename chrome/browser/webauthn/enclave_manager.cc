@@ -390,6 +390,18 @@ cbor::Value BuildUnregisterMessage(const std::string& device_id) {
   return cbor::Value(std::move(requests));
 }
 
+cbor::Value BuildSetPINGenerationHighWaterMessage(int64_t generation) {
+  cbor::Value::MapValue request;
+  request.emplace(enclave::kRequestCommandKey,
+                  enclave::kSetPinGenerationHighWaterCommandName);
+  request.emplace(enclave::kGeneration, generation);
+
+  cbor::Value::ArrayValue requests;
+  requests.emplace_back(std::move(request));
+
+  return cbor::Value(std::move(requests));
+}
+
 EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
                                       const CoreAccountInfo& account) {
   auto it = local_state->mutable_users()->find(account.gaia);
@@ -1070,6 +1082,7 @@ class EnclaveManager::StateMachine {
     kRenewingPIN,
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
+    kUpdatingPINHighWater,
   };
 
   enum class FetchedFile {
@@ -1208,6 +1221,10 @@ class EnclaveManager::StateMachine {
       case State::kUnregistering:
         DoUnregistering(std::move(event));
         break;
+
+      case State::kUpdatingPINHighWater:
+        DoUpdatingPINHighWater(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1285,6 +1302,8 @@ class EnclaveManager::StateMachine {
         return "WaitingForEnclaveTokenForUnregister";
       case State::kUnregistering:
         return "Unregistering";
+      case State::kUpdatingPINHighWater:
+        return "UpdatingPINHighWater";
     }
   }
 
@@ -1914,6 +1933,7 @@ class EnclaveManager::StateMachine {
     crypto::RandBytes(vault_handle_without_type);
 
     state_ = State::kChangingPIN;
+    token_ = token;
     std::vector<uint8_t> wrapped_secret =
         GetCurrentWrappedSecretForUser(user_).second;
     enclave::Transact(
@@ -2105,10 +2125,46 @@ class EnclaveManager::StateMachine {
     const trusted_vault::TrustedVaultRegistrationStatus status =
         join_status.first;
 
+    state_ = State::kStop;
     success_ =
         status == trusted_vault::TrustedVaultRegistrationStatus::kSuccess;
+
     if (success_) {
       manager_->WriteState(&local_state_);
+    } else {
+      return;
+    }
+
+    if (is_pin_update_) {
+      // Update the highwater mark at the enclave now that the new PIN has been
+      // committed to the security domain service.
+      state_ = State::kUpdatingPINHighWater;
+      CHECK(token_.has_value());
+      enclave::Transact(manager_->network_context_factory_,
+                        enclave::GetEnclaveIdentity(), *token_,
+                        /*reauthentication_token=*/std::nullopt,
+                        BuildSetPINGenerationHighWaterMessage(
+                            user_->wrapped_pin().generation()),
+                        manager_->HardwareKeySigningCallback(),
+                        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                                       weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
+  void DoUpdatingPINHighWater(Event event) {
+    // This call is advisory so it doesn't really matter if it fails, but
+    // failures are still reported so that things don't break silently, at
+    // least. The result will already have been logged at this point.
+    if (absl::holds_alternative<Failure>(event)) {
+      success_ = false;
+    } else {
+      cbor::Value response =
+          std::move(absl::get_if<EnclaveResponse>(&event)->value());
+      if (!IsAllOk(response, 1)) {
+        FIDO_LOG(ERROR) << "Setting high water resulted in error response: "
+                        << cbor::DiagnosticWriter::Write(response);
+        success_ = false;
+      }
     }
     state_ = State::kStop;
   }
@@ -2421,6 +2477,10 @@ class EnclaveManager::StateMachine {
   std::optional<trusted_vault::MemberKeysSource> member_keys_source_;
   // When uploading a PIN, this contains the pending `WrappedPIN`.
   std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin_proto_;
+  // token_ holds the OAuth token for communicating with the enclave. While we
+  // try to batch all the requests into a single transaction, sometimes they
+  // have to be split and so the token can be stashed here.
+  std::optional<std::string> token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<StateMachine> weak_ptr_factory_{this};

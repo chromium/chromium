@@ -89,6 +89,8 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapAsMemberCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreRewrapCommandName[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kSetPinGenerationHighWaterCommandName[];
 
 // Register request keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterPubKeysKey[];

@@ -735,6 +735,9 @@ fn do_request(
         "passkeys/assert" => passkeys::do_assert(auth, state, request),
         "passkeys/create" => passkeys::do_create(auth, state, request),
         "passkeys/wrap_pin" => passkeys::do_wrap_pin(auth, state, request),
+        "passkeys/set_pin_generation_high_water" => {
+            passkeys::do_set_pin_generation_high_water(auth, state, request)
+        }
         "recovery_key_store/wrap" => {
             recovery_key_store::do_wrap(ext_ctx.current_time_epoch_millis, request)
         }
@@ -1637,6 +1640,43 @@ mod tests {
         )
     }
 
+    fn set_pin_generation_high_water(
+        state: ClientState,
+        new_high_water: i64,
+    ) -> (Option<cbor::Value>, PINState, ClientState) {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/set_pin_generation_high_water",
+            PIN_GENERATION: new_high_water,
+        }));
+        let (output, state_update) = process_client_msg(
+            state.clone(),
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+
+        // Get the state after processing the command. That's either a new
+        // state, or the original state because no update was made.
+        let state_data = match state_update {
+            StateUpdate::Minor(state_data) => state_data,
+            StateUpdate::Major(state_data) => state_data,
+            StateUpdate::None => match state {
+                ClientState::Explicit(state_data) => state_data,
+                ClientState::Initial => panic!(""),
+            },
+        };
+        let parsed_state = ClientState::Explicit(state_data.clone()).parse().unwrap();
+        (
+            single_response(&output)
+                .unwrap()
+                .get(&MapKeyRef::Str("err") as &dyn MapLookupKey)
+                .cloned(),
+            parsed_state.get_pin_state(&TEST_DEVICE_ID).unwrap(),
+            ClientState::Explicit(state_data),
+        )
+    }
+
     #[test]
     fn test_use_pin() {
         let pin_data = pin::Data {
@@ -1712,6 +1752,54 @@ mod tests {
         assert_eq!(error, Some(Value::Int(4)));
         assert_eq!(pin_state.generation_high_water, 1);
         assert_eq!(pin_state.attempts, 5);
+    }
+
+    #[test]
+    fn test_set_pin_generation_high_water() {
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            generation: 1,
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let pin_claim =
+            seal_aes_256_gcm(&pin_data.claim_key, &pin_data.pin_hash, passkeys::PIN_CLAIM_AAD);
+
+        // Using the PIN should set the highwater mark to 1, which is the generation
+        // number from `pin_data`, above.
+        let (error, pin_state, state) =
+            attempt_pin(REGISTERED_STATE.clone(), &wrapped_pin_data, &pin_claim);
+        assert!(error.is_none());
+        assert_eq!(pin_state.generation_high_water, 1);
+        assert_eq!(pin_state.attempts, 0);
+
+        let wrong_pin_hash = [20u8; 32];
+        let wrong_pin_claim =
+            seal_aes_256_gcm(&pin_data.claim_key, &wrong_pin_hash, passkeys::PIN_CLAIM_AAD);
+        let (error, pin_state, state) = attempt_pin(state, &wrapped_pin_data, &wrong_pin_claim);
+        assert_eq!(error, Some(Value::Int(3)));
+        assert_eq!(pin_state.generation_high_water, 1);
+        assert_eq!(pin_state.attempts, 1);
+
+        // Mustn't be able to set a lesser generation number.
+        let (error, _, state) = set_pin_generation_high_water(state, 0);
+        assert!(error.is_some());
+
+        // Mustn't be able to set the same generation number
+        let (error, _, state) = set_pin_generation_high_water(state, 1);
+        assert!(error.is_some());
+
+        let (error, pin_state, state) = set_pin_generation_high_water(state, 10);
+        assert!(error.is_none());
+        assert_eq!(pin_state.generation_high_water, 10);
+        assert_eq!(pin_state.attempts, 0);
+
+        // Trying to use the original PIN now should cause an error.
+        let (error, _, _) = attempt_pin(state, &wrapped_pin_data, &pin_claim);
+        assert!(error.is_some());
+        assert_eq!(RequestError::PINOutdated.to_cbor(), error.unwrap());
     }
 
     #[test]

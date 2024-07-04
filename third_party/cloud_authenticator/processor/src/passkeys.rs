@@ -586,6 +586,31 @@ fn prf_default_values(prf: &BTreeMap<MapKey, Value>) -> Result<Option<PRFValues>
     Ok(Some(eval.try_into()?))
 }
 
+pub fn do_set_pin_generation_high_water(
+    auth: &Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    request: BTreeMap<MapKey, Value>,
+) -> Result<cbor::Value, RequestError> {
+    let Authentication::Device(device_id, _, _, _) = auth else {
+        return debug("device identity required");
+    };
+    let Some(Value::Int(new_high_water)) = request.get(PIN_GENERATION_KEY) else {
+        return debug("pin_generation required");
+    };
+    let pin_state = state.get_pin_state(device_id)?;
+    if pin_state.generation_high_water >= *new_high_water {
+        return debug("requested PIN generation doesn't exceed current one");
+    }
+    state.get_mut().set_pin_state(
+        &device_id,
+        // If the PIN was successfully changed then the attempt counter can be reset. If it wasn't
+        // changed then increasing the high-water simply disables PIN validation at the enclave
+        // anyway.
+        PINState { attempts: 0, generation_high_water: *new_high_water },
+    )?;
+    Ok(Value::Boolean(true))
+}
+
 #[cfg(test)]
 pub mod tests {
     use super::*;
