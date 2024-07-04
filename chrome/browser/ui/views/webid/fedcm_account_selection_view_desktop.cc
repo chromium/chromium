@@ -837,13 +837,8 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
   // The modal should not be hidden when the pop-up window is displayed for
   // better UX.
   if (GetDialogType() != DialogType::MODAL) {
-    // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
-    // match production.
-    if (input_protector_) {
-      input_protector_->VisibilityChanged(false);
-    }
     if (GetDialogWidget()) {
-      GetDialogWidget()->Hide();
+      HideDialogWidget();
     }
   }
 
@@ -1103,7 +1098,11 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
-  input_protector_->VisibilityChanged(false);
+  // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
+  // match production.
+  if (input_protector_) {
+    input_protector_->VisibilityChanged(false);
+  }
 }
 
 void FedCmAccountSelectionView::OnLensOverlayDidShow() {
