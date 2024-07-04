@@ -79,6 +79,8 @@
 # Tests Mac system fallback for character.
 [ Linux ] virtual/text-antialias/mac-fallback-for-character-colrv1.html [ Skip ]
 [ Win ] virtual/text-antialias/mac-fallback-for-character-colrv1.html [ Skip ]
+[ Linux ] virtual/text-antialias/mac-fallback-for-character.html [ Skip ]
+[ Win ] virtual/text-antialias/mac-fallback-for-character.html [ Skip ]
 
 # Tests Mac system fallback for character.
 [ Linux ] virtual/text-antialias/mac-fallback-font-for-character.html [ Skip ]

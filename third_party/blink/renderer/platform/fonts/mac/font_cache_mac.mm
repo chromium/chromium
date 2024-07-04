@@ -231,7 +231,7 @@ const FontPlatformData* GetAlternateFontPlatformData(
       float best_variation_font_weight =
           get_ct_font_weight(best_variation.get());
       ScopedCFTypeRef<CFCharacterSetRef> char_set(
-          CTFontCopyCharacterSet(substitute_font.get()));
+          CTFontCopyCharacterSet(best_variation.get()));
       if ((!ct_font || best_variation_font_traits != substitute_font_traits ||
            best_variation_font_weight != substitute_font_weight) &&
           char_set &&
