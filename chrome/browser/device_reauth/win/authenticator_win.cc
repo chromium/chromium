@@ -353,7 +353,7 @@ void PerformWin11Authentication(
     base::OnceCallback<void(bool)> result_callback) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::
-              kAuthenticateUsingInteropWindowsHelloApi)) {
+              kAuthenticateUsingUserConsentVerifierInteropApi)) {
     PerformInteropWindowsHelloAuthenticationAsync(std::move(result_callback),
                                                   message);
     return;
@@ -365,7 +365,8 @@ void PerformWin10Authentication(
     const std::u16string& message,
     base::OnceCallback<void(bool)> result_callback) {
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kAuthenticateUsingNewWindowsHelloApi)) {
+          password_manager::features::
+              kAuthenticateUsingUserConsentVerifierApi)) {
     // Posting authentication using the new API on a background thread causes
     // Windows Hello dialog not to attach to Chrome's UI and instead it is
     // visible behind it. Running it on the default thread isn't that bad

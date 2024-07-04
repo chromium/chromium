@@ -11609,11 +11609,12 @@ const FeatureEntry kFeatureEntries[] = {
                             kEnableFingerprintingProtectionFilter)},
 
 #if BUILDFLAG(IS_WIN)
-    {"authenticate-using-new-windows-hello-api",
-     flag_descriptions::kAuthenticateUsingNewWindowsHelloApiName,
-     flag_descriptions::kAuthenticateUsingNewWindowsHelloApiDescription, kOsWin,
+    {"authenticate-using-user-consent-verifier-api",
+     flag_descriptions::kAuthenticateUsingUserConsentVerifierApiName,
+     flag_descriptions::kAuthenticateUsingUserConsentVerifierApiDescription,
+     kOsWin,
      FEATURE_VALUE_TYPE(
-         password_manager::features::kAuthenticateUsingNewWindowsHelloApi)},
+         password_manager::features::kAuthenticateUsingUserConsentVerifierApi)},
 #endif
 
     {"default-browser-prompt-refresh",
@@ -11845,12 +11846,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-    {"authenticate-using-interop-windows-hello-api",
-     flag_descriptions::kAuthenticateUsingInteropWindowsHelloApiName,
-     flag_descriptions::kAuthenticateUsingInteropWindowsHelloApiDescription,
+    {"authenticate-using-user-consent-verifier-interop-api",
+     flag_descriptions::kAuthenticateUsingUserConsentVerifierInteropApiName,
+     flag_descriptions::
+         kAuthenticateUsingUserConsentVerifierInteropApiDescription,
      kOsWin,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kAuthenticateUsingInteropWindowsHelloApi)},
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kAuthenticateUsingUserConsentVerifierInteropApi)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

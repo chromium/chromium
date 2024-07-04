@@ -19570,8 +19570,6 @@ from previous Chrome versions.
   <int value="-461713516" label="ArcEnableVirtioBlkForData:enabled"/>
   <int value="-461568027" label="EcheSWADebugMode:disabled"/>
   <int value="-461292699" label="ContentSuggestionsCategoryOrder:enabled"/>
-  <int value="-460737002"
-      label="AuthenticateUsingInteropWindowsHelloApi:enabled"/>
   <int value="-460702745" label="ExportTaggedPDF:disabled"/>
   <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
@@ -20274,6 +20272,8 @@ from previous Chrome versions.
   <int value="-162377456" label="SecurePaymentConfirmationExtensions:enabled"/>
   <int value="-162294119" label="FeedSportsCard:disabled"/>
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
+  <int value="-161778516"
+      label="AuthenticateUsingUserConsentVerifierApi:disabled"/>
   <int value="-161284423" label="DesktopSharePreview:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
@@ -20997,6 +20997,8 @@ from previous Chrome versions.
   <int value="149914698" label="SearchReadyOmnibox:disabled"/>
   <int value="150193246" label="OmniboxShortcutBoost:disabled"/>
   <int value="150540447" label="ProcessPerSiteUpToMainFrameThreshold:enabled"/>
+  <int value="150724741"
+      label="AuthenticateUsingUserConsentVerifierApi:enabled"/>
   <int value="150820177"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:enabled"/>
   <int value="151022756" label="ArcAvailableForChildAccount:disabled"/>
@@ -23380,7 +23382,6 @@ from previous Chrome versions.
   <int value="1184225265" label="AllowSyncXHRInPageDismissal:enabled"/>
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
-  <int value="1185701843" label="AuthenticateUsingNewWindowsHelloApi:enabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1187692916" label="TheoraVideoCodec:enabled"/>
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
@@ -23693,7 +23694,6 @@ from previous Chrome versions.
   <int value="1304609573" label="TabGroupSyncForceOff:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
-  <int value="1304892658" label="AuthenticateUsingNewWindowsHelloApi:disabled"/>
   <int value="1305339782"
       label="MayLaunchUrlUsesSeparateStoragePartition:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
@@ -23877,6 +23877,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1387497264" label="AutofillEnableLocalIban:enabled"/>
+  <int value="1387796442"
+      label="AuthenticateUsingUserConsentVerifierInteropApi:enabled"/>
   <int value="1387925207" label="MlRelevanceScoring:enabled"/>
   <int value="1388323853" label="ModifierSplit:enabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
@@ -24599,8 +24601,6 @@ from previous Chrome versions.
   <int value="1693658048" label="AppsShortcutDefaultOff:enabled"/>
   <int value="1693685694"
       label="AutofillEnableNewCardArtAndNetworkImages:disabled"/>
-  <int value="1694241061"
-      label="AuthenticateUsingInteropWindowsHelloApi:disabled"/>
   <int value="1694663094" label="RobustAudioDeviceSelectLogic:disabled"/>
   <int value="1694766748"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:enabled"/>
@@ -24871,6 +24871,8 @@ from previous Chrome versions.
       label="AutofillEnablePrefetchingRiskDataForRetrieval:enabled"/>
   <int value="1803470125" label="SyncUSSSessions:enabled"/>
   <int value="1803914892" label="TemporaryUnexpireFlagsM76:enabled"/>
+  <int value="1804190628"
+      label="AuthenticateUsingUserConsentVerifierInteropApi:disabled"/>
   <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:enabled"/>

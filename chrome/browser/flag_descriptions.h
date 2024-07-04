@@ -3160,11 +3160,11 @@ extern const char kDevToolsTabTargetLiteralDescription[];
 
 #if BUILDFLAG(IS_WIN)
 
-extern const char kAuthenticateUsingInteropWindowsHelloApiName[];
-extern const char kAuthenticateUsingInteropWindowsHelloApiDescription[];
+extern const char kAuthenticateUsingUserConsentVerifierInteropApiName[];
+extern const char kAuthenticateUsingUserConsentVerifierInteropApiDescription[];
 
-extern const char kAuthenticateUsingNewWindowsHelloApiName[];
-extern const char kAuthenticateUsingNewWindowsHelloApiDescription[];
+extern const char kAuthenticateUsingUserConsentVerifierApiName[];
+extern const char kAuthenticateUsingUserConsentVerifierApiDescription[];
 
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];

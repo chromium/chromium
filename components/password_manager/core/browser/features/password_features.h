@@ -36,11 +36,11 @@ BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
 // OS authentication will use IUserConsentVerifierInterop api to trigger Windows
 // Hello authentication. This api allows us to specify explicitly to which
 // window, the OS prompt should attach.
-BASE_DECLARE_FEATURE(kAuthenticateUsingInteropWindowsHelloApi);
+BASE_DECLARE_FEATURE(kAuthenticateUsingUserConsentVerifierInteropApi);
 
 // OS authentication will use UserConsentVerifier api to trigger Windows Hello
 // authentication.
-BASE_DECLARE_FEATURE(kAuthenticateUsingNewWindowsHelloApi);
+BASE_DECLARE_FEATURE(kAuthenticateUsingUserConsentVerifierApi);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
