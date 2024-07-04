@@ -332,6 +332,56 @@ IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
+                       FocusingItemInSectionListViewAnnouncesSizeAndPosition) {
+  std::unique_ptr<views::Widget> widget =
+      ash::TestWidgetBuilder()
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildClientOwnsWidget();
+  auto* view =
+      widget->SetContentsView(std::make_unique<ash::PickerSectionListView>(
+          /*section_width=*/100, /*asset_fetcher=*/nullptr,
+          /*submenu_controller=*/nullptr));
+  ash::PickerSectionView* section1 = view->AddSection();
+  ash::PickerListItemView* item1 = section1->AddListItem(
+      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  item1->SetPrimaryText(u"item1");
+  ash::PickerListItemView* item2 = section1->AddListItem(
+      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  item2->SetPrimaryText(u"item2");
+  ash::PickerSectionView* section2 = view->AddSection();
+  ash::PickerListItemView* item3 = section2->AddListItem(
+      std::make_unique<ash::PickerListItemView>(base::DoNothing()));
+  item3->SetPrimaryText(u"item3");
+
+  sm_.Call([item1]() { item1->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("item1");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("1 of 2");
+  sm_.ExpectSpeechPattern("List");
+  sm_.ExpectSpeechPattern("with 2 items");
+
+  sm_.Call([item2]() { item2->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("item2");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("2 of 2");
+
+  sm_.Call([item3]() { item3->RequestFocus(); });
+
+  sm_.ExpectSpeechPattern("item3");
+  sm_.ExpectSpeechPattern("Button");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("1 of 1");
+  sm_.ExpectSpeechPattern("List");
+  sm_.ExpectSpeechPattern("with 1 item");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(PickerAccessibilityBrowserTest,
                        FocusingItemWithSubmenuAnnouncesMenuRole) {
   std::unique_ptr<views::Widget> widget =
       ash::TestWidgetBuilder()

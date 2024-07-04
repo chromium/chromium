@@ -158,6 +158,8 @@ bool PickerImageItemGridView::ContainsItem(views::View* item) {
 
 PickerImageItemView* PickerImageItemGridView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
+  // TODO: b/338142316 - Wrap the image item in a View and give it a correct
+  // accessible role.
   image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(grid_width_));
   views::View* shortest_column =
       base::ranges::min(children(),

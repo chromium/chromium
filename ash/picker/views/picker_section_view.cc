@@ -143,6 +143,7 @@ PickerSectionView::PickerSectionView(
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::LayoutOrientation::kHorizontal)
                        .Build());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 }
 
 PickerSectionView::~PickerSectionView() = default;

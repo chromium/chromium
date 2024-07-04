@@ -117,5 +117,15 @@ TEST_F(PickerListItemContainerViewTest, NoItemRightOf) {
   EXPECT_EQ(container.GetItemRightOf(item2), nullptr);
 }
 
+TEST_F(PickerListItemContainerViewTest, ChildrenHasListItemRole) {
+  PickerListItemContainerView container;
+
+  container.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(container.children()[0]->GetAccessibleRole(),
+            ax::mojom::Role::kListItem);
+}
+
 }  // namespace
 }  // namespace ash

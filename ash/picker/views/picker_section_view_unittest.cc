@@ -48,6 +48,14 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
 
 using PickerSectionViewTest = views::ViewsTestBase;
 
+TEST_F(PickerSectionViewTest, HasListRole) {
+  PickerSectionView section_view(kDefaultSectionWidth,
+                                 /*asset_fetcher=*/nullptr,
+                                 /*submenu_controller=*/nullptr);
+
+  EXPECT_EQ(section_view.GetAccessibleRole(), ax::mojom::Role::kList);
+}
+
 TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSubmenuController submenu_controller;
