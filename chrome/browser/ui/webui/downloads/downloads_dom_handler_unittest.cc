@@ -481,6 +481,21 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
       DangerousDownloadInterstitialAction::kOpenSurvey, 1);
 }
 
+TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
+       RecordCancelBypassWarningInterstitial) {
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler_->RecordCancelBypassWarningInterstitial("1");
+
+  histogram_tester_.ExpectUniqueSample(
+      "Download.DangerousDownloadInterstitial.Action",
+      DangerousDownloadInterstitialAction::kCancelInterstitial, 1);
+
+  // Verify no report is sent, since it's not a terminal action.
+  EXPECT_TRUE(test_safe_browsing_factory_->test_safe_browsing_service()
+                  ->serialized_download_report()
+                  .empty());
+}
+
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:

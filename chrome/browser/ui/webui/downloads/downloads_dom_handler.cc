@@ -420,6 +420,22 @@ void DownloadsDOMHandler::RecordCancelBypassWarningDialog(
                           WarningAction::CANCEL);
 }
 
+void DownloadsDOMHandler::RecordCancelBypassWarningInterstitial(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kDangerousDownloadInterstitial));
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!CanLogWarningMetrics(file)) {
+    return;
+  }
+  RecordDangerousDownloadInterstitialActionHistogram(
+      DangerousDownloadInterstitialAction::kCancelInterstitial);
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
+                          WarningAction::CANCEL);
+}
+
 void DownloadsDOMHandler::DiscardDangerous(const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_DISCARD_DANGEROUS);
   download::DownloadItem* download = GetDownloadByStringId(id);

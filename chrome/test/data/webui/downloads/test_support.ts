@@ -31,6 +31,7 @@ class FakePageHandler implements PageHandlerInterface {
     'logEsbPromotionRowViewed',
     'openEsbSettings',
     'recordCancelBypassWarningDialog',
+    'recordCancelBypassWarningInterstitial',
     'recordOpenBypassWarningDialog',
     'recordOpenBypassWarningInterstitial',
     'recordOpenSurveyOnDangerousInterstitial',
@@ -49,6 +50,10 @@ class FakePageHandler implements PageHandlerInterface {
 
   recordCancelBypassWarningDialog(id: string) {
     this.callTracker_.methodCalled('recordCancelBypassWarningDialog', id);
+  }
+
+  recordCancelBypassWarningInterstitial(id: string) {
+    this.callTracker_.methodCalled('recordCancelBypassWarningInterstitial', id);
   }
 
   recordOpenBypassWarningDialog(id: string) {

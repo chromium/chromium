@@ -120,6 +120,7 @@ struct Data {
   bool has_safe_browsing_verdict;
 };
 
+// The parameter "id" is the id of the current download
 interface PageHandlerFactory {
   CreatePageHandler(pending_remote<Page> page,
                     pending_receiver<PageHandler> handler);
@@ -158,6 +159,10 @@ interface PageHandler {
   // dialog, or the dialog is closed by dismissing it. Only records the event
   // and potentially sends a report.
   RecordCancelBypassWarningDialog(string id);
+
+  // Called when "Cancel" is clicked on the chrome://downloads warning bypass
+  // interstitial. Only records the event and potentially sends a report.
+  RecordCancelBypassWarningInterstitial(string id);
 
   DiscardDangerous(string id);
   RetryDownload(string id);
