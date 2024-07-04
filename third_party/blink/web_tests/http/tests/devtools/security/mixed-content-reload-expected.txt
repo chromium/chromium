@@ -3,8 +3,14 @@ Tests that the mixed content explanation prompts the user to refresh when there 
 
 Before Refresh --------------
 <DIV class=security-explanation security-explanation-neutral >
-    <DIV class=security-property security-property-neutral >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=warning class=security-property security-property-neutral >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-warning); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >
@@ -25,8 +31,14 @@ Reload the page to record requests for HTTP resources.
 
 Refresh --------------
 <DIV class=security-explanation security-explanation-neutral >
-    <DIV class=security-property security-property-neutral >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=warning class=security-property security-property-neutral >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-warning); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >

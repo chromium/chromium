@@ -7,9 +7,17 @@ Panel on origin view:
 Origin
         </DIV>
         <DIV class=origin-display >
-            <SPAN class=security-property security-property-secure >
-            </SPAN>
             <SPAN >
+                <DEVTOOLS-ICON role=presentation name=lock class=security-property security-property-secure >
+                    <#document-fragment >
+                        <SPAN style=--icon-url: var(--image-file-lock); >
+                        </SPAN>
+                        <STYLE >
+                        </STYLE>
+                    </#document-fragment>
+                </DEVTOOLS-ICON>
+            </SPAN>
+            <SPAN class=highlighted-url >
                 <SPAN class=url-scheme-secure >
 chrome-test
                 </SPAN>
@@ -22,9 +30,11 @@ test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=text-button jslog=Action; track: click; context: reveal-in-network type=button role=link >
+            <DEVTOOLS-BUTTON role=link jslog=Action; track: click; context: reveal-in-network >
 View requests in Network Panel
-            </BUTTON>
+                <#document-fragment >
+                </#document-fragment>
+            </DEVTOOLS-BUTTON>
         </DIV>
     </DIV>
     <DIV class=origin-view-section >

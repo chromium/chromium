@@ -1,8 +1,14 @@
 Tests active mixed content blocking in the security panel.
 
 <DIV class=security-explanation security-explanation-info >
-    <DIV class=security-property security-property-info >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=info class=security-property security-property-info >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-info); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
 Blocked mixed content

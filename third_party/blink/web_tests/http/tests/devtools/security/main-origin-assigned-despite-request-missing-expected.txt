@@ -3,7 +3,7 @@ Tests that the Main Origin is assigned even if there is no matching Request.
 Page origin: http://127.0.0.1:8000
 Detected main origin: http://127.0.0.1:8000
 Group: Main origin (non-secure)
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 http
     </SPAN>
@@ -24,7 +24,7 @@ http
 127.0.0.1:8000
 </SPAN>
 Group: Unknown / canceled
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 https
     </SPAN>
@@ -44,7 +44,7 @@ https
 <SPAN >
 foo.test
 </SPAN>
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 https
     </SPAN>

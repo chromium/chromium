@@ -1,8 +1,14 @@
 Tests that info explanations are placed after regular explanations.
 
 <DIV class=security-explanation security-explanation-secure >
-    <DIV class=security-property security-property-secure >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=lock class=security-property security-property-secure >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-lock); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >
@@ -15,14 +21,22 @@ valid and trusted
         <DIV >
 The connection to this site is using a valid, trusted server certificate issued by Issuer.
         </DIV>
-        <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate type=button role=button >
+        <DEVTOOLS-BUTTON role=button class=origin-button jslog=Action; track: click; context: security.view-certificate >
 View certificate
-        </BUTTON>
+            <#document-fragment >
+            </#document-fragment>
+        </DEVTOOLS-BUTTON>
     </DIV>
 </DIV>
 <DIV class=security-explanation security-explanation-secure >
-    <DIV class=security-property security-property-secure >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=lock class=security-property security-property-secure >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-lock); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >
@@ -38,8 +52,14 @@ All resources on this page are served securely.
     </DIV>
 </DIV>
 <DIV class=security-explanation security-explanation-info >
-    <DIV class=security-property security-property-info >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=info class=security-property security-property-info >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-info); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >
@@ -55,8 +75,14 @@ Public-Key-Pinning was bypassed by a local root certificate.
     </DIV>
 </DIV>
 <DIV class=security-explanation security-explanation-info >
-    <DIV class=security-property security-property-info >
-    </DIV>
+    <DEVTOOLS-ICON role=presentation name=info class=security-property security-property-info >
+        <#document-fragment >
+            <SPAN style=--icon-url: var(--image-file-info); >
+            </SPAN>
+            <STYLE >
+            </STYLE>
+        </#document-fragment>
+    </DEVTOOLS-ICON>
     <DIV class=security-explanation-text >
         <DIV class=security-explanation-title >
             <SPAN >
