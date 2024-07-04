@@ -29,6 +29,7 @@
                         passwordSuggestion:(NSString*)passwordSuggestion
                            decisionHandler:
                                (void (^)(BOOL accept))decisionHandler
+                               asProactive:(BOOL)asProactive
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

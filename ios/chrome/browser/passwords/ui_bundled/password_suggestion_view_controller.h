@@ -14,6 +14,7 @@
 // Initializes this alert with password suggestion and current user email.
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
+                               asProactive:(BOOL)proactivePasswordGeneration
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)name

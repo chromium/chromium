@@ -29,15 +29,20 @@ constexpr CGFloat customSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat customSpacingAfterImage = 1;
 }  // namespace
 
-@implementation PasswordSuggestionViewController
+@implementation PasswordSuggestionViewController {
+  // YES when the bottom sheet is proactive where it is triggered upon focus.
+  BOOL _asProactive;
+}
 
 #pragma mark - Public
 
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
-                                 userEmail:(NSString*)userEmail {
+                                 userEmail:(NSString*)userEmail
+                               asProactive:(BOOL)proactivePasswordGeneration {
   if (self = [super init]) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
+    _asProactive = proactivePasswordGeneration;
   }
   return self;
 }

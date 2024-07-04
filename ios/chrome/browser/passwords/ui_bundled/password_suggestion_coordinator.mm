@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
+#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -16,7 +17,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_suggestion_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -42,18 +42,23 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 @end
 
-@implementation PasswordSuggestionCoordinator
+@implementation PasswordSuggestionCoordinator {
+  // YES when the bottom sheet is proactive where it is triggered upon focus.
+  BOOL _asProactive;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                         passwordSuggestion:(NSString*)passwordSuggestion
                            decisionHandler:
-                               (void (^)(BOOL accept))decisionHandler {
+                               (void (^)(BOOL accept))decisionHandler
+                               asProactive:(BOOL)asProactive {
   self = [super initWithBaseViewController:baseViewController browser:browser];
 
   if (self) {
     _passwordSuggestion = passwordSuggestion;
     _decisionHandler = decisionHandler;
+    _asProactive = asProactive;
   }
 
   return self;
@@ -62,7 +67,8 @@ constexpr CGFloat preferredCornerRadius = 20;
 - (void)start {
   self.viewController = [[PasswordSuggestionViewController alloc]
       initWithPasswordSuggestion:self.passwordSuggestion
-                       userEmail:[self userEmail]];
+                       userEmail:[self userEmail]
+                     asProactive:_asProactive];
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
 

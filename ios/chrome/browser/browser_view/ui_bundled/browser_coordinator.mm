@@ -2939,7 +2939,8 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser
               passwordSuggestion:passwordSuggestion
-                 decisionHandler:decisionHandler];
+                 decisionHandler:decisionHandler
+                     asProactive:NO];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
 }
