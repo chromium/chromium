@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
 <translation id="1626771852476987600">Лозинке које користите за више налога: <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
 <translation id="1641113438599504367">Безбедно прегледање</translation>
 <translation id="1641316430523156212">Прати</translation>
 <translation id="1644574205037202324">Историја</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2062410130322589403">Водич за изборе у вези са приватношћу</translation>
 <translation id="20638360198452347">Бирач типа јединице</translation>
+<translation id="2067852168641682340">Сачувај на овом налогу сваки пут</translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Можете да скролујете удесно да бисте прегледали у режиму без архивирања.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Да бисте добијали новости о садржају који вам је важан, укључите обавештења у подешавањима iOS-а.</translation>
 <translation id="2625189173221582860">Лозинка је копирана</translation>
 <translation id="2626236249646841566">Проверите везу и пробајте поново да се пријавите.</translation>
+<translation id="2635918910848538771">Аутоматски попуни CVC</translation>
 <translation id="2637313651144986786">Претражите картице…</translation>
 <translation id="2640733327287333451">Нема корисничког имена ••••••</translation>
 <translation id="2648721026697078500">Никад не премештај</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Затвори све картице без архивирања</translation>
 <translation id="3533436815740441613">Нова картица</translation>
 <translation id="3540141921715814660">Додај у обележиваче</translation>
+<translation id="3547356470684043247">Прочитајте процене производа, услуга или доживљаја од стране клијената да бисте донели утемељеније одлуке у вези са рецензијама</translation>
 <translation id="355101282835380364">Сачувај на налогу…</translation>
 <translation id="3551320343578183772">Затвори картицу</translation>
 <translation id="3565930036634619844">Картица. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} страница на Листи за читање}one{{count} страница на листи за читање}few{{count} странице на листи за читање}other{{count} страница на листи за читање}}</translation>
 <translation id="4659667755519643272">Уђи у пребацивач картица</translation>
 <translation id="46614316059270592">Сачувај лозинку</translation>
+<translation id="467189612236587057">Повежите се са предузећем покретањем телефонског позива</translation>
 <translation id="4682686630151240767">1. Отворите подешавања iPhone-а</translation>
 <translation id="4689564913179979534">Управљајте начинима плаћања...</translation>
 <translation id="469300482518076788">Затвори картицу</translation>

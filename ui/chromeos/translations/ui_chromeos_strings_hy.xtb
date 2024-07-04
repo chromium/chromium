@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Չեղարկել՝ <ph name="ACTIVITY_DESCRIPTION" />։</translation>
 <translation id="3690128548376345212">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
 <translation id="3691184985318546178">սինհալերեն</translation>
+<translation id="3702842351052426940">Ձեր SIM քարտը կամ eSIM պրոֆիլը կարող են ապակտիվացված լինել։ Փորձեք փոխել ձեր SIM քարտը կամ eSIM պրոֆիլը։</translation>
 <translation id="3722341589402358578">Սխալ առաջացավ։ Հնարավոր է՝ որոշ տարրեր չեն ուղարկվել աղբարկղ։</translation>
 <translation id="3726463242007121105">Հնարավոր չէ բացել սարքը, քանի որ նրա ֆայլային համակարգը չի աջակցվում:</translation>
 <translation id="3727148787322499904">Եթե փոխեք այս կարգավորումը, այն կազդի բոլոր ընդհանուր ցանցերի վրա</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Այս պրոքսի սերվերը պարտադրաբար միացվել է ադմինիստրատորի կողմից</translation>
 <translation id="3830674330436234648">Հնարավոր չէ նվագարկել</translation>
 <translation id="383652340667548381">Սերբական</translation>
+<translation id="3839045880592694915">Ձեր մոդեմին չի թույլատրվում միանալ ձեր օպերատորի միջոցով։ Լրացուցիչ հարցերի դեպքում դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3855472144336161447">Գերմանական (Neo 2)</translation>
 <translation id="3858860766373142691">Անուն</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, կապակցում</translation>
 <translation id="6269630227984243955">մալայերեն</translation>
 <translation id="6271903698064569429">Ֆայլերը չեն կարող վերբեռնվել, քանի որ «<ph name="SHARED_DRIVE_NAME" />» ընդհանուր դրայվում բավարար տարածք չկա։</translation>
+<translation id="6279140785485544797">Ձեր բջջային ինտերնետը կարող է սպառված լինել։ Հարցեր ունենալու դեպքում դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="6287852322318138013">Այս ֆայլը բացելու համար ընտրեք հավելված</translation>
 <translation id="6295542640242147836">SIM քարտի կողպում</translation>
 <translation id="6296410173147755564">PUK կոդն անվավեր է</translation>

@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Адкрыць Агляд</translation>
+<translation id="129469256578833241">Вярнуцца да зводкі</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Вы ў любы момант можаце націснуць <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1925320505152357008">менш за 1 хв</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
+<translation id="1929331825127010451">Вярнуцца да пытання</translation>
 <translation id="1948405482892809935">Пераключыцца на наступнага карыстальніка</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1954252331066828794">Запіс экрана завершаны</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Адкрыць або закрыць Панэль запуску</translation>
 <translation id="5240725217819182328">Хуткі доступ да канкрэтных старонак або дзеянняў ва ўсталяваных праграмах</translation>
 <translation id="5245201184978705914">Не ўдалося стварыць расшыфроўку</translation>
+<translation id="5251174953851719648">Абнавіць змесціва</translation>
 <translation id="5253783950165989294">Устаноўлена падключэнне да прылады "<ph name="DEVICE_NAME" />", <ph name="BATTERY_PERCENTAGE" />% зараду акумулятара</translation>
 <translation id="5258528442992323769">Няма захаваных працоўных сталоў</translation>
 <translation id="5260676007519551770">Стол 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">Цяпер вы можаце блакіраваць праграмы, усталяваныя на прыладзе "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="6154006699632741460">Перыферыйная прылада не падтрымліваецца</translation>
 <translation id="6156960295318603523">Налады мовы</translation>
+<translation id="6158923546703693047">Інфармацыя пра крыніцу змесціва</translation>
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>
 <translation id="616543563528926612">Спалучэнне клавіш для дзеяння "Націснуць правай кнопкай мышы" зменена з <ph name="LAUNCHER_KEY_NAME" /> + Левая кнопка мышы на Alt + Левая кнопка мышы</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">Ідзе ўключэнне…</translation>
 <translation id="8331351032546853669">Чакаецца спампоўванне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Задайце пытанне.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Дрэнны вынік</translation>
 <translation id="8345019317483336363">Выбрана акно "<ph name="WINDOW_TITLE" />"</translation>

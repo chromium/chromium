@@ -6085,7 +6085,7 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
           Chính sách này chỉ được áp dụng khi chính sách <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> bật và không được áp dụng trong những trường hợp khác.</translation>
 <translation id="5695907219125832836">Bật tính năng này nhưng không gửi dữ liệu cho hoạt động đào tạo mô hình AI</translation>
 <translation id="5697306356229823047">Báo cáo người dùng thiết bị</translation>
-<translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống cho tiện ích dành cho doanh nghiệp</translation>
+<translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống của tiện ích dành cho doanh nghiệp</translation>
 <translation id="5697466839975082179">Chính sách cấp thiết bị này sẽ định cấu hình việc <ph name="PRODUCT_OS_NAME" /> có đề xuất Kyber, thuật toán của thoả thuận về khoá hậu lượng tử, trong TLS hay không. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
 
 Nếu bạn Bật chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ đề xuất Kyber trong kết nối TLS. Kết nối TLS sẽ được bảo vệ bằng thoả thuận về khoá Kyber khi giao tiếp với các máy chủ tương thích chọn Kyber trong quá trình bắt tay TLS.

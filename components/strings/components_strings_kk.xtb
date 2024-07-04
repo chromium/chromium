@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
 <translation id="1082026381988252344">Ортақ қойынды мазмұнын айналдыру және масштабтау</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> әдетте <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /> тұрады, бірақ интернеттегі қазіргі бағасы — <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Құпия сөзді өзгерту</translation>
+<translation id="1089599132348386324">Таңдауыңызды кез келген уақытта Chrome параметрлерінде өзгертуге болады.</translation>
 <translation id="1090629319939036170">VR мәзірі</translation>
 <translation id="1091779689406092804">скриншоттар</translation>
 <translation id="1094777233105318927">Браузер, операциялық жүйе, құрылғы, орнатылған бағдарламалық құрал және файлдар туралы ақпарат</translation>
@@ -446,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бірнеше әрекет қолжетімді, оларды қарап шығу үшін Tab пернесін басыңыз.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуалдық карта мәліметтері</translation>
+<translation id="1803254472779303354">Тінтуірді құлыптауға рұқсат берілді</translation>
 <translation id="1803351196216024260">Сайттар микрофоныңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="1806174020048213474">Бұл қолданба Wi-Fi тіркелу деректерін орнату рұқсатын сұрауда. Реттеуден кейін, <ph name="DEVICE_TYPE" /> құрылғысы қатысатын Wi-Fi желілеріне автоматты түрде қосылады. Осы тіркелу деректерін өшіру үшін қолданбаны жойыңыз.</translation>
 <translation id="1807246157184219062">Ашық</translation>
@@ -911,6 +914,7 @@
 <translation id="2702592986366989640">Бағасы төмен опция</translation>
 <translation id="2702801445560668637">Оқу тізімі</translation>
 <translation id="270415722347413271">Оптикалық диск (күңгірт)</translation>
+<translation id="2704192696317130398">Тінтуірді құлыптауға рұқсат беру қажет пе?</translation>
 <translation id="2704283930420550640">Мән пішімге сәйкес келмейді.</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2705137772291741111">Бұл тораптың сақталған (кэштелген) көшірмесі оқылмайтын күйде болды.</translation>
@@ -1214,6 +1218,7 @@
 <translation id="3307649904964670439">"Chrome-ды реттеу" түймесі, браузер көрінісін реттеу үшін белсендіріңіз</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
 <translation id="3318016344440038475">Телекомедиялар</translation>
+<translation id="3321152582690622182">Бақыланбайды</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
 <translation id="3325027355611702542">Жылжымалы үйлер және тұрғын автофургондар</translation>
@@ -2168,6 +2173,7 @@
 <translation id="5125751979347152379">Жарамсыз URL.</translation>
 <translation id="512592033764059484">Футбол</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> қолданбасының өлшемін өзгерту кезінде ол дұрыс жұмыс істемеуі мүмкін. Мұның алдын алу үшін әдепкі өлшемдерді пайдаланыңыз.</translation>
+<translation id="512756860033933700">Пернетақтаны құлыптауға рұқсат берілді</translation>
 <translation id="5127934926273826089">Гүлдер</translation>
 <translation id="5129534298163637277">Растау диалогтік терезесі</translation>
 <translation id="5135404736266831032">Мекенжайларды басқару...</translation>
@@ -2198,6 +2204,7 @@
 <translation id="5177076414499237632">Осы беттің дереккөзі мен тақырыбы туралы толығырақ ақпарат</translation>
 <translation id="5179490652562926740">Төлемді растау параметрлері сақталды.</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> тілінде емес пе? Бұл қате туралы хабарлау</translation>
+<translation id="5180662470511508940">Пернетақтаны құлыптауға рұқсат берілмеді</translation>
 <translation id="5187079891181379721">Корпоративтік іс-шаралар</translation>
 <translation id="5190072300954988691">Камера мен микрофонға рұқсат берілмеді.</translation>
 <translation id="5190835502935405962">Бетбелгілер жолағы</translation>
@@ -2771,6 +2778,7 @@
 <translation id="6298456705131259420">Осы жерде берілген сайттарға әсер етеді. Домен аты алдына "[*.]" енгізілсе, бүкіл домен үшін ерекше жағдай жасалады. Мысалы, "[*.]google.com" қосылса, үшінші тарап cookie файлдары mail.google.com ішінде де іске қосыла алады, себебі ол — google.com доменінің бір бөлігі.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Құрылғыңыз қазір қайта қосылады}=1{Құрылғыңыз 1 секундтан кейін қайта қосылады}other{Құрылғыңыз # секундтан кейін қайта қосылады}}</translation>
 <translation id="6301104306974789820">Бағаны бақылау туралы хабарландырулар алу</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> рұқсатының мәліметтерін көрсету</translation>
 <translation id="6304398603974202180">Мультимедиаға арналған бағдарламалық құрал</translation>
 <translation id="6305205051461490394"><ph name="URL" /> мекенжайына кіру мүмкін емес.</translation>
 <translation id="6306713302480826305">Бұл мекенжай осы және аккаунтқа кірген басқа құрылғыларыңыздан жойылады.</translation>
@@ -2913,6 +2921,7 @@
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
 <translation id="6549443526281184652">Костюмдер</translation>
+<translation id="6550245281449521513">Тінтуірді құлыптауға рұқсат берілмеді</translation>
 <translation id="6551873053534932690">Мекенжайды аккаунтта сақтау керек пе?</translation>
 <translation id="6554732001434021288">Соңғы кіру: <ph name="NUM_DAYS" /> күн бұрын</translation>
 <translation id="6556866813142980365">Қайта орындау</translation>
@@ -3831,6 +3840,7 @@
 <translation id="8278544367771164040">Коммерциялық несие беру</translation>
 <translation id="8279290844152565425">Концерттер мен музыкалық фестивальдар</translation>
 <translation id="8279611986089885641">Chrome хабарландырулары қосулы болуы керек. Оларды <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> бөлімінен қосуға болады.</translation>
+<translation id="8280387559022105172">Пернетақтаны құлыптауға рұқсат беру қажет пе?</translation>
 <translation id="8280630997017109758">11-науа</translation>
 <translation id="8281730697546299650">Енді басқа жарнамадағы құпиялық функциялары қолжетімді</translation>
 <translation id="8281886186245836920">Өткізіп жіберу</translation>
@@ -4302,6 +4312,7 @@
 <translation id="9191834167571392248">Төменгі сол жақты тесу</translation>
 <translation id="9192361865877479444">Металл (күңгірт)</translation>
 <translation id="9192947025498305328">Таза сұлулық</translation>
+<translation id="919455784772793601">Осы өнім сатылатын басқа дүкендер көрсетілген бет ашылады.</translation>
 <translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>
 <translation id="9205078245616868884">Деректер синхрондаудың құпия фразасымен шифрланған. Синхрондауды бастау үшін оны енгізіңіз.</translation>
 <translation id="920643408853370361">Туристік сақтандыру</translation>

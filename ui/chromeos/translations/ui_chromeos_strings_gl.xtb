@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Cancelar esta actividade: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3691184985318546178">Cingalés</translation>
+<translation id="3702842351052426940">Pode que a túa tarxeta SIM ou o perfil de eSIM estean desactivados. Proba a substituír a tarxeta SIM ou cambiar de perfil de eSIM.</translation>
 <translation id="3722341589402358578">Produciuse un erro. Pode que non se enviasen á papeleira algúns elementos.</translation>
 <translation id="3726463242007121105">Este dispositivo non se pode abrir debido a que o seu sistema de ficheiros non é compatible.</translation>
 <translation id="3727148787322499904">Ao cambiar esta opción de configuración, veranse afectadas todas as redes compartidas</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">A configuración deste proxy aplícaa o teu administrador</translation>
 <translation id="3830674330436234648">Non hai reproducións dispoñibles</translation>
 <translation id="383652340667548381">Serbio</translation>
+<translation id="3839045880592694915">O teu operador non permite que o módem se conecte. Ponte en contacto con el para obter máis detalles.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3855472144336161447">Neo 2 alemán</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6271903698064569429">Non se puideron cargar os ficheiros porque "<ph name="SHARED_DRIVE_NAME" />" non ten suficiente espazo de almacenamento.</translation>
+<translation id="6279140785485544797">Pode que o teu plan de datos móbiles caducase. Contacta co operador se necesitas axuda.</translation>
 <translation id="6287852322318138013">Selecciona unha aplicación para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">O PUK non é válido</translation>

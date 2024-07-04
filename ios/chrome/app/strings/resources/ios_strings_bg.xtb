@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изберете „Добавяне към Google Календар“ или „Добавяне към Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> повторно използвани пароли</translation>
+<translation id="1636234353664774105">Получавайте упътвания до дестинацията си с указания отсечка по отсечка, като използвате функцията за навигация</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="1641316430523156212">Следене</translation>
 <translation id="1644574205037202324">История</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Община</translation>
 <translation id="2062410130322589403">Ръководство за настройките ви за поверителност</translation>
 <translation id="20638360198452347">Инструмент за избор на тип мерна единица</translation>
+<translation id="2067852168641682340">Запазване в този профил всеки път</translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Можете да превъртите надясно, за да сърфирате в режим „инкогнито“.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">За да получавате актуална информация за важно за вас съдържание, включете известията от настройките на iOS.</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
 <translation id="2626236249646841566">Проверете връзката си и опитайте отново да влезете.</translation>
+<translation id="2635918910848538771">Автоматично попълване на кода за проверка</translation>
 <translation id="2637313651144986786">Търсене в разделите…</translation>
 <translation id="2640733327287333451">Няма потребителско име ••••••</translation>
 <translation id="2648721026697078500">Без преместване</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Затв. на разделите „инкогнито“</translation>
 <translation id="3533436815740441613">Нов раздел</translation>
 <translation id="3540141921715814660">Добавяне към отметките</translation>
+<translation id="3547356470684043247">Четете оценки за продуктите и услугите или отзиви за практическата работа на клиентите, така че да вземате информирани решения</translation>
 <translation id="355101282835380364">Запазване в профила…</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{В списъка ви за четене има {count} страница}other{В списъка ви за четене има {count} страници}}</translation>
 <translation id="4659667755519643272">Влизане в превключвателя на раздели</translation>
 <translation id="46614316059270592">Запазване на паролата</translation>
+<translation id="467189612236587057">Свържете се с даден бизнес, като започнете телефонно обаждане</translation>
 <translation id="4682686630151240767">1. Отворете настройките на iPhone.</translation>
 <translation id="4689564913179979534">Управление на начините на плащане...</translation>
 <translation id="469300482518076788">Затваряне на раздела</translation>

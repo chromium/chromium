@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Fit to width</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">Scroll and zoom the contents of your shared tab</translation>
+<translation id="1088664500620117635">Typical price for <ph name="PRODUCT_NAME" /> is <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" /> but the current price is <ph name="CURRENT_PRICE" /> across the web.</translation>
 <translation id="1089439967362294234">Change Password</translation>
 <translation id="1090629319939036170">VR Menu</translation>
 <translation id="1091779689406092804">screenshots</translation>
@@ -446,6 +447,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, multiple actions are available; press 'Tab' to cycle through them</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtual card details</translation>
+<translation id="1803254472779303354">Mouse lock allowed</translation>
 <translation id="1803351196216024260">Can ask to use your microphone</translation>
 <translation id="1806174020048213474">This app is requesting permission to install Wi-Fi credentials. After setup, your <ph name="DEVICE_TYPE" /> will automatically connect to participating Wi-Fi networks. To remove these credentials, uninstall the app.</translation>
 <translation id="1807246157184219062">Light</translation>
@@ -911,6 +913,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2702592986366989640">Low-priced option</translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="270415722347413271">Optical disc (matte)</translation>
+<translation id="2704192696317130398">Lock your mouse?</translation>
 <translation id="2704283930420550640">Value doesn't match format.</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2705137772291741111">The saved (cached) copy of this site was unreadable.</translation>
@@ -1215,6 +1218,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3307649904964670439">Customise Chrome button, activate to customise the look of your browser</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
 <translation id="3318016344440038475">TV comedies</translation>
+<translation id="3321152582690622182">Not tracking</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
 <translation id="3325027355611702542">Campers and Motorhomes</translation>
@@ -2169,6 +2173,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5125751979347152379">Invalid URL.</translation>
 <translation id="512592033764059484">Football</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> may not resize well. Use preset window sizes to prevent the app from experiencing issues.</translation>
+<translation id="512756860033933700">Keyboard lock allowed</translation>
 <translation id="5127934926273826089">Flowers</translation>
 <translation id="5129534298163637277">Confirmation dialogue</translation>
 <translation id="5135404736266831032">Manage addresses...</translation>
@@ -2199,6 +2204,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5177076414499237632">Learn about this page's source and topic</translation>
 <translation id="5179490652562926740">Payment verification settings saved</translation>
 <translation id="5179510805599951267">Not in <ph name="ORIGINAL_LANGUAGE" />? Report this error</translation>
+<translation id="5180662470511508940">Keyboard lock not allowed</translation>
 <translation id="5187079891181379721">Corporate Events</translation>
 <translation id="5190072300954988691">Camera and microphone not allowed</translation>
 <translation id="5190835502935405962">Bookmarks Bar</translation>
@@ -2772,6 +2778,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6298456705131259420">Affects the sites listed here. Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.co.uk” means that third-party cookies can also be active for mail.google.co.uk, because it’s part of google.co.uk.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6301104306974789820">Get price tracking notifications</translation>
+<translation id="6302546952464230349">Show <ph name="PERMISSION_NAME" /> permission details</translation>
 <translation id="6304398603974202180">Multimedia Software</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is unreachable.</translation>
 <translation id="6306713302480826305">This address will be deleted from this and your other signed-in devices</translation>
@@ -2914,6 +2921,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6545864417968258051">Bluetooth scanning</translation>
 <translation id="6547208576736763147">Dual punch left</translation>
 <translation id="6549443526281184652">Costumes</translation>
+<translation id="6550245281449521513">Mouse lock not allowed</translation>
 <translation id="6551873053534932690">Save address in Account?</translation>
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6556866813142980365">Redo</translation>
@@ -3832,6 +3840,7 @@ Additional details:
 <translation id="8278544367771164040">Commercial lending</translation>
 <translation id="8279290844152565425">Concerts and music festivals</translation>
 <translation id="8279611986089885641">Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Lock your keyboard?</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281730697546299650">Other ad privacy features now available</translation>
 <translation id="8281886186245836920">Skip</translation>
@@ -4304,6 +4313,7 @@ Additional details:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
+<translation id="919455784772793601">Open a page that shows other shops that sell this product.</translation>
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="920643408853370361">Travel insurance</translation>

@@ -1125,7 +1125,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5122517996953421795">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho inativo.</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
-<translation id="5140105873789567560">Tem de ter, pelo menos, 18 anos para usar a funcionalidade Ajuda-me a escrever e Ajuda-me a ler.</translation>
+<translation id="5140105873789567560">Tem de ter, pelo menos, 18 anos para usar as funcionalidades Ajuda-me a escrever e Ajuda-me a ler.</translation>
 <translation id="5144005092084035179">Mudar de entrada de áudio?</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
@@ -1569,7 +1569,7 @@ Nova instalação</translation>
 <translation id="6696025732084565524">O teclado amovível necessita de uma atualização crítica</translation>
 <translation id="6697913454192220372">Adicionar novo espaço de trabalho</translation>
 <translation id="6700713906295497288">Botão de menu IME</translation>
-<translation id="6704375469818246414">A qualidade pode variar ao usar a IA generativa.</translation>
+<translation id="6704375469818246414">A qualidade pode variar se usar a IA generativa.</translation>
 <translation id="6706742084323792866">Teclado do PIN</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentação</translation>
@@ -1837,7 +1837,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7726391492136714301">Veja as notificações e as apps do seu telemóvel</translation>
 <translation id="7727952505535211425">Abrir o Website na barra de endereço num novo separador</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
-<translation id="774736258792760908">Quando ativa a funcionalidade Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido e o conteúdo do documento são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
+<translation id="774736258792760908">Quando ativa as funcionalidades Ajuda-me a escrever e Ajuda-me a ler, o texto introduzido e o conteúdo do documento são enviados para os servidores de IA da Google para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>

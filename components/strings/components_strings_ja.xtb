@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">ウィンドウ幅に合わせる</translation>
 <translation id="1081061862829655580">トレイ 19</translation>
 <translation id="1082026381988252344">共有タブの内容をスクロールしてズームする</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> の一般的な価格は <ph name="LOW_PRICE" />～<ph name="HIGH_PRICE" /> ですが、ウェブ上の現在の価格は <ph name="CURRENT_PRICE" /> です。</translation>
 <translation id="1089439967362294234">パスワードを変更</translation>
 <translation id="1090629319939036170">VR メニュー</translation>
 <translation id="1091779689406092804">スクリーンショット</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">仮想カードの詳細</translation>
+<translation id="1803254472779303354">マウスのロックを許可しました</translation>
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1806174020048213474">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。</translation>
 <translation id="1807246157184219062">明</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">低価格のオプション</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
 <translation id="270415722347413271">光ディスク（非光沢）</translation>
+<translation id="2704192696317130398">マウスをロックしますか？</translation>
 <translation id="2704283930420550640">値が有効な形式ではありません。</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2705137772291741111">このサイトの保存（キャッシュ）されたコピーを読み取れませんでした。</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3307649904964670439">[Chrome をカスタマイズ] ボタンです。実行すると、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
 <translation id="3318016344440038475">お笑い番組</translation>
+<translation id="3321152582690622182">トラッキングなし</translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
 <translation id="3325027355611702542">キャンピング カー、RV</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">URL が無効です。</translation>
 <translation id="512592033764059484">サッカー</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> は適切にサイズ変更されない可能性があります。アプリに問題が生じないようにするには、プリセットのウィンドウ サイズを使用してください。</translation>
+<translation id="512756860033933700">キーボードのロックを許可しました</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5129534298163637277">確認ダイアログ</translation>
 <translation id="5135404736266831032">住所を管理...</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">このページのソースとトピックについて</translation>
 <translation id="5179490652562926740">お支払いの確認の設定を保存しました</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
+<translation id="5180662470511508940">キーボードのロックは許可されていません</translation>
 <translation id="5187079891181379721">企業イベント</translation>
 <translation id="5190072300954988691">カメラとマイクは許可されていません</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">ここに表示されているサイトに影響します。ドメイン名の前に「[*.]」を挿入すると、ドメイン全体が例外となります。たとえば、「[*.]google.com」を追加すると、google.com の一部である mail.google.com でもサードパーティ Cookie が有効になります。</translation>
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> の権限の詳細を表示</translation>
 <translation id="6304398603974202180">マルチメディア ソフトウェア</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
 <translation id="6306713302480826305">この住所は、このデバイスとログインしている他のデバイスから削除されます</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
 <translation id="6547208576736763147">2 穴パンチ（左）</translation>
 <translation id="6549443526281184652">衣装</translation>
+<translation id="6550245281449521513">マウスのロックは許可されていません</translation>
 <translation id="6551873053534932690">アカウントに住所を保存しますか？</translation>
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
 <translation id="6556866813142980365">やり直す</translation>
@@ -3833,6 +3841,7 @@
 <translation id="8278544367771164040">営利貸付</translation>
 <translation id="8279290844152565425">コンサート、音楽祭</translation>
 <translation id="8279611986089885641">Chrome の通知をオンにする必要があります。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] でオンにできます。</translation>
+<translation id="8280387559022105172">キーボードをロックしますか？</translation>
 <translation id="8280630997017109758">トレイ 11</translation>
 <translation id="8281730697546299650">その他の広告のプライバシー機能がリリースされました</translation>
 <translation id="8281886186245836920">スキップ</translation>
@@ -4305,6 +4314,7 @@
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
+<translation id="919455784772793601">この商品を販売している他のショップリストのページを開きます。</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="920643408853370361">旅行保険</translation>

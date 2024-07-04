@@ -97,6 +97,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Otvori opciju Istražite</translation>
+<translation id="129469256578833241">Nazad na rezime</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pritisnite <ph name="LAUNCHER_KEY_NAME" /> + g u bilo kom trenutku</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
@@ -257,6 +258,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastaturom na dodirnom ekranu.</translation>
+<translation id="1929331825127010451">Nazad na pitanje</translation>
 <translation id="1948405482892809935">Pređite na sledećeg korisnika</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1954252331066828794">Snimanje ekrana je dovršeno</translation>
@@ -1153,6 +1155,7 @@ Možete da koristite i tastersku prečicu. Prvo istaknite tekst, pa pritisnite <
 <translation id="5238719049014159442">Otvori ili zatvori Pokretač</translation>
 <translation id="5240725217819182328">Brz pristup određenim stranicama ili radnjama u okviru instaliranih aplikacija</translation>
 <translation id="5245201184978705914">Generisanje transkripta nije uspelo</translation>
+<translation id="5251174953851719648">Osveži sadržaj</translation>
 <translation id="5253783950165989294">Povezani ste sa uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
@@ -1417,6 +1420,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6147182561428020853">Sada možete da blokirate aplikacije instalirane na ovom uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Podešavanja jezika</translation>
+<translation id="6158923546703693047">Informacije o izvoru sadržaja</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
 <translation id="616543563528926612">Prečica za desni klik je sada alt + klik, a ne više taster <ph name="LAUNCHER_KEY_NAME" /> + klik</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
@@ -2002,6 +2006,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8315514906653279104">Uključuje se…</translation>
 <translation id="8331351032546853669">Preuzimanje je na čekanju</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Postavite pitanje.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Loš rezultat</translation>
 <translation id="8345019317483336363">Prozor <ph name="WINDOW_TITLE" /> je izabran</translation>

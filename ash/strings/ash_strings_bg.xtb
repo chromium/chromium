@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Отваряне на Explore</translation>
+<translation id="129469256578833241">Назад към обобщението</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + g по всяко време</translation>
 <translation id="1306549533752902673">ПРЕПОРЪЧАНИ ПРИЛОЖЕНИЯ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">Автоматични кликвания</translation>
 <translation id="1925320505152357008">по-малко от 1 мин</translation>
 <translation id="1928739107511554905">За да инсталирате актуализацията, използвайте сензорния екран да рестартирате своя Chromebook, докато клавиатурата е прикачена.</translation>
+<translation id="1929331825127010451">Назад към въпроса</translation>
 <translation id="1948405482892809935">Превключване към следващия потребител</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954252331066828794">Записването на екрана завърши</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Отваряне/затваряне на стартовия панел</translation>
 <translation id="5240725217819182328">Бърз достъп до конкретни страници или действия в инсталираните приложения</translation>
 <translation id="5245201184978705914">Преписът не може да се генерира</translation>
+<translation id="5251174953851719648">Опресняване на съдържанието</translation>
 <translation id="5253783950165989294">Установена е връзка с устройство на име <ph name="DEVICE_NAME" />. Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">Вече можете да блокирате приложенията, инсталирани на това устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Периферното устройство не се поддържа</translation>
 <translation id="6156960295318603523">Езикови настройки</translation>
+<translation id="6158923546703693047">Информация за източника на съдържанието</translation>
 <translation id="615957422585914272">Показване на екранната клавиатура</translation>
 <translation id="616543563528926612">Прекият път с десния бутон на мишката е променен от клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + кликване на Alt + кликване</translation>
 <translation id="6165508094623778733">Научете повече</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">Включва се...</translation>
 <translation id="8331351032546853669">Предстои изтегляне</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Задайте въпрос.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Лош резултат</translation>
 <translation id="8345019317483336363">Избран е прозорецът <ph name="WINDOW_TITLE" /></translation>

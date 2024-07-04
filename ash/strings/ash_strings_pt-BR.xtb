@@ -97,6 +97,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1293556467332435079">Arquivos</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Abra a opção "Explorar"</translation>
+<translation id="129469256578833241">Voltar ao resumo</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pressione <ph name="LAUNCHER_KEY_NAME" /> + g a qualquer momento</translation>
 <translation id="1306549533752902673">APPS RECOMENDADOS</translation>
@@ -257,6 +258,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1925320505152357008">menos de 1min</translation>
 <translation id="1928739107511554905">Para receber a atualização, use a touchscreen para reiniciar o Chromebook com o teclado conectado.</translation>
+<translation id="1929331825127010451">Voltar para a pergunta</translation>
 <translation id="1948405482892809935">Mudar para o próximo usuário</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954252331066828794">Gravação de tela concluída</translation>
@@ -1152,6 +1154,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5238719049014159442">Abrir/fechar acesso rápido</translation>
 <translation id="5240725217819182328">Acesso rápido a páginas ou ações específicas nos apps instalados</translation>
 <translation id="5245201184978705914">Falha ao gerar transcrição</translation>
+<translation id="5251174953851719648">Atualizar conteúdo</translation>
 <translation id="5253783950165989294">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" />. <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="5258528442992323769">Nenhum espaço de trabalho salvo</translation>
 <translation id="5260676007519551770">Espaço de trabalho 4</translation>
@@ -1416,6 +1419,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6147182561428020853">Agora você pode bloquear apps instalados neste <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periférico não compatível</translation>
 <translation id="6156960295318603523">Configurações de idioma</translation>
+<translation id="6158923546703693047">Informações da origem do conteúdo</translation>
 <translation id="615957422585914272">Mostrar teclado na tela</translation>
 <translation id="616543563528926612">O atalho de clicar com o botão direito do mouse era <ph name="LAUNCHER_KEY_NAME" /> + clique e foi atualizado para alt + clique</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
@@ -2000,6 +2004,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8315514906653279104">Ativando…</translation>
 <translation id="8331351032546853669">Download pendente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Faça uma pergunta.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Resultado ruim</translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>

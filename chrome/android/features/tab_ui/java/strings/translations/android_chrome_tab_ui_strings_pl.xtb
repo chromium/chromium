@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zamknij grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Wyświetl informacje o sklepie, opcja dostępna u góry ekranu</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Przywróć kartę}few{Przywróć karty}many{Przywróć karty}other{Przywróć karty}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link z Chrome}few{<ph name="TABS_COUNT_MANY" /> linki z Chrome}many{<ph name="TABS_COUNT_MANY" /> linków z Chrome}other{<ph name="TABS_COUNT_MANY" /> linku z Chrome}}</translation>
 <translation id="575494663145460764">Chcesz otrzymywać alerty o obniżkach cen?</translation>
 <translation id="58326064309361797">Przeciągaj karty, by je grupować</translation>

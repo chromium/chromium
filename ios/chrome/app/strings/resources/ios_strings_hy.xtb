@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1622717322707146952">Ընտրեք «Ավելացնել Google Օրացույցում» կամ «Ավելացնել Apple Calendar-ում»։</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> կրկնվող գաղտնաբառ</translation>
+<translation id="1636234353664774105">Գծել երթուղիներ դեպի նպատակակետ քայլ առ քայլ ցուցումների միջոցով՝ օգտագործելով նավիգացիան</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="1641316430523156212">Հետևել</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="2062410130322589403">Գաղտնիության կարգավորումների ուղեցույց</translation>
 <translation id="20638360198452347">Միավորի տեսակի ընտրիչ</translation>
+<translation id="2067852168641682340">Ամեն անգամ պահել այս հաշվում</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2078437078822043850">Ինկոգնիտո ռեժիմում դիտարկելու համար ոլորեք աջ։</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Ձեզ հետաքրքրող բովանդակության մասին թարմացումներ ստանալու համար միացրեք ծանուցումը iOS-ի կարգավորումներում։</translation>
 <translation id="2625189173221582860">Գաղտնաբառը պատճենվեց</translation>
 <translation id="2626236249646841566">Ստուգեք կապը և նորից փորձեք մուտք գործել։</translation>
+<translation id="2635918910848538771">Ինքնալրացնել CVC-ն</translation>
 <translation id="2637313651144986786">Որոնեք ներդիրներում</translation>
 <translation id="2640733327287333451">Օգտանուն չկա ••••••</translation>
 <translation id="2648721026697078500">Երբեք չտեղափոխել</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="3533436815740441613">Նոր ներդիր</translation>
 <translation id="3540141921715814660">Ավելացնել էջանիշներում</translation>
+<translation id="3547356470684043247">Կարդալ հաճախորդների տպավորությունները և նրանց կարծիքները ապրանքների և ծառայությունների մասին՝ օգնելու ձեզ կշռադատված որոշումներ կայացնել</translation>
 <translation id="355101282835380364">Պահել հաշվում…</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
 <translation id="3565930036634619844">Ներդիր։ Էջ <ph name="TAB_INDEX" />՝ <ph name="NUMBER_OF_TABS" />-ից։</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} էջ ձեր ընթերցանության ցանկում}one{{count} էջ ձեր ընթերցանության ցանկում}other{{count} էջ ձեր ընթերցանության ցանկում}}</translation>
 <translation id="4659667755519643272">Բացել ներդիրների փոխանջատիչը</translation>
 <translation id="46614316059270592">Պահել գաղտնաբառը</translation>
+<translation id="467189612236587057">Կապվել ընկերության հետ հեռախոսազանգի միջոցով</translation>
 <translation id="4682686630151240767">1. Բացեք iPhone-ի կարգավորումները։</translation>
 <translation id="4689564913179979534">Վճարման եղանակների կառավարում…</translation>
 <translation id="469300482518076788">Փակել ներդիրը</translation>

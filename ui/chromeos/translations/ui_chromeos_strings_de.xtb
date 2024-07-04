@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3691184985318546178">Singhalesisch</translation>
+<translation id="3702842351052426940">Deine SIM-Karte oder dein eSIM-Profil ist möglicherweise deaktiviert. Probiere es damit, dass du deine SIM-Karte austauschst oder das eSIM-Profil wechselst.</translation>
 <translation id="3722341589402358578">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht in den Papierkorb verschoben.</translation>
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Dieser Proxy wird von deinem Administrator erzwungen</translation>
 <translation id="3830674330436234648">Keine Wiedergabe verfügbar</translation>
 <translation id="383652340667548381">Serbisch</translation>
+<translation id="3839045880592694915">Dein Mobilfunkanbieter erlaubt keine Verbindung über dein Modem. Wenn du weitere Informationen benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="3855472144336161447">Deutsch – Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Verbinden</translation>
 <translation id="6269630227984243955">Malaiisch</translation>
 <translation id="6271903698064569429">Die Dateien können nicht hochgeladen werden, weil in „<ph name="SHARED_DRIVE_NAME" />“ nicht genügend Speicherplatz vorhanden ist.</translation>
+<translation id="6279140785485544797">Dein Tarif für mobile Daten ist möglicherweise abgelaufen. Wenn du weitere Unterstützung benötigst, kontaktiere deinen Mobilfunkanbieter.</translation>
 <translation id="6287852322318138013">App zum Öffnen der Datei auswählen</translation>
 <translation id="6295542640242147836">SIM-Karte sperren</translation>
 <translation id="6296410173147755564">Ungültiger PUK</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Откажите <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, није активирана, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3691184985318546178">синхала</translation>
+<translation id="3702842351052426940">SIM картица или eSIM профил је можда деактивиран. Пробајте да замените SIM картицу или да промените eSIM профиле.</translation>
 <translation id="3722341589402358578">Дошло је до грешке. Неке ставке можда нису премештене у отпад.</translation>
 <translation id="3726463242007121105">Овај уређај не може да се отвори јер његов систем датотека није подржан.</translation>
 <translation id="3727148787322499904">Ако промените ово подешавање, то ће утицати на све дељене мреже</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Администратор је наметнуо овај прокси</translation>
 <translation id="3830674330436234648">Репродукција није доступна</translation>
 <translation id="383652340667548381">српски</translation>
+<translation id="3839045880592694915">Мобилни оператер није дозволио да се модем повеже. Више детаља потражите од мобилног оператера.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">немачка Neo 2</translation>
 <translation id="3858860766373142691">Назив</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, повежи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6271903698064569429">Не можете да отпремите фајлове зато што <ph name="SHARED_DRIVE_NAME" /> нема довољно меморијског простора.</translation>
+<translation id="6279140785485544797">Пакет мобилних података је можда истекао. Подршку потражите од мобилног оператера.</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
 <translation id="6295542640242147836">Закључај SIM</translation>
 <translation id="6296410173147755564">Неважећи PUK</translation>

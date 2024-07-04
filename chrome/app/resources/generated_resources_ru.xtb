@@ -450,6 +450,7 @@
 <translation id="1317637799698924700">Док-станция будет работать в режиме совместимости с USB Type-C.</translation>
 <translation id="1319983966058170660">Кнопка "Назад" для перехода на подстраницу "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="1322046419516468189">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="SAVED_PASSWORDS_STORE" />.</translation>
+<translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Билеты Kerberos</translation>
 <translation id="1327495825214193325">Чтобы включить отладку с ADB, нужно перезагрузить это устройство <ph name="DEVICE_TYPE" />. Для отключения ADB потребуется сбросить настройки устройства до заводских.</translation>
 <translation id="1327527584824210101">Используйте ключ доступа</translation>
@@ -2509,6 +2510,7 @@
 <translation id="2783298271312924866">Сохранено</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" />: вход с помощью электронного ключа</translation>
 <translation id="2785267875302712148">Проверка паролей</translation>
+<translation id="2785279781154577715">Внешний вид карточек предпросмотра вкладок</translation>
 <translation id="2785873697295365461">Дескрипторы файлов</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">–</translation>
@@ -3629,7 +3631,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% (ещё <ph name="TIME" />)</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637203148990213388">Дополнительные аккаунты</translation>
-<translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Защитите пароли от фишинга.</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
 <translation id="364100968401221170">Чтобы удалить данные о работе в браузере со всех синхронизируемых устройств и из аккаунта Google, <ph name="BEGIN_LINK" />войдите в систему<ph name="END_LINK" />.</translation>
@@ -3991,6 +3992,7 @@
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Границы окон перемещены вверх</translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
+<translation id="3877209288227498506">Показывать использование памяти на карточках предпросмотра вкладок</translation>
 <translation id="3878445208930547646">Копировать материалы этого сайта запрещено</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880513902716032002">Некоторые страницы, которые вы посещаете, загружаются заранее</translation>
@@ -4092,6 +4094,7 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />, чтобы скачивать файлы было безопаснее.</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3950841222883198950">Голосовой ввод</translation>
+<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome рекомендует удалить его. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}one{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}few{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}many{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}other{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}}</translation>
 <translation id="3953834000574892725">Мои аккаунты</translation>
 <translation id="3954354850384043518">Скачивание…</translation>
 <translation id="3954468641195530330">У приложений нет доступа к микрофону</translation>
@@ -4660,6 +4663,7 @@
 <translation id="438503109373656455">Скачки</translation>
 <translation id="4385146930797718821">Скриншот скопирован в буфер обмена</translation>
 <translation id="4385905942116811558">Поиск Bluetooth- и USB-устройств</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Это расширение отключено, потому что оно больше не поддерживается}one{Эти расширения отключены, потому что они больше не поддерживаются}few{Эти расширения отключены, потому что они больше не поддерживаются}many{Эти расширения отключены, потому что они больше не поддерживаются}other{Эти расширения отключены, потому что они больше не поддерживаются}}</translation>
 <translation id="4386604394450371010">Обзор</translation>
 <translation id="4387890294700445764">Раскрытые пароли</translation>
 <translation id="4388650384344483842">Минимальное количество символов: 8.</translation>
@@ -5243,6 +5247,7 @@
 <translation id="4830502475412647084">Обновление ОС</translation>
 <translation id="4831226137013573603">Отключить микрофон</translation>
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
+<translation id="4835677468087803981">Скрыть PIN-код</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
 <translation id="4837926214103741331">У вас нет доступа к этому устройству. Свяжитесь с его владельцем.</translation>
@@ -5584,6 +5589,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 с шифрованием RSA</translation>
 <translation id="5089763948477033443">Маркер, который позволяет изменить размер боковой панели</translation>
 <translation id="5090637338841444533">Запретить сайтам отслеживать положение камеры</translation>
+<translation id="5091636240353511739">Показать PIN-код</translation>
 <translation id="5093477827231450397">Список заблокированных сайтов, которым запрещено предлагать рекламу для других сайтов</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
@@ -5669,7 +5675,7 @@
 <translation id="5148285448107770349">Длина пароля должна быть не менее 8 символов</translation>
 <translation id="5149602533174716626">&amp;Копировать кадр видео</translation>
 <translation id="5150254825601720210">Имя сервера SSL-сертификатов Netscape</translation>
-<translation id="5151354047782775295">Освободите пространство или выберите данные для автоматического удаления.</translation>
+<translation id="5151354047782775295">Если вы не освободите место на диске, некоторые данные могут быть автоматически удалены.</translation>
 <translation id="5153234146675181447">Удаление телефона</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> – дополнительные настройки</translation>
@@ -5766,6 +5772,7 @@
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
 <translation id="52254442782792731">Вы пока не указали, кому разрешено обнаруживать ваше устройство</translation>
 <translation id="5225463052809312700">Включить камеру</translation>
+<translation id="5226514125747186">Значки сайтов будут обведены пунктирным кругом. Подробнее <ph name="BEGIN_LINK" />о неактивных вкладках<ph name="END_LINK" />…</translation>
 <translation id="5226731562812684363">У сайтов нет доступа к данным о вашем местоположении.</translation>
 <translation id="5227679487546032910">Аватар по умолчанию (сине-зеленый)</translation>
 <translation id="5228245824943774148">Подключено несколько устройств (<ph name="NUM_DEVICES_CONNECTED" />)</translation>
@@ -6350,6 +6357,7 @@
 <translation id="5651308944918885595">Обмен с окружением: параметры видимости</translation>
 <translation id="5653154844073528838">Сохраненных принтеров: <ph name="PRINTER_COUNT" />.</translation>
 <translation id="5654669866168491665">Узнайте больше о сайтах, которые могут не работать, когда сторонние файлы cookie заблокированы</translation>
+<translation id="5654751240928365405">Это расширение отключено, потому оно больше не поддерживается</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Чтобы защитить вашу конфиденциальность, мы отозвали разрешения у одного сайта}one{Чтобы защитить вашу конфиденциальность, мы отозвали разрешения у нескольких сайтов}few{Чтобы защитить вашу конфиденциальность, мы отозвали разрешения у нескольких сайтов}many{Чтобы защитить вашу конфиденциальность, мы отозвали разрешения у нескольких сайтов}other{Чтобы защитить вашу конфиденциальность, мы отозвали разрешения у нескольких сайтов}}</translation>
 <translation id="565515993087783098">Если вы исключите эту сеть, также будет удалена подписка Passpoint и связанные с ней сети.</translation>
 <translation id="5655296450510165335">Регистрация устройства</translation>
@@ -6721,6 +6729,7 @@
 <translation id="5938002010494270685">Доступно обновление системы безопасности</translation>
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="5939719276406088041">Не удалось создать ярлык.</translation>
+<translation id="5939723110967488589">Выберите кнопки для панели инструментов.</translation>
 <translation id="594048410531370124">Неизвестная клавиша. Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Добавить пользователя</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />: необходимо войти.</translation>
@@ -7589,6 +7598,7 @@
 <translation id="6597324406048772521">Расширения на этом сайте запрещены</translation>
 <translation id="6597331566371766302">Администратор заблокировал следующие расширения:</translation>
 <translation id="659894938503552850">сначала новые</translation>
+<translation id="6600016381025017075">Поиск по объектам на странице</translation>
 <translation id="6601262427770154296">Управление словарями пользователя</translation>
 <translation id="6602173570135186741">Автозаполнение и пароли</translation>
 <translation id="6602336931411102724">Показывать группы вкладок на панели закладок</translation>
@@ -8252,6 +8262,7 @@
 <translation id="7089253021944603172">Вкладка вновь активна</translation>
 <translation id="7090160970140261931">Вы можете добавить дополнительные аккаунты на устройство <ph name="DEVICE_TYPE" />, чтобы использовать их в приложениях для Android и на сайтах. Также вы можете выбрать, какие аккаунты будут использоваться в приложениях для Android.</translation>
 <translation id="7090714929377281710">Автоматически отключать точку доступа</translation>
+<translation id="7092504544229909737">Нельзя использовать в приложениях для Android.</translation>
 <translation id="7093220653036489319">Быстрые ответы</translation>
 <translation id="7093866338626856921">Обмен данными с устройствами <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
@@ -9741,6 +9752,7 @@
 <translation id="8184288427634747179">Переключиться на профиль <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Подробнее</translation>
 <translation id="8184472985242519288">Без объема</translation>
+<translation id="8186013737729037962">Подробнее о корпоративных устройствах…</translation>
 <translation id="8186047833733689201">Меню диакритических знаков открыто. Для навигации нажимайте клавиши Стрелка влево, Стрелка вправо или клавиши с цифрами. Чтобы добавить знак, нажмите Ввод.</translation>
 <translation id="8186609076106987817">Этот файл отсутствует на сервере.</translation>
 <translation id="8188389033983459049">Чтобы продолжить, проверьте настройки устройства и включите Bluetooth.</translation>

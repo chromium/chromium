@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1081061862829655580">Тава 19</translation>
 <translation id="1082026381988252344">Превъртане и промяна на мащаба на съдържанието на споделения раздел</translation>
+<translation id="1088664500620117635">Обичайната цена на <ph name="PRODUCT_NAME" /> е <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" />, но текущата цена в мрежата е <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Промяна на паролата</translation>
 <translation id="1090629319939036170">Меню за VR</translation>
 <translation id="1091779689406092804">екранните снимки</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Възможни са няколко действия. Натискайте Tab, за да преминавате циклично между тях</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Подробности на виртуалната карта</translation>
+<translation id="1803254472779303354">Заключването на мишката е разрешено</translation>
 <translation id="1803351196216024260">Може да поиска разрешение да използва микрофона ви</translation>
 <translation id="1806174020048213474">Това приложение иска разрешение да инсталира идентификационните данни за Wi-Fi. След настройването устройството ви <ph name="DEVICE_TYPE" /> ще се свързва автоматично с участващите Wi-Fi мрежи. За да премахнете тези идентификационни данни, деинсталирайте приложението.</translation>
 <translation id="1807246157184219062">Светло</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">Опция с ниска цена</translation>
 <translation id="2702801445560668637">Списък за четене</translation>
 <translation id="270415722347413271">Оптичен диск (матиран)</translation>
+<translation id="2704192696317130398">Искате ли да заключите мишката си?</translation>
 <translation id="2704283930420550640">Стойността не съответства на формата.</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2705137772291741111">Запазеното (кеширано) копие на този сайт не можа да се прочете.</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3307649904964670439">Бутон за персонализиране на Chrome. Активирайте, за да персонализирате облика на браузъра си</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
 <translation id="3318016344440038475">Телевизионни комедии</translation>
+<translation id="3321152582690622182">Не се проследява</translation>
 <translation id="3324687287337751929">4 x 6 инча</translation>
 <translation id="3324983252691184275">пурпурно</translation>
 <translation id="3325027355611702542">Кемпери и каравани</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">Невалиден URL адрес.</translation>
 <translation id="512592033764059484">Футбол</translation>
 <translation id="512670116361803001">Възможно е приложението <ph name="APP_NAME" /> да не функционира правилно след преоразмеряване. За да предотвратите възникване на проблеми, използвайте предварително зададените размери за прозорците.</translation>
+<translation id="512756860033933700">Заключването на клавиатурата е разрешено</translation>
 <translation id="5127934926273826089">Цветя</translation>
 <translation id="5129534298163637277">Диалогов прозорец за потвърждаване</translation>
 <translation id="5135404736266831032">Управление на адресите...</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">Научете за източника и темата на тази страница</translation>
 <translation id="5179490652562926740">Настройките за потвърждаване при плащане бяха запазени</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Подайте сигнал за тази грешка</translation>
+<translation id="5180662470511508940">Заключването на клавиатурата е забранено</translation>
 <translation id="5187079891181379721">Корпоративни мероприятия</translation>
 <translation id="5190072300954988691">Достъпът до камерата и микрофона не е разрешен</translation>
 <translation id="5190835502935405962">Лента на отметките</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">Засяга посочените тук сайтове. Вмъкването на „[*.]“ пред името на даден домейн създава изключение за целия домейн. Например добавянето на [*.]google.com означава, че „бисквитките“ на трети страни могат да са активни и за mail.google.com, тъй като е част от google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Устройството ви ще се рестартира сега}=1{Устройството ви ще се рестартира след 1 секунда}other{Устройството ви ще се рестартира след # секунди}}</translation>
 <translation id="6301104306974789820">Получаване на известия за проследяване на цените</translation>
+<translation id="6302546952464230349">Показване на подробности за разрешението за достъп до <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Мултимедиен софтуер</translation>
 <translation id="6305205051461490394">Няма достъп до <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Този адрес ще бъде изтрит от това устройство и от другите, на които сте влезли в профила си</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
 <translation id="6547208576736763147">Двойно перфориране отляво</translation>
 <translation id="6549443526281184652">Костюми</translation>
+<translation id="6550245281449521513">Заключването на мишката е забранено</translation>
 <translation id="6551873053534932690">Адресът да се запази ли в профила?</translation>
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6556866813142980365">Възстановяване</translation>
@@ -3832,6 +3840,7 @@
 <translation id="8278544367771164040">Търговски заеми</translation>
 <translation id="8279290844152565425">Концерти и музикални фестивали</translation>
 <translation id="8279611986089885641">Известията за Chrome трябва да са включени. Можете да ги включите от <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Искате ли да заключите клавиатурата си?</translation>
 <translation id="8280630997017109758">Тава 11</translation>
 <translation id="8281730697546299650">Вече са налице други функции за поверителността при рекламите</translation>
 <translation id="8281886186245836920">Пропускане</translation>
@@ -4304,6 +4313,7 @@
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9192361865877479444">Метал (матиран)</translation>
 <translation id="9192947025498305328">Чисти продукти за красота</translation>
+<translation id="919455784772793601">Отворете страница, показваща други магазини, в които се продава този продукт.</translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="920643408853370361">Застраховка при пътуване</translation>

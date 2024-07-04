@@ -51,7 +51,9 @@
 <translation id="1080116354587839789">Հարմարեցնել լայնությանը</translation>
 <translation id="1081061862829655580">Դարակ 19</translation>
 <translation id="1082026381988252344">Ոլորեք և խոշորացրեք ընդհանուր ներդիրի բովանդակությունը</translation>
+<translation id="1088664500620117635">Ապրանքի (<ph name="PRODUCT_NAME" />) սովորական գինը <ph name="LOW_PRICE" />-<ph name="HIGH_PRICE" /> սահմաններում է, սակայն ընթացիկ գինը <ph name="CURRENT_PRICE" /> է համացանցում։</translation>
 <translation id="1089439967362294234">Փոխել գաղտնաբառը</translation>
+<translation id="1089599132348386324">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։</translation>
 <translation id="1090629319939036170">VR ընտրացանկ</translation>
 <translation id="1091779689406092804">սքրինշոթները</translation>
 <translation id="1094777233105318927">Տեղեկություններ ձեր դիտարկիչի, օպերացիոն համակարգի, սարքի, տեղադրված ծրագրերի և ֆայլերի մասին</translation>
@@ -450,6 +452,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Հասանելի են բազմաթիվ գործողություններ։ Դրանք ընտրելու համար սեղմեք Tab:</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Վիրտուալ քարտի մանրամասներ</translation>
+<translation id="1803254472779303354">Մկնիկի կողպումը թույլատրվում է</translation>
 <translation id="1803351196216024260">Կարող է հայցել խոսափողն օգտագործելու թույլտվություն</translation>
 <translation id="1806174020048213474">Այս հավելվածը Wi-Fi-ի մուտքի տվյալներ տեղադրելու թույլտվություն է հայցում։ Կարգավորումից հետո ձեր <ph name="DEVICE_TYPE" /> սարքն ավտոմատ կմիանա մասնակից Wi-Fi ցանցերին։ Մուտքի այս տվյալները հեռացնելու համար ապատեղադրեք հավելվածը։</translation>
 <translation id="1807246157184219062">Բաց</translation>
@@ -915,6 +918,7 @@
 <translation id="2702592986366989640">Ցածր գնով տարբերակ</translation>
 <translation id="2702801445560668637">Ընթերցանության ցանկ</translation>
 <translation id="270415722347413271">Օպտիկական սկավառակ (անփայլ)</translation>
+<translation id="2704192696317130398">Կողպե՞լ մկնիկը</translation>
 <translation id="2704283930420550640">Արժեքը չի համապատասխանում ձևաչափին:</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
 <translation id="2705137772291741111">Այս կայքի պահված (քեշավորված) պատճենն անընթեռնելի էր:</translation>
@@ -1221,6 +1225,7 @@
 <translation id="3307649904964670439">«Անհատականացնել Chrome-ը» կոճակ․ ակտիվացրեք՝ դիտարկիչի տեսքն անհատականացնելու համար</translation>
 <translation id="3308006649705061278">Ստորաբաժանում (OU)</translation>
 <translation id="3318016344440038475">Հեռուստատեսային կատակերգություններ</translation>
+<translation id="3321152582690622182">Չի հետագծվում</translation>
 <translation id="3324687287337751929">4 x 6 դյույմ</translation>
 <translation id="3324983252691184275">Բոսորագույն</translation>
 <translation id="3325027355611702542">Բնակելի ավտոկցորդներ և տներ անիվների վրա</translation>
@@ -2178,6 +2183,7 @@
 <translation id="5125751979347152379">URL-ն անվավեր է:</translation>
 <translation id="512592033764059484">Ֆուտբոլ</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> հավելվածը չի աջակցում չափի փոփոխումը։ Սխալներից խուսափելու համար օգտագործեք ստանդարտ չափեր։</translation>
+<translation id="512756860033933700">Ստեղնաշարի կողպումը թույլատրվում է</translation>
 <translation id="5127934926273826089">Ծաղիկներ</translation>
 <translation id="5129534298163637277">Հաստատման պատուհան</translation>
 <translation id="5135404736266831032">Հասցեների կառավարում...</translation>
@@ -2208,6 +2214,7 @@
 <translation id="5177076414499237632">Իմանալ ավելին այս էջի աղբյուրի և թեմայի մասին</translation>
 <translation id="5179490652562926740">Վճարումների հաստատման կարգավորումները պահվեցին</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> չէ՞: Հաղորդեք սխալի մասին</translation>
+<translation id="5180662470511508940">Ստեղնաշարի կողպումը չի թույլատրվում</translation>
 <translation id="5187079891181379721">Կորպորատիվ միջոցառումներ</translation>
 <translation id="5190072300954988691">Տեսախցիկի և խոսափողի օգտագործումն արգելված է</translation>
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
@@ -2783,6 +2790,7 @@
 <translation id="6298456705131259420">Ազդում է այստեղ թվարկված կայքերի վրա։ Ամբողջ տիրույթի համար բացառություն ստեղծելու համար տիրույթի անվանումից առաջ մուտքագրեք «[*.]»։ Օրինակ՝ եթե ավելացնեք «[*.]google.com», երրորդ կողմի քուքիները կթույլատրվեն նաև mail.google.com-ի համար, քանի որ այն պատկանում է google.com տիրույթին։</translation>
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
+<translation id="6302546952464230349">Ցուցադրել «<ph name="PERMISSION_NAME" />» թույլտվության մանրամասները</translation>
 <translation id="6304398603974202180">Մուլտիմեդիա ծրագրեր</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
 <translation id="6306713302480826305">Հասցեն կհեռացվի այս և ձեր մյուս սարքերից, որոնցում մտել եք հաշիվ</translation>
@@ -2925,6 +2933,7 @@
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
 <translation id="6547208576736763147">Երկու անցք ձախ կողմում</translation>
 <translation id="6549443526281184652">Կոստյումներ</translation>
+<translation id="6550245281449521513">Մկնիկի կողպումը չի թույլատրվում</translation>
 <translation id="6551873053534932690">Պահե՞լ հասցեն հաշվում</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
 <translation id="6556866813142980365">Կրկնել</translation>
@@ -3843,6 +3852,7 @@
 <translation id="8278544367771164040">Առևտրական վարկ</translation>
 <translation id="8279290844152565425">Համերգներ և երաժշտական փառատոններ</translation>
 <translation id="8279611986089885641">Chrome-ի ծանուցումները պետք է միացված լինեն։ Դրանք միացնելու համար անցեք <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />։</translation>
+<translation id="8280387559022105172">Կողպե՞լ ստեղնաշարը</translation>
 <translation id="8280630997017109758">Դարակ 11</translation>
 <translation id="8281730697546299650">Այժմ հասանելի են գովազդի գաղտնիության հետ կապված այլ գործառույթներ</translation>
 <translation id="8281886186245836920">Բաց թողնել</translation>
@@ -4314,6 +4324,7 @@
 <translation id="9191834167571392248">Անցք ներքևի ձախ կողմում</translation>
 <translation id="9192361865877479444">Մետաղ (անփայլ)</translation>
 <translation id="9192947025498305328">Էկոլոգիապես մաքուր կոսմետիկա</translation>
+<translation id="919455784772793601">Բացել էջը, որտեղ ցուցադրվում են այս ապրանքը վաճառող այլ խանութներ։</translation>
 <translation id="9199905725844810519">Տպումն արգելափակված է</translation>
 <translation id="9205078245616868884">Ձեր տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="920643408853370361">Ճանապարհորդական ապահովագրություն</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> işlemi iptal edilecek.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ağdan <ph name="NETWORK_INDEX" />., <ph name="NETWORK_NAME" />, Etkinleştirilmemiş, <ph name="CONNECTION_STATUS" />, Sinyal Gücü %<ph name="SIGNAL_STRENGTH" />, Ayrıntılar</translation>
 <translation id="3691184985318546178">Seylanca</translation>
+<translation id="3702842351052426940">SIM kartınız veya eSIM profiliniz devre dışı bırakılabilir. SIM kartınızı değiştirmeyi veya eSIM profilleri arasında geçiş yapmayı deneyin.</translation>
 <translation id="3722341589402358578">Bir hata oluştu. Bazı öğeler çöp kutusuna gönderilmemiş olabilir.</translation>
 <translation id="3726463242007121105">Bu cihaz, dosya sistemi desteklenmediğinden açılamıyor.</translation>
 <translation id="3727148787322499904">Bu ayarı değiştirmek tüm paylaşılan ağları etkiler</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Bu proxy, yöneticiniz tarafından uygulanıyor</translation>
 <translation id="3830674330436234648">Oynatma mevcut değil</translation>
 <translation id="383652340667548381">Sırpça</translation>
+<translation id="3839045880592694915">Modeminizin, operatörünüz tarafından bağlanmasına izin verilmiyor. Daha fazla bilgi için operatörünüzle iletişime geçin.</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Bağlan</translation>
 <translation id="6269630227984243955">Malayca</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" yeterli depolama alanına sahip olmadığından dosyalar yüklenemiyor.</translation>
+<translation id="6279140785485544797">Mobil veri planınızın süresi dolmuş olabilir. Destek için operatörünüzle iletişim kurun.</translation>
 <translation id="6287852322318138013">Bu dosyayı açmak için bir uygulama seçin</translation>
 <translation id="6295542640242147836">SIM kilidi</translation>
 <translation id="6296410173147755564">Geçersiz PUK</translation>

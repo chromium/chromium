@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Нажмите "Добавить в Google Календарь" или "Добавить в календарь Apple".</translation>
 <translation id="1626771852476987600">Повторяющихся паролей: <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">Проложить маршруты до пункта назначения с пошаговыми инструкциями, используя функцию навигации</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="1641316430523156212">Подписаться</translation>
 <translation id="1644574205037202324">История</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2062410130322589403">Руководство по настройкам конфиденциальности</translation>
 <translation id="20638360198452347">Список выбора типов единиц измерения</translation>
+<translation id="2067852168641682340">Всегда сохранять в этот аккаунт</translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Чтобы перейти в режим инкогнито, прокрутите экран вправо</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Чтобы получать уведомления о контенте, включите их в настройках iOS.</translation>
 <translation id="2625189173221582860">Пароль скопирован</translation>
 <translation id="2626236249646841566">Проверьте подключение и повторите попытку.</translation>
+<translation id="2635918910848538771">Автозаполнять CVC-код</translation>
 <translation id="2637313651144986786">Поиск по вкладкам</translation>
 <translation id="2640733327287333451">Имя пользователя не указано ••••••</translation>
 <translation id="2648721026697078500">Никогда</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Закрыть все вкладки инкогнито</translation>
 <translation id="3533436815740441613">Новая вкладка</translation>
 <translation id="3540141921715814660">Добавить в закладки</translation>
+<translation id="3547356470684043247">Прочитать впечатления клиентов или их отзывы о товарах или услугах, чтобы принять взвешенное решение</translation>
 <translation id="355101282835380364">Сохранить в аккаунте</translation>
 <translation id="3551320343578183772">Закрыть вкладку</translation>
 <translation id="3565930036634619844">Номер вкладки: <ph name="TAB_INDEX" /> из <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} страница в вашем списке для чтения}one{{count} страница в вашем списке для чтения}few{{count} страницы в вашем списке для чтения}many{{count} страниц в вашем списке для чтения}other{{count} страницы в вашем списке для чтения}}</translation>
 <translation id="4659667755519643272">Открыть переключатель вкладок</translation>
 <translation id="46614316059270592">Сохранить пароль</translation>
+<translation id="467189612236587057">Позвонить в компанию</translation>
 <translation id="4682686630151240767">1. Откройте настройки устройства iPhone.</translation>
 <translation id="4689564913179979534">Настроить способы оплаты</translation>
 <translation id="469300482518076788">Закрыть вкладку</translation>

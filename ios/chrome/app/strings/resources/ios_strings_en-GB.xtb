@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Select “Add to Google Calendar“ or “Add to Apple Calendar.“</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> reused passwords</translation>
+<translation id="1636234353664774105">Get directions to your destination with turn-by-turn guidance using the navigation feature.</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Follow</translation>
 <translation id="1644574205037202324">History</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2062410130322589403">A guide to your privacy choices</translation>
 <translation id="20638360198452347">Unit type selector</translation>
+<translation id="2067852168641682340">Save to this account every time</translation>
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">You can scroll right to browse in Incognito.</translation>
@@ -313,6 +315,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="261739049332372104">To get updates about content that matters to you, turn on notifications in your iOS settings.</translation>
 <translation id="2625189173221582860">Password copied</translation>
 <translation id="2626236249646841566">Check your connection and try signing in again.</translation>
+<translation id="2635918910848538771">Autofill the CVC</translation>
 <translation id="2637313651144986786">Search Tabs…</translation>
 <translation id="2640733327287333451">No username ••••••</translation>
 <translation id="2648721026697078500">Never Move</translation>
@@ -496,6 +499,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3533202363250687977">Close all incognito tabs</translation>
 <translation id="3533436815740441613">New Tab</translation>
 <translation id="3540141921715814660">Add to Bookmarks</translation>
+<translation id="3547356470684043247">Read customer evaluations of products, services or experiences to help inform your decisions with reviews.</translation>
 <translation id="355101282835380364">Save in Account…</translation>
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> of <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4659194143325814340">{count,plural, =1{{count} page on your Reading List}other{{count} pages on your Reading List}}</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
 <translation id="46614316059270592">Save password</translation>
+<translation id="467189612236587057">Connect with a business by initiating a phone call</translation>
 <translation id="4682686630151240767">1. Open iPhone settings</translation>
 <translation id="4689564913179979534">Manage Payment Methods...</translation>
 <translation id="469300482518076788">Close tab</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">لغو <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3691184985318546178">سینهالی</translation>
+<translation id="3702842351052426940">ممکن است سیم‌کارت یا نمایه سیم‌کارت داخلی‌تان غیرفعال شده باشد. سیم‌کارت را عوض کنید یا نمایه سیم‌کارت داخلی را تغییر دهید.</translation>
 <translation id="3722341589402358578">خطایی رخ داد. ممکن است برخی‌از موارد به «حذف‌شده‌ها» منتقل نشده باشد.</translation>
 <translation id="3726463242007121105">این دستگاه باز نمی‌شود زیرا سیستم فایل آن پشتیبانی نمی‌شود.</translation>
 <translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">سرپرست سیستم شما اجرای این پراکسی را اجباری کرده است</translation>
 <translation id="3830674330436234648">بازپخش در دسترس نیست</translation>
 <translation id="383652340667548381">صربستانی</translation>
+<translation id="3839045880592694915">مودم شما اجازه ندارد به شرکت مخابراتی‌تان متصل شود. برای کسب اطلاعات بیشتر، با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3855472144336161447">نئو آلمان ۲</translation>
 <translation id="3858860766373142691">نام</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
 <translation id="6269630227984243955">مالایی</translation>
 <translation id="6271903698064569429">نمی‌توان فایل‌ها را بارگذاری کرد زیرا «<ph name="SHARED_DRIVE_NAME" />» فضای ذخیره‌سازی کافی ندارد.</translation>
+<translation id="6279140785485544797">ممکن است طرح داده تلفن همراه شما منقضی شده باشد. برای دریافت پشتیبانی، با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="6287852322318138013">یک برنامه را برای باز کردن این فایل انتخاب کنید</translation>
 <translation id="6295542640242147836">قفل کردن سیم‌کارت</translation>
 <translation id="6296410173147755564">‏PUK نامعتبر است</translation>

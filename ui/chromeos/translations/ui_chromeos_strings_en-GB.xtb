@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Cancel <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Your SIM card or eSIM profile may be deactivated. Try replacing your SIM card or switching eSIM profiles.</translation>
 <translation id="3722341589402358578">An error occurred. Some items may not have been deleted.</translation>
 <translation id="3726463242007121105">This device cannot be opened because its file system is not supported.</translation>
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">This proxy is enforced by your administrator</translation>
 <translation id="3830674330436234648">No playback available.</translation>
 <translation id="383652340667548381">Serbian</translation>
+<translation id="3839045880592694915">Your modem isn't allowed to connect by your operator. Contact your operator for more details.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429">Files can't be uploaded because '<ph name="SHARED_DRIVE_NAME" />' doesn't have enough storage.</translation>
+<translation id="6279140785485544797">Your mobile data plan may have expired. Contact your operator for support.</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
 <translation id="6295542640242147836">Lock SIM</translation>
 <translation id="6296410173147755564">Invalid PUK</translation>

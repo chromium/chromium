@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1622717322707146952">აირჩიეთ „Google Calendar-ში დამატება“ ან „Apple Calendar-ში დამატება“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> ხელახლა გამოყენებული პაროლი</translation>
+<translation id="1636234353664774105">გაკვალეთ მარშრუტები თქვენი დანიშნულების წერტილამდე ეტაპობრივი (ნაბიჯ-ნაბიჯ) ინსტრუქციის მეშვეობით, ნავიგაციის ფუნქციის გამოყენებით</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">თვალის დევნება</translation>
 <translation id="1644574205037202324">ისტორია</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">მუნიციპალიტეტი</translation>
 <translation id="2062410130322589403">კონფიდენციალურობასთან დაკავშირებული არჩევანის სახელმძღვანელო</translation>
 <translation id="20638360198452347">ერთეულის ტიპის არჩევის ხელსაწყო</translation>
+<translation id="2067852168641682340">ამ ანგარიშში შენახვა ყოველ ჯერზე</translation>
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2078437078822043850">ვების ინკოგნიტო რეჟიმში დასათვალიერებლად გადაფურცლეთ მარჯვნივ.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">თქვენთვის საინტერესო თემების შესახებ უახლესი ინფორმაციის მისაღებად ჩართეთ შეტყობინებები iOS-ის პარამეტრებიდან.</translation>
 <translation id="2625189173221582860">პაროლი დაკოპირდა</translation>
 <translation id="2626236249646841566">შეამოწმეთ კავშირი და ხელახლა ცადეთ სისტემაში შესვლა.</translation>
+<translation id="2635918910848538771">ბარათის დადასტურების კოდის (CVC) ავტომატურად შევსება</translation>
 <translation id="2637313651144986786">მოიძიეთ ჩანართებში...</translation>
 <translation id="2640733327287333451">მომხმარებლის სახელის გარეშე ••••••</translation>
 <translation id="2648721026697078500">არასოდეს გადავიდეს</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3533436815740441613">ახალი ჩანართი</translation>
 <translation id="3540141921715814660">სანიშნეებში დამატება</translation>
+<translation id="3547356470684043247">გაეცანით კლიენტების შეფასებას პროდუქტების, სერვისებისა თუ შთაბეჭდილებების შესახებ, რაც დაგეხმარებათ გამოხმაურებების მეშვეობით საფუძვლიანი გადაწყვეტილების მიღებაში</translation>
 <translation id="355101282835380364">ანგარიშში შენახვა…</translation>
 <translation id="3551320343578183772">ჩანართის დახურვა</translation>
 <translation id="3565930036634619844">ჩანართი. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" />-დან.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} გვერდი თქვენს საკითხავ სიაში}other{{count} გვერდი თქვენს საკითხავ სიაში}}</translation>
 <translation id="4659667755519643272">ჩანართების გადამრთველში შესვლა</translation>
 <translation id="46614316059270592">პაროლის შენახვა</translation>
+<translation id="467189612236587057">წამოიწყეთ სატელეფონო ზარი და დაუკავშირდით კომპანიას</translation>
 <translation id="4682686630151240767">1. გახსენით iPhone-ის პარამეტრები</translation>
 <translation id="4689564913179979534">გადახდის მეთოდების მართვა…</translation>
 <translation id="469300482518076788">ჩანართის დახურვა</translation>

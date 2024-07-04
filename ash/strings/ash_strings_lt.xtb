@@ -97,6 +97,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Atidaryti skiltį „Naršymas“</translation>
+<translation id="129469256578833241">Grįžti į suvestinę</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Bet kuriuo metu paspauskite „<ph name="LAUNCHER_KEY_NAME" />“ + g</translation>
 <translation id="1306549533752902673">REKOMENDUOJAMOS PROGRAMOS</translation>
@@ -257,6 +258,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
 <translation id="1925320505152357008">mažiau nei 1 min.</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
+<translation id="1929331825127010451">Grįžti į klausimą</translation>
 <translation id="1948405482892809935">Perjungti į kitą naudotoją</translation>
 <translation id="1951012854035635156">Padėjėjas</translation>
 <translation id="1954252331066828794">Ekrano vaizdo įrašymas baigtas</translation>
@@ -1152,6 +1154,7 @@ Taip pat galite naudoti spartųjį klavišą. Pirmiausia paryškinkite tekstą, 
 <translation id="5238719049014159442">Atidaryti ir (arba) uždaryti Paleidimo priemonę</translation>
 <translation id="5240725217819182328">Sparčioji prieiga prie konkrečių puslapių ar veiksmų įdiegtose programose</translation>
 <translation id="5245201184978705914">Nepavyko sugeneruoti transkribuoto teksto</translation>
+<translation id="5251174953851719648">Atnaujinti turinį</translation>
 <translation id="5253783950165989294">Prisijungta prie įrenginio pavadinimu „<ph name="DEVICE_NAME" />“, akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="5258528442992323769">Nėra jokių išsaugotų darbalaukių</translation>
 <translation id="5260676007519551770">4 pultas</translation>
@@ -1416,6 +1419,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6147182561428020853">Dabar galite blokuoti programas, įdiegtas šiame įrenginyje: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Išoriniai įrenginiai nepalaikomi</translation>
 <translation id="6156960295318603523">Kalbos nustatymai</translation>
+<translation id="6158923546703693047">Turinio šaltinio informacija</translation>
 <translation id="615957422585914272">Rodyti ekrano klaviatūrą</translation>
 <translation id="616543563528926612">Dešiniuoju klavišu spustelėjamas spartusis klavišas atnaujintas: dabar naudojamas derinys „Alt“ + paspaudimas vietoj <ph name="LAUNCHER_KEY_NAME" /> klavišo + paspaudimo</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
@@ -2000,6 +2004,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8315514906653279104">Įjungiama...</translation>
 <translation id="8331351032546853669">Laukiama atsisiuntimo</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Užduokite klausimą.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Netinkama išvestis</translation>
 <translation id="8345019317483336363">Pasirinktas langas „<ph name="WINDOW_TITLE" />“</translation>

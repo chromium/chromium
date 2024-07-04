@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contrasenyes reutilitzades</translation>
+<translation id="1636234353664774105">Obtén indicacions fins a la teva destinació amb instruccions pas a pas amb la funció de navegació</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="1641316430523156212">Segueix</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Municipi</translation>
 <translation id="2062410130322589403">Guia de les teves opcions de privadesa</translation>
 <translation id="20638360198452347">Selector de tipus d'unitat</translation>
+<translation id="2067852168641682340">Desa en aquest compte cada vegada</translation>
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
 <translation id="2078437078822043850">Pots desplaçar-te cap a la dreta per navegar d'incògnit.</translation>
@@ -313,6 +315,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="261739049332372104">Per rebre actualitzacions sobre el contingut que t'interessa, activa les notificacions a la configuració d'iOS.</translation>
 <translation id="2625189173221582860">S'ha copiat la contrasenya</translation>
 <translation id="2626236249646841566">Comprova la connexió i torna a provar d'iniciar la sessió.</translation>
+<translation id="2635918910848538771">Emplena automàticament el CVC</translation>
 <translation id="2637313651144986786">Cerca pestanyes</translation>
 <translation id="2640733327287333451">Sense nom d'usuari ••••••</translation>
 <translation id="2648721026697078500">No moguis mai</translation>
@@ -496,6 +499,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3533202363250687977">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3540141921715814660">Afegeix a Adreces d'interès</translation>
+<translation id="3547356470684043247">Llegeix les avaluacions dels clients sobre productes, serveis o experiències per ajudar-te a prendre decisions</translation>
 <translation id="355101282835380364">Desa al compte…</translation>
 <translation id="3551320343578183772">Tanca la pestanya</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4659194143325814340">{count,plural, =1{{count} pàgina a la teva llista de lectura}other{{count} pàgines a la teva llista de lectura}}</translation>
 <translation id="4659667755519643272">Entra al selector de pestanyes</translation>
 <translation id="46614316059270592">Desa la contrasenya</translation>
+<translation id="467189612236587057">Connecta amb una empresa iniciant una trucada telefònica</translation>
 <translation id="4682686630151240767">1. Obre la configuració de l'iPhone.</translation>
 <translation id="4689564913179979534">Gestiona les formes de pagament...</translation>
 <translation id="469300482518076788">Tanca la pestanya</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Kartu SIM atau profil eSIM Anda mungkin dinonaktifkan. Coba ganti kartu SIM atau profil eSIM.</translation>
 <translation id="3722341589402358578">Terjadi error. Beberapa item mungkin belum dibuang.</translation>
 <translation id="3726463242007121105">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak didukung.</translation>
 <translation id="3727148787322499904">Perubahan pada setelan ini akan berpengaruh pada semua jaringan bersama</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Proxy ini diberlakukan oleh administrator Anda</translation>
 <translation id="3830674330436234648">Pemutaran tidak tersedia</translation>
 <translation id="383652340667548381">Serb</translation>
+<translation id="3839045880592694915">Modem tidak diizinkan untuk terhubung oleh operator Anda. Hubungi operator untuk mengetahui detail selengkapnya.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3855472144336161447">Neo 2 Jerman</translation>
 <translation id="3858860766373142691">Nama</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>
 <translation id="6271903698064569429">File tidak dapat diupload karena "<ph name="SHARED_DRIVE_NAME" />" tidak memiliki penyimpanan yang cukup.</translation>
+<translation id="6279140785485544797">Masa berlaku paket data seluler Anda mungkin sudah berakhir. Hubungi operator untuk mendapatkan dukungan.</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
 <translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak valid</translation>

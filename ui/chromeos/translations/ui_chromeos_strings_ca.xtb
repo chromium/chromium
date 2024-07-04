@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Cancel·la <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
 <translation id="3691184985318546178">Singalès</translation>
+<translation id="3702842351052426940">És possible que la targeta SIM o el perfil d'eSIM es desactivin. Prova de substituir la targeta SIM o canviar els perfils d'eSIM.</translation>
 <translation id="3722341589402358578">S'ha produït un error. És possible que alguns elements no s'hagin enviat a la paperera.</translation>
 <translation id="3726463242007121105">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no és compatible.</translation>
 <translation id="3727148787322499904">Els canvis en aquesta opció de configuració afectaran totes les xarxes compartides</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">L'administrador aplica aquest servidor intermediari</translation>
 <translation id="3830674330436234648">No hi ha cap reproducció disponible</translation>
 <translation id="383652340667548381">Serbi</translation>
+<translation id="3839045880592694915">L'operador no permet que el mòdem es connecti. Contacta-hi per obtenir més informació.</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
 <translation id="6269630227984243955">Malai</translation>
 <translation id="6271903698064569429">No es poden penjar els fitxers perquè "<ph name="SHARED_DRIVE_NAME" />" no té prou espai d'emmagatzematge.</translation>
+<translation id="6279140785485544797">Pot ser que el teu pla de dades mòbils hagi caducat. Contacta amb l'operador per obtenir assistència.</translation>
 <translation id="6287852322318138013">Selecció d'una aplicació per obrir el fitxer</translation>
 <translation id="6295542640242147836">Bloqueja la SIM</translation>
 <translation id="6296410173147755564">El PUK no és vàlid</translation>

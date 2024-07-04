@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">सर्व निवडा</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{टॅब गट <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}other{टॅब गट <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून बंद करा.}}</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{टॅब रिस्टोअर करा}other{टॅब रिस्टोअर करा}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome वरील <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome वरील <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
 <translation id="575494663145460764">किंमत कमी झाल्याच्या सूचना मिळवायच्या आहेत का?</translation>
 <translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>

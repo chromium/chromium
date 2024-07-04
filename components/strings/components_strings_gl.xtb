@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Axustar ao ancho</translation>
 <translation id="1081061862829655580">Bandexa 19</translation>
 <translation id="1082026381988252344">Desprazarse polo contido da pestana compartida e facerlle zoom</translation>
+<translation id="1088664500620117635">O prezo habitual de <ph name="PRODUCT_NAME" /> vai de <ph name="LOW_PRICE" /> a <ph name="HIGH_PRICE" />, pero o prezo actual na Web é de <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Cambiar de contrasinal</translation>
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
@@ -446,6 +447,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Hai varias accións dispoñibles; para desprazarte por elas, preme Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalles da tarxeta virtual</translation>
+<translation id="1803254472779303354">Está permitido bloquear o rato</translation>
 <translation id="1803351196216024260">Pode pedirche permiso para utilizar o micrófono</translation>
 <translation id="1806174020048213474">Esta aplicación está solicitando permiso para instalar credenciais de acceso wifi. Despois da configuración, o dispositivo <ph name="DEVICE_TYPE" /> conectarase automaticamente ás redes wifi participantes. Para quitalas, desinstala a aplicación.</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -911,6 +913,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2702592986366989640">Opción económica</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="270415722347413271">Disco óptico (mate)</translation>
+<translation id="2704192696317130398">Queres bloquear o rato?</translation>
 <translation id="2704283930420550640">O valor non se corresponde co formato.</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2705137772291741111">A copia deste sitio gardada (almacenada na memoria caché) era ilexible.</translation>
@@ -1215,6 +1218,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3307649904964670439">Botón para personalizar Chrome. Actívao para personalizar o aspecto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
 <translation id="3318016344440038475">Comedias de televisión</translation>
+<translation id="3321152582690622182">Sen seguimento</translation>
 <translation id="3324687287337751929">4 x 6 polgadas</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Campistas e caravanas</translation>
@@ -2169,6 +2173,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5125751979347152379">URL non válido.</translation>
 <translation id="512592033764059484">Fútbol</translation>
 <translation id="512670116361803001">É posible que <ph name="APP_NAME" /> non cambie ben de tamaño. Para evitar que se produzan problemas co funcionamento da aplicación, usa os tamaños de ventá predeterminados.</translation>
+<translation id="512756860033933700">Está permitido bloquear o teclado</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5129534298163637277">Cadro de diálogo de confirmación</translation>
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
@@ -2199,6 +2204,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5177076414499237632">Máis información sobre o tema e a fonte desta páxina</translation>
 <translation id="5179490652562926740">Gardouse a configuración de verificación de pagos</translation>
 <translation id="5179510805599951267">Non está en <ph name="ORIGINAL_LANGUAGE" />? Informar deste erro</translation>
+<translation id="5180662470511508940">Non está permitido bloquear o teclado</translation>
 <translation id="5187079891181379721">Eventos corporativos</translation>
 <translation id="5190072300954988691">O acceso á cámara e ao micrófono non está permitido</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
@@ -2772,6 +2778,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6298456705131259420">Afecta aos sitios incluídos aquí. Ao inserir “[*.]” antes dun nome de dominio, créase unha excepción para todo o dominio. Por exemplo, se engades [*.]google.com, as cookies de terceiros tamén poderán estar activas en mail.google.com, xa que forma parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
 <translation id="6301104306974789820">Obter notificacións de seguimento do prezo</translation>
+<translation id="6302546952464230349">Mostrar os detalles do permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimedia</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Este enderezo eliminarase deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada</translation>
@@ -2914,6 +2921,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Dúas perforacións na parte esquerda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
+<translation id="6550245281449521513">Non está permitido bloquear o rato</translation>
 <translation id="6551873053534932690">Queres gardar o enderezo na conta?</translation>
 <translation id="6554732001434021288">Visitouse hai <ph name="NUM_DAYS" /> días por última vez</translation>
 <translation id="6556866813142980365">Refacer</translation>
@@ -3832,6 +3840,7 @@ Detalles adicionais:
 <translation id="8278544367771164040">Préstamos comerciais</translation>
 <translation id="8279290844152565425">Concertos e festivais de música</translation>
 <translation id="8279611986089885641">As notificacións de Chrome deben estar activadas. Podes activalas en <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Queres bloquear o teclado?</translation>
 <translation id="8280630997017109758">Bandexa 11</translation>
 <translation id="8281730697546299650">Xa están dispoñibles outras funcións de privacidade nos anuncios</translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -4304,6 +4313,7 @@ Detalles adicionais:
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Cosmética ecolóxica</translation>
+<translation id="919455784772793601">Abre unha páxina que mostra outras tendas nas que se vende este produto.</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaxe</translation>

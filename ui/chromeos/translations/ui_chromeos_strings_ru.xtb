@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Отменить <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3691184985318546178">Сингальский</translation>
+<translation id="3702842351052426940">Возможно, произошла деактивация. Замените SIM-карту или переключитесь на другой профиль eSIM.</translation>
 <translation id="3722341589402358578">Произошла ошибка. Возможно, не все объекты были удалены.</translation>
 <translation id="3726463242007121105">Невозможно получить доступ к устройству, так как его файловая система не поддерживается.</translation>
 <translation id="3727148787322499904">Изменение этого параметра повлияет на все общие сети</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Прокси-сервер принудительно включен администратором</translation>
 <translation id="3830674330436234648">Воспроизведение невозможно</translation>
 <translation id="383652340667548381">Сербский</translation>
+<translation id="3839045880592694915">Подключение модема запрещено оператором связи. Обратитесь к нему за дополнительной информацией.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключение</translation>
 <translation id="6269630227984243955">Малайский</translation>
 <translation id="6271903698064569429">Не удается загрузить файлы, поскольку на общем диске "<ph name="SHARED_DRIVE_NAME" />" недостаточно свободного места.</translation>
+<translation id="6279140785485544797">Возможно, срок действия вашего тарифного плана на мобильный интернет истек. Обратитесь к оператору связи.</translation>
 <translation id="6287852322318138013">Выберите программу, в которой необходимо открыть этот файл</translation>
 <translation id="6295542640242147836">Блокировка SIM-карты</translation>
 <translation id="6296410173147755564">Недействительный PUK-код.</translation>

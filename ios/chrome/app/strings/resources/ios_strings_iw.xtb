@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1622717322707146952">‏בוחרים באפשרות 'הוספה ליומן Google' או 'הוספה ל-Apple Calendar'.</translation>
 <translation id="1626771852476987600">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
+<translation id="1636234353664774105">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1641316430523156212">מעקב</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2062410130322589403">מדריך לבחירות שלך בנושא פרטיות</translation>
 <translation id="20638360198452347">בורר סוגי היחידות</translation>
+<translation id="2067852168641682340">שמירה בחשבון הזה בכל פעם</translation>
 <translation id="2073572773299281212">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="2074131957428911366">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">כדי לגלוש במצב פרטי, אפשר לגלול ימינה.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">‏כדי לקבל עדכונים על תוכן שחשוב לך, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
 <translation id="2626236249646841566">עליך לבדוק את החיבור ולנסות להיכנס שוב.</translation>
+<translation id="2635918910848538771">‏מילוי אוטומטי של קוד האימות (CVC)</translation>
 <translation id="2637313651144986786">חיפוש בכרטיסיות…</translation>
 <translation id="2640733327287333451">אין שם משתמש ••••••</translation>
 <translation id="2648721026697078500">אין להעביר אף פעם</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">סגירה של כל כרטיסיות מצב אנונימי</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
 <translation id="3540141921715814660">הוספה לסימניות</translation>
+<translation id="3547356470684043247">כדאי לקרוא הערכות של לקוחות לגבי מוצרים, שירותים או חוויית השימוש. על סמך ביקורות כאלה ניתן לקבל החלטות מושכלות יותר</translation>
 <translation id="355101282835380364">שמירה בחשבון…</translation>
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3565930036634619844">‏מקש Tab. ‫<ph name="TAB_INDEX" /> מתוך <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{דף אחד ({count}) ברשימת הקריאה}one{{count} דפים ברשימת הקריאה}two{{count} דפים ברשימת הקריאה}other{{count} דפים ברשימת הקריאה}}</translation>
 <translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
 <translation id="46614316059270592">שמירת הסיסמה</translation>
+<translation id="467189612236587057">יצירת קשר עם עסק בשיחת טלפון</translation>
 <translation id="4682686630151240767">‏1. פותחים את הגדרות ה-iPhone</translation>
 <translation id="4689564913179979534">ניהול אמצעי תשלום...</translation>
 <translation id="469300482518076788">סגירת הכרטיסייה</translation>

@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">"Google Жылнаамага кошуу" же "Apple Жылнаамага кошуу" дегенди тандаңыз.</translation>
 <translation id="1626771852476987600">Кайра колдонулган <ph name="COUNT" /> сырсөз бар</translation>
+<translation id="1636234353664774105">Багыт алуу функциясын колдонуп, бара турган жерге багыттарды алыңыз</translation>
 <translation id="1641113438599504367">Коопсуз серептөө</translation>
 <translation id="1641316430523156212">Жазылуу</translation>
 <translation id="1644574205037202324">Таржымал</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2062410130322589403">Купуялык параметрлери боюнча жетектеме</translation>
 <translation id="20638360198452347">Бирдик түрүн тандагыч</translation>
+<translation id="2067852168641682340">Бул аккаунтка ар дайым сактаңыз</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2078437078822043850">Жашыруун режимде карап чыгуу үчүн оңго сыдырыңыз.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Сиз үчүн маанилүү болгон мазмун жөнүндө жаңылыктарды алуу үчүн iOS параметрлеринде билдирмени күйгүзүңүз.</translation>
 <translation id="2625189173221582860">Сырсөз көчүрүлдү</translation>
 <translation id="2626236249646841566">Интернет байланышын текшерип, кайталап көрүңүз.</translation>
+<translation id="2635918910848538771">CVC кодун автотолтуруу</translation>
 <translation id="2637313651144986786">Өтмөктөрдү издөө...</translation>
 <translation id="2640733327287333451">Колдонуучунун аты жок ••••••</translation>
 <translation id="2648721026697078500">Эч качан жылдырылбасын</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
 <translation id="3540141921715814660">Кыстармаларга кошуу</translation>
+<translation id="3547356470684043247">Кардарлардын товарлар, кызматтар тууралуу сын-пикирлерин же тажрыйбасын окуңуз. Бул салмактуу чечим кабыл алууга жардам берет</translation>
 <translation id="355101282835380364">Аккаунтта сактоо…</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3565930036634619844">Өтмөк. <ph name="NUMBER_OF_TABS" /> ичинен <ph name="TAB_INDEX" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{Окуу тизмеңизде {count} бет бар}other{Окуу тизмеңизде {count} бет бар}}</translation>
 <translation id="4659667755519643272">Өтмөк которуштургучка кирүү</translation>
 <translation id="46614316059270592">Сырсөздү сактоо</translation>
+<translation id="467189612236587057">Компанияга чалыңыз</translation>
 <translation id="4682686630151240767">1. iPhone параметрлерин ачыңыз</translation>
 <translation id="4689564913179979534">Төлөм ыкмаларын башкаруу…</translation>
 <translation id="469300482518076788">Өтмөктү жабуу</translation>

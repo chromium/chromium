@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">“Google Taqvimga kiritish” yoki “Apple Taqvimga kiritish” bandini tanlang.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> ta parol qayta ishlatilgan</translation>
+<translation id="1636234353664774105">Navigatsiya yordamida manzilgacha qadamli koʻrsatkichlarni oling</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="1641316430523156212">Kuzatish</translation>
 <translation id="1644574205037202324">Tarix</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2062410130322589403">Maxfiylik sozlamalaringizga oid qoʻllanma</translation>
 <translation id="20638360198452347">Oʻlchov birligi turini tanlash</translation>
+<translation id="2067852168641682340">Har safar shu hisobga saqlansin</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2078437078822043850">Inkognito rejimiga oʻtish uchun oʻngga aylantiring.</translation>
@@ -313,6 +315,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="261739049332372104">Oʻzingizga muhim kontent haqida xabarlar olish uchun iOS sozlamalari orqali bildirishnomasini yoqing.</translation>
 <translation id="2625189173221582860">Parol nusxalandi</translation>
 <translation id="2626236249646841566">Internet aloqasini tekshiring va qaytadan kirish uchun urining</translation>
+<translation id="2635918910848538771">CVC kodni avtomatik kiritish</translation>
 <translation id="2637313651144986786">Varaqlar ichidan qidirish</translation>
 <translation id="2640733327287333451">Loginsiz ••••••</translation>
 <translation id="2648721026697078500">Hech qachon koʻchirilmasin</translation>
@@ -496,6 +499,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3533202363250687977">Inkognito sahifalarni yopish</translation>
 <translation id="3533436815740441613">Yangi varaq</translation>
 <translation id="3540141921715814660">Bukmarklash</translation>
+<translation id="3547356470684043247">Sharhlardagi fikringizni aniqlashtirishda yordam beradigan mijozlarning mahsulot sharhlari va tajribalari bilan tanishing</translation>
 <translation id="355101282835380364">Hisobda saqlash…</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
 <translation id="3565930036634619844">Varaq. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" /></translation>
@@ -714,6 +718,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4659194143325814340">{count,plural, =1{{count} ta sahifa Saqlangan sahifalarda}other{{count} ta sahifa Saqlangan sahifalarda}}</translation>
 <translation id="4659667755519643272">Sahifalarni tezkor almashtirish funksiyasini yoqish</translation>
 <translation id="46614316059270592">Parolni saqlash</translation>
+<translation id="467189612236587057">Biznes bilan telefon chaqiruvi orqali bogʻlaning</translation>
 <translation id="4682686630151240767">1. iPhone sozlamalarini oching</translation>
 <translation id="4689564913179979534">Toʻlov usullarini boshqarish...</translation>
 <translation id="469300482518076788">Varaqni yopish</translation>

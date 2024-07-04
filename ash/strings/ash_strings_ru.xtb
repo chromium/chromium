@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Открыть приложение "Возможности"</translation>
+<translation id="129469256578833241">Назад к краткому пересказу</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Нажмите <ph name="LAUNCHER_KEY_NAME" /> + G в любой момент.</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">Автоматическое нажатие</translation>
 <translation id="1925320505152357008">Меньше 1 мин.</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
+<translation id="1929331825127010451">Назад к вопросу</translation>
 <translation id="1948405482892809935">Переключиться на следующего пользователя</translation>
 <translation id="1951012854035635156">Ассистент</translation>
 <translation id="1954252331066828794">Запись видео с экрана завершена</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Открыть или закрыть панель запуска</translation>
 <translation id="5240725217819182328">Быстрый доступ к нужным страницам и функциям в установленных приложениях</translation>
 <translation id="5245201184978705914">Не удается создать расшифровку.</translation>
+<translation id="5251174953851719648">Обновить содержимое</translation>
 <translation id="5253783950165989294">Установлено подключение к устройству "<ph name="DEVICE_NAME" />", заряд батареи – <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Нет сохраненных рабочих столов.</translation>
 <translation id="5260676007519551770">Рабочий стол 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">Теперь вы можете блокировать приложения, установленные на этом <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6154006699632741460">Периферийное устройство не поддерживается</translation>
 <translation id="6156960295318603523">Языковые настройки</translation>
+<translation id="6158923546703693047">Сведения об источнике информации</translation>
 <translation id="615957422585914272">Показывать экранную клавиатуру</translation>
 <translation id="616543563528926612">Сочетание клавиш для нажатия правой кнопкой мыши изменено с Alt + нажатие на <ph name="LAUNCHER_KEY_NAME" /> + нажатие.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">Включение…</translation>
 <translation id="8331351032546853669">Ожидание скачивания</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Задайте вопрос</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Плохой результат</translation>
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>

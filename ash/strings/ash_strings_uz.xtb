@@ -97,6 +97,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Tanishuv ilovasini ochish</translation>
+<translation id="129469256578833241">Xulosaga qaytish</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Istalganda <ph name="LAUNCHER_KEY_NAME" /> + g tugmalarini bosing</translation>
 <translation id="1306549533752902673">TAVSIYA ETILGAN ILOVALAR</translation>
@@ -257,6 +258,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
 <translation id="1925320505152357008">1 daqiqadan kamroq</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
+<translation id="1929331825127010451">Savolga qaytish</translation>
 <translation id="1948405482892809935">Keyingi foydalanuvchiga almashish</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Ekranni yozib olish tugadi</translation>
@@ -1152,6 +1154,7 @@ Klaviatura tezkor tugmalaridan foydalanishingiz ham mumkin. Avval matnni belgila
 <translation id="5238719049014159442">Launcher tugmasi</translation>
 <translation id="5240725217819182328">Oʻrnatilgan ilovalar ichidagi muayyan sahifalar yoki harakatlarga tezkor kirish</translation>
 <translation id="5245201184978705914">Transkripsiya yaratilmadi</translation>
+<translation id="5251174953851719648">Kontentni yangilash</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> nomli qurilmaga ulandi, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Saqlangan ish stollari topilmadi</translation>
 <translation id="5260676007519551770">Desk 4</translation>
@@ -1416,6 +1419,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6147182561428020853">Mazkur <ph name="DEVICE_TYPE" /> qurilmasida oʻrnatilgan ilovalarni bloklash mumkin</translation>
 <translation id="6154006699632741460">Tashqi qurilmalar ishlamaydi</translation>
 <translation id="6156960295318603523">Til sozlamalari</translation>
+<translation id="6158923546703693047">Kontent manbasi axboroti</translation>
 <translation id="615957422585914272">Ekran klaviaturasini ko‘rsatish</translation>
 <translation id="616543563528926612">Oʻng klik tugmasi <ph name="LAUNCHER_KEY_NAME" /> + klikdan Alt + klikka yangilandi</translation>
 <translation id="6165508094623778733">Batafsil</translation>
@@ -2000,6 +2004,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8315514906653279104">Yoqilmoqda…</translation>
 <translation id="8331351032546853669">Yuklab olinishi kutilmoqda</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Savol bering.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Yomon natija</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> oynasi tanlandi</translation>

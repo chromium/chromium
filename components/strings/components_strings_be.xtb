@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Дапасаваць да шырыні старонкі</translation>
 <translation id="1081061862829655580">Латок 19</translation>
 <translation id="1082026381988252344">Прагортка і маштабаванне змесціва абагуленай укладкі</translation>
+<translation id="1088664500620117635">Звычайная цана тавару "<ph name="PRODUCT_NAME" />" ад <ph name="LOW_PRICE" /> да <ph name="HIGH_PRICE" />, але бягучая цана на вэб-сайтах складае <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Змяніць пароль</translation>
 <translation id="1090629319939036170">Меню VR</translation>
 <translation id="1091779689406092804">здымкі экрана</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, даступна некалькі дзеянняў. Для іх прагляду націскайце Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Рэквізіты віртуальнай карткі</translation>
+<translation id="1803254472779303354">Блакіроўка мышы дазволена</translation>
 <translation id="1803351196216024260">Сайт можа запытваць дазвол на выкарыстанне мікрафона</translation>
 <translation id="1806174020048213474">Гэта праграма запытвае дазвол усталяваць уліковыя даныя Wi-Fi. Пасля наладжвання ваша прылада (<ph name="DEVICE_TYPE" />) зможа аўтаматычна падключацца да сетак Wi-Fi. Каб выдаліць гэтыя ўліковыя даныя, неабходна выдаліць праграму.</translation>
 <translation id="1807246157184219062">Светлая</translation>
@@ -912,6 +914,7 @@
 <translation id="2702592986366989640">Недарагі варыянт</translation>
 <translation id="2702801445560668637">Спіс чытання</translation>
 <translation id="270415722347413271">Матавы аптычны дыск</translation>
+<translation id="2704192696317130398">Заблакіраваць мыш?</translation>
 <translation id="2704283930420550640">Значэнне не адпавядае фармату.</translation>
 <translation id="2704606927547763573">Скапіравана</translation>
 <translation id="2705137772291741111">Не ўдалося прачытаць захаваную (кэшаваную) копію сайта.</translation>
@@ -1216,6 +1219,7 @@
 <translation id="3307649904964670439">Кнопка "Наладзіць Chrome". Каб наладзіць выгляд браўзера, націсніце яе.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
 <translation id="3318016344440038475">Камедыйныя праграмы</translation>
+<translation id="3321152582690622182">Не адсочваецца</translation>
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
 <translation id="3325027355611702542">Жылыя аўтафургоны і іншыя транспартныя сродкі для адпачынку</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="512592033764059484">Футбол</translation>
 <translation id="512670116361803001">Змяненне памеру праграмы "<ph name="APP_NAME" />" можа выклікаць памылкі. Каб пазбегнуць іх, выкарыстоўвайце загадзя зададзеныя памеры вокнаў.</translation>
+<translation id="512756860033933700">Блакіроўка клавіятуры дазволена</translation>
 <translation id="5127934926273826089">Кветкі</translation>
 <translation id="5129534298163637277">Дыялогавае акно пацвярджэння</translation>
 <translation id="5135404736266831032">Кіраваць адрасамі...</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">Даведацца пра крыніцу і тэму гэтай старонкі</translation>
 <translation id="5179490652562926740">Налады спраўджання аплаты захаваны</translation>
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
+<translation id="5180662470511508940">Блакіроўка клавіятуры не дазволена</translation>
 <translation id="5187079891181379721">Карпаратыўныя мерапрыемствы</translation>
 <translation id="5190072300954988691">Выкарыстанне камеры і мікрафона забаронена</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">Налады прымяняюцца да ўсіх пералічаных тут сайтаў. Каб стварыць выключэнне для ўсяго дамена, устаўце перад яго іменем "[*.]". Напрыклад, калі вы дадасце "[*.]google.com", староннія файлы cookie будуць дазволены таксама для сайта mail.google.com, бо ён адносіцца да дамена google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Прылада будзе перазапушчана зараз}=1{Прылада будзе перазапушчана праз 1 секунду}one{Прылада будзе перазапушчана праз # секунду}few{Прылада будзе перазапушчана праз # секунды}many{Прылада будзе перазапушчана праз # секунд}other{Прылада будзе перазапушчана праз # секунды}}</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
+<translation id="6302546952464230349">Паказаць падрабязныя звесткі пра дазвол "<ph name="PERMISSION_NAME" />"</translation>
 <translation id="6304398603974202180">Праграмнае забеспячэнне для працы з мультымедыя</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недаступны.</translation>
 <translation id="6306713302480826305">Гэты адрас будзе выдалены з бягучай і іншых прылад, на якіх выкананы ўваход ва ўліковы запіс</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Пошук прылад Bluetooth</translation>
 <translation id="6547208576736763147">Дзве дзіркі злева</translation>
 <translation id="6549443526281184652">Касцюмы</translation>
+<translation id="6550245281449521513">Блакіроўка мышы не дазволена</translation>
 <translation id="6551873053534932690">Захаваць адрас ва ўліковым запісе?</translation>
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6556866813142980365">Узнавіць</translation>
@@ -3833,6 +3841,7 @@
 <translation id="8278544367771164040">Камерцыйнае крэдытаванне</translation>
 <translation id="8279290844152565425">Канцэрты і музычныя фестывалі</translation>
 <translation id="8279611986089885641">Неабходна ўключыць апавяшчэнні Chrome. Каб зрабіць гэта, перайдзіце ў <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Заблакіраваць клавіятуру?</translation>
 <translation id="8280630997017109758">Латок 11</translation>
 <translation id="8281730697546299650">З'явіліся іншыя функцыі захавання прыватнасці ў рэкламе</translation>
 <translation id="8281886186245836920">Прапусціць</translation>
@@ -4305,6 +4314,7 @@
 <translation id="9191834167571392248">Дзірка знізу злева</translation>
 <translation id="9192361865877479444">Матавы метал</translation>
 <translation id="9192947025498305328">Натуральная касметыка</translation>
+<translation id="919455784772793601">Адкрыць старонку з іншымі крамамі, якія прадаюць гэты тавар.</translation>
 <translation id="9199905725844810519">Друкаванне заблакіравана</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="920643408853370361">Турыстычнае страхаванне</translation>

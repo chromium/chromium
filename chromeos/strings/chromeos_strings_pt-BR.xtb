@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1049663189809099096">amarelo-pastel</translation>
+<translation id="1053371972724535586">Minhas gravações</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
 <translation id="1061864016440983342">Usar sem localização</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">Para um resultado aproximado, divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Redefine automaticamente o uso de dados a cada mês em um dia selecionado</translation>
 <translation id="1442433966118452622">Origem da imagem</translation>
+<translation id="1445573806602812670">Gerar uma transcrição da gravação</translation>
 <translation id="1446954767133808402">safira</translation>
 <translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
 <translation id="1451536289672181509">Este dispositivo é um teclado.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">lago</translation>
 <translation id="1720424726586960395">floresta de vaga-lumes</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
+<translation id="1728792932018505912">Você pode ajustar isso nas configurações ou no menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Não foi possível carregar as imagens. Verifique sua conexão de rede ou tente carregar novamente.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
 <translation id="1908394185991500139">seta para a esquerda</translation>
 <translation id="1923388006036088459">Cores de destaque</translation>
+<translation id="1945403655450283000">Gravador</translation>
 <translation id="1947737735496445907">Impresso</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1954818433534793392">Edifício</translation>
@@ -224,8 +228,10 @@
 <translation id="2085089206770112532">Diminuir o brilho da tela</translation>
 <translation id="2086091080968010660">As mudanças baseadas em tempo podem não ser precisas. Ative o acesso ao local nas configurações.</translation>
 <translation id="2102231663024125441">Edição de texto</translation>
+<translation id="2102648867808308635">Quero ajuda para ler esta página</translation>
 <translation id="2105810540595158374">Este dispositivo é um controle de jogo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Disponível apenas em inglês (EUA)</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis</translation>
 <translation id="2135668738111962377">Editar <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Flutue</translation>
@@ -262,6 +268,7 @@
 <translation id="2267285889943769271">Adicionar captura de tela</translation>
 <translation id="2271469253353559191">Programação do modo escuro</translation>
 <translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
+<translation id="2277631741861284101">Grave e compartilhe seu áudio com facilidade</translation>
 <translation id="2279051792571591988">Restaurar padrões</translation>
 <translation id="2286454467119466181">Simples</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, acesse <ph name="LINK" /></translation>
@@ -287,6 +294,7 @@
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2418150275289244458">Abrir nas configurações</translation>
 <translation id="2421798028054665193">Imagem <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
+<translation id="242825218556404975">Nenhuma fala detectada</translation>
 <translation id="2446553403094072641">Precisão de pontos flutuantes</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2472215337771558851">Use a opção "Quero ajuda para escrever" para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google</translation>
@@ -330,6 +338,7 @@
 <translation id="2656001153562991489">Exclusivo para Chromebook Plus</translation>
 <translation id="2665671725390405060">Ouvir a pronúncia</translation>
 <translation id="267442004702508783">atualizar</translation>
+<translation id="2675392311492541028">Transcrição e resumo</translation>
 <translation id="268270014981824665">escurecer teclado</translation>
 <translation id="2712812801627182647">Chave de autenticação do TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
@@ -430,6 +439,7 @@
 <translation id="33736539805963175">Plano de fundo <ph name="LETTERS_COLOR" /> com a letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
+<translation id="3410165745972100556">A transcrição está desativada</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
 <translation id="3428551088151258685">ao ar livre</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -475,6 +485,7 @@
 <translation id="3621072146987826699">elefantes</translation>
 <translation id="3632040286124154621">Boa sugestão</translation>
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
+<translation id="3639873154908477486">Nome de A a Z</translation>
 <translation id="3644695927181369554">Não gostou da sugestão</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3661106764436337772">Escreva com mais rapidez e confiança</translation>
@@ -541,6 +552,7 @@
 <translation id="4044093238444069296">Não foi possível entrar em contato com o gateway</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
 <translation id="404928562651467259">AVISO</translation>
+<translation id="4050208988451295487">Algumas opções:</translation>
 <translation id="4054683689023980771">Baixando a imagem</translation>
 <translation id="4063039537646912479">azul-clara</translation>
 <translation id="4070799384363688067">anime</translation>
@@ -569,8 +581,10 @@
 <translation id="4171077696775491955">diminuir brilho</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176659219503619100">Painel de controle</translation>
+<translation id="4193496492959950834">Configurações do Gravador</translation>
 <translation id="4198398257084619072">pandas</translation>
 <translation id="420283545744377356">Desativar o protetor de tela</translation>
+<translation id="4210636113897977670">Salvar e sair</translation>
 <translation id="4210659479607886331">rio glacial</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
@@ -643,6 +657,7 @@
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="463791356324567266">Cancelando a digitalização…</translation>
+<translation id="4644611440022666152">Ativar e baixar</translation>
 <translation id="4646949265910132906">Conexão Wi-Fi segura</translation>
 <translation id="4650608062294027130">Shift da direita</translation>
 <translation id="4654549501020883054">Mudar diariamente</translation>
@@ -733,6 +748,7 @@
 <translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">Atalhos sem a tecla <ph name="META_KEY" /> podem entrar em conflito com o atalho de algum app. Pressione esse atalho novamente para continuar a usá-lo ou pressione um novo atalho usando a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Semelhantes:</translation>
+<translation id="5109744590306245079">O Gravador pode criar transcrições de gravações com fala. Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</translation>
 <translation id="5130848777448318809">pôneis</translation>
 <translation id="5137451382116112100">Tela cheia</translation>
 <translation id="5142961317498132443">Autenticação</translation>
@@ -842,6 +858,7 @@
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5763838252932650682">Reiniciando e atualizando o app <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
+<translation id="5779818640587041940">Manter a tela ligada durante a gravação</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
 <translation id="5790391387506209808">lápis-lazúli</translation>
@@ -916,6 +933,7 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificado do usuário</translation>
+<translation id="6141004321363227868">Com esse recurso ativado, as transcrições instantâneas também vão aparecer durante a gravação.</translation>
 <translation id="6146993107019042706">Para concluir, insira a nova senha</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">bordô e rosa</translation>
@@ -984,6 +1002,7 @@
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Protetor de tela exclusivo para <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Parado (atolamento de papel)</translation>
+<translation id="6490861263572002431">Rolagem automática</translation>
 <translation id="6492891353338939218">desgastado</translation>
 <translation id="6494974875566443634">Personalização</translation>
 <translation id="6500818810472529210">Ver resultados na Pesquisa Google</translation>
@@ -997,6 +1016,7 @@
 <translation id="6543412779435705598">tacos mexicanos</translation>
 <translation id="6551839203326557324">maçãs</translation>
 <translation id="65526652485742171">O botão de confirmação está ativado</translation>
+<translation id="6556016675518580850">Se você sair desta página, a gravação atual será encerrada.</translation>
 <translation id="6557784757915238407">O APN é do tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Scanner de mesa</translation>
 <translation id="6560196641871357166">Vibrante</translation>
@@ -1007,6 +1027,7 @@
 <translation id="6576005492601044801">lado esquerdo</translation>
 <translation id="6579509898032828423">Usar esta foto</translation>
 <translation id="6587870930887634392">suculenta</translation>
+<translation id="6595046262780525922">Ativar a transcrição e baixar o modelo de transcrição?</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6599673642868607614">Agradecemos seu feedback. Seu feedback nos ajuda a melhorar a experiência no Chromebook e vai ser analisado pela nossa equipe. Devido ao grande número de avisos que recebemos, não conseguimos enviar uma resposta.</translation>
 <translation id="6618744767048954150">Em execução</translation>
@@ -1048,6 +1069,8 @@
 <translation id="6798678288485555829">Navegação de texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
+<translation id="6818844233294698434">Detectando fala…</translation>
+<translation id="6837645039518471192">Sair da gravação</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">roxo-clara</translation>
@@ -1087,6 +1110,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="7035168792582749309">batatas</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7040729769968826896">Permitir identificar quem está falando</translation>
 <translation id="7041549558901442110">Dispositivo não conectado.</translation>
 <translation id="7046522406494308071">Redefinir todos os atalhos para os valores padrão?</translation>
 <translation id="7058278511608979688">Concluir e salvar</translation>
@@ -1242,6 +1266,7 @@
 <translation id="7850847810298646851">Plano de fundo com tecnologia de IA do Google</translation>
 <translation id="785170686607360576">tulipa</translation>
 <translation id="7856267634822906833">Tela touchscreen Bluetooth</translation>
+<translation id="7857744683152972248">Permitir que o Gravador identifique quem está falando?</translation>
 <translation id="7859006200041800233">flor de cacto</translation>
 <translation id="7869143217755017858">Desativar o modo escuro</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1274,7 @@
 <translation id="7882501334836096755">Chave pública</translation>
 <translation id="78957024357676568">para a esquerda</translation>
 <translation id="7897043345768902965">caminho</translation>
+<translation id="7902285181767404769">Silenciar notificações durante a gravação</translation>
 <translation id="7903695460270716054">Escolher obras de arte e imagens selecionadas</translation>
 <translation id="7915220255123750251">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet.</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
@@ -1295,6 +1321,8 @@
 <translation id="8156233298086717232">mágica</translation>
 <translation id="8162776280680283326">raposas</translation>
 <translation id="8167413449582155132">Plano de fundo gerado com IA do Google</translation>
+<translation id="8171020708598805594">Crie transcrições automaticamente, receba resumos de gravações usando a IA do Google e pesquise áudio. Crie gravações mesmo quando não tiver uma conexão de Internet.</translation>
+<translation id="8174280683348521982">Excluir a gravação atual?</translation>
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Use a IA do Google para impulsionar sua produtividade</translation>
@@ -1332,6 +1360,9 @@
 <translation id="8372477600026034341">Hosts extras</translation>
 <translation id="8372667721254470022">verde-oliva</translation>
 <translation id="8373046809163484087">Use conjuntos de cores que combinem com o plano de fundo</translation>
+<translation id="8379123594780452422">Quando você ativa esse recurso, o Gravador processa suas gravações de áudio usando análise de áudio avançada.
+
+Você pode desativar essa opção quando quiser nas Configurações.</translation>
 <translation id="8380114448424469341">Fixar janela na metade <ph name="DIRECTION" /> da tela</translation>
 <translation id="8391349326751432483">É necessário ter pelo menos 500 MB livres para executar um teste de memória. Para liberar memória, feche guias e apps.</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerenciado por uma empresa</translation>
@@ -1372,10 +1403,12 @@
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="8626489604350149811">Mais ações para o site <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
+<translation id="8647595191512746911">Transcrição de áudio</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8670057600920888023">A IA generativa é uma tecnologia experimental, e o conteúdo pode ser impreciso, enganoso ou ofensivo.</translation>
 <translation id="8670574982334489519">lado direito</translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
 <translation id="8677859815076891398">Nenhum álbum. Crie um no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -1476,6 +1509,7 @@
 <translation id="9122602430962285795">Para se reconectar, acesse as Configurações</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Salvar várias páginas em um único PDF</translation>
+<translation id="9129549320890412487">Recurso de transcrição</translation>
 <translation id="9133772297793293778">Pressione de uma a quatro modificadoras e mais uma tecla no teclado. Para sair do modo de edição, pressione alt + esc.</translation>
 <translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9138630967333032450">Shift da esquerda</translation>

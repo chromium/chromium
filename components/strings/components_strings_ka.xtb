@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">სიგანეზე მორგება</translation>
 <translation id="1081061862829655580">ლანგარი 19</translation>
 <translation id="1082026381988252344">თქვენი გაზიარებული ჩანართის კონტენტში გადაადგილება და მისი მასშტაბირება</translation>
+<translation id="1088664500620117635">ჩვეულებრივ, <ph name="PRODUCT_NAME" />-ის ფასი არის <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />, მაგრამ ამჟამინდელი ფასი ვებში არის <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">პაროლის შეცვლა</translation>
 <translation id="1090629319939036170">VR მენიუ</translation>
 <translation id="1091779689406092804">ეკრანის ანაბეჭდები</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, შესაძლებელია რამდენიმე მოქმედება, დააჭირეთ Tab-ს მათ სანახავად</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ვირტუალური ბარათის დეტალები</translation>
+<translation id="1803254472779303354">მაუსის ჩაკეტვა დაშვებულია</translation>
 <translation id="1803351196216024260">შეუძლია თქვენი მიკროფონის გამოყენების თხოვნა</translation>
 <translation id="1806174020048213474">ეს აპი ითხოვს ნებართვას, დააინსტალიროს Wi-Fi ავტორიზაციის მონაცემები. დაყენების შემდეგ თქვენი <ph name="DEVICE_TYPE" /> ავტომატურად დაუკავშირდება მონაწილე Wi-Fi ქსელებს. ავტორიზაციის მონაცემების წასაშლელად შეასრულეთ აპის დეინსტალაცია.</translation>
 <translation id="1807246157184219062">ნათელი</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">დაბალფასიანი ვარიანტი</translation>
 <translation id="2702801445560668637">საკითხავი სია</translation>
 <translation id="270415722347413271">ოპტიკური დისკი (მქრქალი)</translation>
+<translation id="2704192696317130398">გსურთ მაუსის ჩაკეტვა?</translation>
 <translation id="2704283930420550640">მნიშვნელობა არ ემთხვევა ფორმატს.</translation>
 <translation id="2704606927547763573">დაკოპირდა</translation>
 <translation id="2705137772291741111">ამ საიტის შენახული (ქეშირებული) ასლის წაკითხვა ვერ მოხერხდა.</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3307649904964670439">ღილაკი Chrome-ის პარამეტრების დაყენება, თქვენი ბრაუზერის იერსახის დასაყენებლად გაააქტიურეთ ის</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
 <translation id="3318016344440038475">სატელევიზიო კომედიები</translation>
+<translation id="3321152582690622182">არ მიმდინარეობს თვალყურის დევნება</translation>
 <translation id="3324687287337751929">4 x 6 დუიმი</translation>
 <translation id="3324983252691184275">ალისფერი</translation>
 <translation id="3325027355611702542">მისაბმელი სახლები და ავტოფურგონები</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">არასწორი URL.</translation>
 <translation id="512592033764059484">ფეხბურთი</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" />, შესაძლოა, ზომას არასათანადოდ იცვლიდეს. გამოიყენეთ ფანჯრის წინასწარ დაყენებული ზომები, რათა თავიდან აიცილოთ აპთან დაკავშირებული პრობლემები.</translation>
+<translation id="512756860033933700">კლავიატურის ჩაკეტვა დაშვებულია</translation>
 <translation id="5127934926273826089">ყვავილები</translation>
 <translation id="5129534298163637277">დადასტურების დიალოგი</translation>
 <translation id="5135404736266831032">მისამართების მართვა…</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">შეიტყვეთ ამ გვერდის წყაროსა და თემის შესახებ</translation>
 <translation id="5179490652562926740">გადახდის დადასტურების პარამეტრები შენახულია</translation>
 <translation id="5179510805599951267">არ არის <ph name="ORIGINAL_LANGUAGE" />-ში? მოახსენეთ ამ შეცდომის შესახებ</translation>
+<translation id="5180662470511508940">კლავიატურის ჩაკეტვა არაა დაშვებული</translation>
 <translation id="5187079891181379721">კორპორაციული ღონისძიებები</translation>
 <translation id="5190072300954988691">კამერასა და მიკროფონზე წვდომა დაუშვებელია</translation>
 <translation id="5190835502935405962">სანიშნეების ზოლი</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">აისახება აქ ჩამოთვლილ საიტებზე. დომენის სახელამდე „[*.]“-ის ჩასმა შექმნის გამონაკლისს მთლიანად დომენისთვის. მაგალითად, „[*.]google.com“-ის დამატება ნიშნავს, რომ მესამე მხარის ქუქი-ჩანაწერები შეიძლება გააქტიურდეს mail.google.com-ისთვისაც, რადგან ის google.com-ის ნაწილია.</translation>
 <translation id="6300452962057769623">{0,plural, =0{თქვენი მოწყობილობა ახლა გადაიტვირთება}=1{თქვენი მოწყობილობა გადაიტვირთება 1 წამში}other{თქვენი მოწყობილობა გადაიტვირთება # წამში}}</translation>
 <translation id="6301104306974789820">შეტყობინებების მიღება თვალმიდევნებულ ფასებთან დაკავშირებით</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" />-ის ნებართვის დეტალების ჩვენება</translation>
 <translation id="6304398603974202180">მულტიმედიური პროგრამული უზრუნველყოფა</translation>
 <translation id="6305205051461490394"><ph name="URL" /> მიუწვდომელია.</translation>
 <translation id="6306713302480826305">ეს მისამართი წაიშლება ამ და სხვა მოწყობილობებიდან, რომლებზეც შესული ხართ სისტემაში</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Bluetooth სკანირება</translation>
 <translation id="6547208576736763147">ორმაგად გახვრეტა მარცხნივ</translation>
 <translation id="6549443526281184652">კოსტიუმები</translation>
+<translation id="6550245281449521513">მაუსის ჩაკეტვა არაა დაშვებული</translation>
 <translation id="6551873053534932690">გსურთ, შეინახოთ მისამართი ანგარიშში?</translation>
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="6556866813142980365">გამეორება</translation>
@@ -3832,6 +3840,7 @@
 <translation id="8278544367771164040">ბიზნესსესხები</translation>
 <translation id="8279290844152565425">კონცერტები და მუსიკალური ფესტივალები</translation>
 <translation id="8279611986089885641">Chrome-ში შეტყობინებების მიღება ჩართული უნდა იყოს. მათი ჩართვა შეგიძლიათ სექციიდან „<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />“.</translation>
+<translation id="8280387559022105172">გსურთ თქვენი კლავიატურის ჩაკეტვა?</translation>
 <translation id="8280630997017109758">ლანგარი 11</translation>
 <translation id="8281730697546299650">რეკლამების კონფიდენციალურობის სხვა ფუნქციები უკვე ხელმისაწვდომია</translation>
 <translation id="8281886186245836920">გამოტოვება</translation>
@@ -4304,6 +4313,7 @@
 <translation id="9191834167571392248">ქვედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="9192361865877479444">ლითონი (მქრქალი)</translation>
 <translation id="9192947025498305328">სუფთა სილამაზე</translation>
+<translation id="919455784772793601">გახსენით გვერდი, რომელზეც ნაჩვენებია სხვა მაღაზიები, სადაც იყიდება აღნიშნული პროდუქტი.</translation>
 <translation id="9199905725844810519">ბეჭდვა დაბლოკილია</translation>
 <translation id="9205078245616868884">თქვენი მონაცემები დაშიფრულია სინქრონიზაციის საიდუმლო ფრაზის მეშვეობით. სინქრონიზაციის დასაწყებად, შეიყვანეთ საიდუმლო ფრაზა.</translation>
 <translation id="920643408853370361">სამოგზაურო დაზღვევა</translation>

@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622717322707146952">Selecciona Engadir a Google Calendar ou Engadir a Apple Calendar.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contrasinais reutilizados</translation>
+<translation id="1636234353664774105">Obter indicacións paso a paso ata o teu destino mediante a función de navegación</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2062410130322589403">Unha guía das túas opcións de privacidade</translation>
 <translation id="20638360198452347">Selector do tipo de unidade</translation>
+<translation id="2067852168641682340">Gardar sempre nesta conta</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2078437078822043850">Podes desprazarte cara á dereita para navegar no modo de incógnito.</translation>
@@ -313,6 +315,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="261739049332372104">Para recibir información actualizada sobre o contido que che interesa, activa as notificacións na configuración de iOS.</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
 <translation id="2626236249646841566">Comproba a túa conexión e tenta iniciar sesión de novo.</translation>
+<translation id="2635918910848538771">Autocompletar o CVC</translation>
 <translation id="2637313651144986786">Busca nas pestanas…</translation>
 <translation id="2640733327287333451">Sen nome de usuario ••••••••</translation>
 <translation id="2648721026697078500">Non mover nunca</translation>
@@ -496,6 +499,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3533202363250687977">Pechar todas as pestanas do modo de incógnito</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
+<translation id="3547356470684043247">Ler as avaliacións dos clientes sobre produtos, servizos ou experiencias para poder tomar decisións fundadas</translation>
 <translation id="355101282835380364">Gardar na conta…</translation>
 <translation id="3551320343578183772">Pechar pestana</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4659194143325814340">{count,plural, =1{{count} páxina na túa lista de lectura}other{{count} páxinas na túa lista de lectura}}</translation>
 <translation id="4659667755519643272">Entrar no selector de pestanas</translation>
 <translation id="46614316059270592">Gardar contrasinal</translation>
+<translation id="467189612236587057">Contactar cunha empresa iniciando unha chamada telefónica</translation>
 <translation id="4682686630151240767">1. Abre a configuración do iPhone</translation>
 <translation id="4689564913179979534">Xestionar métodos de pago...</translation>
 <translation id="469300482518076788">Pechar pestana</translation>

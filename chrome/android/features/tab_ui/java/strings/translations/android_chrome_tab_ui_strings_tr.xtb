@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli sekme grubunu kapatın.}}</translation>
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Sekmeyi geri yükle}other{Sekmeleri geri yükle}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> bağlantı}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> bağlantı}}</translation>
 <translation id="575494663145460764">Fiyat düşüşü uyarıları alınsın mı?</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>

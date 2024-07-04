@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, <ph name="CONNECTION_STATUS" /> सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3691184985318546178">सिंहली</translation>
+<translation id="3702842351052426940">तुमचे सिम कार्ड किंवा eSIM प्रोफाइल कदाचित डीअ‍ॅक्टिव्हेट केली गेली असू शकते. तुमचे सिम कार्ड बदलून किंवा eSIM प्रोफाइल स्विच करून पहा.</translation>
 <translation id="3722341589402358578">एरर आली. काही आयटम कदाचित ट्रॅश केले नसतील.</translation>
 <translation id="3726463242007121105">हे डिव्हाइस उघडले जाऊ शकत नाही, कारण त्याच्या फाइलसिस्टीमला सपोर्ट नाही.</translation>
 <translation id="3727148787322499904">हे सेटिंग बदलल्याने सर्व शेअर केलेले नेटवर्क प्रभावित होतील</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">या प्रॉक्सीची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते</translation>
 <translation id="3830674330436234648">प्लेबॅक उपलब्ध नाही</translation>
 <translation id="383652340667548381">सर्बियन</translation>
+<translation id="3839045880592694915">तुमच्या वाहकाने तुमच्या मोडेमला कनेक्ट केले जाण्यास अनुमती दिलेली नाही. अधिक तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="3855472144336161447">जर्मन निओ 2</translation>
 <translation id="3858860766373142691">नाव</translation>
@@ -684,6 +686,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करा</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" मध्ये पुरेशी जागा नसल्यामुळे फाइल अपलोड केल्या जाऊ शकत नाहीत.</translation>
+<translation id="6279140785485544797">तुमचा मोबाइल डेटा प्लॅन कदाचित एक्स्पायर झाला असेल. सपोर्टसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="6287852322318138013">ही फाईल उघडण्यासाठी ॲप निवडा</translation>
 <translation id="6295542640242147836">सिम लॉक करा</translation>
 <translation id="6296410173147755564">चुकीचा PUK</translation>

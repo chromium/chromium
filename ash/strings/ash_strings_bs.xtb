@@ -97,7 +97,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Otvorite aplikaciju Istražite</translation>
-<translation id="129469256578833241">Natrag na sažetak</translation>
+<translation id="129469256578833241">Nazad na sažetak</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pritisnite <ph name="LAUNCHER_KEY_NAME" /> + g bilo kada</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
@@ -258,7 +258,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1925320505152357008">manje od 1 min</translation>
 <translation id="1928739107511554905">Da primate ažuriranja pomoću ekrana na dodir, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
-<translation id="1929331825127010451">Natrag na pitanje</translation>
+<translation id="1929331825127010451">Nazad na pitanje</translation>
 <translation id="1948405482892809935">Prebacite se na sljedećeg korisnika</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">Snimanje ekrana je završeno</translation>
@@ -1419,7 +1419,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6147182561428020853">Sada možete blokirati aplikacije instalirane na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
-<translation id="6158923546703693047">Podaci o izvoru sadržaja</translation>
+<translation id="6158923546703693047">Informacije o izvoru sadržaja</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
 <translation id="616543563528926612">Prečica desnog klika je ažurirana iz tipke <ph name="LAUNCHER_KEY_NAME" /> i klik u Alt i klik</translation>
 <translation id="6165508094623778733">Saznajte više</translation>

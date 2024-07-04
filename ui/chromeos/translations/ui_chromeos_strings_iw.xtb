@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">ביטול <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, <ph name="CONNECTION_STATUS" />, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="3691184985318546178">סינהאלה</translation>
+<translation id="3702842351052426940">‏יכול להיות שכרטיס ה-SIM או פרופיל ה-eSIM שלך יושבתו. אפשר לנסות להחליף את כרטיס ה-SIM או להחליף פרופיל eSIM.</translation>
 <translation id="3722341589402358578">אירעה שגיאה. ייתכן שפריטים מסוימים לא הועברו לאשפה.</translation>
 <translation id="3726463242007121105">לא ניתן לפתוח מכשיר זה מאחר שמערכת הקבצים שלו אינה נתמכת.</translation>
 <translation id="3727148787322499904">שינוי של הגדרה זו ישפיע על כל הרשתות המשותפות</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">‏שרת ה-proxy הזה נאכף על ידי מנהל המערכת</translation>
 <translation id="3830674330436234648">לא ניתן להפעיל</translation>
 <translation id="383652340667548381">סרבית</translation>
+<translation id="3839045880592694915">למודם אין הרשאה להתחבר לספק שלך. למידע נוסף, אפשר לפנות לספק.</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3855472144336161447">‏גרמנית - Neo 2</translation>
 <translation id="3858860766373142691">שם</translation>
@@ -685,6 +687,7 @@
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>
 <translation id="6271903698064569429">לא ניתן להעלות קבצים כי אין מספיק מקום באחסון השיתופי '<ph name="SHARED_DRIVE_NAME" />'.</translation>
+<translation id="6279140785485544797">יכול להיות שתוקף חבילת הגלישה שלך פג. אפשר לפנות לספק לקבלת תמיכה.</translation>
 <translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
 <translation id="6295542640242147836">‏נעילת כרטיס ה-SIM</translation>
 <translation id="6296410173147755564">‏ה-PUK לא תקין</translation>

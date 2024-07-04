@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">'શોધખોળ કરો' ખોલો</translation>
+<translation id="129469256578833241">સારાંશ પર પાછા ફરો</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">કોઈપણ સમયે <ph name="LAUNCHER_KEY_NAME" /> + g દબાવો</translation>
 <translation id="1306549533752902673">ભલામણ કરેલ ઍપ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">ઑટોમૅટિક રીતે ક્લિક</translation>
 <translation id="1925320505152357008">1 મિનિટ કરતાં ઓછો સમય</translation>
 <translation id="1928739107511554905">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરવા માટે ટચસ્કીનનો ઉપયોગ કરો.</translation>
+<translation id="1929331825127010451">પ્રશ્ન પર પાછા ફરો</translation>
 <translation id="1948405482892809935">આગલા વપરાશકર્તા પર સ્વિચ કરો</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">સ્ક્રીન રેકોર્ડિંગ પૂર્ણ થયું</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">લૉન્ચર ખોલો/બંધ કરો</translation>
 <translation id="5240725217819182328">ચોક્કસ પેજનો કે ઇન્સ્ટૉલ કરેલી ઍપની ક્રિયાઓનો ઝડપી ઍક્સેસ</translation>
 <translation id="5245201184978705914">ટ્રાન્સક્રિપ્ટ જનરેટ કરી શકાતી નથી</translation>
+<translation id="5251174953851719648">કન્ટેન્ટ રિફ્રેશ કરો</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> નામના <ph name="BATTERY_PERCENTAGE" />% બૅટરી ધરાવતા ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
 <translation id="5260676007519551770">ડેસ્ક 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">તમે હવે આ <ph name="DEVICE_TYPE" /> પર ઇન્સ્ટૉલ કરેલી ઍપને બ્લૉક કરી શકો છો</translation>
 <translation id="6154006699632741460">પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="6156960295318603523">ભાષા સેટિંગ્સ</translation>
+<translation id="6158923546703693047">કન્ટેન્ટના સૉર્સની માહિતી</translation>
 <translation id="615957422585914272">ઑન-સ્ક્રીન કીબોર્ડ બતાવો</translation>
 <translation id="616543563528926612">રાઇટ ક્લિક શૉર્ટકટને Alt + <ph name="LAUNCHER_KEY_NAME" /> કીની ક્લિક + ક્લિક પર અપડેટ કરવામાં આવ્યો છે</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">ચાલુ કરી રહ્યાં છીએ…</translation>
 <translation id="8331351032546853669">ડાઉનલોડ બાકી</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">કોઈ પ્રશ્ન પૂછો.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">ખરાબ આઉટપુટ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> વિન્ડો પસંદ કરી</translation>

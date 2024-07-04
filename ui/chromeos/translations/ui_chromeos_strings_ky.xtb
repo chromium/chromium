@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="3691184985318546178">Сингалча</translation>
+<translation id="3702842351052426940">SIM картаңыз же eSIM профилиңиз өчүрүлгөн болушу мүмкүн. SIM картаңызды алмаштырып же eSIM профилдерин которуштуруп көрүңүз.</translation>
 <translation id="3722341589402358578">Ката кетти. Айрым нерселер өчүрүлбөй калган болушу мүмкүн.</translation>
 <translation id="3726463242007121105">Бул түзмөктүн файл тутуму колдоого алынбагандыктан, ал ачылбайт.</translation>
 <translation id="3727148787322499904">Бул параметр өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Бул проксини администраторуңуз күчүнө киргизген</translation>
 <translation id="3830674330436234648">Ойното турган нерсе жок</translation>
 <translation id="383652340667548381">Сербче</translation>
+<translation id="3839045880592694915">Байланыш оператору модемге тууташууга уруксат бербейт. Көбүрөөк маалымат алуу үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Аталышы</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
 <translation id="6269630227984243955">Малайча</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" бөлүмүндө орун жетишсиз болгондуктан, файлдарды жүктөөгө болбойт.</translation>
+<translation id="6279140785485544797">Мобилдик трафигиңиздин мөөнөтү бүтүп калган болушу мүмкүн. Жардам алуу үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="6287852322318138013">Бул файлды ачуу үчүн колдонмо тандаңыз</translation>
 <translation id="6295542640242147836">SIM картаны кулпулоо</translation>
 <translation id="6296410173147755564">PUK туура эмес</translation>

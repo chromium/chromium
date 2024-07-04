@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Kanselleer <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; <ph name="CONNECTION_STATUS" />; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
 <translation id="3691184985318546178">Singalees</translation>
+<translation id="3702842351052426940">Jou SIM-kaart of e-SIM-profiel is moontlik gedeaktiveer. Probeer om jou SIM-kaart te vervang of om e-SIM-profiele te ruil.</translation>
 <translation id="3722341589402358578">’n Fout het voorgekom. Sommige items is dalk nie na die asblik toe geskuif nie.</translation>
 <translation id="3726463242007121105">Hierdie toestel kan nie oopgemaak word nie want sy lêerstelsel word nie gesteun nie.</translation>
 <translation id="3727148787322499904">As hierdie instelling verander word, sal dit alle gedeelde netwerke raak</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Hierdie instaanbediener word deur jou administrateur afgedwing</translation>
 <translation id="3830674330436234648">Geen terugspeel beskikbaar nie</translation>
 <translation id="383652340667548381">Serwies</translation>
+<translation id="3839045880592694915">Jou diensverskaffer laat nie toe dat jou modem verbind nie. Kontak jou diensverskaffer vir meer besonderhede.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3855472144336161447">Duitse Neo 2</translation>
 <translation id="3858860766373142691">Naam</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6271903698064569429">Lêers kan nie opgelaai word nie omdat “<ph name="SHARED_DRIVE_NAME" />” nie genoeg bergingspasie het nie.</translation>
+<translation id="6279140785485544797">Jou mobieldatapakket het moontlik verval. Kontak jou diensverskaffer vir steun.</translation>
 <translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
 <translation id="6295542640242147836">Sluit SIM</translation>
 <translation id="6296410173147755564">Ongeldige PUK</translation>

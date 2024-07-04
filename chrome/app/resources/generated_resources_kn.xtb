@@ -448,6 +448,7 @@
 <translation id="1317637799698924700">USB ಟೈಪ್-C ಗೆ ಹೊಂದಾಣಿಕೆಯಾಗುವ ಮೋಡ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಡಾಕಿಂಗ್ ಸ್ಟೇಶನ್ ಕೆಲಸ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> ಉಪಪುಟದ ಹಿಂದೆ ಬಟನ್</translation>
 <translation id="1322046419516468189">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="SAVED_PASSWORDS_STORE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos ಟಿಕೆಟ್‌ಗಳು</translation>
 <translation id="1327495825214193325">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="1327527584824210101">ನಿಮ್ಮ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
@@ -2513,6 +2514,7 @@
 <translation id="2783298271312924866">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀ ಬಳಸಿ</translation>
 <translation id="2785267875302712148">ಪಾಸ್‌ವರ್ಡ್ ಪರಿಶೀಲನೆ</translation>
+<translation id="2785279781154577715">ಟ್ಯಾಬ್ ಹೋವರ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಕಾರ್ಡ್ ನೋಟ</translation>
 <translation id="2785873697295365461">ಫೈಲ್ ವಿವರಣೆಗಳು</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -3631,7 +3633,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ಉಳಿದಿದೆ</translation>
 <translation id="3636940436873918441">ಆದ್ಯತೆಯ ಭಾಷೆಗಳು</translation>
 <translation id="3637203148990213388">ಹೆಚ್ಚುವರಿ ಖಾತೆಗಳು</translation>
-<translation id="3640214691812501263"><ph name="USER_NAME" /> ಬಳಕೆದಾರರಿಗೆ "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯನ್ನು ಸೇರಿಸುವುದೇ?</translation>
 <translation id="3640347231390550691">ಫಿಶಿಂಗ್ ದಾಳಿಯಿಂದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
 <translation id="3640613767643722554">ನಿಮ್ಮ Assistant ಗೆ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ಗುರುತಿಸಲು ಕಲಿಸಿ</translation>
 <translation id="364100968401221170">ಸಿಂಕ್ ಮಾಡಿರುವ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳು ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲು, <ph name="BEGIN_LINK" />ಸೈನ್ ಇನ್<ph name="END_LINK" /> ಮಾಡಿ.</translation>
@@ -3994,6 +3995,7 @@
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ಅನ್ನು ಹೊಸ ಬ್ರೌಸರ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಹೊಂದಿಸಲಾಗಿದೆ. ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ಸಹ ತೆರೆಯುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">ವಿಂಡೋಗಳನ್ನು ಮೇಲಕ್ಕೆ ಮರುಗಾತ್ರಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> ಖಾತೆಯ ಅಡಿಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿರುವ <ph name="USER_NAME" /> ಅವರ ಸಾಧನಕ್ಕಾಗಿ Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
+<translation id="3877209288227498506">ಟ್ಯಾಬ್ ಹೋವರ್ ಪೂರ್ವವೀಕ್ಷಣೆ ಕಾರ್ಡ್‌ನಲ್ಲಿ ಮೆಮೊರಿ ಬಳಕೆ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ತೋರಿಸಲು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3878445208930547646">ಈ ಸೈಟ್‌ನಿಂದ ಕಾಪಿ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="3880513902716032002">ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳು ಪ್ರಿಲೋಡ್ ಆಗುತ್ತವೆ</translation>
@@ -4095,6 +4097,7 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವುದನ್ನು ಸುರಕ್ಷಿತವಾಗಿಸಲು</translation>
 <translation id="3950820424414687140">ಸೈನ್ ಇನ್</translation>
 <translation id="3950841222883198950">ಧ್ವನಿ ಟೈಪಿಂಗ್</translation>
+<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.<ph name="END_LINK" />}one{ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.<ph name="END_LINK" />}other{ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬೆಂಬಲಿತ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">ನನ್ನ ಖಾತೆಗಳು</translation>
 <translation id="3954354850384043518">ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="3954468641195530330">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಆ್ಯಪ್‌ಗಳನ್ನು ಅನುಮತಿಸಿಲ್ಲ</translation>
@@ -4663,6 +4666,7 @@
 <translation id="438503109373656455">ಸರಾಟೊಗಾ</translation>
 <translation id="4385146930797718821">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="4385905942116811558">ಬ್ಲೂಟೂತ್ ಮತ್ತು USB ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಏಕೆಂದರೆ ಇದು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ}one{ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಏಕೆಂದರೆ ಇವುಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ}other{ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಏಕೆಂದರೆ ಇವುಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ}}</translation>
 <translation id="4386604394450371010">ಅವಲೋಕನ</translation>
 <translation id="4387890294700445764">ಅಪಾಯಕ್ಕೀಡಾಗಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="4388650384344483842">ಕನಿಷ್ಠ 8 ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ</translation>
@@ -5247,6 +5251,7 @@
 <translation id="4830502475412647084">OS ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4831226137013573603">ಮೈಕ್ರೊಫೋನ್‌ ಮ್ಯೂಟ್</translation>
 <translation id="4833683849865011483">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನ 1 ಪ್ರಿಂಟರ್‌ ಕಂಡುಬಂದಿದೆ</translation>
+<translation id="4835677468087803981">ಪಿನ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4836504898754963407">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌‍ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4837128290434901661">Google Search ಗೆ ಹಿಂತಿರುಗಿ ಬದಲಿಸುವುದೇ?</translation>
 <translation id="4837926214103741331">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ಸಾಧನ ಮಾಲೀಕನನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -5588,6 +5593,7 @@
 <translation id="5088534251099454936">RSA ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ನೊಂದಿಗೆ PKCS #1 SHA-512</translation>
 <translation id="5089763948477033443">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಮರುಗಾತ್ರಗೊಳಿಸುವ ಹ್ಯಾಂಡಲ್</translation>
 <translation id="5090637338841444533">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಸ್ಥಾನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
+<translation id="5091636240353511739">ಪಿನ್ ತೋರಿಸಿ</translation>
 <translation id="5093477827231450397">ಇತರ ಸೈಟ್‌ಗಳಿಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸಬಾರದು ಎಂದು ನೀವು ಬಯಸುವ, ನೀವು ನಿರ್ಬಂಧಿಸಿರುವ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ</translation>
 <translation id="5093569275467863761">ಅಜ್ಞಾತ ಬ್ಯಾಕ್-ಫಾರ್ವರ್ಡ್ ಕ್ಯಾಷ್ ಮಾಡಿದ ಸಬ್-ಫ್ರೇಮ್: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files ಅಥವಾ ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿರುವ ಈ ಆ್ಯಪ್ ಬಳಸಿಕೊಂಡು ನೀವು ಬೆಂಬಲಿತ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬಹುದು ಮತ್ತು ಎಡಿಟ್ ಮಾಡಬಹುದು. ಈ ಆ್ಯಪ್ ಡೀಫಾಲ್ಟ್ ಆಗಿ ಯಾವ ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಬೇಕು ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಲು, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡುವುದು ಹೇಗೆ ಎಂಬುದರ ಕುರಿತು ತಿಳಿಯಿರಿ<ph name="END_LINK" />.</translation>
@@ -5770,6 +5776,7 @@
 <translation id="5225324770654022472">ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸು</translation>
 <translation id="52254442782792731">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಇನ್ನೂ ಹೊಂದಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5225463052809312700">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಿ</translation>
+<translation id="5226514125747186">ಸೈಟ್ ಐಕಾನ್‌ಗಳ ಸುತ್ತಲೂ ಚುಕ್ಕೆಗಳ ವೃತ್ತವು ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತದೆ. <ph name="BEGIN_LINK" />ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸಲು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಯಿಲ್ಲ</translation>
 <translation id="5227679487546032910">ಡಿಫಾಲ್ಟ್ ಕೆನ್ನೀಲಿ ಅವತಾರ್</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> ಸಾಧನಗಳನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -6354,6 +6361,7 @@
 <translation id="5651308944918885595">Nearby ಶೇರ್ ಪರಿಶೋಧಿಸುವಿಕೆ</translation>
 <translation id="5653154844073528838">ನೀವು <ph name="PRINTER_COUNT" /> ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಉಳಿಸಿದ್ದೀರಿ.</translation>
 <translation id="5654669866168491665">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸುವಾಗ ಕಾರ್ಯನಿರ್ವಹಿಸದಿರುವ ಸೈಟ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="5654751240928365405">ಈ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ ಏಕೆಂದರೆ ಇದು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಸೈಟ್‌ನಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}one{ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಕೆಲವು ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}other{ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಕೆಲವು ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ}}</translation>
 <translation id="565515993087783098">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಮರೆಯುವ ಮೂಲಕ ನೀವು Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಮತ್ತು ಅದರ ಸಂಬಂಧಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸಹ ತೆಗೆದುಹಾಕುತ್ತೀರಿ.</translation>
 <translation id="5655296450510165335">ಸಾಧನದ ನೋಂದಣಿ</translation>
@@ -6725,6 +6733,7 @@
 <translation id="5938002010494270685">ಸುರಕ್ಷತಾ ಅಪ್‌ಗ್ರೇಡ್‌‌ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="5939719276406088041">ಶಾರ್ಟ್‌ಕಟ್ ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="5939723110967488589">ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ ಯಾವ ಬಟನ್‌ಗಳನ್ನು ತೋರಿಸಬೇಕು ಎಂಬುದನ್ನು ಆರಿಸಿ</translation>
 <translation id="594048410531370124">ಗುರುತಿಸದ ಕೀ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="5941153596444580863">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ...</translation>
 <translation id="5941343993301164315">ದಯವಿಟ್ಟು <ph name="TOKEN_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -7589,6 +7598,7 @@
 <translation id="6597324406048772521">ಈ ಸೈಟ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="6597331566371766302">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಕೆಳಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ:</translation>
 <translation id="659894938503552850">ಹೊಚ್ಚ ಹೊಸತು</translation>
+<translation id="6600016381025017075">ಈ ಪುಟದಲ್ಲಿ ಯಾವುದನ್ನಾದರೂ ಹುಡುಕಿ</translation>
 <translation id="6601262427770154296">ಬಳಕೆದಾರ ನಿಘಂಟುಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6602173570135186741">ಆಟೋಫಿಲ್ ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="6602336931411102724">ಬುಕ್‌ಮಾರ್ಕ್ ಪಟ್ಟಿಯಲ್ಲಿ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -8253,6 +8263,7 @@
 <translation id="7089253021944603172">ಟ್ಯಾಬ್ ಮತ್ತೆ ಸಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="7090160970140261931">ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಜೊತೆ ಬಳಸಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ನೀವು ಹೆಚ್ಚುವರಿ ಖಾತೆಗಳನ್ನು ಸೇರಿಸಬಹುದು. Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಜೊತೆ ಯಾವ ಖಾತೆಗಳನ್ನು ಬಳಸಲಾಗಿದೆ ಎಂಬುದನ್ನು ಸಹ ನೀವು ನಿಯಂತ್ರಿಸಬಹುದು.</translation>
 <translation id="7090714929377281710">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
+<translation id="7092504544229909737">Android ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7093220653036489319">ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
 <translation id="7093866338626856921">ಈ ಹೆಸರಿನ ಸಾಧನಗಳೊಂದಿಗೆ ಡೇಟಾ ವಿನಿಮಯ ಮಾಡಿ: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿ ಎಡ ಪೋರ್ಟ್‌)</translation>
@@ -9738,6 +9749,7 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8184318863960255706">ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="8184472985242519288">ಏಕರೂಪ</translation>
+<translation id="8186013737729037962">ಎಂಟರ್‌ಪ್ರೈಸ್-ನೋಂದಣಿ ಮಾಡಿದ ಸಾಧನಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8186047833733689201">ಉಚ್ಚಾರಣೆಯ ಗುರುತುಗಳ ಮೆನು ತೆರೆಯಲಾಗಿದೆ. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಎಡ, ಬಲ ಅಥವಾ ಸಂಖ್ಯೆಯ ಕೀಗಳನ್ನು ಒತ್ತಿ ಮತ್ತು ಸೇರಿಸಲು Enter ಕೀ ಒತ್ತಿ.</translation>
 <translation id="8186609076106987817">ಸರ್ವರ್‌ಗೆ ಫೈಲ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="8188389033983459049">ನಿಮ್ಮ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>

@@ -97,6 +97,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Buksan ang Explore</translation>
+<translation id="129469256578833241">Bumalik sa buod</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pindutin ang <ph name="LAUNCHER_KEY_NAME" /> + g sa anumang oras</translation>
 <translation id="1306549533752902673">MGA INIREREKOMENDANG APP</translation>
@@ -257,6 +258,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1925320505152357008">wala pang 1 min</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
+<translation id="1929331825127010451">Bumalik sa tanong</translation>
 <translation id="1948405482892809935">Lumipat sa susunod na user</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Tapos na ang pag-record ng screen</translation>
@@ -1152,6 +1154,7 @@ Puwede mo ring gamitin ang keyboard shortcut. Una, i-highlight ang text, at pagk
 <translation id="5238719049014159442">Buksan/isara ang Launcher</translation>
 <translation id="5240725217819182328">Mabilis na pag-access sa mga partikular na page o pagkilos sa mga naka-install na app</translation>
 <translation id="5245201184978705914">Hindi makabuo ng transcript</translation>
+<translation id="5251174953851719648">I-refresh ang content</translation>
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
@@ -1416,6 +1419,7 @@ Walang nakakonektang device.</translation>
 <translation id="6147182561428020853">Puwede ka na ngayong mag-block ng mga app na naka-install sa <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="6154006699632741460">Hindi sinusuportahan ang peripheral</translation>
 <translation id="6156960295318603523">Mga Setting ng Wika</translation>
+<translation id="6158923546703693047">Impormasyon ng source ng content</translation>
 <translation id="615957422585914272">Ipakita ang on-screen na keyboard</translation>
 <translation id="616543563528926612">Na-update ang shortcut sa pag-right click sa alt + click mula sa dating <ph name="LAUNCHER_KEY_NAME" /> key + click</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
@@ -1999,6 +2003,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8315514906653279104">Ino-on...</translation>
 <translation id="8331351032546853669">Nakabinbin ang pag-download</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Magtanong.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Hindi magandang output</translation>
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>

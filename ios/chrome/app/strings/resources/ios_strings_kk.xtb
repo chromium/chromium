@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">"Google Calendar жүйесіне қосу" немесе "Apple Calendar жүйесіне қосу" параметрін таңдаңыз.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> бұрын қолданылған құпия сөз</translation>
+<translation id="1636234353664774105">Навигация функциясынан баратын жердің бағыты туралы қадамдық нұсқау алу</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641316430523156212">Жазылу</translation>
 <translation id="1644574205037202324">Тарих</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Қала әкімшілігі</translation>
 <translation id="2062410130322589403">Құпиялық параметрлерінің нұсқаулығы</translation>
 <translation id="20638360198452347">Өлшем бірлігі түрін таңдау құралы</translation>
+<translation id="2067852168641682340">Үнемі осы аккаунтқа сақтау</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> күн бұрын қосылған.</translation>
 <translation id="2074131957428911366">Синхрондалатын контентті кез келген уақытта <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде таңдай аласыз.</translation>
 <translation id="2078437078822043850">Браузерді инкогнито режимінде пайдалану үшін оңға айналдырсаңыз болады.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Өзіңізге ұнайтын контент туралы жаңалықтар алып отыру үшін iOS параметрлерінде хабарландыруларды қосыңыз.</translation>
 <translation id="2625189173221582860">Құпия сөз көшірілді</translation>
 <translation id="2626236249646841566">Байланысты тексеріп, қайта кіріп көріңіз.</translation>
+<translation id="2635918910848538771">CVC кодын автотолтыру</translation>
 <translation id="2637313651144986786">Қойындыларды іздеу...</translation>
 <translation id="2640733327287333451">Пайдаланушы аты жоқ ••••••</translation>
 <translation id="2648721026697078500">Ешқашан жылжытпау</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Барлық инкогнито қойындыларын жабу</translation>
 <translation id="3533436815740441613">Жаңа қойынды</translation>
 <translation id="3540141921715814660">Бетбелгілерге қосу</translation>
+<translation id="3547356470684043247">Пікірлерге сүйене отырып шешім қабылдау үшін клиенттердің өнімдер, қызметтер не тәжірибе туралы берген бағаларын оқу</translation>
 <translation id="355101282835380364">Аккаунтқа сақталып жатыр…</translation>
 <translation id="3551320343578183772">Қойындыны жабу</translation>
 <translation id="3565930036634619844">Қойынды. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{Оқу тізіміндегі {count} бет}other{Оқу тізіміндегі {count} бет}}</translation>
 <translation id="4659667755519643272">Tab Switcher енгізу</translation>
 <translation id="46614316059270592">Құпия сөзді сақтау</translation>
+<translation id="467189612236587057">Компанияға қоңырау шалу</translation>
 <translation id="4682686630151240767">1. iPhone параметрлерін ашыңыз.</translation>
 <translation id="4689564913179979534">Төлеу әдістерін басқару…</translation>
 <translation id="469300482518076788">Қойындыны жабу</translation>

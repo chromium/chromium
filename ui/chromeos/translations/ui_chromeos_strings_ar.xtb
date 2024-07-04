@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعّلة، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3691184985318546178">السنهالية</translation>
+<translation id="3702842351052426940">‏يُحتمل أنّه تم إيقاف شريحة SIM أو ملف تعريف الشريحة الإلكترونية. ننصحك باستبدال شريحة SIM أو تبديل ملفات تعريف الشريحة الإلكترونية.</translation>
 <translation id="3722341589402358578">حدث خطأ. ومن المحتمّل أنّ بعض الملفات لم يتم إرسالها إلى المهملات.</translation>
 <translation id="3726463242007121105">لا يمكن فتح الجهاز لأن نظام الملفات غير متوافق.</translation>
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">تم فرض هذا الخادم الوكيل بواسطة المشرف</translation>
 <translation id="3830674330436234648">لا تتوفر أي عملية تشغيل</translation>
 <translation id="383652340667548381">الصربية</translation>
+<translation id="3839045880592694915">لا يسمح مشغّل شبكة الجوّال بالاتصال بشبكة الإنترنت باستخدام المودم. ننصحك بالتواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من التفاصيل.</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3855472144336161447">‏الألمانية Neo 2</translation>
 <translation id="3858860766373142691">الاسم</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف <ph name="PHONE_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
 <translation id="6269630227984243955">الملايوية</translation>
 <translation id="6271903698064569429">يتعذّر تحميل الملفات بسبب عدم توفُّر مساحة تخزين كافية في "<ph name="SHARED_DRIVE_NAME" />".</translation>
+<translation id="6279140785485544797">يُحتمل أنّ صلاحية خطة بيانات الجوّال انتهت. ننصحك بالتواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="6287852322318138013">حدد تطبيقًا لفتح هذا الملف من خلاله</translation>
 <translation id="6295542640242147836">‏قفل شريحة SIM</translation>
 <translation id="6296410173147755564">‏رمز PUK غير صالح.</translation>

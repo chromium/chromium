@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Prekliči: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">singalščina</translation>
+<translation id="3702842351052426940">Kartica SIM ali profil za e-SIM bo morda deaktivirana oziroma deaktiviran. Poskusite zamenjati kartico SIM ali preklopiti profil za e-SIM.</translation>
 <translation id="3722341589402358578">Prišlo je do napake. Nekateri elementi morda niso premaknjeni v smetnjak.</translation>
 <translation id="3726463242007121105">Naprave ni mogoče odpreti, ker njen datotečni sistem ni podprt.</translation>
 <translation id="3727148787322499904">Sprememba te nastavitve vpliva na vsa omrežja v skupni rabi</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Ta strežnik proxy je uveljavil skrbnik</translation>
 <translation id="3830674330436234648">Predvajanje ni na voljo</translation>
 <translation id="383652340667548381">srbščina</translation>
+<translation id="3839045880592694915">Operater ne dovoljuje povezave modema. Za več podrobnosti se obrnite na operaterja.</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3855472144336161447">nemščina (Neo 2)</translation>
 <translation id="3858860766373142691">Ime</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, vzpostavitev povezave</translation>
 <translation id="6269630227984243955">malajščina</translation>
 <translation id="6271903698064569429">Datotek ni mogoče naložiti, ker v disku »<ph name="SHARED_DRIVE_NAME" />« ni dovolj prostora za shranjevanje.</translation>
+<translation id="6279140785485544797">Vaš paket za prenos podatkov v mobilnem omrežju je morda potekel. Za podporo se obrnite na operaterja.</translation>
 <translation id="6287852322318138013">Izberite aplikacijo za odpiranje te datoteke</translation>
 <translation id="6295542640242147836">Zaklepanje kartice SIM</translation>
 <translation id="6296410173147755564">Neveljavna koda PUK</translation>

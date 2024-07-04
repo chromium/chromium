@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ને રદ કરો.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, <ph name="CONNECTION_STATUS" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="3691184985318546178">સિંહાલા</translation>
+<translation id="3702842351052426940">તમારું સિમ કાર્ડ કે ઇ-સિમ પ્રોફાઇલ કદાચ નિષ્ક્રિય કરવામાં આવી હોય. તમારું સિમ કાર્ડ બદલવાનો અથવા ઇ-સિમ પ્રોફાઇલ સ્વિચ કરવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="3722341589402358578">ભૂલ આવી. અમુક આઇટમને ટ્રેશમાં ન મોકલી હોઈ તેવું બની શકે.</translation>
 <translation id="3726463242007121105">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમને સપોર્ટ નથી.</translation>
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">આ પ્રૉક્સી તમારા એડમિન દ્વારા લાગુ કરવામાં આવે છે</translation>
 <translation id="3830674330436234648">કોઇ પ્લેબેક ઉપલબ્ધ નથી.</translation>
 <translation id="383652340667548381">સર્બિયન</translation>
+<translation id="3839045880592694915">તમારા મોબાઇલ ઑપરેટર દ્વારા તમારા મૉડેમને કનેક્ટ કરવાની મંજૂરી નથી. વધુ વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3855472144336161447">જર્મન નીઓ 2</translation>
 <translation id="3858860766373142691">નામ</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"માં પર્યાપ્ત સ્ટોરેજ ન હોવાને કારણે ફાઇલો અપલોડ કરી શકાશે નહીં.</translation>
+<translation id="6279140785485544797">તમારા મોબાઇલ ડેટા પ્લાની સમયસીમા કદાચ સમાપ્ત થઈ ગઈ હોય. સપોર્ટ માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="6287852322318138013">આ ફાઇલ ખોલવા માટે એક ઍપ્લિકેશન પસંદ કરો</translation>
 <translation id="6295542640242147836">સિમ કાર્ડ લૉક કરો</translation>
 <translation id="6296410173147755564">અમાન્ય PUK</translation>

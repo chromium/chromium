@@ -97,6 +97,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Deschide Explorare</translation>
+<translation id="129469256578833241">Înapoi la rezumat</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Apasă oricând pe <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">APLICAȚII RECOMANDATE</translation>
@@ -257,6 +258,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1925320505152357008">mai puțin de 1 minut</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
+<translation id="1929331825127010451">Înapoi la întrebare</translation>
 <translation id="1948405482892809935">Comută la următorul utilizator</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">S-a înregistrat ecranul</translation>
@@ -1152,6 +1154,7 @@ Poți folosi și comanda rapidă de la tastatură. Mai întâi, evidențiază te
 <translation id="5238719049014159442">Deschide / închide Lansatorul</translation>
 <translation id="5240725217819182328">Acces rapid la anumite pagini sau acțiuni din aplicațiile instalate</translation>
 <translation id="5245201184978705914">Nu se poate genera transcrierea</translation>
+<translation id="5251174953851719648">Actualizează conținutul</translation>
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
 <translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
@@ -1416,6 +1419,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6147182561428020853">Acum poți bloca aplicațiile instalate pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Dispozitivul periferic nu este acceptat</translation>
 <translation id="6156960295318603523">Setări de limbă</translation>
+<translation id="6158923546703693047">Informații despre sursa de conținut</translation>
 <translation id="615957422585914272">Afișați tastatura pe ecran</translation>
 <translation id="616543563528926612">Comanda rapidă clic dreapta s-a actualizat la alt + clic de la tasta <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
@@ -2000,6 +2004,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8315514906653279104">Se activează…</translation>
 <translation id="8331351032546853669">Descărcare în așteptare</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Pune o întrebare.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Rezultate slabe</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> fereastră selectată</translation>

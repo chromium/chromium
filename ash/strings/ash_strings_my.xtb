@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">‘စူးစမ်းလေ့လာရန်’ ကိုဖွင့်ရန်</translation>
+<translation id="129469256578833241">အကျဉ်းချုပ်သို့ ပြန်သွားရန်</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424"><ph name="LAUNCHER_KEY_NAME" /> + g ကို အချိန်မရွေး နှိပ်ပါ</translation>
 <translation id="1306549533752902673">အကြံပြုထားသည့် အက်ပ်များ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">အလိုအလျောက် နှိပ်ချက်များ</translation>
 <translation id="1925320505152357008">၁ မိနစ်အောက်</translation>
 <translation id="1928739107511554905">အပ်ဒိတ်ရယူရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ရန် ထိတွေ့မျက်နှာပြင်ကို အသုံးပြုပါ။</translation>
+<translation id="1929331825127010451">မေးခွန်းသို့ ပြန်သွားရန်</translation>
 <translation id="1948405482892809935">အသုံးပြုသူနောက်တစ်ဦးသို့ ပြောင်းရန်</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">ဖန်သားပြင်ရိုက်ကူးခြင်း ပြီးပြီ</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Launcher ဖွင့်/ပိတ်ရန်</translation>
 <translation id="5240725217819182328">ထည့်သွင်းထားသော အက်ပ်များအတွင်းရှိ အချို့သော စာမျက်နှာ (သို့) လုပ်ဆောင်ချက်များကို အမြန်သုံးခွင့်</translation>
 <translation id="5245201184978705914">စာသားမှတ်တမ်း ထုတ်ယူ၍မရပါ</translation>
+<translation id="5251174953851719648">အကြောင်းအရာကို ပြန်လည်စတင်ရန်</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">သိမ်းထားသည့် မျက်နှာပြင်များ မရှိပါ</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">ဤ <ph name="DEVICE_TYPE" /> တွင် ထည့်သွင်းထားသည့် အက်ပ်များကို ယခု ပိတ်ထားနိုင်ပါပြီ</translation>
 <translation id="6154006699632741460">ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="6156960295318603523">ဘာသာစကားဆက်တင်များ</translation>
+<translation id="6158923546703693047">အချက်အလက် ရင်းမြစ်</translation>
 <translation id="615957422585914272">မျက်နှာပြင် ပေါ်က ကီးဘုတ်ကို ပြရန်</translation>
 <translation id="616543563528926612">ညာဘက်ခလုတ်နှိပ်သည့် ဖြတ်လမ်းလင့်ခ်ကို <ph name="LAUNCHER_KEY_NAME" /> ကီး + ကလစ်မှ Alt + ကလစ်သို့ အပ်ဒိတ်လုပ်လိုက်သည်</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">ဖွင့်နေသည်...</translation>
 <translation id="8331351032546853669">ဒေါင်းလုဒ် ဆိုင်းငံ့ထားသည်</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">မေးခွန်း မေးပါ။</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">ထုတ်လုပ်ချက် မကောင်းပါ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို ရွေးထားသည်</translation>

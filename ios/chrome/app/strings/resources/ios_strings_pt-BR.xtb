@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1622717322707146952">Selecione "Adicionar ao Google Agenda" ou "Adicionar ao Calendário Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> senhas reutilizadas</translation>
+<translation id="1636234353664774105">Confira rotas para seu destino usando o recurso de navegação guiada</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Histórico</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Município</translation>
 <translation id="2062410130322589403">Um guia das suas escolhas de privacidade</translation>
 <translation id="20638360198452347">Seletor de tipo de unidade de medida</translation>
+<translation id="2067852168641682340">Salvar sempre nesta conta</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2078437078822043850">Role a tela para a direita para navegar no modo de navegação anônima.</translation>
@@ -313,6 +315,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="261739049332372104">Para receber atualizações sobre conteúdos importantes para você, ative as notificações nas configurações do iOS.</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
 <translation id="2626236249646841566">Verifique sua conexão e tente fazer login novamente.</translation>
+<translation id="2635918910848538771">Preencher automaticamente o CVC</translation>
 <translation id="2637313651144986786">Pesquisar guias…</translation>
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="2648721026697078500">Nunca mover</translation>
@@ -496,6 +499,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3533202363250687977">Fechar todas as guias anônimas</translation>
 <translation id="3533436815740441613">Nova guia</translation>
 <translation id="3540141921715814660">Adicionar aos favoritos</translation>
+<translation id="3547356470684043247">Leia avaliações de produtos, serviços ou experiências para tomar decisões informadas</translation>
 <translation id="355101282835380364">Salvar na conta…</translation>
 <translation id="3551320343578183772">Fechar guia</translation>
 <translation id="3565930036634619844">Guia. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4659194143325814340">{count,plural, =1{{count} página na sua Lista de leitura}one{{count} página na sua Lista de leitura}other{{count} páginas na sua Lista de leitura}}</translation>
 <translation id="4659667755519643272">Entrar no seletor guias</translation>
 <translation id="46614316059270592">Salvar senha</translation>
+<translation id="467189612236587057">Ligue para uma empresa para mais informações</translation>
 <translation id="4682686630151240767">1. Abra o app Ajustes do iPhone</translation>
 <translation id="4689564913179979534">Gerenciar formas de pagamento…</translation>
 <translation id="469300482518076788">Fechar guia</translation>

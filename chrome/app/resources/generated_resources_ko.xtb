@@ -447,6 +447,7 @@
 <translation id="1317637799698924700">현재 도킹 스테이션은 USB 타입-C 호환 모드에서 작동합니다.</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> 하위 페이지 뒤로 버튼</translation>
 <translation id="1322046419516468189"><ph name="SAVED_PASSWORDS_STORE" />에 저장된 비밀번호 보기 및 관리</translation>
+<translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 티켓</translation>
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
 <translation id="1327527584824210101">패스키 사용</translation>
@@ -2522,6 +2523,7 @@
 <translation id="2783298271312924866">다운로드됨</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> 앱에서 보안 키 사용</translation>
 <translation id="2785267875302712148">비밀번호 진단</translation>
+<translation id="2785279781154577715">탭에 마우스를 가져가면 나타나는 미리보기 카드 모양</translation>
 <translation id="2785873697295365461">파일 설명자</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -3642,7 +3644,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> 남음</translation>
 <translation id="3636940436873918441">기본 언어</translation>
 <translation id="3637203148990213388">추가 계정</translation>
-<translation id="3640214691812501263"><ph name="USER_NAME" />님에 대하여 '<ph name="EXTENSION_NAME" />'을(를) 추가할까요?</translation>
 <translation id="3640347231390550691">피싱 위험에서 비밀번호를 보호하세요</translation>
 <translation id="3640613767643722554">어시스턴트가 내 음성을 인식하도록 학습시키기</translation>
 <translation id="364100968401221170">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />하세요.</translation>
@@ -4004,6 +4005,7 @@
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">창 크기를 위쪽으로 조정함</translation>
 <translation id="3877075909000773256">공유에 <ph name="USER_EMAIL" /> 계정을 사용하는 <ph name="USER_NAME" />님의 기기에 관한 Nearby Share 설정입니다.</translation>
+<translation id="3877209288227498506">탭에 마우스를 가져가면 나타나는 미리보기 카드에 메모리 사용량과 이미지를 표시할 수 있습니다</translation>
 <translation id="3878445208930547646">이 사이트에서 복사할 수 없습니다</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
 <translation id="3880513902716032002">방문한 페이지 중 일부가 미리 로드되었습니다.</translation>
@@ -4105,6 +4107,7 @@
 <translation id="3949999964543783947">파일을 더 안전하게 다운로드하려면 <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /></translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3950841222883198950">음성 입력</translation>
+<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}other{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">내 계정</translation>
 <translation id="3954354850384043518">진행 중</translation>
 <translation id="3954468641195530330">앱에서 마이크를 사용하도록 허용되지 않습니다.</translation>
@@ -4671,6 +4674,7 @@
 <translation id="438503109373656455">말</translation>
 <translation id="4385146930797718821">클립보드에 스크린샷이 복사되었습니다</translation>
 <translation id="4385905942116811558">블루투스 및 USB 기기 검색 중</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}other{이러한 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다}}</translation>
 <translation id="4386604394450371010">개요</translation>
 <translation id="4387890294700445764">유출된 비밀번호</translation>
 <translation id="4388650384344483842">8자 이상 입력하세요.</translation>
@@ -5255,6 +5259,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
 <translation id="4831226137013573603">마이크 음소거</translation>
 <translation id="4833683849865011483">인쇄 서버에 프린터 1대가 있습니다.</translation>
+<translation id="4835677468087803981">PIN 숨기기</translation>
 <translation id="4836504898754963407">지문 관리</translation>
 <translation id="4837128290434901661">Google 검색으로 되돌리시겠습니까?</translation>
 <translation id="4837926214103741331">더 이상 이 기기를 사용할 권한이 없습니다. 기기 소유자에게 로그인 권한에 대해 문의하세요.</translation>
@@ -5596,6 +5601,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512(RSA 암호화 사용)</translation>
 <translation id="5089763948477033443">측면 패널 크기 조절 핸들</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
+<translation id="5091636240353511739">PIN 표시</translation>
 <translation id="5093477827231450397">다른 사이트 광고를 추천하지 않도록 차단한 사이트 목록</translation>
 <translation id="5093569275467863761">시크릿 모드 뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">파일 앱 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />기기에서 기본 앱을 설정하는 방법을 알아보세요<ph name="END_LINK" />.</translation>
@@ -5778,6 +5784,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
 <translation id="52254442782792731">현재 공개 범위가 아직 설정되어 있지 않음</translation>
 <translation id="5225463052809312700">카메라 켜기</translation>
+<translation id="5226514125747186">사이트 아이콘 주위에 점선으로 된 원이 표시됩니다. <ph name="BEGIN_LINK" />비활성 탭에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">웹사이트에서 내 위치를 사용할 수 없습니다.</translation>
 <translation id="5227679487546032910">기본 청록색 아바타</translation>
 <translation id="5228245824943774148">기기 <ph name="NUM_DEVICES_CONNECTED" />대 연결됨</translation>
@@ -6362,6 +6369,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5651308944918885595">Nearby Share 검색 가능 여부</translation>
 <translation id="5653154844073528838">저장된 프린터가 <ph name="PRINTER_COUNT" />대 있습니다.</translation>
 <translation id="5654669866168491665">서드 파티 쿠키를 차단하면 작동하지 않을 수 있는 사이트에 대해 자세히 알아보기</translation>
+<translation id="5654751240928365405">이 확장 프로그램은 더 이상 지원되지 않아 사용 중지되었습니다</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{개인 정보 보호를 위해 사이트 1개에서 권한이 삭제되었습니다.}other{개인 정보 보호를 위해 일부 사이트에서 권한이 삭제되었습니다.}}</translation>
 <translation id="565515993087783098">이 네트워크를 삭제하면 Passpoint 구독 및 관련 네트워크도 삭제됩니다.</translation>
 <translation id="5655296450510165335">기기 등록</translation>
@@ -6733,6 +6741,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5938002010494270685">보안 업그레이드 사용 가능</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5939719276406088041">바로가기를 만들 수 없음</translation>
+<translation id="5939723110967488589">툴바에 표시할 버튼을 선택하세요</translation>
 <translation id="594048410531370124">알 수 없는 키입니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="5941153596444580863">사용자 추가...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />에 로그인하세요.</translation>
@@ -7595,6 +7604,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6597324406048772521">이 사이트에서 허용되지 않는 확장 프로그램</translation>
 <translation id="6597331566371766302">관리자가 다음 확장 프로그램을 차단했습니다.</translation>
 <translation id="659894938503552850">가장 최근 날짜</translation>
+<translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>
 <translation id="6601262427770154296">사용자 사전 관리</translation>
 <translation id="6602173570135186741">자동 완성 및 비밀번호</translation>
 <translation id="6602336931411102724">북마크바에 탭 그룹 표시</translation>
@@ -8258,6 +8268,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7089253021944603172">탭이 다시 활성화됨</translation>
 <translation id="7090160970140261931"><ph name="DEVICE_TYPE" />에 계정을 추가하여 웹사이트 및 Android 앱에서 사용할 수 있습니다. Android 앱에서 어떤 계정을 사용할지 제어할 수도 있습니다.</translation>
 <translation id="7090714929377281710">핫스팟 자동 사용 중지</translation>
+<translation id="7092504544229909737">Android 앱에서 사용할 수 없음</translation>
 <translation id="7093220653036489319">빠른 답변</translation>
 <translation id="7093866338626856921">이름이 <ph name="HOSTNAMES" />인 기기와 데이터 교환</translation>
 <translation id="7098389117866926363">USB-C 기기(좌측 후면 포트)</translation>
@@ -9748,6 +9759,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />(으)로 전환</translation>
 <translation id="8184318863960255706">추가 정보</translation>
 <translation id="8184472985242519288">균일</translation>
+<translation id="8186013737729037962">엔터프라이즈 등록 기기에 대해 자세히 알아보기</translation>
 <translation id="8186047833733689201">발음 구별 기호 메뉴를 열었습니다. 이동하려면 왼쪽, 오른쪽 또는 숫자 키를, 삽입하려면 Enter를 누르세요.</translation>
 <translation id="8186609076106987817">서버에서 파일을 찾을 수 없습니다.</translation>
 <translation id="8188389033983459049">계속하려면 기기 설정을 확인하고 사용 설정하세요.</translation>

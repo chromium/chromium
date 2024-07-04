@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{पेज काम नहीं कर रहा}one{पेज काम नहीं कर रहे}other{पेज काम नहीं कर रहे}}</translation>
 <translation id="1011003645819296594">सेव किए गए डिवाइस</translation>
 <translation id="1011355516189274711">लिखाई को बोली में बदलने की आवाज़ का लेवल</translation>
+<translation id="1011431628606634753">Google Password Manager के लिए खाता वापस पाने का पिन बदलें</translation>
 <translation id="1012794136286421601">आपके दस्तावेज़, शीट, स्लाइड, और ड्रॉइंग फ़ाइलें सिंक की जा रही हैं. उन्हें ऑनलाइन या ऑफ़लाइन एक्सेस करने के लिए Google डिस्क ऐप्लिकेशन खोलें.</translation>
 <translation id="1012876632442809908">USB-C डिवाइस (सामने वाला पोर्ट)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -3641,7 +3642,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> बाकी</translation>
 <translation id="3636940436873918441">पसंदीदा भाषाएं</translation>
 <translation id="3637203148990213388">अतिरिक्त खाते</translation>
-<translation id="3640214691812501263"><ph name="USER_NAME" /> के लिए "<ph name="EXTENSION_NAME" />" को जोड़ें?</translation>
 <translation id="3640347231390550691">फ़िशिंग के खतरे से अपने पासवर्ड की सुरक्षा करें</translation>
 <translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
 <translation id="364100968401221170">सिंक किए हुए सभी डिवाइसों और अपने Google खाते से ब्राउज़िंग डेटा मिटाने के लिए, <ph name="BEGIN_LINK" />साइन इन करें<ph name="END_LINK" />.</translation>
@@ -4064,6 +4064,7 @@
 <translation id="3923221004758245114">क्या आपको <ph name="DEVICE_TYPE" /> से <ph name="VM_NAME" /> को हटाना है? ऐसा करने से, वर्चुअल मशीन में मौजूद डेटा और सभी ऐप्लिकेशन मिट जाएंगे!</translation>
 <translation id="3923494859158167397">कोई भी मोबाइल नेटवर्क सेट अप नहीं किया गया है</translation>
 <translation id="3923676227229836009">इस पेज को फ़ाइलें देखने की अनुमति है</translation>
+<translation id="3923958273791212723">परफ़ॉर्मेंस से जुड़ी समस्याओं की सूचनाएं</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">डिसप्ले और टेक्स्ट का साइज़ <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">सुरक्षित ब्राउज़िंग को जांच के लिए यूआरएल भेजता है. साथ ही, नए खतरों का पता लगाने के लिए कुछ पेजों के नमूने, डाउनलोड, एक्सटेंशन की गतिविधि, और सिस्टम की जानकारी भी भेजता है. आपके साइन इन होने पर, थोड़ी देर के लिए इस डेटा को आपके Google खाते से जो़ड़ता है. ऐसा सभी Google ऐप्लिकेशन पर आपको सुरक्षित रखने के लिए किया जाता है.</translation>
@@ -4080,6 +4081,7 @@
 <translation id="3930737994424905957">डिवाइस खोजे जा रहे हैं</translation>
 <translation id="3930968231047618417">बैकग्राउंड का रंग</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> को पिन करें</translation>
+<translation id="3932477678113677556">इनपुट में <ph name="MAX" /> वर्ण तक ही शामिल करें</translation>
 <translation id="3933121352599513978">अनचाहे अनुरोधों को हटाएं (सुझाया गया)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> आपके साथ वाई-फ़ाई नेटवर्क शेयर कर रहा है</translation>
 <translation id="3936390757709632190">ऑडियो नए टैब में &amp;खोलें</translation>
@@ -5216,6 +5218,7 @@
 <translation id="4807098396393229769">कार्ड पर नाम</translation>
 <translation id="4807122856660838973">सुरक्षित ब्राउज़िंग की सुविधा चालू करें</translation>
 <translation id="4807514039636325497">DBus की जानकारी</translation>
+<translation id="4808525520374557629">परफ़ॉर्मेंस से जुड़ी समस्याओं का पता लगाने के बाद, उन्हें सुधारने के तरीके बताने वाली सूचनाएं पाएं. <ph name="BEGIN_LINK" />परफ़ॉर्मेंस से जुड़ी समस्याओं की चेतावनियों के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">पॉप-अप ब्लॉक किए गए हैं:</translation>
 <translation id="4809079943450490359">आपके डिवाइस के एडमिन से मिले निर्देश:</translation>
 <translation id="4809447465126035330">मिटाएं</translation>
@@ -6084,6 +6087,7 @@
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5457459357461771897">अपने कंप्यूटर से फ़ोटो, संगीत और दूसरे मीडिया पढ़ें और मिटाएं</translation>
 <translation id="5458214261780477893">ड्वोरक</translation>
+<translation id="5458716506062529991">आपने कई बार गलत पिन डाल दिया है. अपनी पासकी और पासवर्ड ऐक्सेस करने के लिए, अपना पिन बदलें.</translation>
 <translation id="5458998536542739734">लॉक स्क्रीन नोट</translation>
 <translation id="5459864179070366255">इंस्टॉल करना जारी रखें</translation>
 <translation id="5460641065520325899">उस तरह की जानकारी को मैनेज करें जिसका इस्तेमाल करके, साइटें आपकी ब्राउज़िंग गतिविधियों को ट्रैक कर सकती हैं.</translation>

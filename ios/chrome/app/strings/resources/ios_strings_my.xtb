@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1622717322707146952">“Google Calendar သို့ ထည့်ရန်” (သို့) “Apple Calendar သို့ ထည့်ရန်” ကို ရွေးပါ။</translation>
 <translation id="1626771852476987600">ပြန်သုံးထားသည့် စကားဝှက် <ph name="COUNT" /> ခု</translation>
+<translation id="1636234353664774105">လမ်းညွှန်ဝန်ဆောင်မှုသုံးကာ တစ်ဆင့်ချင်းလမ်းညွှန်ချက်ဖြင့် သင့်ခရီးဆုံးနေရာသို့သွားရန် ခရီးလမ်းညွှန်ချက်များ ရယူနိုင်သည်</translation>
 <translation id="1641113438599504367">လုံခြုံစွာ ရှာကြည့်မှု</translation>
 <translation id="1641316430523156212">လိုက်ကြည့်ရန်</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">မြူနီစီပယ်</translation>
 <translation id="2062410130322589403">သင့်ကိုယ်ရေးအချက်အလက်ဆိုင်ရာ ရွေးချယ်မှုများအတွက် လမ်းညွှန်</translation>
 <translation id="20638360198452347">ယူနစ်အမျိုးအစား ရွေးချယ်စနစ်</translation>
+<translation id="2067852168641682340">အကြိမ်တိုင်း ဤအကောင့်တွင် သိမ်းရန်</translation>
 <translation id="2073572773299281212">ပြီးခဲ့သော <ph name="DAYS" /> ရက်က အသုံးပြုထားသည်</translation>
 <translation id="2074131957428911366">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="2078437078822043850">ရုပ်ဖျက်မုဒ်တွင် ဘရောက်စ်လုပ်ရန် ညာဘက်သို့ လှိမ့်နိုင်သည်။</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">သင့်အတွက်အရေးပါသည့် အကြောင်းအရာနှင့် ပတ်သက်သော အပ်ဒိတ်များရယူရန် iOS ဆက်တင်များတွင် အကြောင်းကြားချက်ဖွင့်ပါ။</translation>
 <translation id="2625189173221582860">စကားဝှက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="2626236249646841566">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်မံလက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
+<translation id="2635918910848538771">CVC အော်တိုဖြည့်ရန်</translation>
 <translation id="2637313651144986786">တဘ်များရှာဖွေရန်…</translation>
 <translation id="2640733327287333451">အသုံးပြုသူအမည် မရှိပါ ••••••</translation>
 <translation id="2648721026697078500">ဘယ်တော့မှ မရွှေ့ပါနှင့်</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">ရုပ်ဖျက်တဘ်များအားလုံး ပိတ်ရန်</translation>
 <translation id="3533436815740441613">တဘ်အသစ်</translation>
 <translation id="3540141921715814660">လိပ်စာများသို့ ထည့်ရန်</translation>
+<translation id="3547356470684043247">သုံးသပ်ချက်များနှင့် ပတ်သက်သော သင်၏ဆုံးဖြတ်ချက်ကို အသိပေးနိုင်ရန်အတွက် ကုန်ပစ္စည်း၊ ဝန်ဆောင်မှု (သို့) အသုံးပြုမှုအပေါ် ဝယ်ယူသူ၏ အကဲဖြတ်မှုများကို ဖတ်နိုင်သည်</translation>
 <translation id="355101282835380364">Account တွင် သိမ်းနေသည်…</translation>
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
 <translation id="3565930036634619844">တဘ်။ <ph name="NUMBER_OF_TABS" /> အနက် <ph name="TAB_INDEX" />။</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{သင့် ‘ဖတ်ရန် စာရင်း’ တွင် {count} ခုရှိသည်}other{သင့် ‘ဖတ်ရန် စာရင်း’ တွင် {count} ခုရှိသည်}}</translation>
 <translation id="4659667755519643272">တဘ် ခလုတ်ကို ထည့်ပေးရန်</translation>
 <translation id="46614316059270592">စကားဝှက် သိမ်းရန်</translation>
+<translation id="467189612236587057">ဖုန်းစတင်ခေါ်ဆိုပြီး လုပ်ငန်းနှင့် ဆက်သွယ်နိုင်သည်</translation>
 <translation id="4682686630151240767">၁။ ‘iPhone ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="4689564913179979534">ငွေပေးချေနည်းလမ်းများ စီမံရန်...</translation>
 <translation id="469300482518076788">တဘ် ပိတ်ရန်</translation>

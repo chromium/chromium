@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="1049663189809099096">പാസ്‌റ്റൽ മഞ്ഞ</translation>
+<translation id="1053371972724535586">എന്റെ റെക്കോർഡിംഗുകൾ</translation>
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
 <translation id="1061864016440983342">ലൊക്കേഷൻ ഇല്ലാതെ ഉപയോഗിക്കുക</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">ഒരു ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഭാഗിക്കുക</translation>
 <translation id="1435763214710588005">ഓരോ മാസവും തിരഞ്ഞെടുത്ത ദിവസം ഡാറ്റാ ഉപയോഗം സ്വയമേവ റീസെറ്റ് ചെയ്യുന്നു</translation>
 <translation id="1442433966118452622">ചിത്രത്തിന്റെ ഉറവിടം</translation>
+<translation id="1445573806602812670">നിങ്ങളുടെ റെക്കോർഡിംഗിനുള്ള ട്രാൻസ്‌ക്രിപ്ഷൻ നേടുക</translation>
 <translation id="1446954767133808402">സഫയർ</translation>
 <translation id="1449035143498573192">Google Search-ൽ തുറക്കുക</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">തടാകം</translation>
 <translation id="1720424726586960395">മിന്നാമിനുങ്ങുകളുള്ള കാട്</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
+<translation id="1728792932018505912">നിങ്ങൾക്ക് ഇത് ക്രമീകരണത്തിലോ <ph name="THREE_DOTS_MENU_ICON" /> മെനുവിലോ മാറ്റാം</translation>
 <translation id="1731082422893354635">Bluetooth ടച്ച്പാഡ്</translation>
 <translation id="1738949837603788263">മേഖല <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ചിത്രങ്ങൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുകയോ ചിത്രങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യാൻ ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">പരാജയപ്പെട്ട UDP അഭ്യർത്ഥനകൾ</translation>
 <translation id="1908394185991500139">ഇടത്തേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1923388006036088459">ആക്സന്റ് നിറങ്ങൾ</translation>
+<translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954818433534793392">ബിൽഡിംഗ്</translation>
@@ -226,6 +230,7 @@
 <translation id="2102231663024125441">ടെക്‌സ്റ്റ് തിരുത്തൽ</translation>
 <translation id="2105810540595158374">ഉപകരണം ഒരു ഗെയിം കൺട്രോളറാണ്.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">നിലവിൽ ഇംഗ്ലീഷിൽ (യുഎസ്) മാത്രം ലഭ്യം</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB-യിൽ <ph name="AVAILABLE_MEMORY" /> GB ലഭ്യം</translation>
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2138109643290557664">ഒഴുകി നീങ്ങൂ</translation>
@@ -262,6 +267,7 @@
 <translation id="2267285889943769271">സ്ക്രീൻഷോട്ട് ചേർക്കുക</translation>
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="2276999893457278469">മികച്ച സഹായ ഉള്ളടക്കം</translation>
+<translation id="2277631741861284101">നിങ്ങളുടെ ഓഡിയോ എളുപ്പത്തിൽ റെക്കോർഡ് ചെയ്ത് പങ്കിടൂ</translation>
 <translation id="2279051792571591988">ഡിഫോൾട്ടുകൾ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2286454467119466181">ലളിതം</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
@@ -287,6 +293,7 @@
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
 <translation id="2418150275289244458">ക്രമീകരണത്തിൽ തുറക്കുക</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" />-ാമത്തെ ചിത്രം</translation>
+<translation id="242825218556404975">സംഭാഷണമൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
 <translation id="2472215337771558851">ഒരു ഡ്രാഫ്റ്റ് സൃഷ്ടിക്കാനോ നിലവിലുള്ള വർക്ക് പരിഷ്കരിക്കാനോ, Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന 'എന്നെ എഴുതാൻ സഹായിക്കൂ' ഉപയോഗിക്കുക</translation>
@@ -330,6 +337,7 @@
 <translation id="2656001153562991489">Chromebook Plus-ൽ മാത്രം</translation>
 <translation id="2665671725390405060">ഉച്ചാരണം കേൾക്കുക</translation>
 <translation id="267442004702508783">റീഫ്രഷ് ചെയ്യുക</translation>
+<translation id="2675392311492541028">ട്രാൻസ്‌ക്രിപ്ഷനും സംഗ്രഹവും</translation>
 <translation id="268270014981824665">കീബോർഡ് മങ്ങിക്കുക</translation>
 <translation id="2712812801627182647">TLS പരിശോധിച്ചുറപ്പിക്കൽ കീ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
@@ -430,6 +438,7 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> പശ്ചാത്തലത്തിലുള്ള <ph name="LETTERS_LETTER" /> എന്ന അക്ഷരം</translation>
 <translation id="3383623117265110236">എക്‌സ്ക്ലൂസീവ്</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="3410165745972100556">ട്രാൻസ്‌ക്രിപ്ഷൻ ഓഫാണ്</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3428551088151258685">ഔട്ട്ഡോർ</translation>
 <translation id="3428971106895559033">പാസ്റ്റൽ</translation>
@@ -475,6 +484,7 @@
 <translation id="3621072146987826699">ആനകൾ</translation>
 <translation id="3632040286124154621">നല്ല നിർദ്ദേശം</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
+<translation id="3639873154908477486">പേര് (A മുതൽ Z വരെ)</translation>
 <translation id="3644695927181369554">മോശം നിർദ്ദേശം</translation>
 <translation id="3651050199673793219">താപനിലാ യൂണിറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3661106764436337772">കൂടുതൽ ആത്മവിശ്വാസത്തോടെ വേഗത്തിൽ എഴുതൂ</translation>
@@ -541,6 +551,7 @@
 <translation id="4044093238444069296">ഗേറ്റ്‌വേയുമായി ബന്ധപ്പെടാനാകുന്നില്ല</translation>
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
 <translation id="404928562651467259">മുന്നറിയിപ്പ്</translation>
+<translation id="4050208988451295487">ഏതാനും ഓപ്ഷനുകൾ:</translation>
 <translation id="4054683689023980771">ചിത്രം ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4063039537646912479">ഇളം നീല</translation>
 <translation id="4070799384363688067">ആനിമേഷൻ</translation>
@@ -569,8 +580,10 @@
 <translation id="4171077696775491955">തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4176659219503619100">നിയന്ത്രണ പാനൽ</translation>
+<translation id="4193496492959950834">Recorder ക്രമീകരണം</translation>
 <translation id="4198398257084619072">പാണ്ടകൾ</translation>
 <translation id="420283545744377356">സ്ക്രീൻ സേവർ ഓഫാക്കുക</translation>
+<translation id="4210636113897977670">സംരക്ഷിച്ച് പുറത്തുകടക്കുക</translation>
 <translation id="4210659479607886331">ഹിമനദി</translation>
 <translation id="4213104098953699324">USB കീബോർഡ്</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
@@ -643,6 +656,7 @@
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>
+<translation id="4644611440022666152">ഓണാക്കി ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
 <translation id="4650608062294027130">വലത് Shift കീ</translation>
 <translation id="4654549501020883054">ദിവസേന മാറ്റുക</translation>
@@ -733,6 +747,7 @@
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">സമാനമായത്:</translation>
+<translation id="5109744590306245079">Recorder-ന് സംഭാഷണത്തിനൊപ്പം ട്രാൻസ്‌ക്രിപ്റ്റുകൾ സൃഷ്ടിക്കാൻ കഴിയും. ഈ ട്രാൻസ്‌ക്രിപ്റ്റുകൾ നേടാൻ ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ (100MB വരെ) ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
@@ -842,6 +857,7 @@
 <translation id="5760715441271661976">പോര്‍ട്ടല്‍ നില</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> ആപ്പ് റീസ്റ്റാർട്ട് ചെയ്ത് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="576835345334454681">ഡിസ്‌പ്ലേ തെളിച്ചം കൂട്ടുക</translation>
+<translation id="5779818640587041940">റെക്കോർഡ് ചെയ്യുമ്പോൾ സ്ക്രീൻ ഓണാക്കി വയ്‌ക്കുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="5790391387506209808">ലാപിസ് ലസുലി</translation>
@@ -916,6 +932,7 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">സൈബർപങ്ക്</translation>
 <translation id="6137767437444130246">ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ്</translation>
+<translation id="6141004321363227868">ഈ ഫീച്ചർ പ്രവർത്തനക്ഷമമാക്കിയിരിക്കുമ്പോൾ, നിങ്ങൾ റെക്കോർഡ് ചെയ്യുന്നതിനനുസരിച്ച് തത്സമയ ട്രാൻസ്‌ക്രിപ്റ്റുകളും കാണിക്കും.</translation>
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">മെറൂണും പിങ്കും</translation>
@@ -984,6 +1001,7 @@
 <translation id="6480327114083866287"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> എക്സ്ക്ലൂസീവ് സ്ക്രീൻ സേവർ</translation>
 <translation id="649050271426829538">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പർ ജാമായി</translation>
+<translation id="6490861263572002431">സ്വയമേവയുള്ള സ്‌ക്രോൾ</translation>
 <translation id="6492891353338939218">ദുഃഖാർത്തം</translation>
 <translation id="6494974875566443634">ഇഷ്ടാനുസൃതമാക്കൽ</translation>
 <translation id="6500818810472529210">Google Search-ൽ ഫലം കാണുക</translation>
@@ -997,6 +1015,7 @@
 <translation id="6543412779435705598">ടാകോസ്</translation>
 <translation id="6551839203326557324">ആപ്പിളുകൾ</translation>
 <translation id="65526652485742171">'സ്ഥിരീകരിക്കുക' ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
+<translation id="6556016675518580850">ഈ പേജിൽ നിന്ന് പുറത്തുകടന്നാൽ നിലവിലുള്ള റെക്കോർഡിംഗ് അവസാനിപ്പിക്കും.</translation>
 <translation id="6557784757915238407">APN തരം <ph name="ATTACH" /> ആണ്.</translation>
 <translation id="65587193855025101">ഫ്ലാറ്റ്ബെഡ്</translation>
 <translation id="6560196641871357166">വൈബ്രന്റ്</translation>
@@ -1007,6 +1026,7 @@
 <translation id="6576005492601044801">ഇടതുവശം</translation>
 <translation id="6579509898032828423">ഈ ഫോട്ടോ ഉപയോഗിക്കുക</translation>
 <translation id="6587870930887634392">സക്കുലന്റ്</translation>
+<translation id="6595046262780525922">ട്രാൻസ്‌ക്രിപ്ഷൻ ഓണാക്കി ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="6596816719288285829">IP വിലാസം</translation>
 <translation id="6599673642868607614">നിങ്ങളുടെ ഫീഡ്‌ബാക്കിന് നന്ദി. നിങ്ങളുടെ ഫീഡ്ബാക്ക് Chromebook അനുഭവം മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കും, അത് ഞങ്ങളുടെ ടീം അവലോകനവും ചെയ്യും. നിരവധി റിപ്പോർട്ടുകൾ ലഭിക്കുന്നതിനാൽ ഞങ്ങൾക്ക് മറുപടി അയയ്‌ക്കാനാകില്ല.</translation>
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
@@ -1048,6 +1068,8 @@
 <translation id="6798678288485555829">ടെക്സ്റ്റ് നാവിഗേഷൻ</translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
+<translation id="6818844233294698434">സംഭാഷണം കേൾക്കാൻ കാത്തിരിക്കുന്നു...</translation>
+<translation id="6837645039518471192">റെക്കോർഡിംഗിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="6866732840889595464">ഡെയ്‌സി</translation>
 <translation id="6871256179359663621">ഇളം പർപ്പിൾ നിറം</translation>
@@ -1087,6 +1109,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7035168792582749309">ഉരുളക്കിഴങ്ങുകൾ</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
+<translation id="7040729769968826896">സ്‌പീക്കർ തിരിച്ചറിയൽ അനുവദിക്കുക</translation>
 <translation id="7041549558901442110">ഉപകരണം കണക്റ്റ് ചെയ്തിട്ടില്ല.</translation>
 <translation id="7046522406494308071">എല്ലാ കുറുക്കുവഴികളും ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്യണോ?</translation>
 <translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
@@ -1242,6 +1265,7 @@
 <translation id="7850847810298646851">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന വാൾപേപ്പർ</translation>
 <translation id="785170686607360576">ടുലിപ്</translation>
 <translation id="7856267634822906833">Bluetooth ടച്ച്സ്ക്രീൻ</translation>
+<translation id="7857744683152972248">സ്‌പീക്കറുകൾ തിരിച്ചറിയാൻ റെക്കോർഡറിനെ അനുവദിക്കണോ?</translation>
 <translation id="7859006200041800233">കള്ളിമുൾച്ചെടിയുടെ പൂവ്</translation>
 <translation id="7869143217755017858">ഡാർക്ക് മോഡ് പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1273,7 @@
 <translation id="7882501334836096755">എല്ലാവർക്കുമായുള്ള കീ</translation>
 <translation id="78957024357676568">ഇടത്തേക്ക്</translation>
 <translation id="7897043345768902965">നടപ്പാത</translation>
+<translation id="7902285181767404769">റെക്കോർഡ് ചെയ്യുമ്പോൾ അറിയിപ്പുകൾ നിശബ്ദമാക്കുക</translation>
 <translation id="7903695460270716054">ക്യുറേറ്റ് ചെയ്ത ആർട്ട്‌വർക്കും ചിത്രങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7915220255123750251">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു.</translation>
 <translation id="7936303884198020182">നെയിം സെർവറുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
@@ -1295,6 +1320,8 @@
 <translation id="8156233298086717232">മാജിക്കൽ</translation>
 <translation id="8162776280680283326">കുറുക്കന്മാർ</translation>
 <translation id="8167413449582155132">പശ്ചാത്തലത്തിൽ Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
+<translation id="8171020708598805594">Google AI ഉപയോഗിച്ച് സ്വയമേവ ട്രാൻസ്‌ക്രിപ്ഷനുകൾ സൃഷ്ടിക്കൂ, സംഗ്രഹങ്ങൾ റെക്കോർഡ് ചെയ്യൂ, ഓഡിയോ തിരയൂ. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാത്തപ്പോൾ പോലും റെക്കോർഡിംഗുകൾ സൃഷ്ടിക്കൂ.</translation>
+<translation id="8174280683348521982">നിലവിലുള്ള റെക്കോർഡിംഗ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">ബീച്ച്</translation>
 <translation id="819278132617411009">ഉൽപ്പാദനക്ഷമത വർദ്ധിപ്പിക്കാൻ Google AI ഉപയോഗിക്കൂ</translation>
@@ -1332,6 +1359,9 @@
 <translation id="8372477600026034341">അധിക ഹോസ്‌റ്റുകൾ</translation>
 <translation id="8372667721254470022">ഒലിവ്</translation>
 <translation id="8373046809163484087">നിങ്ങളുടെ വാൾപേപ്പറുമായി പൊരുത്തപ്പെടുന്ന വർണ്ണ സെറ്റുകൾ ഉപയോഗിക്കുക</translation>
+<translation id="8379123594780452422">ഇത് അനുവദിക്കുമ്പോൾ, വിപുലമായ ഓഡിയോ വിശകലനം ഉപയോഗിച്ച് Recorder നിങ്ങളുടെ ഓഡിയോ റെക്കോർഡിംഗുകൾ പ്രോസസ് ചെയ്യും.
+
+നിങ്ങൾക്ക് ഇത് എപ്പോൾ വേണമെങ്കിലും ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
 <translation id="8380114448424469341">സ്ക്രീനിന്റെ <ph name="DIRECTION" /> ഭാഗത്തെ വലിയ വശത്ത് വിൻഡോ ഡോക്ക് ചെയ്യുക</translation>
 <translation id="8391349326751432483">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യാൻ, കുറഞ്ഞത് 500 MB ശേഷിച്ചിരിക്കണം. ഇടം സൃഷ്‌ടിക്കാൻ, ടാബുകളും ആപ്പുകളും അടയ്ക്കുക.</translation>
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
@@ -1372,10 +1402,12 @@
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>
+<translation id="8647595191512746911">ഓഡിയോ ട്രാൻസ്‌ക്രിപ്ഷൻ</translation>
 <translation id="8651481478098336970">വോളിയം മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="8655295600908251630">ചാനല്‍</translation>
 <translation id="8655828773034788261">URL പങ്കിടുക:</translation>
 <translation id="8660881923941176839">പൗണ്ട്</translation>
+<translation id="8670057600920888023">ജനറേറ്റീവ് AI പരീക്ഷണാത്മകമാണ്, അതിലെ ഉള്ളടക്കം കൃത്യമല്ലാത്തതോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ നിന്ദ്യമോ ആയേക്കാം.</translation>
 <translation id="8670574982334489519">വലതുവശം</translation>
 <translation id="8675354002693747642">മുമ്പേ പങ്കിട്ട കീ</translation>
 <translation id="8677859815076891398">ആൽബങ്ങളൊന്നുമില്ല. <ph name="LINK_BEGIN" />Google Photos-ൽ<ph name="LINK_END" /> ആൽബം സൃഷ്‌ടിക്കുക.</translation>
@@ -1476,6 +1508,7 @@
 <translation id="9122602430962285795">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="9122865513525855321">സെൻ</translation>
 <translation id="9126720536733509015">ഒരു PDF-ൽ ഒന്നിലധികം പേജുകൾ സംരക്ഷിക്കുക</translation>
+<translation id="9129549320890412487">ട്രാൻസ്‌ക്രിപ്ഷൻ ഫീച്ചർ</translation>
 <translation id="9133772297793293778">കീബോഡിലെ 1-4 മോഡിഫയറുകളും മറ്റൊരു കീയും അമർത്തുക. എഡിറ്റിംഗ് മോഡിൽ നിന്ന് പുറത്തുകടക്കാൻ alt + esc അമർത്തുക.</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9138630967333032450">ഇടത് Shift കീ</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3691184985318546178">싱할라어</translation>
+<translation id="3702842351052426940">SIM 카드 또는 eSIM 프로필이 비활성화되었을 수 있습니다. SIM 카드를 교체하거나 eSIM 프로필을 전환해 보세요.</translation>
 <translation id="3722341589402358578">오류가 발생했습니다. 일부 항목이 휴지통으로 이동되지 않았을 수도 있습니다.</translation>
 <translation id="3726463242007121105">파일 시스템이 지원되지 않아 이 기기를 열 수 없습니다.</translation>
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">이 프록시는 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="3830674330436234648">재생을 사용할 수 없음</translation>
 <translation id="383652340667548381">세르비아어</translation>
+<translation id="3839045880592694915">이동통신사에서 모뎀 연결을 허용하지 않습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
 <translation id="6269630227984243955">말레이어</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"의 저장용량이 부족하여 파일을 업로드할 수 없습니다.</translation>
+<translation id="6279140785485544797">모바일 데이터 요금제가 만료되었을 수 있습니다. 지원이 필요한 경우 이동통신사에 문의하세요.</translation>
 <translation id="6287852322318138013">이 파일을 열 때 사용할 앱 선택</translation>
 <translation id="6295542640242147836">SIM 잠금</translation>
 <translation id="6296410173147755564">무효한 PUK</translation>

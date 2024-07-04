@@ -97,6 +97,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Otwórz aplikację Odkrywaj</translation>
+<translation id="129469256578833241">Wróć do podsumowania</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">W dowolnym momencie naciśnij <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1306549533752902673">POLECANE APLIKACJE</translation>
@@ -257,6 +258,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1923539912171292317">Automatyczne kliknięcia</translation>
 <translation id="1925320505152357008">mniej niż 1 min</translation>
 <translation id="1928739107511554905">Aby pobrać aktualizację, użyj ekranu dotykowego, by uruchomić Chromebooka ponownie z podłączoną klawiaturą.</translation>
+<translation id="1929331825127010451">Wróć do pytania</translation>
 <translation id="1948405482892809935">Przełącz na następnego użytkownika</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1954252331066828794">Ukończono nagrywanie ekranu</translation>
@@ -1152,6 +1154,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5238719049014159442">Otwórz/zamknij Menu z aplikacjami</translation>
 <translation id="5240725217819182328">Szybki dostęp do określonych stron lub działań w zainstalowanych aplikacjach</translation>
 <translation id="5245201184978705914">Nie udało się wygenerować transkrypcji</translation>
+<translation id="5251174953851719648">Odśwież zawartość</translation>
 <translation id="5253783950165989294">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" />, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nie ma zapisanych biurek</translation>
 <translation id="5260676007519551770">Biurko 4</translation>
@@ -1416,6 +1419,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6147182561428020853">Możesz teraz blokować aplikacje zainstalowane na tym urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Nieobsługiwane urządzenie peryferyjne</translation>
 <translation id="6156960295318603523">Ustawienia języka</translation>
+<translation id="6158923546703693047">Informacje o źródle treści</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
 <translation id="616543563528926612">Skrót symulujący kliknięcie prawym przyciskiem myszy to teraz Alt + kliknięcie (poprzednio klawisz <ph name="LAUNCHER_KEY_NAME" /> + kliknięcie)</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
@@ -1999,6 +2003,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8315514906653279104">Włączam…</translation>
 <translation id="8331351032546853669">Pobieranie oczekuje</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Zadaj pytanie.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Złe wyniki</translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>

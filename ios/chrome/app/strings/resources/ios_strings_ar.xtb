@@ -127,6 +127,7 @@
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
 <translation id="1626771852476987600">كلمات المرور المستخدَمة لحساب آخر: ‫<ph name="COUNT" /></translation>
+<translation id="1636234353664774105">احصل على الاتجاهات إلى وجهتك مع إرشادات مفصّلة عن الاتّجاهات باستخدام ميزة التنقُّل</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1641316430523156212">متابعة</translation>
 <translation id="1644574205037202324">السجل</translation>
@@ -210,6 +211,7 @@
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2062410130322589403">دليل خيارات الخصوصية</translation>
 <translation id="20638360198452347">مُحدِّد نوع الوحدة</translation>
+<translation id="2067852168641682340">الحفظ في هذا الحساب في كل مرة</translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> يوم</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">يمكنك الانتقال لليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
@@ -315,6 +317,7 @@
 <translation id="261739049332372104">‏لتلقّي آخر الأخبار عن المحتوى الذي يهمّك، يُرجى تفعيل الإشعارات من إعدادات نظام التشغيل iOS.</translation>
 <translation id="2625189173221582860">تم نسخ كلمة المرور</translation>
 <translation id="2626236249646841566">تحقّق من اتصالك بالإنترنت وحاوِل تسجيل الدخول مرة أخرى.</translation>
+<translation id="2635918910848538771">‏الملء التلقائي لرمز التحقُّق من البطاقة (CVC)</translation>
 <translation id="2637313651144986786">البحث في محتوى علامات التبويب...</translation>
 <translation id="2640733327287333451">بلا اسم مستخدم ••••••</translation>
 <translation id="2648721026697078500">عدم النقل مطلقًا</translation>
@@ -498,6 +501,7 @@
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
 <translation id="3540141921715814660">الإضافة إلى الإشارات المرجعية</translation>
+<translation id="3547356470684043247">اطّلِع على تقييمات العملاء للمنتجات أو الخدمات أو التجارب لمساعدتك في اتخاذ قرارات مدروسة بشأن المراجعات</translation>
 <translation id="355101282835380364">الحفظ في الحساب…</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
@@ -716,6 +720,7 @@
 <translation id="4659194143325814340">{count,plural, =1{"قائمة القراءة" تتضمّن صفحة واحدة ({count})}zero{"قائمة القراءة" تتضمّن {count} صفحة}two{"قائمة القراءة" تتضمّن صفحتين ({count})}few{"قائمة القراءة" تتضمّن {count} صفحات}many{"قائمة القراءة" تتضمّن {count} صفحة}other{"قائمة القراءة" تتضمّن {count} صفحة}}</translation>
 <translation id="4659667755519643272">دخول أداة تغيير علامات التبويب</translation>
 <translation id="46614316059270592">حفظ كلمة المرور</translation>
+<translation id="467189612236587057">التواصل مع نشاط تجاري من خلال بدء مكالمة هاتفية</translation>
 <translation id="4682686630151240767">‏1- فتح iPhone Settings (إعدادات iPhone)</translation>
 <translation id="4689564913179979534">جارٍ إدارة طُرق الدفع...</translation>
 <translation id="469300482518076788">إغلاق علامة التبويب</translation>

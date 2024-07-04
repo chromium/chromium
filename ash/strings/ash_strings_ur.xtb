@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">دریافت کریں کھولیں</translation>
+<translation id="129469256578833241">خلاصہ پر واپس جائیں</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">‏کسی بھی وقت <ph name="LAUNCHER_KEY_NAME" /> + g دبائیں۔</translation>
 <translation id="1306549533752902673">تجویز کردہ ایپس</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">خودکار کلکس</translation>
 <translation id="1925320505152357008">1 منٹ سے کم</translation>
 <translation id="1928739107511554905">‏اپ ڈیٹ حاصل کرنے کیلئے، ٹچ اسکرین استعمال کر کے منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
+<translation id="1929331825127010451">سوال پر واپس جائیں</translation>
 <translation id="1948405482892809935">اگلے صارف پر سوئچ کریں</translation>
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1954252331066828794">اسکرین ریکارڈنگ مکمل ہو گئی</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">لانچر کھولیں/بند کریں</translation>
 <translation id="5240725217819182328">انسٹال کردہ ایپس کے اندر مخصوص صفحات یا کارروائیوں تک فوری رسائی</translation>
 <translation id="5245201184978705914">ٹرانسکرپٹ کو تیار نہیں کیا جا سکتا</translation>
+<translation id="5251174953851719648">مواد ریفریش کریں</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="5258528442992323769">محفوظ کردہ کوئی ڈیسک نہیں ہے</translation>
 <translation id="5260676007519551770">ڈیسک 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">اب آپ اس <ph name="DEVICE_TYPE" /> پر انسٹال کردہ ایپس کو مسدود کر سکتے ہیں</translation>
 <translation id="6154006699632741460">پیریفرل تعاون یافتہ نہیں ہے</translation>
 <translation id="6156960295318603523">زبان کی ترتیبات</translation>
+<translation id="6158923546703693047">مواد کے ماخذ کی معلومات</translation>
 <translation id="615957422585914272">آن اسکرین کی بورڈ دکھائیں</translation>
 <translation id="616543563528926612">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
@@ -1999,6 +2003,7 @@
 <translation id="8315514906653279104">آن ہو رہا ہے…</translation>
 <translation id="8331351032546853669">ڈاؤن لوڈ زير التوا ہے</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">ایک سوال پوچھیں۔</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">خراب آؤٹ پٹ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ونڈو کا انتخاب کیا گیا</translation>

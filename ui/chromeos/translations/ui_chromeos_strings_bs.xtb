@@ -337,7 +337,7 @@
 <translation id="3689865792480713551">Otkaži <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, <ph name="CONNECTION_STATUS" />, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
 <translation id="3691184985318546178">sinhaleški</translation>
-<translation id="3702842351052426940">Vaša SIM kartica ili eSIM profil možda su deaktivirani. Pokušajte zamijeniti SIM karticu ili promijeniti eSIM profil.</translation>
+<translation id="3702842351052426940">SIM kartica ili eSIM profil su možda deaktivirani. Pokušajte zamijeniti SIM karticu ili promijeniti eSIM profil.</translation>
 <translation id="3722341589402358578">Došlo je do greške. Moguće je da neke stavke nisu premještene u otpad.</translation>
 <translation id="3726463242007121105">Nije moguće otvoriti uređaj jer sistem fajlova nije podržan.</translation>
 <translation id="3727148787322499904">Promjenom ove postavke uticat ćete na sve dijeljene mreže</translation>
@@ -357,7 +357,7 @@
 <translation id="3822559385185038546">Ovaj proksi server je nametnuo vaš administrator</translation>
 <translation id="3830674330436234648">Reproduciranje nije dostupno</translation>
 <translation id="383652340667548381">Srpska</translation>
-<translation id="3839045880592694915">Vaš mobilni operater nema dopuštenje za povezivanje vašeg modema. Više pojedinosti zatražite od mobilnog operatera.</translation>
+<translation id="3839045880592694915">Operater ne dozvoljava povezivanje modema. Kontaktirajte operatera za više detalja.</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3855472144336161447">Njemačka Neo 2</translation>
 <translation id="3858860766373142691">Naziv</translation>
@@ -686,7 +686,7 @@
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6271903698064569429">Nije moguće otpremiti fajlove jer na disku "<ph name="SHARED_DRIVE_NAME" />" nema dovoljno prostora za pohranu.</translation>
-<translation id="6279140785485544797">Vaš je mobilni podatkovni paket možda istekao. Obratite se mobilnom operateru radi podrške.</translation>
+<translation id="6279140785485544797">Vaš paket prijenosa podataka na mobilnoj mreži je možda istekao. Kontaktirajte operatera za podršku.</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
 <translation id="6295542640242147836">Zaključaj SIM</translation>
 <translation id="6296410173147755564">Nevažeći PUK</translation>

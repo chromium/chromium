@@ -172,6 +172,7 @@
 <translation id="3859306556332390985">Seek forward</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>
@@ -473,6 +474,7 @@
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>
 <translation id="8712637175834984815">Got it</translation>
+<translation id="8715862698998036666">Drag from the top and swipe from the left or right edge to exit full screen.</translation>
 <translation id="8719283222052720129">Turn on permission for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">When on, sites can ask to look for Bluetooth devices. When off, sites can't look for Bluetooth devices.</translation>
 <translation id="8725066075913043281">Try again</translation>

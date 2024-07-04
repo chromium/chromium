@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Explore қолданбасын ашу</translation>
+<translation id="129469256578833241">Қорытындыға оралу</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Кез келген уақытта <ph name="LAUNCHER_KEY_NAME" /> + g тіркесімін басыңыз</translation>
 <translation id="1306549533752902673">ҰСЫНЫЛАТЫН ҚОЛДАНБАЛАР</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1925320505152357008">1 минуттан аз</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
+<translation id="1929331825127010451">Сұраққа оралу</translation>
 <translation id="1948405482892809935">Келесі пайдаланушыға ауысу</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Экранды жазу аяқталды.</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Іске қосу тақтасын ашу/жабу</translation>
 <translation id="5240725217819182328">Орнатылған қолданбалардағы нақты беттерге немесе әрекеттерге жылдам кіру</translation>
 <translation id="5245201184978705914">Транскриптіні құру мүмкін емес</translation>
+<translation id="5251174953851719648">Контентті жаңарту</translation>
 <translation id="5253783950165989294">"<ph name="DEVICE_NAME" />" деп аталатын, батарея заряды <ph name="BATTERY_PERCENTAGE" />% құрылғыға қосылды.</translation>
 <translation id="5258528442992323769">Сақталған жұмыс үстелі жоқ.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">Осы <ph name="DEVICE_TYPE" /> құрылғысына орнатылған қолданбаларды енді блоктауға болады.</translation>
 <translation id="6154006699632741460">Перифериялық құрылғыға қолдау жоқ</translation>
 <translation id="6156960295318603523">Тіл параметрлері</translation>
+<translation id="6158923546703693047">Контент дереккөзі туралы ақпарат</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
 <translation id="616543563528926612">Тінтуірдің оң жақ түймесін басу жылдам пәрмені <ph name="LAUNCHER_KEY_NAME" /> пернесі + басу орнына "alt + басу" пәрменіне жаңартылды.</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">Қосылып жатыр…</translation>
 <translation id="8331351032546853669">Жүктеп алу басталмады</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Сұрақ қойыңыз.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Нашар пікір</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>

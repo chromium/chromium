@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Kanselahin ang <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Hindi Naka-activate, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Posibleng na-deactivate ang iyong SIM card o profile ng eSIM. Subukang palitan ang SIM card mo o lumipat ng profile ng eSIM.</translation>
 <translation id="3722341589402358578">Nagkaroon ng error. Posibleng hindi na-trash ang ilang item.</translation>
 <translation id="3726463242007121105">Hindi mabuksan ang device na ito dahil hindi sinusuportahan ang filesystem nito.</translation>
 <translation id="3727148787322499904">Maaapektuhan ang lahat ng nakabahaging network kung babaguhin ang setting na ito</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Ipinapatupad ng iyong administrator ang proxy na ito</translation>
 <translation id="3830674330436234648">Walang available na playback</translation>
 <translation id="383652340667548381">Serbian</translation>
+<translation id="3839045880592694915">Hindi pinapayagan ng iyong carrier na kumonekta ang modem mo. Makipag-ugnayan sa iyong carrier para sa higit pang detalye.</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Pangalan</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Kumonekta</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429">Hindi ma-upload ang mga file dahil walang sapat na storage ang "<ph name="SHARED_DRIVE_NAME" />."</translation>
+<translation id="6279140785485544797">Posibleng nag-expire na ang iyong mobile data plan. Makipag-ugnayan sa iyong carrier para sa suporta.</translation>
 <translation id="6287852322318138013">Pumili ng isang app upang buksan ang file na ito</translation>
 <translation id="6295542640242147836">I-lock ang SIM</translation>
 <translation id="6296410173147755564">Invalid ang PUK</translation>

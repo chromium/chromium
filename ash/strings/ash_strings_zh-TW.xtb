@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">開啟「探索」</translation>
+<translation id="129469256578833241">返回摘要</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">可隨時按 <ph name="LAUNCHER_KEY_NAME" /> + G 鍵</translation>
 <translation id="1306549533752902673">推薦應用程式</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">自動點擊</translation>
 <translation id="1925320505152357008">還剩不到 1 分鐘</translation>
 <translation id="1928739107511554905">如要更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
+<translation id="1929331825127010451">返回問題</translation>
 <translation id="1948405482892809935">切換到下一位使用者</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1954252331066828794">已結束錄製螢幕畫面</translation>
@@ -1149,6 +1151,7 @@
 <translation id="5238719049014159442">開啟/關閉啟動器</translation>
 <translation id="5240725217819182328">快速存取特定頁面或在已安裝應用程式中執行操作</translation>
 <translation id="5245201184978705914">無法產生轉錄稿</translation>
+<translation id="5251174953851719648">重新整理內容</translation>
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
@@ -1413,6 +1416,7 @@
 <translation id="6147182561428020853">現在可以封鎖這部 <ph name="DEVICE_TYPE" /> 上安裝的應用程式</translation>
 <translation id="6154006699632741460">不支援周邊裝置</translation>
 <translation id="6156960295318603523">語言設定</translation>
+<translation id="6158923546703693047">內容來源資訊</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
 <translation id="616543563528926612">右鍵快速鍵已從<ph name="LAUNCHER_KEY_NAME" />鍵 + 點按更新為 alt + 點按</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
@@ -1996,6 +2000,7 @@
 <translation id="8315514906653279104">啟用中...</translation>
 <translation id="8331351032546853669">等候下載</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">提出問題。</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">輸出結果不佳</translation>
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>

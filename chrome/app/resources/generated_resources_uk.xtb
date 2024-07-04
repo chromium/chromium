@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Сторінка не відповідає}one{Сторінки не відповідають}few{Сторінки не відповідають}many{Сторінки не відповідають}other{Сторінки не відповідають}}</translation>
 <translation id="1011003645819296594">Збережені пристрої</translation>
 <translation id="1011355516189274711">Гучність синтезу мовлення</translation>
+<translation id="1011431628606634753">Змініть PIN-код для відновлення в Google Менеджері паролів</translation>
 <translation id="1012794136286421601">Ваші файли Документів, Таблиць, Презентацій і Малюнків синхронізуються. Відкрийте програму Диск Google, щоб отримати до них доступ онлайн чи офлайн.</translation>
 <translation id="1012876632442809908">Пристрій із портом USB типу C (на передній панелі)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -3643,7 +3644,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – залишилося <ph name="TIME" /></translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
 <translation id="3637203148990213388">Додаткові облікові записи</translation>
-<translation id="3640214691812501263">Додати розширення <ph name="EXTENSION_NAME" /> для користувача <ph name="USER_NAME" />?</translation>
 <translation id="3640347231390550691">Захистіть паролі від фішингу</translation>
 <translation id="3640613767643722554">Навчіть Асистент розпізнавати ваш голос</translation>
 <translation id="364100968401221170">Щоб видалити дані вебперегляду на всіх синхронізованих пристроях і в обліковому записі Google, <ph name="BEGIN_LINK" />увійдіть в обліковий запис<ph name="END_LINK" />.</translation>
@@ -4066,6 +4066,7 @@
 <translation id="3923221004758245114">Вилучити віртуальну машину <ph name="VM_NAME" /> з пристрою <ph name="DEVICE_TYPE" />? Усі додатки й дані віртуальної машини буде видалено.</translation>
 <translation id="3923494859158167397">Мобільні мережі не налаштовано</translation>
 <translation id="3923676227229836009">Ця сторінка може переглядати файли</translation>
+<translation id="3923958273791212723">Сповіщення про проблеми з продуктивністю</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Масштабування зображення й тексту: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Надсилає URL-адреси в Безпечний перегляд на перевірку. Також надсилає невеликі зразки сторінок, завантаження, дані про активність розширень та інформацію про систему, щоб виявляти нові загрози. Тимчасово зв'язує ці дані з обліковим записом Google, у який ви ввійшли, щоб захищати вас у всіх додатках Google.</translation>
@@ -4082,6 +4083,7 @@
 <translation id="3930737994424905957">Пошук пристроїв</translation>
 <translation id="3930968231047618417">Колір фону</translation>
 <translation id="3932356525934356570">Закріпити розширення "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="3932477678113677556">Максимальна кількість символів: <ph name="MAX" /></translation>
 <translation id="3933121352599513978">Згорнути небажані запити (рекомендовано)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> надає доступ до мережі Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Відкрити аудіо в новій вкладці</translation>
@@ -5219,6 +5221,7 @@
 <translation id="4807098396393229769">Ім'я на картці</translation>
 <translation id="4807122856660838973">Увімкнути Безпечний перегляд</translation>
 <translation id="4807514039636325497">Відомості про D-Bus</translation>
+<translation id="4808525520374557629">Отримувати сповіщення з пропозиціями щодо вирішення виявлених проблем із продуктивністю. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Спливаючі вікна заблоковано:</translation>
 <translation id="4809079943450490359">Вказівки адміністратора вашого пристрою:</translation>
 <translation id="4809447465126035330">Видалити</translation>
@@ -6087,6 +6090,7 @@
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5457459357461771897">Читати й видаляти фотографії, музику та інші медіафайли на комп’ютері</translation>
 <translation id="5458214261780477893">Дворак</translation>
+<translation id="5458716506062529991">Ви ввели неправильний PIN-код забагато разів. Щоб переглянути свої паролі й ключі доступу, змініть PIN-код.</translation>
 <translation id="5458998536542739734">Нотатки на заблокованому екрані</translation>
 <translation id="5459864179070366255">Установити</translation>
 <translation id="5460641065520325899">Керуйте типами інформації, яку сайти можуть використовувати для відстеження ваших дій.</translation>
@@ -8601,7 +8605,7 @@
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – закріплено</translation>
 <translation id="7366316827772164604">Пошук пристроїв поруч…</translation>
 <translation id="7366415735885268578">Додати сайт</translation>
-<translation id="7366909168761621528">Дані веб-перегляду</translation>
+<translation id="7366909168761621528">Дані вебперегляду</translation>
 <translation id="7367714965999718019">Генератор QR-коду</translation>
 <translation id="7368695150573390554">Усі офлайн-дані буде видалено</translation>
 <translation id="736877393389250337">Не вдається відкрити сторінку <ph name="URL" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />. Зверніться до свого системного адміністратора.</translation>

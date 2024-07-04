@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">파일</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">탐색 열기</translation>
+<translation id="129469256578833241">요약으로 돌아가기</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">언제든지 <ph name="LAUNCHER_KEY_NAME" /> + g를 누르세요.</translation>
 <translation id="1306549533752902673">추천 앱</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">자동 클릭</translation>
 <translation id="1925320505152357008">1분 미만</translation>
 <translation id="1928739107511554905">업데이트하려면 키보드가 연결된 상태로 터치스크린을 사용하여 Chromebook을 다시 시작하세요.</translation>
+<translation id="1929331825127010451">질문으로 돌아가기</translation>
 <translation id="1948405482892809935">다음 사용자로 전환</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1954252331066828794">화면 녹화 완료됨</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">런처 열기/닫기</translation>
 <translation id="5240725217819182328">설치된 앱 내의 특정 페이지 또는 작업에 빠르게 액세스</translation>
 <translation id="5245201184978705914">스크립트를 생성할 수 없음</translation>
+<translation id="5251174953851719648">콘텐츠 새로고침</translation>
 <translation id="5253783950165989294">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨(배터리 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5258528442992323769">저장된 데스크 없음</translation>
 <translation id="5260676007519551770">데스크 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">이제 이 <ph name="DEVICE_TYPE" />에 설치된 앱을 차단할 수 있습니다.</translation>
 <translation id="6154006699632741460">지원되지 않는 주변기기</translation>
 <translation id="6156960295318603523">언어 설정</translation>
+<translation id="6158923546703693047">콘텐츠 소스 정보</translation>
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="616543563528926612">마우스 오른쪽 버튼 클릭 단축키가 <ph name="LAUNCHER_KEY_NAME" /> 키 + 클릭에서 Alt + 클릭으로 업데이트되었습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8331351032546853669">다운로드 대기 중</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">질문해 보세요.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">좋지 않은 결과</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>

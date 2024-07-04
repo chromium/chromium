@@ -447,6 +447,7 @@
 <translation id="1317637799698924700">你的座架將以 USB Type-C 相容模式執行。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" />子頁面返回按鈕</translation>
 <translation id="1322046419516468189">你可以查看及管理 <ph name="SAVED_PASSWORDS_STORE" />中儲存的密碼</translation>
+<translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /><ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 票證</translation>
 <translation id="1327495825214193325">如要啟用 ADB 偵錯，必須重新啟動這部 <ph name="DEVICE_TYPE" />。如要停用 ADB 偵錯，必須將裝置恢復原廠設定。</translation>
 <translation id="1327527584824210101">使用密碼金鑰</translation>
@@ -2507,6 +2508,7 @@
 <translation id="2783298271312924866">已下載</translation>
 <translation id="2783952358106015700">透過「<ph name="APP_NAME" />」使用安全金鑰</translation>
 <translation id="2785267875302712148">密碼安全檢查</translation>
+<translation id="2785279781154577715">分頁懸停預覽資訊卡外觀</translation>
 <translation id="2785873697295365461">檔案描述元</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">-</translation>
@@ -3624,7 +3626,6 @@
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - 還可以使用 <ph name="TIME" /></translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637203148990213388">其他帳戶</translation>
-<translation id="3640214691812501263">為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="3640347231390550691">保護密碼，防範網路釣魚</translation>
 <translation id="3640613767643722554">訓練 Google 助理辨識你的聲音</translation>
 <translation id="364100968401221170">如要從所有同步的裝置和 Google 帳戶中刪除瀏覽資料，請先<ph name="BEGIN_LINK" />登入<ph name="END_LINK" />。</translation>
@@ -3986,6 +3987,7 @@
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">已向上調整並排視窗的大小</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
+<translation id="3877209288227498506">選擇在分頁懸停預覽資訊卡中顯示記憶體用量和圖片</translation>
 <translation id="3878445208930547646">不允許複製這個網站的內容</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880513902716032002">系統會預先載入你要造訪的某些網頁</translation>
@@ -4086,6 +4088,7 @@
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />，以更安全的方式下載檔案</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3950841222883198950">語音輸入</translation>
+<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />。}other{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />。}}</translation>
 <translation id="3953834000574892725">我的帳戶</translation>
 <translation id="3954354850384043518">下載中</translation>
 <translation id="3954468641195530330">未授權應用程式使用麥克風</translation>
@@ -4654,6 +4657,7 @@
 <translation id="438503109373656455">赤兔馬</translation>
 <translation id="4385146930797718821">已將螢幕截圖複製到剪貼簿</translation>
 <translation id="4385905942116811558">搜尋藍牙裝置和 USB 裝置</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{系統已不再支援這項擴充功能，因此已將其停用}other{系統已不再支援這些擴充功能，因此已將其停用}}</translation>
 <translation id="4386604394450371010">總覽</translation>
 <translation id="4387890294700445764">遭外洩的密碼</translation>
 <translation id="4388650384344483842">請至少輸入 8 個半形字元</translation>
@@ -5237,6 +5241,7 @@
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4831226137013573603">將麥克風設為靜音</translation>
 <translation id="4833683849865011483">在印表機伺服器上找到 1 台印表機</translation>
+<translation id="4835677468087803981">隱藏 PIN 碼</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回 Google 搜尋嗎？</translation>
 <translation id="4837926214103741331">您未獲得授權，無法使用這個裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
@@ -5578,6 +5583,7 @@
 <translation id="5088534251099454936">PKCS #1 SHA-512 (使用 RSA 加密)</translation>
 <translation id="5089763948477033443">側邊面板大小調整控點</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
+<translation id="5091636240353511739">顯示 PIN 碼</translation>
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">你可以在「檔案」應用程式或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
@@ -5760,6 +5766,7 @@
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前尚未設定瀏覽權限</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
+<translation id="5226514125747186">在網站圖示周圍顯示虛線圓圈。<ph name="BEGIN_LINK" />進一步瞭解閒置分頁<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">未授權網站使用位置資訊</translation>
 <translation id="5227679487546032910">預設的藍綠色顯示圖片</translation>
 <translation id="5228245824943774148">已連線到 <ph name="NUM_DEVICES_CONNECTED" /> 部裝置</translation>
@@ -6341,6 +6348,7 @@
 <translation id="5651308944918885595">鄰近分享可偵測性</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 台已儲存的印表機。</translation>
 <translation id="5654669866168491665">進一步瞭解在封鎖第三方 Cookie 的情況下，可能無法運作的網站</translation>
+<translation id="5654751240928365405">系統已不再支援這項擴充功能，因此已將其停用</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{為保護你的隱私，系統已從一個網站移除相關權限}other{為保護你的隱私，系統已從某些網站移除相關權限}}</translation>
 <translation id="565515993087783098">如果選擇清除這個網路，系統將一併移除 Passpoint 訂閱及其相關網路。</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
@@ -6712,6 +6720,7 @@
 <translation id="5938002010494270685">可進行安全性更新</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="5939719276406088041">無法建立捷徑</translation>
+<translation id="5939723110967488589">選擇工具列要顯示的按鈕</translation>
 <translation id="594048410531370124">無法辨識的按鍵。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="5941153596444580863">新增使用者...</translation>
 <translation id="5941343993301164315">請登入 <ph name="TOKEN_NAME" />。</translation>
@@ -7572,6 +7581,7 @@
 <translation id="6597324406048772521">不允許在這個網站執行擴充功能</translation>
 <translation id="6597331566371766302">系統管理員已封鎖下列擴充功能：</translation>
 <translation id="659894938503552850">由新到舊</translation>
+<translation id="6600016381025017075">搜尋本頁內容</translation>
 <translation id="6601262427770154296">管理使用者字典</translation>
 <translation id="6602173570135186741">自動填入和密碼</translation>
 <translation id="6602336931411102724">在書籤列中顯示分頁群組</translation>
@@ -8235,6 +8245,7 @@
 <translation id="7089253021944603172">讓分頁恢復「使用中」狀態</translation>
 <translation id="7090160970140261931">你可以新增其他帳戶到<ph name="DEVICE_TYPE" />，以便透過這些帳戶存取網站和應用程式。你也可以控管哪些帳戶能夠使用 Android 應用程式。</translation>
 <translation id="7090714929377281710">自動關閉無線基地台</translation>
+<translation id="7092504544229909737">不支援 Android 應用程式</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093866338626856921">與下列名稱的裝置交換資料：<ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C 裝置 (背面左側連接埠)</translation>
@@ -9725,6 +9736,7 @@
 <translation id="8184288427634747179">切換成<ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
+<translation id="8186013737729037962">進一步瞭解企業註冊的裝置</translation>
 <translation id="8186047833733689201">重音符號選單已開啟。按向左鍵、向右鍵或數字鍵即可瀏覽，按下 Enter 鍵則可插入重音符號。</translation>
 <translation id="8186609076106987817">伺服器找不到檔案。</translation>
 <translation id="8188389033983459049">檢查裝置設定並開啟藍牙功能，以便繼續操作</translation>

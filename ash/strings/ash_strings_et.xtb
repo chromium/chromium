@@ -97,6 +97,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1293556467332435079">Failid</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Avage avastamine</translation>
+<translation id="129469256578833241">Tagasi kokkuvõtte lehele</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Vajutage igal ajal klahve <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">SOOVITATUD RAKENDUSED</translation>
@@ -257,6 +258,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1923539912171292317">Automaatsed klikid</translation>
 <translation id="1925320505152357008">alla ühe min</translation>
 <translation id="1928739107511554905">Värskenduse hankimiseks kasutage puuteekraani, et oma Chromebook koos ühendatud klaviatuuriga taaskäivitada.</translation>
+<translation id="1929331825127010451">Tagasi küsimuse juurde</translation>
 <translation id="1948405482892809935">Aktiveeri järgmine kasutaja</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Ekraanikuva salvestamine on lõpetatud</translation>
@@ -1153,6 +1155,7 @@ Kasutada saate ka klaviatuuri otseteed. Esmalt tõstke tekst esile, seejärel va
 <translation id="5238719049014159442">Käivitaja avamine/sulgemine</translation>
 <translation id="5240725217819182328">Kiirjuurdepääs konkreetsetele lehtedele või toimingutele installitud rakendustes</translation>
 <translation id="5245201184978705914">Ei saa transkriptsiooni luua</translation>
+<translation id="5251174953851719648">Sisu värskendamine</translation>
 <translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5258528442992323769">Salvestatud töölaudu ei ole</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
@@ -1417,6 +1420,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6147182561428020853">Nüüd saate seadmesse <ph name="DEVICE_TYPE" /> installitud rakendusi blokeerida</translation>
 <translation id="6154006699632741460">Välisseadet ei toetata</translation>
 <translation id="6156960295318603523">Keeleseaded</translation>
+<translation id="6158923546703693047">Sisu allika teave</translation>
 <translation id="615957422585914272">Ekraanil kuvatava klaviatuuri kuvamine</translation>
 <translation id="616543563528926612">Paremkliki otsetee klahvikombinatsioon klahv <ph name="LAUNCHER_KEY_NAME" /> + klikk asendatakse klahvikombinatsiooniga alt + klikk</translation>
 <translation id="6165508094623778733">Lisateave</translation>
@@ -2001,6 +2005,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8315514906653279104">Sisselülitamine …</translation>
 <translation id="8331351032546853669">Allalaadimine on ootel</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Esitage küsimus.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Halb väljund</translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>

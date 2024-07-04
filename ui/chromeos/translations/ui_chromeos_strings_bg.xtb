@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Анулиране на <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, <ph name="CONNECTION_STATUS" />, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3691184985318546178">Синхалски</translation>
+<translation id="3702842351052426940">SIM картата или потребителският ви профил за електронна SIM карта може да са деактивирани. Заменете SIM картата си или превключете към друг потребителски профил за електронна SIM карта.</translation>
 <translation id="3722341589402358578">Възникна грешка. Някои елементи може да не са преместени в кошчето.</translation>
 <translation id="3726463242007121105">Това устройство не може да бъде отворено, защото файловата му система не се поддържа.</translation>
 <translation id="3727148787322499904">Промяната на тази настройка ще засегне всички споделени мрежи</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Този прокси сървър е наложен от администратора ви</translation>
 <translation id="3830674330436234648">Възпроизвеждането не е възможно</translation>
 <translation id="383652340667548381">сръбски</translation>
+<translation id="3839045880592694915">Операторът ви е забранил на модема ви да осъществява връзка. За повече подробности се обърнете към оператора си.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
 <translation id="6269630227984243955">Малайски</translation>
 <translation id="6271903698064569429">Файловете не могат да бъдат качени, защото мястото в хранилището „<ph name="SHARED_DRIVE_NAME" />“ не е достатъчно.</translation>
+<translation id="6279140785485544797">Планът ви за мобилни данни може да е изтекъл. Свържете се с оператора си за поддръжка.</translation>
 <translation id="6287852322318138013">Изберете приложение за отваряне на този файл</translation>
 <translation id="6295542640242147836">Заключване на SIM картата</translation>
 <translation id="6296410173147755564">Невалиден PUK код</translation>
