@@ -2391,7 +2391,7 @@
     ],
     "args": ["--enable-features=StandardCompliantNonSpecialSchemeURLParsing"],
     "owners": ["hayato@chromium.org"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "cookie-deprecation-label",
