@@ -3134,6 +3134,10 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('some/cpp/problematic/file5.cc', [
                 'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
             ]),
+            MockFile('allowed_ranges_usage.cc', ['std::ranges::begin(vec)']),
+            MockFile('banned_ranges_usage.cc',
+                     ['std::ranges::subrange(first, last)']),
+            MockFile('views_usage.cc', ['std::views::all(vec)']),
         ]
 
         results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -3152,6 +3156,10 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
         self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
         self.assertFalse('some/cpp/comment/file.cc' in results[1].message)
+        self.assertFalse('allowed_ranges_usage.cc' in results[0].message)
+        self.assertFalse('allowed_ranges_usage.cc' in results[1].message)
+        self.assertTrue('banned_ranges_usage.cc' in results[1].message)
+        self.assertTrue('views_usage.cc' in results[1].message)
 
     def testBannedCppRandomFunctions(self):
         banned_rngs = [

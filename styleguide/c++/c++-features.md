@@ -1065,6 +1065,54 @@ machinery in `<type_traits>`.
 None
 ***
 
+### Range algorithms <sup>[allowed]</sup>
+
+```c++
+constexpr int kArr[] = {2, 4, 6, 8, 10, 12};
+constexpr auto is_even = [] (auto x) { return x % 2 == 0; };
+static_assert(std::ranges::all_of(kArr, is_even));
+```
+
+**Description:** Provides versions of most algorithms that accept either an
+iterator-sentinel pair or a single range argument.
+
+**Documentation:**
+[Ranges algorithms](https://en.cppreference.com/w/cpp/algorithm/ranges)
+
+**Notes:**
+*** promo
+Supersedes `//base`'s backports in `//base/ranges/algorithm.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
+### Range access, range primitives, dangling iterator handling, and range concepts <sup>[allowed]</sup>
+
+```c++
+// Range access:
+constexpr int kArr[] = {2, 4, 6, 8, 10, 12};
+static_assert(std::ranges::size(kArr) == 6);
+
+// Range primitives:
+static_assert(
+    std::same_as<std::ranges::iterator_t<decltype(kArr)>, const int*>);
+
+// Range concepts:
+static_assert(std::ranges::contiguous_range<decltype(kArr)>);
+```
+
+**Description:** Various helper functions and types for working with ranges.
+
+**Documentation:**
+[Ranges library](https://en.cppreference.com/w/cpp/ranges)
+
+**Notes:**
+*** promo
+Supersedes `//base`'s backports in `//base//ranges/ranges.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
 ### Library feature-test macros and &lt;version&gt; <sup>[allowed]</sup>
 
 ```c++
@@ -1449,6 +1497,34 @@ encoded using the current C locale.
 Chromium functionality should not vary with the C locale.
 ***
 
+### Views, range factories, and range adaptors <sup>[banned]</sup>
+
+```c++
+constexpr int kArr[] = {6, 2, 8, 4, 4, 2};
+constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
+static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
+
+// Prints 1, 2, 3, 4, 5, 6.
+for (auto i : std::ranges::iota_view(1, 7)) {
+  std::cout << i << '\n';
+}
+```
+
+**Description:** Lightweight objects that represent iterable sequences.
+Provides facilities for lazy operations on ranges, along with composition into
+pipelines.
+
+**Documentation:**
+[Ranges library](https://en.cppreference.com/w/cpp/ranges)
+
+**Notes:**
+*** promo
+Banned in Chrome due to questions about the design, impact on build time, and
+runtime performance.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
 ### std::to_address <sup>[banned]</sup>
 
 ```c++
@@ -1594,28 +1670,6 @@ std::cout << std::format("Hello {}!\n", "world");
 *** promo
 Has both pros and cons compared to `absl::StrFormat` (which we don't yet use).
 Migration would be nontrivial.
-***
-
-### &lt;ranges&gt; <sup>[tbd]</sup>
-
-```c++
-constexpr int arr[] = {6, 2, 8, 4, 4, 2};
-constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
-static_assert(std::ranges::equal(arr | plus_one, {7, 3, 9, 5, 5, 3}));
-```
-
-**Description:** Generalizes algorithms using range views, which are lightweight
-objects that represent iterable sequences. Provides facilities for eager and
-lazy operations on ranges, along with composition into pipelines.
-
-**Documentation:**
-[Ranges library](https://en.cppreference.com/w/cpp/ranges)
-
-**Notes:**
-*** promo
-Significant concerns expressed internally. We should consider whether there are
-clearly-safe pieces to allow (e.g. to replace `base/ranges/algorithm.h`) and
-engage with the internal library team.
 ***
 
 ### &lt;source_location&gt; <sup>[tbd]</sup>
