@@ -2948,6 +2948,12 @@ BASE_FEATURE(kAuthPanelUsesOnlyPassword,
              "AuthPanelUsesOnlyPassword",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This features controls whether or not passwordless setup is enabled, such as
+// having a pin-only config.
+BASE_FEATURE(kAllowPasswordlessSetup,
+             "AllowPasswordlessSetup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 BASE_FEATURE(kUseMessagesStagingUrl,
@@ -4768,6 +4774,10 @@ bool IsUseAuthPanelInSettingsEnabled() {
 
 bool IsAuthPanelUsingOnlyPassword() {
   return base::FeatureList::IsEnabled(kAuthPanelUsesOnlyPassword);
+}
+
+bool IsAllowPasswordlessSetupEnabled() {
+  return base::FeatureList::IsEnabled(kAllowPasswordlessSetup);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {
