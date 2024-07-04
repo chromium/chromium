@@ -1061,7 +1061,7 @@ TEST(CStringViewTest, CompatibleWithRanges) {
 }
 
 TEST(CStringViewTest, ConstructFromStringLiteralWithEmbeddedNul) {
-  constexpr std::string s = "abc\0de";
+  const std::string s = "abc\0de";
   constexpr std::string_view sv = "abc\0de";
   constexpr base::cstring_view cv = "abc\0de";
   EXPECT_EQ(s, std::string_view("abc"));
