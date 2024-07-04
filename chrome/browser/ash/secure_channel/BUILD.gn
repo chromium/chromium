@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("secure_channel") {
+static_library("secure_channel") {
   sources = [
     "nearby_connection_broker.cc",
     "nearby_connection_broker.h",
@@ -44,7 +44,7 @@ source_set("secure_channel") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   sources = [
     "fake_nearby_connection_broker.cc",
     "fake_nearby_connection_broker.h",

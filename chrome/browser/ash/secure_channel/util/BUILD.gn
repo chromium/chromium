@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("util") {
+static_library("util") {
   sources = [
     "histogram_util.cc",
     "histogram_util.h",

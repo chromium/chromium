@@ -249,7 +249,7 @@ static_library("input_method") {
   ]
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [
