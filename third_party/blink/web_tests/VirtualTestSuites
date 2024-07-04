@@ -1863,7 +1863,7 @@
       "external/wpt/cookie-store/cookieStore_opaque_origin.https.html"
     ],
     "args": ["--enable-features=IsolateSandboxedIframes"],
-    "expires": "Jul 1, 2024"
+    "expires": "Jan 1, 2025"
   },
   {
     "prefix": "coop-restrict-properties",
