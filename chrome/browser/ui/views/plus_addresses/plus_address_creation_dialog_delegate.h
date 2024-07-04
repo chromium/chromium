@@ -50,10 +50,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   // PlusAddressCreationView:
   void ShowReserveResult(const PlusProfileOrError& maybe_plus_profile) override;
   void ShowConfirmResult(const PlusProfileOrError& maybe_plus_profile) override;
-  // TODO: crbug.com/350660518 - remove from interface and move into anonymous
-  // namespace of the implementation file.
-  void OpenSettingsLink(content::WebContents* web_contents) override;
-  void OpenErrorReportLink(content::WebContents* web_contents) override;
   void HideRefreshButton() override;
 
   // Calls the respective controller method for `type`.

@@ -84,17 +84,28 @@ const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kLogoLargeIcon = vector_icons::kProductIcon;
 #endif
 
+// Helper function that opens a link in `web_contents` if `web_contents` is not
+// null and the link is not empty.
+void OpenLink(content::WebContents* web_contents, const GURL& url) {
+  if (!web_contents || url.is_empty()) {
+    return;
+  }
+  web_contents->OpenURL(
+      content::OpenURLParams(url, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_LINK,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+}
+
+// Opens a link to report errors with plus addresses.
+void OpenErrorReportingLink(content::WebContents* web_contents) {
+  OpenLink(web_contents, GURL(features::kPlusAddressErrorReportUrl.Get()));
+}
+
 // Opens a link to learn more about plus addresses.
 void OpenLearnMoreLink(content::WebContents* web_contents) {
-  if (web_contents && !features::kPlusAddressLearnMoreUrl.Get().empty()) {
-    web_contents->OpenURL(
-        content::OpenURLParams(GURL(features::kPlusAddressLearnMoreUrl.Get()),
-                               content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PageTransition::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-  }
+  OpenLink(web_contents, GURL(features::kPlusAddressLearnMoreUrl.Get()));
 }
 
 }  // namespace
@@ -278,10 +289,8 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   gfx::Range error_link_range(error_link_offsets[0],
                               error_link_offsets[0] + error_link_text.length());
   const auto error_link_text_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PlusAddressCreationDialogDelegate::OpenErrorReportLink,
-          // Safe because this delegate outlives the Widget (and this view).
-          base::Unretained(this), web_contents));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&OpenErrorReportingLink, web_contents));
   error_report_label_->AddStyleRange(error_link_range, error_link_text_style);
 
   if (show_notice) {
@@ -380,33 +389,6 @@ void PlusAddressCreationDialogDelegate::OnWidgetInitialized() {
             &PlusAddressCreationDialogDelegate::HandleButtonPress,
             // Safe because this outlives the BubbleFrameView.
             base::Unretained(this), PlusAddressViewButtonType::kClose)));
-  }
-}
-
-void PlusAddressCreationDialogDelegate::OpenSettingsLink(
-    content::WebContents* web_contents) {
-  if (web_contents && !features::kPlusAddressManagementUrl.Get().empty()) {
-    web_contents->OpenURL(
-        content::OpenURLParams(GURL(features::kPlusAddressManagementUrl.Get()),
-                               content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PageTransition::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-  }
-}
-
-// TODO(b/313670457) Test open link behaviors when migrate to Kombucha.
-void PlusAddressCreationDialogDelegate::OpenErrorReportLink(
-    content::WebContents* web_contents) {
-  if (web_contents && !features::kPlusAddressErrorReportUrl.Get().empty()) {
-    web_contents->OpenURL(
-        content::OpenURLParams(GURL(features::kPlusAddressErrorReportUrl.Get()),
-                               content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PageTransition::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
   }
 }
 

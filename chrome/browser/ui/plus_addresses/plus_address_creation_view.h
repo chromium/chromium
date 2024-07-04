@@ -8,10 +8,6 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "ui/base/interaction/element_identifier.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace plus_addresses {
 
 enum class PlusAddressViewButtonType { kCancel = 0, kConfirm = 1, kClose = 2 };
@@ -33,13 +29,11 @@ class PlusAddressCreationView {
   // enable the OK button or show an error message.
   virtual void ShowReserveResult(
       const PlusProfileOrError& maybe_plus_profile) = 0;
+
   // Either closes the UI or shows an error message.
   virtual void ShowConfirmResult(
       const PlusProfileOrError& maybe_plus_profile) = 0;
-  // Navigates to the link shown in the dialog's description.
-  virtual void OpenSettingsLink(content::WebContents* web_contents) = 0;
-  // Navigates to the link shown in error report instructions.
-  virtual void OpenErrorReportLink(content::WebContents* web_contents) = 0;
+
   // Hides the button for refreshing the plus address.
   virtual void HideRefreshButton() = 0;
 };
