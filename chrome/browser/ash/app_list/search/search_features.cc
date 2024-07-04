@@ -33,11 +33,7 @@ BASE_FEATURE(kLauncherFuzzyMatchForOmnibox,
 
 BASE_FEATURE(kLauncherImageSearch,
              "LauncherImageSearch",
-#if BUILDFLAG(ENABLE_MERGE_REQUEST)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else   //  BUILDFLAG(ENABLE_MERGE_REQUEST)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
 
 BASE_FEATURE(kLauncherLocalImageSearchConfidence,
              "LauncherLocalImageSearchConfidence",
@@ -57,15 +53,11 @@ BASE_FEATURE(kICASupportedByHardware,
 
 BASE_FEATURE(kLauncherImageSearchOcr,
              "LauncherImageSearchOcr",
-#if BUILDFLAG(ENABLE_MERGE_REQUEST)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else   //  BUILDFLAG(ENABLE_MERGE_REQUEST)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(ENABLE_MERGE_REQUEST)
 
 BASE_FEATURE(kLauncherImageSearchIndexingLimit,
              "LauncherImageSearchIndexingLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
@@ -103,7 +95,6 @@ bool IsLauncherFuzzyMatchForOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kLauncherFuzzyMatchForOmnibox);
 }
 
-// Only enable image search for ICA supported devices.
 bool IsLauncherImageSearchEnabled() {
   return (base::FeatureList::IsEnabled(
               ash::features::kFeatureManagementLocalImageSearch) ||
@@ -112,6 +103,7 @@ bool IsLauncherImageSearchEnabled() {
          base::FeatureList::IsEnabled(kLauncherImageSearch);
 }
 
+// Only enable ica image search for ICA supported devices.
 bool IsLauncherImageSearchIcaEnabled() {
   return base::FeatureList::IsEnabled(kLauncherImageSearchIca) &&
          base::FeatureList::IsEnabled(kICASupportedByHardware);
