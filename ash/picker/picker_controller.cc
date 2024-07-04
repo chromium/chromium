@@ -26,6 +26,7 @@
 #include "ash/picker/picker_rich_media.h"
 #include "ash/picker/picker_suggestions_controller.h"
 #include "ash/picker/search/picker_search_controller.h"
+#include "ash/picker/views/picker_caps_lock_state_view.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_positioning.h"
 #include "ash/picker/views/picker_view.h"
@@ -35,6 +36,8 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -85,6 +88,8 @@ enum class PickerFeatureKeyType { kNone, kDev, kTest };
 constexpr int kMaxRecentEmoji = 20;
 
 constexpr std::string_view kEmojiHistoryValueFieldName = "text";
+
+constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
 
 PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   // Command line looks like:
@@ -298,6 +303,15 @@ GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
   }
 }
 
+gfx::NativeView GetParentView() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  // Use MenuContainer so that it works even with a system modal dialog.
+  return Shell::GetContainer(active_window
+                                 ? active_window->GetRootWindow()
+                                 : Shell::GetRootWindowForNewWindows(),
+                             kShellWindowId_MenuContainer);
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -310,6 +324,8 @@ PickerController::~PickerController() {
   if (widget_) {
     widget_->CloseNow();
   }
+  // Close CapsLock State View if it's open to avoid a dangling pointer.
+  CloseCapsLockStateView();
 }
 
 bool PickerController::IsFeatureKeyMatched() {
@@ -639,6 +655,7 @@ std::vector<std::string> PickerController::GetSuggestedEmoji() {
 }
 
 void PickerController::OnWidgetDestroying(views::Widget* widget) {
+  caps_lock_state_view_ = nullptr;
   feature_usage_metrics_.StopUsage();
   session_metrics_.reset();
   widget_observation_.Reset();
@@ -656,7 +673,10 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
 }
 
 void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
+  CloseCapsLockStateView();
   show_editor_callback_ = client_->CacheEditorContext();
+
+  feature_usage_metrics_.StartUsage();
 
   model_ = std::make_unique<PickerModel>(
       GetFocusedTextInputClient(), &GetImeKeyboard(),
@@ -664,7 +684,16 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
                                       : PickerModel::EditorStatus::kEnabled);
 
   if (model_->GetMode() == PickerModeType::kPassword) {
-    GetImeKeyboard().SetCapsLockEnabled(!model_->is_caps_lock_enabled());
+    bool should_enable = !model_->is_caps_lock_enabled();
+    GetImeKeyboard().SetCapsLockEnabled(should_enable);
+    caps_lock_state_view_ = new PickerCapsLockStateView(
+        GetParentView(), should_enable, GetCaretBounds());
+    caps_lock_state_view_->Show();
+    widget_observation_.Observe(caps_lock_state_view_->GetWidget());
+    caps_lock_state_view_close_timer_.Start(
+        FROM_HERE, kCapsLockStateViewDisplayTime,
+        base::BindOnce(&PickerController::CloseCapsLockStateView,
+                       weak_ptr_factory_.GetWeakPtr()));
     model_.reset();
     return;
   }
@@ -678,7 +707,6 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
       trigger_event_timestamp);
   widget_->Show();
 
-  feature_usage_metrics_.StartUsage();
   session_metrics_->OnStartSession(GetFocusedTextInputClient());
   widget_observation_.Observe(widget_.get());
 }
@@ -688,6 +716,14 @@ void PickerController::CloseWidget() {
       PickerSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
   model_.reset();
+}
+
+void PickerController::CloseCapsLockStateView() {
+  caps_lock_state_view_close_timer_.Stop();
+  if (caps_lock_state_view_) {
+    caps_lock_state_view_->Close();
+    OnWidgetDestroying(caps_lock_state_view_->GetWidget());
+  }
 }
 
 void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,

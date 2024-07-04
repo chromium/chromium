@@ -7434,6 +7434,12 @@ New install
       <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for local files.">
         No images in Files
       </message>
+      <message name="IDS_PICKER_CAPS_LOCK_ON_TEXT" translateable="false" desc="Tooltip text for the bubble shown when Caps Lock is enabled.">
+        Caps Lock on
+      </message>
+      <message name="IDS_PICKER_CAPS_LOCK_OFF_TEXT" translateable="false" desc="Tooltip text for the bubble shown when Caps Lock is disabled.">
+        Caps Lock off
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

@@ -183,7 +183,8 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfClosed) {
   EXPECT_TRUE(controller.widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, ToggleWidgetTogglesCapslockForPasswordField) {
+TEST_F(PickerControllerTest,
+       ToggleWidgetInPasswordFieldTogglesCapslockAndShowsBubbleForAShortTime) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   auto* input_method =
@@ -198,12 +199,43 @@ TEST_F(PickerControllerTest, ToggleWidgetTogglesCapslockForPasswordField) {
   ASSERT_TRUE(ime_keyboard);
 
   EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(controller.caps_lock_state_view_for_testing());
   EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_FALSE(controller.caps_lock_state_view_for_testing());
+}
+
+TEST_F(PickerControllerTest,
+       ToggleWidgetTwiceQuicklyInPasswordFieldExtendsBubbleShowTime) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_PASSWORD});
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  controller.ToggleWidget();
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+
+  EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(controller.caps_lock_state_view_for_testing());
+  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(controller.caps_lock_state_view_for_testing());
 
   controller.ToggleWidget();
 
   EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(controller.caps_lock_state_view_for_testing());
   EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
+
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_TRUE(controller.caps_lock_state_view_for_testing());
 }
 
 TEST_F(PickerControllerTest, ToggleWidgetClosesWidgetIfOpen) {

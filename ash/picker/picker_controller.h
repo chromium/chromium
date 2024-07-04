@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
@@ -31,6 +32,7 @@ class SharedURLLoaderFactory;
 namespace ash {
 
 class PickerAssetFetcher;
+class PickerCapsLockStateView;
 class PickerClient;
 class PickerInsertMediaRequest;
 class PickerModel;
@@ -79,6 +81,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
+  // Returns the CapsLock state view for tests.
+  PickerCapsLockStateView* caps_lock_state_view_for_testing() {
+    return caps_lock_state_view_.get();
+  }
   PickerFeatureTour& feature_tour_for_testing() { return feature_tour_; }
 
   // PickerViewDelegate:
@@ -124,9 +130,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                          std::u16string_view text);
   void OnFeatureTourCompleted();
   std::vector<std::string> GetRecentEmoji(ui::EmojiPickerCategory category);
+  void CloseCapsLockStateView();
 
   PickerFeatureTour feature_tour_;
-  raw_ptr<PickerClient> client_ = nullptr;
   std::unique_ptr<PickerModel> model_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
@@ -134,6 +140,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
   std::unique_ptr<PickerSearchController> search_controller_;
+
+  raw_ptr<PickerClient> client_ = nullptr;
+  raw_ptr<PickerCapsLockStateView> caps_lock_state_view_ = nullptr;
 
   base::OnceCallback<void(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text)>
@@ -148,6 +157,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  // Closes CapsLock state view after some time.
+  base::OneShotTimer caps_lock_state_view_close_timer_;
 
   base::WeakPtrFactory<PickerController> weak_ptr_factory_{this};
 };
