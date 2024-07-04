@@ -1,3 +1,5 @@
+# Last tested args.gn setup for Linux
+
 cc_wrapper = "sccache"
 enable_nacl=false
 use_dawn=false

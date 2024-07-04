@@ -108,6 +108,11 @@ jobs:
         run: |
           cd src
           ninja -C out/Default gpu_unittests
+      # V8 utility stuff
+      - name: ninja gin_unittests
+        run: |
+          cd src
+          ninja -C out/Default gin_unittests
       - name: sccache check
         run: sccache -s
       - name: Any speed
