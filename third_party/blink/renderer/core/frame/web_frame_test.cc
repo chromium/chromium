@@ -235,6 +235,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Mock;
 using testing::Return;
+using testing::UnorderedElementsAre;
 
 namespace blink {
 
@@ -1418,7 +1419,7 @@ TEST_F(WebFrameCSSCallbackTest, AuthorStyleSheet) {
   RunPendingTasks();
   EXPECT_EQ(2, UpdateCount());
   EXPECT_THAT(MatchedSelectors(),
-              ElementsAre("div.initial_off", "div.initial_on"));
+              UnorderedElementsAre("div.initial_off", "div.initial_on"));
 
   // Check that we can turn off callbacks for certain selectors.
   Doc().WatchCSSSelectors(WebVector<WebString>());
@@ -1606,7 +1607,7 @@ TEST_F(WebFrameCSSCallbackTest, MultiSelector) {
   RunPendingTasks();
 
   EXPECT_EQ(1, UpdateCount());
-  EXPECT_THAT(MatchedSelectors(), ElementsAre("span", "span, p"));
+  EXPECT_THAT(MatchedSelectors(), UnorderedElementsAre("span", "span, p"));
 }
 
 TEST_F(WebFrameCSSCallbackTest, InvalidSelector) {

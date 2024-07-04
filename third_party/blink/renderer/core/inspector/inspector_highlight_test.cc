@@ -23,6 +23,7 @@ namespace {
 using base::test::ParseJson;
 using testing::ByRef;
 using testing::Eq;
+using testing::UnorderedElementsAre;
 
 void AssertValueEqualsJSON(const std::unique_ptr<protocol::Value>& actual_value,
                            const std::string& json_expected) {
@@ -389,30 +390,23 @@ TEST_F(InspectorHighlightTest, GridLineNames) {
       InspectorGridHighlight(subgrid, InspectorHighlight::DefaultGridConfig());
   EXPECT_TRUE(info);
 
-  auto CompareLineNames = [](protocol::ListValue* row_or_column_list,
-                             WTF::Vector<WTF::String>& expected_names) -> void {
+  auto GetLineNames = [](protocol::ListValue* row_or_column_list) {
+    Vector<String> ret;
     for (wtf_size_t i = 0; i < row_or_column_list->size(); ++i) {
       protocol::DictionaryValue* current_value =
           static_cast<protocol::DictionaryValue*>(row_or_column_list->at(i));
 
       WTF::String string_value;
       EXPECT_TRUE(current_value->getString("name", &string_value));
-
-      EXPECT_EQ(expected_names[i], string_value);
+      ret.push_back(string_value);
     }
+    return ret;
   };
 
-  protocol::ListValue* row_info = info->getArray("rowLineNameOffsets");
-  EXPECT_EQ(row_info->size(), 6u);
-  WTF::Vector<WTF::String> expected_row_names = {"d", "e_sub", "e",
-                                                 "f", "d_sub", "f_sub"};
-  CompareLineNames(row_info, expected_row_names);
-
-  protocol::ListValue* column_info = info->getArray("columnLineNameOffsets");
-  EXPECT_EQ(column_info->size(), 6u);
-  WTF::Vector<WTF::String> expected_column_names = {"b", "a_sub", "b_sub",
-                                                    "c", "a",     "c_sub"};
-  CompareLineNames(column_info, expected_column_names);
+  EXPECT_THAT(GetLineNames(info->getArray("rowLineNameOffsets")),
+              UnorderedElementsAre("d", "d_sub", "e", "e_sub", "f", "f_sub"));
+  EXPECT_THAT(GetLineNames(info->getArray("columnLineNameOffsets")),
+              UnorderedElementsAre("a", "a_sub", "b", "b_sub", "c", "c_sub"));
 }
 
 TEST_F(InspectorHighlightTest, GridAreaNames) {

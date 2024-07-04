@@ -530,7 +530,7 @@ TEST_P(PrintContextTest, LinkedTarget) {
   );
   PrintSinglePage(canvas);
 
-  const Vector<MockPageContextCanvas::Operation>& operations =
+  Vector<MockPageContextCanvas::Operation> operations =
       canvas.RecordedOperations();
   ASSERT_EQ(8u, operations.size());
   // The DrawRect operations come from a stable iterator.
@@ -544,14 +544,20 @@ TEST_P(PrintContextTest, LinkedTarget) {
   EXPECT_SKRECT_EQ(50, 460, 10, 10, operations[3].rect);
 
   // The DrawPoint operations come from an unstable iterator.
+  std::sort(operations.begin() + 4, operations.begin() + 8,
+            [](const MockPageContextCanvas::Operation& a,
+               const MockPageContextCanvas::Operation& b) {
+              return std::pair(a.rect.x(), a.rect.y()) <
+                     std::pair(b.rect.x(), b.rect.y());
+            });
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[4].type);
-  EXPECT_SKRECT_EQ(450, 260, 0, 0, operations[4].rect);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[4].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[5].type);
   EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[5].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[6].type);
   EXPECT_SKRECT_EQ(450, 60, 0, 0, operations[6].rect);
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[7].type);
-  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[7].rect);
+  EXPECT_SKRECT_EQ(450, 260, 0, 0, operations[7].rect);
 }
 
 TEST_P(PrintContextTest, EmptyLinkedTarget) {
