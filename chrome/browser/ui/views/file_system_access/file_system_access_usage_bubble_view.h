@@ -85,6 +85,8 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   // twice at the same time.
   static FileSystemAccessUsageBubbleView* bubble_;
 
+  raw_ptr<views::View> readable_collapsible_list_view_;
+  raw_ptr<views::View> writable_collapsible_list_view_;
   const url::Origin origin_;
   const Usage usage_;
   FilePathListModel readable_paths_model_;

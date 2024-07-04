@@ -204,6 +204,11 @@ class CollapsibleListView : public views::View {
     table_view_parent_->SetVisible(false);
   }
 
+  void ClearModel() {
+    static_cast<views::TableView*>(table_view_parent_->contents())
+        ->SetModel(nullptr);
+  }
+
   // views::View
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
@@ -367,7 +372,16 @@ FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
-FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() = default;
+FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() {
+  if (readable_collapsible_list_view_) {
+    static_cast<CollapsibleListView*>(readable_collapsible_list_view_)
+        ->ClearModel();
+  }
+  if (writable_collapsible_list_view_) {
+    static_cast<CollapsibleListView*>(writable_collapsible_list_view_)
+        ->ClearModel();
+  }
+}
 
 std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
@@ -428,7 +442,7 @@ void FileSystemAccessUsageBubbleView::Init() {
         label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
         AddChildView(std::move(label));
       }
-      AddChildView(
+      writable_collapsible_list_view_ = AddChildView(
           std::make_unique<CollapsibleListView>(&writable_paths_model_));
     }
 
@@ -442,7 +456,7 @@ void FileSystemAccessUsageBubbleView::Init() {
         label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
         AddChildView(std::move(label));
       }
-      AddChildView(
+      readable_collapsible_list_view_ = AddChildView(
           std::make_unique<CollapsibleListView>(&readable_paths_model_));
     }
   }
