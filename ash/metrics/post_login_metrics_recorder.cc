@@ -45,19 +45,6 @@ PostLoginMetricsRecorder::PostLoginMetricsRecorder(
 
 PostLoginMetricsRecorder::~PostLoginMetricsRecorder() = default;
 
-void PostLoginMetricsRecorder::EnsureTracingSliceNamed() {
-  // EnsureTracingSliceNamed() should be called only on expected events.
-  // If login ThroughputRecording did not start with either OnAuthSuccess
-  // or LoggedInStateChanged the tracing slice will have the "-unordered"
-  // suffix.
-  //
-  // Depending on the login flow this function may get called multiple times.
-  if (markers_.empty()) {
-    // The first event will name the tracing row.
-    AddLoginTimeMarker(kLoginThroughput);
-  }
-}
-
 void PostLoginMetricsRecorder::AddLoginTimeMarker(
     const std::string& marker_name) {
   // Unit tests often miss the full initialization flow so we use a
@@ -141,17 +128,16 @@ void PostLoginMetricsRecorder::AddLoginTimeMarker(
 }
 
 void PostLoginMetricsRecorder::OnAuthSuccess(base::TimeTicks ts) {
-  EnsureTracingSliceNamed();
+  EnsureTracingSliceNamed(ts);
   AddLoginTimeMarker("OnAuthSuccess");
-  timestamp_on_auth_success_ = ts;
 }
 
 void PostLoginMetricsRecorder::OnUserLoggedIn(base::TimeTicks ts,
                                               bool is_ash_restarted,
                                               bool is_regular_user_or_owner) {
-  timestamp_primary_user_logged_in_ = ts;
+  std::optional<base::TimeTicks> timestamp_on_auth_success = timestamp_origin_;
 
-  EnsureTracingSliceNamed();
+  EnsureTracingSliceNamed(ts);
   AddLoginTimeMarker("UserLoggedIn");
 
   if (is_ash_restarted || !is_regular_user_or_owner) {
@@ -159,17 +145,16 @@ void PostLoginMetricsRecorder::OnUserLoggedIn(base::TimeTicks ts,
   }
 
   // Report UserLoggedIn histogram if we had OnAuthSuccess() event previously.
-  if (timestamp_on_auth_success_.has_value()) {
-    const base::TimeDelta duration = ts - timestamp_on_auth_success_.value();
+  if (timestamp_on_auth_success.has_value()) {
+    const base::TimeDelta duration = ts - timestamp_on_auth_success.value();
     base::UmaHistogramTimes("Ash.Login.LoggedInStateChanged", duration);
   }
 }
 
 void PostLoginMetricsRecorder::OnAllExpectedShelfIconLoaded(
     base::TimeTicks ts) {
-  if (timestamp_primary_user_logged_in_.has_value()) {
-    const base::TimeDelta duration_ms =
-        ts - timestamp_primary_user_logged_in_.value();
+  if (timestamp_origin_.has_value()) {
+    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
     constexpr char kAshLoginSessionRestoreAllShelfIconsLoaded[] =
         "Ash.LoginSessionRestore.AllShelfIconsLoaded";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllShelfIconsLoaded,
@@ -180,9 +165,8 @@ void PostLoginMetricsRecorder::OnAllExpectedShelfIconLoaded(
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsCreated(base::TimeTicks ts) {
-  if (timestamp_primary_user_logged_in_.has_value()) {
-    const base::TimeDelta duration_ms =
-        ts - timestamp_primary_user_logged_in_.value();
+  if (timestamp_origin_.has_value()) {
+    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
     constexpr char kAshLoginSessionRestoreAllBrowserWindowsCreated[] =
         "Ash.LoginSessionRestore.AllBrowserWindowsCreated";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreAllBrowserWindowsCreated,
@@ -193,9 +177,8 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsCreated(base::TimeTicks ts) {
 }
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsShown(base::TimeTicks ts) {
-  if (timestamp_primary_user_logged_in_.has_value()) {
-    const base::TimeDelta duration_ms =
-        ts - timestamp_primary_user_logged_in_.value();
+  if (timestamp_origin_.has_value()) {
+    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
     constexpr char kAshLoginSessionRestoreAllBrowserWindowsShown[] =
         "Ash.LoginSessionRestore.AllBrowserWindowsShown";
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.LoginSessionRestore.AllBrowserWindowsShown",
@@ -207,9 +190,8 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsShown(base::TimeTicks ts) {
 
 void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
     base::TimeTicks ts) {
-  if (timestamp_primary_user_logged_in_.has_value()) {
-    const base::TimeDelta duration_ms =
-        ts - timestamp_primary_user_logged_in_.value();
+  if (timestamp_origin_.has_value()) {
+    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
     constexpr char kAshLoginSessionRestoreAllBrowserWindowsPresented[] =
         "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
     // Headless units do not report presentation time, so we only report
@@ -224,9 +206,8 @@ void PostLoginMetricsRecorder::OnAllBrowserWindowsPresented(
 }
 
 void PostLoginMetricsRecorder::OnShelfAnimationFinished(base::TimeTicks ts) {
-  if (timestamp_primary_user_logged_in_.has_value()) {
-    const base::TimeDelta duration_ms =
-        ts - timestamp_primary_user_logged_in_.value();
+  if (timestamp_origin_.has_value()) {
+    const base::TimeDelta duration_ms = ts - timestamp_origin_.value();
     constexpr char kAshLoginSessionRestoreShelfLoginAnimationEnd[] =
         "Ash.LoginSessionRestore.ShelfLoginAnimationEnd";
     UMA_HISTOGRAM_CUSTOM_TIMES(kAshLoginSessionRestoreShelfLoginAnimationEnd,
@@ -262,9 +243,8 @@ void PostLoginMetricsRecorder::OnCompositorAnimationFinished(
   int smoothness = metrics_util::CalculateSmoothnessV3(data);
   int jank = metrics_util::CalculateJankV3(data);
 
-  DCHECK(timestamp_primary_user_logged_in_.has_value());
-  int duration_ms =
-      (ts - timestamp_primary_user_logged_in_.value()).InMilliseconds();
+  DCHECK(timestamp_origin_.has_value());
+  int duration_ms = (ts - timestamp_origin_.value()).InMilliseconds();
 
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
   AddLoginTimeMarker(smoothness_name + suffix);
@@ -283,12 +263,11 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
 
   // It seems that neither `OnAuthSuccess` nor `LoggedInStateChanged` is called
   // on some ARC tests.
-  if (!timestamp_primary_user_logged_in_.has_value()) {
+  if (!timestamp_origin_.has_value()) {
     return;
   }
 
-  const base::TimeDelta duration =
-      ts - timestamp_primary_user_logged_in_.value();
+  const base::TimeDelta duration = ts - timestamp_origin_.value();
   base::UmaHistogramCustomTimes("Ash.Login.ArcUiAvailableAfterLogin.Duration",
                                 duration, base::Milliseconds(100),
                                 base::Seconds(30), 100);
@@ -303,7 +282,7 @@ void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
   // Can be in a part of better architecture.
   AddLoginTimeMarker("BootTime.Login4");
   base::UmaHistogramCustomTimes(
-      "BootTime.Login4", ts - timestamp_primary_user_logged_in_.value(),
+      "BootTime.Login4", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
 }
 
@@ -316,7 +295,7 @@ void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
 
   AddLoginTimeMarker("BootTime.Login3");
   base::UmaHistogramCustomTimes(
-      "BootTime.Login3", ts - timestamp_primary_user_logged_in_.value(),
+      "BootTime.Login3", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
 
   LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
@@ -324,5 +303,19 @@ void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
 
 PostLoginMetricsRecorder::TimeMarker::TimeMarker(const std::string& name)
     : name_(name) {}
+
+void PostLoginMetricsRecorder::EnsureTracingSliceNamed(base::TimeTicks ts) {
+  // EnsureTracingSliceNamed should be called only on expected events.
+  // If login ThroughputRecording did not start with either OnAuthSuccess
+  // or LoggedInStateChanged the tracing slice will have the "-unordered"
+  // suffix.
+  //
+  // Depending on the login flow this function may get called multiple times.
+  if (markers_.empty()) {
+    // The first event will name the tracing row.
+    AddLoginTimeMarker(kLoginThroughput);
+    timestamp_origin_ = ts;
+  }
+}
 
 }  // namespace ash

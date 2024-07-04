@@ -29,8 +29,6 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
   PostLoginMetricsRecorder& operator=(const PostLoginMetricsRecorder&) = delete;
   ~PostLoginMetricsRecorder() override;
 
-  void EnsureTracingSliceNamed();
-
   // Add a time marker for login animations events. A timeline will be sent to
   // tracing after login is done.
   void AddLoginTimeMarker(const std::string& marker_name);
@@ -74,10 +72,13 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
     const base::TimeTicks time_ = base::TimeTicks::Now();
   };
 
+  void EnsureTracingSliceNamed(base::TimeTicks ts);
+
   std::vector<TimeMarker> markers_;
 
-  std::optional<base::TimeTicks> timestamp_on_auth_success_;
-  std::optional<base::TimeTicks> timestamp_primary_user_logged_in_;
+  // Records the timestamp of `OnAuthSuccess` or `OnUserLoggedIn`, which
+  // ever happens first, as the origin time of a user login.
+  std::optional<base::TimeTicks> timestamp_origin_;
 
   base::ScopedObservation<LoginUnlockThroughputRecorder, PostLoginEventObserver>
       post_login_event_observation_{this};
