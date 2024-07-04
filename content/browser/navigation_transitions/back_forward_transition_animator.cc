@@ -37,15 +37,6 @@ void ResetTransformForLayer(cc::slim::Layer* layer) {
   layer->SetTransform(transform);
 }
 
-void PutScreenshotBack(NavigationControllerImpl* controller,
-                       std::unique_ptr<NavigationEntryScreenshot> screenshot) {
-  if (auto* entry =
-          controller->GetEntryWithUniqueID(screenshot->navigation_entry_id())) {
-    auto* cache = controller->GetNavigationEntryScreenshotCache();
-    cache->SetScreenshot(entry, std::move(screenshot));
-  }
-}
-
 SkColor4f GetBackgroundColor(const std::optional<SkColor4f>& background_color) {
   // The default background color if the CSS has not computed one.
   static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
@@ -178,8 +169,10 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
     if (navigation_state_ != NavigationState::kCommitted) {
       CHECK(screenshot_);
-      PutScreenshotBack(animation_manager_->navigation_controller(),
-                        std::move(screenshot_));
+      animation_manager_->navigation_controller()
+          ->GetNavigationEntryScreenshotCache()
+          ->SetScreenshot(nullptr, std::move(screenshot_),
+                          is_copied_from_embedder_);
     } else {
       // If the navigation has committed then the destination entry is active.
       // We don't persist the screenshot for the active entry.

@@ -592,9 +592,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
         enabled_features,
         /*disabled_features=*/{});
 
-    InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
-                                       RenderDocumentFeatureFullyEnabled()[0]);
-
     ContentBrowserTest::SetUp();
   }
 
@@ -786,7 +783,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedFeatureList scoped_feature_list_render_document_;
 };
 
 // Simulates the gesture sequence: start, 30%, 60%, 90%, 60%, 30%, 60%, 90% and

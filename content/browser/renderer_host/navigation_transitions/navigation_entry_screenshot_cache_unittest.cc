@@ -79,10 +79,10 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   // controller of `tab`.
   void CacheScreenshot(WebContents* tab, int entry_id, SkColor color) {
     const auto& bitmap = GetBitmapOfColor(color);
-    auto* entry = GetEntryWithID(tab, entry_id);
     auto* cache = GetCacheForTab(tab);
     cache->SetScreenshot(
-        entry, std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id));
+        nullptr, std::make_unique<NavigationEntryScreenshot>(bitmap, entry_id),
+        false);
   }
 
   std::unique_ptr<NavigationEntryScreenshot> GetScreenshot(WebContents* tab,
@@ -262,7 +262,7 @@ TEST_F(NavigationEntryScreenshotCacheTest, DeletedNavEntry) {
   CacheScreenshot(tab1(), 4, SK_ColorGREEN);
   CacheScreenshot(tab1(), 5, SK_ColorBLUE);
   CacheScreenshot(tab2(), 15, SK_ColorBLACK);
-  CacheScreenshot(tab2(), 20, SK_ColorWHITE);
+  CacheScreenshot(tab2(), 19, SK_ColorWHITE);
   ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 5);
 
   // Remove the entry4->Green from tab1, entry20->Black from tab2.
@@ -280,7 +280,7 @@ TEST_F(NavigationEntryScreenshotCacheTest, DeletedNavEntry) {
   ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 2);
   AssertBitmapOfColor(GetScreenshot(tab1(), 5), SK_ColorBLUE);
   ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 1);
-  AssertBitmapOfColor(GetScreenshot(tab2(), 20), SK_ColorWHITE);
+  AssertBitmapOfColor(GetScreenshot(tab2(), 19), SK_ColorWHITE);
   ASSERT_TRUE(GetCacheForTab(tab1())->IsEmpty());
   ASSERT_TRUE(GetCacheForTab(tab2())->IsEmpty());
   ASSERT_TRUE(GetManager()->IsEmpty());
@@ -469,9 +469,9 @@ TEST_F(NavigationEntryScreenshotCacheTest, OnWebContentsDestroyed) {
   GetManager()->SetMemoryBudgetForTesting(10240U);
 
   // Restore entry1/2 into tab1; entry3/4 into tab2; entry5/6 into tab3.
-  RestoreEntriesToTab(tab1(), 1, 2, 1);
-  RestoreEntriesToTab(tab2(), 3, 4, 1);
-  RestoreEntriesToTab(tab3(), 5, 6, 1);
+  RestoreEntriesToTab(tab1(), 1, 3, 2);
+  RestoreEntriesToTab(tab2(), 3, 5, 2);
+  RestoreEntriesToTab(tab3(), 5, 7, 2);
 
   // Tab1: entry1->Red, entry2->Green.
   // Tab2: entry3->Blue, entry4->Black.
