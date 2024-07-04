@@ -154,39 +154,38 @@ bool IsPointerLocked(content::WebContents* web_contents) {
 void NotifyUserEducationAboutAcceptedSuggestion(
     content::BrowserContext* browser_context,
     const Suggestion& suggestion) {
-  if (suggestion.type == SuggestionType::kVirtualCreditCardEntry) {
-    feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
-        ->NotifyEvent(suggestion.feature_for_iph ==
-                              &feature_engagement::
-                                  kIPHAutofillVirtualCardCVCSuggestionFeature
-                          ? "autofill_virtual_card_cvc_suggestion_accepted"
-                          : "autofill_virtual_card_suggestion_accepted");
-  }
-
-  if (suggestion.feature_for_iph ==
-      &feature_engagement::
-          kIPHAutofillExternalAccountProfileSuggestionFeature) {
-    feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
-        ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
-  }
-
-  if (suggestion.feature_for_iph ==
-      &feature_engagement::kIPHAutofillCreditCardBenefitFeature) {
-    feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
-        ->NotifyEvent("autofill_credit_card_benefit_iph_accepted");
-  }
-
-  // TODO: crbug.com/350873603 - Use the feature specified in the suggestion.
+  if (suggestion.feature_for_iph) {
+    using IphEventPair = std::pair<const base::Feature*, const char*>;
+    static const auto kIphFeatures = std::to_array<IphEventPair>(
+        {IphEventPair{&feature_engagement::kIPHAutofillCreditCardBenefitFeature,
+                      "autofill_credit_card_benefit_iph_accepted"},
+         IphEventPair{&feature_engagement::
+                          kIPHAutofillExternalAccountProfileSuggestionFeature,
+                      "autofill_external_account_profile_suggestion_accepted"},
+         IphEventPair{
+             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+             "autofill_virtual_card_suggestion_accepted"},
+         IphEventPair{
+             &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+             "autofill_virtual_card_suggestion_accepted"}});
+    if (auto it = base::ranges::find(kIphFeatures, suggestion.feature_for_iph,
+                                     &IphEventPair::first);
+        it != kIphFeatures.end()) {
+      feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
+          ->NotifyEvent(it->second);
+    } else {
 #if !BUILDFLAG(IS_ANDROID)
-  if (suggestion.feature_for_iph ==
-      &feature_engagement::kIPHPlusAddressCreateSuggestionFeature) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
-        browser_context,
-        feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
+      // Otherwise, notify the new API for the user education service.
+      UserEducationService::MaybeNotifyPromoFeatureUsed(
+          browser_context, *suggestion.feature_for_iph);
+#endif
+    }
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Notifications for the new badge system.
-  if (suggestion.feature_for_new_badge) {
+  if (suggestion.feature_for_new_badge &&
+      suggestion.feature_for_new_badge != suggestion.feature_for_iph) {
     UserEducationService::MaybeNotifyPromoFeatureUsed(
         browser_context, *suggestion.feature_for_new_badge);
   }
