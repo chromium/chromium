@@ -11,6 +11,9 @@
 
 namespace chromeos::magic_boost {
 
+// Please keep in sync with the `ChromeOS.MagicBoost.OptInCard.{OptInFeatures}`
+// histogram name found in
+// //tools/metrics/histograms/metadata/chromeos/histograms.xml.
 void RecordOptInCardActionMetrics(OptInFeatures opt_in_features,
                                   OptInCardAction action) {
   std::string histogram_name = kMagicBoostOptInCardHistogram;
@@ -22,10 +25,6 @@ void RecordOptInCardActionMetrics(OptInFeatures opt_in_features,
     case OptInFeatures::kOrcaAndHmr:
       histogram_name += "OrcaAndHmr";
       break;
-    case OptInFeatures::kOrcaOnly:
-      histogram_name += "OrcaOnly";
-      break;
-    case OptInFeatures::kTotal:
     default:
       NOTREACHED();
   }

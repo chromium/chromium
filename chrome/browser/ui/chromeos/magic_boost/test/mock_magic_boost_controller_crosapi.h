@@ -18,7 +18,9 @@ class MockMagicBoostControllerCrosapi
 
   MOCK_METHOD(void,
               ShowDisclaimerUi,
-              (int64_t, crosapi::mojom::MagicBoostController::TransitionAction),
+              (int64_t,
+               crosapi::mojom::MagicBoostController::TransitionAction,
+               crosapi::mojom::MagicBoostController::OptInFeatures),
               (override));
   MOCK_METHOD(void, CloseDisclaimerUi, (), (override));
 };

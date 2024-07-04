@@ -2524,7 +2524,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <token key="OptInFeatures">
     <variant name="HmrOnly" summary="only HMR feature"/>
     <variant name="OrcaAndHmr" summary="both Orca and HMR"/>
-    <variant name="OrcaOnly" summary="only Orca feature"/>
     <variant name="Total"
         summary="no filter is added, records the total number"/>
   </token>

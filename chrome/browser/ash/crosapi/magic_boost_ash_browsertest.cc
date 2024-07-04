@@ -18,18 +18,22 @@ namespace crosapi {
 
 namespace {
 
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
+
 // Calls all crosapi::mojom::MagicBoostControlle methods over mojo.
 void CallMagicBoostControllerMethods(
     mojo::Remote<mojom::MagicBoostController>& remote) {
   auto display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   remote->ShowDisclaimerUi(
       /*display_id=*/display_id,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kDoNothing);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
   remote->ShowDisclaimerUi(
       /*display_id=*/display_id,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kShowEditorPanel);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 }
 
 // Calls all crosapi::mojom::MagicBoostController methods directly.
@@ -38,12 +42,14 @@ void CallMagicBoostControllerMethods(
   auto display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   magic_boost_controller->ShowDisclaimerUi(
       /*display_id=*/display_id,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kDoNothing);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
   magic_boost_controller->ShowDisclaimerUi(
       /*display_id=*/display_id,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kShowEditorPanel);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 }
 
 using MagicBoostAshBrowserTest = InProcessBrowserTest;

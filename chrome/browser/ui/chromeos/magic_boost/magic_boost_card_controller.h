@@ -38,6 +38,7 @@ class Profile;
 
 namespace chromeos {
 
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
 
 // The controller that manages the lifetime of opt-in cards.
@@ -66,8 +67,8 @@ class MagicBoostCardController : public ReadWriteCardController {
 
   // The setter and getter of the features that trigger the magic boost opt in
   // card.
-  void SetOptInFeature(const magic_boost::OptInFeatures& features);
-  const magic_boost::OptInFeatures& GetOptInFeatures() const;
+  void SetOptInFeature(const OptInFeatures& features);
+  const OptInFeatures& GetOptInFeatures() const;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void BindMagicBoostControllerCrosapiForTesting(
@@ -98,7 +99,7 @@ class MagicBoostCardController : public ReadWriteCardController {
   mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  magic_boost::OptInFeatures opt_in_features_;
+  OptInFeatures opt_in_features_;
 
   base::WeakPtrFactory<MagicBoostCardController> weak_factory_{this};
 };

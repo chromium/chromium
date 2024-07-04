@@ -245,8 +245,10 @@ void EditorMediator::HandleTrigger(
                 /*display_id=*/display::Screen::GetScreen()
                     ->GetPrimaryDisplay()
                     .id(),
-                /*action=*/crosapi::mojom::MagicBoostController::
-                    TransitionAction::kShowEditorPanel);
+                /*action=*/
+                crosapi::mojom::MagicBoostController::TransitionAction::
+                    kShowEditorPanel,
+                /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
       } else {
         mako_bubble_coordinator_.LoadConsentUI(profile_);
       }

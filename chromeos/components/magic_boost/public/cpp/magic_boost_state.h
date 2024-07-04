@@ -62,10 +62,6 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // immediately after the write can read a stale value.
   virtual void AsyncWriteHMREnabled(bool enabled) = 0;
 
-  // Whether Orca should be included in the Magic Boost opt-in flow.
-  virtual void ShouldIncludeOrcaInOptIn(
-      base::OnceCallback<void(bool)> callback) = 0;
-
   // Marks Orca consent status as rejected and disable the feature.
   virtual void DisableOrcaFeature() = 0;
 

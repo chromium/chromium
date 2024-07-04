@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 #define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace chromeos::magic_boost {
+
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 inline constexpr char kMagicBoostOptInCardHistogram[] =
     "ChromeOS.MagicBoost.OptInCard.";

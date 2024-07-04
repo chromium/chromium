@@ -15,17 +15,21 @@ namespace crosapi {
 
 namespace {
 
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
+
 // Calls all crosapi::mojom::MagicBoostControlle methods over mojo.
 void CallMagicBoostControllerMethods(
     mojo::Remote<mojom::MagicBoostController>& remote) {
   remote->ShowDisclaimerUi(
       /*display_id=*/0,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kDoNothing);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
   remote->ShowDisclaimerUi(
       /*display_id=*/0,
-      /*action=*/crosapi::mojom::MagicBoostController::TransitionAction::
-          kShowEditorPanel);
+      /*action=*/
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 }
 
 using MagicBoostLacrosBrowserTest = InProcessBrowserTest;

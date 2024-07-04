@@ -37,8 +37,6 @@ class MagicBoostStateAsh : public chromeos::MagicBoostState,
   void AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus consent_status) override;
   void AsyncWriteHMREnabled(bool enabled) override;
-  void ShouldIncludeOrcaInOptIn(
-      base::OnceCallback<void(bool)> callback) override;
   void DisableOrcaFeature() override;
 
   // Virtual for testing.

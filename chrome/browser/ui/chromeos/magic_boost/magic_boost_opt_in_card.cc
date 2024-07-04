@@ -132,6 +132,8 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
           .Build());
 
   // Create text container that holds title and body text.
+  bool include_orca =
+      controller_->GetOptInFeatures() == OptInFeatures::kOrcaAndHmr;
   image_and_text_container->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
@@ -148,30 +150,39 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded,
                                        /*adjust_height_for_width=*/true))
-          .AddChildren(views::Builder<views::Label>()
-                           .CopyAddressTo(&title_label_)
-                           .SetID(magic_boost::ViewId::OptInCardTitleLabel)
-                           .SetText(l10n_util::GetStringUTF16(
-                               IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE))
-                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                           .SetEnabledColorId(ui::kColorSysOnSurface)
-                           .SetAutoColorReadabilityEnabled(false)
-                           .SetSubpixelRenderingEnabled(false)
-                           .SetFontList(kTitleTextFontList)
-                           .SetMultiLine(true)
-                           .SetMaxLines(kTitleLabelMaxLines),
-                       views::Builder<views::Label>()
-                           .CopyAddressTo(&body_label_)
-                           .SetID(magic_boost::ViewId::OptInCardBodyLabel)
-                           .SetText(l10n_util::GetStringUTF16(
-                               IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY))
-                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                           .SetEnabledColorId(ui::kColorSysOnSurface)
-                           .SetAutoColorReadabilityEnabled(false)
-                           .SetSubpixelRenderingEnabled(false)
-                           .SetFontList(kBodyTextFontList)
-                           .SetMultiLine(true)
-                           .SetMaxLines(kBodyLabelMaxLines))
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&title_label_)
+                  .SetID(magic_boost::ViewId::OptInCardTitleLabel)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE))
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetEnabledColorId(ui::kColorSysOnSurface)
+                  .SetAutoColorReadabilityEnabled(false)
+                  .SetSubpixelRenderingEnabled(false)
+                  .SetText(l10n_util::GetStringUTF16(
+                      include_orca
+                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
+                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE))
+                  .SetFontList(kTitleTextFontList)
+                  .SetMultiLine(true)
+                  .SetMaxLines(kTitleLabelMaxLines),
+              views::Builder<views::Label>()
+                  .CopyAddressTo(&body_label_)
+                  .SetID(magic_boost::ViewId::OptInCardBodyLabel)
+                  .SetText(l10n_util::GetStringUTF16(
+                      IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY))
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetEnabledColorId(ui::kColorSysOnSurface)
+                  .SetAutoColorReadabilityEnabled(false)
+                  .SetSubpixelRenderingEnabled(false)
+                  .SetText(l10n_util::GetStringUTF16(
+                      include_orca
+                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
+                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY))
+                  .SetFontList(kBodyTextFontList)
+                  .SetMultiLine(true)
+                  .SetMaxLines(kBodyLabelMaxLines))
           .Build());
 
   // Create buttons container that holds two buttons.
@@ -249,18 +260,6 @@ void MagicBoostOptInCard::RequestFocus() {
   secondary_button_->RequestFocus();
 }
 
-void MagicBoostOptInCard::SetIncludeOrca(bool include_orca) {
-  include_orca_ = include_orca;
-
-  title_label_->SetText(l10n_util::GetStringUTF16(
-      include_orca_ ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
-                    : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE));
-
-  body_label_->SetText(l10n_util::GetStringUTF16(
-      include_orca ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
-                   : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY));
-}
-
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   magic_boost::RecordOptInCardActionMetrics(
       controller_->GetOptInFeatures(),
@@ -283,16 +282,13 @@ void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   controller_->CloseOptInUi();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
-      base::BindOnce([](bool should_include_orca) {
-        auto* magic_boost_state = chromeos::MagicBoostState::Get();
-        if (should_include_orca) {
-          magic_boost_state->DisableOrcaFeature();
-        }
-        magic_boost_state->AsyncWriteConsentStatus(
-            chromeos::HMRConsentStatus::kDeclined);
-        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
-      }));
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  if (controller_->GetOptInFeatures() == OptInFeatures::kOrcaAndHmr) {
+    magic_boost_state->DisableOrcaFeature();
+  }
+  magic_boost_state->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kDeclined);
+  magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

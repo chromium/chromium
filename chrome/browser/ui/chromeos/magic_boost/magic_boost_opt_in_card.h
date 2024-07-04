@@ -46,17 +46,10 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // views::View:
   void RequestFocus() override;
 
-  // Sets the value of `include_orca_` and change the UI of the opt-in card
-  // according to this.
-  void SetIncludeOrca(bool include_orca);
-
  private:
   // Button callbacks.
   void OnPrimaryButtonPressed();
   void OnSecondaryButtonPressed();
-
-  // True if the opt-in flow includes opting in or out of the Orca feature.
-  bool include_orca_ = false;
 
   raw_ptr<MagicBoostCardController> controller_ = nullptr;
 

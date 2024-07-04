@@ -86,7 +86,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     mock_magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-    card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
+    card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
   }
 
   void TearDown() override {
@@ -96,7 +96,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 
  protected:
   MagicBoostCardController card_controller_;
-  testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
+  testing::NiceMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
   std::unique_ptr<ash::MockMagicBoostState> mock_magic_boost_state_;
@@ -148,10 +148,7 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
 }
 
 TEST_F(MagicBoostOptInCardTest, StringVariations_NoOrca) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
+  card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
 
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
@@ -169,10 +166,7 @@ TEST_F(MagicBoostOptInCardTest, StringVariations_NoOrca) {
 }
 
 TEST_F(MagicBoostOptInCardTest, StringVariations_OrcaIncluded) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
+  card_controller_.SetOptInFeature(OptInFeatures::kOrcaAndHmr);
 
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
@@ -193,10 +187,7 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_NoOrca) {
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
   histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
 
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
+  card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
 
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
@@ -243,10 +234,7 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_NoOrca) {
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions_IncludeOrca) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
+  card_controller_.SetOptInFeature(OptInFeatures::kOrcaAndHmr);
 
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);

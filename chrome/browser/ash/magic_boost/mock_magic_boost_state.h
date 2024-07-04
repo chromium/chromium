@@ -21,10 +21,6 @@ class MockMagicBoostState : public MagicBoostStateAsh {
   ~MockMagicBoostState() override;
 
   // chromeos::MagicBoostState:
-  MOCK_METHOD(void,
-              ShouldIncludeOrcaInOptIn,
-              (base::OnceCallback<void(bool)>),
-              (override));
   MOCK_METHOD(void, EnableOrcaFeature, (), (override));
   MOCK_METHOD(void, DisableOrcaFeature, (), (override));
 };

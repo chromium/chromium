@@ -66,9 +66,6 @@ void MagicBoostStateLacros::AsyncWriteHMREnabled(bool enabled) {
   SetPref(crosapi::mojom::PrefPath::kHmrEnabled, base::Value(enabled));
 }
 
-void MagicBoostStateLacros::ShouldIncludeOrcaInOptIn(
-    base::OnceCallback<void(bool)> calback) {}
-
 void MagicBoostStateLacros::DisableOrcaFeature() {}
 
 }  // namespace chromeos

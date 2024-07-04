@@ -99,16 +99,6 @@ void MagicBoostCardController::ShowOptInUi(
       /*controller=*/this, anchor_view_bounds);
   opt_in_widget_->ShowInactive();
 
-  MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(base::BindOnce(
-      [](MagicBoostOptInCard* opt_in_card, bool should_include_orca) {
-        // The card might be closed already.
-        if (opt_in_card) {
-          opt_in_card->SetIncludeOrca(should_include_orca);
-        }
-      },
-      views::AsViewClass<MagicBoostOptInCard>(
-          opt_in_widget_->GetContentsView())));
-
   magic_boost::RecordOptInCardActionMetrics(
       opt_in_features_, magic_boost::OptInCardAction::kShowCard);
 }
@@ -121,19 +111,18 @@ void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
   // TODO(b/319735347): Add integration tests to make sure that this function
   // always goes through the crosapi.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->ShowDisclaimerUi(display_id, transition_action_);
+  remote_->ShowDisclaimerUi(display_id, transition_action_, opt_in_features_);
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_);
+  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_,
+                                                opt_in_features_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void MagicBoostCardController::SetOptInFeature(
-    const magic_boost::OptInFeatures& features) {
+void MagicBoostCardController::SetOptInFeature(const OptInFeatures& features) {
   opt_in_features_ = features;
 }
 
-const magic_boost::OptInFeatures& MagicBoostCardController::GetOptInFeatures()
-    const {
+const OptInFeatures& MagicBoostCardController::GetOptInFeatures() const {
   return opt_in_features_;
 }
 

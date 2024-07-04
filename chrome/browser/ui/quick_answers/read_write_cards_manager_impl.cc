@@ -14,7 +14,6 @@
 #include "base/hash/sha1.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
-#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
@@ -30,6 +29,8 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 
 namespace chromeos {
+
+using OptInFeatures = crosapi::mojom::MagicBoostController::OptInFeatures;
 
 ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     : quick_answers_controller_(
@@ -124,16 +125,14 @@ ReadWriteCardsManagerImpl::GetControllers(
                   kDoNothing);
 
     // Set the features that triggers the magic boost feature (the opt in card
-    // and the disclaimer view). This is for recording metrics.
-    magic_boost::OptInFeatures opt_in_features;
-    if (should_opt_in_orca_with_magic_boost &&
-        should_opt_in_hmr_with_magic_boost) {
-      opt_in_features = magic_boost::OptInFeatures::kOrcaAndHmr;
-    } else if (should_opt_in_orca_with_magic_boost) {
-      opt_in_features = magic_boost::OptInFeatures::kOrcaOnly;
+    // and the disclaimer view). If it should opt in orca, then the features are
+    // `OptInFeatures::kOrcaAndHmr`.
+    OptInFeatures opt_in_features;
+    if (should_opt_in_orca_with_magic_boost) {
+      opt_in_features = OptInFeatures::kOrcaAndHmr;
     } else {
       CHECK(should_opt_in_hmr_with_magic_boost);
-      opt_in_features = magic_boost::OptInFeatures::kHmrOnly;
+      opt_in_features = OptInFeatures::kHmrOnly;
     }
     magic_boost_card_controller_->SetOptInFeature(opt_in_features);
 

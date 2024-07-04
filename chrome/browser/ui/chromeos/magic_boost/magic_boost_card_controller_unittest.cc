@@ -47,7 +47,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
+    card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
 
     magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
   }
@@ -118,15 +118,22 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
   int expected_display_id = 2;
   auto expected_action =
       crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel;
+  auto expected_features =
+      crosapi::mojom::MagicBoostController::OptInFeatures::kOrcaAndHmr;
+
   card_controller_.set_transition_action(expected_action);
+  card_controller_.SetOptInFeature(expected_features);
 
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi)
       .WillOnce(
-          [expected_display_id, expected_action](
+          [expected_display_id, expected_action, expected_features](
               int display_id,
-              crosapi::mojom::MagicBoostController::TransitionAction action) {
+              crosapi::mojom::MagicBoostController::TransitionAction action,
+              /*opt_in_features=*/
+              crosapi::mojom::MagicBoostController::OptInFeatures features) {
             EXPECT_EQ(expected_display_id, display_id);
             EXPECT_EQ(expected_action, action);
+            EXPECT_EQ(expected_features, features);
           });
 
   card_controller_.ShowDisclaimerUi(expected_display_id);
@@ -153,10 +160,9 @@ TEST_F(MagicBoostCardControllerTest, ShowOptInCardMetrics) {
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 0);
   histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 0);
   histogram_tester->ExpectTotalCount(histogram_name + "OrcaAndHmr", 0);
-  histogram_tester->ExpectTotalCount(histogram_name + "OrcaOnly", 0);
 
   // Shows the opt-in widget from hmr feature.
-  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kHmrOnly);
+  card_controller_.SetOptInFeature(OptInFeatures::kHmrOnly);
   card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 1);
   histogram_tester->ExpectTotalCount(histogram_name + "HmrOnly", 1);
@@ -164,17 +170,10 @@ TEST_F(MagicBoostCardControllerTest, ShowOptInCardMetrics) {
       histogram_name + "HmrOnly", magic_boost::OptInCardAction::kShowCard, 1);
   card_controller_.CloseOptInUi();
 
-  // Shows the opt-in widget from orca feature.
-  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kOrcaOnly);
+  // Shows the opt-in widget from both hmr and orca feature.
+  card_controller_.SetOptInFeature(OptInFeatures::kOrcaAndHmr);
   card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
   histogram_tester->ExpectTotalCount(histogram_name + "Total", 2);
-  histogram_tester->ExpectTotalCount(histogram_name + "OrcaOnly", 1);
-  card_controller_.CloseOptInUi();
-
-  // Shows the opt-in widget from both hmr and orca feature.
-  card_controller_.SetOptInFeature(magic_boost::OptInFeatures::kOrcaAndHmr);
-  card_controller_.ShowOptInUi(/*anchor_bounds=*/gfx::Rect());
-  histogram_tester->ExpectTotalCount(histogram_name + "Total", 3);
   histogram_tester->ExpectTotalCount(histogram_name + "OrcaAndHmr", 1);
   card_controller_.CloseOptInUi();
 }

@@ -27,7 +27,10 @@ void MagicBoostControllerAsh::BindReceiver(
 }
 
 void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
-                                               TransitionAction action) {
+                                               TransitionAction action,
+                                               OptInFeatures opt_in_features) {
+  opt_in_features_ = opt_in_features;
+
   if (disclaimer_widget_) {
     return;
   }
@@ -51,41 +54,34 @@ void MagicBoostControllerAsh::CloseDisclaimerUi() {
 
 void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
     TransitionAction action) {
-  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(base::BindOnce(
-      [](TransitionAction action, bool should_include_orca) {
-        auto* magic_boost_state =
-            static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
-        if (should_include_orca) {
-          magic_boost_state->EnableOrcaFeature();
-        }
-        magic_boost_state->AsyncWriteConsentStatus(
-            chromeos::HMRConsentStatus::kApproved);
-        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
+  auto* magic_boost_state =
+      static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
+  if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
+    magic_boost_state->EnableOrcaFeature();
+  }
+  magic_boost_state->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
 
-        switch (action) {
-          case TransitionAction::kDoNothing:
-            break;
-          case TransitionAction::kShowEditorPanel:
-            magic_boost_state->GetEditorPanelManager()->StartEditingFlow();
-            break;
-        }
-      },
-      action));
+  switch (action) {
+    case TransitionAction::kDoNothing:
+      break;
+    case TransitionAction::kShowEditorPanel:
+      magic_boost_state->GetEditorPanelManager()->StartEditingFlow();
+      break;
+  }
 
   CloseDisclaimerUi();
 }
 
 void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
-  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
-      base::BindOnce([](bool should_include_orca) {
-        auto* magic_boost_state = chromeos::MagicBoostState::Get();
-        if (should_include_orca) {
-          magic_boost_state->DisableOrcaFeature();
-        }
-        magic_boost_state->AsyncWriteConsentStatus(
-            chromeos::HMRConsentStatus::kDeclined);
-        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
-      }));
+  auto* magic_boost_state = chromeos::MagicBoostState::Get();
+  if (opt_in_features_ == OptInFeatures::kOrcaAndHmr) {
+    magic_boost_state->DisableOrcaFeature();
+  }
+  magic_boost_state->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kDeclined);
+  magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
 
   CloseDisclaimerUi();
 }

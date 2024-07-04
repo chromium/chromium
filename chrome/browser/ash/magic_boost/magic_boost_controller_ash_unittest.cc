@@ -72,7 +72,8 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
 
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -82,14 +83,10 @@ TEST_F(MagicBoostControllerAshTest, DisclaimerWidget) {
 }
 
 TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
-
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kHmrOnly);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -108,14 +105,10 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
 
 TEST_F(MagicBoostControllerAshTest,
        OnDisclaimerAcceptButtonPressedIncludeOrca) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
-
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -134,17 +127,13 @@ TEST_F(MagicBoostControllerAshTest,
 
 TEST_F(MagicBoostControllerAshTest,
        OnDisclaimerAcceptButtonPressedIncludeOrcaAndTriggerEditorUI) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
-
   mock_magic_boost_state_->set_editor_panel_manager_for_test(
       &mock_editor_panel_manager_);
 
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -164,14 +153,10 @@ TEST_F(MagicBoostControllerAshTest,
 }
 
 TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
-
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kHmrOnly);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
@@ -189,14 +174,10 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerDeclineButtonPressed) {
 
 TEST_F(MagicBoostControllerAshTest,
        OnDisclaimerDeclineButtonPressedIncludeOrca) {
-  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
-      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
-
   controller.ShowDisclaimerUi(
       /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
+      crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+      /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
 
   EXPECT_TRUE(controller.disclaimer_widget_for_test());
 
