@@ -1251,6 +1251,8 @@ source_set("extensions") {
       "//chrome/browser/ash/arc/optin",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/customization",
@@ -1335,6 +1337,8 @@ source_set("extensions") {
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/account_manager",
+      "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/time_limits",
     ]
 
     if (is_cfm) {
