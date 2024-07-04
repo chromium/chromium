@@ -21,6 +21,13 @@ enum class FileSaveDestination {
   kMaxValue = kOneDrive,
 };
 
+// Supported cloud providers.
+enum class CloudProvider {
+  kNotSpecified,  // Not set by the policy.
+  kGoogleDrive,   // Google Drive.
+  kOneDrive,      // Microsoft OneDrive.
+};
+
 // Returns whether local user files are enabled on the device by the flag and
 // policy.
 bool LocalUserFilesAllowed();

@@ -14,6 +14,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -88,9 +89,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
 
-  // Migration destination. Can be a cloud destination or read-only in which
-  // case no migration happens.
-  std::string destination_;
+  // Cloud provider to which files are uploaded. If not specified, no migration
+  // happens.
+  CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
 
   // Stores any error that occurred during migration.
   std::optional<std::string> error_;

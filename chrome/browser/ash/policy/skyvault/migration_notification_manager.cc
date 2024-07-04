@@ -5,15 +5,13 @@
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -21,7 +19,6 @@
 namespace policy::local_user_files {
 
 namespace {
-constexpr char kSkyVaultNotificationId[] = "skyvault";
 
 // Creates a notification with `kSkyvaultNotificationId`, `title` and `message`,
 // that invokes `callback` when clicked on.
@@ -33,7 +30,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
   optional_fields.never_timeout = true;
   return ash::CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      kSkyVaultNotificationId, title, message,
+      kSkyVaultMigrationNotificationId, title, message,
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(), optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -42,76 +39,105 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
-// Closes the notification with `kSkyvaultNotificationId`.
-void CloseNotification() {
-  NotificationDisplayService::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Close(NotificationHandler::Type::TRANSIENT, kSkyVaultNotificationId);
+// Closes the notification with `kSkyVaultMigrationNotificationId`.
+void CloseNotification(Profile* profile) {
+  NotificationDisplayService::GetForProfile(profile)->Close(
+      NotificationHandler::Type::TRANSIENT, kSkyVaultMigrationNotificationId);
 }
 
 }  // namespace
 
-MigrationNotificationManager::MigrationNotificationManager() = default;
+MigrationNotificationManager::MigrationNotificationManager(Profile* profile)
+    : profile_(profile) {}
 
 MigrationNotificationManager::~MigrationNotificationManager() = default;
 
 void MigrationNotificationManager::ShowMigrationInfoDialog(
+    CloudProvider provider,
     base::TimeDelta migration_delay,
     base::OnceClosure migration_callback) {
   LocalFilesMigrationDialog::Show(migration_delay,
                                   std::move(migration_callback));
 }
 
-void MigrationNotificationManager::ShowMigrationProgressNotification() {
-  // TODO(aidazolic): Use i18n strings.
-  // TODO(aidazolic): Use FileSaveDestination.
-  auto notification = CreateNotificationPtr(
-      /*title=*/u"Your files are being uploaded to OneDrive",
-      /*message=*/
-      u"Local storage will be restricted. You can only modify "
-      u"these files once the upload has been completed.",
-      /*callback=*/base::DoNothing());
+void MigrationNotificationManager::ShowMigrationProgressNotification(
+    CloudProvider provider) {
+  std::u16string title;
+  std::u16string message;
+  switch (provider) {
+    case CloudProvider::kGoogleDrive:
+      title = u"Your files are being uploaded to Google Drive";
+      message =
+          u"If your file is not on your device, look for it on Google Drive. "
+          u"Once files have been uploaded to Google Drive, they will no longer "
+          u"exist on your device. From then on, save your files to Google "
+          u"Drive.";
+      break;
+    case CloudProvider::kOneDrive:
+      title = u"Your files are being uploaded to Microsoft OneDrive";
+      message =
+          u"If your file is not on your device, look for it on Microsoft "
+          u"OneDrive. "
+          u"Once files have been uploaded to Microsoft OneDrive, they will no "
+          u"longer "
+          u"exist on your device. From then on, save your files to Google "
+          u"Drive.";
+      break;
+    case CloudProvider::kNotSpecified:
+      LOG(ERROR) << "CloudProvider must be set.";
+      return;
+  }
 
-  NotificationDisplayService::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
-                /*metadata=*/nullptr);
+  // TODO(334511998): Use i18n strings.
+  auto notification = CreateNotificationPtr(title, message,
+                                            /*callback=*/base::DoNothing());
+
+  NotificationDisplayService::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 void MigrationNotificationManager::ShowMigrationCompletedNotification(
+    CloudProvider provider,
     const base::FilePath& destination_path) {
-  // TODO(aidazolic): Use i18n strings.
-  // TODO(aidazolic): Use FileSaveDestination.
-  auto notification = CreateNotificationPtr(
-      /*title=*/u"All files have been uploaded to OneDrive",
-      /*message=*/u"Local storage has been disabled.",
-      base::BindRepeating(
-          &MigrationNotificationManager::HandleCompletedNotificationClick,
-          weak_factory_.GetWeakPtr(), destination_path));
-  notification->set_buttons(
-      {message_center::ButtonInfo(u"View files in OneDrive")});
+  // TODO(334511998): Use i18n strings.
+  std::u16string title;
+  std::u16string message;
+  switch (provider) {
+    case CloudProvider::kGoogleDrive:
+      title = u"Upload to Google Drive complete";
+      message =
+          u"All files from your device have been uploaded to "
+          u"Google Drive. From now on, save your files to Google Drive.";
+      break;
+    case CloudProvider::kOneDrive:
+      title = u"Upload to Microsoft OneDrive complete";
+      message =
+          u"All files from your device have been uploaded to Microsoft "
+          u"OneDrive. From now on, save your files to Microsoft "
+          u"OneDrive.";
+      break;
+    case CloudProvider::kNotSpecified:
+      LOG(ERROR) << "CloudProvider must be set.";
+      return;
+  }
 
-  NotificationDisplayService::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
-                /*metadata=*/nullptr);
+  auto notification = CreateNotificationPtr(title, message, base::DoNothing());
+
+  NotificationDisplayService::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
+    CloudProvider provider,
     const std::string& message) {
   // TODO(aidazolic): Handle different error states.
 }
 
-void MigrationNotificationManager::HandleCompletedNotificationClick(
-    const base::FilePath& destination_path,
-    std::optional<int> button_index) {
-  // If "View files in..." was clicked.
-  if (button_index) {
-    platform_util::ShowItemInFolder(ProfileManager::GetActiveUserProfile(),
-                                    destination_path);
-  }
-
-  CloseNotification();
+void MigrationNotificationManager::CloseAll() {
+  CloseNotification(profile_);
+  // TODO(b/342340599): Close the dialog.
 }
 
 }  // namespace policy::local_user_files
