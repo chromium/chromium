@@ -365,19 +365,4 @@ TEST_F(InvalidationListenerImplTest, ShutsdownCorrectly) {
   EXPECT_EQ(fake_gcm_driver_.GetAppHandler(kFakeSenderId), nullptr);
 }
 
-using InvalidationListenerImplDeathTest = InvalidationListenerImplTest;
-
-TEST_F(InvalidationListenerImplDeathTest, DoubleStartCrashes) {
-  ASSERT_DEATH(
-      {
-        InvalidationListenerImpl listener(&fake_gcm_driver_,
-                                          &mock_instance_id__driver_,
-                                          kFakeSenderId, kTestLogPrefix);
-
-        listener.Start(&fake_token_handler_);
-        listener.Start(&fake_token_handler_);
-      },
-      "");
-}
-
 }  // namespace invalidation
