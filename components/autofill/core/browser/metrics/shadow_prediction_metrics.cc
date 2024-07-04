@@ -40,6 +40,10 @@ ShadowPredictionComparison GetBaseComparison(
 }
 
 void LogRegexShadowPredictions(const AutofillField& field) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillDisableShadowHeuristics)) {
+    return;
+  }
   // If a `PatternSource` is active, emit shadow predictions against the
   // `PatternSource` of the prior rollout stage.
   // `GetNonActiveHeuristicSources()` ensures that they were computed.
