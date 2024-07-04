@@ -79,7 +79,7 @@ jobs:
       - name: gn gen
         run: |
           cd src
-          gn gen out/Default --args='cc_wrapper="sccache"'
+          gn gen out/Default --args-file=chrobalt/linux/args.gn
       - name: ninja base_unittests
         run: |
           cd src

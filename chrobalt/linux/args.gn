@@ -5,6 +5,7 @@ skia_use_dawn=false
 # enable_vulkan=false
 
 
+# Enterprise stuff
 enable_print_content_analysis=false
 # enterprise_client_certificates=false
 enterprise_cloud_content_analysis=false
@@ -36,7 +37,7 @@ enable_hidpi = false
 
 enable_library_cdms = false
 
-# swiftshader disable
+# disable swiftshader
 enable_swiftshader = false
 enable_swiftshader_vulkan = false
 swiftshader_optimized_debug_build=false
@@ -44,21 +45,24 @@ use_swiftshader_with_subzero=false
 angle_enable_swiftshader=false
 dawn_use_swiftshader=false
 
-# Disable webnn | tflite
+
+# Disable webnn neural networks | tflite
 webnn_use_tflite = false
 enable_maldoca = false
-enable_oop_printing = false
 enable_reading_list = false
-enable_remoting = no
+enable_remoting = false
 enable_screen_ai_service = false
+
+# linux system interfaces
 use_bluez = false
 use_cups = false
 use_dbus = false
 use_mpris = false
+use_udev = false
 use_qt = false
 use_qt6 = false
 
-# printing
+# printing stuff
 enable_oop_basic_print_dialog = false
 enable_basic_print_dialog = false
 enable_basic_printing = false
@@ -70,3 +74,8 @@ enable_print_preview=false
 enable_printing=false
 enable_printing_tests=false
 use_cups=false
+
+enable_vr=false
+
+# Network stuff
+use_kerberos=false
