@@ -254,8 +254,10 @@ void OpenFileFromODFS(
                                     /*window_info=*/nullptr);
             if (base::FeatureList::IsEnabled(
                     ::features::kHappinessTrackingOffice)) {
-              ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-                  ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
+              ash::cloud_upload::HatsOfficeTrigger::Get()
+                  .ShowSurveyAfterAppInactive(
+                      web_app::kMicrosoft365AppId,
+                      ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
             }
             std::move(callback).Run(OfficeOneDriveOpenErrors::kSuccess);
           },
@@ -639,10 +641,6 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     ::file_manager::util::OpenHostedFileInNewTabOrApp(
         profile_, file_urls_.front().path(), base::DoNothing(),
         net::AppendOrReplaceQueryParameter(hosted_url, "cros_files", "true"));
-    if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice)) {
-      ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-          ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
-    }
   }
   LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }
@@ -655,10 +653,6 @@ void CloudOpenTask::OpenUploadedDriveUrl(const GURL& url,
   ::file_manager::util::OpenHostedFileInNewTabOrApp(
       profile_, file_urls_.front().path(), base::DoNothing(),
       net::AppendOrReplaceQueryParameter(url, "cros_files", "true"));
-  if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice)) {
-    ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-        ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
-  }
   // TODO(b/296950967): This function logs both open result and task result (but
   // only if open fails) metrics internally, pull them up to a higher level so
   // all the metrics are logged in one place.

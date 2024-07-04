@@ -2989,11 +2989,10 @@ IN_PROC_BROWSER_TEST_F(OfficeDriveHatsSurvey, OpenInDrive) {
   ASSERT_EQ(docs_app_id, web_app::kGoogleDocsAppId);
   apps::AppReadinessWaiter(profile(), web_app::kGoogleDocsAppId).Await();
 
-  base::test::TestFuture<ash::cloud_upload::HatsOfficeLaunchingApp>
+  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
       hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get()
-      .SetShowSurveyAfterDelayCallbackForTesting(
-          hats_survey_executed_future.GetCallback());
+  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
+      hats_survey_executed_future.GetCallback());
 
   auto expected_state = apps::InstanceState(apps::kStarted | apps::kRunning |
                                             apps::kActive | apps::kVisible);
@@ -3010,8 +3009,9 @@ IN_PROC_BROWSER_TEST_F(OfficeDriveHatsSurvey, OpenInDrive) {
   waiter.Await();
 
   // Check that the Drive HaTS survey has been triggered.
-  ASSERT_EQ(hats_survey_executed_future.Get<0>(),
-            ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
+  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
+  ASSERT_EQ(app_id, web_app::kGoogleDocsAppId);
+  ASSERT_EQ(launching_app, ash::cloud_upload::HatsOfficeLaunchingApp::kDrive);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3031,11 +3031,10 @@ class OfficeMS365HatsSurvey : public OneDriveTest {
 // opened in MS365.
 IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, OpenInMS365) {
   SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false);
-  base::test::TestFuture<ash::cloud_upload::HatsOfficeLaunchingApp>
+  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
       hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get()
-      .SetShowSurveyAfterDelayCallbackForTesting(
-          hats_survey_executed_future.GetCallback());
+  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
+      hats_survey_executed_future.GetCallback());
 
   base::test::TestFuture<TaskResult, std::string> task_executed_future;
   ExecuteFileTask(profile(), CreateOpenInOfficeTask(), file_urls_,
@@ -3044,8 +3043,9 @@ IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, OpenInMS365) {
   CHECK_EQ(task_executed_future.Get<0>(), TaskResult::kOpened);
 
   // Check that the MS365 HaTS survey has been triggered.
-  ASSERT_EQ(hats_survey_executed_future.Get<0>(),
-            ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
+  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
+  ASSERT_EQ(app_id, web_app::kMicrosoft365AppId);
+  ASSERT_EQ(launching_app, ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
 }
 
 // Test that the right HaTS survey for gets triggered when an Office file gets
@@ -3071,11 +3071,10 @@ IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, FallbackQuickOffice) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  base::test::TestFuture<ash::cloud_upload::HatsOfficeLaunchingApp>
+  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
       hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get()
-      .SetShowSurveyAfterDelayCallbackForTesting(
-          hats_survey_executed_future.GetCallback());
+  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
+      hats_survey_executed_future.GetCallback());
 
   // Run dialog callback, with the "quick-office" option.
   OnDialogChoiceReceived(profile(), open_in_office_task_, file_urls_,
@@ -3084,7 +3083,9 @@ IN_PROC_BROWSER_TEST_F(OfficeMS365HatsSurvey, FallbackQuickOffice) {
                          ash::office_fallback::kDialogChoiceQuickOffice);
 
   // Check that the QuickOffice HaTS survey has been triggered.
-  ASSERT_EQ(hats_survey_executed_future.Get<0>(),
+  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
+  ASSERT_EQ(app_id, std::string());
+  ASSERT_EQ(launching_app,
             ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice);
 }
 
@@ -3105,15 +3106,16 @@ class OfficeQuickOfficeHatsSurveyClippyOn : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurveyClippyOn, OpenInQuickOffice) {
   storage::FileSystemURL test_url;
   std::vector<FileSystemURL> file_url{test_url};
-  base::test::TestFuture<ash::cloud_upload::HatsOfficeLaunchingApp>
+  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
       hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get()
-      .SetShowSurveyAfterDelayCallbackForTesting(
-          hats_survey_executed_future.GetCallback());
+  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
+      hats_survey_executed_future.GetCallback());
 
   file_manager::file_tasks::LaunchQuickOffice(browser()->profile(), file_url);
 
-  ASSERT_EQ(hats_survey_executed_future.Get<0>(),
+  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
+  ASSERT_EQ(app_id, std::string());
+  ASSERT_EQ(launching_app,
             ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice);
 }
 
@@ -3134,15 +3136,16 @@ IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurveyClippyOff,
                        OpenInQuickOffice) {
   storage::FileSystemURL test_url;
   std::vector<FileSystemURL> file_url{test_url};
-  base::test::TestFuture<ash::cloud_upload::HatsOfficeLaunchingApp>
+  base::test::TestFuture<std::string, ash::cloud_upload::HatsOfficeLaunchingApp>
       hats_survey_executed_future;
-  ash::cloud_upload::HatsOfficeTrigger::Get()
-      .SetShowSurveyAfterDelayCallbackForTesting(
-          hats_survey_executed_future.GetCallback());
+  ash::cloud_upload::HatsOfficeTrigger::Get().SetShowSurveyCallbackForTesting(
+      hats_survey_executed_future.GetCallback());
 
   file_manager::file_tasks::LaunchQuickOffice(browser()->profile(), file_url);
 
-  ASSERT_EQ(hats_survey_executed_future.Get<0>(),
+  const auto [app_id, launching_app] = hats_survey_executed_future.Get();
+  ASSERT_EQ(app_id, std::string());
+  ASSERT_EQ(launching_app,
             ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOfficeClippyOff);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
