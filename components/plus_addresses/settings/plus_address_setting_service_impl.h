@@ -38,9 +38,14 @@ class PlusAddressSettingServiceImpl : public PlusAddressSettingService {
 
  private:
   // Internals helpers to get the setting value for a given setting name by
-  // type. If a setting of the given name exists, but the type doesn't match, a
-  // CHECK() will fail. If no setting of the given name exists, the default
-  // value is returned.
+  // type. If no setting of the given name exists, the default value is
+  // returned.
+  // If a setting of the given name exists, but the type doesn't match...
+  // - a DCHECK() will fail. This is intended to catch coding errors during
+  //   development.
+  // - the default value is returned with DCHECKs disabled. This choice was made
+  //   to avoid that external factors lead to a crashing state, since settings
+  //   are received via the network.
   // No string or int64_t getters exists, since no such settings are synced yet.
   bool GetBoolean(std::string_view name) const;
 

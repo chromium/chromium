@@ -62,11 +62,12 @@ bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name) const {
   if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
     return false;
   }
-  if (auto setting = sync_bridge_->GetSetting(name)) {
-    CHECK(setting->has_bool_value());
-    return setting->bool_value();
+  auto setting = sync_bridge_->GetSetting(name);
+  DCHECK(!setting || setting->has_bool_value());
+  if (!setting || !setting->has_bool_value()) {
+    return false;
   }
-  return false;
+  return setting->bool_value();
 }
 
 }  // namespace plus_addresses
