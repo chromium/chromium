@@ -1542,6 +1542,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.RegisterNavigationThrottlesTime.{FrameType}"
+    units="ms" expires_after="2024-12-02">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the time taken to register navigation throttles in
+    NavigationThrottleRunner for a {FrameType}. Recorded for every navigation,
+    before dispatching the request.
+  </summary>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram name="Navigation.Renderer.BlockedForFilterURL"
     enum="RendererBlockedURLReason" expires_after="2025-02-05">
   <owner>creis@chromium.org</owner>

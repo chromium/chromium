@@ -9988,15 +9988,23 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebContentsObserver.{Method}" units="ms"
-    expires_after="2023-07-28">
+<histogram name="WebContentsObserver.{Method}{FrameType}" units="ms"
+    expires_after="2024-12-02">
   <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time it takes to call all observers of the WebContents observer
-    method {Method}. Logged every time the method is called.
+    method {Method} in {FrameType}. Logged every time the method is called.
+
+    WARNING: This method may have been expired from 2023-07-28 to 2024-06-02.
   </summary>
   <token key="Method" variants="WebContentsObserverMethods"/>
+  <token key="FrameType">
+    <variant name="" summary="all frames"/>
+    <variant name=".MainFrame" summary="main frame"/>
+    <variant name=".Subframe" summary="subframe"/>
+  </token>
 </histogram>
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"

@@ -45,6 +45,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -6507,11 +6508,16 @@ bool WebContentsImpl::FocusLocationBarByDefault() {
 void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidStartNavigation",
                "navigation_handle", navigation_handle);
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartNavigation");
-    observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
-                               navigation_handle);
-  }
+  base::ElapsedTimer duration;
+  observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
+                             navigation_handle);
+  base::TimeDelta elapsed = duration.Elapsed();
+  base::UmaHistogramTimes("WebContentsObserver.DidStartNavigation", elapsed);
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"WebContentsObserver.DidStartNavigation.",
+           navigation_handle->IsInMainFrame() ? "MainFrame" : "Subframe"}),
+      elapsed);
   if (navigation_handle->IsInPrimaryMainFrame()) {
     // When the browser is started with about:blank as the startup URL, focus
     // the location bar (which will also select its contents) so people can

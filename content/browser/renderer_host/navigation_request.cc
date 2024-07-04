@@ -7419,8 +7419,14 @@ void NavigationRequest::WillStartRequest() {
 
   // Throttles will already have run the first time the page was navigated, we
   // won't run them again on activation.
-  if (!IsPageActivation())
+  if (!IsPageActivation()) {
+    base::ElapsedTimer duration;
     throttle_runner_->RegisterNavigationThrottles();
+    base::UmaHistogramTimes(
+        base::StrCat({"Navigation.RegisterNavigationThrottlesTime.",
+                      IsInMainFrame() ? "MainFrame" : "Subframe"}),
+        duration.Elapsed());
+  }
 
   // If the content/ embedder did not pass the NavigationUIData at the beginning
   // of the navigation, ask for it now.
