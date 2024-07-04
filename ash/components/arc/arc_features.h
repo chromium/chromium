@@ -15,6 +15,8 @@ namespace arc {
 
 // Please keep alphabetized.
 BASE_DECLARE_FEATURE(kArcOnDemandV2);
+extern const base::FeatureParam<bool> kArcOnDemandActivateOnAppLaunch;
+extern const base::FeatureParam<base::TimeDelta> kArcOnDemandInactiveInterval;
 BASE_DECLARE_FEATURE(kArcVmGki);
 BASE_DECLARE_FEATURE(kBlockIoScheduler);
 extern const base::FeatureParam<bool> kEnableDataBlockIoScheduler;

@@ -392,6 +392,8 @@ class ArcAppListPrefs : public KeyedService,
   void SetLastLaunchTime(const std::string& app_id);
   void SetLaunchRequestTimeForTesting(const std::string& app_id,
                                       base::Time timestamp);
+  void SetLastLaunchTimeForTesting(const std::string& app_id,
+                                   base::Time timestamp);
 
   // Calls RequestIcon to get the raw icon data.
   void RequestRawIconData(

@@ -16,6 +16,16 @@ BASE_FEATURE(kArcOnDemandV2,
              "ArcOnDemandV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether ARC should be activated on any app launches. If set to
+// false, inactive_interval will be checked.
+const base::FeatureParam<bool> kArcOnDemandActivateOnAppLaunch{
+    &kArcOnDemandV2, "activate_on_app_launch", true};
+
+// Controls how long of invactivity are allowed before ARC on Demand is
+// triggered.
+const base::FeatureParam<base::TimeDelta> kArcOnDemandInactiveInterval{
+    &kArcOnDemandV2, "inactive_interval", base::Days(0)};
+
 // Controls whether to start ARC with the GKI kernel.
 BASE_FEATURE(kArcVmGki,
              "ArcVmGki",

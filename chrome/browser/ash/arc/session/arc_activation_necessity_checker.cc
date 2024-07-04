@@ -50,11 +50,11 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
 
 void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
                                               bool result) {
-  // Activate ARC if the user has launched any apps.
+  // Activate ARC if the user has no installed apps.
   ArcAppListPrefs* app_list = ArcAppListPrefs::Get(profile_);
   DCHECK(app_list);
+  std::optional<base::Time> last_launch;
   bool is_app_installed = false;
-  bool is_app_launched = false;
   const auto app_ids = app_list->GetAppIds();
   for (const auto& app_id : app_ids) {
     const auto package_name = app_list->GetAppPackageName(app_id);
@@ -62,17 +62,30 @@ void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
     if (package && !package->preinstalled) {
       is_app_installed = true;
       const auto app = app_list->GetApp(app_id);
+      // Launch time is stored as time since the Windows epoch. A value of
+      // greater than 0 means that the app has been launched.
       if (app->last_launch_time.ToDeltaSinceWindowsEpoch().InMicroseconds() >
           0) {
-        // Launch time is stored as time since the Windows epoch
-        // A value of greater than 0 means that the app has been launched.
-        is_app_launched = true;
-        break;
+        if (!last_launch.has_value() ||
+            app->last_launch_time > last_launch.value()) {
+          last_launch = app->last_launch_time;
+        }
       }
     }
   }
+
+  // If delay_on_app_launch is true, activate ARC if the user has launched any
+  // app. Othsewise, activate ARC if the user has launched any apps within
+  // inactive_interval.
+  bool is_app_recently_launched = false;
+  if (kArcOnDemandActivateOnAppLaunch.Get()) {
+    is_app_recently_launched = last_launch.has_value();
+  } else if (last_launch.has_value()) {
+    is_app_recently_launched = (base::Time::Now() - last_launch.value()) <
+                               kArcOnDemandInactiveInterval.Get();
+  }
   base::UmaHistogramBoolean("Arc.ArcOnDemandV2.ActivationShouldBeDelayed",
-                            !result && !is_app_launched);
+                            !result && !is_app_recently_launched);
 
   if (!base::FeatureList::IsEnabled(kArcOnDemandV2)) {
     // For V1, activate ARC if the user is an unmanaged user or if any app is
@@ -80,7 +93,7 @@ void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
     result |= !policy_util::IsAccountManaged(profile_) || is_app_installed;
   } else {
     // For V2, activate ARC if the user has launched apps before.
-    result |= is_app_launched;
+    result |= is_app_recently_launched;
   }
   std::move(callback).Run(result);
 }

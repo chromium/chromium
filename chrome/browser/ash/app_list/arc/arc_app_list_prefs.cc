@@ -1189,6 +1189,15 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
   }
 }
 
+void ArcAppListPrefs::SetLastLaunchTimeForTesting(const std::string& app_id,
+                                                  base::Time timestamp) {
+  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
+  base::Value::Dict& app_dict = update.Get();
+  const std::string string_value =
+      base::NumberToString(timestamp.ToInternalValue());
+  app_dict.Set(kLastLaunchTime, string_value);
+}
+
 void ArcAppListPrefs::DisableAllApps() {
   std::unordered_set<std::string> old_ready_apps;
   old_ready_apps.swap(ready_apps_);
