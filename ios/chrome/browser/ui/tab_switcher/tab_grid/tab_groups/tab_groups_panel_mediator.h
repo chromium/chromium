@@ -8,13 +8,16 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
 @protocol GridToolbarsMutator;
 @protocol TabGridToolbarsMainTabGridDelegate;
+@protocol TabGroupsPanelConsumer;
 class WebStateList;
 
 // TabGroupsPanelMediator controls the Tab Groups panel in Tab Grid.
-@interface TabGroupsPanelMediator : NSObject <TabGridPageMutator>
+@interface TabGroupsPanelMediator
+    : NSObject <TabGridPageMutator, TabGroupsPanelMutator>
 
 // WebStateList-s are used to configure the Done button.
 // `regularWebStateList` must not be null.
@@ -24,6 +27,9 @@ class WebStateList;
                            disabledByPolicy:(BOOL)disabled
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+// The UI consumer to which updates are made.
+@property(nonatomic, weak) id<TabGroupsPanelConsumer> consumer;
 
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;

@@ -74,6 +74,8 @@
                  disabledByPolicy:regularModeDisabled];
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.toolbarTabGridDelegate = _toolbarTabGridDelegate;
+  _mediator.consumer = _gridViewController;
+  _gridViewController.mutator = _mediator;
 }
 
 - (void)stop {

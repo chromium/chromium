@@ -116,6 +116,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      PinnedTabsViewControllerDelegate,
                                      RecentTabsTableViewControllerUIDelegate,
                                      SuggestedActionsDelegate,
+                                     TabGroupsPanelViewControllerUIDelegate,
                                      UIGestureRecognizerDelegate,
                                      UIScrollViewAccessibilityDelegate>
 // Whether the view is visible. Bookkeeping is based on
@@ -548,6 +549,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setTabGroupsPanelViewController:
     (TabGroupsPanelViewController*)tabGroupsPanelViewController {
   _tabGroupsPanelViewController = tabGroupsPanelViewController;
+  _tabGroupsPanelViewController.UIDelegate = self;
   _tabGroupsPanelViewController.view.accessibilityElementsHidden =
       self.currentPage != TabGridPageTabGroups;
 }
@@ -709,9 +711,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   self.incognitoTabsViewController.contentInsets =
-      [self calculateInsetsForIncognitoGridView];
+      [self calculateInsetsForGridView];
   self.regularTabsViewController.contentInsets =
       [self calculateInsetsForRegularGridView];
+  self.tabGroupsPanelViewController.contentInsets =
+      [self calculateInsetsForGridView];
 }
 
 // Returns the corresponding BaseGridViewController for `page`. Returns `nil` if
@@ -1296,10 +1300,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       gridScrolledToBottom = self.remoteTabsViewController.scrolledToBottom;
       break;
     case TabGridPage::TabGridPageTabGroups:
-      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
-      NOTIMPLEMENTED();
-      gridScrolledToTop = YES;
-      gridScrolledToBottom = YES;
+      gridScrolledToTop = self.tabGroupsPanelViewController.scrolledToTop;
+      gridScrolledToBottom = self.tabGroupsPanelViewController.scrolledToBottom;
       break;
   }
   [self.topToolbar setScrollViewScrolledToEdge:gridScrolledToTop];
@@ -1548,9 +1550,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Calculates the proper insets for the Incognito Grid ViewController to
-// accommodate for the safe area and toolbar.
-- (UIEdgeInsets)calculateInsetsForIncognitoGridView {
+// Calculates the proper insets for a Tab Grid panel to accommodate for the safe
+// area and toolbar.
+- (UIEdgeInsets)calculateInsetsForGridView {
   // The content inset of the tab grids must be modified so that the toolbars
   // do not obscure the tabs. This may change depending on orientation.
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
@@ -1568,9 +1570,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 // Calculates the proper insets for the Regular Grid ViewController to
-// accommodate for the safe area and toolbars.
+// accommodate for the safe area and toolbars. It differs from
+// `calculateInsetsForGridView` when there is the Pinned Tabs tray to account
+// for as well.
 - (UIEdgeInsets)calculateInsetsForRegularGridView {
-  UIEdgeInsets inset = [self calculateInsetsForIncognitoGridView];
+  UIEdgeInsets inset = [self calculateInsetsForGridView];
 
   if (IsPinnedTabsEnabled() && self.pinnedTabsViewController.visible) {
     CGFloat pinnedViewHeight =
@@ -1585,6 +1589,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)recentTabsScrollViewDidScroll:
     (RecentTabsTableViewController*)recentTabsTableViewController {
+  [self updateToolbarsAppearance];
+}
+
+#pragma mark - TabGroupsPanelViewControllerUIDelegate
+
+- (void)tabGroupsPanelViewControllerDidScroll:
+    (TabGroupsPanelViewController*)tabGroupsPanelViewController {
   [self updateToolbarsAppearance];
 }
 
