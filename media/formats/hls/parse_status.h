@@ -64,6 +64,7 @@ enum class ParseStatusCode : StatusCodeType {
   kRenditionGroupHasMultipleDefaultRenditions,
   kRenditionGroupHasDuplicateRenditionNames,
   kRenditionGroupDoesNotExist,
+  kUnsupportedEncryptionMethod,
 };
 
 struct ParseStatusTraits {

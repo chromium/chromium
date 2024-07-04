@@ -1557,7 +1557,7 @@ ParseStatus::Or<XKeyTagMethod> RecognizeMethod(SourceString content) {
   } else if (content.Str() == kMethodISO230017) {
     return XKeyTagMethod::kISO230017;
   } else {
-    return ParseStatusCode::kMalformedTag;
+    return ParseStatusCode::kUnsupportedEncryptionMethod;
   }
 }
 

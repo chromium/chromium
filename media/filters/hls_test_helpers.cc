@@ -27,6 +27,9 @@ MockHlsRenditionHost::~MockHlsRenditionHost() = default;
 MockHlsRendition::MockHlsRendition() = default;
 MockHlsRendition::~MockHlsRendition() = default;
 
+MockHlsNetworkAccess::MockHlsNetworkAccess() = default;
+MockHlsNetworkAccess::~MockHlsNetworkAccess() = default;
+
 // static
 std::unique_ptr<HlsDataSourceStream>
 StringHlsDataSourceStreamFactory::CreateStream(std::string content,
