@@ -442,12 +442,6 @@ struct PasswordForm {
   // saved or filled only with the fallback.
   bool only_for_fallback = false;
 
-  // True iff the new password field was found with server hints or autocomplete
-  // attributes.
-  // Only set on form parsing for filling, and not persisted. Used as signal for
-  // password generation eligibility.
-  bool is_new_password_reliable = false;
-
   // True iff the form may be filled with webauthn credentials from an active
   // webauthn request.
   bool accepts_webauthn_credentials = false;

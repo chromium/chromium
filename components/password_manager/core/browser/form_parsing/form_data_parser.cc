@@ -1046,8 +1046,6 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->server_side_classification_successful = form_predictions.has_value();
   result->username_may_use_prefilled_placeholder =
       GetMayUsePrefilledPlaceholder(form_predictions, significant_fields);
-  result->is_new_password_reliable =
-      significant_fields.is_new_password_reliable;
   result->only_for_fallback = significant_fields.is_fallback;
   result->submission_event = form_data.submission_event();
   result->accepts_webauthn_credentials =
@@ -1072,21 +1070,33 @@ bool FieldValueIsTooShortForSaving(const FormFieldData* field) {
 
 }  // namespace
 
+FormParsingResult::FormParsingResult() = default;
+
+FormParsingResult::FormParsingResult(
+    std::unique_ptr<PasswordForm> password_form,
+    UsernameDetectionMethod username_detection_method,
+    bool is_new_password_reliable)
+    : password_form(std::move(password_form)),
+      username_detection_method(username_detection_method),
+      is_new_password_reliable(is_new_password_reliable) {}
+
+FormParsingResult::FormParsingResult(FormParsingResult&& other) = default;
+
+FormParsingResult::~FormParsingResult() = default;
+
 FormDataParser::FormDataParser() = default;
 
 FormDataParser::~FormDataParser() = default;
 
-std::tuple<std::unique_ptr<PasswordForm>,
-           FormDataParser::UsernameDetectionMethod>
-FormDataParser::ParseAndReturnUsernameDetection(
+FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     const FormData& form_data,
     Mode mode,
     const base::flat_set<std::u16string>& stored_usernames) {
   if (form_data.fields().size() > kMaxParseableFields) {
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
+    return FormParsingResult();
   }
   if (!form_data.url().is_valid()) {
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
+    return FormParsingResult();
   }
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
@@ -1097,7 +1107,7 @@ FormDataParser::ParseAndReturnUsernameDetection(
                     &all_alternative_usernames, mode);
 
   if (processed_fields.empty()) {
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
+    return FormParsingResult();
   }
 
   SignificantFields significant_fields;
@@ -1189,9 +1199,9 @@ FormDataParser::ParseAndReturnUsernameDetection(
   // eligible for automatic password generation. This only makes sense when
   // forms are analysed for filling, because no passwords are generated when the
   // user saves the already entered one.
-  significant_fields.is_new_password_reliable =
-      mode == Mode::kFilling && significant_fields.new_password &&
-      new_password_found_before_heuristic;
+  bool is_new_password_reliable = mode == Mode::kFilling &&
+                                  significant_fields.new_password &&
+                                  new_password_found_before_heuristic;
 
   if (mode == Mode::kFilling) {
     for (const auto& field : processed_fields) {
@@ -1213,20 +1223,19 @@ FormDataParser::ParseAndReturnUsernameDetection(
        FieldValueIsTooShortForSaving(significant_fields.new_password))) {
     significant_fields.is_fallback = true;
   }
-
-  return {
+  return FormParsingResult(
       AssemblePasswordForm(form_data, significant_fields,
                            std::move(all_alternative_passwords),
                            std::move(all_alternative_usernames), predictions_),
-      method};
+      method, is_new_password_reliable);
 }
 
 std::unique_ptr<PasswordForm> FormDataParser::Parse(
     const FormData& form_data,
     Mode mode,
     const base::flat_set<std::u16string>& stored_usernames) {
-  return std::get<0>(
-      ParseAndReturnUsernameDetection(form_data, mode, stored_usernames));
+  return ParseAndReturnParsingResult(form_data, mode, stored_usernames)
+      .password_form;
 }
 
 std::string GetSignonRealm(const GURL& url) {

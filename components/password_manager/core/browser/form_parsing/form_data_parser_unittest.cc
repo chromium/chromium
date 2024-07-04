@@ -44,8 +44,6 @@ namespace {
 using testing::IsNull;
 using testing::NotNull;
 
-using UsernameDetectionMethod = FormDataParser::UsernameDetectionMethod;
-
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
 // generated in GetFormDataAndExpectation().
 constexpr char16_t kNonimportantValue[] = u"non-important unique";
@@ -382,58 +380,70 @@ class FormParserTest : public testing::Test {
             << test_case.description_for_logging << ", parsing mode = "
             << (mode == FormDataParser::Mode::kFilling ? "Filling" : "Saving"));
 
-        std::unique_ptr<PasswordForm> parsed_form =
-            parser.Parse(form_data, mode, /*stored_usernames=*/{});
-
+        FormParsingResult parsing_result = parser.ParseAndReturnParsingResult(
+            form_data, mode, /*stored_usernames=*/{});
         const ParseResultIds& expected_ids =
             mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
         if (expected_ids.IsEmpty()) {
-          EXPECT_THAT(parsed_form, IsNull()) << "Expected no parsed results";
+          EXPECT_THAT(parsing_result.password_form, IsNull())
+              << "Expected no parsed results";
         } else {
-          ASSERT_THAT(parsed_form, NotNull()) << "Expected successful parsing";
-          EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
-          EXPECT_FALSE(parsed_form->blocked_by_user);
-          EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
+          ASSERT_THAT(parsing_result.password_form, NotNull())
+              << "Expected successful parsing";
+          EXPECT_EQ(PasswordForm::Scheme::kHtml,
+                    parsing_result.password_form->scheme);
+          EXPECT_FALSE(parsing_result.password_form->blocked_by_user);
+          EXPECT_EQ(PasswordForm::Type::kFormSubmission,
+                    parsing_result.password_form->type);
           EXPECT_EQ(test_case.server_side_classification_successful,
-                    parsed_form->server_side_classification_successful);
+                    parsing_result.password_form
+                        ->server_side_classification_successful);
           EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
-                    parsed_form->username_may_use_prefilled_placeholder);
-          EXPECT_EQ(test_case.submission_event, parsed_form->submission_event);
+                    parsing_result.password_form
+                        ->username_may_use_prefilled_placeholder);
+          EXPECT_EQ(test_case.submission_event,
+                    parsing_result.password_form->submission_event);
           if (test_case.is_new_password_reliable &&
               mode == FormDataParser::Mode::kFilling) {
             EXPECT_EQ(*test_case.is_new_password_reliable,
-                      parsed_form->is_new_password_reliable);
+                      parsing_result.is_new_password_reliable);
           }
           EXPECT_EQ(test_case.accepts_webauthn_credentials &&
                         mode == FormDataParser::Mode::kFilling,
-                    parsed_form->accepts_webauthn_credentials);
+                    parsing_result.password_form->accepts_webauthn_credentials);
           EXPECT_EQ(test_case.form_has_autofilled_value,
-                    parsed_form->form_has_autofilled_value);
+                    parsing_result.password_form->form_has_autofilled_value);
 
-          CheckPasswordFormFields(*parsed_form, form_data, expected_ids);
-          CheckAllValuesUnique(parsed_form->all_alternative_passwords);
-          CheckAllValuesUnique(parsed_form->all_alternative_usernames);
+          CheckPasswordFormFields(*parsing_result.password_form, form_data,
+                                  expected_ids);
+          CheckAllValuesUnique(
+              parsing_result.password_form->all_alternative_passwords);
+          CheckAllValuesUnique(
+              parsing_result.password_form->all_alternative_usernames);
           if (test_case.number_of_all_alternative_passwords >= 0) {
-            EXPECT_EQ(static_cast<size_t>(
-                          test_case.number_of_all_alternative_passwords),
-                      parsed_form->all_alternative_passwords.size());
+            EXPECT_EQ(
+                static_cast<size_t>(
+                    test_case.number_of_all_alternative_passwords),
+                parsing_result.password_form->all_alternative_passwords.size());
           }
           if (test_case.all_alternative_passwords) {
             EXPECT_EQ(*test_case.all_alternative_passwords,
-                      parsed_form->all_alternative_passwords);
+                      parsing_result.password_form->all_alternative_passwords);
           }
           if (test_case.number_of_all_alternative_usernames >= 0) {
-            EXPECT_EQ(static_cast<size_t>(
-                          test_case.number_of_all_alternative_usernames),
-                      parsed_form->all_alternative_usernames.size());
+            EXPECT_EQ(
+                static_cast<size_t>(
+                    test_case.number_of_all_alternative_usernames),
+                parsing_result.password_form->all_alternative_usernames.size());
           }
           if (test_case.all_alternative_usernames) {
             EXPECT_EQ(*test_case.all_alternative_usernames,
-                      parsed_form->all_alternative_usernames);
+                      parsing_result.password_form->all_alternative_usernames);
           }
           if (mode == FormDataParser::Mode::kSaving) {
-            EXPECT_EQ(test_case.fallback_only, parsed_form->only_for_fallback);
+            EXPECT_EQ(test_case.fallback_only,
+                      parsing_result.password_form->only_for_fallback);
           }
         }
         if (test_case.readonly_status) {
@@ -3310,8 +3320,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
   FormDataParser parser;
   parser.set_predictions(std::move(predictions));
 
-  auto [result, username_detection_method] =
-      parser.ParseAndReturnUsernameDetection(
+  auto [result, username_detection_method, is_new_password_reliable] =
+      parser.ParseAndReturnParsingResult(
           form_data, FormDataParser::Mode::kSaving, /*stored_usernames=*/{});
   EXPECT_EQ(username_detection_method,
             UsernameDetectionMethod::kServerSidePrediction);
@@ -3326,8 +3336,8 @@ TEST_F(FormParserTest, BaseHeuristicsFindUsernameFieldWithStoredUsername) {
                         CreateField(FormControlType::kInputPassword, u"")});
 
   FormDataParser parser;
-  auto [password_form, username_detection_method] =
-      parser.ParseAndReturnUsernameDetection(
+  auto [password_form, username_detection_method, is_new_password_reliable] =
+      parser.ParseAndReturnParsingResult(
           form_data, FormDataParser::Mode::kFilling, {kUsername});
   ASSERT_TRUE(password_form);
 

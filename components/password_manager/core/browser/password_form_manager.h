@@ -311,10 +311,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Helper function for calling form parsing and logging results if logging is
   // active.
-  std::tuple<std::unique_ptr<PasswordForm>,
-             FormDataParser::UsernameDetectionMethod>
-  ParseFormAndMakeLogging(const autofill::FormData& form,
-                          FormDataParser::Mode mode);
+  FormParsingResult ParseFormAndMakeLogging(const autofill::FormData& form,
+                                            FormDataParser::Mode mode);
 
   void PresaveGeneratedPasswordInternal(
       const autofill::FormData& form,
@@ -383,16 +381,14 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // found inside the password form.
   bool ShouldPreferUsernameFoundOutsideOfForm(
       const std::optional<UsernameFoundOutsideOfForm>& best_candidate,
-      FormDataParser::UsernameDetectionMethod
-          in_form_username_detection_method);
+      UsernameDetectionMethod in_form_username_detection_method);
 
   // Sets voting data and update `parsed_submitted_form_` with the correct
   // username value for a password form without a username field.
   void HandleUsernameFirstFlow(
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames,
-      FormDataParser::UsernameDetectionMethod
-          in_form_username_detection_method);
+      UsernameDetectionMethod in_form_username_detection_method);
 
   // Sets voting data for a password form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the

@@ -180,7 +180,6 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("only_for_fallback", form.only_for_fallback);
   target.Set("is_gaia_with_skip_save_password_form",
              form.form_data.is_gaia_with_skip_save_password_form());
-  target.Set("is_new_password_reliable", form.is_new_password_reliable);
   target.Set("in_store", ToString(form.in_store));
 
   std::vector<std::string> hashes;
@@ -453,7 +452,6 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.app_icon_url == rhs.app_icon_url &&
          lhs.submission_event == rhs.submission_event &&
          lhs.only_for_fallback == rhs.only_for_fallback &&
-         lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
          lhs.in_store == rhs.in_store &&
          lhs.moving_blocked_for_list == rhs.moving_blocked_for_list &&
          lhs.password_issues == rhs.password_issues && lhs.notes == rhs.notes &&
