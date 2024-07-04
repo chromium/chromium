@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace chromeos::editor_menu {
@@ -107,40 +106,6 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     ~ClipboardData();
 
     bool operator==(const ClipboardData&) const;
-  };
-
-  // TODO: b/349891147 - Remove GIFs.
-  struct GifData {
-    GifData(const GURL& preview_url,
-            const GURL& preview_image_url,
-            const gfx::Size& preview_dimensions,
-            const GURL& full_url,
-            const gfx::Size& full_dimensions,
-            std::u16string content_description);
-    GifData(const GifData&);
-    GifData& operator=(const GifData&);
-    ~GifData();
-
-    // A url to an animated preview gif media source.
-    GURL preview_url;
-
-    // A url to an unanimated preview image of the gif media source.
-    GURL preview_image_url;
-
-    // Width and height of the GIF at `preview_url`.
-    gfx::Size preview_dimensions;
-
-    // A url to a full-sized gif media source.
-    GURL full_url;
-
-    // Width and height of the GIF at `full_url`.
-    gfx::Size full_dimensions;
-
-    // A textual description of the content, primarily used for accessibility
-    // features.
-    std::u16string content_description;
-
-    bool operator==(const GifData&) const;
   };
 
   struct BrowsingHistoryData {
@@ -251,7 +216,6 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             SymbolData,
                             EmoticonData,
                             ClipboardData,
-                            GifData,
                             BrowsingHistoryData,
                             LocalFileData,
                             DriveFileData,
@@ -293,12 +257,6 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::u16string display_text,
       std::optional<ui::ImageModel> display_image,
       bool is_recent);
-  static PickerSearchResult Gif(const GURL& preview_url,
-                                const GURL& preview_image_url,
-                                const gfx::Size& preview_dimensions,
-                                const GURL& full_url,
-                                const gfx::Size& full_dimensions,
-                                std::u16string content_description);
   static PickerSearchResult LocalFile(std::u16string title,
                                       base::FilePath file_path,
                                       bool best_match = false);

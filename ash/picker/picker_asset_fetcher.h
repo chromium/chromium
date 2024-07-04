@@ -41,12 +41,14 @@ class ASH_EXPORT PickerAssetFetcher {
   // Fetches and decodes a gif from `url`. If successful, the decoded gif frames
   // will be returned via `callback`. Otherwise, `callback` is run with an empty
   // vector of frames.
+  // TODO: b/349891147 - Remove this unused method.
   virtual void FetchGifFromUrl(const GURL& url,
                                PickerGifFetchedCallback callback) = 0;
 
   // Fetches and decodes a gif preview image from `url`. If successful, the
   // decoded gif preview image will be returned via `callback`. Otherwise,
   // `callback` is run with an empty ImageSkia.
+  // TODO: b/349891147 - Remove this unused method.
   virtual void FetchGifPreviewImageFromUrl(
       const GURL& url,
       PickerImageFetchedCallback callback) = 0;

@@ -401,55 +401,6 @@ TEST_F(PickerControllerTest,
   waiter.Wait();
 }
 
-TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-  controller.ToggleWidget();
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-
-  controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      GURL("http://foo.com/fake_preview.gif"),
-      GURL("http://foo.com/fake_preview_image.png"), gfx::Size(),
-      GURL("http://foo.com/fake.gif"), gfx::Size(),
-      /*content_description=*/u""));
-  controller.widget_for_testing()->CloseNow();
-  ui::FakeTextInputClient input_field(
-      input_method,
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.last_inserted_image_url(),
-            GURL("http://foo.com/fake.gif"));
-}
-
-TEST_F(PickerControllerTest,
-       InsertUnsupportedImageResultTimeoutCopiesToClipboard) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-  controller.ToggleWidget();
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-
-  controller.InsertResultOnNextFocus(PickerSearchResult::Gif(
-      /*preview_url=*/GURL("http://foo.com/preview"),
-      /*preview_image_url=*/GURL(), gfx::Size(30, 20),
-      /*full_url=*/GURL("http://foo.com"), gfx::Size(60, 40),
-      /*content_description=*/u"a gif"));
-  controller.widget_for_testing()->CloseNow();
-  ui::FakeTextInputClient input_field(
-      input_method,
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
-  input_method->SetFocusedTextInputClient(&input_field);
-  task_environment()->FastForwardBy(PickerController::kInsertMediaTimeout);
-
-  EXPECT_EQ(
-      ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
-      uR"html(<img src="http://foo.com/" referrerpolicy="no-referrer" alt="a gif" width="60" height="40"/>)html");
-  EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
-}
-
 TEST_F(PickerControllerTest,
        InsertBrowsingHistoryResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
@@ -862,11 +813,6 @@ INSTANTIATE_TEST_SUITE_P(
                 u"",
                 {},
                 false),
-            .no_selection_action = PickerActionType::kInsert,
-            .has_selection_action = PickerActionType::kInsert,
-        },
-        {
-            .result = PickerSearchResult::Gif({}, {}, {}, {}, {}, u""),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },

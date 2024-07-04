@@ -172,10 +172,6 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerSearchResult::ClipboardData& data) -> ReturnType {
             return data;
           },
-          [](const PickerSearchResult::GifData& data) -> ReturnType {
-            return PickerImageMedia(data.full_url, data.full_dimensions,
-                                    data.content_description);
-          },
           [](const PickerSearchResult::BrowsingHistoryData& data)
               -> ReturnType { return PickerLinkMedia(data.url); },
           [](const PickerSearchResult::LocalFileData& data) -> ReturnType {
@@ -506,9 +502,6 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchResult::ClipboardData& data) {
             NOTREACHED_NORETURN();
           },
-          [](const PickerSearchResult::GifData& data) {
-            NOTREACHED_NORETURN();
-          },
           [](const PickerSearchResult::BrowsingHistoryData& data) {
             OpenLink(data.url);
           },
@@ -599,11 +592,6 @@ PickerActionType PickerController::GetActionForResult(
             return PickerActionType::kInsert;
           },
           [mode](const PickerSearchResult::ClipboardData& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerSearchResult::GifData& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;

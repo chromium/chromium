@@ -1253,7 +1253,7 @@
     <variant value="6">DATES_TIMES</variant>
     <variant value="7">UNITS_MATHS</variant>
     <variant value="8">CASE_TRANSFORM</variant>
-    <variant value="9">TENOR</variant>
+    <variant value="9">DEPRECATED_TENOR</variant>
   </enum>
 
   <enum name="PickerResultType">
@@ -1266,7 +1266,7 @@
     <variant value="6">CLIPBOARD_TEXT</variant>
     <variant value="7">CLIPBOARD_IMAGE</variant>
     <variant value="8">CLIPBOARD_HTML</variant>
-    <variant value="9">GIF</variant>
+    <variant value="9">DEPRECATED_GIF</variant>
     <variant value="10">LINK</variant>
     <variant value="11">LOCAL_FILE</variant>
     <variant value="12">DRIVE_FILE</variant>

@@ -23,6 +23,7 @@ struct ASH_EXPORT PickerTextMedia {
   explicit PickerTextMedia(std::string_view text);
 };
 
+// TODO: b/349891147 - Remove GIFs.
 struct ASH_EXPORT PickerImageMedia {
   GURL url;
   // `dimensions` is std::nullopt if it's unknown.
