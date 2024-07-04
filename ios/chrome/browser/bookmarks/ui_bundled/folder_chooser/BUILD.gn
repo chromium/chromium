@@ -36,12 +36,12 @@ source_set("coordinator_impl") {
     "//base",
     "//components/bookmarks/browser",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor:coordinator_headers",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:model",
-    "//ios/chrome/browser/bookmarks/ui_bundled:core",
-    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor:coordinator_headers",
   ]
 }
 
@@ -70,15 +70,15 @@ source_set("ui") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/cells",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:model",
-    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
-    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
-    "//ios/chrome/browser/bookmarks/ui_bundled/cells",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
@@ -87,17 +87,24 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm" ]
+  sources = [
+    "bookmarks_folder_chooser_mediator_unittest.mm",
+    "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/sync:test_support",
     "//components/sync/base:features",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
@@ -117,10 +124,10 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks/model:bookmark_model_type",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/bookmarks/ui_bundled:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

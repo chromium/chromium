@@ -10,11 +10,12 @@
 #import <Foundation/Foundation.h>
 #import <set>
 
+enum class BookmarkModelType;
+
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
-
-class LegacyBookmarkModel;
 
 // Protocol to access and update data from parent data source object. Please
 // note that the parent data source is not and should not be responsible for
@@ -42,7 +43,8 @@ class LegacyBookmarkModel;
 
 // Both `bookmarkModel` and `parentDataSource` needs to be non null.
 // Additionally, `bookmarkModel` needs to be fully loaded.
-- (instancetype)initWithBookmarkModel:(LegacyBookmarkModel*)bookmarkModel
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                                 type:(BookmarkModelType)type
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource NS_DESIGNATED_INITIALIZER;

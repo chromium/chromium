@@ -12,15 +12,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_mediator.h"
@@ -29,6 +24,10 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_editor/bookmarks_folder_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 @interface BookmarksFolderChooserCoordinator () <
     BookmarksFolderChooserMediatorDelegate,
@@ -117,21 +116,17 @@
   [super start];
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
-  LegacyBookmarkModel* localOrSyncableModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browserState);
-  LegacyBookmarkModel* accountModel =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
+  bookmarks::BookmarkModel* model =
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksFolderChooserMediator alloc]
-      initWithLocalOrSyncableBookmarkModel:localOrSyncableModel
-                      accountBookmarkModel:accountModel
-                               editedNodes:std::move(_hiddenNodes)
-                     authenticationService:authenticationService
-                               syncService:syncService];
+      initWithBookmarkModel:model
+                editedNodes:std::move(_hiddenNodes)
+      authenticationService:authenticationService
+                syncService:syncService];
   _hiddenNodes.clear();
   _mediator.delegate = self;
   _mediator.selectedFolderNode = _selectedFolder;

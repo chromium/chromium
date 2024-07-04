@@ -13,17 +13,19 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
-#import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
-using bookmarks::BookmarkNode;
-
+namespace bookmark_utils_ios {
 namespace {
+
+using bookmarks::BookmarkNode;
 
 std::vector<std::u16string> GetBookmarkTitles(
     const std::vector<std::unique_ptr<BookmarkNode>>& nodes) {
@@ -52,9 +54,8 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport {
     const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
 
     std::vector<const BookmarkNode*> to_move{a, f2b, f2};
-    EXPECT_TRUE(bookmark_utils_ios::MoveBookmarks(
-        to_move, local_or_syncable_bookmark_model_, account_bookmark_model_,
-        f1));
+    EXPECT_TRUE(MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
+                              account_bookmark_model_, f1));
 
     // Moving within one model shouldn't change pointers in `to_move`.
     EXPECT_THAT(to_move, ::testing::ElementsAre(a, f2b, f2));
@@ -77,9 +78,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
 
   GURL url_copy = node->GetTitledUrlNodeUrl();
   // This call is a no-op, , so `UpdateBookmark` should return `false`.
-  EXPECT_FALSE(bookmark_utils_ios::UpdateBookmark(
-      node, base::SysUTF16ToNSString(title), url_copy, mobile_node,
-      local_or_syncable_bookmark_model_, account_bookmark_model_));
+  EXPECT_FALSE(UpdateBookmark(node, base::SysUTF16ToNSString(title), url_copy,
+                              mobile_node, local_or_syncable_bookmark_model_,
+                              account_bookmark_model_));
   EXPECT_EQ(node->GetTitle(), title);
 }
 
@@ -91,9 +92,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
-  EXPECT_TRUE(bookmark_utils_ios::UpdateBookmark(
-      node, new_title, new_url, folder, local_or_syncable_bookmark_model_,
-      account_bookmark_model_));
+  EXPECT_TRUE(UpdateBookmark(node, new_title, new_url, folder,
+                             local_or_syncable_bookmark_model_,
+                             account_bookmark_model_));
 
   ASSERT_THAT(mobile_node->children(),
               testing::ElementsAre(testing::Pointer(folder)));
@@ -114,9 +115,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
-  EXPECT_TRUE(bookmark_utils_ios::UpdateBookmark(
-      node, new_title, new_url, account_mobile_node,
-      local_or_syncable_bookmark_model_, account_bookmark_model_));
+  EXPECT_TRUE(UpdateBookmark(node, new_title, new_url, account_mobile_node,
+                             local_or_syncable_bookmark_model_,
+                             account_bookmark_model_));
 
   EXPECT_THAT(local_or_syncable_mobile_node->children(), testing::IsEmpty());
   ASSERT_THAT(account_mobile_node->children(), testing::SizeIs(1));
@@ -144,8 +145,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   toDelete.insert(f2b);
   toDelete.insert(f2);
 
-  bookmark_utils_ios::DeleteBookmarks(
-      toDelete, local_or_syncable_bookmark_model_, FROM_HERE);
+  DeleteBookmarks(toDelete, local_or_syncable_bookmark_model_, FROM_HERE);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();
@@ -189,8 +189,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
   to_move.push_back(b);    // Cross-storage move, the parent is not moved.
   to_move.push_back(c);    // Same-storage move.
 
-  bookmark_utils_ios::MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
-                                    account_bookmark_model_, f2);
+  MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
+                account_bookmark_model_, f2);
 
   EXPECT_THAT(GetBookmarkTitles(local_or_syncable_mobile_node->children()),
               ::testing::ElementsAre(u"a"));
@@ -220,8 +220,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
   const BookmarkNode* mobileNode =
       local_or_syncable_bookmark_model_->subtle_mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
-  NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
-      local_or_syncable_bookmark_model_, f1->id());
+  NSArray<NSNumber*>* path =
+      CreateBookmarkPath(local_or_syncable_bookmark_model_, f1->id());
   NSMutableArray<NSNumber*>* expectedPath = [NSMutableArray array];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
   [expectedPath addObject:[NSNumber numberWithLongLong:f1->id()]];
@@ -229,8 +229,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
-  NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
-      local_or_syncable_bookmark_model_, 999);
+  NSArray<NSNumber*>* path =
+      CreateBookmarkPath(local_or_syncable_bookmark_model_, 999);
   EXPECT_TRUE(path == nil);
 }
 
@@ -264,9 +264,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   obstructions.insert(gaga);
   obstructions.insert(lindsey);
 
-  bookmark_utils_ios::NodeVector result =
-      bookmark_utils_ios::VisibleNonDescendantNodes(
-          obstructions, local_or_syncable_bookmark_model_);
+  NodeVector result = VisibleNonDescendantNodes(
+      obstructions, bookmark_model_, BookmarkModelType::kLocalOrSyncable);
   ASSERT_EQ(13u, result.size());
 
   EXPECT_EQ(result[0]->GetTitle(), u"Mobile Bookmarks");
@@ -286,102 +285,99 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   // Empty vectors: [] - [].
-  bookmark_utils_ios::NodeVector vector1;
-  bookmark_utils_ios::NodeVector vector2;
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  NodeVector vector1;
+  NodeVector vector2;
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector2, vector1));
 
   // Empty vs vector with one element: [] - [1].
   const BookmarkNode* mobileNode =
       local_or_syncable_bookmark_model_->subtle_mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // The same element in each: [1] - [1].
   vector1.push_back(bookmark1);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector2, vector1));
 
   // One different element in each: [2] - [1].
   vector1.pop_back();
   const BookmarkNode* bookmark2 = AddBookmark(mobileNode, u"2");
   vector1.push_back(bookmark2);
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [2] - [1, 2].
   vector2.push_back(bookmark2);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [3] - [1, 2].
   vector1.pop_back();
   const BookmarkNode* bookmark3 = AddBookmark(mobileNode, u"3");
   vector1.push_back(bookmark3);
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [2, 3] - [1, 2, 3].
   vector1.insert(vector1.begin(), bookmark2);
   vector2.push_back(bookmark3);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [2, 3, 1] - [1, 2, 3].
   vector1.push_back(bookmark2);
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [1, 3] - [1, 2, 3].
   vector1.clear();
   vector1.push_back(bookmark1);
   vector1.push_back(bookmark2);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [1, 1] - [1, 2, 3].
   vector1.pop_back();
   vector1.push_back(bookmark1);
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 
   // [1, 1] - [1, 1, 2, 3].
   vector2.insert(vector2.begin(), bookmark1);
-  EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
-  EXPECT_FALSE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
+  EXPECT_TRUE(IsSubvectorOfNodes(vector1, vector2));
+  EXPECT_FALSE(IsSubvectorOfNodes(vector2, vector1));
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   // [] - [].
-  bookmark_utils_ios::NodeVector vector1;
-  bookmark_utils_ios::NodeVector vector2;
-  EXPECT_EQ(0u,
-            bookmark_utils_ios::MissingNodesIndices(vector1, vector2).size());
+  NodeVector vector1;
+  NodeVector vector2;
+  EXPECT_EQ(0u, MissingNodesIndices(vector1, vector2).size());
 
   // [] - [1].
   const BookmarkNode* mobileNode =
       local_or_syncable_bookmark_model_->subtle_mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
-  std::vector<bookmark_utils_ios::NodeVector::size_type> missingNodesIndices =
-      bookmark_utils_ios::MissingNodesIndices(vector1, vector2);
+  std::vector<NodeVector::size_type> missingNodesIndices =
+      MissingNodesIndices(vector1, vector2);
   EXPECT_EQ(1u, missingNodesIndices.size());
   EXPECT_EQ(0u, missingNodesIndices[0]);
 
   // [1] - [1].
   vector1.push_back(bookmark1);
-  EXPECT_EQ(0u,
-            bookmark_utils_ios::MissingNodesIndices(vector1, vector2).size());
+  EXPECT_EQ(0u, MissingNodesIndices(vector1, vector2).size());
 
   // [2] - [1, 2].
   vector1.pop_back();
   const BookmarkNode* bookmark2 = AddBookmark(mobileNode, u"2");
   vector1.push_back(bookmark2);
   vector2.push_back(bookmark2);
-  missingNodesIndices =
-      bookmark_utils_ios::MissingNodesIndices(vector1, vector2);
+  missingNodesIndices = MissingNodesIndices(vector1, vector2);
   EXPECT_EQ(1u, missingNodesIndices.size());
   EXPECT_EQ(0u, missingNodesIndices[0]);
 
@@ -389,8 +385,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   const BookmarkNode* bookmark3 = AddBookmark(mobileNode, u"3");
   vector1.push_back(bookmark3);
   vector2.push_back(bookmark3);
-  missingNodesIndices =
-      bookmark_utils_ios::MissingNodesIndices(vector1, vector2);
+  missingNodesIndices = MissingNodesIndices(vector1, vector2);
   EXPECT_EQ(1u, missingNodesIndices.size());
   EXPECT_EQ(0u, missingNodesIndices[0]);
 
@@ -398,8 +393,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   vector1.clear();
   vector1.push_back(bookmark1);
   vector1.push_back(bookmark3);
-  missingNodesIndices =
-      bookmark_utils_ios::MissingNodesIndices(vector1, vector2);
+  missingNodesIndices = MissingNodesIndices(vector1, vector2);
   EXPECT_EQ(1u, missingNodesIndices.size());
   EXPECT_EQ(1u, missingNodesIndices[0]);
 
@@ -407,8 +401,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   vector1.pop_back();
   vector1.push_back(bookmark1);
   vector2.insert(vector2.begin(), bookmark1);
-  missingNodesIndices =
-      bookmark_utils_ios::MissingNodesIndices(vector1, vector2);
+  missingNodesIndices = MissingNodesIndices(vector1, vector2);
   EXPECT_EQ(2u, missingNodesIndices.size());
   EXPECT_EQ(2u, missingNodesIndices[0]);
   EXPECT_EQ(3u, missingNodesIndices[1]);
@@ -420,38 +413,33 @@ TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
 
   // If the user is signed out, `IsAccountBookmarkStorageOptedIn()` should
   // always return false.
-  EXPECT_FALSE(
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
   // If sync-the-feature is on, including bookmarks,
   // `IsAccountBookmarkStorageOptedIn()` should always return false.
   sync_service.SetSignedInWithSyncFeatureOn();
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
   // If sync-the-feature is on, but bookmarks excluded,
   // `IsAccountBookmarkStorageOptedIn()` should always return false.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
   // If sync-the-feature is off and the account storage is enabled,
   // `IsAccountBookmarkStorageOptedIn()` should return true.
   sync_service.SetSignedInWithoutSyncFeature();
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_TRUE(
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+  EXPECT_TRUE(IsAccountBookmarkStorageOptedIn(&sync_service));
 
   // If sync-the-feature is off and the account storage is not enabled,
   // `IsAccountBookmarkStorageOptedIn()` should return false.
   sync_service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
-  EXPECT_FALSE(
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+  EXPECT_FALSE(IsAccountBookmarkStorageOptedIn(&sync_service));
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
@@ -460,10 +448,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
   AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
               GURL("http://example.com/b"));
 
-  const BookmarkNode* result =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
-          account_bookmark_model_);
+  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
+      GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -474,10 +461,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingLocalBookmark) {
   AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
               GURL("http://example.com/b"));
 
-  const BookmarkNode* result =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-          account_bookmark_model_);
+  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
+      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_);
   EXPECT_EQ(result, local_bookmark);
 }
 
@@ -488,10 +474,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingAccountBookmark) {
       AddBookmark(account_bookmark_model_->subtle_mobile_node(), u"b",
                   GURL("http://example.com/b"));
 
-  const BookmarkNode* result =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
-          account_bookmark_model_);
+  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
+      GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_);
   EXPECT_EQ(result, account_bookmark);
 }
 
@@ -513,10 +498,9 @@ TEST_F(BookmarkIOSUtilsUnitTest,
   local_or_syncable_bookmark_model_->SetDateAdded(local_bookmark,
                                                   added_time_local_bookmark);
 
-  const BookmarkNode* result =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-          account_bookmark_model_);
+  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
+      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_);
   // Local bookmark is more recent, so it should be returned.
   EXPECT_EQ(result, local_bookmark);
 }
@@ -539,12 +523,27 @@ TEST_F(BookmarkIOSUtilsUnitTest,
   account_bookmark_model_->SetDateAdded(account_bookmark,
                                         added_time_account_bookmark);
 
-  const BookmarkNode* result =
-      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
-          account_bookmark_model_);
+  const BookmarkNode* result = GetMostRecentlyAddedUserNodeForURL(
+      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_);
   // Account bookmark is more recent, so it should be returned.
   EXPECT_EQ(result, account_bookmark);
 }
 
+TEST_F(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageAvailable) {
+  ASSERT_NE(nullptr, bookmark_model_->account_mobile_node());
+
+  EXPECT_TRUE(IsAccountBookmarkStorageAvailable(bookmark_model_));
+  EXPECT_TRUE(IsAccountBookmarkStorageAvailable(
+      /*sync_service=*/nullptr /*unused*/, account_bookmark_model_));
+
+  bookmark_model_->RemoveAccountPermanentFolders();
+  ASSERT_EQ(nullptr, bookmark_model_->account_mobile_node());
+
+  EXPECT_FALSE(IsAccountBookmarkStorageAvailable(bookmark_model_));
+  EXPECT_FALSE(IsAccountBookmarkStorageAvailable(
+      /*sync_service=*/nullptr /*unused*/, account_bookmark_model_));
+}
+
 }  // namespace
+}  // namespace bookmark_utils_ios

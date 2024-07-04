@@ -17,6 +17,7 @@ class LegacyBookmarkModel;
 class PrefService;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -50,9 +51,17 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 [[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
                                              const base::Location& location);
 
-// Returns the permanent nodes whose url children are considered uncategorized
-// and whose folder children should be shown in the bookmark menu.
-// `model` must be loaded.
+// Returns the permanent bookmark folders that match `type`.
+// `model` must not be null and must be loaded. An empty result may be returned
+// if `BookmarkModelType::kAccount` is used and account bookmarks don't actually
+// exist (e.g. the user is signed out).
+std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
+    const bookmarks::BookmarkModel* model,
+    BookmarkModelType type);
+
+// Legacy equivalent of the above. In this case, the subset of permanent folders
+// is implicit in the LegacyBookmarkModel instance itself, which exclusively
+// exposes three permanent folders.
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     LegacyBookmarkModel* model);
 

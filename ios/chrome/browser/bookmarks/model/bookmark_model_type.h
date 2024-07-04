@@ -10,6 +10,9 @@
 //
 // Do not change the explicitly set values. This enum is saved in preference
 // kIosBookmarkLastUsedStorageReceivingBookmarks.
+// TODO(crbug.com/346918509): Rename or delete this enum, as there is currently
+// a single BookmarkModel instance. It could instead represent the bookmark
+// storage type or a similar concept.
 enum class BookmarkModelType {
   // Bookmarks that are stored on the local device only. Corresponds to
   // LocalOrSyncableBookmarkModelFactory.

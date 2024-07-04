@@ -124,7 +124,10 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
 // Returns true if the user opted-in and can use the account storage.
 // E.g. if the passphrase is missing, the storage may not be available.
-// TODO(crbug.com/346918509): `sync_service` isn't used and can be removed.
+// `model` must not be null.
+bool IsAccountBookmarkStorageAvailable(const bookmarks::BookmarkModel* model);
+
+// Legacy equivalent of the above.
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model);
 
@@ -287,11 +290,13 @@ extern NSString* const kBookmarksSnackbarCategory;
 // Sorts a vector full of folders by title.
 void SortFolders(NodeVector* vector);
 
-// Returns a vector of root level folders and all their folder descendants,
-// sorted depth-first, then alphabetically. The returned nodes are visible, and
-// are guaranteed to not be descendants of any nodes in `obstructions`.
+// Returns a vector of top-level permanent folders as filtered by `type` and
+// all their descendant folders, except for those included in `obstructions`
+// which are excluded, as well as their descendants. The returned list is
+// sorted depth-first, then alphabetically.
 NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     LegacyBookmarkModel* model);
+                                     const bookmarks::BookmarkModel* model,
+                                     BookmarkModelType type);
 
 // Whether `vector1` contains only elements of `vector2` in the same order.
 BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);

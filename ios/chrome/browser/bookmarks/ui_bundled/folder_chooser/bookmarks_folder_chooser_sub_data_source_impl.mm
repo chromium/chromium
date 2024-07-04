@@ -6,9 +6,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 
 using bookmarks::BookmarkNode;
@@ -19,13 +20,16 @@ using bookmarks::BookmarkNode;
 
 @implementation BookmarksFolderChooserSubDataSourceImpl {
   // Bookmarks model object.
-  raw_ptr<LegacyBookmarkModel> _bookmarkModel;
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+  // Which subset of the BookmarkModel is in scope of this data source.
+  BookmarkModelType _type;
   // Observer for `_bookmarkModel` changes.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   __weak id<BookmarksFolderChooserParentDataSource> _parentDataSource;
 }
 
-- (instancetype)initWithBookmarkModel:(LegacyBookmarkModel*)bookmarkModel
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                                 type:(BookmarkModelType)type
                      parentDataSource:
                          (id<BookmarksFolderChooserParentDataSource>)
                              parentDataSource {
@@ -36,6 +40,7 @@ using bookmarks::BookmarkNode;
   self = [super init];
   if (self) {
     _bookmarkModel = bookmarkModel;
+    _type = type;
     _bookmarkModelBridge =
         std::make_unique<BookmarkModelBridge>(self, _bookmarkModel);
     _parentDataSource = parentDataSource;
@@ -56,12 +61,18 @@ using bookmarks::BookmarkNode;
 #pragma mark - BookmarksFolderChooserSubDataSource
 
 - (const BookmarkNode*)mobileFolderNode {
-  return _bookmarkModel->subtle_mobile_node();
+  switch (_type) {
+    case BookmarkModelType::kLocalOrSyncable:
+      return _bookmarkModel->mobile_node();
+    case BookmarkModelType::kAccount:
+      return _bookmarkModel->account_mobile_node();
+  }
+  NOTREACHED_NORETURN();
 }
 
 - (std::vector<const BookmarkNode*>)visibleFolderNodes {
   return bookmark_utils_ios::VisibleNonDescendantNodes(
-      [_parentDataSource editedNodes], _bookmarkModel);
+      [_parentDataSource editedNodes], _bookmarkModel, _type);
 }
 
 #pragma mark - BookmarkModelBridgeObserver

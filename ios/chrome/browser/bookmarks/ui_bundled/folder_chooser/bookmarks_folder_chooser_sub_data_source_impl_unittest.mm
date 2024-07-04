@@ -9,27 +9,19 @@
 
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using bookmarks::BookmarkNode;
-
-namespace {
-
-enum class TestParam {
-  kLocalOrSyncableModel,
-  kAccountModel,
-};
-
-}  // namespace
 
 @interface FakeBookmarksFolderChooserParentDataSource
     : NSObject <BookmarksFolderChooserParentDataSource>
@@ -71,7 +63,7 @@ enum class TestParam {
 
 class BookmarksFolderChooserSubDataSourceImplTest
     : public BookmarkIOSUnitTestSupport,
-      public testing::WithParamInterface<TestParam> {
+      public testing::WithParamInterface<BookmarkModelType> {
  protected:
   BookmarksFolderChooserSubDataSourceImplTest() {
     mock_consumer_ =
@@ -88,13 +80,17 @@ class BookmarksFolderChooserSubDataSourceImplTest
 
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
-    edited_nodes_.insert(AddURL(model()->subtle_mobile_node(), @"Test URL"));
+    edited_nodes_.insert(AddURL(mobile_node(), @"Test URL"));
   }
 
-  LegacyBookmarkModel* model() {
-    return GetParam() == TestParam::kAccountModel
-               ? account_bookmark_model_
-               : local_or_syncable_bookmark_model_;
+  const bookmarks::BookmarkNode* mobile_node() {
+    switch (GetParam()) {
+      case BookmarkModelType::kLocalOrSyncable:
+        return bookmark_model_->mobile_node();
+      case BookmarkModelType::kAccount:
+        return bookmark_model_->account_mobile_node();
+    }
+    NOTREACHED_NORETURN();
   }
 
   void CreateSubDataSource() {
@@ -102,7 +98,8 @@ class BookmarksFolderChooserSubDataSourceImplTest
         [[FakeBookmarksFolderChooserParentDataSource alloc]
             initWithNodes:edited_nodes_];
     sub_data_source_ = [[BookmarksFolderChooserSubDataSourceImpl alloc]
-        initWithBookmarkModel:model()
+        initWithBookmarkModel:bookmark_model_
+                         type:GetParam()
              parentDataSource:fake_parent_data_source_];
     sub_data_source_.consumer = mock_consumer_;
   }
@@ -111,29 +108,31 @@ class BookmarksFolderChooserSubDataSourceImplTest
     std::u16string c_title = base::SysNSStringToUTF16(title);
     GURL url(base::SysNSStringToUTF16(@"http://example.com/bookmark") +
              c_title);
-    return model()->AddURL(parent, parent->children().size(), c_title, url);
+    return bookmark_model_->AddURL(parent, parent->children().size(), c_title,
+                                   url);
   }
 
   const BookmarkNode* AddFolder(const BookmarkNode* parent, NSString* title) {
     std::u16string c_title = base::SysNSStringToUTF16(title);
-    return model()->AddFolder(parent, parent->children().size(), c_title);
+    return bookmark_model_->AddFolder(parent, parent->children().size(),
+                                      c_title);
   }
 
   void ChangeTitle(const BookmarkNode* node, NSString* title) {
     std::u16string c_title = base::SysNSStringToUTF16(title);
-    model()->SetTitle(node, c_title,
-                      bookmarks::metrics::BookmarkEditSource::kUser);
+    bookmark_model_->SetTitle(node, c_title,
+                              bookmarks::metrics::BookmarkEditSource::kUser);
   }
 
   void RemoveNode(const BookmarkNode* node) {
-    model()->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
-                    FROM_HERE);
+    bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kUser,
+                            FROM_HERE);
   }
 
   void RemoveAllNodes() { bookmark_model_->RemoveAllUserBookmarks(FROM_HERE); }
 
   void MoveNode(const BookmarkNode* node, const BookmarkNode* new_parent) {
-    model()->Move(node, new_parent, new_parent->children().size());
+    bookmark_model_->Move(node, new_parent, new_parent->children().size());
   }
 
   BookmarksFolderChooserSubDataSourceImpl* sub_data_source_;
@@ -147,7 +146,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
 // Tests that the sub data source correctly fetches visible folders.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   edited_nodes_.insert(test_folder_node_2);
@@ -165,7 +164,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
 // Tests that changing title of bookmarked folder node updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
   const BookmarkNode* test_folder_node =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -184,7 +183,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
 // Tests that adding a folder node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
@@ -205,7 +204,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
 // Tests that removing a folder node from the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
@@ -232,7 +231,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
 // Tests that removing all nodes in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
@@ -252,13 +251,13 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
 // Tests that moving a node in the bookmark model updates the UI.
 TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
   const BookmarkNode* test_folder_node_1 =
-      AddFolder(model()->subtle_mobile_node(), test_folder_title_1);
+      AddFolder(mobile_node(), test_folder_title_1);
   const BookmarkNode* test_folder_node_2 =
       AddFolder(test_folder_node_1, test_folder_title_2);
   CreateSubDataSource();
 
   [[mock_consumer_ expect] notifyModelUpdated];
-  MoveNode(test_folder_node_2, model()->subtle_mobile_node());
+  MoveNode(test_folder_node_2, mobile_node());
 
   [mock_consumer_ verify];
   std::vector<const BookmarkNode*> visible_folder_nodes =
@@ -274,5 +273,5 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantionName*/,
                          BookmarksFolderChooserSubDataSourceImplTest,
-                         testing::Values(TestParam::kAccountModel,
-                                         TestParam::kLocalOrSyncableModel));
+                         testing::Values(BookmarkModelType::kAccount,
+                                         BookmarkModelType::kLocalOrSyncable));

@@ -213,8 +213,14 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
   return selected_types.Has(syncer::UserSelectableType::kBookmarks);
 }
 
+bool IsAccountBookmarkStorageAvailable(const bookmarks::BookmarkModel* model) {
+  CHECK(model);
+  return model->account_mobile_node() != nullptr;
+}
+
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model) {
+  CHECK(account_model);
   return account_model->subtle_mobile_node() != nullptr;
 }
 
@@ -763,8 +769,9 @@ void SortFolders(NodeVector* vector) {
 }
 
 NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     LegacyBookmarkModel* model) {
-  NodeVector primary_nodes = PrimaryPermanentNodes(model);
+                                     const bookmarks::BookmarkModel* model,
+                                     BookmarkModelType type) {
+  NodeVector primary_nodes = PrimaryPermanentNodes(model, type);
   NodeVector filtered_primary_nodes;
   for (auto* node : primary_nodes) {
     if (IsObstructed(node, obstructions)) {

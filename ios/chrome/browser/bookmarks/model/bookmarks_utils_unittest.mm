@@ -12,8 +12,12 @@
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "testing/gmock/include/gmock/gmock.h"
 
 namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 class BookmarksUtilsTest : public BookmarkIOSUnitTestSupport {
  protected:
@@ -99,6 +103,24 @@ TEST_F(BookmarksUtilsTest, GetDefaultBookmarkFolderWithDefaultBookmarkSet) {
   histogram_tester_.ExpectUniqueSample(
       "IOS.Bookmarks.DefaultBookmarkFolderOutcome",
       DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet, 1);
+}
+
+TEST_F(BookmarksUtilsTest, PrimaryPermanentNodes) {
+  EXPECT_THAT(PrimaryPermanentNodes(bookmark_model_,
+                                    BookmarkModelType::kLocalOrSyncable),
+              ElementsAre(bookmark_model_->mobile_node(),
+                          bookmark_model_->bookmark_bar_node(),
+                          bookmark_model_->other_node()));
+  EXPECT_THAT(
+      PrimaryPermanentNodes(bookmark_model_, BookmarkModelType::kAccount),
+      ElementsAre(bookmark_model_->account_mobile_node(),
+                  bookmark_model_->account_bookmark_bar_node(),
+                  bookmark_model_->account_other_node()));
+
+  bookmark_model_->RemoveAccountPermanentFolders();
+  EXPECT_THAT(
+      PrimaryPermanentNodes(bookmark_model_, BookmarkModelType::kAccount),
+      IsEmpty());
 }
 
 }  // namespace

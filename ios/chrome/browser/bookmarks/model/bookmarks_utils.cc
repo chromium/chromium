@@ -66,8 +66,39 @@ bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
   return true;
 }
 
+std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
+    const bookmarks::BookmarkModel* model,
+    BookmarkModelType type) {
+  CHECK(model);
+  CHECK(model->loaded());
+
+  switch (type) {
+    case BookmarkModelType::kLocalOrSyncable:
+      return {model->mobile_node(), model->bookmark_bar_node(),
+              model->other_node()};
+    case BookmarkModelType::kAccount:
+      // When dealing with account bookmarks, it is possible that they don't
+      // actually exist (e.g. the user is signed out). It is guaranteed that all
+      // exist or none.
+      if (!model->account_mobile_node()) {
+        // Account bookmarks do not exist, no need to return them.
+        CHECK(!model->account_bookmark_bar_node());
+        CHECK(!model->account_other_node());
+        return {};
+      }
+      // Account bookmarks do exist (all three). Return them.
+      CHECK(model->account_bookmark_bar_node());
+      CHECK(model->account_other_node());
+
+      return {model->account_mobile_node(), model->account_bookmark_bar_node(),
+              model->account_other_node()};
+  }
+  NOTREACHED_NORETURN();
+}
+
 std::vector<const BookmarkNode*> PrimaryPermanentNodes(
     LegacyBookmarkModel* model) {
+  DCHECK(model);
   DCHECK(model->loaded());
   std::vector<const BookmarkNode*> nodes;
 

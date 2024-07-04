@@ -6,18 +6,19 @@
 
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
-#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_mediator_delegate.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_mutator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_sub_data_source_impl.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 using bookmarks::BookmarkNode;
 
@@ -29,14 +30,14 @@ using bookmarks::BookmarkNode;
 @end
 
 @implementation BookmarksFolderChooserMediator {
-  // Data source from localOrSyncable bookmark model;
+  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
+  // Data source from local bookmark nodes.
   BookmarksFolderChooserSubDataSourceImpl* _localOrSyncableDataSource;
-  // Data source from account bookmark model;
+  // Data source from account bookmark nodes.
   BookmarksFolderChooserSubDataSourceImpl* _accountDataSource;
   // Set of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder. These are also the list of nodes that are
-  // being edited (moved to a folder). This set may contain nodes from both the
-  // `_localOrSyncableBookmarkModel` and `_accountBookmarkModel`.
+  // being edited (moved to a folder).
   std::set<const BookmarkNode*> _editedNodes;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
@@ -44,37 +45,29 @@ using bookmarks::BookmarkNode;
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
-  // The account bookmark model.
-  LegacyBookmarkModel* _accountBookmarkModel;
 }
 
-- (instancetype)
-    initWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                    accountBookmarkModel:
-                        (LegacyBookmarkModel*)accountBookmarkModel
-                             editedNodes:
-                                 (std::set<const BookmarkNode*>)editedNodes
-                   authenticationService:(AuthenticationService*)authService
-                             syncService:(syncer::SyncService*)syncService {
-  DCHECK(localOrSyncableBookmarkModel);
-  DCHECK(localOrSyncableBookmarkModel->loaded());
-  DCHECK(accountBookmarkModel);
-  DCHECK(accountBookmarkModel->loaded());
+- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
+                          editedNodes:(std::set<const BookmarkNode*>)editedNodes
+                authenticationService:(AuthenticationService*)authService
+                          syncService:(syncer::SyncService*)syncService {
+  DCHECK(model);
+  DCHECK(model->loaded());
   DCHECK(authService->initialized());
 
   self = [super init];
   if (self) {
+    _bookmarkModel = model;
     _localOrSyncableDataSource =
         [[BookmarksFolderChooserSubDataSourceImpl alloc]
-            initWithBookmarkModel:localOrSyncableBookmarkModel
+            initWithBookmarkModel:model
+                             type:BookmarkModelType::kLocalOrSyncable
                  parentDataSource:self];
-    if (accountBookmarkModel) {
-      _accountDataSource = [[BookmarksFolderChooserSubDataSourceImpl alloc]
-          initWithBookmarkModel:accountBookmarkModel
-               parentDataSource:self];
-      _accountBookmarkModel = accountBookmarkModel;
-    }
+    _accountDataSource = [[BookmarksFolderChooserSubDataSourceImpl alloc]
+        initWithBookmarkModel:model
+                         type:BookmarkModelType::kAccount
+             parentDataSource:self];
+
     _editedNodes = std::move(editedNodes);
     _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
         authService, self);
@@ -121,8 +114,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (BOOL)shouldShowAccountBookmarks {
-  return bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
-      _syncService, _accountBookmarkModel);
+  return bookmark_utils_ios::IsAccountBookmarkStorageAvailable(_bookmarkModel);
 }
 
 #pragma mark - BookmarksFolderChooserMutator

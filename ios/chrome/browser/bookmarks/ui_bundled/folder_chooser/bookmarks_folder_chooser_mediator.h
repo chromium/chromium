@@ -13,9 +13,9 @@
 
 class AuthenticationService;
 @protocol BookmarksFolderChooserMediatorDelegate;
-class LegacyBookmarkModel;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -34,21 +34,15 @@ class SyncService;
 @property(nonatomic, assign) const bookmarks::BookmarkNode* selectedFolderNode;
 
 // Initialize the mediator with a bookmark model.
-// `localOrSyncableBookmarkModel` must not be `nullptr` and must be loaded.
+// `model` must not be `nullptr` and must be loaded.
 // `editedNodes` are the list of nodes to hide when displaying folders. This is
 // to avoid to move a folder inside a child folder. These are also the list of
 // nodes that are being edited (moved to a folder).
 - (instancetype)
-    initWithLocalOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-                    accountBookmarkModel:
-                        (LegacyBookmarkModel*)accountBookmarkModel
-                             editedNodes:
-                                 (std::set<const bookmarks::BookmarkNode*>)
-                                     editedNodes
-                   authenticationService:
-                       (AuthenticationService*)authenticationService
-                             syncService:(syncer::SyncService*)syncService
+    initWithBookmarkModel:(bookmarks::BookmarkModel*)model
+              editedNodes:(std::set<const bookmarks::BookmarkNode*>)editedNodes
+    authenticationService:(AuthenticationService*)authenticationService
+              syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
