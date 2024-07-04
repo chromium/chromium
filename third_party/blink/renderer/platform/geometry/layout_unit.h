@@ -68,30 +68,6 @@ static const int kFixedPointDenominator = 1 << kLayoutUnitFractionalBits;
 const int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
 const int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
 
-#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
-    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
-inline int GetMaxSaturatedSetResultForTesting() {
-  // For ARM Asm version the set function maxes out to the biggest
-  // possible integer part with the fractional part zero'd out.
-  // e.g. 0x7fffffc0.
-  return std::numeric_limits<int>::max() & ~(kFixedPointDenominator - 1);
-}
-
-inline int GetMinSaturatedSetResultForTesting() {
-  return std::numeric_limits<int>::min();
-}
-#else
-ALWAYS_INLINE int GetMaxSaturatedSetResultForTesting() {
-  // For C version the set function maxes out to max int, this differs from
-  // the ARM asm version.
-  return std::numeric_limits<int>::max();
-}
-
-ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
-  return std::numeric_limits<int>::min();
-}
-#endif  // CPU(ARM) && COMPILER(GCC)
-
 // TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
 class PLATFORM_EXPORT LayoutUnit;
 constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
@@ -836,6 +812,30 @@ inline std::optional<LayoutUnit> LayoutUnit::NullOptIf(
   }
   return *this;
 }
+
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
+    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
+inline int GetMaxSaturatedSetResultForTesting() {
+  // For ARM Asm version the set function maxes out to the biggest
+  // possible integer part with the fractional part zero'd out.
+  // e.g. 0x7fffffc0.
+  return std::numeric_limits<int>::max() & ~(kFixedPointDenominator - 1);
+}
+
+inline int GetMinSaturatedSetResultForTesting() {
+  return std::numeric_limits<int>::min();
+}
+#else
+ALWAYS_INLINE int GetMaxSaturatedSetResultForTesting() {
+  // For C version the set function maxes out to max int, this differs from
+  // the ARM asm version.
+  return std::numeric_limits<int>::max();
+}
+
+ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
+  return std::numeric_limits<int>::min();
+}
+#endif  // CPU(ARM) && COMPILER(GCC)
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutUnit&);
 PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&,
