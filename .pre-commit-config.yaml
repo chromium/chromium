@@ -1,0 +1,20 @@
+
+default_language_version:
+    python: python3
+files: |
+    (?x)^(
+        (
+            .github|
+            chrobalt|
+            docker|
+        )
+    )
+
+repos:
+-   repo: https://cobalt.googlesource.com/pre-commit-hooks
+    rev: e1668fe86af3810fbca72b8653fe478e66a0afdc  # v3.2.0
+    hooks:
+    -   id: check-case-conflict
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: mixed-line-ending

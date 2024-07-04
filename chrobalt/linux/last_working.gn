@@ -44,21 +44,20 @@ use_swiftshader_with_subzero=false
 angle_enable_swiftshader=false
 dawn_use_swiftshader=false
 
+
 # Disable webnn | tflite
 webnn_use_tflite = false
 enable_maldoca = false
 enable_oop_printing = false
 enable_reading_list = false
-enable_remoting = no
+enable_remoting = false
 enable_screen_ai_service = false
+
 use_bluez = false
 use_cups = false
 use_dbus = false
 use_mpris = false
-use_qt = false
-use_qt6 = false
 
-# printing
 enable_oop_basic_print_dialog = false
 enable_basic_print_dialog = false
 enable_basic_printing = false
