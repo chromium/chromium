@@ -5,16 +5,17 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
 #define COMPONENTS_POLICY_CORE_COMMON_REMOTE_COMMANDS_REMOTE_COMMANDS_INVALIDATOR_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation_handler.h"
+#include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-
-namespace invalidation {
-class InvalidationService;
-}  // namespace invalidation
 
 namespace invalidation {
 class Invalidation;
@@ -27,7 +28,8 @@ namespace policy {
 // directly, instead, it handles the interacting with invalidation service
 // only and leaves interfaces to integrate with subclasses.
 class POLICY_EXPORT RemoteCommandsInvalidator
-    : public invalidation::InvalidationHandler {
+    : public invalidation::InvalidationHandler,
+      public invalidation::InvalidationListener::Observer {
  public:
   explicit RemoteCommandsInvalidator(std::string owner_name);
   RemoteCommandsInvalidator(const RemoteCommandsInvalidator&) = delete;
@@ -35,9 +37,11 @@ class POLICY_EXPORT RemoteCommandsInvalidator
       delete;
   ~RemoteCommandsInvalidator() override;
 
-  // Initialize this invalidator to pair with |invalidation_service|. Must be
-  // called before Start().
-  void Initialize(invalidation::InvalidationService* invalidation_service);
+  // Initialize this invalidator to pair with `InvalidationService` or
+  // `InvalidationListener`. Must be called before Start().
+  void Initialize(std::variant<invalidation::InvalidationService*,
+                               invalidation::InvalidationListener*>
+                      invalidation_service_or_listener);
 
   // Shutdown this invalidator. Will stop the invalidator first, and after
   // shutting down, the invalidator can't be started anymore unless it's
@@ -52,12 +56,10 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   void Stop();
 
   // Helpful accessors.
-  invalidation::InvalidationService* invalidation_service() {
-    return invalidation_service_;
-  }
+  invalidation::InvalidationService* invalidation_service();
 
   // Whether the invalidator currently has the ability to receive invalidations.
-  bool invalidations_enabled() {
+  bool invalidations_enabled() const {
     return IsRegistered() && AreInvalidationsEnabled();
   }
 
@@ -69,6 +71,13 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   bool IsPublicTopic(const invalidation::Topic& topic) const override;
   void OnSuccessfullySubscribed(
       const invalidation::Topic& invalidation) override;
+
+  // invalidation::InvalidationListener::Observer:
+  void OnExpectationChanged(
+      invalidation::InvalidationsExpected expected) override;
+  void OnInvalidationReceived(
+      const invalidation::DirectInvalidation& invalidation) override;
+  std::string GetType() const override;
 
  protected:
   virtual void OnInitialize() = 0;
@@ -89,24 +98,23 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   // Subclasses must call this function to set the topic for remote command
   // invalidations.
   void ReloadPolicyData(const enterprise_management::PolicyData* policy);
+  void ReloadPolicyDataWithInvalidationService(
+      const enterprise_management::PolicyData* policy);
 
  private:
-  // Returns true if `this` is observing `invalidation_service_`.
+  // Returns true if `this` is observing `invalidation_service_or_listener_`.
   bool IsRegistered() const;
 
-  // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
+  // Returns true if `IsRegistered()` and `invalidation_service_or_listener_` is
+  // enabled.
   bool AreInvalidationsEnabled() const;
 
-  // Registers this handler with |invalidation_service_| if needed and
-  // subscribes to the given |topic| with the invalidation service.
-  void Register(const invalidation::Topic& topic);
-
-  // Unregisters this handler but keeps the current topic subscribed with
-  // the invalidation service.
-  void Unregister();
+  // Registers this handler with `InvalidationService` if needed and
+  // subscribes to the given `topic` with the invalidation service.
+  void RegisterWithInvalidationService(const invalidation::Topic& topic);
 
   // Unsubscribes from the current topics but keeps the registration as is.
-  void UnsubscribeFromTopics();
+  void UnsubscribeFromTopicsWithInvalidationService();
 
   // The state of the object.
   enum State {
@@ -117,10 +125,26 @@ class POLICY_EXPORT RemoteCommandsInvalidator
   State state_ = SHUT_DOWN;
 
   // The unique name to be returned with by GetOwnerName().
+  // TODO(b/343429042): Remove once does not implement
+  // `invalidation::InvalidationHandler`.
   const std::string owner_name_;
 
-  // The invalidation service.
-  raw_ptr<invalidation::InvalidationService> invalidation_service_ = nullptr;
+  // The invalidation service or listener.
+  std::variant<raw_ptr<invalidation::InvalidationService>,
+               raw_ptr<invalidation::InvalidationListener>>
+      invalidation_service_or_listener_ =
+          static_cast<invalidation::InvalidationService*>(nullptr);
+
+  // The current status of `InvalidationListener`.
+  invalidation::InvalidationsExpected are_invalidations_expected_ =
+      invalidation::InvalidationsExpected::kMaybe;
+
+  base::ScopedObservation<invalidation::InvalidationListener,
+                          RemoteCommandsInvalidator>
+      invalidation_listener_observation_{this};
+  base::ScopedObservation<invalidation::InvalidationService,
+                          RemoteCommandsInvalidator>
+      invalidation_service_observation_{this};
 
   // The Topic representing the remote commands in the invalidation service.
   invalidation::Topic topic_;
