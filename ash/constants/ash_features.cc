@@ -2141,6 +2141,11 @@ BASE_FEATURE(kOobeDisplaySize,
              "OobeDisplaySize",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, InputMethodsScreen will be shown in CHOOBE.
+BASE_FEATURE(kOobeInputMethods,
+             "OobeInputMethods",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4223,6 +4228,11 @@ bool IsOobeTouchpadScrollEnabled() {
 bool IsOobeDisplaySizeEnabled() {
   return IsOobeChoobeEnabled() &&
          base::FeatureList::IsEnabled(kOobeDisplaySize);
+}
+
+bool IsOobeInputMethodsEnabled() {
+  return IsOobeChoobeEnabled() &&
+         base::FeatureList::IsEnabled(kOobeInputMethods);
 }
 
 bool IsOsFeedbackDialogEnabled() {
