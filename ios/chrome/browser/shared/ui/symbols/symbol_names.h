@@ -197,6 +197,7 @@ extern NSString* const kDocSymbol;
 extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronDownSymbol;
+extern NSString* const kChevronBackwardSymbol;
 extern NSString* const kChevronForwardSymbol;
 extern NSString* const kChevronUpDown;
 extern NSString* const kChevronDownCircleFill;

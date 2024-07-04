@@ -36,6 +36,7 @@ source_set("view_controller") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/components/ui_util",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

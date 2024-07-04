@@ -6,14 +6,29 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
 
 namespace {
 
+/// Top padding for the view content.
+const CGFloat kViewTopPadding = 19;
+
+/// Width of the back button.
+const CGFloat kBackButtonWidth = 44;
+/// Size of the back button.
+const CGFloat kBackButtonSize = 24;
+
+/// Minimum leading and trailing padding for the omnibox container.
+const CGFloat kOmniboxContainerHorizontalPadding = 12;
+/// Minimum height of the omnibox container.
+const CGFloat kOmniboxContainerMinimumHeight = 42;
 /// Minimum padding between the top of the view and the top of the web
 /// container.
-const CGFloat kWebContainerTopPadding = 10;
+const CGFloat kWebContainerTopPadding = 8;
 
 }  // namespace
 
@@ -27,6 +42,12 @@ const CGFloat kWebContainerTopPadding = 10;
 @implementation LensResultPageViewController {
   /// Container for the web view.
   UIView* _webViewContainer;
+  /// Back button.
+  UIButton* _backButton;
+  /// Container for the omnibox.
+  UIButton* _omniboxContainer;
+  /// StackView for the `_backButton` and `_omniboxContainer`.
+  UIStackView* _horizontalStackView;
 }
 
 - (instancetype)init {
@@ -43,17 +64,66 @@ const CGFloat kWebContainerTopPadding = 10;
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   CHECK(_webViewContainer, kLensOverlayNotFatalUntil);
+  // Webview container.
   _webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_webViewContainer];
 
+  // Back Button.
+  _backButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.hidden = YES;
+  UIImage* image =
+      DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
+  [_backButton setImage:image forState:UIControlStateNormal];
+  [_backButton addTarget:self
+                  action:@selector(didTapBackButton:)
+        forControlEvents:UIControlEventTouchUpInside];
+
+  // Omnibox container.
+  _omniboxContainer = [[UIButton alloc] init];
+  _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _omniboxContainer.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  _omniboxContainer.layer.cornerRadius = 21;
+  [_omniboxContainer
+      setContentHuggingPriority:UILayoutPriorityDefaultLow
+                        forAxis:UILayoutConstraintAxisHorizontal];
+  [_omniboxContainer addTarget:self
+                        action:@selector(didTapOmniboxContainer:)
+              forControlEvents:UIControlEventTouchUpInside];
+
+  // Horizontal stack view.
+  _horizontalStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _backButton, _omniboxContainer ]];
+  _horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  _horizontalStackView.distribution = UIStackViewDistributionFill;
+  [self.view addSubview:_horizontalStackView];
+
+  NSLayoutConstraint* omniboxLeadingConstraint =
+      [_omniboxContainer.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor
+                         constant:kOmniboxContainerHorizontalPadding];
+  omniboxLeadingConstraint.priority = UILayoutPriorityDefaultHigh;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_horizontalStackView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:kViewTopPadding],
+    [_backButton.widthAnchor constraintEqualToConstant:kBackButtonWidth],
+    [_horizontalStackView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kOmniboxContainerMinimumHeight],
+    [_backButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    omniboxLeadingConstraint,
+    [self.view.trailingAnchor
+        constraintEqualToAnchor:_horizontalStackView.trailingAnchor
+                       constant:kOmniboxContainerHorizontalPadding],
+    [_webViewContainer.topAnchor
+        constraintEqualToAnchor:_horizontalStackView.bottomAnchor
+                       constant:kWebContainerTopPadding],
+  ]];
   AddSameConstraintsToSides(
       _webViewContainer, self.view,
       LayoutSides::kLeading | LayoutSides::kBottom | LayoutSides::kTrailing);
-  [NSLayoutConstraint activateConstraints:@[
-    [_webViewContainer.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor
-                       constant:kWebContainerTopPadding],
-  ]];
 }
 
 #pragma mark - LensResultPageConsumer
@@ -75,6 +145,18 @@ const CGFloat kWebContainerTopPadding = 10;
 
   [_webViewContainer addSubview:_webView];
   AddSameConstraints(_webView, _webViewContainer);
+}
+
+#pragma mark - Private
+
+/// Handles back button taps.
+- (void)didTapBackButton:(UIView*)button {
+  // TODO(crbug.com/347239663): Handle back button tap.
+}
+
+/// Handles omnibox taps.
+- (void)didTapOmniboxContainer:(UIView*)view {
+  // TODO(crbug.com/347237539): Handle omnibox tap.
 }
 
 @end
