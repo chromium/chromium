@@ -170,6 +170,12 @@ void NotifyUserEducationAboutAcceptedSuggestion(
         ->NotifyEvent("autofill_external_account_profile_suggestion_accepted");
   }
 
+  if (suggestion.feature_for_iph ==
+      &feature_engagement::kIPHAutofillCreditCardBenefitFeature) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(browser_context)
+        ->NotifyEvent("autofill_credit_card_benefit_iph_accepted");
+  }
+
   // TODO: crbug.com/350873603 - Use the feature specified in the suggestion.
 #if !BUILDFLAG(IS_ANDROID)
   if (suggestion.feature_for_iph ==
