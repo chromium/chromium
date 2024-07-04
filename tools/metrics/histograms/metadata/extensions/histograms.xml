@@ -2936,9 +2936,10 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.HomepageOverrides2" units="units"
-    expires_after="2024-07-07">
+    expires_after="2025-07-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
+  <owner>junhaohuang@microsoft.com</owner>
   <summary>
     The number of enabled extensions with a homepage override specified in their
     manifest. Recorded once per &quot;user profile&quot; (profiles where people
