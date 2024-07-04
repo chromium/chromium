@@ -55,28 +55,42 @@ class PhysicalToLogical {
   Value InlineStart() const {
     if (writing_direction_.IsHorizontal())
       return writing_direction_.IsLtr() ? left_ : right_;
-    return writing_direction_.IsLtr() ? top_ : bottom_;
+    return ValueFor(writing_direction_.InlineStart());
   }
 
   Value InlineEnd() const {
     if (writing_direction_.IsHorizontal())
       return writing_direction_.IsLtr() ? right_ : left_;
-    return writing_direction_.IsLtr() ? bottom_ : top_;
+    return ValueFor(writing_direction_.InlineEnd());
   }
 
   Value BlockStart() const {
     if (writing_direction_.IsHorizontal())
       return top_;
-    return writing_direction_.IsFlippedBlocks() ? right_ : left_;
+    return ValueFor(writing_direction_.BlockStart());
   }
 
   Value BlockEnd() const {
     if (writing_direction_.IsHorizontal())
       return bottom_;
-    return writing_direction_.IsFlippedBlocks() ? left_ : right_;
+    return ValueFor(writing_direction_.BlockEnd());
   }
 
  private:
+  Value ValueFor(PhysicalDirection direction) const {
+    switch (direction) {
+      case PhysicalDirection::kUp:
+        return top_;
+      case PhysicalDirection::kRight:
+        return right_;
+      case PhysicalDirection::kDown:
+        return bottom_;
+      case PhysicalDirection::kLeft:
+        return left_;
+    }
+    return top_;
+  }
+
   WritingDirectionMode writing_direction_;
   Value top_;
   Value right_;
