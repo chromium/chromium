@@ -26,7 +26,6 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Instrumentation;
-import android.os.Build;
 import android.view.View;
 import android.widget.Spinner;
 
@@ -46,7 +45,6 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -81,9 +79,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Build(
-        sdk_equals = Build.VERSION_CODES.TIRAMISU,
-        message = "Crashes emulator https://crbug.com/341168292")
 public class QuickDeleteControllerTest {
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
     private static final long FIFTEEN_MINUTES_IN_MS = TimeUnit.MINUTES.toMillis(15);
