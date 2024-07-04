@@ -871,6 +871,11 @@
       status: "stable",
     },
     {
+      // crbug.com/345562934
+      name: "CssDecoratingBoxFirstLine",
+      status: "stable",
+    },
+    {
       name: "CSSDisplayModePictureInPicture",
       status: "stable",
     },

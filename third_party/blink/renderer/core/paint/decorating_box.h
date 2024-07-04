@@ -26,7 +26,6 @@ class CORE_EXPORT DecoratingBox {
         style_(&style),
         decorations_(decorations ? decorations
                                  : &style.AppliedTextDecorations()) {
-    DCHECK_EQ(&style.AppliedTextDecorations(), decorations_);
   }
   DecoratingBox(const FragmentItem& item,
                 const ComputedStyle& style,
