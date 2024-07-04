@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -110,14 +111,14 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      */
     @CalledByNative
     private void showAccounts(
-            String topFrameForDisplay,
-            String iframeForDisplay,
-            String idpForDisplay,
+            @JniType("std::string") String topFrameForDisplay,
+            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String idpForDisplay,
             Account[] accounts,
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientIdMetadata,
             boolean isAutoReauthn,
-            String rpContext,
+            @JniType("std::string") String rpContext,
             boolean requestPermission) {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(
@@ -141,15 +142,15 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
+     *     the FedCM prompt: "signin", "continue", etc.
      */
     @CalledByNative
     private void showFailureDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
-            String idpForDisplay,
+            @JniType("std::string") String topFrameForDisplay,
+            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext) {
+            @JniType("std::string") String rpContext) {
         mAccountSelectionComponent.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
@@ -163,39 +164,39 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
+     *     the FedCM prompt: "signin", "continue", etc.
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
-     *         FedCM prompt.
+     *     FedCM prompt.
      */
     @CalledByNative
     private void showErrorDialog(
-            String topFrameForDisplay,
-            String iframeForDisplay,
-            String idpForDisplay,
+            @JniType("std::string") String topFrameForDisplay,
+            @JniType("std::string") String iframeForDisplay,
+            @JniType("std::string") String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext,
+            @JniType("std::string") String rpContext,
             IdentityCredentialTokenError error) {
         mAccountSelectionComponent.showErrorDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);
     }
 
     @CalledByNative
-    private String getTitle() {
+    private @JniType("std::string") String getTitle() {
         return mAccountSelectionComponent.getTitle();
     }
 
     @CalledByNative
-    private String getSubtitle() {
+    private @JniType("std::optional<std::string>") String getSubtitle() {
         return mAccountSelectionComponent.getSubtitle();
     }
 
     @CalledByNative
-    private void showUrl(@IdentityRequestDialogLinkType int linkType, GURL url) {
+    private void showUrl(@IdentityRequestDialogLinkType int linkType, @JniType("GURL") GURL url) {
         mAccountSelectionComponent.showUrl(linkType, url);
     }
 
     @CalledByNative
-    private WebContents showModalDialog(GURL url) {
+    private WebContents showModalDialog(@JniType("GURL") GURL url) {
         return mAccountSelectionComponent.showModalDialog(url);
     }
 
@@ -257,9 +258,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     interface Natives {
         void onAccountSelected(
                 long nativeAccountSelectionViewAndroid,
-                GURL idpConfigUrl,
-                String[] accountFields,
-                GURL accountPictureUrl,
+                @JniType("GURL") GURL idpConfigUrl,
+                @JniType("std::vector<std::string>") String[] accountFields,
+                @JniType("GURL") GURL accountPictureUrl,
                 boolean isSignedIn);
 
         void onDismiss(
@@ -267,7 +268,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 @IdentityRequestDialogDismissReason int dismissReason);
 
         void onLoginToIdP(
-                long nativeAccountSelectionViewAndroid, GURL idpConfigUrl, GURL idpLoginUrl);
+                long nativeAccountSelectionViewAndroid,
+                @JniType("GURL") GURL idpConfigUrl,
+                @JniType("GURL") GURL idpLoginUrl);
 
         void onMoreDetails(long nativeAccountSelectionViewAndroid);
 

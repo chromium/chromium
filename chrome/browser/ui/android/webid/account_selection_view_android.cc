@@ -100,13 +100,10 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
   return array;
 }
 
-Account ConvertFieldsToAccount(
-    JNIEnv* env,
-    const JavaParamRef<jobjectArray>& string_fields_obj,
-    const JavaParamRef<jobject>& picture_url_obj,
-    bool is_sign_in) {
-  std::vector<std::string> string_fields;
-  AppendJavaStringArrayToStringVector(env, string_fields_obj, &string_fields);
+Account ConvertFieldsToAccount(JNIEnv* env,
+                               const std::vector<std::string>& string_fields,
+                               const GURL& picture_url,
+                               bool is_sign_in) {
   auto account_id = string_fields[0];
   auto email = string_fields[1];
   auto name = string_fields[2];
@@ -114,8 +111,6 @@ Account ConvertFieldsToAccount(
 
   Account::LoginState login_state =
       is_sign_in ? Account::LoginState::kSignIn : Account::LoginState::kSignUp;
-
-  GURL picture_url = url::GURLAndroid::ToNativeGURL(env, picture_url_obj);
 
   // The following fields are only used before account selection.
   std::vector<std::string> login_hints;
@@ -129,9 +124,7 @@ Account ConvertFieldsToAccount(
                  std::move(labels), login_state, browser_trusted_login_state);
 }
 
-ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(
-    JNIEnv* env,
-    blink::mojom::RpContext rp_context) {
+std::string ConvertRpContextToString(blink::mojom::RpContext rp_context) {
   std::string rp_context_string;
   switch (rp_context) {
     case blink::mojom::RpContext::kSignUp:
@@ -146,7 +139,7 @@ ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(
     default:
       rp_context_string = "signin";
   }
-  return ConvertUTF8ToJavaString(env, rp_context_string);
+  return rp_context_string;
 }
 
 }  // namespace
@@ -195,13 +188,11 @@ bool AccountSelectionViewAndroid::Show(
 
   // TODO(crbug.com/41490360): Use `new_account_idp` on Android.
   Java_AccountSelectionBridge_showAccounts(
-      env, java_object_internal_,
-      ConvertUTF8ToJavaString(env, top_frame_for_display),
-      ConvertUTF8ToJavaString(env, iframe_for_display.value_or("")),
-      ConvertUTF8ToJavaString(env, identity_provider_data[0].idp_for_display),
-      accounts_obj, idp_metadata_obj, client_id_metadata_obj,
-      sign_in_mode == Account::SignInMode::kAuto,
-      ConvertRpContextToJavaString(env, identity_provider_data[0].rp_context),
+      env, java_object_internal_, top_frame_for_display,
+      iframe_for_display.value_or(""),
+      identity_provider_data[0].idp_for_display, accounts_obj, idp_metadata_obj,
+      client_id_metadata_obj, sign_in_mode == Account::SignInMode::kAuto,
+      ConvertRpContextToString(identity_provider_data[0].rp_context),
       identity_provider_data[0].request_permission);
   return true;
 }
@@ -228,11 +219,9 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
   Java_AccountSelectionBridge_showFailureDialog(
-      env, java_object_internal_,
-      ConvertUTF8ToJavaString(env, top_frame_for_display),
-      ConvertUTF8ToJavaString(env, iframe_for_display.value_or("")),
-      ConvertUTF8ToJavaString(env, idp_for_display), idp_metadata_obj,
-      ConvertRpContextToJavaString(env, rp_context));
+      env, java_object_internal_, top_frame_for_display,
+      iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
+      ConvertRpContextToString(rp_context));
   return true;
 }
 
@@ -257,11 +246,9 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   ScopedJavaLocalRef<jobject> idp_metadata_obj =
       ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
   Java_AccountSelectionBridge_showErrorDialog(
-      env, java_object_internal_,
-      ConvertUTF8ToJavaString(env, top_frame_for_display),
-      ConvertUTF8ToJavaString(env, iframe_for_display.value_or("")),
-      ConvertUTF8ToJavaString(env, idp_for_display), idp_metadata_obj,
-      ConvertRpContextToJavaString(env, rp_context),
+      env, java_object_internal_, top_frame_for_display,
+      iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
+      ConvertRpContextToString(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
   return true;
 }
@@ -284,27 +271,18 @@ bool AccountSelectionViewAndroid::ShowLoadingDialog(
 
 std::string AccountSelectionViewAndroid::GetTitle() const {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> title =
-      Java_AccountSelectionBridge_getTitle(env, java_object_internal_);
-  CHECK(title);
-  return ConvertJavaStringToUTF8(title);
+  return Java_AccountSelectionBridge_getTitle(env, java_object_internal_);
 }
 
 std::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> subtitle =
-      Java_AccountSelectionBridge_getSubtitle(env, java_object_internal_);
-  if (!subtitle) {
-    return std::nullopt;
-  }
-  return ConvertJavaStringToUTF8(subtitle);
+  return Java_AccountSelectionBridge_getSubtitle(env, java_object_internal_);
 }
 
 void AccountSelectionViewAndroid::ShowUrl(LinkType link_type, const GURL& url) {
   JNIEnv* env = AttachCurrentThread();
-  Java_AccountSelectionBridge_showUrl(
-      env, java_object_internal_, static_cast<int>(link_type),
-      url::GURLAndroid::FromNativeGURL(env, url));
+  Java_AccountSelectionBridge_showUrl(env, java_object_internal_,
+                                      static_cast<int>(link_type), url);
 }
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
@@ -318,9 +296,8 @@ content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
   }
   JNIEnv* env = AttachCurrentThread();
   return content::WebContents::FromJavaWebContents(
-      Java_AccountSelectionBridge_showModalDialog(
-          env, java_object_internal_,
-          url::GURLAndroid::FromNativeGURL(env, url)));
+      Java_AccountSelectionBridge_showModalDialog(env, java_object_internal_,
+                                                  url));
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {
@@ -335,14 +312,13 @@ void AccountSelectionViewAndroid::CloseModalDialog() {
 
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
-    const JavaParamRef<jobject>& idp_config_url,
-    const JavaParamRef<jobjectArray>& account_string_fields,
-    const JavaParamRef<jobject>& account_picture_url,
+    const GURL& idp_config_url,
+    const std::vector<std::string>& account_string_fields,
+    const GURL& account_picture_url,
     bool is_sign_in) {
-  GURL config_url = url::GURLAndroid::ToNativeGURL(env, idp_config_url);
   delegate_->OnAccountSelected(
-      config_url, ConvertFieldsToAccount(env, account_string_fields,
-                                         account_picture_url, is_sign_in));
+      idp_config_url, ConvertFieldsToAccount(env, account_string_fields,
+                                             account_picture_url, is_sign_in));
   // The AccountSelectionViewAndroid may be destroyed.
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.
@@ -352,13 +328,10 @@ void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
-void AccountSelectionViewAndroid::OnLoginToIdP(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& idp_config_url,
-    const JavaParamRef<jobject>& idp_login_url) {
-  GURL config_url = url::GURLAndroid::ToNativeGURL(env, idp_config_url);
-  GURL login_url = url::GURLAndroid::ToNativeGURL(env, idp_login_url);
-  delegate_->OnLoginToIdP(config_url, login_url);
+void AccountSelectionViewAndroid::OnLoginToIdP(JNIEnv* env,
+                                               const GURL& idp_config_url,
+                                               const GURL& idp_login_url) {
+  delegate_->OnLoginToIdP(idp_config_url, idp_login_url);
 }
 
 void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {

@@ -56,16 +56,15 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
 
-  void OnAccountSelected(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& idp_config_url,
-      const base::android::JavaParamRef<jobjectArray>& account_string_fields,
-      const base::android::JavaParamRef<jobject>& account_picture_url,
-      bool is_sign_in);
+  void OnAccountSelected(JNIEnv* env,
+                         const GURL& idp_config_url,
+                         const std::vector<std::string>& account_string_fields,
+                         const GURL& account_picture_url,
+                         bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
   void OnLoginToIdP(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& idp_config_url,
-                    const base::android::JavaParamRef<jobject>& idp_login_url);
+                    const GURL& idp_config_url,
+                    const GURL& idp_login_url);
   void OnMoreDetails(JNIEnv* env);
   void OnAccountsDisplayed(JNIEnv* env);
 
