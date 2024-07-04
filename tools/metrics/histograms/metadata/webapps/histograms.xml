@@ -969,6 +969,7 @@ chromium-metrics-reviews@google.com.
     enum="IsolatedWebAppInstallError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the exact error that occured during the installation of an Isolated
     Web App. The error is logged together with WebApp.Isolated.InstallSuccess in
@@ -980,6 +981,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records whether the the installation of an Isolated Web App was successful
     or resulted in an error.
@@ -990,6 +992,7 @@ chromium-metrics-reviews@google.com.
     enum="IsolatedWebAppCleanupOrphanedIWAsError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the exact error that occurred during the execution of the
     OrphanedBundlesCleanupCommand. This command is run on session start and
@@ -1003,6 +1006,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanValid" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records whether the OrphanedBundlesCleanupCommand was successful or resulted
     in an error. This command is run on session start and after a failed IWA
@@ -1014,6 +1018,7 @@ chromium-metrics-reviews@google.com.
     enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the exact error that occured during reading of a response head for a
     request to an Isolated Web App via the isolated-app: scheme. The error is
@@ -1027,6 +1032,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records whether reading the response head for a request to an Isolated Web
     App via the isolated-app: scheme was successful or resulted in an error. As
@@ -1043,6 +1049,7 @@ chromium-metrics-reviews@google.com.
     enum="IsolatedWebAppResponseReaderCacheState" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     This histogram is logged whenever an HTTP request to read a response from a
     Signed Web Bundle used for Isolated Web Apps is made through the
@@ -1060,6 +1067,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records how long it takes to verify signatures of Signed Web Bundles used
     for Isolated Web Apps every time their signatures are verified. Signatures
@@ -1072,6 +1080,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the file length of Signed Web Bundles used for Isolated Web Apps
     every time their signatures are verified. Signatures are verified during
@@ -1084,6 +1093,7 @@ chromium-metrics-reviews@google.com.
     enum="IsolatedWebAppSwbnFileUsabilityError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the exact error why a Signed Web Bundle is unusable. In particular
     integrity block or metadata parsing errors are recorded here. The error is
@@ -1097,6 +1107,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records whether a Signed Web Bundle file is usable. To be usable the file's
     integrity block and metadata should be read, parsed and validated
@@ -1115,6 +1126,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records the exact error that occured during the update of an Isolated Web
     App. The update process happens at 2 different times: browser launch and
@@ -1129,6 +1141,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Records whether the the update of an Isolated Web App was successful or
     resulted in an error. The update process happens at 2 different times:

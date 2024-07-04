@@ -54,7 +54,7 @@ void UpdateManifestFetcher::DownloadUpdateManifest() {
       destination: OTHER
       internal {
         contacts {
-          email: "peletskyi@google.com"
+          owners: "//chrome/browser/web_applications/isolated_web_apps/OWNERS"
         }
       }
       user_data {

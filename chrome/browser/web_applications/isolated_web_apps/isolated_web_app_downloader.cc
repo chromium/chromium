@@ -59,7 +59,7 @@ void IsolatedWebAppDownloader::DownloadSignedWebBundle(
       destination: OTHER
       internal {
         contacts {
-          email: "cmfcmf@google.com"
+          owners: "//chrome/browser/web_applications/isolated_web_apps/OWNERS"
         }
       }
       user_data {

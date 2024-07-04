@@ -14,7 +14,7 @@ features:
 supported_on:
 - chrome_os:128-
 owners:
-- file://chrome/browser/web_applications/OWNERS
+- file://chrome/browser/web_applications/isolated_web_apps/OWNERS
 - iwa-team@google.com
 - simonha@google.com
 schema:

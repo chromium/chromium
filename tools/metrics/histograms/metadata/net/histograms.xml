@@ -1656,6 +1656,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
   <owner>pwa-commercial@google.com</owner>
+  <owner>src/chrome/browser/web_applications/isolated_web_apps/OWNERS</owner>
   <summary>
     Positive net error codes that HTTP requests using the isolated-app: URL
     scheme end with, including net::OK and net::ERR_ABORTED.
