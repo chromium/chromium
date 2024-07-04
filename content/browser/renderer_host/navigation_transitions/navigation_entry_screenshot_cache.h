@@ -61,9 +61,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // will own it. Also tracks the screenshot within this cache and notifies the
   // `NavigationEntryScreenshotManager` of size changes in case eviction is
   // needed.
-  void SetScreenshot(base::WeakPtr<NavigationRequest> navigation_request,
-                     std::unique_ptr<NavigationEntryScreenshot> screenshot,
-                     bool is_copied_from_embedder);
+  void SetScreenshot(NavigationEntry* navigation_entry,
+                     std::unique_ptr<NavigationEntryScreenshot> screenshot);
 
   // Removes the `NavigationEntryScreenshot` from `NavigationEntry` and
   // transfers ownership to the caller, updating the relevant tracking in the
@@ -77,9 +76,6 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.
   void OnNavigationEntryGone(int navigation_entry_id, size_t size);
-
-  // Called when a navigation request has finished.
-  void OnNavigationFinished(const NavigationRequest& navigation_request);
 
   // `NavigationEntryScreenshotCacheEvictor`:
   //
@@ -99,30 +95,9 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
       NewScreenshotCachedCallbackForTesting callback);
 
  private:
-  void SetScreenshotInternal(
-      std::unique_ptr<NavigationEntryScreenshot> screenshot,
-      bool is_copied_from_embedder);
-
   // Tracks the unique IDs of the navigation entries, for which we have captured
   // screenshots.
   base::flat_set<int> cached_screenshots_;
-
-  // Tracks the set of screenshots for ongoing navigations. These screenshots
-  // are either added to `cached_screenshots_` or discarded when the navigation
-  // finishes.
-  struct PendingScreenshot {
-    PendingScreenshot();
-    PendingScreenshot(std::unique_ptr<NavigationEntryScreenshot> screenshot,
-                      bool is_copied_from_embedder);
-    ~PendingScreenshot();
-
-    PendingScreenshot(PendingScreenshot&& other);
-    PendingScreenshot& operator=(PendingScreenshot&& other);
-
-    std::unique_ptr<NavigationEntryScreenshot> screenshot;
-    bool is_copied_from_embedder;
-  };
-  base::flat_map<int64_t, PendingScreenshot> pending_screenshots_;
 
   // The per-BrowserContext manager that manages the eviction. Guaranteed to
   // outlive `this`.

@@ -77,13 +77,41 @@ NavigationEntryImpl* GetEntryForToken(
   return nullptr;
 }
 
-void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
+void CacheScreenshotImpl(NavigationControllerImpl& controller,
+                         NavigationEntryImpl& entry,
                          base::WeakPtr<NavigationRequest> navigation_request,
-                         int navigation_entry_id,
                          bool is_copied_from_embedder,
                          const SkBitmap& bitmap) {
-  if (!controller) {
-    // The tab was destroyed by the time we receive the bitmap from the GPU.
+  auto navigation_entry_id = entry.GetUniqueID();
+
+  // For same-RFH navigations, we issue the screenshot request when sending the
+  // commit message. It's possible that we receive the screenshot response
+  // before the navigation has committed in the browser.
+  //
+  // After the navigation finished committing, `entry` should no longer be the
+  // committed entry. Since we issue the screenshot for the entry the user is
+  // navigating away from. So if `entry` is the committed entry *after* the
+  // navigation has finished, it implies that another navigation occurred to
+  // commit `entry` and we shouldn't be caching a stale screenshot for it.
+  const bool navigation_has_finished =
+      !navigation_request || navigation_request->HasCommitted();
+
+  if (&entry == controller.GetLastCommittedEntry() && navigation_has_finished) {
+    // TODO(crbug.com/40278616): We shouldn't cache the screenshot into
+    // the navigation entry if the entry is re-navigated after we send out the
+    // copy request. See the two cases below.
+    //
+    // Consider a fast swipe that triggers history navigation A->B->A, where the
+    // second A commits before the GPU responds with the first screenshotting(A)
+    // task. Currently `entry == controller->GetLastCommittedEntry()` guards
+    // against this stale screenshot; however we should combine with the case
+    // below and guard them together (see comments on the crbug).
+    //
+    // Consider a fast swipe that triggers history navigation A->B->A->B, where
+    // the second B commits before the GPU responds with the first
+    // screenshotting(A) task. We should discard A's screenshot because it is
+    // stale. Currently the capture code does not handle this case. We need to
+    // discard the stale screenshot.
     return;
   }
 
@@ -92,8 +120,8 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
   if (GetTestScreenshotCallback()) {
     SkBitmap override_bitmap;
     InvokeTestCallback(
-        controller->GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
-        true, override_bitmap);
+        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap, true,
+        override_bitmap);
     if (!override_bitmap.drawsNothing()) {
       bitmap_copy = override_bitmap;
     }
@@ -102,18 +130,41 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
   if (bitmap_copy.drawsNothing()) {
     // The GPU is not able to produce a valid bitmap. This is an error case.
     LOG(ERROR) << "Cannot generate a valid bitmap for entry "
-               << navigation_entry_id;
+               << entry.GetUniqueID() << " url " << entry.GetURL();
     return;
   }
 
   bitmap_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      bitmap_copy, navigation_entry_id);
+      bitmap_copy, entry.GetUniqueID());
   NavigationEntryScreenshotCache* cache =
-      controller->GetNavigationEntryScreenshotCache();
-  cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
-                       is_copied_from_embedder);
+      controller.GetNavigationEntryScreenshotCache();
+  cache->SetScreenshot(&entry, std::move(screenshot));
+  entry.navigation_transition_data().set_is_copied_from_embedder(
+      is_copied_from_embedder);
+}
+
+void CacheScreenshotForCrossDocNavigations(
+    base::WeakPtr<NavigationControllerImpl> controller,
+    base::WeakPtr<NavigationRequest> navigation_request,
+    int navigation_entry_id,
+    bool is_copied_from_embedder,
+    const SkBitmap& bitmap) {
+  if (!controller) {
+    // The tab was destroyed by the time we receive the bitmap from the GPU.
+    return;
+  }
+  NavigationEntryImpl* entry =
+      controller->GetEntryWithUniqueID(navigation_entry_id);
+  if (!entry) {
+    // The entry was deleted by the time we received the bitmap from the GPU.
+    // This can happen by clearing the session history, or when the
+    // `NavigationEntry` was replaced or deleted, etc.
+    return;
+  }
+  CacheScreenshotImpl(*controller, *entry, std::move(navigation_request),
+                      is_copied_from_embedder, bitmap);
 }
 
 // We only want to capture screenshots for navigation entries reachable via
@@ -209,6 +260,36 @@ void RemoveScreenshotFromDestination(NavigationControllerImpl& nav_controller,
   }
 }
 
+void CacheScreenshotForSameDocNavigations(
+    base::WeakPtr<NavigationControllerImpl> controller,
+    base::WeakPtr<NavigationRequest> navigation_request,
+    int navigation_entry_id,
+    const SkBitmap& bitmap) {
+  CHECK(AreBackForwardTransitionsEnabled());
+
+  if (!controller) {
+    // The tab was destroyed by the time we receive the bitmap from the GPU.
+    return;
+  }
+
+  auto* destination_entry =
+      controller->GetEntryWithUniqueID(navigation_entry_id);
+
+  if (!destination_entry) {
+    // The entry was deleted by the time we received the bitmap from the GPU.
+    // This can happen by clearing the session history, or when the
+    // `NavigationEntry` was replaced or deleted, etc.
+    return;
+  }
+
+  CacheScreenshotImpl(*controller, *destination_entry,
+                      std::move(navigation_request),
+                      /*is_copied_from_embedder=*/false, bitmap);
+
+  destination_entry->navigation_transition_data()
+      .SetSameDocumentNavigationEntryScreenshotToken(std::nullopt);
+}
+
 }  // namespace
 
 void NavigationTransitionUtils::SetCapturedScreenshotSizeForTesting(
@@ -300,7 +381,8 @@ bool NavigationTransitionUtils::
 
   bool copied_via_delegate =
       navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
-          base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
+          base::BindOnce(&CacheScreenshotForCrossDocNavigations,
+                         nav_controller.GetWeakPtr(),
                          navigation_request.GetWeakPtr(),
                          nav_controller.GetLastCommittedEntry()->GetUniqueID(),
                          /*is_copied_from_embedder=*/true));
@@ -330,7 +412,8 @@ bool NavigationTransitionUtils::
 
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
-      base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
+      base::BindOnce(&CacheScreenshotForCrossDocNavigations,
+                     nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID(),
                      /*is_copied_from_embedder=*/false));
@@ -387,10 +470,10 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
 
   GetHostFrameSinkManager()->SetOnCopyOutputReadyCallback(
       destination_token,
-      base::BindOnce(&CacheScreenshotImpl, nav_controller.GetWeakPtr(),
+      base::BindOnce(&CacheScreenshotForSameDocNavigations,
+                     nav_controller.GetWeakPtr(),
                      navigation_request.GetWeakPtr(),
-                     nav_controller.GetLastCommittedEntry()->GetUniqueID(),
-                     /*is_copied_from_embedder=*/true));
+                     nav_controller.GetLastCommittedEntry()->GetUniqueID()));
 }
 
 }  // namespace content
