@@ -29,6 +29,10 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/features/password_features.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace password_manager {
 
 namespace {
@@ -133,6 +137,15 @@ void PasswordStoreBuiltInBackend::InitBackend(
   affiliated_match_helper_ = affiliated_match_helper;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // To ensure that groups of the kClearUndecryptablePasswords will stay
+  // balanced, after the cleanup is done an additional flag check is needed.
+  // Users won't reach the flag the normal way since the LoginDB is working
+  // correctly and thus flag is never reached.
+  // TODO(b/40286735): Remove after this feature is launched.
+  if (pref_service_->GetBoolean(prefs::kClearingUndecryptablePasswords)) {
+    base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
+  }
+
   auto clearing_undecryptable_passwords_cb = base::BindPostTaskToCurrentDefault(
       base::BindRepeating(&PasswordStoreBuiltInBackend::
                               SetClearingUndecryptablePasswordsIsEnabledPref,

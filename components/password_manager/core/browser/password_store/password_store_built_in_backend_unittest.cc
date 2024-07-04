@@ -158,6 +158,10 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kClearingUndecryptablePasswords, false);
+#endif
   }
 
   void TearDown() override {
