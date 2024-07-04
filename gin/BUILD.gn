@@ -233,7 +233,7 @@ test("gin_unittests") {
   if (use_partition_alloc) {
     sources += [ "v8_platform_page_allocator_unittest.cc" ]
     if (target_cpu == "arm64" && (is_linux || is_android)) {
-      deps += [ "//base:arm_bti_testfunctions" ]
+      deps += [ "//base/allocator/partition_allocator/src/partition_alloc:arm_bti_testfunctions" ]
     }
   }
 
