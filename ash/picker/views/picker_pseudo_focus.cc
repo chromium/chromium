@@ -6,6 +6,7 @@
 
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_search_bar_textfield.h"
 #include "base/functional/bind.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -13,7 +14,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -32,6 +32,13 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
     if (views::IsViewClass<PickerListItemView>(view)) {
       views::AsViewClass<PickerListItemView>(view)->SetBadgeVisible(true);
     }
+    return;
+  }
+
+  // PickerSearchBarTextfield has special pseudo focus appearance.
+  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
+    views::AsViewClass<PickerSearchBarTextfield>(view)
+        ->SetShouldShowFocusIndicator(true);
     return;
   }
 
@@ -60,6 +67,13 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
     return;
   }
 
+  // PickerSearchBarTextfield has special pseudo focus appearance.
+  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
+    views::AsViewClass<PickerSearchBarTextfield>(view)
+        ->SetShouldShowFocusIndicator(false);
+    return;
+  }
+
   // Otherwise, default to removing the focus ring around the view.
   // TODO: b/328144222 - Add accessibility announcement when a view loses
   // pseudo focus.
@@ -73,6 +87,11 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
 bool DoPickerPseudoFocusedActionOnView(views::View* view) {
   if (view == nullptr) {
     return false;
+  }
+
+  // PickerSearchBarTextfield has no pseudo focus action.
+  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
+    return true;
   }
 
   // PickerItemView has special pseudo focus behavior, so handle it separately.
@@ -97,20 +116,12 @@ views::View* GetNextPickerPseudoFocusableView(
     views::View* view,
     PickerPseudoFocusDirection direction,
     bool should_loop) {
-  if (view == nullptr || view->GetFocusManager() == nullptr) {
-    return nullptr;
-  }
-  views::View* next_view = view->GetFocusManager()->GetNextFocusableView(
-      view, view->GetWidget(),
-      direction == PickerPseudoFocusDirection::kBackward, !should_loop);
-
-  // Skip the textfield.
-  if (views::IsViewClass<views::Textfield>(next_view)) {
-    next_view = view->GetFocusManager()->GetNextFocusableView(
-        next_view, view->GetWidget(),
-        direction == PickerPseudoFocusDirection::kBackward, !should_loop);
-  }
-  return next_view;
+  return view == nullptr || view->GetFocusManager() == nullptr
+             ? nullptr
+             : view->GetFocusManager()->GetNextFocusableView(
+                   view, view->GetWidget(),
+                   direction == PickerPseudoFocusDirection::kBackward,
+                   !should_loop);
 }
 
 }  // namespace ash

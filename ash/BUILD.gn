@@ -1100,6 +1100,8 @@ component("ash") {
     "picker/views/picker_pseudo_focus.cc",
     "picker/views/picker_pseudo_focus.h",
     "picker/views/picker_pseudo_focus_handler.h",
+    "picker/views/picker_search_bar_textfield.cc",
+    "picker/views/picker_search_bar_textfield.h",
     "picker/views/picker_search_field_view.cc",
     "picker/views/picker_search_field_view.h",
     "picker/views/picker_search_results_view.cc",

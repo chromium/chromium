@@ -26,6 +26,7 @@ namespace ash {
 
 class PickerKeyEventHandler;
 class PickerPerformanceMetrics;
+class PickerSearchBarTextfield;
 
 // View for the Picker search field.
 class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
@@ -57,6 +58,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   void RequestFocus() override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -84,7 +86,9 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   // Sets whether the back button is visible.
   void SetBackButtonVisible(bool visible);
 
-  views::Textfield& textfield_for_testing() { return *textfield_; }
+  void SetShouldShowFocusIndicator(bool should_show_focus_indicator);
+
+  PickerSearchBarTextfield& textfield_for_testing() { return *textfield_; }
   views::ImageButton& back_button_for_testing() { return *back_button_; }
   views::ImageButton& clear_button_for_testing() { return *clear_button_; }
 
@@ -94,10 +98,12 @@ class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
   // Updates the textfield border when the clear button visibility changes.
   void UpdateTextfieldBorder();
 
+  bool should_show_focus_indicator_ = false;
+
   SearchCallback search_callback_;
   raw_ptr<PickerKeyEventHandler> key_event_handler_ = nullptr;
   raw_ptr<PickerPerformanceMetrics> performance_metrics_ = nullptr;
-  raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<PickerSearchBarTextfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
 };

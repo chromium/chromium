@@ -9,7 +9,9 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
+#include "ash/picker/views/picker_focus_indicator.h"
 #include "ash/picker/views/picker_key_event_handler.h"
+#include "ash/picker/views/picker_search_bar_textfield.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
@@ -18,8 +20,11 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
@@ -32,6 +37,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -43,6 +49,8 @@ constexpr auto kButtonHorizontalMargin = gfx::Insets::VH(0, 8);
 // The default horizontal margin for the textfield when surrounding icon buttons
 // are not visible.
 constexpr int kDefaultTextfieldHorizontalMargin = 16;
+// Margins around the textfield focus indicator bar.
+constexpr auto kTextfieldFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
 }  // namespace
 
@@ -68,7 +76,8 @@ PickerSearchFieldView::PickerSearchFieldView(
               .CopyAddressTo(&back_button_)
               .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
               .SetVisible(false),
-          views::Builder<views::Textfield>()
+          views::Builder<PickerSearchBarTextfield>(
+              std::make_unique<PickerSearchBarTextfield>(this))
               .CopyAddressTo(&textfield_)
               .SetProperty(views::kElementIdentifierKey,
                            kPickerSearchFieldTextfieldElementId)
@@ -109,6 +118,17 @@ void PickerSearchFieldView::AddedToWidget() {
 
 void PickerSearchFieldView::RemovedFromWidget() {
   GetFocusManager()->RemoveFocusChangeListener(this);
+}
+
+void PickerSearchFieldView::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+
+  if (should_show_focus_indicator_) {
+    PaintPickerFocusIndicator(
+        canvas, gfx::Point(0, kTextfieldFocusIndicatorMargins.top()),
+        height() - kTextfieldFocusIndicatorMargins.height(),
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));
+  }
 }
 
 void PickerSearchFieldView::ContentsChanged(
@@ -169,6 +189,15 @@ void PickerSearchFieldView::SetQueryText(std::u16string text) {
 void PickerSearchFieldView::SetBackButtonVisible(bool visible) {
   back_button_->SetVisible(visible);
   UpdateTextfieldBorder();
+}
+
+void PickerSearchFieldView::SetShouldShowFocusIndicator(
+    bool should_show_focus_indicator) {
+  if (should_show_focus_indicator_ == should_show_focus_indicator) {
+    return;
+  }
+  should_show_focus_indicator_ = should_show_focus_indicator;
+  SchedulePaint();
 }
 
 void PickerSearchFieldView::ClearButtonPressed() {
