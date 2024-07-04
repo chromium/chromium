@@ -1397,6 +1397,9 @@
                   '|services/network/masked_domain_list/' \
                   '|services/network/network_service_proxy_delegate',
     },
+    'ipcz': {
+      'filepath': 'third_party/ipcz/',
+    },
     'isolated_web_apps_apis': {
       'filepath': 'content/browser/direct_sockets/'\
                   '|chrome/browser/direct_sockets/'\
@@ -2978,6 +2981,7 @@
                       'awillia@chromium.org',
                       'brgoldstein@google.com',
                       'djmitche@chromium.org'],
+    'ipcz': ['andreaorru+watch@chromium.org'],
     'isolated_web_apps_apis': ['greengrape@google.com', 'simonha@google.com'],
     'isolated_web_apps_core': ['greengrape@google.com', 'simonha@google.com'],
     'isolated_web_apps_unmanaged_install': ['greengrape@google.com', 'simonha@google.com'],
