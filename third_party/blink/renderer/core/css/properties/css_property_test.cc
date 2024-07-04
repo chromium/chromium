@@ -454,7 +454,8 @@ TEST_F(CSSPropertyTest, AnchorModeSize) {
 }
 
 TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
-  ScopedCSSPositionTryFallbacksForTest enabled(true);
+  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
+  ScopedCSSPositionTryOptionsForTest options_enabled(true);
   const CSSPropertyValueSet* declarations =
       ParseShorthand("position-try", "most-width flip-block");
   ASSERT_TRUE(declarations);
@@ -465,7 +466,8 @@ TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
 }
 
 TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
-  ScopedCSSPositionTryFallbacksForTest enabled(false);
+  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(false);
+  ScopedCSSPositionTryOptionsForTest options_enabled(true);
   const CSSPropertyValueSet* declarations =
       ParseShorthand("position-try", "most-width flip-block");
   ASSERT_TRUE(declarations);
@@ -473,6 +475,18 @@ TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
   EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
   EXPECT_EQ(declarations->PropertyAt(1).Id(),
             CSSPropertyID::kPositionTryOptions);
+}
+
+TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
+  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
+  ScopedCSSPositionTryOptionsForTest options_enabled(false);
+  const CSSPropertyValueSet* declarations =
+      ParseShorthand("position-try", "most-width flip-block");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 2u);
+  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
+  EXPECT_EQ(declarations->PropertyAt(1).Id(),
+            CSSPropertyID::kPositionTryFallbacks);
 }
 
 }  // namespace blink

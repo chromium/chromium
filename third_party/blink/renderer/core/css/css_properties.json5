@@ -4568,6 +4568,7 @@
       name: "position-try-options",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       surrogate_for: "position-try-fallbacks",
+      runtime_flag: "CSSPositionTryOptions",
     },
     {
       name: "position-try-order",

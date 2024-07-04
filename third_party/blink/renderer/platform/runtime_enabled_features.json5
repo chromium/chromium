@@ -978,6 +978,13 @@
       status: "experimental",
     },
     {
+      // position-try-options has been renamed to position-try-fallbacks. Will
+      // be removed, but kept as a surrogate for now.
+      name: "CSSPositionTryOptions",
+      depends_on: ["CSSAnchorPositioning"],
+      status: "stable",
+    },
+    {
       // Support the position-try-order property.
       // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
       name: "CSSPositionTryOrder",
