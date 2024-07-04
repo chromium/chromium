@@ -30,16 +30,16 @@
     "args": [
       "--enable-features=PrivateNetworkAccessPermissionPrompt",
       "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
-    "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jul 1, 2024"
+    "owners": ["clamy@google.com"],
+    "expires": "Jan 2, 2025"
   },
   {
     "prefix": "pna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
-    "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jul 1, 2024"
+    "owners": ["clamy@google.com"],
+    "expires": "Jan 2, 2025"
   },
   {
     "prefix": "pna-workers-enabled",
@@ -48,24 +48,24 @@
     "args": [
       "--enable-features=PrivateNetworkAccessForWorkers",
       "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"],
-    "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jul 1, 2024"
+    "owners": ["clamy@google.com"],
+    "expires": "Jan 2, 2025"
   },
   {
     "prefix": "pna-navigations-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--enable-features=PrivateNetworkAccessForNavigations"],
-    "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jul 1, 2024"
+    "owners": ["clamy@google.com"],
+    "expires": "Jan 2, 2025"
   },
   {
     "prefix": "pna-navigations-warning",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly"],
-    "owners": ["phao@google.com", "lyf@google.com"],
-    "expires": "Jul 1, 2024"
+    "owners": ["clamy@google.com"],
+    "expires": "Jan 2, 2025"
   },
   {
     "prefix": "gpu",
