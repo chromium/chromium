@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h"
+#include "chrome/browser/enterprise/signin/mock_user_policy_oidc_signin_service.h"
 #include "chrome/browser/enterprise/signin/oidc_authentication_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
@@ -41,7 +42,9 @@
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/mock_profile_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -55,7 +58,9 @@ using testing::Invoke;
 using testing::Return;
 
 using policy::MockCloudPolicyClient;
+using policy::MockProfileCloudPolicyStore;
 using policy::MockUserCloudPolicyStore;
+using policy::ProfileCloudPolicyManager;
 using policy::UserCloudPolicyManager;
 using RegistrationParameters =
     policy::CloudPolicyClient::RegistrationParameters;
@@ -88,24 +93,40 @@ constexpr char kFakeDeviceID[] = "fake-id";
 
 // Fake OIDC policy sign in service that simulates policy fetch success/failure.
 class FakeUserPolicyOidcSigninService
-    : public policy::UserPolicyOidcSigninService {
+    : public policy::MockUserPolicyOidcSigninService {
  public:
   static std::unique_ptr<KeyedService> CreateFakeUserPolicyOidcSigninService(
       bool will_policy_fetch_succeed,
+      int number_of_windows,
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
-    return std::make_unique<FakeUserPolicyOidcSigninService>(
-        profile, will_policy_fetch_succeed);
+    auto fake_service =
+        (profile->GetUserCloudPolicyManager())
+            ? std::make_unique<FakeUserPolicyOidcSigninService>(
+                  profile, profile->GetUserCloudPolicyManager(),
+                  will_policy_fetch_succeed)
+            : std::make_unique<FakeUserPolicyOidcSigninService>(
+                  profile, profile->GetProfileCloudPolicyManager(),
+                  will_policy_fetch_succeed);
+
+    EXPECT_CALL(*fake_service, CreateBrowser())
+        .Times(number_of_windows)
+        .WillRepeatedly(testing::Return());
+
+    return std::move(fake_service);
   }
 
-  FakeUserPolicyOidcSigninService(Profile* profile,
-                                  bool will_policy_fetch_succeed)
-      : UserPolicyOidcSigninService(profile,
-                                    nullptr,
-                                    nullptr,
-                                    profile->GetUserCloudPolicyManager(),
-                                    nullptr,
-                                    nullptr),
+  FakeUserPolicyOidcSigninService(
+      Profile* profile,
+      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+          policy_manager,
+      bool will_policy_fetch_succeed)
+      : policy::MockUserPolicyOidcSigninService(profile,
+                                                nullptr,
+                                                nullptr,
+                                                policy_manager,
+                                                nullptr,
+                                                nullptr),
         test_profile_(profile),
         will_policy_fetch_succeed_(will_policy_fetch_succeed) {}
 
@@ -123,9 +144,16 @@ class FakeUserPolicyOidcSigninService
     }
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_gaia_id(kExampleGaiaId);
-    static_cast<MockUserCloudPolicyStore*>(
-        test_profile_->GetUserCloudPolicyManager()->core()->store())
-        ->set_policy_data_for_testing(std::move(policy_data));
+    if (test_profile_->GetProfileCloudPolicyManager()) {
+      static_cast<MockProfileCloudPolicyStore*>(
+          test_profile_->GetProfileCloudPolicyManager()->core()->store())
+          ->set_policy_data_for_testing(std::move(policy_data));
+    } else {
+      static_cast<MockUserCloudPolicyStore*>(
+          test_profile_->GetUserCloudPolicyManager()->core()->store())
+          ->set_policy_data_for_testing(std::move(policy_data));
+    }
+
     std::move(callback).Run(will_policy_fetch_succeed_);
   }
 
@@ -139,20 +167,6 @@ std::unique_ptr<KeyedService> CreateMalfunctionProfileIdService(
   std::string fake_profile_id =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   return std::make_unique<enterprise::ProfileIdService>(fake_profile_id);
-}
-
-std::unique_ptr<KeyedService> BuildMockInterceptor(
-    int number_of_windows,
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  auto mock_interceptor =
-      std::make_unique<MockOidcAuthenticationSigninInterceptor>(
-          profile, std::make_unique<DiceWebSigninInterceptorDelegate>());
-  EXPECT_CALL(*mock_interceptor, CreateBrowserAfterSigninInterception())
-      .Times(number_of_windows)
-      .WillRepeatedly(testing::Return());
-
-  return std::move(mock_interceptor);
 }
 
 // Customized profile manager that ensures the created profiles are properly set
@@ -174,19 +188,27 @@ class UnittestProfileManager : public FakeProfileManager {
     TestingProfile::Builder builder;
     builder.SetPath(path);
     builder.SetDelegate(delegate);
-    builder.SetUserCloudPolicyManager(std::move(policy_manager_));
+
+    if (absl::holds_alternative<std::unique_ptr<UserCloudPolicyManager>>(
+            policy_manager_)) {
+      builder.SetUserCloudPolicyManager(std::move(
+          absl::get<std::unique_ptr<UserCloudPolicyManager>>(policy_manager_)));
+    } else {
+      builder.SetProfileCloudPolicyManager(
+          std::move(absl::get<std::unique_ptr<ProfileCloudPolicyManager>>(
+              policy_manager_)));
+    }
+
     builder.AddTestingFactory(
         policy::UserPolicyOidcSigninServiceFactory::GetInstance(),
         base::BindRepeating(&FakeUserPolicyOidcSigninService::
                                 CreateFakeUserPolicyOidcSigninService,
-                            will_policy_fetch_succeed_on_new_profile_));
+                            will_policy_fetch_succeed_on_new_profile_,
+                            std::move(number_of_windows_)));
     builder.AddTestingFactory(
         policy::UserPolicySigninServiceFactory::GetInstance(),
         base::BindRepeating(&policy::FakeUserPolicySigninService::Build));
-    builder.AddTestingFactory(
-        OidcAuthenticationSigninInterceptorFactory::GetInstance(),
-        base::BindRepeating(&BuildMockInterceptor,
-                            std::move(number_of_windows_)));
+
     if (!will_id_service_succeed_on_new_profile_) {
       builder.AddTestingFactory(
           enterprise::ProfileIdServiceFactory::GetInstance(),
@@ -198,7 +220,9 @@ class UnittestProfileManager : public FakeProfileManager {
   }
 
   void SetPolicyManagerForNextProfile(
-      std::unique_ptr<UserCloudPolicyManager> policy_manager) {
+      absl::variant<std::unique_ptr<UserCloudPolicyManager>,
+                    std::unique_ptr<ProfileCloudPolicyManager>>
+          policy_manager) {
     policy_manager_ = std::move(policy_manager);
   }
 
@@ -207,7 +231,9 @@ class UnittestProfileManager : public FakeProfileManager {
   }
 
  private:
-  std::unique_ptr<UserCloudPolicyManager> policy_manager_;
+  absl::variant<std::unique_ptr<UserCloudPolicyManager>,
+                std::unique_ptr<ProfileCloudPolicyManager>>
+      policy_manager_;
   bool will_policy_fetch_succeed_on_new_profile_;
   bool will_id_service_succeed_on_new_profile_;
   int number_of_windows_;
@@ -309,10 +335,8 @@ class OidcAuthenticationSigninInterceptorTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // Build a test version CloudPolicyManager for testing profiles. Using
-  // UserCloudPolicyManager should work for dasherless profiles should work too,
-  // since we are using a fake policy sign in service.
-  std::unique_ptr<UserCloudPolicyManager> BuildCloudPolicyManager() {
+  // Build a test version CloudPolicyManager for testing profiles.
+  std::unique_ptr<UserCloudPolicyManager> BuildUserCloudPolicyManager() {
     auto mock_user_cloud_policy_store =
         std::make_unique<MockUserCloudPolicyStore>();
     EXPECT_CALL(*mock_user_cloud_policy_store, Load())
@@ -320,6 +344,19 @@ class OidcAuthenticationSigninInterceptorTest
 
     return std::make_unique<UserCloudPolicyManager>(
         std::move(mock_user_cloud_policy_store), base::FilePath(),
+        /*cloud_external_data_manager=*/nullptr,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        network::TestNetworkConnectionTracker::CreateGetter());
+  }
+
+  std::unique_ptr<ProfileCloudPolicyManager> BuildProfileCloudPolicyManager() {
+    auto mock_profile_cloud_policy_store =
+        std::make_unique<MockProfileCloudPolicyStore>();
+    EXPECT_CALL(*mock_profile_cloud_policy_store, Load())
+        .Times(testing::AnyNumber());
+
+    return std::make_unique<ProfileCloudPolicyManager>(
+        std::move(mock_profile_cloud_policy_store), base::FilePath(),
         /*cloud_external_data_manager=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
@@ -386,8 +423,13 @@ class OidcAuthenticationSigninInterceptorTest
         expect_profile_created ? num_profiles_before + 1 : num_profiles_before;
 
     if (expect_profile_created) {
-      unit_test_profile_manager_->SetPolicyManagerForNextProfile(
-          BuildCloudPolicyManager());
+      if (is_3p_identity_synced()) {
+        unit_test_profile_manager_->SetPolicyManagerForNextProfile(
+            BuildUserCloudPolicyManager());
+      } else {
+        unit_test_profile_manager_->SetPolicyManagerForNextProfile(
+            BuildProfileCloudPolicyManager());
+      }
       unit_test_profile_manager_->SetExpectedWindowCreation(
           expected_number_of_windows);
     } else {
@@ -668,9 +710,44 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
       /*expect_dialog_to_show=*/true);
 }
 
+TEST_P(OidcAuthenticationSigninInterceptorTest, PolicyRecoveryFromPref) {
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
+
+  // Manually remove the fetched policies to simulate policy loss.
+  if (is_3p_identity_synced()) {
+    static_cast<MockUserCloudPolicyStore*>(
+        added_profile_->GetUserCloudPolicyManager()->core()->store())
+        ->set_policy_data_for_testing(nullptr);
+  } else {
+    static_cast<MockProfileCloudPolicyStore*>(
+        added_profile_->GetProfileCloudPolicyManager()->core()->store())
+        ->set_policy_data_for_testing(nullptr);
+  }
+
+  policy::UserPolicyOidcSigninServiceFactory::GetForProfile(added_profile_)
+      ->AttemptToRestorePolicy();
+
+  base::RunLoop().RunUntilIdle();
+
+  if (is_3p_identity_synced()) {
+    CHECK(added_profile_->GetUserCloudPolicyManager()
+              ->core()
+              ->store()
+              ->has_policy());
+  } else {
+    CHECK(added_profile_->GetProfileCloudPolicyManager()
+              ->core()
+              ->store()
+              ->has_policy());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          OidcAuthenticationSigninInterceptorTest,
-                         /*enable_oidc_interception=*/testing::Bool());
+                         /*is_3p_identity_synced=*/testing::Bool());
 
 // Extra test class for cases when policy fetch fails.
 class OidcAuthenticationSigninInterceptorFetchFailureTest
@@ -695,7 +772,7 @@ TEST_P(OidcAuthenticationSigninInterceptorFetchFailureTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OidcAuthenticationSigninInterceptorFetchFailureTest,
-                         /*enable_oidc_interception=*/testing::Bool());
+                         /*is_3p_identity_synced=*/testing::Bool());
 
 // Extra test class for cases when profile id service fails.
 class OidcAuthenticationSigninInterceptorIdFailureTest
@@ -716,4 +793,4 @@ TEST_P(OidcAuthenticationSigninInterceptorIdFailureTest, DeviceIdFailure) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OidcAuthenticationSigninInterceptorIdFailureTest,
-                         /*enable_oidc_interception=*/testing::Bool());
+                         /*is_3p_identity_synced=*/testing::Bool());

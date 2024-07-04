@@ -433,103 +433,30 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched sucessfully";
   }
 
-  policy::UserPolicyOidcSigninService* policy_service =
-      policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
-          new_profile.get());
-
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Starting policy fetch process for OIDC-managed profile";
   RecordOidcProfileCreationFunnelStep(
       OidcProfileCreationFunnelStep::kPolicyFetchStarted, dasher_based_);
 
-  policy_service->FetchPolicyForSignedInUser(
-      AccountId(), dm_token_, client_id_,
+  auto* oidc_signin_service =
+      policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
+          new_profile.get());
+
+  if (!oidc_signin_service) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Can not find OIDC policy sign in service. Policy fetch aborted";
+    RecordOidcProfileCreationResult(
+        OidcProfileCreationResult::kFailedToFetchPolicy, dasher_based_);
+    return Reset();
+  }
+
+  oidc_signin_service->FetchPolicyForOidcUser(
+      AccountId(), dm_token_, client_id_, user_email_,
       /*user_affiliation_ids=*/std::vector<std::string>(),
-      new_profile.get()
-          ->GetDefaultStoragePartition()
+      base::TimeTicks::Now(), switch_to_entry_ != nullptr,
+      /*create_new_window=*/true,
+      new_profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      base::BindOnce(&OidcAuthenticationSigninInterceptor::
-                         OnPolicyFetchCompleteInNewProfile,
-                     weak_factory_.GetWeakPtr(), new_profile.get(),
-                     base::TimeTicks::Now()));
-}
-
-void OidcAuthenticationSigninInterceptor::
-    CreateBrowserAfterSigninInterception() {
-  GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
-
-  // Open a new browser.
-  NavigateParams params(profile_, url_to_open,
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  Navigate(&params);
-  VLOG_POLICY(2, OIDC_ENROLLMENT) << "New browser created";
-}
-
-void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
-    Profile* new_profile,
-    base::TimeTicks policy_fetch_start_time,
-    bool success) {
-  RecordOidcEnrollmentPolicyFetchLatency(
-      dasher_based_, success, base::TimeTicks::Now() - policy_fetch_start_time);
-  if (success) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Policy fetched for OIDC profile.";
-  }
-
-  if (success && dasher_based_ && !switch_to_entry_) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Policy fetched for Dasher-based OIDC profile, adding the user as "
-           "the primary account.";
-    RecordOidcProfileCreationFunnelStep(
-        OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based_);
-
-    // User account management would be included in unified consent dialog.
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(new_profile,
-                                                              true);
-
-    policy::CloudPolicyManager* user_policy_manager =
-        new_profile->GetUserCloudPolicyManager();
-
-    std::string gaia_id =
-        user_policy_manager->core()->store()->policy()->gaia_id();
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "GAIA ID retrieved from user policy for "
-                                    << user_email_ << ": " << gaia_id << ".";
-    auto set_primary_account_result =
-        signin_util::SetPrimaryAccountWithInvalidToken(
-            new_profile, user_email_, gaia_id,
-            /*is_under_advanced_protection=*/false,
-            signin_metrics::AccessPoint::
-                ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION,
-            signin_metrics::SourceForRefreshTokenOperation::
-                kMachineLogon_CredentialProvider);
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Operation of setting account id " << gaia_id
-        << " received the following result: "
-        << static_cast<int>(set_primary_account_result);
-
-    RecordOidcProfileCreationResult(
-        (set_primary_account_result ==
-         signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
-            ? OidcProfileCreationResult::kEnrollmentSucceeded
-            : OidcProfileCreationResult::kFailedToAddPrimaryAccount,
-        dasher_based_);
-
-  } else {
-    RecordOidcProfileCreationResult(
-        (success) ? ((switch_to_entry_)
-                         ? OidcProfileCreationResult::kSwitchedToExistingProfile
-                         : OidcProfileCreationResult::kEnrollmentSucceeded)
-                  : OidcProfileCreationResult::kFailedToFetchPolicy,
-        dasher_based_);
-  }
-
-  // Work is done in this profile, creating a new browser window/tab for the
-  // new/existing profile with chrome://newtab/, using the new profile's
-  // interceptor. We can create the window regardless of policy fetch and
-  // primary account setting succeeds or not.
-  OidcAuthenticationSigninInterceptorFactory::GetForProfile(new_profile)
-      ->CreateBrowserAfterSigninInterception();
-
-  Reset();
+      base::BindOnce(&OidcAuthenticationSigninInterceptor::Reset,
+                     weak_factory_.GetWeakPtr()));
 }

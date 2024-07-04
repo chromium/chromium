@@ -1092,6 +1092,8 @@ static_library("test_support") {
     sources += [
       "../browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.cc",
       "../browser/enterprise/signin/mock_oidc_authentication_signin_interceptor.h",
+      "../browser/enterprise/signin/mock_user_policy_oidc_signin_service.cc",
+      "../browser/enterprise/signin/mock_user_policy_oidc_signin_service.h",
     ]
   }
 }
@@ -10018,6 +10020,7 @@ test("unit_tests") {
       "../browser/enterprise/signin/oidc_managed_profile_creation_delegate_unittest.cc",
       "../browser/enterprise/signin/profile_token_web_signin_interceptor_unittest.cc",
       "../browser/enterprise/signin/token_managed_profile_creation_delegate_unittest.cc",
+      "../browser/enterprise/signin/user_policy_oidc_signin_service_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",

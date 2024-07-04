@@ -316,7 +316,9 @@ class TestingProfile : public Profile {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
-      std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
+      absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
+                    std::unique_ptr<policy::ProfileCloudPolicyManager>>
+          policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<policy::PolicyService> policy_service,
       TestingFactories testing_factories,

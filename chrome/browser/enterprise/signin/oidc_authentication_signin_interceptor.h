@@ -35,8 +35,12 @@ using policy::CloudPolicyClient;
 // Called after a valid OIDC authentication redirection is captured. The
 // interceptor is responsible for starting registration process, collecting user
 // consent, and creating/switching to a new managed profile if agreed.
-class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
-                                            public KeyedService {
+class OidcAuthenticationSigninInterceptor
+    : public WebSigninInterceptor,
+
+      // TODO(350960816): Restructure `OidcAuthenticationSigninInterceptor` to
+      // be a state machine instead of a keyed service.
+      public KeyedService {
  public:
   enum class SigninInterceptionType {
     kProfileSwitch,
@@ -70,12 +74,11 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
     client_for_testing_ = std::move(client);
   }
 
- protected:
-  virtual void CreateBrowserAfterSigninInterception();
+ private:
+  friend class MockOidcAuthenticationSigninInterceptor;
+
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
-
- private:
   void Reset();
 
   // Try to send OIDC tokens to DM server for registration.
@@ -91,13 +94,6 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   void OnProfileCreationChoice(SigninInterceptionResult create);
   // Called when the new profile has been created.
   void OnNewSignedInProfileCreated(base::WeakPtr<Profile> new_profile);
-  // Called when policy fetch response has been received, For Dasher-based
-  // profiles, pulls gaia id from fetched policies and user email from DM server
-  // response, and sets this AccountId as primary user of the new profile.
-  void OnPolicyFetchCompleteInNewProfile(
-      Profile* new_profile,
-      base::TimeTicks policy_fetch_start_time,
-      bool success);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Delegate> delegate_;
@@ -119,8 +115,6 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   std::string preset_profile_id_;
   raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;
   SkColor profile_color_;
-  // TODO(b/319479021): utilize the status variable to have better error
-  // handling and in metrics.
   bool interception_in_progress_ = false;
 
   std::unique_ptr<policy::CloudPolicyClientRegistrationHelper>
