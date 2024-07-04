@@ -16,6 +16,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "pages/telemetry.ts",
+    "pages/thermal_chart.ts",
   ]
 
   non_web_component_files = [

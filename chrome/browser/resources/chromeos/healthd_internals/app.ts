@@ -9,6 +9,7 @@ import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
 import './pages/telemetry.js';
+import './pages/thermal_chart.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
 import {CrRouter} from '//resources/js/cr_router.js';
@@ -17,11 +18,18 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {UPDATE_PERIOD} from './constants.js';
 import {HealthdApiTelemetryResult} from './externs.js';
+import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
   name: string;
   path: string;
+}
+
+export interface HealthdInternalsAppElement {
+  $: {
+    thermalChart: HealthdInternalsThermalChartElement,
+  };
 }
 
 export class HealthdInternalsAppElement extends PolymerElement {
@@ -71,6 +79,10 @@ export class HealthdInternalsAppElement extends PolymerElement {
       name: 'Event',
       path: '/event',
     },
+    {
+      name: 'Thermal Diagram',
+      path: '/thermal',
+    },
   ];
   private currentPath: string;
   private selectedIndex: number;
@@ -91,8 +103,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
     setInterval(fetchData, UPDATE_PERIOD);
   }
 
-  private handleHealthdTelemetryInfo(_: HealthdApiTelemetryResult): void {
-    // TODO(b/350423216): Handle the response.
+  private handleHealthdTelemetryInfo(data: HealthdApiTelemetryResult): void {
+    this.$.thermalChart.updateThermalData(data.thermals, Date.now());
   }
 }
 

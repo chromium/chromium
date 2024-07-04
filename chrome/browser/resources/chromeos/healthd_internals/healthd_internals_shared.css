@@ -16,3 +16,8 @@ h1 {
   font-weight: 500;
   padding-inline-start: 24px;
 }
+
+.full-page {
+  height: 100%;
+  width: 100%;
+}
