@@ -3357,7 +3357,6 @@ test("base_unittests") {
     "rand_util_unittest.cc",
     "ranges/algorithm_unittest.cc",
     "ranges/functional_unittest.cc",
-    "ranges/ranges_unittest.cc",
     "run_loop_unittest.cc",
     "safe_numerics_unittest.cc",
     "sampling_heap_profiler/lock_free_address_hash_set_unittest.cc",
