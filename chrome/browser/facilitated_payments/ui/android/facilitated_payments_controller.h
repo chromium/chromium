@@ -37,6 +37,10 @@ class FacilitatedPaymentsController {
   // tests.
   virtual void ShowProgressScreen();
 
+  // Asks the `view_` to close the bottom sheet. Virtual for overriding in
+  // tests.
+  virtual void Dismiss();
+
   // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env);
 

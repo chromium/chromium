@@ -57,6 +57,7 @@ class ChromeFacilitatedPaymentsClient
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
       override;
   void ShowProgressScreen() override;
+  void DismissPrompt() override;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;

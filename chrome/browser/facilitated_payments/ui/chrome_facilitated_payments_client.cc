@@ -87,6 +87,10 @@ void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
   facilitated_payments_controller_->ShowProgressScreen();
 }
 
+void ChromeFacilitatedPaymentsClient::DismissPrompt() {
+  facilitated_payments_controller_->Dismiss();
+}
+
 void ChromeFacilitatedPaymentsClient::
     SetFacilitatedPaymentsControllerForTesting(
         std::unique_ptr<FacilitatedPaymentsController> mock_controller) {

@@ -46,6 +46,10 @@ void FacilitatedPaymentsController::ShowProgressScreen() {
   view_->ShowProgressScreen();
 }
 
+void FacilitatedPaymentsController::Dismiss() {
+  view_->Dismiss();
+}
+
 void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
   view_->OnDismissed();
   java_object_.Reset();

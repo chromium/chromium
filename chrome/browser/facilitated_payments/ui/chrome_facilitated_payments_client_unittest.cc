@@ -58,6 +58,7 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
        base::OnceCallback<void(bool, int64_t)> on_user_decision_callback),
       (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void, Dismiss, (), (override));
 };
 
 class ChromeFacilitatedPaymentsClientTest
@@ -141,4 +142,12 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
 
   base_client().ShowPixPaymentPrompt({}, base::DoNothing());
   base_client().ShowProgressScreen();
+}
+
+// Test the client forwards call for closing the bottom sheet to the
+// controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest, DismissPrompt) {
+  EXPECT_CALL(controller(), Dismiss);
+
+  base_client().DismissPrompt();
 }

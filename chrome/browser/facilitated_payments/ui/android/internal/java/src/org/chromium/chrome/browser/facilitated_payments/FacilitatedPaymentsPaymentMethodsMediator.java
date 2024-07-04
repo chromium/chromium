@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
@@ -108,9 +109,13 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mModel.set(VISIBLE_STATE, SHOWN);
     }
 
-    public void onDismissed(@StateChangeReason int reason) {
-        if (mModel.get(VISIBLE_STATE) == HIDDEN) return; // Dismiss only if not dismissed yet.
+    void dismiss() {
+        mModel.set(SCREEN, UNINITIALIZED);
         mModel.set(VISIBLE_STATE, HIDDEN);
+    }
+
+    // TODO: b/350660307 - Remove reason parameter.
+    public void onDismissed(@StateChangeReason int reason) {
         mDelegate.onDismissed();
     }
 

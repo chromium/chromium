@@ -55,6 +55,11 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
         mMediator.showProgressScreen();
     }
 
+    @Override
+    public void dismiss() {
+        mMediator.dismiss();
+    }
+
     /**
      * Connects the given model with the given view using Model Change Processors.
      *

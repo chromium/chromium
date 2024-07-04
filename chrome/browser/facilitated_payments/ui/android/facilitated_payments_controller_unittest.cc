@@ -37,6 +37,7 @@ class MockFacilitatedPaymentsBottomSheetBridge
       (base::span<const autofill::BankAccount> bank_account_suggestions),
       (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
+  MOCK_METHOD(void, Dismiss, (), (override));
   MOCK_METHOD(void, OnDismissed, (), (override));
 };
 
@@ -153,4 +154,11 @@ TEST_F(FacilitatedPaymentsControllerTest,
 
   controller_->Show(bank_accounts_, base::DoNothing());
   controller_->ShowProgressScreen();
+}
+
+// Test controller forwards call for closing the bottom sheet to the view.
+TEST_F(FacilitatedPaymentsControllerTest, Dismiss) {
+  EXPECT_CALL(*mock_view_, Dismiss);
+
+  controller_->Dismiss();
 }

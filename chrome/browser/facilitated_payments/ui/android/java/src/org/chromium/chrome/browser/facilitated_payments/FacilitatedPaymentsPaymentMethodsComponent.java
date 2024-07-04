@@ -41,4 +41,7 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
 
     /** Displays a progress screen in a bottom sheet. */
     void showProgressScreen();
+
+    /** Close the bottom sheet. */
+    void dismiss();
 }

@@ -96,4 +96,10 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
     public void showProgressScreen() {
         mComponent.showProgressScreen();
     }
+
+    /** Requests to close the bottom sheet. */
+    @CalledByNative
+    public void dismiss() {
+        mComponent.dismiss();
+    }
 }

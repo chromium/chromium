@@ -22,6 +22,7 @@ namespace payments::facilitated {
 
 class FacilitatedPaymentsNetworkInterface;
 
+// TODO: b/350661525 - Make all methods pure virtual.
 // A cross-platform client interface for showing UI for non-form based FOPs.
 class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
  public:
@@ -54,6 +55,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.
   virtual void ShowProgressScreen();
+
+  // Closes the bottom sheet.
+  virtual void DismissPrompt();
 };
 
 }  // namespace payments::facilitated

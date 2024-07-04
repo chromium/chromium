@@ -39,6 +39,7 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
+// TODO: b/351064045 - Dismiss the bottom sheet from within `Reset`.
 void FacilitatedPaymentsManager::Reset() {
   // In tests, when the payment flow is abandoned, do not reset so the final
   // states can be verified.
@@ -284,6 +285,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
       !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
+    client_->DismissPrompt();
     Reset();
     return;
   }
@@ -316,12 +318,14 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   if (result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
     // TODO(b/300335703): Show the error message.
     LogInitiatePaymentResult(/*result=*/false, latency);
+    client_->DismissPrompt();
     Reset();
     return;
   }
   LogInitiatePaymentResult(/*result=*/true, latency);
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
+    client_->DismissPrompt();
     Reset();
     return;
   }
@@ -330,6 +334,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
+    client_->DismissPrompt();
     Reset();
     return;
   }
@@ -342,6 +347,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
     FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+  client_->DismissPrompt();
+  Reset();
   LogInitiatePurchaseActionResult(
       /*result=*/result ==
           FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,

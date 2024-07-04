@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -181,14 +183,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
     @Test
     public void testOnDismissedIsCalled() {
-        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
-
         mFacilitatedPaymentsPaymentMethodsModel
                 .get(DISMISS_HANDLER)
                 .onResult(StateChangeReason.SWIPE);
 
-        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
         verify(mDelegateMock).onDismissed();
     }
 
@@ -307,6 +305,26 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         .getAllProperties()
                         .size(),
                 0);
+    }
+
+    @Test
+    public void testDismiss() {
+        // Show the FOP selector.
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        // Confirm the FOP selector is shown.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(FOP_SELECTOR));
+
+        // Close the bottom sheet.
+        mCoordinator.dismiss();
+
+        // Verify that the bottom sheet model is updated for dismissal.
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
+        assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
+
+        // Verify that the bottom sheet closing is triggered.
+        verify(mBottomSheetController, times(2)).hideContent(any(), eq(true));
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

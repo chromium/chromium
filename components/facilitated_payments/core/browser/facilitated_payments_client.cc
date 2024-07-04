@@ -18,4 +18,6 @@ bool FacilitatedPaymentsClient::ShowPixPaymentPrompt(
 
 void FacilitatedPaymentsClient::ShowProgressScreen() {}
 
+void FacilitatedPaymentsClient::DismissPrompt() {}
+
 }  // namespace payments::facilitated
