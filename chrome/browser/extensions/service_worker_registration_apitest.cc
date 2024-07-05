@@ -789,8 +789,10 @@ using ServiceWorkerRegistrationRestartMetricBrowserTest =
 
 // Tests that restarting an extension emits metrics for unregistering and
 // registering the service worker.
+//
+// TODO(crbug.com/349683323): Fix flakiness
 IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationRestartMetricBrowserTest,
-                       ExtensionRestart) {
+                       DISABLED_ExtensionRestart) {
   ASSERT_NO_FATAL_FAILURE(InstallMv2OrMv3Extension());
 
   base::HistogramTester histogram_tester;
