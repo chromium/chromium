@@ -257,7 +257,7 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   // Content property with attr() values depend on the attribute value of the
   // originating element, thus we cannot cache based on the matched properties
   // because the value of content is retrieved from the attribute at apply time.
-  if (builder.HasAttrContent()) {
+  if (builder.HasAttrFunction()) {
     return false;
   }
   if (builder.Zoom() != ComputedStyleInitialValues::InitialZoom()) {

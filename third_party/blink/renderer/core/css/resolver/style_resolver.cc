@@ -1601,7 +1601,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   if (RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled() &&
       state.HasAttrFunction()) {
-    state.StyleBuilder().SetHasAttrContent();
+    state.StyleBuilder().SetHasAttrFunction();
   }
 
   // Now we're done with all operations that may overwrite InsideLink,

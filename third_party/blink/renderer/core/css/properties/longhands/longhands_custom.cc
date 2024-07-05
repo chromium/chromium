@@ -2714,7 +2714,7 @@ String GetStringFromAttributeOrStringValue(const CSSValue& value,
   if (const auto* function_value = DynamicTo<CSSFunctionValue>(value)) {
     DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
     DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
-    builder.SetHasAttrContent();
+    builder.SetHasAttrFunction();
     // TODO: Can a namespace be specified for an attr(foo)?
     QualifiedName attr(
         To<CSSCustomIdentValue>(function_value->Item(0)).Value());

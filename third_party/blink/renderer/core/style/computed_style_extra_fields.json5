@@ -96,9 +96,9 @@
       type_name: "bool",
       inherited: true,
     },
-    // Style has content property with attr() values.
+    // Style has a property with attr() values.
     {
-      name: "HasAttrContent",
+      name: "HasAttrFunction",
       field_template: "monotonic_flag",
       default_value: "false",
       reset_on_new_style: true,

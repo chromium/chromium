@@ -1679,20 +1679,20 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
   DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
   if (PseudoElement* before = element.GetPseudoElement(kPseudoIdBefore)) {
     const ComputedStyle* style = before->GetComputedStyle();
-    if (style && style->HasAttrContent()) {
+    if (style && style->HasAttrFunction()) {
       return true;
     }
   }
   if (PseudoElement* after = element.GetPseudoElement(kPseudoIdAfter)) {
     const ComputedStyle* style = after->GetComputedStyle();
-    if (style && style->HasAttrContent()) {
+    if (style && style->HasAttrFunction()) {
       return true;
     }
   }
   if (PseudoElement* scroll_marker =
           element.GetPseudoElement(kPseudoIdScrollMarker)) {
     const ComputedStyle* style = scroll_marker->GetComputedStyle();
-    if (style && style->HasAttrContent()) {
+    if (style && style->HasAttrFunction()) {
       return true;
     }
   }
@@ -1702,7 +1702,7 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
 bool HasAttributeDependentStyle(const Element& element) {
   DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
   const ComputedStyle* style = element.GetComputedStyle();
-  if (style && style->HasAttrContent()) {
+  if (style && style->HasAttrFunction()) {
     return true;
   }
   // TODO(crbug.com/40320391): Handle pseudo elements invalidation.
