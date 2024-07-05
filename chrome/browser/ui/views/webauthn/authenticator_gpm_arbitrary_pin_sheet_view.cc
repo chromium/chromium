@@ -44,3 +44,7 @@ AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
 void AuthenticatorGPMArbitraryPinSheetView::OnPinChanged(std::u16string pin) {
   gpm_arbitrary_pin_sheet_model()->SetPin(std::move(pin));
 }
+
+void AuthenticatorGPMArbitraryPinSheetView::UpdateHintVisibility() {
+  gpm_arbitrary_pin_sheet_model()->dialog_model()->OnSheetModelChanged();
+}

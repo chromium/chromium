@@ -16513,6 +16513,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PIN_DIGIT_HINT" desc="The hint that is displayed during the creation of a 6-digit Google Password Manager PIN, whenever a user types something other than a digit.">
         Enter a 6-digit PIN
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PIN_LENGTH_HINT" desc="The hint that is displayed during the creation of an alphanumeric Google Password Manager PIN, explaining its minimal length requirement whenever the currently typed length is not enough.">
+        Your PIN can be 4 characters or more
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

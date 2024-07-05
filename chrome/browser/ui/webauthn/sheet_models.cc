@@ -50,6 +50,8 @@ using ICloudKeychainMech =
     AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain;
 using Step = AuthenticatorRequestDialogModel::Step;
 
+constexpr int kGpmArbitraryPinMinLength = 4;
+
 bool IsLocalPasskeyOrEnclaveAuthenticator(
     const AuthenticatorRequestDialogModel::Mechanism& mech) {
   return (absl::holds_alternative<CredentialMech>(mech.type) &&
@@ -1814,7 +1816,7 @@ bool AuthenticatorGpmArbitraryPinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGpmArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
-  return pin_.length() > 0 && !ui_disabled();
+  return pin_.length() >= kGpmArbitraryPinMinLength && !ui_disabled();
 }
 
 std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAcceptButtonLabel()
@@ -1822,6 +1824,12 @@ std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAcceptButtonLabel()
   return mode_ == Mode::kPinEntry
              ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT)
              : l10n_util::GetStringUTF16(IDS_CONFIRM);
+}
+
+std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetHint() const {
+  return pin_.length() < kGpmArbitraryPinMinLength
+             ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_LENGTH_HINT)
+             : std::u16string();
 }
 
 // AuthenticatorTrustThisComputerAssertionSheetModel -------------------------

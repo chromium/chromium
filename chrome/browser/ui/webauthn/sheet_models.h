@@ -789,6 +789,7 @@ class AuthenticatorGpmArbitraryPinSheetModel
       Mode mode);
   ~AuthenticatorGpmArbitraryPinSheetModel() override;
 
+  // AuthenticatorGpmPinSheetModelBase:
   void SetPin(std::u16string pin) override;
 
  private:
@@ -796,6 +797,7 @@ class AuthenticatorGpmArbitraryPinSheetModel
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetHint() const override;
 };
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during

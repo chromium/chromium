@@ -43,6 +43,7 @@ class AuthenticatorGPMArbitraryPinSheetView
 
   // AuthenticatorGPMArbitraryPinView::Delegate:
   void OnPinChanged(std::u16string pin) override;
+  void UpdateHintVisibility() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_SHEET_VIEW_H_

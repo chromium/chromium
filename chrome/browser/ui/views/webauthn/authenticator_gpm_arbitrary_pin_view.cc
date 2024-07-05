@@ -10,6 +10,10 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace {
+constexpr int kGpmArbitraryPinMinLength = 4;
+}  // namespace
+
 AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
     bool ui_disabled,
     const std::u16string& pin,
@@ -53,6 +57,19 @@ void AuthenticatorGPMArbitraryPinView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   delegate_->OnPinChanged(new_contents);
+}
+
+void AuthenticatorGPMArbitraryPinView::OnBeforeUserAction(
+    views::Textfield* sender) {
+  pin_length_before_user_action_ = sender->GetText().length();
+}
+
+void AuthenticatorGPMArbitraryPinView::OnAfterUserAction(
+    views::Textfield* sender) {
+  if (pin_length_before_user_action_ < kGpmArbitraryPinMinLength !=
+      sender->GetText().length() < kGpmArbitraryPinMinLength) {
+    delegate_->UpdateHintVisibility();
+  }
 }
 
 BEGIN_METADATA(AuthenticatorGPMArbitraryPinView)
