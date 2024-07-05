@@ -73,6 +73,9 @@ function excludeTentativeTests(test) {
 }
 
 export function flattenTests(report) {
+  if (report === undefined) {
+    return undefined;
+  }
   return report.results
     .filter(excludeTentativeTests)
     .map(flattenSingleTest)
@@ -84,6 +87,9 @@ export function flattenTests(report) {
 }
 
 export function groupTests(tests) {
+  if (tests === undefined) {
+    return undefined;
+  }
   const pathMap = {
     group: '',
     children: new Map(),
@@ -164,6 +170,9 @@ function compareToBaseLine(current, baseline) {
 }
 
 function getHtmlForTest(map, title) {
+  if (map === undefined) {
+    return `<h2>${title} not available</h2>`;
+  }
   return `
       <h2 id="${title.replaceAll(' ', '-').toLowerCase()}">${title} - ${map.stat.passing} / ${map.stat.total} (${
         map.stat.total - map.stat.passing

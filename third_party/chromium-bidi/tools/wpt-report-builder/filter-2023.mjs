@@ -22,6 +22,9 @@ import {LABELS_TO_TESTS} from './labelled-tests.mjs';
 const RELEVANT_TESTS = LABELS_TO_TESTS.get('chromium-bidi-2023');
 
 export const apply2023Filter = (reportData) => {
+  if (reportData === undefined) {
+    return undefined;
+  }
   const filteredResults = [];
   for (const result of reportData.results) {
     if (RELEVANT_TESTS.has(result.test)) {

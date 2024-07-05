@@ -56,6 +56,9 @@ function getChromeVersion() {
 }
 
 function readReport(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return undefined;
+  }
   const json = fs.readFileSync(filePath, 'utf8');
   return JSON.parse(json);
 }
@@ -68,6 +71,10 @@ const reportData = readReport(jsonPath);
 const reportInteropData = readReport(jsonInteropPath);
 const filteredReportData = apply2023Filter(reportData);
 const filteredInteropReportData = apply2023Filter(reportInteropData);
+
+if (filteredReportData === undefined) {
+  throw Error('filteredReportData is undefined');
+}
 
 const currentCommit = getCurrentCommit();
 const chromeVersion = getChromeVersion();
