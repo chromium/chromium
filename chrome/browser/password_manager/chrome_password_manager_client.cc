@@ -574,7 +574,13 @@ bool ChromePasswordManagerClient::IsReauthBeforeFillingRequired(
   if (!authenticator || !GetPrefs()) {
     return false;
   }
-  return authenticator->CanAuthenticateWithBiometricOrScreenLock() &&
+  bool can_authenticate =
+      authenticator->CanAuthenticateWithBiometricOrScreenLock();
+  base::UmaHistogramBoolean(
+      "PasswordManager.BiometricAuthPwdFillAndroid."
+      "CanAuthenticateWithBiometricOrScreenLock",
+      can_authenticate);
+  return can_authenticate &&
          base::FeatureList::IsEnabled(
              password_manager::features::kBiometricTouchToFill) &&
          GetPrefs()->GetBoolean(

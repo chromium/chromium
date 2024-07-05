@@ -899,6 +899,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.BiometricAuthPwdFillAndroid.CanAuthenticateWithBiometricOrScreenLock"
+    enum="Boolean" expires_after="2025-01-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Logs whether authentication either with biometrics or the screen lock is
+    possible. Recorded before credentials filling during the check whether
+    biometric reauth is required.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BiometricAvailabilityWin"
     enum="BiometricAuthenticationStatusWin" expires_after="2024-12-08">
   <owner>vasilii@chromium.org</owner>

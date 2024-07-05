@@ -815,12 +815,17 @@ TEST_F(ChromePasswordManagerClientTest,
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP();
   }
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList enabled_features(
       password_manager::features::kBiometricTouchToFill);
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(false));
   EXPECT_FALSE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAuthPwdFillAndroid."
+      "CanAuthenticateWithBiometricOrScreenLock",
+      false, 1);
 }
 
 // Test that authentication is not possible if the
@@ -849,6 +854,8 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP();
   }
+
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList enabled_features(
       password_manager::features::kBiometricTouchToFill);
   device_reauth::MockDeviceAuthenticator authenticator;
@@ -857,6 +864,10 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   ON_CALL(authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
   EXPECT_TRUE(GetClient()->IsReauthBeforeFillingRequired(&authenticator));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAuthPwdFillAndroid."
+      "CanAuthenticateWithBiometricOrScreenLock",
+      true, 1);
 }
 
 // Test that authentication is possible if the `CanAuthenticateWithBiometrics`
