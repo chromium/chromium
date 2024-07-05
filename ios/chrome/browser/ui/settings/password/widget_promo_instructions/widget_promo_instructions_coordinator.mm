@@ -103,8 +103,7 @@
   [self.delegate removeWidgetPromoInstructionsCoordinator:self];
 }
 
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings {
+- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
   NOTREACHED_NORETURN();
   return nil;
 }

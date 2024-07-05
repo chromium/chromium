@@ -54,9 +54,8 @@
 
   self.viewController = [[ClearBrowsingDataTableViewController alloc]
       initWithBrowser:self.browser];
-  self.viewController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.viewController.dispatcher = static_cast<id<ApplicationCommands>>(
+      self.browser->GetCommandDispatcher());
 
   self.viewController.delegate = self;
   [self.baseNavigationController pushViewController:self.viewController

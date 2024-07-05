@@ -45,7 +45,7 @@
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   self.clearBrowsingDataTableViewController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowsingDataCommands>>(
+      static_cast<id<ApplicationCommands>>(
           self.browser->GetCommandDispatcher());
   // Configure and present ClearBrowsingDataNavigationController.
   self.historyClearBrowsingDataNavigationController =

@@ -474,8 +474,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [self onSettingsDismissed];
 }
 
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings {
+- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
   NOTREACHED_IN_MIGRATION();
   return nil;
 }

@@ -14,7 +14,6 @@
 
 class Browser;
 @protocol BrowserCommands;
-@protocol BrowsingDataCommands;
 enum class DefaultBrowserSettingsPageSource;
 @protocol SettingsRootViewControlling;
 @protocol SnackbarCommands;

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class Browser;
-@protocol BrowsingDataCommands;
 class ChromeBrowserState;
 @protocol SystemIdentity;
 

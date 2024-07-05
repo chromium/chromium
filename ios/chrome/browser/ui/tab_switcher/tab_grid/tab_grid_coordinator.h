@@ -13,7 +13,6 @@
 
 @protocol ApplicationCommands;
 class Browser;
-@protocol BrowsingDataCommands;
 @protocol TabGridCoordinatorDelegate;
 
 @interface TabGridCoordinator : ChromeCoordinator
