@@ -4506,6 +4506,10 @@
       public: true,
     },
     {
+      name: "WebGPUHDR",
+      status: "experimental",
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },

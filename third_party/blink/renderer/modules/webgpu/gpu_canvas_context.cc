@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_tone_mapping.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_tone_mapping_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -518,7 +520,23 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   gfx::HDRMetadata hdr_metadata;
-  if (descriptor->hasHdrOptions()) {
+  if (descriptor->hasToneMapping()) {
+    if (descriptor->toneMapping()->hasMode()) {
+      switch (descriptor->toneMapping()->mode().AsEnum()) {
+        case V8GPUCanvasToneMappingMode::Enum::kStandard:
+          break;
+        case V8GPUCanvasToneMappingMode::Enum::kExtended:
+          hdr_metadata.extended_range.emplace(
+              /*current_headroom=*/gfx::HdrMetadataExtendedRange::
+                  kDefaultHdrHeadroom,
+              /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
+                  kDefaultHdrHeadroom);
+          break;
+      }
+    }
+  } else if (descriptor->hasHdrOptions()) {
+    // TODO(https://crbug.com/333967627): Remove support for this older version
+    // of the API once the new API lands.
     ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
