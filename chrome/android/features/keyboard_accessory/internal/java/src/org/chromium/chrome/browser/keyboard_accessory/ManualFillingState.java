@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -29,31 +28,12 @@ class ManualFillingState {
         AccessoryTabType.PASSWORDS, AccessoryTabType.CREDIT_CARDS, AccessoryTabType.ADDRESSES,
     };
     private final WebContents mWebContents;
-    private final SparseArray<SheetState> mSheetStates = new SparseArray<>();
+    private final SparseArray<Provider<AccessorySheetData>> mSheetDataProviders =
+            new SparseArray<>();
     private final SparseArray<KeyboardAccessoryData.Tab> mAvailableTabs = new SparseArray<>();
     private @Nullable ManualFillingComponent.UpdateAccessorySheetDelegate mUpdater;
     private @Nullable CachedProviderAdapter<KeyboardAccessoryData.Action[]> mActionsProvider;
     private boolean mWebContentsShowing;
-
-    private static class SheetState {
-        @Nullable Provider<AccessorySheetData> mDataProvider;
-
-        /**
-         * @deprecated Storing a sheet per WebContents is too expensive. Instead, reuse the already
-         *     constructed, browser-scoped sheets in the {@link ManualFillingMediator}! The state
-         *     knows about {@link #mAvailableTabs} which is sufficient to request updates via {@link
-         *     #requestRecentSheets()} for browser-scoped sheets.
-         */
-        @Deprecated @Nullable AccessorySheetTabCoordinator mSheet;
-
-        // TODO(crbug.com/40165275): Remove this method when the legacy accessory is cleaned up.
-        void notifyProviderObservers() {
-            if (mDataProvider instanceof CachedProviderAdapter) {
-                ((CachedProviderAdapter<AccessorySheetData>) mDataProvider)
-                        .notifyAboutCachedItems();
-            }
-        }
-    }
 
     private class Observer extends WebContentsObserver {
         public Observer(WebContents webContents) {
@@ -65,11 +45,6 @@ class ManualFillingState {
             super.wasShown();
             mWebContentsShowing = true;
             if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
-            for (int state : TAB_ORDER) {
-                if (mAvailableTabs.get(state, null) != null) {
-                    getStateFor(state).notifyProviderObservers();
-                }
-            }
         }
 
         @Override
@@ -98,17 +73,11 @@ class ManualFillingState {
     }
 
     /**
-     * Repeats the latest data that known {@link CachedProviderAdapter}s cached to all
-     * {@link Provider.Observer}s.
+     * Repeats the latest data that known {@link CachedProviderAdapter}s cached to all {@link
+     * Provider.Observer}s.
      */
     void notifyObservers() {
         if (mActionsProvider != null) mActionsProvider.notifyAboutCachedItems();
-        for (int state : TAB_ORDER) {
-            // TODO(fhorschig): This needs controller tests for each state in the order!
-            if (mAvailableTabs.get(state, null) != null) {
-                getStateFor(state).notifyProviderObservers();
-            }
-        }
     }
 
     void setSheetUpdater(ManualFillingComponent.UpdateAccessorySheetDelegate delegate) {
@@ -135,21 +104,13 @@ class ManualFillingState {
     void destroy() {
         if (mWebContents != null) mWebContents.removeObserver(mWebContentsObserver);
         mActionsProvider = null;
-        mSheetStates.clear();
+        mSheetDataProviders.clear();
         mWebContentsShowing = false;
-    }
-
-    private SheetState getStateFor(@AccessoryTabType int tabType) {
-        SheetState state = mSheetStates.get(tabType);
-        if (state == null) {
-            mSheetStates.put(tabType, new SheetState());
-            state = mSheetStates.get(tabType);
-        }
-        return state;
     }
 
     /**
      * Wraps the given ActionProvider in a {@link CachedProviderAdapter} and stores it.
+     *
      * @param provider A {@link PropertyProvider} providing actions.
      * @param defaultActions A default set of actions to prepopulate the adapter's cache.
      */
@@ -177,20 +138,23 @@ class ManualFillingState {
      */
     void wrapSheetDataProvider(
             @AccessoryTabType int tabType, PropertyProvider<AccessorySheetData> provider) {
-        getStateFor(tabType).mDataProvider =
-                new ConditionalProviderAdapter<>(provider, () -> mWebContentsShowing);
+        mSheetDataProviders.put(
+                tabType, new ConditionalProviderAdapter<>(provider, () -> mWebContentsShowing));
     }
 
     /**
      * Returns the wrapped provider set with {@link #wrapSheetDataProvider}.
+     *
      * @return A {@link CachedProviderAdapter} wrapping a {@link PropertyProvider}.
      */
+    @Nullable
     Provider<AccessorySheetData> getSheetDataProvider(@AccessoryTabType int tabType) {
-        return getStateFor(tabType).mDataProvider;
+        return mSheetDataProviders.get(tabType);
     }
 
     /**
      * Makes a tab available to the state. If there is already a tab of the same state, this fails.
+     *
      * @param tab The @{@link KeyboardAccessoryData.Tab} to track.
      * @return True iff the tab was added. False if the a tab of that type was already added.
      */
