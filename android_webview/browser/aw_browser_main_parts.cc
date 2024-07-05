@@ -71,6 +71,7 @@
 #include "ui/gl/gl_surface.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserMainParts_jni.h"
 #include "android_webview/browser_jni_headers/AwInterfaceRegistrar_jni.h"
 
 namespace android_webview {
@@ -305,6 +306,12 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
         std::string(PRODUCT_VERSION) + "_" + trial_group,
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewSeparateResourceContextMetrics",
+      use_webview_context ? "Enabled" : "Control",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {

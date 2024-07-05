@@ -33,6 +33,7 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.ApkType;
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
@@ -367,10 +368,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 }
             }
             // Use this to report the actual state of the feature at runtime.
-            if (webViewContextWasApplied) {
-                CommandLine.getInstance()
-                        .appendSwitch(AwSwitches.WEBVIEW_CONTEXT_EXPERIMENTATION_METRICS);
-            }
+            AwBrowserMainParts.setUseWebViewContext(webViewContextWasApplied);
 
             // WebView needs to make sure to always use the wrapped application context.
             ctx = ClassLoaderContextWrapperFactory.get(ctx);

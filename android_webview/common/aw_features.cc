@@ -200,19 +200,6 @@ BASE_FEATURE(kWebViewSeparateResourceContext,
              "WebViewSeparateResourceContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This flag is used in conjunction with kWebViewSeparateResourceContext. That
-// flag needs to be accessed before finch is initialized. We're using prefs to
-// cache the feature flag value and read it. However, this will lead to a slight
-// disparity between reported enablement of the feature and actual enablement.
-// As a result, our metrics may skew. To compensate, 100% of WebView population
-// will override this flag with the actual value of
-// kWebViewSeparateResourceContext so that the metrics from this feature are
-// completely accurate to the experiment group membership decision made at
-// runtime.
-BASE_FEATURE(kWebViewSeparateResourceContextMetrics,
-             "WebViewSeparateResourceContextMetrics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether to use initial network state during initialization to speed up
 // startup.
 BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,

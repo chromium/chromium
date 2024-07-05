@@ -99,11 +99,6 @@ const char kWebViewForceCrashNative[] = "webview-force-crash-native";
 const char kWebViewUseSeparateResourceContext[] =
     "webview-use-separate-resource-context";
 
-// Should not be set manually. Used by WebView code to set the runtime state of
-// the WebView Context experimentation.
-const char kWebViewContextExperimentationMetrics[] =
-    "webview-context-experimentation-metrics";
-
 // Override and enable features useful for BSA library testing/debugging.
 const char kDebugBsa[] = "debug-bsa";
 
