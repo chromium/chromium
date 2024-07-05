@@ -1012,7 +1012,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       back_buffer_shared_image_->mailbox(), GetSyncToken(), shared_texture_id,
-      image_info, GL_TEXTURE_2D, true /*is_origin_top_left*/,
+      image_info, TextureTarget(), true /*is_origin_top_left*/,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
@@ -1099,7 +1099,7 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // Don't generate sync token after the copy so that it's not on critical path.
   raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
                                     back_buffer_shared_image_->mailbox(),
-                                    GL_TEXTURE_2D, 0, 0, 0, 0, size_.width(),
+                                    TextureTarget(), 0, 0, 0, 0, size_.width(),
                                     size_.height(), false /* unpack_flip_y */,
                                     false /* unpack_premultiply_alpha */);
   // Restore shared image access after copy when using legacy GL raster.
