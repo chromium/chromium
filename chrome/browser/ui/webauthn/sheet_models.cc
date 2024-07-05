@@ -1788,7 +1788,7 @@ std::u16string AuthenticatorGpmPinSheetModel::GetAcceptButtonLabel() const {
 }
 
 std::u16string AuthenticatorGpmPinSheetModel::GetHint() const {
-  return show_digit_hint_
+  return mode_ == Mode::kPinCreate && show_digit_hint_
              ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_DIGIT_HINT)
              : std::u16string();
 }
@@ -1827,7 +1827,7 @@ std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetAcceptButtonLabel()
 }
 
 std::u16string AuthenticatorGpmArbitraryPinSheetModel::GetHint() const {
-  return pin_.length() < kGpmArbitraryPinMinLength
+  return mode_ == Mode::kPinCreate && pin_.length() < kGpmArbitraryPinMinLength
              ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_LENGTH_HINT)
              : std::u16string();
 }
