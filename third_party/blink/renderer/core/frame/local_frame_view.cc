@@ -2755,8 +2755,7 @@ void LocalFrameView::PerformScrollAnchoringAdjustments() {
       DCHECK(scroller->GetScrollAnchor());
       // The CSS scroll-start property should take precedence over scroll
       // anchoring.
-      if (RuntimeEnabledFeatures::CSSScrollStartEnabled() &&
-          scroller->IsApplyingScrollStart()) {
+      if (scroller->IsApplyingScrollStart()) {
         scroller->GetScrollAnchor()->CancelAdjustment();
         continue;
       }

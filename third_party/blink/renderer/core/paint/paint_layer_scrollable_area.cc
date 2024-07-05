@@ -115,6 +115,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -1133,10 +1134,12 @@ bool PaintLayerScrollableArea::IsApplyingScrollStart() const {
     if (element->HasBeenExplicitlyScrolled()) {
       return false;
     }
-    if (GetScrollStartTargets()) {
+    if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled() &&
+        GetScrollStartTargets()) {
       return true;
     }
-    return !ScrollStartIsDefault();
+    return RuntimeEnabledFeatures::CSSScrollStartEnabled() &&
+           !ScrollStartIsDefault();
   }
   return false;
 }

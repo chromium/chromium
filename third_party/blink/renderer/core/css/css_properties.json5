@@ -5078,7 +5078,7 @@
       },
       keywords: ["none", "auto"],
       invalidate: ["layout"],
-      runtime_flag: "CSSScrollStart",
+      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "scroll-start-target-y",
@@ -5093,7 +5093,7 @@
       },
       keywords: ["none", "auto"],
       invalidate: ["layout"],
-      runtime_flag: "CSSScrollStart",
+      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "scroll-timeline-axis",
@@ -7102,7 +7102,7 @@
         name: "scroll-start-target",
         resolver: "block",
       },
-      runtime_flag: "CSSScrollStart",
+      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "scroll-start-target-inline",
@@ -7111,7 +7111,7 @@
         name: "scroll-start-target",
         resolver: "inline",
       },
-      runtime_flag: "CSSScrollStart",
+      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "border-inline-start-width",
@@ -8213,7 +8213,7 @@
       name: "scroll-start-target",
       longhands: ["scroll-start-target-block", "scroll-start-target-inline"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollStart",
+      runtime_flag: "CSSScrollStartTarget",
     },
     {
       name: "scroll-timeline",
