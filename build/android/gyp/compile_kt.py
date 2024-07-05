@@ -154,6 +154,9 @@ def main(argv):
       '-no-stdlib',
       # Avoid depending on the bundled Kotlin reflect libs.
       '-no-reflect',
+      # We typically set a default of 1G for java commands, see
+      # build_utils.JavaCmd. This may help prevent OOMs.
+      '-J-Xmx1G',
   ]
 
   if args.generated_dir:
