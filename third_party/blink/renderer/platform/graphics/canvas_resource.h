@@ -142,7 +142,7 @@ class PLATFORM_EXPORT CanvasResource
   // The sync mode indicates how the sync token for the resource should be
   // prepared.
   // NOTE: Valid to call only if SupportsAcceleratedCompositing() is true.
-  virtual const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) = 0;
+  virtual const gpu::Mailbox& GetMailbox(MailboxSyncMode) = 0;
 
   // A CanvasResource is not thread-safe and does not allow concurrent usage
   // from multiple threads. But it maybe used from any thread. It remains bound
@@ -245,7 +245,7 @@ class PLATFORM_EXPORT CanvasResource
   }
 
   // Prepares GPU TransferableResource. Default implementation creates a
-  // TransferableResource that wraps GetOrCreateGpuMailbox(). Subclasses needing
+  // TransferableResource that wraps GetMailbox(). Subclasses needing
   // different behavior should override this method.
   // NOTE: Will be called only if SupportsAcceleratedCompositing() is true.
   virtual bool PrepareAcceleratedTransferableResource(
@@ -300,7 +300,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool flag) final { is_origin_clean_ = flag; }
-  const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   void NotifyResourceLost() override;
 
  private:
@@ -391,7 +391,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   }
   bool IsLost() const final { return owning_thread_data().is_lost; }
   void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image) final;
-  const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
                     size_t bytes_per_pixel) const override;
@@ -519,7 +519,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
-  const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   viz::ReleaseCallback TakeVizReleaseCallback() override {
     return std::move(release_callback_);
   }
@@ -596,7 +596,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   }
 
   void PresentSwapChain();
-  const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
+  const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
 
  private:
   void TearDown() override;

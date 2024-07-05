@@ -291,7 +291,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return gpu::Mailbox();
 
     WillDrawInternal(false);
-    return resource_->GetOrCreateGpuMailbox(sync_mode);
+    return resource_->GetMailbox(sync_mode);
   }
 
   GLenum GetBackingTextureTarget() const override {
@@ -470,9 +470,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
           TearDownSkSurface();
 
         if (mode_ == SkSurface::kRetain_ContentChangeMode) {
-          auto old_mailbox = old_resource_shared_image->GetOrCreateGpuMailbox(
-              kOrderingBarrier);
-          auto mailbox = resource()->GetOrCreateGpuMailbox(kOrderingBarrier);
+          auto old_mailbox =
+              old_resource_shared_image->GetMailbox(kOrderingBarrier);
+          auto mailbox = resource()->GetMailbox(kOrderingBarrier);
 
           raster_interface->CopySharedImage(
               old_mailbox, mailbox, GetBackingTextureTarget(), 0, 0, 0, 0,
@@ -531,7 +531,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
     RasterRecordOOP(std::move(last_recording), needs_clear,
-                    resource()->GetOrCreateGpuMailbox(kUnverifiedSyncToken));
+                    resource()->GetMailbox(kUnverifiedSyncToken));
   }
 
   bool ShouldReplaceTargetBuffer(

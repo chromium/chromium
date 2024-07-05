@@ -112,7 +112,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   DCHECK(canvas_resource->IsAccelerated());
 
   const gpu::Mailbox& mailbox =
-      canvas_resource->GetOrCreateGpuMailbox(kUnverifiedSyncToken);
+      canvas_resource->GetMailbox(kUnverifiedSyncToken);
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
   gfx::Size size = canvas_resource->Size();
 

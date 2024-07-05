@@ -217,7 +217,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResource(
   DCHECK(SharedGpuContext::IsGpuCompositingEnabled());
   if (!ContextProviderWrapper())
     return false;
-  const gpu::Mailbox& mailbox = GetOrCreateGpuMailbox(sync_mode);
+  const gpu::Mailbox& mailbox = GetMailbox(sync_mode);
   if (mailbox.IsZero())
     return false;
 
@@ -362,7 +362,7 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
   shared_mapping_ = {};
 }
 
-const gpu::Mailbox& CanvasResourceSharedBitmap::GetOrCreateGpuMailbox(
+const gpu::Mailbox& CanvasResourceSharedBitmap::GetMailbox(
     MailboxSyncMode sync_mode) {
   // By contract this method is valid to call only if
   // SupportsAcceleratedCompositing() is true.
@@ -742,7 +742,7 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
-const gpu::Mailbox& CanvasResourceRasterSharedImage::GetOrCreateGpuMailbox(
+const gpu::Mailbox& CanvasResourceRasterSharedImage::GetMailbox(
     MailboxSyncMode sync_mode) {
   if (!is_cross_thread()) {
     owning_thread_data().mailbox_sync_mode = sync_mode;
@@ -892,9 +892,9 @@ void ExternalCanvasResource::TearDown() {
   Abandon();
 }
 
-const gpu::Mailbox& ExternalCanvasResource::GetOrCreateGpuMailbox(
+const gpu::Mailbox& ExternalCanvasResource::GetMailbox(
     MailboxSyncMode sync_mode) {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::GetOrCreateGpuMailbox");
+  TRACE_EVENT0("blink", "ExternalCanvasResource::GetMailbox");
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
   return transferable_resource_.mailbox();
 }
@@ -1049,7 +1049,7 @@ void CanvasResourceSwapChain::TearDown() {
                           std::move(back_buffer_shared_image_));
 }
 
-const gpu::Mailbox& CanvasResourceSwapChain::GetOrCreateGpuMailbox(
+const gpu::Mailbox& CanvasResourceSwapChain::GetMailbox(
     MailboxSyncMode sync_mode) {
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
   return (front_buffer_shared_image_) ? front_buffer_shared_image_->mailbox()
