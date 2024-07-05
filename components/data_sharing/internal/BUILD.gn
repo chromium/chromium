@@ -28,6 +28,8 @@ static_library("internal") {
     "empty_data_sharing_service.h",
     "group_data_proto_utils.cc",
     "group_data_proto_utils.h",
+    "group_data_store.cc",
+    "group_data_store.h",
   ]
 
   deps = [
@@ -78,6 +80,7 @@ source_set("unit_tests") {
     "fake_data_sharing_sdk_delegate.cc",
     "fake_data_sharing_sdk_delegate.h",
     "group_data_proto_utils_unittest.cc",
+    "group_data_store_unittest.cc",
   ]
 
   if (is_android) {
