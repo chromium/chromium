@@ -147,6 +147,17 @@ class KeyboardAccessoryViewBinder {
                                         mRootViewForIPH,
                                         item.getSuggestion().getItemTag());
                     }
+                } else if (item.getFeatureForIPH()
+                        .equals(
+                                FeatureConstants
+                                        .KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION)) {
+                    isIPHShown =
+                            showHelpBubble(
+                                    mKeyboardAccessory.getFeatureEngagementTracker(),
+                                    item.getFeatureForIPH(),
+                                    chipView,
+                                    mRootViewForIPH,
+                                    item.getSuggestion().getIPHDescriptionText());
                 } else {
                     isIPHShown =
                             showHelpBubble(

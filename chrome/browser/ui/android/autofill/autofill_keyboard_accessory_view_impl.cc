@@ -119,6 +119,7 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             base::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
             suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
+            suggestion.iph_description_text,
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),

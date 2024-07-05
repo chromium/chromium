@@ -254,6 +254,8 @@ struct Suggestion {
   // On Android, the icon can be at the start of the suggestion before the label
   // or at the end of the label.
   bool is_icon_at_start = false;
+  // TODO(crbug.com/346469807): Remove once strings are passed directly.
+  std::u16string iph_description_text;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // This is the icon which is shown on the side of a suggestion.

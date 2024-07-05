@@ -267,6 +267,11 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
     create_plus_address_suggestion.feature_for_iph =
         &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+#if BUILDFLAG(IS_ANDROID)
+    create_plus_address_suggestion.iph_description_text =
+        l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID);
+#endif  // BUILDFLAG(IS_ANDROID)
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
     return;
   }

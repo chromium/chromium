@@ -50,6 +50,10 @@ class KeyboardAccessoryIPHUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:
                 // Noop as the event is triggered in native AutofillKeyboardAccessoryControllerImpl.
                 return;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION:
+                tracker.notifyEvent(
+                        EventConstants.KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION);
+                return;
         }
         assert false : "No filling event emitted for feature: " + feature;
     }

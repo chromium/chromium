@@ -16280,6 +16280,27 @@
             ]
         }
     ],
+    "PlusAddressCreateSuggestion": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "PlusAddress_IPH_Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:plus_address_create_suggestion_iph_trigger;comparator:<10;window:90;storage:360",
+                        "event_used": "name:plus_address_create_suggestion_accepted;comparator:<2;window:90;storage:360",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_PlusAddressCreateSuggestion"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressFallbackFromContextMenu": [
         {
             "platforms": [

@@ -47,6 +47,7 @@ public class AutofillSuggestionTest {
                         /* isBoldLabel= */ true,
                         /* applyDeactivatedStyle= */ false,
                         "feature_for_iph",
+                        "iph_description",
                         mock(GURL.class),
                         drawableIcon);
         assertEquals(suggestion.toBuilder().build(), suggestion);
