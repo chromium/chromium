@@ -34,12 +34,7 @@ BASE_FEATURE(kMojoRecordUnreadMessageCount,
 // Enables predictive allocation for Mojo serialization.
 BASE_FEATURE(kMojoPredictiveAllocation,
              "MojoPredictiveAllocation",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace mojo
