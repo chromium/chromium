@@ -129,12 +129,18 @@ class LogicalToPhysical {
   Value Top() const {
     if (writing_direction_.IsHorizontal())
       return block_start_;
+    if (writing_direction_.GetWritingMode() == WritingMode::kSidewaysLr) {
+      return writing_direction_.IsLtr() ? inline_end_ : inline_start_;
+    }
     return writing_direction_.IsLtr() ? inline_start_ : inline_end_;
   }
 
   Value Bottom() const {
     if (writing_direction_.IsHorizontal())
       return block_end_;
+    if (writing_direction_.GetWritingMode() == WritingMode::kSidewaysLr) {
+      return writing_direction_.IsLtr() ? inline_start_ : inline_end_;
+    }
     return writing_direction_.IsLtr() ? inline_end_ : inline_start_;
   }
 

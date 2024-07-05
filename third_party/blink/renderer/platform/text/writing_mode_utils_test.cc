@@ -135,6 +135,46 @@ TEST(WritingModeUtilsTest, LogicalToPhysicalVrlRtl) {
   EXPECT_EQ(kInlineStart, converter.Bottom());
 }
 
+TEST(WritingModeUtilsTest, LogicalToPhysicalSlrLtr) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysLr, TextDirection::kLtr}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockStart, converter.Left());
+  EXPECT_EQ(kBlockEnd, converter.Right());
+  EXPECT_EQ(kInlineEnd, converter.Top());
+  EXPECT_EQ(kInlineStart, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSlrRtl) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysLr, TextDirection::kRtl}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockStart, converter.Left());
+  EXPECT_EQ(kBlockEnd, converter.Right());
+  EXPECT_EQ(kInlineStart, converter.Top());
+  EXPECT_EQ(kInlineEnd, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSrlLtr) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysRl, TextDirection::kLtr}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockEnd, converter.Left());
+  EXPECT_EQ(kBlockStart, converter.Right());
+  EXPECT_EQ(kInlineStart, converter.Top());
+  EXPECT_EQ(kInlineEnd, converter.Bottom());
+}
+
+TEST(WritingModeUtilsTest, LogicalToPhysicalSrlRtl) {
+  LogicalToPhysical<int> converter(
+      {WritingMode::kSidewaysRl, TextDirection::kRtl}, kInlineStart, kInlineEnd,
+      kBlockStart, kBlockEnd);
+  EXPECT_EQ(kBlockEnd, converter.Left());
+  EXPECT_EQ(kBlockStart, converter.Right());
+  EXPECT_EQ(kInlineEnd, converter.Top());
+  EXPECT_EQ(kInlineStart, converter.Bottom());
+}
+
 class PhysicalValues {
   STACK_ALLOCATED();
 
