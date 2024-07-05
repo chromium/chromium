@@ -2520,39 +2520,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromeTabbedActivity.this,
                 MessageDispatcherProvider.from(getWindowAndroid()),
                 mTabModelProfileSupplier.get());
-
-        if (mStartSurfaceSupplier.get() == null) {
-            return;
-        }
-        // The start surface is not the layout shown on startup, so wait
-        // until it is shown before notifying the start surface that is was.
-        var layoutManager = getLayoutManager();
-        @LayoutType int activeType = layoutManager.getActiveLayoutType();
-        @LayoutType int nextType = layoutManager.getNextLayoutType();
-
-        if (activeType == LayoutType.START_SURFACE || nextType != LayoutType.START_SURFACE) {
-            mStartSurfaceSupplier
-                    .get()
-                    .onOverviewShownAtLaunch(mOverviewShownOnStart, getOnCreateTimestampMs());
-        } else if (nextType == LayoutType.TAB_SWITCHER || nextType == LayoutType.START_SURFACE) {
-            layoutManager.addObserver(
-                    new LayoutStateProvider.LayoutStateObserver() {
-                        @Override
-                        public void onStartedShowing(int layoutType) {
-                            if (layoutType != LayoutType.TAB_SWITCHER
-                                    && layoutType != LayoutType.START_SURFACE) {
-                                return;
-                            }
-
-                            mStartSurfaceSupplier
-                                    .get()
-                                    .onOverviewShownAtLaunch(
-                                            mOverviewShownOnStart, getOnCreateTimestampMs());
-
-                            getLayoutManager().removeObserver(this);
-                        }
-                    });
-        }
     }
 
     @Override

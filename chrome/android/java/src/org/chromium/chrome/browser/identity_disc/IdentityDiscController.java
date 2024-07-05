@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -78,13 +77,11 @@ public class IdentityDiscController
     private boolean mNativeIsInitialized;
 
     private boolean mIsTabNtp;
-    private boolean mIsStartSurface;
 
     /**
-     *
      * @param context The Context for retrieving resources, launching preference activity, etc.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g. native
-     *         initialization completing.
+     *     initialization completing.
      */
     public IdentityDiscController(
             Context context,
@@ -139,19 +136,6 @@ public class IdentityDiscController
         if (!mIsTabNtp) {
             mButtonData.setCanShow(false);
             return mButtonData;
-        }
-
-        calculateButtonData();
-        return mButtonData;
-    }
-
-    public ButtonData getForStartSurface(@LayoutType int layoutType) {
-        if (layoutType != LayoutType.START_SURFACE) {
-            mIsStartSurface = false;
-            mButtonData.setCanShow(false);
-            return mButtonData;
-        } else {
-            mIsStartSurface = true;
         }
 
         calculateButtonData();
@@ -296,11 +280,11 @@ public class IdentityDiscController
 
     /**
      * Records IdentityDisc usage with feature engagement tracker. This signal can be used to decide
-     * whether to show in-product help.
-     * We also record the clicking actions on the profile icon in histograms.
+     * whether to show in-product help. We also record the clicking actions on the profile icon in
+     * histograms.
      */
     private void recordIdentityDiscUsed() {
-        BrowserUiUtils.recordIdentityDiscClicked(mIsStartSurface, mIsTabNtp);
+        BrowserUiUtils.recordIdentityDiscClicked(/* isStartSurface= */ false, mIsTabNtp);
 
         assert isProfileInitialized();
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());

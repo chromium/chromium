@@ -174,13 +174,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mIncognitoBackgroundColor = incognitoBackgroundColor;
 
         if (layoutStateProviderSupplier.get() != null
-                && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)
-                        || (layoutStateProviderSupplier
-                                .get()
-                                .isLayoutVisible(LayoutType.START_SURFACE)))) {
-            // It is possible that the overview mode is showing when the TabGroupUiMediator is
-            // created, sets the mIsShowingOverViewMode early to prevent the Tab strip is wrongly
-            // showing on the Start surface homepage. See https://crbug.com/1239272.
+                && (layoutStateProviderSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER))) {
             mIsShowingOverViewMode = true;
         }
 
@@ -244,9 +238,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                         if (currentTab == null
                                 || (mLayoutStateProvider != null
                                         && (mLayoutStateProvider.isLayoutVisible(
-                                                        LayoutType.TAB_SWITCHER)
-                                                || mLayoutStateProvider.isLayoutVisible(
-                                                        LayoutType.START_SURFACE)))) {
+                                                LayoutType.TAB_SWITCHER)))) {
                             return;
                         }
                         resetTabStripWithRelatedTabsForId(currentTab.getId());
@@ -266,8 +258,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 new LayoutStateProvider.LayoutStateObserver() {
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER
-                                || layoutType == LayoutType.START_SURFACE) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
                             mIsShowingOverViewMode = true;
                             resetTabStripWithRelatedTabsForId(Tab.INVALID_TAB_ID);
                         }
@@ -275,8 +266,7 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                     @Override
                     public void onFinishedHiding(@LayoutType int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER
-                                || layoutType == LayoutType.START_SURFACE) {
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
                             mIsShowingOverViewMode = false;
                             Tab tab = mTabModelSelector.getCurrentTab();
                             if (tab == null) return;

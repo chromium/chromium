@@ -99,8 +99,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     public void onStartedHiding(@LayoutType int layout) {
                         if (mTabModelSelector == null) return;
 
-                        if (LayoutType.START_SURFACE == layout
-                                || LayoutType.TAB_SWITCHER == layout) {
+                        if (LayoutType.TAB_SWITCHER == layout) {
                             set(mTabModelSelector.getCurrentTab());
                         }
                     }

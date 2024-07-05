@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -110,7 +108,6 @@ public class StatusBarColorController
     private boolean mShouldUpdateStatusBarColorForNtp;
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
-    private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
 
     // Tab strip transition states.
     private boolean mTabStripHiddenOnTablet;
@@ -122,21 +119,18 @@ public class StatusBarColorController
             new LayoutStateObserver() {
                 @Override
                 public void onStartedShowing(@LayoutType int layoutType) {
-                    if (layoutType != LayoutType.TAB_SWITCHER
-                            && layoutType != LayoutType.START_SURFACE) {
+                    if (layoutType != LayoutType.TAB_SWITCHER) {
                         return;
                     }
                     mIsInOverviewMode = true;
-                    if (shouldUpdateStatusBarColorForHomeSurface()
-                            || !OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+                    if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
                         updateStatusBarColor();
                     }
                 }
 
                 @Override
                 public void onFinishedHiding(@LayoutType int layoutType) {
-                    if (layoutType != LayoutType.TAB_SWITCHER
-                            && layoutType != LayoutType.START_SURFACE) {
+                    if (layoutType != LayoutType.TAB_SWITCHER) {
                         return;
                     }
                     mIsInOverviewMode = false;
@@ -155,7 +149,6 @@ public class StatusBarColorController
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param topUiThemeColorProvider The {@link ThemeColorProvider} for top UI.
-     * @param startSurfaceSupplier The supplier for {@link StartSurface}.
      */
     public StatusBarColorController(
             Window window,
@@ -165,12 +158,10 @@ public class StatusBarColorController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ActivityTabProvider tabProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            TopUiThemeColorProvider topUiThemeColorProvider) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
-        mStartSurfaceSupplier = startSurfaceSupplier;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mAllowToolbarColorOnTablets = false;
 
@@ -274,30 +265,12 @@ public class StatusBarColorController
                                 assert layoutManager != null;
                                 mLayoutStateProvider = layoutManager;
                                 mLayoutStateProvider.addObserver(mLayoutStateObserver);
-                                // It is possible that the Start surface is showing when the
-                                // LayoutStateProvider becomes available. We need to check the
-                                // current active layout and update the status bar color if that
-                                // happens.
-                                if (mLayoutStateProvider.getActiveLayoutType()
-                                                == LayoutType.START_SURFACE
-                                        && !mIsInOverviewMode) {
-                                    mIsInOverviewMode = true;
-                                    updateStatusBarColor();
-                                }
                             }));
         }
 
         activityLifecycleDispatcher.register(this);
         mTopUiThemeColor = topUiThemeColorProvider;
         mToolbarColorChanged = false;
-    }
-
-    private boolean shouldUpdateStatusBarColorForHomeSurface() {
-        return mIsSurfacePolishEnabled
-                && !mIsIncognitoBranded
-                && mStartSurfaceSupplier != null
-                && mStartSurfaceSupplier.hasValue()
-                && mStartSurfaceSupplier.get().isHomepageShown();
     }
 
     // DestroyObserver implementation.
@@ -313,9 +286,6 @@ public class StatusBarColorController
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
-        }
-        if (mStartSurfaceSupplier != null) {
-            mStartSurfaceSupplier = null;
         }
     }
 
@@ -485,10 +455,6 @@ public class StatusBarColorController
 
         // Return status bar color in overview mode.
         if (mIsInOverviewMode) {
-            if (shouldUpdateStatusBarColorForHomeSurface()) {
-                return mPolishedHomeSurfaceBgColor;
-            }
-
             // Toolbar will notify status bar color controller about the toolbar color during
             // overview animation.
             if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {

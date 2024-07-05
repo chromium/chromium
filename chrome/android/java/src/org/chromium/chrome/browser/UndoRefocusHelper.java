@@ -218,8 +218,7 @@ public class UndoRefocusHelper implements DestroyObserver {
                 new LayoutStateProvider.LayoutStateObserver() {
                     @Override
                     public void onFinishedShowing(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
+                        if (layoutType != LayoutType.TAB_SWITCHER) {
                             return;
                         }
                         mTabSwitcherActive = true;
@@ -227,8 +226,7 @@ public class UndoRefocusHelper implements DestroyObserver {
 
                     @Override
                     public void onFinishedHiding(int layoutType) {
-                        if (layoutType != LayoutType.TAB_SWITCHER
-                                && layoutType != LayoutType.START_SURFACE) {
+                        if (layoutType != LayoutType.TAB_SWITCHER) {
                             return;
                         }
                         mTabSwitcherActive = false;

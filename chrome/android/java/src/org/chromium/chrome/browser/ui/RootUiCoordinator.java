@@ -537,8 +537,7 @@ public class RootUiCoordinator
                         mLayoutManagerSupplier,
                         mActivityLifecycleDispatcher,
                         mActivityTabProvider,
-                        mTopUiThemeColorProvider,
-                        mStartSurfaceSupplier);
+                        mTopUiThemeColorProvider);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
         mPageZoomCoordinator =
