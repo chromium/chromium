@@ -395,10 +395,6 @@ std::string SanitizeFrontendQueryParam(const std::string& key,
     return value;
   }
 
-  if (key == "freestyler_dogfood" && value == "true") {
-    return value;
-  }
-
   return std::string();
 }
 

@@ -1266,10 +1266,6 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
         url += "&veLogging=true";
       }
-      if (base::FeatureList::IsEnabled(
-              ::features::kDevToolsFreestylerDogfood)) {
-        url += "&freestyler_dogfood=true";
-      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;
