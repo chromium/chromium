@@ -73,9 +73,7 @@ bool NameMatches(const ComputedStyle& style,
 
 bool TypeMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
-  DCHECK(
-      !container_selector.HasUnknownFeature() ||
-      !RuntimeEnabledFeatures::CSSUnknownContainerQueriesNoSelectionEnabled());
+  DCHECK(!container_selector.HasUnknownFeature());
   unsigned type = container_selector.Type(style.GetWritingMode());
   return !type || ((style.ContainerType() & type) == type);
 }
@@ -152,8 +150,7 @@ bool ContainerQueryEvaluator::EvalAndAdd(
     ContainerSelectorCache& container_selector_cache,
     MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
-  if (selector.HasUnknownFeature() &&
-      RuntimeEnabledFeatures::CSSUnknownContainerQueriesNoSelectionEnabled()) {
+  if (selector.HasUnknownFeature()) {
     return false;
   }
   bool selects_size = selector.SelectsSizeContainers();

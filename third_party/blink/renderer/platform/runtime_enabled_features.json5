@@ -1141,14 +1141,6 @@
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
     },
-    {
-      // Container query selectors containing uknown or unsupported queries
-      // never selects a container with this feature enabled.
-      // For instance, "@container (width > 0px) or (foo: bar)" will never
-      // select or match any containers.
-      name: "CSSUnknownContainerQueriesNoSelection",
-      status: "stable",
-    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",
