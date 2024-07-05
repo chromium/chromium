@@ -42,6 +42,14 @@ enum class AccountManagementStatus {
   kNonManaged,
 };
 
+// Returns an AccountInfo with all fields filled in, such that
+// AccountInfo::IsValid() is true.
+AccountInfo FillAccountInfo(
+    const CoreAccountInfo& core_info,
+    AccountManagementStatus management_status,
+    signin::Tribool
+        can_show_history_sync_opt_ins_without_minor_mode_restrictions);
+
 // Used to create a dummy account and sign it in, by default as a primary
 // account.
 AccountInfo SignInWithAccount(

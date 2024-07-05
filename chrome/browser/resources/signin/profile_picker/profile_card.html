@@ -132,8 +132,8 @@
           'profileCardButtonLabel', profileState.localProfileName)]]">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
-      <div id="iconContainer" hidden="[[!profileState.isManaged]]">
-        <iron-icon icon="cr:domain"></iron-icon>
+      <div id="iconContainer" hidden="[[!profileState.avatarBadge.length]]">
+        <iron-icon icon="[[profileState.avatarBadge]]"></iron-icon>
       </div>
     </div>
     <div id="gaiaName" class="profile-card-info secondary-text"

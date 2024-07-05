@@ -81,8 +81,8 @@ void VerifyProfileEntry(const base::Value::Dict& dict,
             base::UTF16ToUTF8(entry->GetGAIANameToDisplay()));
   EXPECT_EQ(*dict.FindString("userName"),
             base::UTF16ToUTF8(entry->GetUserName()));
-  EXPECT_EQ(*dict.FindBool("isManaged"),
-            AccountInfo::IsManaged(entry->GetHostedDomain()));
+  EXPECT_EQ(dict.FindString("avatarBadge")->empty(),
+            !AccountInfo::IsManaged(entry->GetHostedDomain()));
 }
 
 }  // namespace

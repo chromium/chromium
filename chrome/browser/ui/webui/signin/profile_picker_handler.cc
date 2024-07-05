@@ -58,6 +58,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -199,8 +200,19 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesEntry* entry,
   // chrome.
   profile_entry.Set("gaiaName", entry->GetGAIAName());
   profile_entry.Set("userName", entry->GetUserName());
-  profile_entry.Set("isManaged",
-                    AccountInfo::IsManaged(entry->GetHostedDomain()));
+
+  if (AccountInfo::IsManaged(entry->GetHostedDomain())) {
+    profile_entry.Set("avatarBadge", "cr:domain");
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else if (base::FeatureList::IsEnabled(
+                 supervised_user::kShowKiteForSupervisedUsers) &&
+             entry->IsSupervised()) {
+    profile_entry.Set("avatarBadge", "cr20:kite");
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else {
+    profile_entry.Set("avatarBadge", "");
+  }
+
   gfx::Image icon =
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
                                    avatar_icon_size, avatar_icon_size);

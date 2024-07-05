@@ -23,7 +23,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace {
 AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
     AccountManagementStatus management_status,
@@ -56,7 +55,6 @@ AccountInfo FillAccountInfo(
 
   return account_info;
 }
-}  // namespace
 
 AccountInfo SignInWithAccount(
     signin::IdentityTestEnvironment& identity_test_env,

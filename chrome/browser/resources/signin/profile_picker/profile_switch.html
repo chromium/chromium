@@ -89,8 +89,8 @@
   <div id="profileCardContainer">
     <div id="avatarContainer">
       <img class="profile-avatar" alt="" src="[[profileState_.avatarIcon]]">
-      <div id="iconContainer" hidden="[[!profileState_.isManaged]]">
-        <iron-icon icon="cr:domain"></iron-icon>
+      <div id="iconContainer" hidden="[[!profileState_.avatarBadge.length]]">
+        <iron-icon icon="[[profileState_.avatarBadge]]"></iron-icon>
       </div>
     </div>
     <div id="profileName" class="profile-card-info prominent-text">

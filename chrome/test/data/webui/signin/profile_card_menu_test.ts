@@ -41,8 +41,8 @@ suite('ProfileCardMenuTest', function() {
       needsSignin: false,
       gaiaName: `User`,
       userName: `User@gmail.com`,
-      isManaged: false,
       avatarIcon: `AvatarUrl`,
+      avatarBadge: ``,
       // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>
@@ -214,8 +214,8 @@ suite('ProfileCardMenuLacrosTest', function() {
       needsSignin: false,
       gaiaName: `User`,
       userName: `User@gmail.com`,
-      isManaged: true,
       avatarIcon: `AvatarUrl`,
+      avatarBadge: `cr:domain`,
       isPrimaryLacrosProfile: true,
     };
     primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
@@ -230,8 +230,8 @@ suite('ProfileCardMenuLacrosTest', function() {
       needsSignin: false,
       gaiaName: `User2`,
       userName: `User2@gmail.com`,
-      isManaged: false,
       avatarIcon: `AvatarUrl`,
+      avatarBadge: ``,
       isPrimaryLacrosProfile: false,
     };
     secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;

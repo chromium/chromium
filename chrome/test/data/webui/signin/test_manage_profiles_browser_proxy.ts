@@ -43,8 +43,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       isSyncing: true,
       gaiaName: 'Alice',
       userName: 'Alice@gmail.com',
-      isManaged: false,
       avatarIcon: 'url',
+      avatarBadge: '',
       // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>

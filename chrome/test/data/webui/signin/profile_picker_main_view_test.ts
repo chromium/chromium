@@ -92,8 +92,8 @@ suite('ProfilePickerMainViewTest', function() {
                needsSignin: false,
                gaiaName: sync ? `User${i}` : '',
                userName: sync ? `User${i}@gmail.com` : '',
-               isManaged: i % 4 === 0,
                avatarIcon: `AvatarUrl-${i}`,
+               avatarBadge: i % 4 === 0 ? `cr:domain` : ``,
                // <if expr="chromeos_lacros">
                isPrimaryLacrosProfile: false,
                // </if>
@@ -137,7 +137,7 @@ suite('ProfilePickerMainViewTest', function() {
       assertEquals(
           profile.shadowRoot!.querySelector<HTMLElement>(
                                  '#iconContainer')!.hidden,
-          !expectedProfile.isManaged);
+          !expectedProfile.avatarBadge);
       assertEquals(
           (profile.shadowRoot!
                .querySelector<HTMLImageElement>('.profile-avatar')!.src)

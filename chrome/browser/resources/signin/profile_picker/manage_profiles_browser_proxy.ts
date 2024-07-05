@@ -15,8 +15,9 @@ export interface ProfileState {
   needsSignin: boolean;
   gaiaName: string;
   userName: string;
-  isManaged: boolean;
   avatarIcon: string;
+  // Empty if no badge should be set.
+  avatarBadge: string;
   // <if expr="chromeos_lacros">
   isPrimaryLacrosProfile: boolean;
   // </if>

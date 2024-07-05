@@ -60,6 +60,12 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 // kCustomWebSignInInterceptForSupervisedUsers is enabled.
 BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi);
 
+// Displays a Family Link kite badge on the supervised user avatar in various
+// surfaces.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // This hides the following guest mode entry points for supervised users:
 //

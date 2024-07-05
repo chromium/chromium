@@ -51,7 +51,7 @@ suite('ProfileSwitchTest', function() {
   test('getSwitchProfile_managed', async function() {
     const profileState: ProfileState =
         Object.assign({}, browserProxy.profileSample);
-    profileState.isManaged = true;
+    profileState.avatarBadge = 'cr:domain';
 
     getSwitchProfilePromiseResolver.resolve(profileState);
     await browserProxy.whenCalled('getSwitchProfile');
