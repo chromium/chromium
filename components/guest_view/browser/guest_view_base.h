@@ -481,15 +481,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // element may not match the size of the guest.
   gfx::Size guest_size_;
 
-  // When the guest is created, a guest WebContents is created and we take
-  // ownership of it here until it's ready to be attached. On attachment,
-  // ownership of the guest WebContents is taken by the embedding WebContents.
-  std::unique_ptr<content::WebContents> owned_guest_contents_;
-
   // Before attachment a GuestViewBase is owned with a unique_ptr. After
   // attachment, a GuestViewBase is self-owned and scoped to the lifetime of the
   // guest WebContents.
   bool self_owned_ = false;
+
+  // When the guest is created, a guest WebContents is created and we take
+  // ownership of it here until it's ready to be attached. On attachment,
+  // ownership of the guest WebContents is taken by the embedding WebContents.
+  std::unique_ptr<content::WebContents> owned_guest_contents_;
 
   // The params used when creating the guest contents. These are saved here in
   // case we need to recreate the guest contents. Not all guest types need to
