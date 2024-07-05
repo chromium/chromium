@@ -17,11 +17,17 @@ build_webui("build") {
     "app.ts",
     "pages/telemetry.ts",
     "pages/thermal_chart.ts",
+    "line_chart/line_chart.ts",
+    "line_chart/menu.ts",
   ]
 
   non_web_component_files = [
     "constants.ts",
     "externs.ts",
+    "line_chart/configs.ts",
+    "line_chart/utils/canvas_drawer.ts",
+    "line_chart/utils/data_series.ts",
+    "line_chart/utils/unit_label.ts",
   ]
 
   ts_deps = [
