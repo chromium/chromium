@@ -112,20 +112,14 @@ PlusAddressService::PlusAddressService(
           plus_address_http_client_.get())),
       plus_address_match_helper_(this, affiliation_service),
       excluded_sites_(GetAndParseExcludedSites()) {
-  if (IsSyncingPlusAddresses()) {
-    if (webdata_service_) {
-      webdata_service_observation_.Observe(webdata_service_.get());
-      if (IsEnabled()) {
-        webdata_service_->GetPlusProfiles(this);
-      }
+  if (IsSyncingPlusAddresses() && webdata_service_) {
+    webdata_service_observation_.Observe(webdata_service_.get());
+    if (IsEnabled()) {
+      webdata_service_->GetPlusProfiles(this);
     }
-  } else {
-    CreateAndStartTimer();
-    // Observing the identity manager is only necessary to clear data on
-    // sign-out and start polling plus addresses for newly signed in accounts.
-    // When plus addresses arrive via sync, this becomes unnecessary.
-    identity_manager_observation_.Observe(identity_manager);
   }
+  CreateAndStartTimer();
+  identity_manager_observation_.Observe(identity_manager);
 }
 
 PlusAddressService::~PlusAddressService() {
@@ -408,6 +402,9 @@ void PlusAddressService::CreateAndStartTimer() {
       polling_timer_.IsRunning()) {
     return;
   }
+  if (IsSyncingPlusAddresses()) {
+    return;
+  }
   SyncPlusAddressMapping();
   polling_timer_.Start(
       FROM_HERE, features::kEnterprisePlusAddressTimerDelay.Get(),
@@ -556,8 +553,10 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_address_cache_.Clear();
-  polling_timer_.Stop();
+  if (!IsSyncingPlusAddresses()) {
+    plus_address_cache_.Clear();
+    polling_timer_.Stop();
+  }
   plus_address_http_client_->Reset();
 }
 

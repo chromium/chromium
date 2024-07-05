@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -449,6 +450,39 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_EQ(confirm.Get()->plus_address, profile.plus_address);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests that if an account error happens while a server request is ongoing,
+// the request ends in an error and the eventual server response is ignored.
+TEST_F(PlusAddressServiceRequestsTest,
+       PrimaryRefreshTokenError_ResetsHttpRequests) {
+  base::test::ScopedFeatureList sync_feature_{
+      GetSyncPlusAddressFeatureForTests()};
+  PlusProfile profile = test::CreatePlusProfile();
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  service().ReservePlusAddress(OriginFromFacet(profile.facet),
+                               future.GetCallback());
+
+  // Check that the future callback is still blocked, and unblock it.
+  ASSERT_FALSE(future.IsReady());
+
+  // Simulate an auth error happening while the server response is still
+  // pending.
+  const CoreAccountInfo primary_account =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // The auth change calls the callback with an error.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
+                                PlusAddressRequestErrorType::kUserSignedOut)));
+
+  // Nothing happens once the server responds.
+  url_loader_factory().SimulateResponseForPendingRequest(
+      kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  EXPECT_THAT(service().GetPlusProfiles(), IsEmpty());
+}
 
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryRefreshTokenError_TogglesPlusAddressCreationOff) {
