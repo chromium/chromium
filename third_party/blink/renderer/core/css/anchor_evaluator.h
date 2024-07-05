@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -115,6 +116,8 @@ class CORE_EXPORT AnchorScope {
       *target_ = mode;
     }
   }
+  AnchorScope(CSSPropertyID property, AnchorEvaluator* anchor_evaluator)
+      : AnchorScope(PropertyMode(property), anchor_evaluator) {}
   ~AnchorScope() {
     if (target_) {
       *target_ = original_;
@@ -122,6 +125,28 @@ class CORE_EXPORT AnchorScope {
   }
 
  private:
+  static Mode PropertyMode(CSSPropertyID property) {
+    switch (property) {
+      case CSSPropertyID::kTop:
+        return Mode::kTop;
+      case CSSPropertyID::kRight:
+        return Mode::kRight;
+      case CSSPropertyID::kBottom:
+        return Mode::kBottom;
+      case CSSPropertyID::kLeft:
+        return Mode::kLeft;
+      case CSSPropertyID::kWidth:
+      case CSSPropertyID::kHeight:
+      case CSSPropertyID::kMinWidth:
+      case CSSPropertyID::kMinHeight:
+      case CSSPropertyID::kMaxWidth:
+      case CSSPropertyID::kMaxHeight:
+        return Mode::kSize;
+      default:
+        return Mode::kNone;
+    }
+  }
+
   Mode* target_;
   Mode original_;
 };

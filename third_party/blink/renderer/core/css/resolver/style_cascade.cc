@@ -1317,35 +1317,13 @@ const CSSValue* StyleCascade::ResolveMathFunction(
     return &math_value;
   }
 
-  auto anchor_mode = [](const CSSProperty& property) {
-    switch (property.PropertyID()) {
-      case CSSPropertyID::kTop:
-        return AnchorEvaluator::Mode::kTop;
-      case CSSPropertyID::kRight:
-        return AnchorEvaluator::Mode::kRight;
-      case CSSPropertyID::kBottom:
-        return AnchorEvaluator::Mode::kBottom;
-      case CSSPropertyID::kLeft:
-        return AnchorEvaluator::Mode::kLeft;
-      case CSSPropertyID::kWidth:
-      case CSSPropertyID::kHeight:
-      case CSSPropertyID::kMinWidth:
-      case CSSPropertyID::kMinHeight:
-      case CSSPropertyID::kMaxWidth:
-      case CSSPropertyID::kMaxHeight:
-        return AnchorEvaluator::Mode::kSize;
-      default:
-        return AnchorEvaluator::Mode::kNone;
-    }
-  };
-
   const CSSLengthResolver& length_resolver = state_.CssToLengthConversionData();
 
   // Calling HasInvalidAnchorFunctions evaluates the anchor*() functions
   // inside the CSSMathFunctionValue. Evaluating anchor*() requires that we
   // have the correct AnchorEvaluator::Mode, so we need to set that just like
   // we do for during e.g. Left::ApplyValue, Right::ApplyValue, etc.
-  AnchorScope anchor_scope(anchor_mode(property),
+  AnchorScope anchor_scope(property.PropertyID(),
                            length_resolver.GetAnchorEvaluator());
   // HasInvalidAnchorFunctions actually evaluates any anchor*() queries
   // within the CSSMathFunctionValue, and this requires the TreeScope to

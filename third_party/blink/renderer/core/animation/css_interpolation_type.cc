@@ -11,6 +11,7 @@
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
@@ -29,6 +30,42 @@
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
 namespace blink {
+
+// Generic checker for any value that needs resolution through
+// CSSInterpolationEnvironment::Resolve (StyleCascade::Resolve).
+//
+// More specialized checkers (e.g. RevertChecker) may exist even though
+// they could also be handled by this class (perhaps less efficiently).
+//
+// TODO(andruud): Unify this with some other checkers.
+class ResolvedValueChecker : public CSSInterpolationType::ConversionChecker {
+ public:
+  ResolvedValueChecker(const PropertyHandle& property,
+                       const CSSValue* unresolved_value,
+                       const CSSValue* resolved_value)
+      : property_(property),
+        unresolved_value_(unresolved_value),
+        resolved_value_(resolved_value) {}
+
+  void Trace(Visitor* visitor) const final {
+    CSSInterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(unresolved_value_);
+    visitor->Trace(resolved_value_);
+  }
+
+ private:
+  bool IsValid(const InterpolationEnvironment& environment,
+               const InterpolationValue&) const final {
+    const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
+    const CSSValue* resolved_value =
+        css_environment.Resolve(property_, unresolved_value_);
+    return base::ValuesEquivalent(resolved_value_.Get(), resolved_value);
+  }
+
+  PropertyHandle property_;
+  Member<const CSSValue> unresolved_value_;
+  Member<const CSSValue> resolved_value_;
+};
 
 class ResolvedVariableChecker : public CSSInterpolationType::ConversionChecker {
  public:
@@ -209,6 +246,17 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
         CssProperty().PropertyID(), value, resolved_value));
     value = resolved_value;
   }
+  if (value->IsMathFunctionValue()) {
+    // Math functions can contain anchor() and anchor-size() functions,
+    // and those functions can make the value invalid at computed-value time
+    // if they reference an invalid anchor and also don't have a fallback.
+    const CSSValue* resolved_value =
+        css_environment.Resolve(GetProperty(), value);
+    DCHECK(resolved_value);
+    conversion_checkers.push_back(MakeGarbageCollected<ResolvedValueChecker>(
+        GetProperty(), /* unresolved_value */ value, resolved_value));
+    value = resolved_value;
+  }
 
   if (value->IsRevertValue()) {
     value = css_environment.Resolve(GetProperty(), value);
@@ -343,6 +391,14 @@ void CSSInterpolationType::Apply(
     ApplyCustomPropertyValue(interpolable_value, non_interpolable_value, state);
     return;
   }
+
+  // The anchor() and anchor-size() functions evaluate differently depending
+  // on which property they are used in. The regular CSSProperty::ApplyValue
+  // code paths take care of this, but we are bypassing those code paths,
+  // so we have to do it ourselves.
+  AnchorScope anchor_scope(
+      CssProperty().PropertyID(),
+      state.CssToLengthConversionData().GetAnchorEvaluator());
   ApplyStandardPropertyValue(interpolable_value, non_interpolable_value, state);
 }
 
