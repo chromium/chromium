@@ -1351,7 +1351,10 @@ source_set("extensions") {
     ]
 
     if (is_cfm) {
-      deps += [ "//chromeos/ash/components/chromebox_for_meetings" ]
+      deps += [
+        "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
+        "//chromeos/ash/components/chromebox_for_meetings",
+      ]
     }
   }
 

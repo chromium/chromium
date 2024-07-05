@@ -6,6 +6,7 @@ import("//base/allocator/allocator.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/buildflags_paint_preview.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
@@ -5724,6 +5725,17 @@ static_library("browser") {
 
     if (enable_server_based_recognition) {
       deps += [ "//chrome/services/speech/internal:lib" ]
+    }
+
+    if (is_cfm) {
+      deps += [
+        "//chrome/browser/ash/chromebox_for_meetings/browser",
+        "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
+      ]
+      allow_circular_includes_from += [
+        "//chrome/browser/ash/chromebox_for_meetings/browser",
+        "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
+      ]
     }
   } else {  # Non - Ash.
     sources += [
