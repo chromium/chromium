@@ -183,8 +183,8 @@ void InlineTextAutoSpace::Apply(InlineItemsData& data,
       last_type = kOther;
       continue;
     }
-    if (UNLIKELY(!style->IsHorizontalWritingMode()) &&
-        UNLIKELY(style->GetTextOrientation() == ETextOrientation::kUpright)) {
+    if (UNLIKELY(style->GetFontDescription().Orientation() ==
+                 FontOrientation::kVerticalUpright)) {
       applier.SetSpacing(offsets, &item, *style);
       // Upright non-ideographic characters are `kOther`.
       // https://drafts.csswg.org/css-text-4/#non-ideographic-letters
