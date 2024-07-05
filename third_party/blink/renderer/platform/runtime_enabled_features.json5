@@ -4239,6 +4239,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionTreeScopedNames",
+      status: "stable",
+    },
+    {
       // https://chromestatus.com/feature/5089552511533056
       name: "ViewTransitionTypes",
       status: "stable",
