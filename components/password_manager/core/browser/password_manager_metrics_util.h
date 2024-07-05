@@ -702,7 +702,8 @@ enum class PasswordManagerCredentialRemovalReason {
   // TODO(crbug.com/342519805): Add reasons.
   kSettings = 0,           // Stored as (1<<0) in the bit vector.
   kClearBrowsingData = 1,  // Stored as (1<<1) in the bit vector.
-  kMaxValue = kClearBrowsingData,
+  kSync = 2,               // Stored as (1<<2) in the bit vector.
+  kMaxValue = kSync,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(

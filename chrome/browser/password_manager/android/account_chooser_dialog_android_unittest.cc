@@ -121,8 +121,10 @@ AccountChooserDialogAndroid* AccountChooserDialogAndroidTest::CreateDialog(
 AccountChooserDialogAndroid*
 AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
-  credentials.push_back(FillPasswordFormWithData(kFormData1));
-  credentials.push_back(FillPasswordFormWithData(kFormData2));
+  credentials.push_back(
+      FillPasswordFormWithData(kFormData1, /*is_account_store=*/false));
+  credentials.push_back(
+      FillPasswordFormWithData(kFormData2, /*is_account_store=*/false));
   return CreateDialog(std::move(credentials));
 }
 
@@ -140,7 +142,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   EXPECT_CALL(client_, GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
   std::unique_ptr<password_manager::PasswordForm> form =
-      FillPasswordFormWithData(kFormData2);
+      FillPasswordFormWithData(kFormData2, /*is_account_store=*/false);
 
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
@@ -161,7 +163,7 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   std::unique_ptr<password_manager::PasswordForm> form =
-      FillPasswordFormWithData(kFormData2);
+      FillPasswordFormWithData(kFormData2, /*is_account_store=*/false);
   EXPECT_CALL(credential_callback_, Run(Pointee(*form.get())));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
@@ -181,7 +183,7 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
   std::unique_ptr<password_manager::PasswordForm> form =
-      FillPasswordFormWithData(kFormData2);
+      FillPasswordFormWithData(kFormData2, /*is_account_store=*/false);
   EXPECT_CALL(credential_callback_, Run(nullptr));
 
   dialog->OnCredentialClicked(base::android::AttachCurrentThread(),

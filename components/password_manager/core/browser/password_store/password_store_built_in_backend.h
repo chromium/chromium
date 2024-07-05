@@ -12,7 +12,10 @@
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_change.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
@@ -52,6 +55,10 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier = nullptr);
 
   ~PasswordStoreBuiltInBackend() override;
+
+  void NotifyCredentialsChangedForTesting(
+      base::PassKey<class PasswordStoreBuiltInBackendPasswordLossMetricsTest>,
+      const PasswordStoreChangeList& changes);
 
  private:
   // Implements PasswordStoreBackend interface.
@@ -124,10 +131,15 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsResultOrError forms_or_error);
 
   void OnEncryptorReceived(
-      RemoteChangesReceived remote_form_changes_received,
+      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
+                                   bool)> remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb,
       base::OnceCallback<void(bool)> completion,
       std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+
+  void WritePasswordRemovalReasonPrefs(
+      IsAccountStore is_account_store,
+      metrics_util::PasswordManagerCredentialRemovalReason removal_reason);
 
   void OnInitComplete(base::OnceCallback<void(bool)> completion, bool result);
 
@@ -137,6 +149,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // TODO(b/40286735): Remove after this feature is launched.
   void SetClearingUndecryptablePasswordsIsEnabledPref(bool value);
 #endif
+
   // Ensures that all methods are called on the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 

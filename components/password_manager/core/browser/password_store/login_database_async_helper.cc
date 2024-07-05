@@ -51,7 +51,8 @@ LoginDatabaseAsyncHelper::~LoginDatabaseAsyncHelper() {
 }
 
 bool LoginDatabaseAsyncHelper::Initialize(
-    PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
+    base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
+        remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -408,8 +409,8 @@ void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(
     return;
   }
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(remote_forms_changes_received_callback_, changes));
+      FROM_HERE, base::BindOnce(remote_forms_changes_received_callback_,
+                                changes, IsAccountStore()));
 }
 
 void LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced(bool success) {

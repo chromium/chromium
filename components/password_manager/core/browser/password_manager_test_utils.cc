@@ -56,6 +56,7 @@ std::unique_ptr<PasswordForm> PasswordFormFromData(
 
 std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
+    bool is_account_store,
     bool use_federated_login) {
   auto form = PasswordFormFromData(form_data);
   if (form_data.username_value) {
@@ -74,7 +75,11 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
       form->type = PasswordForm::Type::kApi;
     }
   }
-  form->in_store = PasswordForm::Store::kProfileStore;
+  if (is_account_store) {
+    form->in_store = PasswordForm::Store::kAccountStore;
+  } else {
+    form->in_store = PasswordForm::Store::kProfileStore;
+  }
   form->password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 
@@ -35,7 +36,7 @@ struct InteractionsStats;
 
 // Class which interacts directly with LoginDatabase. It is also responsible to
 // sync passwords. Works only on background sequence.
-class LoginDatabaseAsyncHelper : private PasswordStoreSync {
+class LoginDatabaseAsyncHelper : public PasswordStoreSync {
  public:
   LoginDatabaseAsyncHelper(
       std::unique_ptr<LoginDatabase> login_db,
@@ -48,7 +49,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
 
   // Opens |login_db_| and creates sync bridges.
   bool Initialize(
-      PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
+      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
+                                   bool)> remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb,
       std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
@@ -152,7 +154,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   // Whenever 'password_sync_bridge_' receive remote changes this callback is
   // used to notify PasswordStore observers about them. Called on a main
   // sequence from the 'NotifyLoginsChanged'.
-  PasswordStoreBackend::RemoteChangesReceived
+  // The bool indicates that the received changes are for the account store.
+  base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -10,16 +10,19 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
+#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
@@ -71,6 +74,28 @@ std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
   return std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
 }
 
+// Records in a pref that passwords were deleted via sync. The pref is used to
+// report metrics.
+std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
+    base::RepeatingCallback<
+        void(password_manager::IsAccountStore,
+             metrics_util::PasswordManagerCredentialRemovalReason)>
+        write_prefs_callback,
+    std::optional<PasswordStoreChangeList> password_store_change_list,
+    bool is_account_store) {
+  bool hasCredentialRemoval = std::any_of(
+      password_store_change_list.value().begin(),
+      password_store_change_list.value().end(), [](PasswordStoreChange change) {
+        return change.type() == PasswordStoreChange::REMOVE;
+      });
+  if (hasCredentialRemoval) {
+    write_prefs_callback.Run(
+        password_manager::IsAccountStore(is_account_store),
+        metrics_util::PasswordManagerCredentialRemovalReason::kSync);
+  }
+  return password_store_change_list;
+}
+
 }  // namespace
 
 PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
@@ -93,6 +118,20 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
 
 PasswordStoreBuiltInBackend::~PasswordStoreBuiltInBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+// TODO: crbug.com/350656597 - Test tracking
+// PasswordManagerCredentialRemovalReason::kSync via an integration test
+void PasswordStoreBuiltInBackend::NotifyCredentialsChangedForTesting(
+    base::PassKey<class PasswordStoreBuiltInBackendPasswordLossMetricsTest>,
+    const PasswordStoreChangeList& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PasswordStoreSync::NotifyCredentialsChanged,
+          base::Unretained(static_cast<PasswordStoreSync*>(helper_.get())),
+          changes));
 }
 
 void PasswordStoreBuiltInBackend::Shutdown(
@@ -162,7 +201,13 @@ void PasswordStoreBuiltInBackend::InitBackend(
 
   auto init_database_callback = base::BindOnce(
       &PasswordStoreBuiltInBackend::OnEncryptorReceived,
-      weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
+      weak_ptr_factory_.GetWeakPtr(),
+      base::BindRepeating(
+          &MaybeRecordPasswordDeletionViaSync,
+          base::BindRepeating(
+              &PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs,
+              weak_ptr_factory_.GetWeakPtr()))
+          .Then(std::move(remote_form_changes_received)),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
   if (!os_crypt_async_) {
@@ -462,7 +507,8 @@ void PasswordStoreBuiltInBackend::OnInitComplete(
 }
 
 void PasswordStoreBuiltInBackend::OnEncryptorReceived(
-    RemoteChangesReceived remote_form_changes_received,
+    base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
+        remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
@@ -488,5 +534,13 @@ void PasswordStoreBuiltInBackend::
   pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, value);
 }
 #endif
+
+void PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs(
+    IsAccountStore is_account_store,
+    metrics_util::PasswordManagerCredentialRemovalReason removal_reason) {
+  AddPasswordRemovalReason(pref_service_,
+                           password_manager::IsAccountStore(is_account_store),
+                           removal_reason);
+}
 
 }  // namespace password_manager

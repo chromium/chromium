@@ -261,8 +261,8 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
-  std::unique_ptr<PasswordForm> old_form(
-      FillPasswordFormWithData(kTestCredentials[0]));
+  std::unique_ptr<PasswordForm> old_form(FillPasswordFormWithData(
+      kTestCredentials[0], /*is_account_store=*/false));
   old_form->password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time(), IsMuted(false),
@@ -273,8 +273,8 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   MockPasswordStoreObserver mock_observer;
   store->AddObserver(&mock_observer);
 
-  std::unique_ptr<PasswordForm> new_form(
-      FillPasswordFormWithData(kTestCredentials[1]));
+  std::unique_ptr<PasswordForm> new_form(FillPasswordFormWithData(
+      kTestCredentials[1], /*is_account_store=*/false));
   new_form->password_issues = old_form->password_issues;
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   PasswordForm old_primary_key;
@@ -310,9 +310,11 @@ TEST_F(PasswordStoreTest, AddLogins) {
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> all_credentials;
   all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestWebRealm1)));
+      CreateTestPasswordFormDataByOrigin(kTestWebRealm1),
+      /*is_account_store=*/false));
   all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1)));
+      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1),
+      /*is_account_store=*/false));
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
@@ -351,8 +353,8 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   PasswordFormData form_data_2 =
       CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1);
   std::vector<PasswordForm> all_credentials = {
-      *FillPasswordFormWithData(form_data_1),
-      *FillPasswordFormWithData(form_data_2)};
+      *FillPasswordFormWithData(form_data_1, /*is_account_store=*/false),
+      *FillPasswordFormWithData(form_data_2, /*is_account_store=*/false)};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
@@ -368,9 +370,9 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
   form_data_2.password_value = u"new_password2";
 
   std::unique_ptr<PasswordForm> updated_form_1 =
-      FillPasswordFormWithData(form_data_1);
+      FillPasswordFormWithData(form_data_1, /*is_account_store=*/false);
   std::unique_ptr<PasswordForm> updated_form_2 =
-      FillPasswordFormWithData(form_data_2);
+      FillPasswordFormWithData(form_data_2, /*is_account_store=*/false);
 
   std::vector<PasswordForm> updated_credentials = {*updated_form_1,
                                                    *updated_form_2};
@@ -419,7 +421,7 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredential));
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
@@ -496,7 +498,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   /* clang-format on */
 
   std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredential));
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   test_form->password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
@@ -505,7 +507,8 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   WaitForPasswordStore();
 
   kTestCredential.password_value = u"password_value_2";
-  PasswordForm test_form_2(*FillPasswordFormWithData(kTestCredential));
+  PasswordForm test_form_2(
+      *FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   store->UpdateLogin(test_form_2);
   WaitForPasswordStore();
 
@@ -537,7 +540,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   /* clang-format on */
 
   std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredential));
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   test_form->password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
@@ -547,7 +550,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
 
   kTestCredential.password_value = u"password_value_2";
   std::unique_ptr<PasswordForm> test_form_2(
-      FillPasswordFormWithData(kTestCredential));
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   store->AddLogin(*test_form_2);
   WaitForPasswordStore();
 
@@ -577,7 +580,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredentials));
+      FillPasswordFormWithData(kTestCredentials, /*is_account_store=*/false));
   store->AddLogin(*test_form);
   WaitForPasswordStore();
 
@@ -613,7 +616,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   std::unique_ptr<PasswordForm> test_form(
-      FillPasswordFormWithData(kTestCredentials));
+      FillPasswordFormWithData(kTestCredentials, /*is_account_store=*/false));
   test_form->password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false),
@@ -674,8 +677,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& i : kTestCredentials) {
-    all_credentials.push_back(
-        FillPasswordFormWithData(i.form_data, i.use_federated_login));
+    all_credentials.push_back(FillPasswordFormWithData(
+        i.form_data, /*is_account_store=*/false, i.use_federated_login));
     store->AddLogin(*all_credentials.back());
   }
 
@@ -778,7 +781,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& credential : kTestCredentials) {
-    all_credentials.push_back(FillPasswordFormWithData(credential));
+    all_credentials.push_back(
+        FillPasswordFormWithData(credential, /*is_account_store=*/false));
     store->AddLogin(*all_credentials.back());
   }
 
@@ -882,8 +886,8 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& i : kTestCredentials) {
-    all_credentials.push_back(
-        FillPasswordFormWithData(i.form_data, i.use_federated_login));
+    all_credentials.push_back(FillPasswordFormWithData(
+        i.form_data, /*is_account_store=*/false, i.use_federated_login));
     store->AddLogin(*all_credentials.back());
   }
 
@@ -950,7 +954,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
                                 kTestLastUsageTime,
                                 1};
   std::unique_ptr<PasswordForm> credential =
-      FillPasswordFormWithData(form_data);
+      FillPasswordFormWithData(form_data, /*is_account_store=*/false);
   store->AddLogin(*credential);
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
@@ -1001,7 +1005,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
                                 kTestLastUsageTime,
                                 1};
   std::unique_ptr<PasswordForm> credential =
-      FillPasswordFormWithData(form_data);
+      FillPasswordFormWithData(form_data, /*is_account_store=*/false);
   store->AddLogin(*credential);
 
   PasswordFormDigest observed_form = {PasswordForm::Scheme::kHtml,
@@ -1110,7 +1114,8 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const PasswordFormData& i : kTestCredentials) {
-    all_credentials.push_back(FillPasswordFormWithData(i, GetParam()));
+    all_credentials.push_back(
+        FillPasswordFormWithData(i, /*is_account_store=*/false, GetParam()));
     store->AddLogin(*all_credentials.back());
   }
 
@@ -1200,7 +1205,8 @@ class PasswordStoreGroupsTest : public PasswordStoreTest {
          u"password2"}};
     std::vector<std::unique_ptr<PasswordForm>> credentials;
     for (const auto& i : kTestCredentials) {
-      credentials.push_back(FillPasswordFormWithData(i, false));
+      credentials.push_back(FillPasswordFormWithData(
+          i, /*is_account_store=*/false, /*use_federated_login=*/false));
       store_->AddLogin(*credentials.back());
     }
     return credentials;
@@ -1401,9 +1407,11 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
       "PasswordManager.PasswordStore.OnLoginsRetained";
   std::vector<PasswordForm> all_credentials;
   all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestWebRealm1)));
+      CreateTestPasswordFormDataByOrigin(kTestWebRealm1),
+      /*is_account_store=*/false));
   all_credentials.push_back(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1)));
+      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1),
+      /*is_account_store=*/false));
   const PasswordForm kTestForm = all_credentials[0];
   const PasswordForm kOtherForm = all_credentials[1];
   MockPasswordStoreObserver mock_observer;
@@ -1512,7 +1520,8 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
-    all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    all_credentials.push_back(
+        FillPasswordFormWithData(test_credential, /*is_account_store=*/false));
     store->AddLogin(*all_credentials.back());
   }
 
@@ -1559,7 +1568,8 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
-    all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    all_credentials.push_back(
+        FillPasswordFormWithData(test_credential, /*is_account_store=*/false));
     store->AddLogin(*all_credentials.back());
   }
   WaitForPasswordStore();
@@ -1642,7 +1652,8 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
 
   std::vector<PasswordForm> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
-    all_credentials.push_back(*FillPasswordFormWithData(test_credential));
+    all_credentials.push_back(
+        *FillPasswordFormWithData(test_credential, /*is_account_store=*/false));
     store->AddLogin(all_credentials.back());
   }
   WaitForPasswordStore();
@@ -1693,7 +1704,8 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
                                                 u"12345",
                                                 10,
                                                 5};
-  PasswordForm form(*FillPasswordFormWithData(kTestCredential));
+  PasswordForm form(
+      *FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
   form.password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(100), IsMuted(false),
@@ -1795,7 +1807,8 @@ TEST_F(PasswordStoreOriginTest,
        RemoveLoginsByURLAndTimeImpl_AllFittingOriginAndTime) {
   constexpr char origin_url[] = "http://foo.example.com/";
   std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
+                               /*is_account_store=*/false);
   store()->AddLogin(*form);
   WaitForPasswordStore();
 
@@ -1820,12 +1833,14 @@ TEST_F(PasswordStoreOriginTest,
        RemoveLoginsByURLAndTimeImpl_SomeFittingOriginAndTime) {
   constexpr char fitting_url[] = "http://foo.example.com/";
   std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(fitting_url));
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(fitting_url),
+                               /*is_account_store=*/false);
   store()->AddLogin(*form);
 
   const char nonfitting_url[] = "http://bar.example.com/";
   store()->AddLogin(*FillPasswordFormWithData(
-      CreateTestPasswordFormDataByOrigin(nonfitting_url)));
+      CreateTestPasswordFormDataByOrigin(nonfitting_url),
+      /*is_account_store=*/false));
 
   WaitForPasswordStore();
 
@@ -1850,7 +1865,8 @@ TEST_F(PasswordStoreOriginTest,
        RemoveLoginsByURLAndTimeImpl_NonMatchingOrigin) {
   constexpr char origin_url[] = "http://foo.example.com/";
   std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
+                               /*is_account_store=*/false);
   store()->AddLogin(*form);
   WaitForPasswordStore();
 
@@ -1873,7 +1889,8 @@ TEST_F(PasswordStoreOriginTest,
        RemoveLoginsByURLAndTimeImpl_NotWithinTimeInterval) {
   constexpr char origin_url[] = "http://foo.example.com/";
   std::unique_ptr<PasswordForm> form =
-      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url));
+      FillPasswordFormWithData(CreateTestPasswordFormDataByOrigin(origin_url),
+                               /*is_account_store=*/false);
   store()->AddLogin(*form);
   WaitForPasswordStore();
 
