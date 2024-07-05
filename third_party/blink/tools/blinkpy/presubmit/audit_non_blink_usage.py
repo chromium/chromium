@@ -73,6 +73,7 @@ _CONFIG = [
             'base::AutoReset',
             'base::Contains',
             'base::ConditionVariable',
+            'base::CPU',
             'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',

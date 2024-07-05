@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/cpu.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -2457,8 +2458,18 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     if (!observer_ && lazy_state_) {
       DCHECK(style_sheet_);
 
-      wtf_size_t len = static_cast<wtf_size_t>(
-          FindLengthOfDeclarationList(StringView(stream.RemainingText(), 1)));
+      StringView text(stream.RemainingText(), 1);
+#ifdef ARCH_CPU_X86_FAMILY
+      wtf_size_t len;
+      if (base::CPU::GetInstanceNoAllocation().has_avx2()) {
+        len = static_cast<wtf_size_t>(FindLengthOfDeclarationListAVX2(text));
+      } else {
+        len = static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
+      }
+#else
+      wtf_size_t len =
+          static_cast<wtf_size_t>(FindLengthOfDeclarationList(text));
+#endif
       if (len != 0) {
         wtf_size_t block_start_offset = stream.Offset();
         stream.SkipToEndOfBlock(len + 2);  // +2 for { and }.

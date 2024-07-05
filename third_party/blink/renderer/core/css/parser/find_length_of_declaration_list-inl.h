@@ -95,11 +95,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // We do a prefix-xor to spread out “are we in a string”
     // status from each quotation mark to the next stop. The standard
     // trick to do this would be PCLMULQDQ, but that requires CPU support
-    // that we don't have, and it's also fairly high-latency, so we'd
-    // need to find some other useful calculations to do while it works.
-    // (Also, it only supports 64-bit inputs, so we'd need to do
-    // something like PMOVMSKB and then move _back_ into vector
-    // registers.)
+    // that we don't have (see PrefixXORAVX2()).
     //
     // Thus, we'll simply do a prefix xor-sum instead. Note that we
     // need to factor in the quote status from the previous block;
@@ -127,11 +123,15 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // and need to mask out all special character handling” (i.e., convert
     // to 0xFF). But 0x05 means that we have ' within " or " within '
     // (mixed quotes), and this is a case we're not prepared to take on.
-    // Thus, we treat this as an error condition and abort. It is possible
-    // that we could treat these 0x05 bytes as a special kind of “cancel
-    // quote” and do a _new_ XOR cascade on those bytes alone, but I haven't
-    // checked deeply that it will actually work, and it seems very much
-    // not worth it for such a narrow case.
+    // Thus, we treat this as an error condition and abort. If you have
+    // shuffles (e.g., in the AVX2 path below), there's a very surprising
+    // technique based on group theory that could be used to reliably
+    // deal with this case; see:
+    //
+    //   https://chromium-review.googlesource.com/c/chromium/src/+/5592448
+    //
+    // However, it is notably slower, and this computation is definitely
+    // on the critical path, so we settle for just detection.
     const __m128i eq_single_quote = _mm_cmpeq_epi8(x, _mm_set1_epi8('\''));
     const __m128i eq_double_quote = _mm_cmpeq_epi8(x, _mm_set1_epi8('"'));
     __m128i quoted = x & (eq_single_quote | eq_double_quote);
@@ -211,8 +211,10 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     // no ] to match against).
     //
     // Also, we cannot do lazy parsing of nested rules, so opening braces
-    // need to abort. If we had SSSE3, we could have probably done this
-    // (and comments) more efficiently with PSHUFB, but we don't.
+    // need to abort. With SSSE3 or AVX2, we could use PSHUFB to do several
+    // comparisons at the same time, but since they share low nibble,
+    // none of the fastest tricks apply, and a simple series of comparisons
+    // should be faster.
     //
     // [ and { happen to be 0x20 apart in ASCII, so we can do with one
     // less comparison.
@@ -251,6 +253,189 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(const CharType* begin,
     prev_parens = _mm_srli_si128(parens, 15);
   }
   return 0;  // Premature EOF; we cannot SIMD any further.
+}
+
+// The AVX2 version is 50–65% faster than SSE2, depending on CPU;
+// partially from wider vectors, and partially from increased
+// instruction availability. The caller must call
+// FindLengthOfDeclarationListAVX2() themselves if relevant.
+//
+// Like with NEON below, we'll only really document the differences
+// with the SSE2 version. AVX2 is generally a 2x128-bit instruction set,
+// much like NEON is a 2x64-bit instruction set, which will necessitate
+// some of the same strategies.
+
+__attribute__((target("avx2"))) static inline __m256i
+LoadAndCollapseHighBytesAVX2(const UChar* ptr) {
+  __m256i x1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr));
+  __m256i x2 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr + 16));
+  __m256i packed = _mm256_packus_epi16(x1, x2);
+
+  // AVX2 pack is per-lane (two separate 16 -> 8 packs),
+  // so to get the right order, we'll need a lane-crossing permute.
+  return _mm256_permute4x64_epi64(packed, _MM_SHUFFLE(3, 1, 2, 0));
+}
+
+__attribute__((target("avx2"))) static inline __m256i
+LoadAndCollapseHighBytesAVX2(const LChar* ptr) {
+  return _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr));
+}
+
+// Similar to NEON, our parenthesis cascade doesn't cross the 128-bit lanes
+// (shifts are not 256-bit, but rather two separate 128-bit shifts), so we'll
+// need a final operation to propagate the highest element of the low lane
+// into all the elements in the high lane. The compiler converts this to
+// a nice combination of shuffles and permutations.
+__attribute__((target("avx2"))) static inline __m256i BroadcastToHigh(
+    __m256i x) {
+  uint8_t b = _mm256_extract_epi8(x, 15);
+  return _mm256_setr_epi8(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, b, b,
+                          b, b, b, b, b, b, b, b, b, b, b, b, b, b);
+}
+
+// For the prefix-xor cascade, we can abuse the carryless multiplication
+// function found in modern CPUs (there are really none that support AVX2 but
+// not this). Essentially, it does a binary multiplication, except that adds are
+// replaced with XORs, which means we can multiply with 1111111... to get
+// exactly what we want. Note that the upper bits will contain junk that we may
+// need to remove later.
+//
+// Also note that doing this operation over both halves of a 256-bit register
+// is a much newer extension, but we only really need it over a 32-bit value.
+// We go through an integer register to convert the 256-bit values to 32
+// single bits (if we had eight bits per byte, they would be masking each other
+// out anyway), and then immediately bump upwards again to a 128-bit register
+// for the multiplication. Note that we return that 128-bit register; since we
+// want the value _both_ in an integer register (it lets us do more work
+// in parallel with the parenthesis cascade) _and_ in a vector register
+// (since we need to use it to mask out bytes before said cascade), we let
+// the caller do the conversion.
+__attribute__((target("avx2,pclmul"))) ALWAYS_INLINE static __m128i
+PrefixXORAVX2(__m256i x, uint64_t prev) {
+  uint64_t bitmask = _mm256_movemask_epi8(x) ^ prev;
+  __m128i all_ones = _mm_set1_epi8(0xff);
+  return _mm_clmulepi64_si128(_mm_set_epi64x(0ULL, bitmask), all_ones, 0);
+}
+
+// Once PrefixXORAVX2() has created a bit mask, we need to convert that back
+// to a byte mask. This is an adapted version of
+//
+//   https://stackoverflow.com/questions/21622212/how-to-perform-the-inverse-of-mm256-movemask-epi8-vpmovmskb
+//
+// except that we take in the input value in the bottom 32 bits of a vector
+// register, which gives less transfer back and forth through the integer
+// registers. Clang figures out a fairly fast way of computing vmask using
+// shuffles.
+__attribute__((target("avx2"))) ALWAYS_INLINE static __m256i MaskToAVX2(
+    __m128i mask) {
+  __m256i vmask = _mm256_set1_epi32(_mm_extract_epi32(mask, 0));
+  const __m256i shuffle =
+      _mm256_setr_epi64x(0x0000000000000000, 0x0101010101010101,
+                         0x0202020202020202, 0x0303030303030303);
+  vmask = _mm256_shuffle_epi8(vmask, shuffle);
+  const __m256i bit_mask = _mm256_set1_epi64x(0x7fbfdfeff7fbfdfe);
+  vmask = _mm256_or_si256(vmask, bit_mask);
+  return _mm256_cmpeq_epi8(vmask, _mm256_set1_epi64x(-1));
+}
+
+template <class CharType>
+__attribute__((target("avx2,pclmul"))) ALWAYS_INLINE static size_t
+FindLengthOfDeclarationListAVX2(const CharType* begin, const CharType* end) {
+  uint64_t prev_single_quote = 0;
+  uint64_t prev_double_quote = 0;
+  __m256i prev_parens = _mm256_setzero_si256();
+
+  const CharType* ptr = begin;
+  while (ptr + 33 <= end) {
+    __m256i x = LoadAndCollapseHighBytesAVX2(ptr);
+    __m256i next_x = LoadAndCollapseHighBytesAVX2(ptr + 1);
+
+    const __m256i eq_backslash = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\\'));
+
+    // See PrefixXORAVX2() for information on how we compute the prefix-xor.
+    // Note that we now have separate computations for single and double quotes,
+    // since they are bit masks and not full bytes, but they can go in parallel
+    // just fine.
+    const __m256i eq_single_quote =
+        _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\''));
+    const __m256i eq_double_quote = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('"'));
+    __m128i prefix_single_quote =
+        PrefixXORAVX2(eq_single_quote, prev_single_quote);
+    __m128i prefix_double_quote =
+        PrefixXORAVX2(eq_double_quote, prev_double_quote);
+    uint32_t single_quote_bitmask = _mm_cvtsi128_si32(prefix_single_quote);
+    uint32_t double_quote_bitmask = _mm_cvtsi128_si32(prefix_double_quote);
+    uint32_t mixed_quote = single_quote_bitmask & double_quote_bitmask;
+    uint32_t quoted_bitmask = single_quote_bitmask | double_quote_bitmask;
+
+    // We need to convert this back into a byte mask so that we can mask out
+    // parens within quotes.
+    __m256i quoted_mask = MaskToAVX2(prefix_single_quote | prefix_double_quote);
+
+    const __m256i comment_start =
+        _mm256_cmpeq_epi8(x, _mm256_set1_epi8('/')) &
+        _mm256_cmpeq_epi8(next_x, _mm256_set1_epi8('*'));
+
+    // Like in NEON, we need to shuffle the low values over into the high
+    // 128-bit lane (see BroadcastToHigh()), and we choose to do prev_parens
+    // as a shuffle after the cascade instead of a single value before
+    // for the same reasons.
+    const __m256i opening_paren = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('('));
+    const __m256i closing_paren = _mm256_cmpeq_epi8(x, _mm256_set1_epi8(')'));
+    __m256i parens =
+        _mm256_sub_epi8(closing_paren, opening_paren) & ~quoted_mask;
+    parens = _mm256_add_epi8(parens, _mm256_slli_si256(parens, 1));
+    parens = _mm256_add_epi8(parens, _mm256_slli_si256(parens, 2));
+    parens = _mm256_add_epi8(parens, _mm256_slli_si256(parens, 4));
+    parens = _mm256_add_epi8(parens, _mm256_slli_si256(parens, 8));
+    parens = _mm256_add_epi8(parens, BroadcastToHigh(parens));
+    parens = _mm256_add_epi8(parens, prev_parens);
+
+    const __m256i opening_block =
+        _mm256_cmpeq_epi8(x | _mm256_set1_epi8(0x20), _mm256_set1_epi8('{'));
+    const __m256i eq_rightbrace = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('}'));
+    uint64_t must_end =
+        (_mm256_movemask_epi8(opening_block | comment_start | eq_rightbrace) &
+         ~quoted_bitmask) |
+        mixed_quote | _mm256_movemask_epi8(parens | eq_backslash);
+    if (must_end != 0) {
+      unsigned idx = __builtin_ctzll(must_end);
+      ptr += idx;
+      if (*ptr == '}') {
+        uint32_t mask = _mm256_movemask_epi8(
+            _mm256_cmpeq_epi8(parens, _mm256_setzero_si256()));
+        if (((mask >> idx) & 1) == 0) {
+          return 0;
+        } else {
+          return ptr - begin;
+        }
+      } else {
+        // Ended due to something that was not successful EOB.
+        return 0;
+      }
+    }
+
+    ptr += 32;
+
+    // We keep prev_*_quote as integers, unlike in SSE2; there's no need
+    // to waste cross-lane shifts on them.
+    prev_single_quote = uint32_t(single_quote_bitmask) >> 31;
+    prev_double_quote = uint32_t(double_quote_bitmask) >> 31;
+
+    prev_parens = _mm256_set1_epi8(((__v32qi)parens)[31]);
+  }
+  return 0;
+}
+
+__attribute__((target("avx2,pclmul"))) inline size_t
+FindLengthOfDeclarationListAVX2(StringView str) {
+  if (str.Is8Bit()) {
+    return FindLengthOfDeclarationListAVX2(str.Characters8(),
+                                           str.Characters8() + str.length());
+  } else {
+    return FindLengthOfDeclarationListAVX2(str.Characters16(),
+                                           str.Characters16() + str.length());
+  }
 }
 
 #elif defined(__ARM_NEON__)

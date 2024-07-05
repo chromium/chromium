@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/cpu.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/find_length_of_declaration_list-inl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -10,25 +11,63 @@ namespace blink {
 
 #if defined(__SSE2__) || defined(__ARM_NEON__)
 
-static bool BlockAccepted(const String& str) {
+enum class FindLengthInstructionSet { BASE, AVX2 };
+
+class FindLengthOfDeclarationListTest
+    : public testing::TestWithParam<FindLengthInstructionSet> {
+ protected:
+  void SetUp() override {
+#ifdef __SSE2__
+    if (GetParam() == FindLengthInstructionSet::AVX2 &&
+        !base::CPU::GetInstanceNoAllocation().has_avx2()) {
+      GTEST_SKIP() << "CPU has no AVX2 support, skipping AVX2 tests";
+    }
+#endif
+  }
+  bool BlockAccepted(const String& str);
+};
+
+#ifdef __SSE2__
+INSTANTIATE_TEST_SUITE_P(WithAndWithoutAVX2,
+                         FindLengthOfDeclarationListTest,
+                         testing::Values(FindLengthInstructionSet::BASE,
+                                         FindLengthInstructionSet::AVX2));
+#else
+INSTANTIATE_TEST_SUITE_P(WithBaseOnly,
+                         FindLengthOfDeclarationListTest,
+                         testing::Values(FindLengthInstructionSet::BASE));
+#endif
+
+bool FindLengthOfDeclarationListTest::BlockAccepted(const String& str) {
   // Close the block, then add various junk afterwards to make sure
   // that it doesn't affect the parsing. (We also need a fair bit of
   // padding since the SIMD code needs there to be room after the end
   // of the block.)
-  String test_str = str + "}abcdefghi jkl!{}\\\"\\#/*[]                 ";
-  return FindLengthOfDeclarationList(test_str) == str.length();
+  String test_str =
+      str + "}abcdefghi jkl!{}\\\"\\#/*[]                                 ";
+#ifdef __SSE2__
+  size_t len;
+  if (GetParam() == FindLengthInstructionSet::AVX2) {
+    len = FindLengthOfDeclarationListAVX2(test_str);
+  } else {
+    len = FindLengthOfDeclarationList(test_str);
+  }
+#else
+  size_t len = FindLengthOfDeclarationList(test_str);
+#endif
+  return len == str.length();
 }
 
-TEST(FindLengthOfDeclarationListTest, Basic) {
+TEST_P(FindLengthOfDeclarationListTest, Basic) {
   EXPECT_TRUE(BlockAccepted("color: red;"));
 }
 
-TEST(FindLengthOfDeclarationListTest, Variable) {
+TEST_P(FindLengthOfDeclarationListTest, Variable) {
   EXPECT_TRUE(BlockAccepted("color: var(--color);"));
   EXPECT_TRUE(BlockAccepted("color: var(--variable-name-that-spans-blocks);"));
 }
 
-TEST(FindLengthOfDeclarationListTest, UnbalancedVariable) {
+TEST_P(FindLengthOfDeclarationListTest, UnbalancedVariable) {
   // The closing brace here should be ignored as an unbalanced block-end
   // token, so we should hit the junk afterwards and stop with an error.
   EXPECT_FALSE(BlockAccepted("color: var("));
@@ -64,7 +103,7 @@ TEST(FindLengthOfDeclarationListTest, UnbalancedVariable) {
   EXPECT_EQ(0u, FindLengthOfDeclarationList("a:(()})paddingpaddingpadding"));
 }
 
-TEST(FindLengthOfDeclarationListTest, NoSubBlocksAccepted) {
+TEST_P(FindLengthOfDeclarationListTest, NoSubBlocksAccepted) {
   // Some of these are by design, some of these are just because of
   // limitations in the algorithm.
   EXPECT_FALSE(BlockAccepted(".a { --nested-rule: nope; }"));
@@ -72,7 +111,7 @@ TEST(FindLengthOfDeclarationListTest, NoSubBlocksAccepted) {
   EXPECT_FALSE(BlockAccepted("--foo: {}"));
 }
 
-TEST(FindLengthOfDeclarationListTest, NoCommentsAccepted) {
+TEST_P(FindLengthOfDeclarationListTest, NoCommentsAccepted) {
   // This is also just a limitation in the algorithm.
   // The second example demonstrates the peril.
   EXPECT_FALSE(BlockAccepted("color: black /* any color */"));
@@ -83,7 +122,7 @@ TEST(FindLengthOfDeclarationListTest, NoCommentsAccepted) {
   EXPECT_TRUE(BlockAccepted("z-index: calc(2 * 3 / 4)"));
 }
 
-TEST(FindLengthOfDeclarationListTest, String) {
+TEST_P(FindLengthOfDeclarationListTest, String) {
   EXPECT_TRUE(BlockAccepted("--foo: \"some string\""));
   EXPECT_TRUE(BlockAccepted("--foo: \"(\""));
   EXPECT_TRUE(BlockAccepted("--foo: \"}\""));
@@ -108,7 +147,7 @@ TEST(FindLengthOfDeclarationListTest, String) {
   EXPECT_FALSE(BlockAccepted("--foo: '1\" = 2.54cm'"));
 }
 
-TEST(FindLengthOfDeclarationListTest, IgnoringDangerousAfterBlock) {
+TEST_P(FindLengthOfDeclarationListTest, IgnoringDangerousAfterBlock) {
   EXPECT_EQ(
       0u,
       FindLengthOfDeclarationList(
@@ -119,7 +158,7 @@ TEST(FindLengthOfDeclarationListTest, IgnoringDangerousAfterBlock) {
           "a:b}[selector containing difficult stuff]paddingpaddingpadding"));
 }
 
-TEST(FindLengthOfDeclarationListTest, NonASCII) {
+TEST_P(FindLengthOfDeclarationListTest, NonASCII) {
   // Non-ASCII long after the block should not matter.
   EXPECT_EQ(10u, FindLengthOfDeclarationList(
                      String::FromUTF8("--foo: bar}                   ❤️")));
