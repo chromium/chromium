@@ -122,8 +122,6 @@ class Profile;
   /* (But not the GPM one.) */                                                \
   AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
   /* Called when the user accepts passkey creation dialog. */                 \
-  /* TODO(enclave): Add transition to authentication or bootstrapping  */     \
-  /* device. */                                                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                           \
   /* Called when the user accepts the warning dialog for creating a GPM */    \
   /* passkey in incognito mode.*/                                             \
