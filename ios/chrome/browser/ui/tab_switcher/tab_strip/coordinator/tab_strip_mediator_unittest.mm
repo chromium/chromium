@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/core/favicon_url.h"
@@ -12,6 +15,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -30,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -37,6 +42,13 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 using tab_groups::TabGroupId;
+
+namespace {
+
+// URL to be used for drag and drop tests.
+const char kDraggedUrl[] = "https://dragged_url.com";
+
+}  // namespace
 
 // Fake handler to get commands in tests.
 @interface FakeTabStripHandler : NSObject <TabStripCommands>
@@ -308,6 +320,7 @@ class TabStripMediatorTest : public PlatformTest {
   raw_ptr<WebStateList> web_state_list_;
   TabStripMediator* mediator_;
   FakeTabStripConsumer* consumer_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that the mediator correctly populates the consumer at startup and after
@@ -1183,4 +1196,64 @@ TEST_F(TabStripMediatorTest, AddTabToGroup) {
   // Check model is updated.
   EXPECT_EQ(group, web_state_list_->GetGroupOfWebStateAt(1));
   EXPECT_EQ(2, group->range().count());
+}
+
+// Tests dropping an interal URL (e.g. drag from omnibox).
+TEST_F(TabStripMediatorTest, DropInternalURL) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  GURL url_to_load = GURL(kDraggedUrl);
+  id local_object = [[URLInfo alloc] initWithURL:url_to_load title:@"My title"];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+
+  // Drop item.
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+
+  ASSERT_EQ(4, web_state_list->count());
+  web::WebState* web_state = web_state_list->GetWebStateAt(1);
+  EXPECT_EQ(1, web_state_list->active_index());
+  EXPECT_EQ(url_to_load,
+            web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+  histogram_tester_.ExpectUniqueSample(kUmaTabStripViewDragOrigin,
+                                       DragItemOrigin::kOther, 1);
+}
+
+// Tests dropping an external URL.
+TEST_F(TabStripMediatorTest, DropExternalURL) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a* b c ", browser_->GetBrowserState()));
+
+  InitializeMediator();
+
+  NSItemProvider* item_provider = [[NSItemProvider alloc]
+      initWithContentsOfURL:[NSURL URLWithString:base::SysUTF8ToNSString(
+                                                     kDraggedUrl)]];
+
+  // Drop item.
+  [mediator_ dropItemFromProvider:item_provider
+                          toIndex:1
+               placeholderContext:nil];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), ^bool(void) {
+        return web_state_list->count() == 4;
+      }));
+  web::WebState* web_state = web_state_list->GetWebStateAt(1);
+  EXPECT_EQ(1, web_state_list->active_index());
+  EXPECT_EQ(GURL(kDraggedUrl),
+            web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+  histogram_tester_.ExpectUniqueSample(kUmaTabStripViewDragOrigin,
+                                       DragItemOrigin::kOther, 1);
 }

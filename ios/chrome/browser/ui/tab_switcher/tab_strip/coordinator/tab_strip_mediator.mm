@@ -1015,8 +1015,9 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // Simulating the insertion.
   NSMutableArray<TabStripItemIdentifier*>* items = CreateItemIdentifiers(
       _webStateList, /*including_hidden_tab_items=*/false);
-  const WebStateList::InsertionParams insertionParams =
+  WebStateList::InsertionParams insertionParams =
       [self insertionParamsForDestinationItemIndex:index items:items];
+  insertionParams.activate = true;
   _webStateList->InsertWebState(std::move(webState), insertionParams);
 }
 
