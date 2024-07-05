@@ -130,6 +130,17 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     this.loadedIconsCount = 0;
     this.categoriesItemRendered = [];
     this.appsList = [];
+    this.resetScroll();
+  }
+
+  /**
+   * Reset scroll position to the top between screen's data changes.
+   */
+  private resetScroll(): void {
+    const appsList = this.shadowRoot?.querySelector('#personalizedApps');
+    if (appsList) {
+      appsList.scrollTop = 0;
+    }
   }
 
   itemRenderedChanged(_itemRendered: CategoriesItemList): void {
