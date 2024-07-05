@@ -143,8 +143,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     // This is not strictly necessary, but it makes it more explicit. The OS
     // limits to 1 refresh task at any time, and a new request will replace a
     // previous request. Tasks are only executed in the background.
-    // TODO(crbug.com/40231943): Coordinate background tasks when more are
-    // added.
     [BGTaskScheduler.sharedScheduler cancelAllTaskRequests];
   }
 }
