@@ -107,15 +107,15 @@ PageAllocationGranularityShift() {
   return 14;  // 16kB
 #elif PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
   return static_cast<size_t>(vm_page_shift);
-#elif PA_BUILDFLAG(IS_WIN) || defined(ARCH_CPU_PPC64)
+#elif PA_BUILDFLAG(IS_WIN) || PA_BUILDFLAG(PA_ARCH_CPU_PPC64)
   // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
   // sizes.  Since 64kB is the de facto standard on the platform and binaries
   // compiled for 64kB are likely to work on 4kB systems, 64kB is a good choice
   // here.
   return 16;  // 64kB
-#elif defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_LOONGARCH64)
+#elif defined(_MIPS_ARCH_LOONGSON) || PA_BUILDFLAG(PA_ARCH_CPU_LOONGARCH64)
   return 14;  // 16kB
-#elif PA_BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
+#elif PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
   return static_cast<size_t>(vm_page_shift);
 #else
   return 12;  // 4kB
