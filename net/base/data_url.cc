@@ -128,15 +128,33 @@ bool DataURL::Parse(const GURL& url,
     // of the data, and should be stripped. Otherwise, the escaped whitespace
     // could be part of the payload, so don't strip it.
     if (base64_encoded) {
-      // If the data URL is well formed, we can decode it immediately.
-      if (IsDataURLReadyForDecode(raw_body)) {
-        if (!base::Base64Decode(raw_body, data))
-          return false;
+      if (base::FeatureList::IsEnabled(features::kOptimizeParsingDataUrls)) {
+        // Since whitespace and invalid characters in input will always cause
+        // `Base64Decode` to fail, just handle unescaping the URL on failure.
+        // This is not much slower than scanning the URL for being well formed
+        // first, even for input with whitespace.
+        if (!base::Base64Decode(raw_body, data)) {
+          std::string unescaped_body =
+              base::UnescapeBinaryURLComponent(raw_body);
+          if (!base::Base64Decode(unescaped_body, data,
+                                  base::Base64DecodePolicy::kForgiving)) {
+            return false;
+          }
+        }
       } else {
-        std::string unescaped_body = base::UnescapeBinaryURLComponent(raw_body);
-        if (!base::Base64Decode(unescaped_body, data,
-                                base::Base64DecodePolicy::kForgiving))
-          return false;
+        // If the data URL is well formed, we can decode it immediately.
+        if (IsDataURLReadyForDecode(raw_body)) {
+          if (!base::Base64Decode(raw_body, data)) {
+            return false;
+          }
+        } else {
+          std::string unescaped_body =
+              base::UnescapeBinaryURLComponent(raw_body);
+          if (!base::Base64Decode(unescaped_body, data,
+                                  base::Base64DecodePolicy::kForgiving)) {
+            return false;
+          }
+        }
       }
     } else {
       // Strip whitespace for non-text MIME types.
