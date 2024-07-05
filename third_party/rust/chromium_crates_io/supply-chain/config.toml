@@ -284,7 +284,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."windows_i686_gnu:0.52.6"]
 criteria = []
 
-[policy."windows_i686_gnullvm:0.52.5"]
+[policy."windows_i686_gnullvm:0.52.6"]
 criteria = []
 
 [policy."windows_i686_msvc:0.52.5"]
