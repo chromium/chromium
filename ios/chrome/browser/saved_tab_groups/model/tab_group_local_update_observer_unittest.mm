@@ -48,6 +48,8 @@ namespace tab_groups {
 
 namespace {
 
+const char kTestURL[] = "https://chromium.org";
+
 std::unique_ptr<KeyedService> CreateMockSyncService(
     web::BrowserState* context) {
   return std::make_unique<MockTabGroupSyncService>();
@@ -159,9 +161,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateExistingTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, std::make_optional(0ul)))
+                                        kNewTitle, _, _))
       .Times(1);
-
   web_state->SetTitle(kNewTitle);
 }
 
@@ -177,8 +178,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTab) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, std::make_optional(0ul)));
-
+                                        kNewTitle, _, _));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -195,9 +195,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewTabSyncPaused) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, std::make_optional(0ul)))
+                                        kNewTitle, _, _))
       .Times(0);
-
   web_state->SetTitle(kNewTitle);
 }
 
@@ -217,8 +216,7 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateList) {
       ->AddBrowser(browser_same_browser_state_.get());
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, std::make_optional(0ul)));
-
+                                        kNewTitle, _, _));
   web_state->SetTitle(kNewTitle);
 }
 
@@ -241,9 +239,223 @@ TEST_F(TabGroupLocalUpdateObserverTest, TitleUpdateNewWebStateListInsert) {
   web_state_list->CreateGroup({0}, {}, tab_group_id);
 
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
-                                        kNewTitle, _, std::make_optional(0ul)));
-
+                                        kNewTitle, _, _));
   web_state->SetTitle(kNewTitle);
+}
+
+// Tests that the service is correctly updated when the navigation of a tab is
+// updated.
+TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
+                                        _, GURL(kTestURL), _));
+  web_state->SetCurrentURL(GURL(kTestURL));
+  web_state->OnNavigationFinished(nullptr);
+}
+
+// Tests that the service is not updated when the new active tab is not in the
+// group.
+TEST_F(TabGroupLocalUpdateObserverTest, ActivateRegularTab) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+  web_state_list->ActivateWebStateAt(0);
+
+  EXPECT_CALL(*mock_service_, UpdateTab(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_service_, AddTab(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_service_, RemoveTab(_, _)).Times(0);
+  EXPECT_CALL(*mock_service_, MoveTab(_, _, _)).Times(0);
+
+  web_state_list->ActivateWebStateAt(1);
+}
+
+// Tests that the service is not updated when sync is paused and the navigation
+// of a tab is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  EXPECT_CALL(*mock_service_,
+              UpdateTab(tab_group_id, web_state_id.identifier(), _,
+                        GURL(kTestURL), std::make_optional(0ul)))
+      .Times(0);
+  web_state->SetCurrentURL(GURL(kTestURL));
+  web_state->OnNavigationFinished(nullptr);
+}
+
+// Tests that the service is correctly updated when a tab is added to a newly
+// created group.
+TEST_F(TabGroupLocalUpdateObserverTest, AddTabToNewGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  web_state->SetCurrentURL(GURL(kTestURL));
+  web_state->SetTitle(kNewTitle);
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, web_state_id.identifier(), kNewTitle,
+                     GURL(kTestURL), std::make_optional(0ul)));
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+}
+
+// Tests that the service is not updated when sync is paused and a tab is added
+// to a group.
+TEST_F(TabGroupLocalUpdateObserverTest, AddTabSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  web_state->SetCurrentURL(GURL(kTestURL));
+  web_state->SetTitle(kNewTitle);
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, web_state_id.identifier(), kNewTitle,
+                     GURL(kTestURL), std::make_optional(0ul)))
+      .Times(0);
+  web_state_list->CreateGroup({0}, {}, tab_group_id);
+}
+
+// Tests that the service is correctly updated when tabs are moved in and out of
+// a group.
+TEST_F(TabGroupLocalUpdateObserverTest, MoveTabToGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state_1 = InsertWebState(web_state_list);
+  web::FakeWebState* web_state_2 = InsertWebState(web_state_list);
+  web::FakeWebState* web_state_3 = InsertWebState(web_state_list);
+
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  web_state_3->SetCurrentURL(GURL(kTestURL));
+  web_state_3->SetTitle(kNewTitle);
+  web::WebStateID web_state_1_id = web_state_1->GetUniqueIdentifier();
+  web::WebStateID web_state_2_id = web_state_2->GetUniqueIdentifier();
+  web::WebStateID web_state_3_id = web_state_3->GetUniqueIdentifier();
+
+  // Create the group and insert `web_state_1`.
+  EXPECT_CALL(*mock_service_, AddTab(tab_group_id, web_state_1_id.identifier(),
+                                     _, _, std::make_optional(0ul)));
+  const TabGroup* group = web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  // Move `web_state_2` in the group.
+  EXPECT_CALL(*mock_service_, AddTab(tab_group_id, web_state_2_id.identifier(),
+                                     _, _, std::make_optional(1ul)));
+  web_state_list->MoveToGroup({1}, group);
+
+  // Move `web_state_3` in the group.
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, web_state_3_id.identifier(), kNewTitle,
+                     GURL(kTestURL), std::make_optional(2ul)));
+  web_state_list->MoveToGroup({2}, group);
+
+  // Move `web_state_3` at the beginning of the group.
+  EXPECT_CALL(*mock_service_,
+              MoveTab(tab_group_id, web_state_3_id.identifier(), 0));
+  web_state_list->MoveWebStateAt(2, 0);
+
+  // Move `web_state_3` out of the group.
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_3_id.identifier()));
+  web_state_list->RemoveFromGroups({0});
+}
+
+// Tests that the service is correctly updated when tabs are moved between
+// groups.
+TEST_F(TabGroupLocalUpdateObserverTest, MoveTabFromOtherGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state_1 = InsertWebState(web_state_list);
+  web::FakeWebState* web_state_2 = InsertWebState(web_state_list);
+  web::FakeWebState* web_state_3 = InsertWebState(web_state_list);
+
+  TabGroupId tab_group_1_id = TabGroupId::GenerateNew();
+  TabGroupId tab_group_2_id = TabGroupId::GenerateNew();
+
+  web::WebStateID web_state_1_id = web_state_1->GetUniqueIdentifier();
+  web::WebStateID web_state_2_id = web_state_2->GetUniqueIdentifier();
+  web::WebStateID web_state_3_id = web_state_3->GetUniqueIdentifier();
+
+  // Create a first group and insert `web_state_1`.
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_1_id, web_state_1_id.identifier(), _, _,
+                     std::make_optional(0ul)));
+  const TabGroup* group_1 =
+      web_state_list->CreateGroup({0}, {}, tab_group_1_id);
+
+  // Create a second group and insert `web_state_2`.
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_2_id, web_state_2_id.identifier(), _, _,
+                     std::make_optional(0ul)));
+  const TabGroup* group_2 =
+      web_state_list->CreateGroup({1}, {}, tab_group_2_id);
+
+  // Move `web_state_3` in the second group.
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_2_id, web_state_3_id.identifier(), _, _,
+                     std::make_optional(1ul)));
+  web_state_list->MoveToGroup({2}, group_2);
+
+  // Move `web_state_2` in the first group.
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_2_id, web_state_2_id.identifier()));
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_1_id, web_state_2_id.identifier(), _, _,
+                     std::make_optional(1ul)));
+  web_state_list->MoveToGroup({1}, group_1);
+}
+
+// Tests that the service is correctly updated when a tab is removed from a
+// group.
+TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
+  web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_id.identifier()));
+  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
+}
+
+// Tests that the service is not updated when sync is pausded and a tab is
+// removed from a group.
+TEST_F(TabGroupLocalUpdateObserverTest, RemoveFromGroupSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::FakeWebState* web_state = InsertWebState(web_state_list);
+  InsertWebState(web_state_list);
+
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
+  web_state_list->CreateGroup({0, 1}, {}, tab_group_id);
+
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_id.identifier()))
+      .Times(0);
+  web_state_list->CloseWebStateAt(/*index*/ 0, WebStateList::CLOSE_NO_FLAGS);
 }
 
 // Tests that the service is correctly updated when a raw tab group is created.
@@ -318,6 +530,132 @@ TEST_F(TabGroupLocalUpdateObserverTest, CreateSyncedGroupSyncPaused) {
   EXPECT_CALL(*mock_service_, AddGroup(SyncTabGroupPrediction(saved_group)))
       .Times(0);
   web_state_list->CreateGroup({0}, {}, tab_group_id);
+}
+
+// Tests that the service is correctly updated when the visual data of a group
+// is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, UpdateVisualData) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  InsertWebState(web_state_list);
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  const TabGroup* group = web_state_list->CreateGroup({0}, {}, tab_group_id);
+  TabGroupVisualData visual_data(u"Updated Group Name",
+                                 tab_groups::TabGroupColorId::kRed);
+
+  EXPECT_CALL(*mock_service_,
+              UpdateVisualData(tab_group_id, &group->visual_data()));
+  web_state_list->UpdateGroupVisualData(group, visual_data);
+}
+
+// Tests that the service is correctly updated when the visual data of a group
+// is updated.
+TEST_F(TabGroupLocalUpdateObserverTest, UpdateVisualDataSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  InsertWebState(web_state_list);
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  const TabGroup* group = web_state_list->CreateGroup({0}, {}, tab_group_id);
+  TabGroupVisualData visual_data(u"Updated Group Name",
+                                 tab_groups::TabGroupColorId::kRed);
+
+  EXPECT_CALL(*mock_service_,
+              UpdateVisualData(tab_group_id, &group->visual_data()))
+      .Times(0);
+  web_state_list->UpdateGroupVisualData(group, visual_data);
+}
+
+// Tests that the service is correctly updated when a tab is replaced in a
+// group.
+TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  web::WebState* web_state_b = builder.GetWebStateForIdentifier('b');
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+
+  web::WebStateID web_state_b_id = web_state_b->GetUniqueIdentifier();
+  web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = group->tab_group_id();
+
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_b_id.identifier()));
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, passed_web_state_id.identifier(), _, _,
+                     std::make_optional(1ul)));
+  web_state_list->ReplaceWebStateAt(/*index=*/1, std::move(passed_web_state));
+}
+
+// Tests that the service is not updated when sync is paused and a tab is
+// replaced in a group.
+TEST_F(TabGroupLocalUpdateObserverTest, ReplaceTabInGroupSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  web::WebState* web_state_b = builder.GetWebStateForIdentifier('b');
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+
+  web::WebStateID web_state_b_id = web_state_b->GetUniqueIdentifier();
+  web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = group->tab_group_id();
+
+  EXPECT_CALL(*mock_service_,
+              RemoveTab(tab_group_id, web_state_b_id.identifier()))
+      .Times(0);
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, passed_web_state_id.identifier(), _, _,
+                     std::make_optional(1ul)))
+      .Times(0);
+  web_state_list->ReplaceWebStateAt(/*index=*/1, std::move(passed_web_state));
+}
+
+// Tests that the service is correctly updated when a tab is inserted in a
+// group.
+TEST_F(TabGroupLocalUpdateObserverTest, InsertInGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+
+  web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = group->tab_group_id();
+
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, passed_web_state_id.identifier(), _, _,
+                     std::make_optional(1ul)));
+  web_state_list->InsertWebState(std::move(passed_web_state),
+                                 WebStateList::InsertionParams::AtIndex(1));
+}
+
+// Tests that the service is not updated when sync is pauded and a tab is
+// inserted in a group.
+TEST_F(TabGroupLocalUpdateObserverTest, InsertInGroupSyncPaused) {
+  ScopedPauseSyncOperation lock = local_observer_->PauseSyncUpdate();
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| [0 a b] c* d e f"));
+
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+
+  web::WebStateID passed_web_state_id = passed_web_state->GetUniqueIdentifier();
+  TabGroupId tab_group_id = group->tab_group_id();
+
+  EXPECT_CALL(*mock_service_,
+              AddTab(tab_group_id, passed_web_state_id.identifier(), _, _,
+                     std::make_optional(1ul)))
+      .Times(0);
+  web_state_list->InsertWebState(std::move(passed_web_state),
+                                 WebStateList::InsertionParams::AtIndex(1));
 }
 
 }  // namespace tab_groups

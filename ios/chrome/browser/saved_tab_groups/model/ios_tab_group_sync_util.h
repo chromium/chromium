@@ -7,6 +7,8 @@
 
 #import "components/saved_tab_groups/types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 
 namespace tab_groups {
 class SavedTabGroup;
@@ -18,24 +20,40 @@ class BrowserList;
 namespace tab_groups {
 namespace utils {
 
-// Struct that containing local tab group information.
+// Struct containing local tab group information.
 struct LocalTabGroupInfo {
   const TabGroup* tab_group = nil;
   WebStateList* web_state_list = nil;
   Browser* browser = nil;
 };
 
+// Struct containing local tab information.
+struct LocalTabInfo {
+  const TabGroup* tab_group = nil;
+  int index_in_group = WebStateList::kInvalidIndex;
+};
+
 // Find the `tab_group` and the `web_state_list` corresponding to
-// the `saved_tab_group`.
+// the given `saved_tab_group`.
 LocalTabGroupInfo GetLocalTabGroupInfo(
     BrowserList* browser_list,
     const tab_groups::SavedTabGroup& saved_tab_group);
 
 // Find the `tab_group` and the `web_state_list` corresponding to
-// the `tab_group_id`.
+// the given `tab_group_id`.
 LocalTabGroupInfo GetLocalTabGroupInfo(
     BrowserList* browser_list,
     const tab_groups::LocalTabGroupID& tab_group_id);
+
+// Find the `tab_group` and the `tab_index` corresponding to
+// the given `web_state_identifier` into regular browsers.
+LocalTabInfo GetLocalTabInfo(BrowserList* browser_list,
+                             web::WebStateID web_state_identifier);
+
+// Find the `tab_group` and the `tab_index` corresponding to
+// the given `web_state_identifier`.
+LocalTabInfo GetLocalTabInfo(WebStateList* web_state_list,
+                             web::WebStateID web_state_identifier);
 
 }  // namespace utils
 }  // namespace tab_groups

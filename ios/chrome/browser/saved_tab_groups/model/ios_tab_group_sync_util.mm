@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 using tab_groups::SavedTabGroupTab;
 
@@ -46,6 +45,36 @@ LocalTabGroupInfo GetLocalTabGroupInfo(
     }
   }
   return LocalTabGroupInfo{};
+}
+
+LocalTabInfo GetLocalTabInfo(BrowserList* browser_list,
+                             web::WebStateID web_state_identifier) {
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    LocalTabInfo info = GetLocalTabInfo(web_state_list, web_state_identifier);
+    if (info.tab_group) {
+      return info;
+    }
+  }
+  return LocalTabInfo{};
+}
+
+LocalTabInfo GetLocalTabInfo(WebStateList* web_state_list,
+                             web::WebStateID web_state_identifier) {
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    if (web_state_identifier == web_state->GetUniqueIdentifier()) {
+      const TabGroup* group = web_state_list->GetGroupOfWebStateAt(index);
+      int index_in_group = group ? index - group->range().range_begin()
+                                 : WebStateList::kInvalidIndex;
+      return LocalTabInfo{
+          .tab_group = group,
+          .index_in_group = index_in_group,
+      };
+    }
+  }
+  return LocalTabInfo{};
 }
 
 }  // namespace utils

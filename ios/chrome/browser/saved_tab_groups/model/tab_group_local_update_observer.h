@@ -104,9 +104,29 @@ class TabGroupLocalUpdateObserver : public BrowserListObserver,
                                               const WebStateListChange& change,
                                               const WebStateListStatus& status);
 
+  // Propagates local updates of `web_state` in a local group. The position in
+  // the synced group is not updated.
+  void UpdateLocalWebStateInSyncedGroup(web::WebState* web_state);
+
+  // Propagates the addition of `web_state` to a local group. `web_state_list`
+  // can be `nil`.
+  void AddLocalWebStateToSyncedGroup(web::WebState* web_state,
+                                     WebStateList* web_state_list);
+
+  // Propagates the move of `web_state` in a local group.
+  void MoveLocalWebStateToSyncedGroup(web::WebState* web_state,
+                                      WebStateList* web_state_list);
+
+  // Propagates the removal of `web_state` from `tab_group`.
+  void RemoveLocalWebStateFromSyncedGroup(web::WebState* web_state,
+                                          const TabGroup* tab_group);
+
   // Propagates the creation of `tab_group`.
   void CreateSyncedGroup(WebStateList* web_state_list,
                          const TabGroup* tab_group);
+
+  // Propagates the visual update of `tab_group`.
+  void UpdateVisualDataSyncedGroup(const TabGroup* tab_group);
 
   raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
   raw_ptr<BrowserList> browser_list_ = nullptr;

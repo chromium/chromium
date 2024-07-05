@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
 #import "components/saved_tab_groups/types.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,6 +24,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
+
+using tab_groups::utils::GetLocalTabInfo;
+using tab_groups::utils::LocalTabInfo;
 
 namespace tab_groups {
 
@@ -71,15 +75,19 @@ TabGroupLocalUpdateObserver::PauseSyncUpdate() {
 void TabGroupLocalUpdateObserver::OnBrowserAdded(
     const BrowserList* browser_list,
     Browser* browser) {
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
+  }
   StartObservingBrowser(browser);
 }
 
 void TabGroupLocalUpdateObserver::OnBrowserRemoved(
     const BrowserList* browser_list,
     Browser* browser) {
-  if (!browser->IsInactive()) {
-    StopObservingWebStateList(browser->GetWebStateList());
+  if (browser->type() != Browser::Type::kRegular) {
+    return;
   }
+  StopObservingWebStateList(browser->GetWebStateList());
 }
 
 void TabGroupLocalUpdateObserver::OnBrowserListShutdown(
@@ -104,66 +112,75 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
       if (old_group != new_group) {
         // There is a change of group.
         if (old_group) {
-          // TODO(crbug.com/329640035): Remove from the old group.
-          StopObservingWebState(status_only.web_state());
+          // Remove the tab from the synced `old_group`.
+          RemoveLocalWebStateFromSyncedGroup(status_only.web_state(),
+                                             old_group);
         }
         if (new_group) {
-          // TODO(crbug.com/329640035): Insert into the new group.
-          StartObservingWebState(status_only.web_state());
+          // Insert the tab into the synced `new_group`.
+          AddLocalWebStateToSyncedGroup(status_only.web_state(),
+                                        web_state_list);
         }
       }
     } break;
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach =
           change.As<WebStateListChangeDetach>();
-      if (detach.group()) {
-        // TODO(crbug.com/329640035): Remove from the group.
-        StopObservingWebState(detach.detached_web_state());
+      const TabGroup* detach_group = detach.group();
+      if (detach_group) {
+        // Remove the tab from the `detach_group`.
+        RemoveLocalWebStateFromSyncedGroup(detach.detached_web_state(),
+                                           detach_group);
       }
     } break;
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace =
           change.As<WebStateListChangeReplace>();
-      if (web_state_list->GetGroupOfWebStateAt(replace.index())) {
-        StopObservingWebState(replace.replaced_web_state());
-        StartObservingWebState(replace.inserted_web_state());
-        // TODO(crbug.com/329640035): Is it necessary to update the associated
-        // tab?
+      const TabGroup* group =
+          web_state_list->GetGroupOfWebStateAt(replace.index());
+      if (group) {
+        RemoveLocalWebStateFromSyncedGroup(replace.replaced_web_state(), group);
+        AddLocalWebStateToSyncedGroup(replace.inserted_web_state(),
+                                      web_state_list);
       }
     } break;
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert =
           change.As<WebStateListChangeInsert>();
       if (insert.group()) {
-        // TODO(crbug.com/329640035): Add to the group.
-        StartObservingWebState(insert.inserted_web_state());
+        // Insert the tab into the synced `new_group`.
+        AddLocalWebStateToSyncedGroup(insert.inserted_web_state(),
+                                      web_state_list);
       }
     } break;
     case WebStateListChange::Type::kGroupCreate: {
-      const WebStateListChangeGroupCreate& groupCreateChange =
+      const WebStateListChangeGroupCreate& group_create =
           change.As<WebStateListChangeGroupCreate>();
-      CreateSyncedGroup(web_state_list, groupCreateChange.created_group());
+      CreateSyncedGroup(web_state_list, group_create.created_group());
       break;
     }
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // TODO(crbug.com/329640035): Once groups have ID, update the saved one.
+    case WebStateListChange::Type::kGroupVisualDataUpdate: {
+      const WebStateListChangeGroupVisualDataUpdate& visual_data =
+          change.As<WebStateListChangeGroupVisualDataUpdate>();
+      UpdateVisualDataSyncedGroup(visual_data.updated_group());
       break;
+    }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& move = change.As<WebStateListChangeMove>();
       const TabGroup* old_group = move.old_group();
       const TabGroup* new_group = move.new_group();
-      if (old_group || new_group) {
-        if (old_group && old_group != new_group) {
-          // TODO(crbug.com/329640035): Implement.
-          StopObservingWebState(move.moved_web_state());
+      if (old_group != new_group) {
+        if (old_group) {
+          // Remove the tab from the synced `old_group`.
+          RemoveLocalWebStateFromSyncedGroup(move.moved_web_state(), old_group);
         }
-        if (new_group && old_group != new_group) {
-          // TODO(crbug.com/329640035): Implement.
-          StartObservingWebState(move.moved_web_state());
+        if (new_group) {
+          // Insert the tab into the synced `new_group`.
+          AddLocalWebStateToSyncedGroup(move.moved_web_state(), web_state_list);
         }
-        if (old_group == new_group) {
-          // TODO(crbug.com/329640035): Implement.
-        }
+      } else if (old_group) {
+        // Move the tab in the group.
+        MoveLocalWebStateToSyncedGroup(move.moved_web_state(), web_state_list);
       }
       break;
     }
@@ -187,20 +204,13 @@ void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
     return;
   }
 
-  BrowserAndIndex browser_and_index = FindBrowserAndIndex(
-      web_state->GetUniqueIdentifier(), browser_list_->AllRegularBrowsers());
-  const TabGroup* tab_group =
-      browser_and_index.browser->GetWebStateList()->GetGroupOfWebStateAt(
-          browser_and_index.tab_index);
-  int tab_position =
-      browser_and_index.tab_index - tab_group->range().range_begin();
-  CHECK(tab_position >= 0);
-  CHECK(tab_position < tab_group->range().count());
+  // Updates before the first navigation should be ignored.
+  web::WebStateID identifier = web_state->GetUniqueIdentifier();
+  if (ignored_web_state_identifiers_.contains(identifier)) {
+    return;
+  }
 
-  sync_service_->UpdateTab(
-      tab_group->tab_group_id(), web_state->GetUniqueIdentifier().identifier(),
-      web_state->GetTitle(), web_state->GetVisibleURL(),
-      std::make_optional(tab_position));
+  UpdateLocalWebStateInSyncedGroup(web_state);
 }
 
 void TabGroupLocalUpdateObserver::DidFinishNavigation(
@@ -217,7 +227,7 @@ void TabGroupLocalUpdateObserver::DidFinishNavigation(
     return;
   }
 
-  // TODO(crbug.com/329640035): Update the model with the new URL.
+  UpdateLocalWebStateInSyncedGroup(web_state);
 }
 
 void TabGroupLocalUpdateObserver::WebStateDestroyed(web::WebState* web_state) {
@@ -245,11 +255,6 @@ void TabGroupLocalUpdateObserver::SetSyncUpdatePaused(bool paused) {
 }
 
 void TabGroupLocalUpdateObserver::StartObservingBrowser(Browser* browser) {
-  if (browser->IsInactive()) {
-    // The updates of the inactive browser should not be propagated.
-    return;
-  }
-
   // Observer should be set once the session restoration service has started.
   // TODO(crbug.com/350885825): Directly inject the SessionRestorationService to
   // this class when it's no longer necessary for MigrateSessionStorageFormat to
@@ -286,6 +291,67 @@ void TabGroupLocalUpdateObserver::StopObservingWebState(
   // `ignored_web_state_identifiers_`.
   ignored_web_state_identifiers_.erase(web_state->GetUniqueIdentifier());
   web_state_observation_.RemoveObservation(web_state);
+}
+
+void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
+    web::WebState* web_state) {
+  CHECK(!sync_update_paused_);
+
+  LocalTabInfo tab_info =
+      utils::GetLocalTabInfo(browser_list_, web_state->GetUniqueIdentifier());
+
+  sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
+                           web_state->GetUniqueIdentifier().identifier(),
+                           web_state->GetTitle(), web_state->GetVisibleURL(),
+                           std::nullopt);
+}
+
+void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(
+    web::WebState* web_state,
+    WebStateList* web_state_list) {
+  StartObservingWebState(web_state);
+  if (sync_update_paused_) {
+    // Early return after starting observing new tabs.
+    return;
+  }
+
+  LocalTabInfo tab_info =
+      web_state_list ? utils::GetLocalTabInfo(web_state_list,
+                                              web_state->GetUniqueIdentifier())
+                     : utils::GetLocalTabInfo(browser_list_,
+                                              web_state->GetUniqueIdentifier());
+  utils::GetLocalTabInfo(browser_list_, web_state->GetUniqueIdentifier());
+  sync_service_->AddTab(tab_info.tab_group->tab_group_id(),
+                        web_state->GetUniqueIdentifier().identifier(),
+                        web_state->GetTitle(), web_state->GetVisibleURL(),
+                        std::make_optional(tab_info.index_in_group));
+}
+
+void TabGroupLocalUpdateObserver::MoveLocalWebStateToSyncedGroup(
+    web::WebState* web_state,
+    WebStateList* web_state_list) {
+  if (sync_update_paused_) {
+    return;
+  }
+
+  LocalTabInfo tab_info =
+      utils::GetLocalTabInfo(web_state_list, web_state->GetUniqueIdentifier());
+  sync_service_->MoveTab(tab_info.tab_group->tab_group_id(),
+                         web_state->GetUniqueIdentifier().identifier(),
+                         tab_info.index_in_group);
+}
+
+void TabGroupLocalUpdateObserver::RemoveLocalWebStateFromSyncedGroup(
+    web::WebState* web_state,
+    const TabGroup* tab_group) {
+  StopObservingWebState(web_state);
+  if (sync_update_paused_) {
+    // Early return after stoping observing new tabs.
+    return;
+  }
+
+  sync_service_->RemoveTab(tab_group->tab_group_id(),
+                           web_state->GetUniqueIdentifier().identifier());
 }
 
 void TabGroupLocalUpdateObserver::CreateSyncedGroup(
@@ -326,6 +392,16 @@ void TabGroupLocalUpdateObserver::CreateSyncedGroup(
                             std::nullopt, saved_tab_group_id,
                             tab_group->tab_group_id());
   sync_service_->AddGroup(saved_group);
+}
+
+void TabGroupLocalUpdateObserver::UpdateVisualDataSyncedGroup(
+    const TabGroup* tab_group) {
+  if (sync_update_paused_) {
+    return;
+  }
+
+  sync_service_->UpdateVisualData(tab_group->tab_group_id(),
+                                  &tab_group->visual_data());
 }
 
 }  // namespace tab_groups
