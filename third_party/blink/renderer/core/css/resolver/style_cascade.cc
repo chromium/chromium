@@ -1444,6 +1444,7 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
     } else if (token.FunctionId() == CSSValueID::kAttr &&
                RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
       CSSParserTokenStream::BlockGuard guard(stream);
+      state_.SetHasAttrFunction();
       success &=
           ResolveAttrInto(stream, resolver, parent_tokenizer, context, out);
     } else if (token.GetType() == kFunctionToken &&

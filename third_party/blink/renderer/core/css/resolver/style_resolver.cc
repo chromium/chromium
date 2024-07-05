@@ -1599,6 +1599,11 @@ void StyleResolver::ApplyBaseStyleNoCache(
   state.StyleBuilder().SetPseudoElementStyles(
       match_result.PseudoElementStyles());
 
+  if (RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled() &&
+      state.HasAttrFunction()) {
+    state.StyleBuilder().SetHasAttrContent();
+  }
+
   // Now we're done with all operations that may overwrite InsideLink,
   // so we can set it once and for all.
   state.StyleBuilder().SetInsideLink(state.InsideLink());

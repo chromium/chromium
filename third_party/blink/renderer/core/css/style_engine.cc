@@ -118,6 +118,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -1675,6 +1676,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
 namespace {
 
 bool HasAttributeDependentGeneratedContent(const Element& element) {
+  DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
   if (PseudoElement* before = element.GetPseudoElement(kPseudoIdBefore)) {
     const ComputedStyle* style = before->GetComputedStyle();
     if (style && style->HasAttrContent()) {
@@ -1694,6 +1696,16 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
       return true;
     }
   }
+  return false;
+}
+
+bool HasAttributeDependentStyle(const Element& element) {
+  DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
+  const ComputedStyle* style = element.GetComputedStyle();
+  if (style && style->HasAttrContent()) {
+    return true;
+  }
+  // TODO(crbug.com/40320391): Handle pseudo elements invalidation.
   return false;
 }
 
@@ -1729,11 +1741,16 @@ void StyleEngine::AttributeChangedForElement(
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
 
-  if (!element.NeedsStyleRecalc() &&
-      HasAttributeDependentGeneratedContent(element)) {
-    element.SetNeedsStyleRecalc(
-        kLocalStyleChange,
-        StyleChangeReasonForTracing::FromAttribute(attribute_name));
+  if (!element.NeedsStyleRecalc()) {
+    bool attr_dependent =
+        RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()
+            ? HasAttributeDependentStyle(element)
+            : HasAttributeDependentGeneratedContent(element);
+    if (attr_dependent) {
+      element.SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::FromAttribute(attribute_name));
+    }
   }
 }
 

@@ -329,6 +329,11 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
     // be different if the cascade filter is different.
     return false;
   }
+
+  if (state.HasAttrFunction()) {
+    return false;
+  }
+
   return true;
 }
 

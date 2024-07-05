@@ -3138,6 +3138,7 @@
       "external/wpt/css/css-values/attr-color-valid.html",
       "external/wpt/css/css-values/attr-in-max.html",
       "external/wpt/css/css-values/attr-invalid-type-008.html",
+      "external/wpt/css/css-values/attr-invalidation.html",
       "external/wpt/css/css-values/attr-length-invalid-cast.html",
       "external/wpt/css/css-values/attr-length-valid.html",
       "external/wpt/css/css-values/attr-length-valid-zero.html",
