@@ -500,9 +500,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
 class BorderlessIsolatedWebAppBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  BorderlessIsolatedWebAppBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppBorderless);
+  BorderlessIsolatedWebAppBrowserTest() = default;
+
+  void SetUp() override {
+    SetupBorderlessFeatureFlag();
+    IsolatedWebAppBrowserTestHarness::SetUp();
   }
 
   void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {
@@ -522,7 +524,6 @@ class BorderlessIsolatedWebAppBrowserTest
           browser_view()->GetActiveWebContents(), kBorderlessAppOnloadTitle);
       EXPECT_EQ(title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
     }
-    EXPECT_EQ(uses_borderless, browser_view()->AppUsesBorderlessMode());
 
     views::NonClientFrameView* frame_view =
         browser_view()->GetWidget()->non_client_view()->frame_view();
@@ -615,8 +616,13 @@ class BorderlessIsolatedWebAppBrowserTest
     }
   }
 
- private:
+  virtual void SetupBorderlessFeatureFlag() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppBorderless);
+  }
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
@@ -626,6 +632,8 @@ class BorderlessIsolatedWebAppBrowserTest
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppUsesBorderlessModeAndHasWindowManagementPermission) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
+
   GrantWindowManagementPermission();
 
   ASSERT_TRUE(
@@ -637,6 +645,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        BorderlessModeHidesTitlebarAndWindowingControls) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // `chromeos::FrameCaptionButtonContainerView` is ChromeOS only thing.
@@ -660,6 +669,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        DisplayModeMediaCSS) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   auto* web_contents = browser_view()->GetActiveWebContents();
 
   std::string get_background_color = R"(
@@ -691,6 +701,7 @@ IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     AppUsesBorderlessModeAndDoesNotHaveWindowManagementPermission) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
@@ -700,6 +711,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppDoesntUseBorderlessMode) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/false);
+  EXPECT_FALSE(browser_view()->AppUsesBorderlessMode());
   ASSERT_FALSE(browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(
       browser_view()->window_management_permission_granted_for_testing());
@@ -709,6 +721,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToItselfIsBorderless) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
@@ -724,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToAnyOtherOriginIsNotBorderless) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
@@ -737,6 +751,7 @@ IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     PopupSize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
@@ -786,6 +801,7 @@ IN_PROC_BROWSER_TEST_F(
     BorderlessIsolatedWebAppBrowserTest,
     PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
@@ -853,6 +869,7 @@ IN_PROC_BROWSER_TEST_F(
 // possible. To test the fix for b/265935069.
 IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
   InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  EXPECT_TRUE(browser_view()->AppUsesBorderlessMode());
   GrantWindowManagementPermission();
 
   ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
@@ -869,6 +886,25 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
 #elif BUILDFLAG(IS_LINUX)
   EXPECT_EQ(frame_view()->GetMinimumSize(), gfx::Size(1, 1));
 #endif
+}
+
+class BorderlessIsolatedWebAppBrowserTestDisabledFlag
+    : public BorderlessIsolatedWebAppBrowserTest {
+ protected:
+  void SetupBorderlessFeatureFlag() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kWebAppBorderless);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTestDisabledFlag,
+                       AppCannotUseFeatureWhenBorderlessFlagIsDisabled) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+
+  EXPECT_FALSE(browser_view()->AppUsesBorderlessMode());
+  EXPECT_FALSE(
+      browser_view()->window_management_permission_granted_for_testing());
+  EXPECT_FALSE(browser_view()->IsBorderlessModeEnabled());
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
