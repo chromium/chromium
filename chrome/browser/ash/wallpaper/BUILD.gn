@@ -17,6 +17,7 @@ static_library("wallpaper") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/file_manager",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/drivefs/mojom",
     "//google_apis/common",

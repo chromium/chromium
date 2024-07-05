@@ -20,6 +20,8 @@ static_library("safe_browsing") {
 
   public_deps = []
 
+  allow_circular_includes_from = []
+
   deps = [
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
@@ -78,6 +80,12 @@ static_library("safe_browsing") {
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/file_manager" ]
+
+    allow_circular_includes_from += [ "//chrome/browser/ash/file_manager" ]
   }
 
   if (safe_browsing_mode != 0) {

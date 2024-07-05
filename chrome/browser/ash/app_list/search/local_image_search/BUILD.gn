@@ -19,6 +19,8 @@ static_library("local_image_search") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
   ]
+
+  deps = [ "//chrome/browser/ash/file_manager" ]
 }
 
 source_set("unit_tests") {

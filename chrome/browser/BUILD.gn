@@ -5354,6 +5354,8 @@ static_library("browser") {
       "//chrome/browser/ash/events",
       "//chrome/browser/ash/exo",
       "//chrome/browser/ash/extended_updates",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_manager/virtual_tasks",
       "//chrome/browser/ash/file_suggest",
       "//chrome/browser/ash/first_run",
       "//chrome/browser/ash/floating_sso",
@@ -5628,6 +5630,8 @@ static_library("browser") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/account_manager",
       "//chrome/browser/ash/cryptauth",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_manager/virtual_tasks",
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/device_name",
       "//chrome/browser/ash/device_sync",
@@ -8822,6 +8826,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/dbus" ]
     deps += [
       "//chrome/browser/ash",
+      "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/test:test_support_ui",
       "//chromeos:test_support",

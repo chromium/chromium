@@ -22,6 +22,7 @@ source_set("system_web_apps") {
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
@@ -48,6 +49,7 @@ source_set("system_web_apps") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",

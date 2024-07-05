@@ -194,6 +194,7 @@ static_library("input_method") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/input_method/japanese",
     "//chrome/browser/ash/input_method/ui",
     "//chrome/browser/ash/magic_boost",

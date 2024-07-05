@@ -25,6 +25,8 @@ static_library("fusebox") {
   deps = [
     ":fusebox_proto",
     "//base",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/system_web_apps/apps",
     "//content/public/browser",
     "//net",
@@ -33,7 +35,11 @@ static_library("fusebox") {
     "//url",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/system_web_apps/apps" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/file_manager",
+  ]
 }
 
 proto_library("fusebox_proto") {

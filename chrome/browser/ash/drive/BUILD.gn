@@ -37,6 +37,7 @@ static_library("drive") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
@@ -72,6 +73,7 @@ static_library("drive") {
     "//chrome/browser/ash/wallpaper",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
+    "//chrome/browser/ash/file_manager",
   ]
 }
 
@@ -121,6 +123,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chromeos/ash/components/drivefs:test_support",

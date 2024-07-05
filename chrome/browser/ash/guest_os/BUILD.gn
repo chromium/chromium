@@ -67,6 +67,7 @@ static_library("guest_os") {
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/system_web_apps/apps",
@@ -103,6 +104,7 @@ static_library("guest_os") {
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/exo",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/plugin_vm",

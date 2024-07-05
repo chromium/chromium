@@ -29,6 +29,7 @@ static_library("nearby_share") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/nearby_share/ui",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/webshare:storage",

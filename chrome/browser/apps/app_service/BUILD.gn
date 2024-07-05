@@ -232,6 +232,8 @@ source_set("app_service") {
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_manager/virtual_tasks",
       "//chrome/browser/ash/fusebox",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os/public",
@@ -270,6 +272,7 @@ source_set("app_service") {
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
+      "//chrome/browser/ash/app_mode/web_app",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/app_shortcuts",
@@ -282,13 +285,13 @@ source_set("app_service") {
       "//chrome/browser/ash/child_accounts/on_device_controls",
       "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/remote_apps",
       "//chrome/browser/ash/system_logs",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",
-      "//chrome/browser/ash/app_mode/web_app",
     ]
   }
 
@@ -448,6 +451,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/bruschetta:test_support",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crosapi:test_support",
+      "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/fusebox",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os:test_support",
