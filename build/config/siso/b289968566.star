@@ -38,6 +38,7 @@ def __step_config(ctx, step_config):
         "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
         "./obj/chrome/browser/ash/ash/user_session_manager.o",
         "./obj/chrome/browser/ash/ash/webui_login_view.o",
+        "./obj/chrome/browser/ash/file_manager/browser_tests/file_tasks_browsertest.o",
         "./obj/chrome/browser/ash/system_web_apps/apps/browser_tests/media_app_integration_browsertest.o",
         "./obj/chrome/browser/ash/system_web_apps/browser_tests/system_web_app_manager_browsertest.o",
         "./obj/chrome/browser/ash/unit_tests/wizard_controller_unittest.o",
