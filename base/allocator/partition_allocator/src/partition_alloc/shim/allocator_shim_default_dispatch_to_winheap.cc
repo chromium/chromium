@@ -95,6 +95,7 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapCallocImpl,
     &DefaultWinHeapMemalignImpl,
     &DefaultWinHeapReallocImpl,
+    &DefaultWinHeapReallocImpl, /* realloc_unchecked_function */
     &DefaultWinHeapFreeImpl,
     &DefaultWinHeapGetSizeEstimateImpl,
     nullptr, /* good_size */
@@ -104,7 +105,9 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr, /* free_definite_size_function */
     nullptr, /* try_free_default_function */
     &DefaultWinHeapAlignedMallocImpl,
+    &DefaultWinHeapAlignedMallocImpl, /* aligned_malloc_unchecked_function */
     &DefaultWinHeapAlignedReallocImpl,
+    &DefaultWinHeapAlignedReallocImpl, /* aligned_realloc_unchecked_function */
     &DefaultWinHeapAlignedFreeImpl,
     nullptr, /* next */
 };

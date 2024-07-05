@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdlib.h>
-
-#include <algorithm>
 #include <cstddef>
-#include <cstdlib>
-#include <cstring>
 
 #include "build/build_config.h"
 #include "build/rust/std/alias.h"
@@ -17,10 +12,6 @@
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #include "partition_alloc/shim/allocator_shim.h"        // nogncheck
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include <malloc.h>
 #endif
 
 // When linking a final binary, rustc has to pick between either:
@@ -108,32 +99,7 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
   if (align <= alignof(std::max_align_t)) {
     return allocator_shim::UncheckedAlloc(size);
   } else {
-    // TODO(b/342251590): We need an Unchecked path for aligned allocations.
-    // Then we should use that instead of all these platform-specific functions
-    // and enable the rest of the RustStaticTest.RustLargeAllocationFailure
-    // test.
-
-#if defined(COMPILER_MSVC)
-    return _aligned_malloc(size, align);
-#elif BUILDFLAG(IS_ANDROID)
-    // Android has no posix_memalign() exposed:
-    // https://source.chromium.org/chromium/chromium/src/+/main:base/memory/aligned_memory.cc;l=24-30;drc=e4622aaeccea84652488d1822c28c78b7115684f
-    return memalign(align, size);
-#else
-    // The `align` from Rust is always a power of 2:
-    // https://doc.rust-lang.org/std/alloc/struct.Layout.html#method.from_size_align.
-    //
-    // We get here only if align > alignof(max_align_t), which guarantees that
-    // the alignment is both a power of 2 and even, which is required by
-    // posix_memalign().
-    //
-    // The PartitionAlloc impl requires that the alignment is at least the same
-    // as pointer-alignment. std::max_align_t is at least pointer-aligned as
-    // well, so we satisfy that.
-    void* p;
-    auto ret = posix_memalign(&p, align, size);
-    return ret == 0 ? p : nullptr;
-#endif
+    return allocator_shim::UncheckedAlignedAlloc(size, align);
   }
 #endif
 }
@@ -141,16 +107,12 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
 REMAP_ALLOC_ATTRIBUTES void __rust_dealloc(void* p, size_t size, size_t align) {
 #if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   extern void __rdl_dealloc(void* p, size_t size, size_t align);
-  return __rdl_dealloc(p, size, align);
+  __rdl_dealloc(p, size, align);
 #else
   if (align <= alignof(std::max_align_t)) {
     allocator_shim::UncheckedFree(p);
   } else {
-#if defined(COMPILER_MSVC)
-    _aligned_free(p);
-#else
-    free(p);
-#endif
+    allocator_shim::UncheckedAlignedFree(p);
   }
 #endif
 }
@@ -164,18 +126,10 @@ REMAP_ALLOC_ATTRIBUTES void* __rust_realloc(void* p,
                              size_t new_size);
   return __rdl_realloc(p, old_size, align, new_size);
 #else
-  // TODO(b/342251590): We need an Unchecked path for reallocations. Then we
-  // should use that instead of `reallloc()` and enable the rest of the
-  // RustStaticTest.RustLargeAllocationFailure test.
-
   if (align <= alignof(std::max_align_t)) {
-    return realloc(p, new_size);
+    return allocator_shim::UncheckedRealloc(p, new_size);
   } else {
-    void* out = __rust_alloc(align, new_size);
-    if (out) {
-      memcpy(out, p, std::min(old_size, new_size));
-    }
-    return out;
+    return allocator_shim::UncheckedAlignedRealloc(p, new_size, align);
   }
 #endif
 }

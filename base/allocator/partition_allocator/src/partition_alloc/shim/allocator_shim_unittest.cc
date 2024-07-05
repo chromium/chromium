@@ -133,6 +133,32 @@ class AllocatorShimTest : public testing::Test {
     return self->next->realloc_function(self->next, address, size, context);
   }
 
+  static void* MockReallocUnchecked(const AllocatorDispatch* self,
+                                    void* address,
+                                    size_t size,
+                                    void* context) {
+    if (instance_) {
+      // Size 0xFEED is a special sentinel for the NewHandlerConcurrency test.
+      // Hitting it for the first time will cause a failure, causing the
+      // invocation of the std::new_handler.
+      if (size == 0xFEED) {
+        thread_local bool did_fail_realloc_0xfeed_once = false;
+        if (!did_fail_realloc_0xfeed_once) {
+          did_fail_realloc_0xfeed_once = true;
+          return nullptr;
+        }
+        return address;
+      }
+
+      if (size < MaxSizeTracked()) {
+        ++(instance_->reallocs_intercepted_by_size[size]);
+      }
+      ++instance_->reallocs_intercepted_by_addr[Hash(address)];
+    }
+    return self->next->realloc_unchecked_function(self->next, address, size,
+                                                  context);
+  }
+
   static void MockFree(const AllocatorDispatch* self,
                        void* address,
                        void* context) {
@@ -225,6 +251,17 @@ class AllocatorShimTest : public testing::Test {
                                                context);
   }
 
+  static void* MockAlignedMallocUnchecked(const AllocatorDispatch* self,
+                                          size_t size,
+                                          size_t alignment,
+                                          void* context) {
+    if (instance_ && size < MaxSizeTracked()) {
+      ++instance_->aligned_mallocs_intercepted_by_size[size];
+    }
+    return self->next->aligned_malloc_unchecked_function(self->next, size,
+                                                         alignment, context);
+  }
+
   static void* MockAlignedRealloc(const AllocatorDispatch* self,
                                   void* address,
                                   size_t size,
@@ -238,6 +275,21 @@ class AllocatorShimTest : public testing::Test {
     }
     return self->next->aligned_realloc_function(self->next, address, size,
                                                 alignment, context);
+  }
+
+  static void* MockAlignedReallocUnchecked(const AllocatorDispatch* self,
+                                           void* address,
+                                           size_t size,
+                                           size_t alignment,
+                                           void* context) {
+    if (instance_) {
+      if (size < MaxSizeTracked()) {
+        ++instance_->aligned_reallocs_intercepted_by_size[size];
+      }
+      ++instance_->aligned_reallocs_intercepted_by_addr[Hash(address)];
+    }
+    return self->next->aligned_realloc_unchecked_function(
+        self->next, address, size, alignment, context);
   }
 
   static void MockAlignedFree(const AllocatorDispatch* self,
@@ -356,7 +408,8 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockAllocZeroInit, /* alloc_zero_initialized_function */
     &AllocatorShimTest::MockAllocAligned,  /* alloc_aligned_function */
     &AllocatorShimTest::MockRealloc,       /* realloc_function */
-    &AllocatorShimTest::MockFree,          /* free_function */
+    &AllocatorShimTest::MockReallocUnchecked, /* realloc_unchecked_function */
+    &AllocatorShimTest::MockFree,             /* free_function */
     &AllocatorShimTest::MockGetSizeEstimate,  /* get_size_estimate_function */
     &AllocatorShimTest::MockGoodSize,         /* good_size */
     &AllocatorShimTest::MockClaimedAddress,   /* claimed_address_function */
@@ -365,9 +418,13 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockFreeDefiniteSize, /* free_definite_size_function */
     &AllocatorShimTest::MockTryFreeDefault,   /* try_free_default_function */
     &AllocatorShimTest::MockAlignedMalloc,    /* aligned_malloc_function */
-    &AllocatorShimTest::MockAlignedRealloc,   /* aligned_realloc_function */
-    &AllocatorShimTest::MockAlignedFree,      /* aligned_free_function */
-    nullptr,                                  /* next */
+    &AllocatorShimTest::MockAlignedMallocUnchecked,
+    /* aligned_malloc_unchecked_function */
+    &AllocatorShimTest::MockAlignedRealloc, /* aligned_realloc_function */
+    &AllocatorShimTest::MockAlignedReallocUnchecked,
+    /* aligned_realloc_unchecked_function */
+    &AllocatorShimTest::MockAlignedFree, /* aligned_free_function */
+    nullptr,                             /* next */
 };
 
 TEST_F(AllocatorShimTest, InterceptLibcSymbols) {

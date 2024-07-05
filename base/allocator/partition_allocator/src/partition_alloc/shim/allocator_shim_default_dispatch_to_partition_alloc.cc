@@ -174,6 +174,7 @@ bool AllocatorConfigurationFinalized() {
   return g_roots_finalized.load();
 }
 
+template <partition_alloc::AllocFlags flags>
 void* AllocateAlignedMemory(size_t alignment, size_t size) {
   // Memory returned by the regular allocator *always* respects |kAlignment|,
   // which is a power of two, and any valid alignment is also a power of two. So
@@ -188,12 +189,10 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
     PA_CHECK(std::has_single_bit(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
-    return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(
-        size);
+    return Allocator()->AllocInline<flags>(size);
   }
 
-  return Allocator()->AlignedAllocInline<partition_alloc::AllocFlags::kNoHooks>(
-      alignment, size);
+  return Allocator()->AlignedAllocInline<flags>(alignment, size);
 }
 
 }  // namespace
@@ -231,7 +230,8 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t size,
                         void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return AllocateAlignedMemory(alignment, size);
+  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
+                                                                      size);
 }
 
 void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
@@ -239,7 +239,18 @@ void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             size_t alignment,
                             void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
-  return AllocateAlignedMemory(alignment, size);
+  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
+                                                                      size);
+}
+
+void* PartitionAlignedAllocUnchecked(const AllocatorDispatch* dispatch,
+                                     size_t size,
+                                     size_t alignment,
+                                     void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks |
+                               partition_alloc::AllocFlags::kReturnNull>(
+      alignment, size);
 }
 
 // aligned_realloc documentation is
@@ -256,7 +267,43 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   partition_alloc::ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
-    new_ptr = AllocateAlignedMemory(alignment, size);
+    new_ptr = AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(
+        alignment, size);
+  } else {
+    // size == 0 and address != null means just "free(address)".
+    if (address) {
+      partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+          partition_alloc::FreeFlags::kNoHooks>(address);
+    }
+  }
+  // The original memory block (specified by address) is unchanged if ENOMEM.
+  if (!new_ptr) {
+    return nullptr;
+  }
+  // TODO(tasak): Need to compare the new alignment with the address' alignment.
+  // If the two alignments are not the same, need to return nullptr with EINVAL.
+  if (address) {
+    size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
+    size_t copy_size = usage > size ? size : usage;
+    memcpy(new_ptr, address, copy_size);
+
+    partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(address);
+  }
+  return new_ptr;
+}
+
+void* PartitionAlignedReallocUnchecked(const AllocatorDispatch* dispatch,
+                                       void* address,
+                                       size_t size,
+                                       size_t alignment,
+                                       void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+  void* new_ptr = nullptr;
+  if (size > 0) {
+    new_ptr = AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks |
+                                    partition_alloc::AllocFlags::kReturnNull>(
+        alignment, size);
   } else {
     // size == 0 and address != null means just "free(address)".
     if (address) {
@@ -299,6 +346,27 @@ void* PartitionRealloc(const AllocatorDispatch*,
 
   return Allocator()->Realloc<partition_alloc::AllocFlags::kNoHooks>(address,
                                                                      size, "");
+}
+
+void* PartitionReallocUnchecked(const AllocatorDispatch*,
+                                void* address,
+                                size_t size,
+                                void* context) {
+  partition_alloc::ScopedDisallowAllocations guard{};
+#if PA_BUILDFLAG(IS_APPLE)
+  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+                      reinterpret_cast<uintptr_t>(address)) &&
+                  address)) {
+    // A memory region allocated by the system allocator is passed in this
+    // function.  Forward the request to `realloc` which supports zone-
+    // dispatching so that it appropriately selects the right zone.
+    return realloc(address, size);
+  }
+#endif  // PA_BUILDFLAG(IS_APPLE)
+
+  return Allocator()
+      ->Realloc<partition_alloc::AllocFlags::kNoHooks |
+                partition_alloc::AllocFlags::kReturnNull>(address, size, "");
 }
 
 #if PA_BUILDFLAG(IS_CAST_ANDROID)
@@ -610,7 +678,9 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
         PartitionCalloc,  // alloc_zero_initialized_function
     &allocator_shim::internal::PartitionMemalign,  // alloc_aligned_function
     &allocator_shim::internal::PartitionRealloc,   // realloc_function
-    &allocator_shim::internal::PartitionFree,      // free_function
+    &allocator_shim::internal::
+        PartitionReallocUnchecked,             // realloc_unchecked_function
+    &allocator_shim::internal::PartitionFree,  // free_function
     &allocator_shim::internal::
         PartitionGetSizeEstimate,  // get_size_estimate_function
 #if PA_BUILDFLAG(IS_APPLE)
@@ -637,7 +707,11 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &allocator_shim::internal::
         PartitionAlignedAlloc,  // aligned_malloc_function
     &allocator_shim::internal::
-        PartitionAlignedRealloc,               // aligned_realloc_function
+        PartitionAlignedAllocUnchecked,  // aligned_malloc_unchecked_function
+    &allocator_shim::internal::
+        PartitionAlignedRealloc,  // aligned_realloc_function
+    &allocator_shim::internal::
+        PartitionAlignedReallocUnchecked,  // aligned_realloc_unchecked_function
     &allocator_shim::internal::PartitionFree,  // aligned_free_function
     nullptr,                                   // next
 };

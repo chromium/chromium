@@ -56,11 +56,8 @@ TEST(RustStaticTest, RustLargeAllocationFailure) {
 
   // Same as above but with an alignment larger than PartitionAlloc's default
   // alignment, which goes down a different path.
-  //
-  // TODO(b/342251590): This currently crashes because we have no unchecked
-  // aligned allocation path.
   size_t big_alignment = alignof(std::max_align_t) * 2u;
-  // EXPECT_FALSE(allocate_huge_via_rust(max_size + 1u, big_alignment));
+  EXPECT_FALSE(allocate_huge_via_rust(max_size + 1u, big_alignment));
 
   // PartitionAlloc will crash if given an alignment larger than this. The
   // allocation hooks handle it gracefully.
@@ -70,16 +67,12 @@ TEST(RustStaticTest, RustLargeAllocationFailure) {
   // Repeat the test but with alloc_zeroed().
   EXPECT_TRUE(allocate_zeroed_huge_via_rust(100u, 1u));
   EXPECT_FALSE(allocate_zeroed_huge_via_rust(max_size + 1u, 4u));
-  // TODO(b/342251590): This currently crashes because we have no unchecked
-  // aligned allocation path.
-  // EXPECT_FALSE(allocate_zeroed_huge_via_rust(max_size + 1u, big_alignment));
+  EXPECT_FALSE(allocate_zeroed_huge_via_rust(max_size + 1u, big_alignment));
   EXPECT_FALSE(allocate_zeroed_huge_via_rust(100u, max_alignment * 2u));
 
   // Repeat the test but with realloc().
   EXPECT_TRUE(reallocate_huge_via_rust(100u, 1u));
-  // TODO(b/342251590): This currently crashes because we have no unchecked
-  // re-allocation path.
-  // EXPECT_FALSE(reallocate_huge_via_rust(max_size + 1u, 4u));
+  EXPECT_FALSE(reallocate_huge_via_rust(max_size + 1u, 4u));
   EXPECT_FALSE(reallocate_huge_via_rust(max_size + 1u, big_alignment));
   // Note: We don't test with `max_alignment * 2` since the initial allocation
   // will always fail, the realloc can't happen anyway.

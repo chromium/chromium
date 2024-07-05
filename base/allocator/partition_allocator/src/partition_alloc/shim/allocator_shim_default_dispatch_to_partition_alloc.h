@@ -56,6 +56,12 @@ void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* PartitionAlignedAllocUnchecked(const AllocatorDispatch* dispatch,
+                                     size_t size,
+                                     size_t alignment,
+                                     void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               void* address,
                               size_t size,
@@ -63,10 +69,23 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* PartitionAlignedReallocUnchecked(const AllocatorDispatch* dispatch,
+                                       void* address,
+                                       size_t size,
+                                       size_t alignment,
+                                       void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context);
+
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* PartitionReallocUnchecked(const AllocatorDispatch*,
+                                void* address,
+                                size_t size,
+                                void* context);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void PartitionFree(const AllocatorDispatch*, void* object, void* context);

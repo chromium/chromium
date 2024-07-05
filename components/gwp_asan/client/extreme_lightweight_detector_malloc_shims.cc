@@ -196,6 +196,7 @@ AllocatorDispatch allocator_dispatch = {
     // realloc doesn't always deallocate memory, so the Extreme LUD doesn't
     // support realloc.
     nullptr,  // realloc_function
+    nullptr,  // realloc_unchecked_function
     FreeFn,   // free_function
     nullptr,  // get_size_estimate_function
     nullptr,  // good_size_function
@@ -209,8 +210,10 @@ AllocatorDispatch allocator_dispatch = {
     // try_free_default (at least for now).
     nullptr,  // try_free_default_function
     nullptr,  // aligned_malloc_function
+    nullptr,  // aligned_malloc_unchecked_function
     // The same reason with realloc_function.
     nullptr,  // aligned_realloc_function
+    nullptr,  // aligned_realloc_unchecked_function
     // As of 2024 Jan, only _aligned_free on Windows calls this function. The
     // function is rarely used, so the Extreme LUD doesn't support this for now.
     nullptr,  // aligned_free_function

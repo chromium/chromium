@@ -220,6 +220,7 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     &BadCalloc,         /* alloc_zero_initialized_function */
     &BadAlignedAlloc,   /* alloc_aligned_function */
     &BadRealloc,        /* realloc_function */
+    &BadRealloc,        /* realloc_unchecked_function */
     &BadFree,           /* free_function */
     nullptr,            /* get_size_estimate_function */
     nullptr,            /* good_size_function */
@@ -229,7 +230,9 @@ allocator_shim::AllocatorDispatch g_bad_malloc_dispatch = {
     nullptr,            /* free_definite_size_function */
     nullptr,            /* try_free_default_function */
     &BadAlignedAlloc,   /* aligned_malloc_function */
+    &BadAlignedAlloc,   /* aligned_malloc_unchecked_function */
     &BadAlignedRealloc, /* aligned_realloc_function */
+    &BadAlignedRealloc, /* aligned_realloc_unchecked_function */
     &BadFree,           /* aligned_free_function */
     nullptr,            /* next */
 };

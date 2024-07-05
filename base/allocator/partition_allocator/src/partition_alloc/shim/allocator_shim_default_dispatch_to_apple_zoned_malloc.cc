@@ -123,6 +123,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &CallocImpl,           /* alloc_zero_initialized_function */
     &MemalignImpl,         /* alloc_aligned_function */
     &ReallocImpl,          /* realloc_function */
+    &ReallocImpl,          /* realloc_unchecked_function */
     &FreeImpl,             /* free_function */
     &GetSizeEstimateImpl,  /* get_size_estimate_function */
     &GoodSizeImpl,         /* good_size_function */
@@ -132,7 +133,9 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &FreeDefiniteSizeImpl, /* free_definite_size_function */
     &TryFreeDefaultImpl,   /* try_free_default_function */
     nullptr,               /* aligned_malloc_function */
+    nullptr,               /* aligned_malloc_unchecked_function */
     nullptr,               /* aligned_realloc_function */
+    nullptr,               /* aligned_realloc_unchecked_function */
     nullptr,               /* aligned_free_function */
     nullptr,               /* next */
 };

@@ -121,6 +121,37 @@ void* ReallocFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
+void* ReallocUncheckedFn(const AllocatorDispatch* self,
+                         void* address,
+                         size_t size,
+                         void* context) {
+  if (UNLIKELY(!address)) {
+    return AllocFn(self, size, context);
+  }
+
+  if (LIKELY(!gpa->PointerIsMine(address))) {
+    return self->next->realloc_unchecked_function(self->next, address, size,
+                                                  context);
+  }
+
+  if (!size) {
+    gpa->Deallocate(address);
+    return nullptr;
+  }
+
+  void* new_alloc = gpa->Allocate(size);
+  if (!new_alloc) {
+    new_alloc = self->next->alloc_unchecked_function(self->next, size, context);
+  }
+  if (!new_alloc) {
+    return nullptr;
+  }
+
+  memcpy(new_alloc, address, std::min(size, gpa->GetRequestedSize(address)));
+  gpa->Deallocate(address);
+  return new_alloc;
+}
+
 void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
   if (UNLIKELY(gpa->PointerIsMine(address)))
     return gpa->Deallocate(address);
@@ -223,6 +254,20 @@ static void* AlignedMallocFn(const AllocatorDispatch* self,
                                              context);
 }
 
+static void* AlignedMallocUncheckedFn(const AllocatorDispatch* self,
+                                      size_t size,
+                                      size_t alignment,
+                                      void* context) {
+  if (UNLIKELY(sampling_state.Sample())) {
+    if (void* allocation = gpa->Allocate(size, alignment)) {
+      return allocation;
+    }
+  }
+
+  return self->next->aligned_malloc_unchecked_function(self->next, size,
+                                                       alignment, context);
+}
+
 static void* AlignedReallocFn(const AllocatorDispatch* self,
                               void* address,
                               size_t size,
@@ -252,6 +297,39 @@ static void* AlignedReallocFn(const AllocatorDispatch* self,
   return new_alloc;
 }
 
+static void* AlignedReallocUncheckedFn(const AllocatorDispatch* self,
+                                       void* address,
+                                       size_t size,
+                                       size_t alignment,
+                                       void* context) {
+  if (UNLIKELY(!address)) {
+    return AlignedMallocFn(self, size, alignment, context);
+  }
+
+  if (LIKELY(!gpa->PointerIsMine(address))) {
+    return self->next->aligned_realloc_unchecked_function(
+        self->next, address, size, alignment, context);
+  }
+
+  if (!size) {
+    gpa->Deallocate(address);
+    return nullptr;
+  }
+
+  void* new_alloc = gpa->Allocate(size, alignment);
+  if (!new_alloc) {
+    new_alloc = self->next->aligned_malloc_unchecked_function(
+        self->next, size, alignment, context);
+  }
+  if (!new_alloc) {
+    return nullptr;
+  }
+
+  memcpy(new_alloc, address, std::min(size, gpa->GetRequestedSize(address)));
+  gpa->Deallocate(address);
+  return new_alloc;
+}
+
 static void AlignedFreeFn(const AllocatorDispatch* self,
                           void* address,
                           void* context) {
@@ -267,6 +345,7 @@ AllocatorDispatch g_allocator_dispatch = {
     &AllocZeroInitializedFn,
     &AllocAlignedFn,
     &ReallocFn,
+    &ReallocUncheckedFn,
     &FreeFn,
     &GetSizeEstimateFn,
     &GoodSizeFn,
@@ -276,7 +355,9 @@ AllocatorDispatch g_allocator_dispatch = {
     &FreeDefiniteSizeFn,
     &TryFreeDefaultFn,
     &AlignedMallocFn,
+    &AlignedMallocUncheckedFn,
     &AlignedReallocFn,
+    &AlignedReallocUncheckedFn,
     &AlignedFreeFn,
     nullptr /* next */
 };

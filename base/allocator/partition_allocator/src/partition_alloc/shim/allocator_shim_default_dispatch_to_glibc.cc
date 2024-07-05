@@ -76,6 +76,17 @@ void* GlibcRealloc(const AllocatorDispatch*,
   return __libc_realloc(address, size);
 }
 
+void* GlibcUncheckedRealloc(const AllocatorDispatch*,
+                            void* address,
+                            size_t size,
+                            void* context) {
+  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+    return nullptr;
+  }
+
+  return __libc_realloc(address, size);
+}
+
 void* GlibcMemalign(const AllocatorDispatch*,
                     size_t alignment,
                     size_t size,
@@ -110,21 +121,24 @@ size_t GlibcGetSizeEstimate(const AllocatorDispatch*,
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &GlibcMalloc,          /* alloc_function */
-    &GlibcUncheckedMalloc, /* alloc_unchecked_function */
-    &GlibcCalloc,          /* alloc_zero_initialized_function */
-    &GlibcMemalign,        /* alloc_aligned_function */
-    &GlibcRealloc,         /* realloc_function */
-    &GlibcFree,            /* free_function */
-    &GlibcGetSizeEstimate, /* get_size_estimate_function */
-    nullptr,               /* good_size_function */
-    nullptr,               /* claimed_address */
-    nullptr,               /* batch_malloc_function */
-    nullptr,               /* batch_free_function */
-    nullptr,               /* free_definite_size_function */
-    nullptr,               /* try_free_default_function */
-    nullptr,               /* aligned_malloc_function */
-    nullptr,               /* aligned_realloc_function */
-    nullptr,               /* aligned_free_function */
-    nullptr,               /* next */
+    &GlibcMalloc,           /* alloc_function */
+    &GlibcUncheckedMalloc,  /* alloc_unchecked_function */
+    &GlibcCalloc,           /* alloc_zero_initialized_function */
+    &GlibcMemalign,         /* alloc_aligned_function */
+    &GlibcRealloc,          /* realloc_function */
+    &GlibcUncheckedRealloc, /* realloc_unchecked_function */
+    &GlibcFree,             /* free_function */
+    &GlibcGetSizeEstimate,  /* get_size_estimate_function */
+    nullptr,                /* good_size_function */
+    nullptr,                /* claimed_address */
+    nullptr,                /* batch_malloc_function */
+    nullptr,                /* batch_free_function */
+    nullptr,                /* free_definite_size_function */
+    nullptr,                /* try_free_default_function */
+    nullptr,                /* aligned_malloc_function */
+    nullptr,                /* aligned_malloc_unchecked_function */
+    nullptr,                /* aligned_realloc_function */
+    nullptr,                /* aligned_realloc_unchecked_function */
+    nullptr,                /* aligned_free_function */
+    nullptr,                /* next */
 };

@@ -72,6 +72,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &RealCalloc,       /* alloc_zero_initialized_function */
     &RealMemalign,     /* alloc_aligned_function */
     &RealRealloc,      /* realloc_function */
+    &RealRealloc,      /* realloc_unchecked_function */
     &RealFree,         /* free_function */
     &RealSizeEstimate, /* get_size_estimate_function */
     nullptr,           /* good_size_function */
@@ -81,7 +82,9 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr,           /* free_definite_size_function */
     nullptr,           /* try_free_default_function */
     nullptr,           /* aligned_malloc_function */
+    nullptr,           /* aligned_malloc_unchecked_function */
     nullptr,           /* aligned_realloc_function */
+    nullptr,           /* aligned_realloc_unchecked_function */
     nullptr,           /* aligned_free_function */
     nullptr,           /* next */
 };
