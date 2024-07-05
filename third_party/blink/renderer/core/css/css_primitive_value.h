@@ -319,6 +319,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   bool IsLength() const;
   bool IsNumber() const;
   bool IsInteger() const;
+  static bool IsPercentage(UnitType unit) {
+    return unit == UnitType::kPercentage;
+  }
   bool IsPercentage() const;
   // Is this a percentage *or* a calc() with a percentage?
   bool HasPercentage() const;

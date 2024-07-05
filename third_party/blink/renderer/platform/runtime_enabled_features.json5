@@ -774,6 +774,12 @@
       status: "experimental",
     },
     {
+      // CSS attr() function that accepts not only string types
+      // and can be used in all properties.
+      // https://drafts.csswg.org/css-values-4/#attr-notation
+      name: "CSSAdvancedAttrFunction",
+    },
+    {
       // Allows positioning a positioned element relative to another one.
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",

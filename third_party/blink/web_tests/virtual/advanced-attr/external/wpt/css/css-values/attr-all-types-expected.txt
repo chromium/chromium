@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Values and Units Test: attr 22
+  assert_equals: Value '30px attr(data-foo flex)', where 'data-foo=1fr' should be valid for the property 'grid-template-columns'. expected "30px 1fr" but got "none"
+[FAIL] CSS Values and Units Test: attr 72
+  assert_equals: Value 'attr(data-foo flex)', where 'data-foo=3fr' should be valid for the property 'grid-template-columns'. expected "3fr" but got "none"
+Harness: the test ran to completion.
+

@@ -5,12 +5,16 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 
 #include "base/containers/contains.h"
+#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -18,6 +22,7 @@ namespace {
 
 bool IsValidVariableReference(CSSParserTokenRange, const ExecutionContext*);
 bool IsValidEnvVariableReference(CSSParserTokenRange, const ExecutionContext*);
+bool IsValidAttributeReference(CSSParserTokenRange, const ExecutionContext*);
 
 // Checks if a token sequence is a valid <declaration-value> [1],
 // with the additional restriction that any var()/env() functions (if present)
@@ -87,6 +92,15 @@ bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
           continue;
         case CSSValueID::kEnv:
           if (!IsValidEnvVariableReference(range.ConsumeBlock(), context)) {
+            return false;  // Invalid reference.
+          }
+          has_references = true;
+          continue;
+        case CSSValueID::kAttr:
+          if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
+            break;
+          }
+          if (!IsValidAttributeReference(range.ConsumeBlock(), context)) {
             return false;  // Invalid reference.
           }
           has_references = true;
@@ -192,6 +206,45 @@ bool IsValidEnvVariableReference(CSSParserTokenRange range,
     return false;
   }
 
+  bool has_references = false;
+  bool has_positioned_braces = false;
+  return IsValidRestrictedDeclarationValue(range, has_references,
+                                           has_positioned_braces, context);
+}
+
+// attr() = attr( <attr-name> <attr-type>? , <declaration-value>?)
+bool IsValidAttributeReference(CSSParserTokenRange range,
+                               const ExecutionContext* context) {
+  range.ConsumeWhitespace();
+  // Parse <attr-name>.
+  auto token = range.ConsumeIncludingWhitespace();
+  if (token.GetType() != kIdentToken) {
+    return false;
+  }
+  if (range.AtEnd()) {
+    // attr = attr(<attr-name>) is allowed, so return true.
+    return true;
+  }
+
+  token = range.ConsumeIncludingWhitespace();
+
+  // Parse <attr-type>.
+  if (token.GetType() == kIdentToken) {
+    if (!CSSAttrType::Parse(token.Value()).IsValid()) {
+      return false;
+    }
+    if (range.AtEnd()) {
+      // attr = attr(<attr-name> <attr-type>) is allowed, so return true.
+      return true;
+    }
+  }
+
+  if (range.Consume().GetType() != kCommaToken) {
+    return false;
+  }
+  if (range.AtEnd()) {
+    return false;
+  }
   bool has_references = false;
   bool has_positioned_braces = false;
   return IsValidRestrictedDeclarationValue(range, has_references,

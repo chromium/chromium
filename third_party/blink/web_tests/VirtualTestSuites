@@ -3129,5 +3129,28 @@
     "args": ["--enable-blink-features=CSSMixins"],
     "owners": ["sesse@chromium.org"],
     "expires": "Jan 1, 2025"
+  },
+  {
+    "prefix": "advanced-attr",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-values/attr-color-invalid-cast.html",
+      "external/wpt/css/css-values/attr-color-valid.html",
+      "external/wpt/css/css-values/attr-in-max.html",
+      "external/wpt/css/css-values/attr-invalid-type-008.html",
+      "external/wpt/css/css-values/attr-length-invalid-cast.html",
+      "external/wpt/css/css-values/attr-length-valid.html",
+      "external/wpt/css/css-values/attr-length-valid-zero.html",
+      "external/wpt/css/css-values/attr-length-valid-zero-nofallback.html",
+      "external/wpt/css/css-values/attr-px-invalid-cast.html",
+      "external/wpt/css/css-values/attr-px-valid.html",
+      "external/wpt/css/css-values/attr-all-types.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=CSSAdvancedAttrFunction"
+    ],
+    "expires": "Jan 1, 2025",
+    "owners": ["moonira@google.com"]
   }
 ]

@@ -2525,6 +2525,7 @@ namespace {
 
 CSSValue* ConsumeAttr(CSSParserTokenRange args,
                       const CSSParserContext& context) {
+  DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
   if (args.Peek().GetType() != kIdentToken) {
     return nullptr;
   }
@@ -2618,7 +2619,8 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
       parsed_value = css_parsing_utils::ConsumeString(stream);
     }
     if (!parsed_value) {
-      if (stream.Peek().FunctionId() == CSSValueID::kAttr) {
+      if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
+          !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
         parsed_value =
             ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
       } else if (stream.Peek().FunctionId() == CSSValueID::kCounter) {
@@ -2655,7 +2657,8 @@ const CSSValue* Content::ParseSingleValue(CSSParserTokenStream& stream,
     if (RuntimeEnabledFeatures::CSSContentMultiArgAltTextEnabled()) {
       do {
         CSSParserSavePoint savepoint(stream);
-        if (stream.Peek().FunctionId() == CSSValueID::kAttr) {
+        if (stream.Peek().FunctionId() == CSSValueID::kAttr &&
+            !RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
           alt_text =
               ConsumeAttr(css_parsing_utils::ConsumeFunction(stream), context);
         } else {
@@ -2709,6 +2712,7 @@ String GetStringFromAttributeOrStringValue(const CSSValue& value,
                                            ComputedStyleBuilder& builder) {
   String string = g_empty_string;
   if (const auto* function_value = DynamicTo<CSSFunctionValue>(value)) {
+    DCHECK(!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
     DCHECK_EQ(function_value->FunctionType(), CSSValueID::kAttr);
     builder.SetHasAttrContent();
     // TODO: Can a namespace be specified for an attr(foo)?

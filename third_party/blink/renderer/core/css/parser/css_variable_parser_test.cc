@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -54,6 +55,25 @@ const char* invalid_variable_reference_value[] = {
     "{ var(--x) } []",
     "{}{ var(--x) }",
     "{ var(--x) }{}",
+    // clang-format on
+};
+
+const char* valid_attr_values[] = {
+    // clang-format off
+    "attr(p)",
+    "attr(p string)",
+    "attr(p color)",
+    "attr(p number)",
+    "attr(p color, red)",
+    // clang-format on
+};
+
+const char* invalid_attr_values[] = {
+    // clang-format off
+    "attr(p url)",
+    "attr(p, url)",
+    "attr(p url,)",
+    "attr(p color red)",
     // clang-format on
 };
 
@@ -146,6 +166,43 @@ TEST_P(CustomPropertyDeclarationTest, ParseDeclarationValue) {
   EXPECT_NE(nullptr,
             CSSVariableParser::ParseDeclarationValue(
                 tokenized_value, /* is_animation_tainted */ false, *context));
+}
+
+class ValidAttrTest : public testing::Test,
+                      public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ValidAttrTest,
+                         testing::ValuesIn(valid_attr_values));
+
+TEST_P(ValidAttrTest, ContainsValidAttr) {
+  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
+  SCOPED_TRACE(GetParam());
+  Vector<CSSParserToken, 32> tokens = Parse(GetParam());
+  CSSParserTokenRange range(tokens);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  EXPECT_TRUE(CSSVariableParser::ContainsValidVariableReferences(
+      range, context->GetExecutionContext()));
+}
+
+class InvalidAttrTest : public testing::Test,
+                        public testing::WithParamInterface<const char*> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InvalidAttrTest,
+                         testing::ValuesIn(invalid_attr_values));
+
+TEST_P(InvalidAttrTest, ContainsValidAttr) {
+  ScopedCSSAdvancedAttrFunctionForTest scoped_feature(true);
+
+  SCOPED_TRACE(GetParam());
+  Vector<CSSParserToken, 32> tokens = Parse(GetParam());
+  CSSParserTokenRange range(tokens);
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  EXPECT_FALSE(CSSVariableParser::ContainsValidVariableReferences(
+      range, context->GetExecutionContext()));
 }
 
 }  // namespace blink

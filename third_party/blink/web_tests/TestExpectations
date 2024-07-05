@@ -1402,6 +1402,9 @@ crbug.com/1500288 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001
 
 crbug.com/1205953 external/wpt/css/css-will-change/will-change-fixpos-cb-position-1.html [ Failure ]
 
+# Advanced attr() function
+crbug.com/40320391 virtual/advanced-attr/external/wpt/css/css-values/attr-invalid-type-008.html [ Failure ]
+
 # All browsers fail
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
 

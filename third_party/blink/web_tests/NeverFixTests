@@ -203,18 +203,6 @@ virtual/threaded/printing/width-overflow.html [ Skip ]
 # We don't allow to access external hosts in layout tests.
 external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/support/xhtml-mathml-dtd-entity.htm [ Skip ]
 
-# CSS3 attribute / attr references have not been implemented (except for content)
-crbug.com/246571 external/wpt/css/css-values/attr-color-invalid-cast.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-color-valid.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-in-max.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-invalid-type-008.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-length-invalid-cast.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-length-valid.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-length-valid-zero.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-length-valid-zero-nofallback.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-px-invalid-cast.html [ Skip ]
-crbug.com/246571 external/wpt/css/css-values/attr-px-valid.html [ Skip ]
-
 # Failing WPT using ch unit in vertical orientation
 crbug.com/759914 external/wpt/css/css-values/ch-unit-002.html [ Skip ]
 

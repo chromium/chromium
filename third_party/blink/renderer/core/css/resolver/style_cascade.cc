@@ -6,6 +6,7 @@
 
 #include <bit>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
@@ -20,12 +21,15 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -46,6 +50,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -53,8 +58,12 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -73,6 +82,20 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
     return true;
   }
   return false;
+}
+
+CSSAttrType ConsumeAttributeType(CSSParserTokenStream& stream) {
+  stream.ConsumeWhitespace();
+  // <attr-type> defaults to string if omitted.
+  // https://drafts.csswg.org/css-values-5/#funcdef-attr
+  if (stream.Peek().GetType() != kIdentToken) {
+    return CSSAttrType(CSSAttrType::Category::kString);
+  }
+  CSSAttrType type =
+      CSSAttrType::Parse(stream.ConsumeIncludingWhitespace().Value());
+  // Invalid types should be omitted during parse time.
+  DCHECK(type.IsValid());
+  return type;
 }
 
 const CSSValue* Parse(const CSSProperty& property,
@@ -185,6 +208,45 @@ bool HasUnresolvedReferences(CSSParserTokenRange range) {
 }
 
 #endif  // DCHECK_IS_ON()
+
+// https://drafts.csswg.org/css-values-5/#attr-substitution-value
+std::optional<CSSParserToken> GetAttrSubstitutionValue(
+    const String& attribute_value,
+    const CSSAttrType& attribute_type,
+    const CSSParserContext& context) {
+  if (attribute_value.IsNull()) {
+    return std::nullopt;
+  }
+
+  if (attribute_type.category == CSSAttrType::Category::kString) {
+    return CSSParserToken(kStringToken, attribute_value);
+  }
+
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      attribute_type.ConvertToCSSSyntaxDefinition();
+  if (!syntax_definition.has_value()) {
+    return std::nullopt;
+  }
+
+  CSSTokenizer tokenizer(attribute_value);
+  auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
+                                context, false)) {
+    return std::nullopt;
+  }
+
+  range.ConsumeWhitespace();
+  CSSParserToken token = range.ConsumeIncludingWhitespace();
+  if (!range.AtEnd()) {
+    return std::nullopt;
+  }
+  if (attribute_type.category == CSSAttrType::Category::kDimensionUnit) {
+    token.ConvertToDimensionWithUnit(
+        CSSPrimitiveValue::UnitTypeToString(attribute_type.dimension_unit));
+  }
+  return token;
+}
 
 }  // namespace
 
@@ -1379,6 +1441,11 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveArgInto(stream, resolver, parent_tokenizer, context,
                                 function_context, out);
+    } else if (token.FunctionId() == CSSValueID::kAttr &&
+               RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      success &=
+          ResolveAttrInto(stream, resolver, parent_tokenizer, context, out);
     } else if (token.GetType() == kFunctionToken &&
                CSSVariableParser::IsValidVariableName(token.Value()) &&
                RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
@@ -1659,6 +1726,50 @@ bool StyleCascade::ResolveArgInto(CSSParserTokenStream& stream,
   CSSParserTokenStream arg_value_stream(tokenizer);
   return ResolveTokensInto(arg_value_stream, resolver, &tokenizer, context,
                            FunctionContext{}, out);
+}
+
+bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
+                                   CascadeResolver& resolver,
+                                   CSSTokenizer* parent_tokenizer,
+                                   const CSSParserContext& context,
+                                   TokenSequence& out) {
+  AtomicString attribute_name = ConsumeVariableName(stream);
+  CSSAttrType attribute_type = ConsumeAttributeType(stream);
+  const String& attribute_value =
+      state_.GetElement().getAttribute(attribute_name);
+
+  std::optional<CSSParserToken> substitution_value =
+      GetAttrSubstitutionValue(attribute_value, attribute_type, context);
+
+  // Validate fallback value.
+  if (ConsumeComma(stream)) {
+    TokenSequence fallback;
+    if (!ResolveTokensInto(stream, resolver, parent_tokenizer, context,
+                           FunctionContext{}, fallback)) {
+      return false;
+    }
+    if (!substitution_value.has_value()) {
+      return out.AppendFallback(fallback, CSSVariableData::kMaxVariableBytes);
+    }
+  }
+
+  if (!substitution_value.has_value() &&
+      attribute_type.category == CSSAttrType::Category::kString) {
+    // If the <attr-type> argument is string, <declaration-value> defaults to
+    // the empty string if omitted.
+    // https://drafts.csswg.org/css-values-5/#funcdef-attr
+    out.Append(CSSParserToken(kStringToken, g_empty_atom), g_empty_atom);
+    return true;
+  }
+
+  if (substitution_value.has_value()) {
+    StringBuilder serialized_substitution_value;
+    substitution_value->Serialize(serialized_substitution_value);
+    out.Append(*substitution_value, serialized_substitution_value);
+    return true;
+  }
+
+  return false;
 }
 
 CSSVariableData* StyleCascade::GetVariableData(
