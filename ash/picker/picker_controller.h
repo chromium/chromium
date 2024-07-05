@@ -34,6 +34,7 @@ namespace ash {
 class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
+class PickerEmojiHistoryModel;
 class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
@@ -126,14 +127,12 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
  private:
   void ShowWidget(base::TimeTicks trigger_event_timestamp);
   void CloseWidget();
-  void UpdateRecentEmoji(ui::EmojiPickerCategory category,
-                         std::u16string_view text);
   void OnFeatureTourCompleted();
-  std::vector<std::string> GetRecentEmoji(ui::EmojiPickerCategory category);
   void CloseCapsLockStateView();
 
   PickerFeatureTour feature_tour_;
   std::unique_ptr<PickerModel> model_;
+  std::unique_ptr<PickerEmojiHistoryModel> emoji_history_model_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;

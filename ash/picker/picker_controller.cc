@@ -15,6 +15,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_emoji_history_model.h"
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/model/picker_search_results_section.h"
@@ -84,10 +85,6 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     base::kSHA1Length);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
-
-constexpr int kMaxRecentEmoji = 20;
-
-constexpr std::string_view kEmojiHistoryValueFieldName = "text";
 
 constexpr base::TimeDelta kCapsLockStateViewDisplayTime = base::Seconds(3);
 
@@ -273,19 +270,6 @@ void OpenFile(const base::FilePath& path) {
   ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
 }
 
-std::string ConvertToString(ui::EmojiPickerCategory category) {
-  switch (category) {
-    case ui::EmojiPickerCategory::kEmojis:
-      return "emoji";
-    case ui::EmojiPickerCategory::kSymbols:
-      return "symbol";
-    case ui::EmojiPickerCategory::kEmoticons:
-      return "emoticon";
-    case ui::EmojiPickerCategory::kGifs:
-      return "gif";
-  }
-}
-
 GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
   switch (type) {
     case PickerSearchResult::NewWindowData::Type::kDoc:
@@ -433,18 +417,22 @@ void PickerController::InsertResultOnNextFocus(
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
   std::visit(
-      base::Overloaded{
-          [&](const PickerSearchResult::EmojiData& data) {
-            UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, data.emoji);
-          },
-          [&](const PickerSearchResult::SymbolData& data) {
-            UpdateRecentEmoji(ui::EmojiPickerCategory::kSymbols, data.symbol);
-          },
-          [&](const PickerSearchResult::EmoticonData& data) {
-            UpdateRecentEmoji(ui::EmojiPickerCategory::kEmoticons,
-                              data.emoticon);
-          },
-          [](const auto& data) {}},
+      base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
+                         emoji_history_model_->UpdateRecentEmoji(
+                             ui::EmojiPickerCategory::kEmojis,
+                             base::UTF16ToUTF8(data.emoji));
+                       },
+                       [&](const PickerSearchResult::SymbolData& data) {
+                         emoji_history_model_->UpdateRecentEmoji(
+                             ui::EmojiPickerCategory::kSymbols,
+                             base::UTF16ToUTF8(data.symbol));
+                       },
+                       [&](const PickerSearchResult::EmoticonData& data) {
+                         emoji_history_model_->UpdateRecentEmoji(
+                             ui::EmojiPickerCategory::kEmoticons,
+                             base::UTF16ToUTF8(data.emoticon));
+                       },
+                       [](const auto& data) {}},
       result.data());
 
   std::visit(
@@ -633,8 +621,9 @@ PickerActionType PickerController::GetActionForResult(
 }
 
 std::vector<std::string> PickerController::GetSuggestedEmoji() {
+  CHECK(emoji_history_model_);
   std::vector<std::string> recent_emojis =
-      GetRecentEmoji(ui::EmojiPickerCategory::kEmojis);
+      emoji_history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
   if (recent_emojis.empty()) {
     // Fall back to a default set of suggested emojis.
     return {"😀", "😃", "😄"};
@@ -686,6 +675,8 @@ void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
     return;
   }
 
+  emoji_history_model_ =
+      std::make_unique<PickerEmojiHistoryModel>(client_->GetPrefs());
   session_metrics_ = std::make_unique<PickerSessionMetrics>();
 
   widget_ = PickerWidget::Create(
@@ -714,61 +705,8 @@ void PickerController::CloseCapsLockStateView() {
   }
 }
 
-void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,
-                                         std::u16string_view text) {
-  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
-    return;
-  }
-  std::string utf8_text = base::UTF16ToUTF8(text);
-
-  std::vector<std::string> history = GetRecentEmoji(category);
-  base::Value::List history_value;
-  history_value.Append(
-      base::Value::Dict().Set(kEmojiHistoryValueFieldName, text));
-  for (const std::string& value : history) {
-    if (value == utf8_text) {
-      continue;
-    }
-    history_value.Append(
-        base::Value::Dict().Set(kEmojiHistoryValueFieldName, value));
-    if (history_value.size() == kMaxRecentEmoji) {
-      break;
-    }
-  }
-
-  ScopedDictPrefUpdate update(client_->GetPrefs(), prefs::kEmojiPickerHistory);
-  update->Set(ConvertToString(category), std::move(history_value));
-}
-
 void PickerController::OnFeatureTourCompleted() {
   ShowWidget(base::TimeTicks::Now());
-}
-
-std::vector<std::string> PickerController::GetRecentEmoji(
-    ui::EmojiPickerCategory category) {
-  if (client_ == nullptr || client_->GetPrefs() == nullptr) {
-    return {};
-  }
-
-  const base::Value::List* history = client_->GetPrefs()
-                                         ->GetDict(prefs::kEmojiPickerHistory)
-                                         .FindList(ConvertToString(category));
-  if (history == nullptr) {
-    return {};
-  }
-  std::vector<std::string> results;
-  for (const auto& it : *history) {
-    const base::Value::Dict* value_dict = it.GetIfDict();
-    if (value_dict == nullptr) {
-      continue;
-    }
-    const std::string* text =
-        value_dict->FindString(kEmojiHistoryValueFieldName);
-    if (text != nullptr) {
-      results.push_back(*text);
-    }
-  }
-  return results;
 }
 
 }  // namespace ash

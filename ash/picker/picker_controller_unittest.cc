@@ -672,6 +672,8 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
 
+  controller.ToggleWidget();
+
   EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("😀", "😃", "😄"));
 }
 
@@ -683,6 +685,8 @@ TEST_F(PickerControllerTest, SuggestedEmojiReturnsRecentEmoji) {
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
   ScopedDictPrefUpdate update(client.GetPrefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
+
+  controller.ToggleWidget();
 
   EXPECT_THAT(controller.GetSuggestedEmoji(), ElementsAre("abc", "xyz"));
 }
