@@ -7340,7 +7340,6 @@ crbug.com/40501131 external/wpt/css/css-writing-modes/vertical-alignment-slr-029
 crbug.com/40501131 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
 crbug.com/40501131 external/wpt/css/cssom-view/scrollIntoView-sideways-lr-writing-mode.html [ Failure ]
 crbug.com/40501131 external/wpt/css/cssom-view/scrollIntoView-sideways-rl-writing-mode.html [ Failure ]
-crbug.com/40501131 external/wpt/svg/text/scripted/getrotationofchar.html [ Failure ]
 
 # secure-payment-confirmation tests failed due to set_spc_transaction_mode not implemented
 crbug.com/336866597 external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure ]

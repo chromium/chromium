@@ -254,8 +254,16 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
     return 0.0f;
   }
   float rotation = item->GetSvgFragmentData()->angle;
-  if (item->Style().IsHorizontalWritingMode()) {
-    return rotation;
+  switch (item->Style().GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      return rotation;
+    case WritingMode::kSidewaysRl:
+      return rotation + 90.0f;
+    case WritingMode::kSidewaysLr:
+      return rotation - 90.0f;
+    case WritingMode::kVerticalRl:
+    case WritingMode::kVerticalLr:
+      break;
   }
   ETextOrientation orientation = item->Style().GetTextOrientation();
   if (orientation == ETextOrientation::kUpright) {
