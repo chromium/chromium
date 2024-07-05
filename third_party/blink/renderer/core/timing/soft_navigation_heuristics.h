@@ -25,32 +25,6 @@ class TaskAttributionInfo;
 class ScriptState;
 class SoftNavigationContext;
 
-namespace internal {
-
-const char kPageLoadInternalSoftNavigationFromReferenceInvalidTiming[] =
-    "PageLoad.Internal.SoftNavigationFromReferenceInvalidTiming";
-
-// These values are recorded into a UMA histogram as scenarios where the start
-// time of soft navigation ends up being 0. These entries
-// should not be renumbered and the numeric values should not be reused. These
-// entries should be kept in sync with the definition in
-// tools/metrics/histograms/enums.xml
-// TODO(crbug.com/1489583): Remove the code here and related code once the bug
-// is resolved.
-enum class SoftNavigationFromReferenceInvalidTimingReasons {
-  kNullUserInteractionTsAndNotNullReferenceTs = 0,
-  kUserInteractionTsAndReferenceTsBothNull = 1,
-  kNullReferenceTsAndNotNullUserInteractionTs = 2,
-  kUserInteractionTsAndReferenceTsBothNotNull = 3,
-  kMaxValue = kUserInteractionTsAndReferenceTsBothNotNull,
-};
-
-CORE_EXPORT void
-RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
-    base::TimeTicks user_interaction_ts,
-    base::TimeTicks reference_ts);
-}  // namespace internal
-
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
@@ -215,4 +189,4 @@ class CORE_EXPORT SoftNavigationHeuristics
 
 }  // namespace blink
 
-#endif  //  THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_HEURISTICS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_HEURISTICS_H_

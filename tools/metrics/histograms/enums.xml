@@ -32305,33 +32305,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="SoftNavigationFromReferenceInvalidTimingReasons">
-  <int value="0"
-      label="User interaction ts is null and reference monotonic ts is not
-             null."/>
-  <int value="1"
-      label="User interaction ts and reference monotonic ts are both null."/>
-  <int value="2"
-      label="User interaction ts is not null but reference monotonic ts is
-             null"/>
-  <int value="3"
-      label="User interaction ts and reference monotonic ts are both not null"/>
-</enum>
-
-<enum name="SoftNavigationFromStartInvalidTimingReasons">
-  <int value="0"
-      label="Soft nav start relative to nav start is 0 and less than nav
-             start"/>
-  <int value="1"
-      label="Soft nav start relative to nav start is 0 and equal to nav start"/>
-  <int value="2"
-      label="Soft nav start relative to nav start is non 0 and equal to nav
-             start"/>
-  <int value="3"
-      label="Soft nav start relative to nav start is non 0 and less than nav
-             start"/>
-</enum>
-
 <enum name="SoftNavigationOutcome">
   <int value="0" label="Soft navigation detected"/>
   <int value="1" label="No ancestor task"/>

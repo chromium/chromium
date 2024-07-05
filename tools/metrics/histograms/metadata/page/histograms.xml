@@ -2840,32 +2840,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.SoftNavigationFromReferenceInvalidTiming"
-    enum="SoftNavigationFromReferenceInvalidTimingReasons"
-    expires_after="2024-08-23">
-  <owner>haoliuk@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Records the count of scenarios where the soft navigation start time relative
-    to reference time is 0. This is recorded when the soft navigation metrics
-    reporting is kicked off. With this data we can further investigate for the
-    root cause.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Internal.SoftNavigationFromStartInvalidTiming"
-    enum="SoftNavigationFromStartInvalidTimingReasons"
-    expires_after="2024-10-13">
-  <owner>haoliuk@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Records the count of scenarios where the start time relative to the
-    navigation start is 0. This is recorded when the soft navigation metrics is
-    about to be sent from renderer to browser. With this data we can further
-    investigate for the root cause.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"
     enum="SoftNavigationOutcome" expires_after="2024-12-24">
   <owner>iclelland@chromium.org</owner>

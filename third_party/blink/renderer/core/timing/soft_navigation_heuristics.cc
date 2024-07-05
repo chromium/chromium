@@ -116,40 +116,6 @@ EventScopeTypeFromEvent(const Event& event) {
 
 }  // namespace
 
-namespace internal {
-void RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
-    base::TimeTicks user_interaction_ts,
-    base::TimeTicks reference_ts) {
-  if (user_interaction_ts.is_null()) {
-    if (reference_ts.is_null()) {
-      base::UmaHistogramEnumeration(
-          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
-          SoftNavigationFromReferenceInvalidTimingReasons::
-              kUserInteractionTsAndReferenceTsBothNull);
-    } else {
-      base::UmaHistogramEnumeration(
-          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
-          SoftNavigationFromReferenceInvalidTimingReasons::
-              kNullUserInteractionTsAndNotNullReferenceTs);
-    }
-  } else {
-    if (reference_ts.is_null()) {
-      base::UmaHistogramEnumeration(
-          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
-          SoftNavigationFromReferenceInvalidTimingReasons::
-              kNullReferenceTsAndNotNullUserInteractionTs);
-
-    } else {
-      base::UmaHistogramEnumeration(
-          kPageLoadInternalSoftNavigationFromReferenceInvalidTiming,
-          SoftNavigationFromReferenceInvalidTimingReasons::
-              kUserInteractionTsAndReferenceTsBothNotNull);
-    }
-  }
-}
-
-}  // namespace internal
-
 // static
 const char SoftNavigationHeuristics::kSupplementName[] =
     "SoftNavigationHeuristics";
@@ -428,13 +394,6 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
   auto soft_navigation_start_time =
       loader->GetTiming().MonotonicTimeToPseudoWallTime(
           context->UserInteractionTimestamp());
-
-  if (soft_navigation_start_time.is_zero()) {
-    internal::
-        RecordUmaForPageLoadInternalSoftNavigationFromReferenceInvalidTiming(
-            context->UserInteractionTimestamp(),
-            loader->GetTiming().ReferenceMonotonicTime());
-  }
 
   LocalDOMWindow* window = GetSupplementable();
 
