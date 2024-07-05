@@ -223,12 +223,12 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
       case blink::mojom::SpeculationEagerness::kModerate:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
-            "block_until_head_timeout_moderate_prefetch", 1000);
+            "block_until_head_timeout_moderate_prefetch", 0);
         break;
       case blink::mojom::SpeculationEagerness::kConservative:
         timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
             features::kPrefetchUseContentRefactor,
-            "block_until_head_timeout_conservative_prefetch", 1000);
+            "block_until_head_timeout_conservative_prefetch", 0);
         break;
     }
   } else {
