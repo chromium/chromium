@@ -62,6 +62,10 @@ extern NSString* const kOmniboxPopoutSuggestionRowSeparatorColor;
 extern NSString* const kTabGroupFaviconBackgroundColor;
 // Color for the omnibox popout overlay.
 extern NSString* const kOmniboxPopoutOverlayColor;
+// Color of the Tab Strip.
+extern NSString* const kTabStripBackgroundColor;
+// Color of the symbol of the Tab Strip new tab button.
+extern NSString* const kTabStripNewTabButtonColor;
 
 // ***************
 // Standard Colors
@@ -146,6 +150,7 @@ extern NSString* const kGrey800Color;
 extern NSString* const kGrey900Color;
 // Static Grey palette (same color for light and dark modes).
 extern NSString* const kStaticGrey300Color;
+extern NSString* const kStaticGrey600Color;
 extern NSString* const kStaticGrey900Color;
 
 // **********************

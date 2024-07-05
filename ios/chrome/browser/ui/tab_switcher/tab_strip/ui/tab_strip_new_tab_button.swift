@@ -68,18 +68,29 @@ class TabStripNewTabButton: UIView {
 
   /// Configures the `UIButton`.
   private func configureButton() {
-    let closeSymbol: UIImage = DefaultSymbolWithPointSize(
-      kPlusSymbol, TabStripConstants.NewTabButton.symbolPointSize)
+    let symbolSize =
+      TabStripFeaturesUtils.isTabStripCloserNTBEnabled
+        || TabStripFeaturesUtils.isTabStripDarkerBackgroundEnabled
+        || TabStripFeaturesUtils.isTabStripCloserNTBDarkerBackgroundEnabled
+        || TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
+      ? TabStripConstants.NewTabButton.symbolBiggerPointSize
+      : TabStripConstants.NewTabButton.symbolPointSize
+    let closeSymbol = DefaultSymbolWithPointSize(
+      kPlusSymbol, symbolSize)
 
     var configuration = UIButton.Configuration.borderless()
     configuration.contentInsets = .zero
 
     configuration.image = closeSymbol
-    configuration.baseForegroundColor = UIColor(named: kTextSecondaryColor)
+    configuration.baseForegroundColor = TabStripHelper.newTabButtonSymbolColor
     button.configuration = configuration
     button.imageView?.contentMode = .center
     button.layer.cornerRadius = TabStripConstants.NewTabButton.cornerRadius
-    button.backgroundColor = UIColor(named: kGroupedSecondaryBackgroundColor)
+    if !TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
+      && !TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled
+    {
+      button.backgroundColor = UIColor(named: kGroupedSecondaryBackgroundColor)
+    }
 
     button.translatesAutoresizingMaskIntoConstraints = false
     button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)

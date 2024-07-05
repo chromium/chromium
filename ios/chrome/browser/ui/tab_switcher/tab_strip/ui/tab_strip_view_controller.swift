@@ -111,7 +111,7 @@ class TabStripViewController: UIViewController,
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = UIColor(named: kGroupedPrimaryBackgroundColor)
+    view.backgroundColor = TabStripHelper.backgroundColor
 
     // Don't clip to bound the collection view to allow the shadow of the long press to be displayed fully.
     // The trailing placeholder will ensure that the cells aren't displayed out of the bounds.
@@ -135,7 +135,7 @@ class TabStripViewController: UIViewController,
     newTabButton.isIncognito = isIncognito
     view.addSubview(newTabButton)
 
-    if TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic() {
+    if TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic {
       NSLayoutConstraint.activate([
         collectionView.trailingAnchor.constraint(
           equalTo: view.trailingAnchor, constant: -TabStripConstants.NewTabButton.width),

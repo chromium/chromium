@@ -12,29 +12,30 @@
 
 // Helper function to check if the position of the "new tab button" on the
 // modern tab strip is dynamic.
-+ (BOOL)isModernTabStripNewTabButtonDynamic;
+@property(class, nonatomic, readonly) BOOL isModernTabStripNewTabButtonDynamic;
 
 // Helper function to check if tab groups appear in the tab strip.
-+ (BOOL)isModernTabStripWithTabGroups;
+@property(class, nonatomic, readonly) BOOL isModernTabStripWithTabGroups;
 
 // Whether the new tab button should be bigger and closer to the tab strip.
-+ (BOOL)isTabStripCloserNTBEnabled;
+@property(class, nonatomic, readonly) BOOL isTabStripCloserNTBEnabled;
 
 // Whether the tab strip should have a darker background.
-+ (BOOL)isTabStripDarkerBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL isTabStripDarkerBackgroundEnabled;
 
 // Whether the tab strip should have a darker background and a closer new tab
 // button.
-+ (BOOL)isTabStripCloserNTBDarkerBackgroundEnabled;
+@property(class, nonatomic, readonly)
+    BOOL isTabStripCloserNTBDarkerBackgroundEnabled;
 
 // Whether the new tab button should have its background removed.
-+ (BOOL)isTabStripNTBNoBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL isTabStripNTBNoBackgroundEnabled;
 
 // Whether the tab strip should have a black background.
-+ (BOOL)isTabStripBlackBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL isTabStripBlackBackgroundEnabled;
 
 // Whether the close button should have a bigger tap target.
-+ (BOOL)isTabStripBiggerCloseTargetEnabled;
+@property(class, nonatomic, readonly) BOOL isTabStripBiggerCloseTargetEnabled;
 
 @end
 

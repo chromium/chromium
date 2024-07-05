@@ -14,6 +14,10 @@ class TabStripDecorationView: UIView {
     super.init(frame: frame)
     translatesAutoresizingMaskIntoConstraints = false
 
+    if TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled {
+      overrideUserInterfaceStyle = .dark
+    }
+
     let solidBackgroundView: UIView = createSolidBackgroundView()
     let smallSeparator: UIView = createSeparatorView()
     let regularSeparator: UIView = createSeparatorView()
@@ -80,7 +84,7 @@ class TabStripDecorationView: UIView {
   // Returns a new solid background view.
   func createSolidBackgroundView() -> UIView {
     let solidBackgroundView = UIView()
-    solidBackgroundView.backgroundColor = UIColor(named: kGroupedPrimaryBackgroundColor)
+    solidBackgroundView.backgroundColor = TabStripHelper.backgroundColor
     solidBackgroundView.translatesAutoresizingMaskIntoConstraints = false
     return solidBackgroundView
   }

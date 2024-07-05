@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_utils.h"
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
@@ -1309,8 +1310,7 @@ enum HeaderBehaviour {
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
-      _fakeStatusBarView.backgroundColor =
-          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+      _fakeStatusBarView.backgroundColor = [TabStripHelper backgroundColor];
       // Force the UserInterfaceStyle update in incognito.
       _fakeStatusBarView.overrideUserInterfaceStyle =
           _isOffTheRecord ? UIUserInterfaceStyleDark

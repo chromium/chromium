@@ -51,6 +51,7 @@ source_set("ui") {
   ]
   deps = [
     ":swift_constants_for_objective_c",
+    ":utils",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
@@ -70,11 +71,14 @@ source_set("utils") {
   sources = [
     "tab_strip_features_utils.h",
     "tab_strip_features_utils.mm",
+    "tab_strip_utils.h",
+    "tab_strip_utils.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:features_utils",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 

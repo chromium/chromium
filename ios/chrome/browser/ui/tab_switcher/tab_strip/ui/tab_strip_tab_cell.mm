@@ -10,11 +10,14 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_features_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_stroke_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -26,8 +29,7 @@ namespace {
 
 // The size of the close button.
 const CGFloat kCloseButtonSize = 16;
-// The alpha of the close button background color.
-const CGFloat kCloseButtonBackgroundAlpha = 0.2;
+const CGFloat kCloseButtonMinimumTouchTarget = 36;
 
 // Size of the decoration corner and corner radius when the cell is selected.
 const CGFloat kCornerSize = 16;
@@ -512,7 +514,15 @@ UIImage* DefaultFavicon() {
   } else {
     backgroundColor =
         self.isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                        : [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+                        : [TabStripHelper backgroundColor];
+  }
+
+  if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+    if (self.isSelected) {
+      self.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+    } else {
+      self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    }
   }
 
   // Needed to correctly update the `_titleGradientView` colors in incognito.
@@ -887,17 +897,18 @@ UIImage* DefaultFavicon() {
 - (UIButton*)createCloseButton {
   UIImage* closeSymbol =
       DefaultSymbolWithPointSize(kXMarkSymbol, kCloseButtonSize);
-  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  UIButton* closeButton;
+  if ([TabStripFeaturesUtils isTabStripBiggerCloseTargetEnabled]) {
+    ExtendedTouchTargetButton* button =
+        [[ExtendedTouchTargetButton alloc] init];
+    button.minimumDiameter = kCloseButtonMinimumTouchTarget;
+    closeButton = button;
+  } else {
+    closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  }
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [closeButton
-      setImage:SymbolWithPalette(
-                   closeSymbol,
-                   @[
-                     [UIColor colorNamed:kTextSecondaryColor],
-                     [[UIColor colorNamed:kTextQuaternaryColor]
-                         colorWithAlphaComponent:kCloseButtonBackgroundAlpha]
-                   ])
-      forState:UIControlStateNormal];
+  closeButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  [closeButton setImage:closeSymbol forState:UIControlStateNormal];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped:)
         forControlEvents:UIControlEventTouchUpInside];
@@ -921,12 +932,12 @@ UIImage* DefaultFavicon() {
 
 // Returns a new gradient view.
 - (GradientView*)createGradientView {
-  GradientView* gradientView = [[GradientView alloc]
-      initWithStartColor:[[UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-                             colorWithAlphaComponent:0]
-                endColor:[UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-              startPoint:CGPointMake(0.0f, 0.5f)
-                endPoint:CGPointMake(1.0f, 0.5f)];
+  GradientView* gradientView =
+      [[GradientView alloc] initWithStartColor:[[TabStripHelper backgroundColor]
+                                                   colorWithAlphaComponent:0]
+                                      endColor:[TabStripHelper backgroundColor]
+                                    startPoint:CGPointMake(0.0f, 0.5f)
+                                      endPoint:CGPointMake(1.0f, 0.5f)];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   return gradientView;
 }
@@ -968,8 +979,7 @@ UIImage* DefaultFavicon() {
 // Returns a new separator view.
 - (UIView*)createSeparatorView {
   UIView* separatorView = [[UIView alloc] init];
-  separatorView.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  separatorView.backgroundColor = [TabStripHelper backgroundColor];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
   separatorView.layer.cornerRadius =
       TabStripStaticSeparatorConstants.separatorCornerRadius;
@@ -986,8 +996,7 @@ UIImage* DefaultFavicon() {
 // Returns a new selected border background view.
 - (UIView*)createSelectedBorderBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
-  backgroundView.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  backgroundView.backgroundColor = [TabStripHelper backgroundColor];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;

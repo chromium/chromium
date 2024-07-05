@@ -67,15 +67,20 @@ class TabStripLayout: UICollectionViewFlowLayout {
   override var collectionViewContentSize: CGSize {
     let contentSize = super.collectionViewContentSize
 
-    if !TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic() { return contentSize }
+    if !TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic { return contentSize }
     guard
       let collectionView = collectionView,
       let newTabButton = newTabButton,
       let newTabButtonSuperView = newTabButton.superview
     else { return contentSize }
 
-    let updatedConstant = min(
-      contentSize.width, collectionView.bounds.width)
+    let offset: CGFloat =
+      TabStripFeaturesUtils.isTabStripCloserNTBEnabled
+        || TabStripFeaturesUtils.isTabStripCloserNTBDarkerBackgroundEnabled ? 8 : 0
+
+    let updatedConstant =
+      min(
+        contentSize.width, collectionView.bounds.width) - offset
 
     if newTabButtonLeadingConstraint == nil {
       newTabButtonLeadingConstraint = newTabButton.leadingAnchor.constraint(
