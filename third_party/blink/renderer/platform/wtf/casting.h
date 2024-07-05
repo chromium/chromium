@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "base/notreached.h"
-#include "base/template_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {

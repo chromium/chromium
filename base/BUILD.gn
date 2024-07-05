@@ -827,7 +827,6 @@ component("base") {
     "task/thread_pool/worker_thread_waitable_event.cc",
     "task/thread_pool/worker_thread_waitable_event.h",
     "task/updateable_sequenced_task_runner.h",
-    "template_util.h",
     "test/scoped_logging_settings.h",
     "test/spin_wait.h",
     "third_party/cityhash/city.cc",
