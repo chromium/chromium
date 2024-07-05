@@ -78,6 +78,7 @@ public class PasswordSavingIntegrationTest {
 
     private PasswordStoreBridge mPasswordStoreBridge;
     private BottomSheetController mBottomSheetController;
+    private BottomSheetTestSupport mBottomSheetTestSupport;
     private WebContents mWebContents;
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
@@ -93,6 +94,7 @@ public class PasswordSavingIntegrationTest {
                     mBottomSheetController =
                             BottomSheetControllerProvider.from(
                                     mActivityTestRule.getActivity().getWindowAndroid());
+                    mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
                     mPasswordStoreBridge =
                             new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
@@ -184,7 +186,7 @@ public class PasswordSavingIntegrationTest {
                 });
 
         // Wait till TTF closes.
-        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+        waitForBottomSheetClosed();
 
         // Enter the new password.
         DOMUtils.clickNode(
@@ -263,6 +265,11 @@ public class PasswordSavingIntegrationTest {
                                     PASSWORD_MANAGER_ANNOTATION, webContents, nodeID, String.class);
                     return attribute != null;
                 });
+    }
+
+    private void waitForBottomSheetClosed() {
+        runOnUiThreadBlocking(() -> mBottomSheetTestSupport.endAllAnimations());
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
     }
 
     private RecyclerView getCredentials() {
