@@ -13,10 +13,12 @@ from core import sharding_map_generator
 
 
 class FakeBenchmarkConfig(object):
-  def __init__(self, name, stories, repeat):
+
+  def __init__(self, name, stories, repeat, pageset_repeat_override=None):
     self.name = name
     self.stories = stories
     self.repeat = repeat
+    self.pageset_repeat_override = pageset_repeat_override
     self.abridged = False
     self.is_telemetry = True
 
@@ -85,6 +87,23 @@ class TestShardingMapGenerator(unittest.TestCase):
         sharding_map['2']['benchmarks'],
         collections.OrderedDict([('c_benchmark', {
             'abridged': False
+        })]))
+
+  def testGenerateShardingMapsWithPagesetRepeatOverride(self):
+    timing_data = []
+    benchmarks_data = [
+        FakeBenchmarkConfig('a_benchmark', ['a_1', 'a_2', 'a_3', 'a_4'], 1, 2),
+        FakeBenchmarkConfig('b_benchmark', ['b_1', 'b_2', 'b_3', 'b_4'], 1),
+    ]
+    sharding_map = sharding_map_generator.generate_sharding_map(
+        benchmarks_data, timing_data, 1, None)
+    self.assertEqual(
+        sharding_map['0']['benchmarks'],
+        collections.OrderedDict([('a_benchmark', {
+            'abridged': False,
+            'pageset_repeat': 2,
+        }), ('b_benchmark', {
+            'abridged': False,
         })]))
 
   def testGeneratePerfSharding(self):

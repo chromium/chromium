@@ -136,19 +136,23 @@ class PerfPlatform(object):
 
 
 class BenchmarkConfig(object):
-  def __init__(self, benchmark, abridged):
+
+  def __init__(self, benchmark, abridged, pageset_repeat_override):
     """A configuration for a benchmark that helps decide how to shard it.
 
     Args:
       benchmark: the benchmark.Benchmark object.
       abridged: True if the benchmark should be abridged so fewer stories
         are run, and False if the whole benchmark should be run.
+      pageset_repeat_override: number of times to repeat the entire story set.
+        can be None, which defaults to the benchmark default pageset_repeat.
     """
     self.benchmark = benchmark
     self.abridged = abridged
     self._stories = None
     self._exhaustive_stories = None
     self.is_telemetry = True
+    self.pageset_repeat_override = pageset_repeat_override
 
   @property
   def name(self):
@@ -156,6 +160,8 @@ class BenchmarkConfig(object):
 
   @property
   def repeat(self):
+    if self.pageset_repeat_override is not None:
+      return self.pageset_repeat_override
     return self.benchmark.options.get('pageset_repeat', 1)
 
   @property
@@ -248,15 +254,18 @@ class PerfSuite(object):
           name, abridged=True)
     return self
 
+  def Repeat(self, config_names, pageset_repeat):
+    for name in config_names:
+      self._configs[name] = _GetBenchmarkConfig(
+          name,
+          abridged=self._configs[name].abridged,
+          pageset_repeat=pageset_repeat)
+    return self
 
-# Global |benchmarks| is convenient way to keep BenchmarkConfig objects
-# unique, which allows us to use set subtraction below.
-benchmarks = {b.Name(): {True: BenchmarkConfig(b, abridged=True),
-                         False: BenchmarkConfig(b, abridged=False)}
-              for b in ALL_SCHEDULEABLE_BENCHMARKS}
 
-def _GetBenchmarkConfig(benchmark_name, abridged=False):
-  return benchmarks[benchmark_name][abridged]
+def _GetBenchmarkConfig(benchmark_name, abridged=False, pageset_repeat=None):
+  benchmark = _ALL_BENCHMARKS_BY_NAMES[benchmark_name]
+  return BenchmarkConfig(benchmark, abridged, pageset_repeat)
 
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
@@ -498,7 +507,11 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'jetstream2-minorms',
         'speedometer2-minorms',
         'speedometer3-minorms',
-    ])
+    ]).Repeat([
+        'speedometer2',
+        'speedometer3',
+        'rendering.desktop.notracing',
+    ], 2)
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),
@@ -506,9 +519,9 @@ _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.desktop.notracing'),
 ])
 _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer3'),
-    _GetBenchmarkConfig('rendering.desktop.notracing'),
+    _GetBenchmarkConfig('speedometer2', pageset_repeat=2),
+    _GetBenchmarkConfig('speedometer3', pageset_repeat=2),
+    _GetBenchmarkConfig('rendering.desktop.notracing', pageset_repeat=2),
 ])
 _MAC_M1_PRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),

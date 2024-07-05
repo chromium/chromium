@@ -229,8 +229,6 @@ def generate_sharding_map(benchmarks_to_shard,
           benchmark_config['begin'] = begin
         if end:
           benchmark_config['end'] = end
-        benchmark_config['abridged'] = benchmark_name_to_config[
-            benchmark].abridged
       elif len(merged_sections) > 1:
         for section in merged_sections:
           sections_config.append({'begin': section[0], 'end': section[1]})
@@ -238,7 +236,17 @@ def generate_sharding_map(benchmarks_to_shard,
             'sections': sections_config,
             'abridged': benchmark_name_to_config[benchmark].abridged
         }
+
+      abridged = benchmark_name_to_config[benchmark].abridged
+      benchmark_config['abridged'] = abridged
+
+      pageset_repeat_override = benchmark_name_to_config[
+          benchmark].pageset_repeat_override
+      if pageset_repeat_override:
+        benchmark_config['pageset_repeat'] = pageset_repeat_override
+
       new_benchmark_configs[benchmark] = benchmark_config
+
     sharding_map[str(i)]['benchmarks'] = new_benchmark_configs
     if i != num_shards - 1:
       total_time -= shard_time

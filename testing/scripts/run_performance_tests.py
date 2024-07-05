@@ -455,10 +455,15 @@ class TelemetryCommandGenerator(object):
     return []
 
   def _generate_repeat_args(self):
+    pageset_repeat = None
     if self._options.isolated_script_test_repeat:
-      return [
-          '--pageset-repeat=' + str(self._options.isolated_script_test_repeat)
-      ]
+      pageset_repeat = self._options.isolated_script_test_repeat
+    elif (self._story_selection_config is not None
+          and self._story_selection_config.get('pageset_repeat')):
+      pageset_repeat = self._story_selection_config.get('pageset_repeat')
+
+    if pageset_repeat:
+      return ['--pageset-repeat=' + str(pageset_repeat)]
     return []
 
   def _generate_also_run_disabled_tests_args(self):
