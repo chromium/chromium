@@ -62,13 +62,9 @@ namespace blink {
 #define REPORT_OVERFLOW(doesOverflow) ((void)0)
 #endif
 
-// TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
-class PLATFORM_EXPORT LayoutUnit;
-constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
-
 // LayoutUnit is a fixed-point math class, storing multiples of 1/64 of a pixel.
 // See: https://trac.webkit.org/wiki/LayoutUnit
-class LayoutUnit {
+class PLATFORM_EXPORT LayoutUnit {
   DISALLOW_NEW();
 
  public:
