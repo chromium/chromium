@@ -5581,6 +5581,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LoadingPredictor.IsSlowNetwork" enum="Boolean"
+    expires_after="2024-12-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the network is considered to be slow or not. Recorded on
+    each call of LoadingPredictor::PrepareForPageLoad() function if
+    kSuppressesLoadingPredictorOnSlowNetwork feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="LoadingPredictor.LcppStatCorruptedAtLearnTime" enum="Boolean"
     expires_after="2024-05-01">
   <owner>yyanagisawa@chromium.org</owner>

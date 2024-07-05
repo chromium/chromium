@@ -186,9 +186,12 @@ bool LoadingPredictor::PrepareForPageLoad(
       features::kSuppressesLoadingPredictorOnSlowNetworkThreshold.Get();
   if (kSuppressesLoadingPredictorOnSlowNetworkIsEnabled && g_browser_process &&
       g_browser_process->network_quality_tracker()) {
-    base::TimeDelta last_http_rtt =
-        g_browser_process->network_quality_tracker()->GetHttpRTT();
-    if (last_http_rtt > kSlowNetworkThreshold) {
+    const bool is_slow_network =
+        g_browser_process->network_quality_tracker()->GetHttpRTT() >
+        kSlowNetworkThreshold;
+    base::UmaHistogramBoolean("LoadingPredictor.IsSlowNetwork",
+                              is_slow_network);
+    if (is_slow_network) {
       return true;
     }
   }
