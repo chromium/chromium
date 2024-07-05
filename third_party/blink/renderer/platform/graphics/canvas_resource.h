@@ -491,10 +491,9 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
 };
 
 // Resource type for a given opaque external resource described on construction
-// via a Mailbox; this CanvasResource IsAccelerated() by definition.
-// This resource can also encapsulate an external mailbox, synctoken and release
-// callback, exported from WebGL. This CanvasResource should only be used with
-// context that support GL.
+// via a TransferableResource; this CanvasResource IsAccelerated() by
+// definition. This CanvasResource should only be used with context that support
+// GL.
 class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
  public:
   static scoped_refptr<ExternalCanvasResource> Create(
@@ -504,18 +503,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       base::WeakPtr<CanvasResourceProvider>,
       cc::PaintFlags::FilterQuality,
       bool is_origin_top_left);
-
-  static scoped_refptr<ExternalCanvasResource> Create(
-      const gpu::Mailbox& mailbox,
-      viz::ReleaseCallback release_callback,
-      gpu::SyncToken sync_token,
-      const SkImageInfo&,
-      GLenum texture_target,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality,
-      bool is_origin_top_left,
-      bool is_overlay_candidate);
 
   ~ExternalCanvasResource() override;
   bool IsRecycleable() const final { return IsValid(); }
