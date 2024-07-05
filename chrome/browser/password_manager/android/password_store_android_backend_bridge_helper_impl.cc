@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
@@ -20,6 +21,9 @@
 namespace password_manager {
 
 namespace {
+
+constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
+constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
 
 using JobId = PasswordStoreAndroidBackendBridgeHelper::JobId;
 
@@ -84,14 +88,31 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAffiliatedPasswordsAPI() {
-  return PasswordStoreAndroidBackendDispatcherBridge::
-      CanUseGetAffiliatedPasswordsAPI();
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+  if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
+    return false;
+  }
+
+  return true;
 }
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAllLoginsWithBrandingInfoAPI() {
-  return PasswordStoreAndroidBackendDispatcherBridge::
-      CanUseGetAllLoginsWithBrandingInfoAPI();
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+  if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >
+      current_gms_core_version) {
+    return false;
+  }
+
+  return true;
 }
 
 void PasswordStoreAndroidBackendBridgeHelperImpl::SetConsumer(

@@ -8,7 +8,6 @@
 
 #include <cstdint>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -29,9 +28,6 @@ namespace {
 
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
-constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
-constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
-
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     std::string account) {
   if (account.empty()) {
@@ -48,35 +44,6 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
 std::unique_ptr<PasswordStoreAndroidBackendDispatcherBridge>
 PasswordStoreAndroidBackendDispatcherBridge::Create() {
   return std::make_unique<PasswordStoreAndroidBackendDispatcherBridgeImpl>();
-}
-
-bool PasswordStoreAndroidBackendDispatcherBridge::
-    CanUseGetAffiliatedPasswordsAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
-  int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
-    return false;
-  }
-  if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
-    return false;
-  }
-
-  return true;
-}
-
-bool PasswordStoreAndroidBackendDispatcherBridge::
-    CanUseGetAllLoginsWithBrandingInfoAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
-  int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
-    return false;
-  }
-  if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >
-      current_gms_core_version) {
-    return false;
-  }
-
-  return true;
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
