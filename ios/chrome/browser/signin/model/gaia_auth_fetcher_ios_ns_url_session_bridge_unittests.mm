@@ -404,12 +404,18 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
 // Tests to send a request with one cookie set in the cookie store and receive
 // another cookies from the request.
 TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
-  NSArray* cookies_to_send = @[ GetCookie1() ];
-  ASSERT_TRUE(SetCookiesInCookieManager(cookies_to_send));
+  NSHTTPCookie* cookie_to_send = GetCookie1();
+  ASSERT_TRUE(SetCookiesInCookieManager(@[ cookie_to_send ]));
 
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
-  ASSERT_NSEQ(url_session_configuration_.HTTPCookieStorage.cookies,
-              cookies_to_send);
+
+  EXPECT_TRUE(url_session_configuration_.HTTPCookieStorage.cookies.count == 1);
+  // Check that sent cookie is equal to the cookie in the storage.
+  EXPECT_TRUE([GetStringWithNSHTTPCookie(cookie_to_send)
+      isEqualToString:GetStringWithNSHTTPCookie(
+                          url_session_configuration_.HTTPCookieStorage
+                              .cookies[0])]);
+
   ASSERT_TRUE(completion_handler_);
 
   NSHTTPURLResponse* http_url_reponse =
