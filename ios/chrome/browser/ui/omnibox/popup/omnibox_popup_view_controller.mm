@@ -882,6 +882,27 @@ const CGFloat kHeaderTopPadding = 16.0f;
   return header;
 }
 
+- (void)tableView:(UITableView*)tableView
+    didEndDisplayingCell:(UITableViewCell*)cell
+       forRowAtIndexPath:(NSIndexPath*)indexPath {
+  // Action in suggest buttons respond to touch-up events which could be
+  // triggered after the cell was removed (see b/350911243).
+  // Remove the delegate from a cell when it is no longer visible, ensuring that
+  // actions are not dispatched for stale cells.
+  BOOL isActionsRowCell = [cell.contentConfiguration
+      isKindOfClass:OmniboxPopupActionsRowContentConfiguration.class];
+
+  if (!isActionsRowCell) {
+    return;
+  }
+
+  OmniboxPopupActionsRowContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<OmniboxPopupActionsRowContentConfiguration>(
+          cell.contentConfiguration);
+
+  configuration.delegate = nil;
+}
+
 /// Customize the appearance of table view cells.
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
