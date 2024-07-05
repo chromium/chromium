@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -149,6 +150,11 @@ public class AccountSelectionCoordinator
                 new LinearLayoutManager(
                         sheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
         sheetItemListView.setItemAnimator(null);
+        if (rpMode == RpMode.BUTTON) {
+            // AccountPickerItemDecoration updates the background and rounds the edges of the
+            // account list items.
+            sheetItemListView.addItemDecoration(new AccountPickerItemDecoration());
+        }
 
         // Setup the recycler view to be updated as we update the sheet items.
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(sheetItems);

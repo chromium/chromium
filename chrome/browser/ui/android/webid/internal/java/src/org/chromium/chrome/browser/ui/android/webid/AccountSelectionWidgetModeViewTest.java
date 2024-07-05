@@ -6,17 +6,12 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 
-import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
@@ -24,7 +19,6 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -33,21 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountSelectionWidgetModeViewTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    private class RpContextEntry {
-        public @RpContext.EnumType int mValue;
-        public int mTitleId;
-
-        RpContextEntry(@RpContext.EnumType int value, int titleId) {
-            mValue = value;
-            mTitleId = titleId;
-        }
-    }
-
+public class AccountSelectionWidgetModeViewTest extends AccountSelectionViewTestBase {
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
                 new RpContextEntry(
@@ -63,14 +43,10 @@ public class AccountSelectionWidgetModeViewTest {
                 new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
             };
 
-    private Resources mResources;
-    private PropertyModel mModel;
-    private ModelList mSheetAccountItems;
-    private View mContentView;
-
     @Before
+    @Override
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        super.setUp();
 
         mActivityScenarioRule
                 .getScenario()

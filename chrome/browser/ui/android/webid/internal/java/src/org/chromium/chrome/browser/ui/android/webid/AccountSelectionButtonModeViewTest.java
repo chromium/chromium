@@ -7,17 +7,17 @@ package org.chromium.chrome.browser.ui.android.webid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.content.res.Resources;
+import static java.util.Arrays.asList;
+
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.RpContext;
@@ -25,7 +25,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
-import org.chromium.ui.base.TestActivity;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -34,21 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountSelectionButtonModeViewTest {
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    private class RpContextEntry {
-        public int mValue;
-        public int mTitleId;
-
-        RpContextEntry(@RpContext.EnumType int value, int titleId) {
-            mValue = value;
-            mTitleId = titleId;
-        }
-    }
-
+public class AccountSelectionButtonModeViewTest extends AccountSelectionViewTestBase {
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
                 new RpContextEntry(
@@ -68,14 +54,10 @@ public class AccountSelectionButtonModeViewTest {
                         0xCAFE, R.string.account_selection_button_mode_sheet_title_explicit_signin)
             };
 
-    private Resources mResources;
-    private PropertyModel mModel;
-    private ModelList mSheetAccountItems;
-    private View mContentView;
-
     @Before
+    @Override
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        super.setUp();
 
         mActivityScenarioRule
                 .getScenario()
@@ -128,5 +110,23 @@ public class AccountSelectionButtonModeViewTest {
                     title.getText().toString());
             assertEquals("Incorrect subtitle", "example.org", subtitle.getText());
         }
+    }
+
+    @Test
+    public void testAccountsListHasAccountPickerItemDecoration() {
+        mSheetAccountItems.addAll(
+                asList(
+                        buildAccountItem(mAnaAccount),
+                        buildAccountItem(mNoOneAccount),
+                        buildAccountItem(mBobAccount)));
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        RecyclerView accountsList = mContentView.findViewById(R.id.sheet_item_list);
+        assertTrue(accountsList.isShown());
+
+        assertEquals(1, accountsList.getItemDecorationCount());
+        assertEquals(
+                accountsList.getItemDecorationAt(0).getClass(), AccountPickerItemDecoration.class);
     }
 }

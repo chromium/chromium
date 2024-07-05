@@ -31,14 +31,16 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/sheet_item_list_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/account_selection_sheet_horizontal_margin"
+        android:paddingRight="@dimen/account_selection_sheet_horizontal_margin">
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sheet_item_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:divider="@null"
-            tools:listitem="@layout/account_selection_account_item"/>
+            tools:listitem="@layout/account_selection_button_mode_account_item"/>
       </FrameLayout>
 
     <include layout="@layout/idp_signin_text_item"

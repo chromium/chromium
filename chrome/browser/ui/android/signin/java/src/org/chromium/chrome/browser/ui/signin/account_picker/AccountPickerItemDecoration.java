@@ -30,6 +30,9 @@ public final class AccountPickerItemDecoration extends RecyclerView.ItemDecorati
     }
 
     private int getBackgroundDrawableId(int position, int itemCount) {
+        if (itemCount == 1) { // Round all edges of the only item.
+            return R.drawable.account_row_background_rounded_all;
+        }
         if (position == itemCount - 1) { // Round the bottom of the last item.
             return R.drawable.account_row_background_rounded_down;
         }

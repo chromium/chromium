@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 
 import static java.util.Arrays.asList;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -22,20 +21,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -52,7 +47,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -69,7 +63,7 @@ import java.util.Map;
  * sheet. This class is parameterized to run all tests for each RP mode.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-public class AccountSelectionViewTest {
+public class AccountSelectionViewTest extends AccountSelectionViewTestBase {
     @Parameter(0)
     public @RpMode.EnumType int mRpMode;
 
@@ -91,25 +85,11 @@ public class AccountSelectionViewTest {
     private static final String LINK_TAG_REGEX = "<[^>]*>";
 
     // Constants but can only be initialized after parameterized test runner setup.
-    private GURL mTestProfilePicUrl;
     private GURL mTestConfigUrl;
     private GURL mTestLoginUrl;
     private GURL mTestErrorUrl;
     private GURL mTestEmptyErrorUrl;
-    private Account mAnaAccount;
-    private Account mNoOneAccount;
-    private Account mBobAccount;
     private IdentityProviderMetadata mTestIdpMetadata;
-
-    private class RpContextEntry {
-        public @RpContext.EnumType int mValue;
-        public int mTitleId;
-
-        RpContextEntry(@RpContext.EnumType int value, int titleId) {
-            mValue = value;
-            mTitleId = titleId;
-        }
-    }
 
     private final RpContextEntry[] mRpContexts =
             new RpContextEntry[] {
@@ -222,54 +202,15 @@ public class AccountSelectionViewTest {
         }
     }
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
-
-    @Mock private Callback<Account> mAccountCallback;
-
-    private Resources mResources;
-    private PropertyModel mModel;
-    private ModelList mSheetAccountItems;
-    private View mContentView;
-
     @Before
+    @Override
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        super.setUp();
 
-        mTestProfilePicUrl = new GURL("https://profile-picture.com");
         mTestConfigUrl = new GURL("https://idp.com/fedcm.json");
         mTestLoginUrl = new GURL("https://idp.com/login");
         mTestErrorUrl = new GURL("https://idp.com/error");
         mTestEmptyErrorUrl = new GURL("");
-
-        mAnaAccount =
-                new Account(
-                        "Ana",
-                        "ana@email.example",
-                        "Ana Doe",
-                        "Ana",
-                        mTestProfilePicUrl,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
-        mNoOneAccount =
-                new Account(
-                        "",
-                        "",
-                        "No Subject",
-                        "",
-                        mTestProfilePicUrl,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
-        mBobAccount =
-                new Account(
-                        "Bob",
-                        "",
-                        "Bob",
-                        "",
-                        mTestProfilePicUrl,
-                        /* pictureBitmap= */ null,
-                        /* isSignIn= */ true);
 
         mTestIdpMetadata =
                 new IdentityProviderMetadata(
@@ -506,15 +447,6 @@ public class AccountSelectionViewTest {
         return verify(
                 mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
-    }
-
-    private MVCListAdapter.ListItem buildAccountItem(Account account) {
-        return new MVCListAdapter.ListItem(
-                AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                        .with(AccountProperties.ACCOUNT, account)
-                        .with(AccountProperties.ON_CLICK_LISTENER, mAccountCallback)
-                        .build());
     }
 
     private PropertyModel buildContinueButton(

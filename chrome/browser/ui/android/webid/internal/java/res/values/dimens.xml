@@ -19,6 +19,8 @@ found in the LICENSE file.
   <dimen name="account_selection_sheet_icon_size">20dp</dimen>
 
   <!-- FedCM button mode bottom sheet dimensions. -->
+  <dimen name="account_selection_button_mode_sheet_avatar_size">24dp</dimen>
+  <dimen name="account_selection_button_mode_sheet_vertical_margin">14dp</dimen>
   <dimen name="account_selection_button_mode_sheet_icon_size">32dp</dimen>
 
   <!-- Common FedCM bottom sheet dimensions. -->
