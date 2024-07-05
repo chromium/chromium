@@ -50,6 +50,7 @@ enum class SigninStatusPixelTestParam {
   kSignedOut,
   kWebSignedIn,
   kSignedInNoSync,
+  kSignInPendingNoSync,
   kSignedInWithSync,
   kSignedInSyncPaused,
   kSignedInSyncNotWorking
@@ -142,6 +143,14 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .signin_status = SigninStatusPixelTestParam::kSignedInSyncNotWorking},
     {.pixel_test_param = {.test_suffix = "WebSignedIn_Chrome"},
      .signin_status = SigninStatusPixelTestParam::kWebSignedIn},
+    {.pixel_test_param = {.test_suffix = "SignInPending_Nosync"},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync},
+    {.pixel_test_param = {.test_suffix = "SignInPending_Nosync_RTL",
+                          .use_right_to_left_language = true},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync},
+    {.pixel_test_param = {.test_suffix = "SignInPending_Nosync_DarkTheme",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync},
 };
 
 }  // namespace
@@ -154,6 +163,8 @@ class ProfileMenuViewPixelTest
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     bool should_enable_uno =
         GetParam().signin_status == SigninStatusPixelTestParam::kWebSignedIn ||
+        GetParam().signin_status ==
+            SigninStatusPixelTestParam::kSignInPendingNoSync ||
         GetParam().profile_menu_uno_redesign;
 
     feature_list_.InitWithFeatureState(
@@ -249,6 +260,11 @@ class ProfileMenuViewPixelTest
       }
       case SigninStatusPixelTestParam::kSignedInNoSync: {
         AccountInfo no_sync_info = SignInWithAccount();
+        break;
+      }
+      case SigninStatusPixelTestParam::kSignInPendingNoSync: {
+        AccountInfo no_sync_info = SignInWithAccount();
+        identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
         break;
       }
       case SigninStatusPixelTestParam::kSignedInWithSync: {

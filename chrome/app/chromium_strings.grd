@@ -1186,6 +1186,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chromium
       </message>
+      <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chromium button in the Profile Menu when the user is in sign in pending state.">
+        Remove account from Chromium
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_PROFILE_MENU_PROFILES_LIST_TITLE" desc="Title in the profile menu for the list of 'other Chromium profiles'.">
           Other Chromium profiles

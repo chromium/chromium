@@ -849,11 +849,23 @@ void ProfileMenuView::BuildFeatureButtons() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   // The sign-out button is always at the bottom.
   if (add_sign_out_button) {
+    std::u16string signout_button_text;
+    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+      // Note: Sign out button is only added if there is a signed profile with
+      // no sync consent, so there is no need to check these conditions for the
+      // sign in pending state.
+      bool signin_pending =
+          identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+              identity_manager->GetPrimaryAccountId(
+                  signin::ConsentLevel::kSignin));
+      signout_button_text = l10n_util::GetStringUTF16(
+          signin_pending ? IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING
+                         : IDS_PROFILE_MENU_SIGN_OUT);
+    } else {
+      signout_button_text = l10n_util::GetStringUTF16(IDS_SCREEN_LOCK_SIGN_OUT);
+    }
     AddFeatureButton(
-        l10n_util::GetStringUTF16(
-            switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-                ? IDS_PROFILE_MENU_SIGN_OUT
-                : IDS_SCREEN_LOCK_SIGN_OUT),
+        signout_button_text,
         base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                             base::Unretained(this)),
         kSignOutIcon);
