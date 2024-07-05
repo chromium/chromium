@@ -41,7 +41,7 @@
 برای باز کردن و رفتن به برگه جدید به‌طور خودکار، Control+T را فشار دهید. مکان‌نما در omnibox قرار خواهد گرفت. 
 برای بستن برگه، Control+W را فشار دهید. 
 برای حرکت رو به‌جلو میان برگه‌های باز، از Control+Tab استفاده کنید. 
-برای باز کردن منوی مرورگر Chrome، کلیدهای Alt+F را فشار دهید.</translation>
+برای باز کردن منو مرورگر Chrome، کلیدهای Alt+F را فشار دهید.</translation>
 <translation id="1213216066620407844">‏ChromeVox - ارائه صدا به Chrome</translation>
 <translation id="1225969361094801578">سربی تیره</translation>
 <translation id="122928249241119550">به جمله قبلی برو</translation>
@@ -250,7 +250,7 @@
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">نوشتار پیشنهادی برای تبدیل</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{پرانتز باز}one{# پرانتز باز}other{# پرانتز باز}}</translation>
-<translation id="270523456882008230">نکات: برای فعال کردن مورد کنونی، با یک انگشت دوضربه بزنید.</translation>
+<translation id="270523456882008230">نکات: برای فعال کردن مورد کنونی، با یک انگشت دو تک‌ضرب بزنید.</translation>
 <translation id="2705875883745373140">فشرده نشده</translation>
 <translation id="2708078563826046398">هلویی پررنگ</translation>
 <translation id="2713444072780614174">سفید</translation>
@@ -775,12 +775,12 @@
 <translation id="6236061028292614533">عنوان بعدی</translation>
 <translation id="6254901459154107917">کادر نوشتار قابل‌ویرایش بعدی</translation>
 <translation id="6259464875943891919">از <ph name="TYPE" /> خارج شدید.</translation>
-<translation id="6280088282605782512">دوضربه بزنید</translation>
+<translation id="6280088282605782512">دو تک‌ضرب بزنید</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">کلیدهای ضروری: «جستجو»</translation>
 <translation id="6305702903308659374">‏پخش با صدایی معمولی حتی اگر ChromeVox درحال صحبت کردن باشد</translation>
 <translation id="6307969636681130414">فشرده شده</translation>
-<translation id="6315652249189065725">باز کردن منوی میان‌برهای صفحه‌کلید</translation>
+<translation id="6315652249189065725">باز کردن منو میان‌برهای صفحه‌کلید</translation>
 <translation id="6320690422100602757">مورد بعدی فهرست وجود ندارد</translation>
 <translation id="6322856989298155004">آواها</translation>
 <translation id="6324551002951139333">اشتباه دستوری شناسایی شد</translation>
