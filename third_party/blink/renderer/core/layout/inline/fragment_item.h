@@ -11,7 +11,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
-#include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/inline/text_item_type.h"
 #include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -23,8 +24,8 @@
 namespace blink {
 
 class FragmentItems;
-class InlineBreakToken;
 class InlinePaintContext;
+class PhysicalBoxFragment;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
 
