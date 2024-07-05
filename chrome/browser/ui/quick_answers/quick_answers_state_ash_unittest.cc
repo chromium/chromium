@@ -75,7 +75,9 @@ class TestQuickAnswersStateObserver : public QuickAnswersStateObserver {
   bool prefs_initialized_ = false;
 };
 
-class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase {
+// The bool parameter controls the feature flag QuickAnswers.
+class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
+                                 public testing::WithParamInterface<bool> {
  protected:
   QuickAnswersStateAshTest() = default;
   QuickAnswersStateAshTest(const QuickAnswersStateAshTest&) = delete;
@@ -314,7 +316,7 @@ TEST_F(QuickAnswersStateAshTest, EnabledThenDisabledByPolicy) {
   EXPECT_FALSE(observer()->settings_enabled());
 }
 
-TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
+TEST_P(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
   QuickAnswersState::Get()->AddObserver(observer());
 
   user_manager::ScopedUserManager user_manager(
@@ -322,7 +324,7 @@ TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
   chromeos::SetUpFakeKioskSession();
 
   EXPECT_TRUE(chromeos::IsKioskSession());
-  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, GetParam());
 
   EXPECT_FALSE(
       prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
@@ -330,3 +332,7 @@ TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
             observer()->consent_status());
   EXPECT_FALSE(observer()->settings_enabled());
 }
+
+INSTANTIATE_TEST_SUITE_P(ForceDisabledForKiosk,
+                         QuickAnswersStateAshTest,
+                         testing::Bool());

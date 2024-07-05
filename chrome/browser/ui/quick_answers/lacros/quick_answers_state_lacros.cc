@@ -105,7 +105,7 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   bool settings_enabled = value.GetBool();
 
-  if (chromeos::IsKioskSession() && settings_enabled) {
+  if (chromeos::IsKioskSession()) {
     settings_enabled = false;
     SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled, base::Value(false));
     SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,

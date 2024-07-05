@@ -149,7 +149,7 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
 
   // Quick answers should be disabled for kiosk session.
-  if (chromeos::IsKioskSession() && settings_enabled) {
+  if (chromeos::IsKioskSession()) {
     settings_enabled = false;
     prefs->SetBoolean(kQuickAnswersEnabled, false);
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
