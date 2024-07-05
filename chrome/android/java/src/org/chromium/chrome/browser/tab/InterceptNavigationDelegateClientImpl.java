@@ -87,7 +87,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public boolean isIncognito() {
-        return mTab.isIncognito();
+        return mTab.isIncognitoBranded();
     }
 
     @Override
