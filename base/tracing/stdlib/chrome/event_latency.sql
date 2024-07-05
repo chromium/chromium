@@ -2,21 +2,7 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- Checks if slice has a descendant with provided name.
-CREATE PERFETTO FUNCTION _has_descendant_slice_with_name(
-  -- Id of the slice to check descendants of.
-  id INT,
-  -- Name of potential descendant slice.
-  descendant_name STRING
-)
--- Whether `descendant_name` is a name of an descendant slice.
-RETURNS BOOL AS
-SELECT EXISTS(
-  SELECT 1
-  FROM descendant_slice($id)
-  WHERE name = $descendant_name
-  LIMIT 1
-);
+INCLUDE PERFETTO MODULE deprecated.v42.common.slices;
 
 -- Finds the end timestamp for a given slice's descendant with a given name.
 -- If there are multiple descendants with a given name, the function will return
@@ -64,7 +50,7 @@ SELECT
   slice.ts,
   slice.dur,
   EXTRACT_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
-  _has_descendant_slice_with_name(
+  has_descendant_slice_with_name(
     slice.id,
     'SubmitCompositorFrameToPresentationCompositorFrame')
   AS is_presented,
@@ -84,7 +70,7 @@ SELECT
   id,
   scroll_update_id,
   is_presented,
-  CASE WHEN _has_descendant_slice_with_name(
+  CASE WHEN has_descendant_slice_with_name(
       id,
       'SwapEndToPresentationCompositorFrame')
     THEN _descendant_slice_end(id, 'SwapEndToPresentationCompositorFrame')
@@ -98,7 +84,7 @@ WHERE (
   event_type GLOB '*GESTURE_SCROLL*'
   -- Pinches are only relevant if the frame was presented.
   OR (event_type GLOB '*GESTURE_PINCH_UPDATE'
-    AND _has_descendant_slice_with_name(
+    AND has_descendant_slice_with_name(
       id,
       'SubmitCompositorFrameToPresentationCompositorFrame')
   )
