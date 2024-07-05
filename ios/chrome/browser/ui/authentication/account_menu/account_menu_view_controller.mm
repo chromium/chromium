@@ -285,7 +285,8 @@ typedef NS_ENUM(NSUInteger, RowIdentifier) {
     // `itemIdentifier` is a gaiaID.
     base::RecordAction(
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
-    [self.mutator accountTappedWithGaiaID:gaiaID];
+    CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+    [self.mutator accountTappedWithGaiaID:gaiaID targetRect:cellRect];
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
     RowIdentifier rowIdentifier = static_cast<RowIdentifier>(

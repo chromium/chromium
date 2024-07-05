@@ -529,6 +529,9 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 
 // Returns snackbar if needed.
 - (MDCSnackbarMessage*)signoutSnackbarMessage {
+  if (self.skipPostSignoutSnackbar) {
+    return nil;
+  }
   switch (self.signedInUserState) {
     case SignedInUserStateWithManagedAccountClearsDataOnSignout:
     case SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin:

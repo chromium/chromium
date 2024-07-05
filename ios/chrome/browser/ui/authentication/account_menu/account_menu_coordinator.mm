@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
@@ -258,6 +259,49 @@
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator {
   CHECK_EQ(mediator, _mediator);
   [self.delegate acountMenuCoordinatorShouldStop:self];
+}
+
+- (void)triggerSignoutWithTargetRect:(CGRect)targetRect
+                          completion:(void (^)(BOOL success))completion {
+  CHECK(!_mediator.signOutFlowInProgress &&
+        !_mediator.addAccountOperationInProgress);
+  CHECK(
+      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
+      base::NotFatalUntil::M130)
+      << "There must be a signed-in account to view the menu and be able to "
+         "switch accounts.";
+
+  _signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:_navigationController
+                         browser:self.browser
+                            rect:targetRect
+                            view:_viewController.view
+                      withSource:signin_metrics::ProfileSignout::
+                                     kChangeAccountInAccountMenu];
+  _signoutActionSheetCoordinator.delegate = self;
+  _signoutActionSheetCoordinator.skipPostSignoutSnackbar = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  _signoutActionSheetCoordinator.completion = ^(BOOL signoutSuccess) {
+    [weakSelf stopSignoutActionSheetCoordinator];
+    completion(signoutSuccess);
+  };
+  [_signoutActionSheetCoordinator start];
+}
+
+- (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                             completion:(void (^)())completion {
+  AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
+               initWithBrowser:self.browser
+                      identity:identity
+                   accessPoint:signin_metrics::AccessPoint::
+                                   ACCESS_POINT_ACCOUNT_MENU
+             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
+      presentingViewController:_navigationController];
+
+  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    completion();
+  }];
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

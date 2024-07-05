@@ -47,6 +47,9 @@
   // The type of account error that is being displayed in the error section for
   // signed in accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
+
+  // Whether an account switching is in progress.
+  BOOL _accountSwitchingInProgress;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -169,7 +172,7 @@
       [self updateIdentities];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      if (self.accountSwitchingInProgress) {
+      if (_accountSwitchingInProgress) {
         return;
       }
       [self.delegate mediatorWantsToBeDismissed:self];
@@ -190,8 +193,9 @@
 
 #pragma mark - AccountMenuMutator
 
-- (void)accountTappedWithGaiaID:(NSString*)gaiaID {
-  if (self.accountSwitchingInProgress || self.signOutFlowInProgress) {
+- (void)accountTappedWithGaiaID:(NSString*)gaiaID
+                     targetRect:(CGRect)targetRect {
+  if (_accountSwitchingInProgress || self.signOutFlowInProgress) {
     return;
   }
   id<SystemIdentity> newIdentity = nil;
@@ -202,18 +206,14 @@
     }
   }
   CHECK(newIdentity);
-  self.accountSwitchingInProgress = YES;
+  _accountSwitchingInProgress = YES;
   __weak __typeof(self) weakSelf = self;
-  _authenticationService->SignOut(
-      signin_metrics::ProfileSignout::kChangeAccountInAccountMenu, NO, ^{
-        AccountMenuMediator* strongSelf = weakSelf;
-        if (strongSelf) {
-          strongSelf->_authenticationService->SignIn(
-              newIdentity,
-              signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU);
-          strongSelf.accountSwitchingInProgress = NO;
-        }
-      });
+  [self.delegate triggerSignoutWithTargetRect:targetRect
+                                   completion:^(BOOL success) {
+                                     [weakSelf
+                                         signoutDoneWithSuccess:success
+                                                 systemIdentity:newIdentity];
+                                   }];
 }
 
 - (void)didTapErrorButton {
@@ -289,6 +289,24 @@
                                    gaiaIDsToRemove:tablegaiaIDsToRemove];
   // In case the primary account information changed.
   [self.consumer updatePrimaryAccount];
+}
+
+- (void)signoutDoneWithSuccess:(BOOL)success
+                systemIdentity:(id<SystemIdentity>)systemIdentity {
+  if (!success) {
+    _accountSwitchingInProgress = NO;
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [self.delegate triggerSigninWithSystemIdentity:systemIdentity
+                                      completion:^() {
+                                        [weakSelf signinDone];
+                                      }];
+}
+
+- (void)signinDone {
+  _accountSwitchingInProgress = NO;
+  [_delegate mediatorWantsToBeDismissed:self];
 }
 
 @end

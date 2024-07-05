@@ -70,6 +70,11 @@ class Browser;
 // Whether to warns feature won’t be available anymore when user is not
 // synced.
 @property(nonatomic, assign) BOOL showUnavailableFeatureDialogHeader;
+
+// Whether to skip the post sign-out snackbar. If YES, the snackbar will be
+// skipped, if NO, it will show. Default is NO.
+@property(nonatomic, assign) BOOL skipPostSignoutSnackbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNOUT_ACTION_SHEET_SIGNOUT_ACTION_SHEET_COORDINATOR_H_

@@ -11,7 +11,7 @@
 @protocol AccountMenuMutator <NSObject>
 
 // The user tapped on the `index`-th account.
-- (void)accountTappedWithGaiaID:(NSString*)index;
+- (void)accountTappedWithGaiaID:(NSString*)index targetRect:(CGRect)targetRect;
 
 // The user tapped on the error button.
 - (void)didTapErrorButton;

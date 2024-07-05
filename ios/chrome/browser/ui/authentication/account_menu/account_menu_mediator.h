@@ -38,9 +38,6 @@ class SyncService;
 // Whether the add-account-flow is currently in progress.
 @property(nonatomic) BOOL addAccountOperationInProgress;
 
-// Whether an account switching is in progress.
-@property(nonatomic) BOOL accountSwitchingInProgress;
-
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService

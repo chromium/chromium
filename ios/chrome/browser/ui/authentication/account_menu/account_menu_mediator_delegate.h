@@ -10,10 +10,17 @@
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
 @protocol AccountMenuMediator;
+@protocol SystemIdentity;
 
 @protocol AccountMenuMediatorDelegate <SyncErrorSettingsCommandHandler>
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator;
+
+- (void)triggerSignoutWithTargetRect:(CGRect)targetRect
+                          completion:(void (^)(BOOL success))completion;
+
+- (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
+                             completion:(void (^)())completion;
 
 @end
 
