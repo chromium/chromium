@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -60,8 +61,8 @@ public interface AccountSelectionComponent {
      * @param idpMetadata Metadata related to identity provider.
      * @param clientMetadata Metadata related to relying party.
      * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
-     * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *     the FedCM prompt: "signin", "continue", etc.
+     * @param rpContext is an enum representing the desired text to be used in the title of the
+     *     FedCM prompt: "signin", "continue", etc.
      * @param requestPermission A {@link boolean} indicating whether we need to request permission
      *     from the user to share their data with the IDP, if the user is not a returning user.
      */
@@ -73,7 +74,7 @@ public interface AccountSelectionComponent {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             boolean requestPermission);
 
     /**
@@ -85,15 +86,15 @@ public interface AccountSelectionComponent {
      * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
-     * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
+     * @param rpContext is an enum representing the desired text to be used in the title of the
+     *     FedCM prompt: "signin", "continue", etc.
      */
     void showFailureDialog(
             String topFrameForDisplay,
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext);
+            @RpContext.EnumType int rpContext);
 
     /**
      * Displays a dialog telling the user that an error has occurred in their attempt to sign-in to
@@ -103,17 +104,17 @@ public interface AccountSelectionComponent {
      * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
-     * @param rpContext is a {@link String} representing the desired text to be used in the title of
-     *         the FedCM prompt: "signin", "continue", etc.
+     * @param rpContext is an enum representing the desired text to be used in the title of the
+     *     FedCM prompt: "signin", "continue", etc.
      * @param IdentityCredentialTokenError is contains the error code and url to display in the
-     *         FedCM prompt.
+     *     FedCM prompt.
      */
     void showErrorDialog(
             String topFrameForDisplay,
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error);
 
     /** Closes the outstanding bottom sheet. */

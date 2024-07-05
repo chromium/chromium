@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -38,31 +39,33 @@ public class AccountSelectionButtonModeViewTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private class RpContext {
-        public String mValue;
+    private class RpContextEntry {
+        public int mValue;
         public int mTitleId;
 
-        RpContext(String value, int titleId) {
+        RpContextEntry(@RpContext.EnumType int value, int titleId) {
             mValue = value;
             mTitleId = titleId;
         }
     }
 
-    private final RpContext[] mRpContexts =
-            new RpContext[] {
-                new RpContext(
-                        "signin",
+    private final RpContextEntry[] mRpContexts =
+            new RpContextEntry[] {
+                new RpContextEntry(
+                        RpContext.SIGN_IN,
                         R.string.account_selection_button_mode_sheet_title_explicit_signin),
-                new RpContext(
-                        "signup",
+                new RpContextEntry(
+                        RpContext.SIGN_UP,
                         R.string.account_selection_button_mode_sheet_title_explicit_signup),
-                new RpContext(
-                        "use", R.string.account_selection_button_mode_sheet_title_explicit_use),
-                new RpContext(
-                        "continue",
+                new RpContextEntry(
+                        RpContext.USE,
+                        R.string.account_selection_button_mode_sheet_title_explicit_use),
+                new RpContextEntry(
+                        RpContext.CONTINUE,
                         R.string.account_selection_button_mode_sheet_title_explicit_continue),
-                new RpContext(
-                        "", R.string.account_selection_button_mode_sheet_title_explicit_signin)
+                // Test a random invalid value.
+                new RpContextEntry(
+                        0xCAFE, R.string.account_selection_button_mode_sheet_title_explicit_signin)
             };
 
     private Resources mResources;
@@ -104,7 +107,7 @@ public class AccountSelectionButtonModeViewTest {
 
     @Test
     public void testRpContextTitleDisplayed() {
-        for (RpContext rpContext : mRpContexts) {
+        for (RpContextEntry rpContext : mRpContexts) {
             mModel.set(
                     ItemProperties.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)

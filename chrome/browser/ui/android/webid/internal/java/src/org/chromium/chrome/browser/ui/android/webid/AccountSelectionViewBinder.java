@@ -28,6 +28,7 @@ import androidx.annotation.StringRes;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -657,7 +658,7 @@ class AccountSelectionViewBinder {
             HeaderProperties.HeaderType type,
             String rpUrl,
             String idpUrl,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
@@ -668,14 +669,14 @@ class AccountSelectionViewBinder {
         @StringRes int titleStringId;
         if (rpMode == RpMode.BUTTON) {
             switch (rpContext) {
-                case "signup":
+                case RpContext.SIGN_UP:
                     titleStringId =
                             R.string.account_selection_button_mode_sheet_title_explicit_signup;
                     break;
-                case "use":
+                case RpContext.USE:
                     titleStringId = R.string.account_selection_button_mode_sheet_title_explicit_use;
                     break;
-                case "continue":
+                case RpContext.CONTINUE:
                     titleStringId =
                             R.string.account_selection_button_mode_sheet_title_explicit_continue;
                     break;
@@ -687,13 +688,13 @@ class AccountSelectionViewBinder {
         }
 
         switch (rpContext) {
-            case "signup":
+            case RpContext.SIGN_UP:
                 titleStringId = R.string.account_selection_sheet_title_explicit_signup;
                 break;
-            case "use":
+            case RpContext.USE:
                 titleStringId = R.string.account_selection_sheet_title_explicit_use;
                 break;
-            case "continue":
+            case RpContext.CONTINUE:
                 titleStringId = R.string.account_selection_sheet_title_explicit_continue;
                 break;
             default:

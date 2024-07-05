@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -189,7 +190,7 @@ public class AccountSelectionCoordinator
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             boolean requestPermission) {
         mMediator.showAccounts(
                 topFrameEtldPlusOne,
@@ -209,7 +210,7 @@ public class AccountSelectionCoordinator
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext) {
+            @RpContext.EnumType int rpContext) {
         mMediator.showFailureDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
@@ -220,7 +221,7 @@ public class AccountSelectionCoordinator
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
         mMediator.showErrorDialog(
                 topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext, error);

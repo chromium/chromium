@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -119,7 +120,7 @@ class AccountSelectionMediator {
     private IdentityProviderMetadata mIdpMetadata;
     private Bitmap mBrandIcon;
     private ClientIdMetadata mClientMetadata;
-    private String mRpContext;
+    private @RpContext.EnumType int mRpContext;
     private IdentityCredentialTokenError mError;
     private boolean mRequestPermission;
 
@@ -296,7 +297,7 @@ class AccountSelectionMediator {
             String topFrameForDisplay,
             String iframeForDisplay,
             String idpForDisplay,
-            String rpContext) {
+            @RpContext.EnumType int rpContext) {
         Runnable closeOnClickRunnable =
                 () -> {
                     onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
@@ -420,7 +421,7 @@ class AccountSelectionMediator {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             boolean requestPermission) {
         showPlaceholderIcon(idpMetadata);
         mSelectedAccount = null;
@@ -446,7 +447,7 @@ class AccountSelectionMediator {
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext) {
+            @RpContext.EnumType int rpContext) {
         showPlaceholderIcon(idpMetadata);
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;
@@ -464,7 +465,7 @@ class AccountSelectionMediator {
             String iframeForDisplay,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             IdentityCredentialTokenError error) {
         showPlaceholderIcon(idpMetadata);
         mTopFrameForDisplay = topFrameForDisplay;
@@ -516,7 +517,7 @@ class AccountSelectionMediator {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             boolean isAutoReauthn,
-            String rpContext,
+            @RpContext.EnumType int rpContext,
             boolean requestPermission) {
         mTopFrameForDisplay = topFrameForDisplay;
         mIframeForDisplay = iframeForDisplay;

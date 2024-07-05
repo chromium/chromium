@@ -124,24 +124,6 @@ Account ConvertFieldsToAccount(JNIEnv* env,
                  std::move(labels), login_state, browser_trusted_login_state);
 }
 
-std::string ConvertRpContextToString(blink::mojom::RpContext rp_context) {
-  std::string rp_context_string;
-  switch (rp_context) {
-    case blink::mojom::RpContext::kSignUp:
-      rp_context_string = "signup";
-      break;
-    case blink::mojom::RpContext::kUse:
-      rp_context_string = "use";
-      break;
-    case blink::mojom::RpContext::kContinue:
-      rp_context_string = "continue";
-      break;
-    default:
-      rp_context_string = "signin";
-  }
-  return rp_context_string;
-}
-
 }  // namespace
 
 AccountSelectionViewAndroid::AccountSelectionViewAndroid(
@@ -192,7 +174,7 @@ bool AccountSelectionViewAndroid::Show(
       iframe_for_display.value_or(""),
       identity_provider_data[0].idp_for_display, accounts_obj, idp_metadata_obj,
       client_id_metadata_obj, sign_in_mode == Account::SignInMode::kAuto,
-      ConvertRpContextToString(identity_provider_data[0].rp_context),
+      static_cast<jint>(identity_provider_data[0].rp_context),
       identity_provider_data[0].request_permission);
   return true;
 }
@@ -221,7 +203,7 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
   Java_AccountSelectionBridge_showFailureDialog(
       env, java_object_internal_, top_frame_for_display,
       iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
-      ConvertRpContextToString(rp_context));
+      static_cast<jint>(rp_context));
   return true;
 }
 
@@ -248,7 +230,7 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
   Java_AccountSelectionBridge_showErrorDialog(
       env, java_object_internal_, top_frame_for_display,
       iframe_for_display.value_or(""), idp_for_display, idp_metadata_obj,
-      ConvertRpContextToString(rp_context),
+      static_cast<jint>(rp_context),
       ConvertToJavaIdentityCredentialTokenError(env, error));
   return true;
 }

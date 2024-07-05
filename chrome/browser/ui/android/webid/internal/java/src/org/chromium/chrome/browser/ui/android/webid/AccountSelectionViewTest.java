@@ -39,6 +39,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -100,23 +101,29 @@ public class AccountSelectionViewTest {
     private Account mBobAccount;
     private IdentityProviderMetadata mTestIdpMetadata;
 
-    private class RpContext {
-        public String mValue;
+    private class RpContextEntry {
+        public @RpContext.EnumType int mValue;
         public int mTitleId;
 
-        RpContext(String value, int titleId) {
+        RpContextEntry(@RpContext.EnumType int value, int titleId) {
             mValue = value;
             mTitleId = titleId;
         }
     }
 
-    private final RpContext[] mRpContexts =
-            new RpContext[] {
-                new RpContext("signin", R.string.account_selection_sheet_title_explicit_signin),
-                new RpContext("signup", R.string.account_selection_sheet_title_explicit_signup),
-                new RpContext("use", R.string.account_selection_sheet_title_explicit_use),
-                new RpContext("continue", R.string.account_selection_sheet_title_explicit_continue),
-                new RpContext("", R.string.account_selection_sheet_title_explicit_signin)
+    private final RpContextEntry[] mRpContexts =
+            new RpContextEntry[] {
+                new RpContextEntry(
+                        RpContext.SIGN_IN, R.string.account_selection_sheet_title_explicit_signin),
+                new RpContextEntry(
+                        RpContext.SIGN_UP, R.string.account_selection_sheet_title_explicit_signup),
+                new RpContextEntry(
+                        RpContext.USE, R.string.account_selection_sheet_title_explicit_use),
+                new RpContextEntry(
+                        RpContext.CONTINUE,
+                        R.string.account_selection_sheet_title_explicit_continue),
+                // Test an invalid value.
+                new RpContextEntry(0xCAFE, R.string.account_selection_sheet_title_explicit_signin)
             };
 
     private class TokenError {

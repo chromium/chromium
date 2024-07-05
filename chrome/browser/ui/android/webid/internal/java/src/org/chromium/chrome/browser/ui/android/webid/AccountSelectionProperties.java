@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialToken
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.GURL;
@@ -77,8 +78,7 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
-        static final ReadableObjectPropertyKey<String> RP_CONTEXT =
-                new ReadableObjectPropertyKey<>("rp_context");
+        static final ReadableIntPropertyKey RP_CONTEXT = new ReadableIntPropertyKey("rp_context");
         static final ReadableObjectPropertyKey<Integer> RP_MODE =
                 new ReadableObjectPropertyKey<>("rp_mode");
 
