@@ -54,7 +54,7 @@ void FakeOnDeviceSession::GetSizeInTokens(const std::string& text,
 
 void FakeOnDeviceSession::Score(const std::string& text,
                                 ScoreCallback callback) {
-  std::move(callback).Run(0);
+  std::move(callback).Run(0.5);
 }
 
 void FakeOnDeviceSession::ExecuteImpl(

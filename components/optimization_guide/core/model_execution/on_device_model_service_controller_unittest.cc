@@ -423,6 +423,52 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   OptimizationGuideLogger logger_;
 };
 
+TEST_F(OnDeviceModelServiceControllerTest, ScoreNullBeforeContext) {
+  Initialize();
+
+  base::HistogramTester histogram_tester;
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+  base::test::TestFuture<std::optional<float>> score_future;
+  session->Score("token", score_future.GetCallback());
+  EXPECT_EQ(score_future.Get(), std::nullopt);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ScorePresentAfterContext) {
+  Initialize();
+
+  base::HistogramTester histogram_tester;
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "foo");
+
+  base::test::TestFuture<std::optional<float>> score_future;
+  session->Score("token", score_future.GetCallback());
+  EXPECT_EQ(score_future.Get(), 0.5);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ScoreNullAfterExecute) {
+  Initialize();
+
+  base::HistogramTester histogram_tester;
+  auto session = test_controller_->CreateSession(
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  EXPECT_TRUE(session);
+
+  AddContext(*session, "foo");
+  ExecuteModel(*session, "bar");
+
+  base::test::TestFuture<std::optional<float>> score_future;
+  session->Score("token", score_future.GetCallback());
+  EXPECT_EQ(score_future.Get(), std::nullopt);
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   Initialize();
 
