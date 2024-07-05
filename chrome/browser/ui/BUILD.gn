@@ -421,6 +421,7 @@ static_library("ui") {
   # have the same dependencies. Once browser_ui is untangled from
   # browser, then we can clean up these dependencies.
   public_deps = [
+    "//chrome/browser:lcp_critical_path_predictor_proto",
     "//chrome/browser/headless",
     "//chrome/browser/ui/tabs:tab_enums",
     "//components/cross_device/logging",
@@ -750,6 +751,10 @@ static_library("ui") {
     "//ui/webui",
     "//v8:v8_version",
   ]
+
+  if (enable_compose) {
+    deps += [ "//chrome/browser:compose_optimization_guide_proto" ]
+  }
 
   if (is_chrome_branded) {
     deps += [ "//components/plus_addresses/resources:vector_icons" ]
@@ -2020,7 +2025,6 @@ static_library("ui") {
       "//base",
       "//build:chromeos_buildflags",
       "//chrome/app/vector_icons",
-      "//chrome/browser:lcp_critical_path_predictor_proto",
       "//chrome/browser/accessibility:utils",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",
