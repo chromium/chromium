@@ -18,19 +18,23 @@ specific_include_rules = {
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
   ],
-  "gtest_util.h": [
-    "+testing/gtest/include/gtest/gtest.h",
-  ],
 
   # Dependencies on //base:
   "extended_api\.cc": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
+  ],
+  "page_allocator_unittest\.cc": [
+    "+base/debug/proc_maps_linux.h",
   ],
   "partition_alloc_perftest\.cc": [
     "+base/allocator/dispatcher/dispatcher.h",
     "+base/debug/allocation_trace.h",
     "+base/debug/debugging_buildflags.h",
     "+base/timer/lap_timer.h",
+  ],
+  "partition_alloc_unittest\.cc": [
+    "+base/system/sys_info.h",
+    "+base/test/gtest_util.h",
   ],
   "partition_lock_perftest\.cc": [
     "+base/timer/lap_timer.h",
