@@ -3346,8 +3346,36 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->Init();
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UsesTopKAndTemperature) {
-  Initialize();
+TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(kFeature, config);
+  config.mutable_sampling_params()->set_top_k(4);
+  config.mutable_sampling_params()->set_temperature(1.5);
+  Initialize({.config = config});
+
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing(),
+                                                 logger_.GetWeakPtr(), nullptr,
+                                                 SessionConfigParams{});
+  EXPECT_TRUE(session);
+  ExecuteModel(*session, "foo");
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(response_received_);
+  const std::string expected_response =
+      "Input: execute:foo\nTopK: 4, Temp: 1.5\n";
+  EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
+  // Session sampling params should have precedence over feature ones.
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
+  PopulateConfigForFeature(kFeature, config);
+  config.mutable_sampling_params()->set_top_k(4);
+  config.mutable_sampling_params()->set_temperature(1.5);
+  Initialize({.config = config});
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(), nullptr,
       SessionConfigParams{.sampling_params = SamplingParams{

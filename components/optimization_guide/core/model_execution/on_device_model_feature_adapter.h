@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 
@@ -53,6 +54,8 @@ class OnDeviceModelFeatureAdapter final
       const std::string& text) const;
 
   bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
+
+  std::optional<SamplingParams> MaybeSamplingParams() const;
 
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;

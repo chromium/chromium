@@ -41,6 +41,10 @@ message OnDeviceModelExecutionFeatureConfig {
 
   // Whether text safety can be skipped for this feature, if not configured.
   optional bool can_skip_text_safety = 5;
+
+  // Sampling parameters to use with the model.
+  // These will override global defaults, but not per session configurations.
+  optional SamplingParams sampling_params = 6;
 }
 
 message OnDeviceModelExecutionInputConfig {
@@ -97,4 +101,9 @@ message ValidationPrompt {
   // A string that the output is expected to contain. This is not case
   // sensitive.
   optional string expected_output = 2;
+}
+
+message SamplingParams {
+  optional uint32 top_k = 1;
+  optional float temperature = 2;
 }

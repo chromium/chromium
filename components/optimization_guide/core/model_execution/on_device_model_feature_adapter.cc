@@ -122,4 +122,15 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
+std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
+    const {
+  if (!config_.has_sampling_params()) {
+    return std::nullopt;
+  }
+  return SamplingParams{
+      .top_k = config_.sampling_params().top_k(),
+      .temperature = config_.sampling_params().temperature(),
+  };
+}
+
 }  // namespace optimization_guide
