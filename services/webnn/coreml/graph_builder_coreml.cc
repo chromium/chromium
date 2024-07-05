@@ -844,7 +844,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::SerializeModel() {
   base::File model_file(model_file_path,
                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!model_file.IsValid()) {
-    LOG(ERROR) << "Unable to open " << model_file_path << ": "
+    LOG(ERROR) << "[WebNN] Unable to open " << model_file_path << ": "
                << base::File::ErrorToString(model_file.error_details());
     return NewUnknownError(kWriteModelErrorMessage);
   }
@@ -872,7 +872,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
   base::File weights_file(weights_file_path,
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!weights_file.IsValid()) {
-    LOG(ERROR) << "Unable to open " << weights_file_path << ": "
+    LOG(ERROR) << "[WebNN] Unable to open " << weights_file_path << ": "
                << base::File::ErrorToString(weights_file.error_details());
     return NewUnknownError(kWriteWeightsErrorMessage);
   }

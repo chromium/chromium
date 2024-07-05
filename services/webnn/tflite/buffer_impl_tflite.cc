@@ -20,7 +20,7 @@ std::unique_ptr<WebNNBufferImpl> BufferImplTflite::Create(
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
   if (!base::IsValueInRangeForNumericType<int>(
           buffer_info->descriptor.PackedByteLength())) {
-    DLOG(ERROR) << "Buffer is too large to create.";
+    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
     return nullptr;
   }
 

@@ -76,20 +76,19 @@ struct ScopedModelPaths {
       const auto dump_directory =
           base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
               switches::kWebNNCoreMlDumpModel);
-      LOG(INFO) << "webnn::coreml Copying model files to " << dump_directory;
+      LOG(INFO) << "[WebNN] Copying model files to " << dump_directory;
       if (dump_directory.empty()) {
-        LOG(ERROR) << "webnn::coreml Dump directory not specified.";
+        LOG(ERROR) << "[WebNN] Dump directory not specified.";
       } else {
         if (!model_file_dir.IsValid() ||
             !base::CopyDirectory(model_file_dir.GetPath(), dump_directory,
                                  /*recursive=*/true)) {
-          LOG(ERROR) << "webnn::coreml Failed to copy model file directory.";
+          LOG(ERROR) << "[WebNN] Failed to copy model file directory.";
         }
         if (!compiled_model_dir.IsValid() ||
             !base::CopyDirectory(compiled_model_dir.GetPath(), dump_directory,
                                  /*recursive=*/true)) {
-          LOG(ERROR)
-              << "webnn::coreml Failed to copy compiled model directory.";
+          LOG(ERROR) << "[WebNN] Failed to copy compiled model directory.";
         }
       }
     }
@@ -316,7 +315,7 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
       .compiled_model_dir = std::move(scoped_compiled_model_dir)};
 
   if (error) {
-    DLOG(ERROR) << error;
+    LOG(ERROR) << "[WebNN] " << error;
     std::move(callback).Run(base::unexpected(mojom::Error::New(
         mojom::Error::Code::kUnknownError, "Model compilation error.")));
     return;
@@ -345,7 +344,7 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.CompiledModelLoad",
                              model_load_timer.Elapsed());
   if (model_load_error) {
-    DLOG(ERROR) << model_load_error;
+    LOG(ERROR) << "[WebNN] " << model_load_error;
     std::move(callback).Run(base::unexpected(mojom::Error::New(
         mojom::Error::Code::kUnknownError, "Model load error.")));
     return;
@@ -360,7 +359,7 @@ void GraphImplCoreml::DidCreateAndBuild(
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<std::unique_ptr<Params>, mojom::ErrorPtr> result) {
   if (!result.has_value()) {
-    DLOG(ERROR) << result.error()->message;
+    LOG(ERROR) << "[WebNN] " << result.error()->message;
     std::move(callback).Run(base::unexpected(std::move(result).error()));
     return;
   }
@@ -417,8 +416,7 @@ GraphImplCoreml::GetCoreMLFeatureInfo(
     expected_size *= dimension;
   }
   if (!expected_size.IsValid()) {
-    DLOG(ERROR)
-        << "WebNN::CoreML Error GetCoreMLFeatureInfo expected size overflow";
+    LOG(ERROR) << "[WebNN] Error GetCoreMLFeatureInfo expected size overflow";
     return std::nullopt;
   }
   uint32_t current_stride = expected_size.ValueOrDie();
@@ -511,7 +509,7 @@ void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
                              model_predict_timer.Elapsed());
 
   if (error) {
-    DLOG(ERROR) << "webnn::coreml predictionError : " << error;
+    LOG(ERROR) << "[WebNN] PredictionError : " << error;
     std::move(callback).Run(mojom::ComputeResult::NewError(mojom::Error::New(
         mojom::Error::Code::kUnknownError, "Error computing results")));
     return;

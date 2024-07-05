@@ -108,7 +108,7 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
     case OperandDataType::kUint32:
       return DML_TENSOR_DATA_TYPE_UINT32;
     default:
-      DLOG(ERROR) << "This data type is not supported.";
+      LOG(ERROR) << "[WebNN] This data type is not supported.";
       NOTREACHED_NORETURN();
   }
 }
@@ -199,7 +199,7 @@ std::optional<AlignedByteLength<uint64_t>> CalculateAlignedByteLength(
     total_byte_length += base::bits::AlignUp<size_t>(
         buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
-      DLOG(ERROR) << "Failed to calculate the total byte length.";
+      LOG(ERROR) << "[WebNN] Failed to calculate the total byte length.";
       return std::nullopt;
     }
 
@@ -231,7 +231,7 @@ CalculateAlignedByteLengthFromDescriptors(
     total_byte_length += base::bits::AlignUp<size_t>(
         descriptor.PackedByteLength(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
-      DLOG(ERROR) << "Failed to calculate the total byte length.";
+      LOG(ERROR) << "[WebNN] Failed to calculate the total byte length.";
       return std::nullopt;
     }
 
@@ -288,8 +288,8 @@ UploadAndCreateConstantBufferBinding(
 
   HRESULT hr = buffer_to_map->Map(0, nullptr, &mapped_buffer);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to map buffer for inputs: "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "[WebNN] Failed to map buffer for inputs: "
+               << logging::SystemErrorCodeToString(hr);
     return std::nullopt;
   }
 
@@ -431,8 +431,8 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
       break;
     }
     default:
-      DLOG(ERROR)
-          << "The data type must be one of the floating point data types.";
+      LOG(ERROR) << "[WebNN] The data type must be one of the floating point "
+                    "data types.";
       NOTREACHED_NORETURN();
   }
 
@@ -2095,7 +2095,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       break;
     }
     default:
-      DLOG(ERROR) << "Invalid Pool2d operator type";
+      LOG(ERROR) << "[WebNN] Invalid Pool2d operator type";
       NOTREACHED_NORETURN();
   }
 
@@ -4995,7 +4995,8 @@ void HandleGraphCreationFailure(
     const std::string& error_message,
     HRESULT hr,
     WebNNContextImpl::CreateGraphImplCallback callback) {
-  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  LOG(ERROR) << "[WebNN] " << error_message << " "
+             << logging::SystemErrorCodeToString(hr);
   if (hr == E_OUTOFMEMORY) {
     std::move(callback).Run(base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,
@@ -5143,7 +5144,8 @@ GraphImplDml::AllocateComputeResources(
       CalculateAlignedByteLengthFromDescriptors(
           compute_resource_info.input_names_to_descriptors);
   if (!aligned_byte_length_of_inputs) {
-    DLOG(ERROR) << "Failed to calculate the aligned byte length of inputs.";
+    LOG(ERROR)
+        << "[WebNN] Failed to calculate the aligned byte length of inputs.";
     return base::unexpected(E_INVALIDARG);
   }
 
@@ -5184,7 +5186,8 @@ GraphImplDml::AllocateComputeResources(
       CalculateAlignedByteLengthFromDescriptors(
           compute_resource_info.output_names_to_descriptors);
   if (!aligned_byte_length_of_outputs) {
-    DLOG(ERROR) << "Failed to calculate the aligned byte length of outputs.";
+    LOG(ERROR)
+        << "[WebNN] Failed to calculate the aligned byte length of outputs.";
     return base::unexpected(E_INVALIDARG);
   }
 
@@ -5227,7 +5230,7 @@ GraphImplDml::AllocateComputeResources(
   std::unique_ptr<CommandRecorder> command_recorder =
       CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
   if (!command_recorder) {
-    DLOG(ERROR) << "Failed to create a command recorder.";
+    LOG(ERROR) << "[WebNN] Failed to create a command recorder.";
     return base::unexpected(E_FAIL);
   }
 
@@ -6116,7 +6119,8 @@ void GraphImplDml::HandleComputationFailure(
     const std::string& error_message,
     HRESULT hr,
     mojom::WebNNGraph::ComputeCallback callback) {
-  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  LOG(ERROR) << "[WebNN] " << error_message << " "
+             << logging::SystemErrorCodeToString(hr);
   compute_resources_.reset();
   if (hr == E_OUTOFMEMORY) {
     std::move(callback).Run(ComputeResult::NewError(CreateError(
@@ -6131,7 +6135,8 @@ void GraphImplDml::HandleComputationFailure(
 // TODO(crbug.com/41492165): generate error using context.
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
                                          HRESULT hr) {
-  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  LOG(ERROR) << "[WebNN] " << error_message << " "
+             << logging::SystemErrorCodeToString(hr);
   command_recorder_.reset();
 
   // Clear out previous buffers recorded for dispatch() so we don't mistakenly
@@ -6293,7 +6298,7 @@ void GraphImplDml::DispatchImpl(
     command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
                                                 adapter_->dml_device());
     if (!command_recorder_) {
-      LOG(ERROR) << "Failed to create the command recorder.";
+      LOG(ERROR) << "[WebNN] Failed to create the command recorder.";
       return;
     }
     is_command_recording_needed = true;

@@ -142,8 +142,8 @@ HRESULT CommandQueue::WaitSync() {
   HRESULT hr =
       fence_->SetEventOnCompletion(last_fence_value_, fence_event_.get());
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set event on completion : "
-                << logging::SystemErrorCodeToString(hr);
+    LOG(ERROR) << "Failed to set event on completion : "
+               << logging::SystemErrorCodeToString(hr);
     return hr;
   }
   CHECK_EQ(WaitForSingleObject(fence_event_.get(), INFINITE), WAIT_OBJECT_0);

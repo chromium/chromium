@@ -88,7 +88,7 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
       static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength())) {
-    DLOG(ERROR) << "Buffer is too large to create.";
+    LOG(ERROR) << "[WebNN] Buffer is too large to create.";
     return nullptr;
   }
 
@@ -310,7 +310,7 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
     command_recorder_ = CommandRecorder::Create(adapter_->command_queue(),
                                                 adapter_->dml_device());
     if (!command_recorder_) {
-      DLOG(ERROR) << "Failed to create the command recorder.";
+      LOG(ERROR) << "[WebNN] Failed to create the command recorder.";
       return E_FAIL;
     }
   }

@@ -71,13 +71,14 @@ PlatformFunctions::PlatformFunctions() {
   PlatformFunctions::DXCoreCreateAdapterFactoryProc
       dxcore_create_adapter_factory_proc;
   if (!dxcore_library.is_valid()) {
-    DLOG(WARNING) << "Failed to load DXCore.dll.";
+    LOG(WARNING) << "[WebNN] Failed to load DXCore.dll.";
   } else {
     dxcore_create_adapter_factory_proc =
         reinterpret_cast<DXCoreCreateAdapterFactoryProc>(
             dxcore_library.GetFunctionPointer("DXCoreCreateAdapterFactory"));
     if (!dxcore_create_adapter_factory_proc) {
-      DLOG(WARNING) << "Failed to get DXCoreCreateAdapterFactory function.";
+      LOG(WARNING)
+          << "[WebNN] Failed to get DXCoreCreateAdapterFactory function.";
     }
   }
 
