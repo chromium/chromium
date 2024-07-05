@@ -47,6 +47,8 @@ source_set("internal") {
     "internal/detection_processor.h",
     "internal/pref_observer.cc",
     "internal/pref_observer.h",
+    "internal/retry_timer.cc",
+    "internal/retry_timer.h",
   ]
   deps = [
     ":vision_prefs",

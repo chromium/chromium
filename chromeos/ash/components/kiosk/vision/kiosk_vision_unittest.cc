@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
 #include <cstdint>
-#include <iterator>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
@@ -34,10 +34,7 @@
 #include "content/public/test/test_image_transport_factory.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
-#include "services/video_capture/public/cpp/mock_push_subscription.h"
 #include "services/video_capture/public/cpp/mock_video_capture_service.h"
-#include "services/video_capture/public/cpp/mock_video_frame_handler.h"
-#include "services/video_capture/public/cpp/mock_video_source.h"
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -159,6 +156,9 @@ class KioskVisionTest : public testing::Test {
   void SetUp() override {
     RegisterKioskVisionPrefs(local_state_);
 
+    // Tell the fake DLC service to only record successful installs.
+    fake_dlcservice_.set_skip_adding_dlc_info_on_error(true);
+
     content::ImageTransportFactory::SetFactory(
         std::make_unique<content::TestImageTransportFactory>());
 
@@ -198,7 +198,8 @@ class KioskVisionTest : public testing::Test {
   KioskVisionTest() : source_provider_receiver_(&mock_source_provider_) {}
 
  protected:
-  content::BrowserTaskEnvironment browser_task_environment_;
+  content::BrowserTaskEnvironment browser_task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeCrosCameraService fake_cros_camera_service_;
   TestingPrefServiceSimple local_state_;
   FakeDlcserviceClient fake_dlcservice_;
@@ -226,6 +227,23 @@ TEST_F(KioskVisionTest, InstallsDlcWhenEnabled) {
   KioskVision vision(&local_state_);
 
   EXPECT_TRUE(IsKioskVisionDlcInstalled(fake_dlcservice_));
+}
+
+TEST_F(KioskVisionTest, RetriesToInstallDlcOnErrorAfterDelay) {
+  ASSERT_FALSE(IsKioskVisionDlcInstalled(fake_dlcservice_));
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  // Prepare one install error, such that a second install attempt should work.
+  fake_dlcservice_.set_install_errors({dlcservice::kErrorNoImageFound});
+
+  KioskVision vision(&local_state_);
+
+  EXPECT_FALSE(IsKioskVisionDlcInstalled(fake_dlcservice_))
+      << "First install attempt should fail";
+
+  browser_task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(IsKioskVisionDlcInstalled(fake_dlcservice_))
+      << "Second install didn't work, or there was no retry";
 }
 
 TEST_F(KioskVisionTest, UninstallsDlcWhenDisabled) {

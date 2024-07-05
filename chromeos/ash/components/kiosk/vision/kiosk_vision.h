@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/kiosk/vision/internal/camera_service_connector.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
+#include "chromeos/ash/components/kiosk/vision/internal/retry_timer.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,6 +57,8 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   // Sets up enabled processors and connects them to camera service detections.
   void InitializeProcessors(std::string dlc_path);
 
+  void OnDlcInstallError();
+
   // `nullopt` if the telemetry API consumer is disabled.
   std::optional<TelemetryProcessor> telemetry_processor_;
 
@@ -69,6 +72,8 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   std::optional<CameraServiceConnector> camera_connector_;
 
   PrefObserver pref_observer_;
+
+  RetryTimer retry_timer_;
 
   // `base::WeakPtrFactory` must be the last field so it's destroyed first.
   base::WeakPtrFactory<KioskVision> weak_ptr_factory_{this};
