@@ -139,7 +139,7 @@ void CountersAttachmentContext::EnterElement(const Element& element) {
   if (!layout_object) {
     return;
   }
-  for (auto& [identifier, directives] : *counter_directives) {
+  for (auto& [counter_name, directives] : *counter_directives) {
     std::optional<std::pair<unsigned, int>> type_and_value =
         DetermineCounterTypeAndValue(*layout_object, directives);
     if (!type_and_value.has_value()) {
@@ -148,17 +148,17 @@ void CountersAttachmentContext::EnterElement(const Element& element) {
     // First, there might be some counters on stack that are stale,
     // remove those (e.g. remove counters whose parent is not
     // ancestor of `element` from stack).
-    RemoveStaleCounters(identifier, element);
+    RemoveStaleCounters(element, counter_name);
     auto [counter_type, counter_value] = type_and_value.value();
     // Reset counter always creates counter.
     if (IsReset(counter_type)) {
-      CreateCounter(identifier, element, counter_value);
+      CreateCounter(element, counter_name, counter_value);
       continue;
     }
     // Otherswise, get the value of last counter from stack and update its
     // value.
     // Note: this can create counter, if there are no counters on stack.
-    UpdateCounterValue(identifier, element, counter_type, counter_value);
+    UpdateCounterValue(element, counter_name, counter_type, counter_value);
   }
   // If there were no explicit counter related property set for `list-item`
   // counter, maybe we need to create implicit one.
@@ -206,7 +206,7 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
   if (style->ContainsStyle()) {
     LeaveStyleContainmentScope();
   }
-  for (auto& [identifier, directives] : *counter_directives) {
+  for (auto& [counter_name, directives] : *counter_directives) {
     std::optional<std::pair<unsigned, int>> type_and_value =
         DetermineCounterTypeAndValue(*layout_object, directives);
     if (!type_and_value.has_value()) {
@@ -220,7 +220,7 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
     // self. This is done since we should always inherit from ancestor first,
     // and in the case described, all next elements would inherit ancestor
     // instead of self, so remove self.
-    RemoveCounterIfAncestorExists(element, identifier);
+    RemoveCounterIfAncestorExists(element, counter_name);
   }
   // If there were no explicit counter related property set for `list-item`
   // counter, maybe we need to remove implicit one.
@@ -233,27 +233,27 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
 // Check if we need to create implicit list-item counter.
 void CountersAttachmentContext::MaybeCreateListItemCounter(
     const Element& element) {
-  RemoveStaleCounters(list_item_, element);
+  RemoveStaleCounters(element, list_item_);
   if (ListItemOrdinal* ordinal = ListItemOrdinal::Get(element)) {
     if (const auto& explicit_value = ordinal->ExplicitValue()) {
-      CreateCounter(list_item_, element, explicit_value.value());
+      CreateCounter(element, list_item_, explicit_value.value());
       return;
     }
     int value = ListItemOrdinal::IsInReversedOrderedList(element) ? -1 : 1;
     unsigned type_mask =
         static_cast<unsigned>(CountersAttachmentContext::Type::kIncrementType);
-    UpdateCounterValue(list_item_, element, type_mask, value);
+    UpdateCounterValue(element, list_item_, type_mask, value);
     return;
   }
   if (auto* olist = DynamicTo<HTMLOListElement>(element)) {
     int value = base::ClampAdd(olist->StartConsideringItemCount(),
                                olist->IsReversed() ? 1 : -1);
-    CreateCounter(list_item_, element, value);
+    CreateCounter(element, list_item_, value);
     return;
   }
   if (IsA<HTMLUListElement>(element) || IsA<HTMLMenuElement>(element) ||
       IsA<HTMLDirectoryElement>(element)) {
-    CreateCounter(list_item_, element, 0);
+    CreateCounter(element, list_item_, 0);
     return;
   }
 }
@@ -261,12 +261,12 @@ void CountersAttachmentContext::MaybeCreateListItemCounter(
 // Traverse the stack and collect counters values for counter() and counters()
 // functions.
 Vector<int> CountersAttachmentContext::GetCounterValues(
-    const AtomicString& identifier,
     const Element& element,
+    const AtomicString& counter_name,
     bool only_last) {
-  RemoveStaleCounters(identifier, element);
+  RemoveStaleCounters(element, counter_name);
   Vector<int> counter_values;
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return {0};
   }
@@ -279,7 +279,7 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
     if (counter_element == nullptr) {
       continue;
     }
-    counter_values.push_back(GetCounterValue(identifier, *counter_element));
+    counter_values.push_back(GetCounterValue(*counter_element, counter_name));
     if (only_last) {
       break;
     }
@@ -290,28 +290,28 @@ Vector<int> CountersAttachmentContext::GetCounterValues(
 // Push the counter on stack or create stack if there is none. Also set the
 // value in the table.
 // Also, per https://drafts.csswg.org/css-lists/#instantiating-counters:
-// If innermost counter’s originating element is `owner` or a previous sibling
-// of `owner`, remove innermost counter from counters.
-void CountersAttachmentContext::CreateCounter(const AtomicString& identifier,
-                                              const Element& owner,
+// If innermost counter’s originating element is `element` or a previous sibling
+// of `element`, remove innermost counter from counters.
+void CountersAttachmentContext::CreateCounter(const Element& element,
+                                              const AtomicString& counter_name,
                                               int value) {
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     CounterStack* counter_stack =
-        MakeGarbageCollected<CounterStack>(1u, &owner);
-    counter_inheritance_table_->insert(identifier, counter_stack);
-    SetCounterValue(identifier, owner, value);
+        MakeGarbageCollected<CounterStack>(1u, &element);
+    counter_inheritance_table_->insert(counter_name, counter_stack);
+    SetCounterValue(element, counter_name, value);
     return;
   }
   CounterStack& counter_stack = *counter_stack_it->value;
   // Remove innermost counter with same or previous sibling originating element.
   while (!counter_stack.empty() && counter_stack.back() &&
          LayoutTreeBuilderTraversal::ParentElement(*counter_stack.back()) ==
-             LayoutTreeBuilderTraversal::ParentElement(owner)) {
+             LayoutTreeBuilderTraversal::ParentElement(element)) {
     counter_stack.pop_back();
   }
-  counter_stack.push_back(&owner);
-  SetCounterValue(identifier, owner, value);
+  counter_stack.push_back(&element);
+  SetCounterValue(element, counter_name, value);
 }
 
 // Remove counters parent is not ancestor of current element from stack,
@@ -326,9 +326,9 @@ void CountersAttachmentContext::CreateCounter(const AtomicString& identifier,
 // on this level. Instead, once we reach S we pop all stale counters from stack,
 // here R will be removed from stack.
 void CountersAttachmentContext::RemoveStaleCounters(
-    const AtomicString& identifier,
-    const Element& owner) {
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
+    const Element& element,
+    const AtomicString& counter_name) {
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return;
   }
@@ -340,8 +340,8 @@ void CountersAttachmentContext::RemoveStaleCounters(
     }
     const Element* parent =
         LayoutTreeBuilderTraversal::ParentElement(*counter_stack.back());
-    // We pop all elements whose parent is not ancestor of `owner`.
-    if (!parent || IsAncestorOf(*parent, owner)) {
+    // We pop all elements whose parent is not ancestor of `element`.
+    if (!parent || IsAncestorOf(*parent, element)) {
       break;
     }
     counter_stack.pop_back();
@@ -354,51 +354,54 @@ void CountersAttachmentContext::RemoveStaleCounters(
 // so, if the previous counter is ancestor to the last one, the last one will
 // never be inherited, remove it.
 void CountersAttachmentContext::RemoveCounterIfAncestorExists(
-    const Element& owner,
-    const AtomicString& identifier) {
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
+    const Element& element,
+    const AtomicString& counter_name) {
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return;
   }
   CounterStack& counter_stack = *counter_stack_it->value;
   // Don't remove the last on stack counter or style containment boundary.
-  // Also don't remove if the last counter's originating element is not `owner`.
+  // Also don't remove if the last counter's originating element is not
+  // `element`.
   if (counter_stack.empty() || counter_stack.size() == 1 ||
-      counter_stack.back() == nullptr || counter_stack.back() != owner) {
+      counter_stack.back() == nullptr || counter_stack.back() != element) {
     return;
   }
-  const Element* element = counter_stack.back();
+  const Element* last_element = counter_stack.back();
   const Element* previous_element = counter_stack[counter_stack.size() - 2];
-  if (previous_element && IsAncestorOf(*previous_element, *element)) {
+  if (previous_element && IsAncestorOf(*previous_element, *last_element)) {
     counter_stack.pop_back();
   }
 }
 
 // Set the counter's value by either updating the existing value or create
 // a new record in the table, if there is no record yet.
-void CountersAttachmentContext::SetCounterValue(const AtomicString& identifier,
-                                                const Element& owner,
-                                                int value) {
-  auto counter_value_it = counter_value_table_->find(identifier);
+void CountersAttachmentContext::SetCounterValue(
+    const Element& element,
+    const AtomicString& counter_name,
+    int value) {
+  auto counter_value_it = counter_value_table_->find(counter_name);
   if (counter_value_it == counter_value_table_->end()) {
     CounterValues* counter_values = MakeGarbageCollected<CounterValues>();
-    counter_values->insert(&owner, value);
-    counter_value_table_->insert(identifier, counter_values);
+    counter_values->insert(&element, value);
+    counter_value_table_->insert(counter_name, counter_values);
     return;
   }
   CounterValues& counter_values = *counter_value_it->value;
-  auto owner_value_it = counter_values.find(&owner);
-  if (owner_value_it == counter_values.end()) {
-    counter_values.insert(&owner, value);
+  auto element_value_it = counter_values.find(&element);
+  if (element_value_it == counter_values.end()) {
+    counter_values.insert(&element, value);
     return;
   }
-  owner_value_it->value = value;
+  element_value_it->value = value;
 }
 
 // Get the value for counter created on `element`.
-int CountersAttachmentContext::GetCounterValue(const AtomicString& identifier,
-                                               const Element& element) {
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
+int CountersAttachmentContext::GetCounterValue(
+    const Element& element,
+    const AtomicString& counter_name) {
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
   if (counter_stack_it == counter_inheritance_table_->end()) {
     return 0;
   }
@@ -406,7 +409,7 @@ int CountersAttachmentContext::GetCounterValue(const AtomicString& identifier,
   if (counter_stack.empty()) {
     return 0;
   }
-  auto counter_value_it = counter_value_table_->find(identifier);
+  auto counter_value_it = counter_value_table_->find(counter_name);
   DCHECK_NE(counter_value_it, counter_value_table_->end());
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(&element);
@@ -417,30 +420,30 @@ int CountersAttachmentContext::GetCounterValue(const AtomicString& identifier,
 // Update the value of last on stack counter or create a new one, if there
 // is no last counter on stack.
 void CountersAttachmentContext::UpdateCounterValue(
-    const AtomicString& identifier,
     const Element& element,
+    const AtomicString& counter_name,
     unsigned counter_type,
     int counter_value) {
   int default_counter_value =
       CalculateCounterValue(counter_type, counter_value, 0);
-  auto counter_stack_it = counter_inheritance_table_->find(identifier);
-  // If there are no counters with such identifier, create stack and push
+  auto counter_stack_it = counter_inheritance_table_->find(counter_name);
+  // If there are no counters with such counter_name, create stack and push
   // new counter on it.
   if (counter_stack_it == counter_inheritance_table_->end()) {
-    CreateCounter(identifier, element, default_counter_value);
+    CreateCounter(element, counter_name, default_counter_value);
     return;
   }
   // If the stack is empty or the last element on stack is style containment
   // boundary, create and push counter on stack.
   CounterStack& counter_stack = *counter_stack_it->value;
   if (counter_stack.empty() || !counter_stack.back()) {
-    CreateCounter(identifier, element, default_counter_value);
+    CreateCounter(element, counter_name, default_counter_value);
     return;
   }
   // Otherwise take the value of last counter on stack from the table and
   // update it.
   const Element* current = counter_stack.back();
-  auto counter_value_it = counter_value_table_->find(identifier);
+  auto counter_value_it = counter_value_table_->find(counter_name);
   DCHECK_NE(counter_value_it, counter_value_table_->end());
   CounterValues& counter_values = *counter_value_it->value;
   auto current_value_it = counter_values.find(current);
@@ -451,19 +454,20 @@ void CountersAttachmentContext::UpdateCounterValue(
 
 void CountersAttachmentContext::EnterStyleContainmentScope() {
   // Push a style containment boundary (nullptr) to each existing stack.
-  // Note: if there will be counters with new identifier created later,
+  // Note: if there will be counters with new counter_name created later,
   // it still will work correctly as we will remove all counters until
   // counter stack is empty, when we will leave style containment scope.
-  for (auto& [identifier, counter_stack] : *counter_inheritance_table_) {
+  for (auto& [counter_name, counter_stack] : *counter_inheritance_table_) {
     counter_stack->push_back(nullptr);
   }
 }
 
 void CountersAttachmentContext::LeaveStyleContainmentScope() {
   // Pop counters until the stack is empty (happens if we created a counter with
-  // a previously unseen identifier after we entered style containment scope) or
-  // nullptr is the last on stack (we reached the style containment boundary).
-  for (auto& [identifier, counter_stack] : *counter_inheritance_table_) {
+  // a previously unseen counter_name after we entered style containment scope)
+  // or nullptr is the last on stack (we reached the style containment
+  // boundary).
+  for (auto& [counter_name, counter_stack] : *counter_inheritance_table_) {
     while (!counter_stack->empty() && counter_stack->back() != nullptr) {
       counter_stack->pop_back();
     }

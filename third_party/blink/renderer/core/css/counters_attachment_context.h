@@ -36,10 +36,11 @@ class CORE_EXPORT CountersAttachmentContext {
 
   CountersAttachmentContext();
 
-  void EnterElement(const Element&);
-  void LeaveElement(const Element&);
-  Vector<int> GetCounterValues(const AtomicString&,
-                               const Element&,
+  void EnterElement(const Element& element);
+  void LeaveElement(const Element& element);
+  // only_last = true for counter(), = false for counters().
+  Vector<int> GetCounterValues(const Element& element,
+                               const AtomicString& counter_name,
                                bool only_last);
   void SetAttachmentRootIsDocumentElement() {
     attachment_root_is_document_element_ = true;
@@ -50,12 +51,21 @@ class CORE_EXPORT CountersAttachmentContext {
   static bool ElementGeneratesListItemCounter(const Element& element);
 
  private:
-  void CreateCounter(const AtomicString&, const Element&, int);
-  void RemoveStaleCounters(const AtomicString&, const Element&);
-  void RemoveCounterIfAncestorExists(const Element&, const AtomicString&);
-  void SetCounterValue(const AtomicString&, const Element&, int);
-  int GetCounterValue(const AtomicString&, const Element&);
-  void UpdateCounterValue(const AtomicString&, const Element&, unsigned, int);
+  void CreateCounter(const Element& element,
+                     const AtomicString& counter_name,
+                     int value);
+  void RemoveStaleCounters(const Element& element,
+                           const AtomicString& counter_name);
+  void RemoveCounterIfAncestorExists(const Element& element,
+                                     const AtomicString& counter_name);
+  void SetCounterValue(const Element& element,
+                       const AtomicString& counter_name,
+                       int value);
+  int GetCounterValue(const Element& element, const AtomicString& counter_name);
+  void UpdateCounterValue(const Element& element,
+                          const AtomicString& counter_name,
+                          unsigned counter_type,
+                          int counter_value);
   void MaybeCreateListItemCounter(const Element& element);
   void EnterStyleContainmentScope();
   void LeaveStyleContainmentScope();
@@ -64,10 +74,10 @@ class CORE_EXPORT CountersAttachmentContext {
   // True if attachment started from documentElement. If true, counters
   // calculations are done as part of layout tree attachment.
   bool attachment_root_is_document_element_ = false;
-  // Hash table of identifier <-> {Hash table of element <-> current value},
+  // Hash table of counter name <-> {Hash table of element <-> current value},
   // for keeping track of current counter value.
   CounterValueTable* counter_value_table_ = nullptr;
-  // Hash table of identifier <-> counters stack, for inheritance.
+  // Hash table of counter name <-> counters stack, for inheritance.
   CounterInheritanceTable* counter_inheritance_table_ = nullptr;
 };
 

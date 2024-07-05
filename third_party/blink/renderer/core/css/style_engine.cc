@@ -795,7 +795,7 @@ void StyleEngine::UpdateLayoutCounters(const Element& element,
        child; child = child->NextInPreOrder(&layout_object)) {
     if (auto* layout_counter = DynamicTo<LayoutCounter>(child)) {
       Vector<int> counter_values =
-          context.GetCounterValues(layout_counter->Identifier(), element,
+          context.GetCounterValues(element, layout_counter->Identifier(),
                                    layout_counter->Separator().IsNull());
       layout_counter->UpdateCounter(std::move(counter_values));
     }

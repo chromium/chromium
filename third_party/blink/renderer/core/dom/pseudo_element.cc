@@ -363,7 +363,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
           if (context.counters_context.AttachmentRootIsDocumentElement()) {
             Vector<int> counter_values =
                 context.counters_context.GetCounterValues(
-                    layout_counter->Identifier(), *this,
+                    *this, layout_counter->Identifier(),
                     layout_counter->Separator().IsNull());
             layout_counter->UpdateCounter(std::move(counter_values));
           } else {
