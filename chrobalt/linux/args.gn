@@ -1,4 +1,6 @@
+# Use sccache
 cc_wrapper = "sccache"
+
 enable_nacl=false
 use_dawn=false
 skia_use_dawn=false
