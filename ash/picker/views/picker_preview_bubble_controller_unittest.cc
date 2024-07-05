@@ -10,6 +10,8 @@
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -25,7 +27,12 @@
 namespace ash {
 namespace {
 
-using PickerPreviewBubbleControllerTest = views::ViewsTestBase;
+class PickerPreviewBubbleControllerTest : public views::ViewsTestBase {
+ public:
+  PickerPreviewBubbleControllerTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 // Creates a basic widget and view that acts as the anchor view for the preview
 // bubble.
@@ -47,12 +54,14 @@ ash::HoldingSpaceImage CreateUnresolvedAsyncImage() {
                                 base::FilePath(), base::DoNothing());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsBubbleWidget) {
+TEST_F(PickerPreviewBubbleControllerTest, ShowsBubbleAfterDelay) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleAfterDelay(&async_preview_image,
+                                  anchor_widget->GetContentsView());
+  task_environment()->FastForwardBy(base::Milliseconds(600));
 
   views::View* bubble_view = controller.bubble_view_for_testing();
   ASSERT_NE(bubble_view, nullptr);
@@ -61,12 +70,42 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsBubbleWidget) {
   views::test::WidgetVisibleWaiter(bubble_view->GetWidget()).Wait();
 }
 
+TEST_F(PickerPreviewBubbleControllerTest,
+       DoesNotShowBubbleIfCanceledBeforeDelay) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateAnchorWidget(GetContext());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubbleAfterDelay(&async_preview_image,
+                                  anchor_widget->GetContentsView());
+  controller.CloseBubble();
+  task_environment()->FastForwardBy(base::Milliseconds(600));
+
+  ASSERT_EQ(controller.bubble_view_for_testing(), nullptr);
+}
+
+TEST_F(PickerPreviewBubbleControllerTest,
+       DoesNotShowBubbleIfAnchorWidgetClosedBeforeDelay) {
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateAnchorWidget(GetContext());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubbleAfterDelay(&async_preview_image,
+                                  anchor_widget->GetContentsView());
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  anchor_widget->CloseNow();
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+
+  ASSERT_EQ(controller.bubble_view_for_testing(), nullptr);
+}
+
 TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
   views::Widget* bubble_widget =
       controller.bubble_view_for_testing()->GetWidget();
@@ -83,7 +122,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
   views::Widget* bubble_widget =
       controller.bubble_view_for_testing()->GetWidget();
@@ -100,7 +140,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
 
   anchor_widget->CloseNow();
 
@@ -112,11 +153,13 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleWhileShownKeepsSameBubble) {
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   views::View* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
 
   ASSERT_EQ(controller.bubble_view_for_testing(), bubble_view);
   EXPECT_EQ(controller.bubble_view_for_testing()->GetWidget(),
@@ -136,11 +179,13 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
       CreateAnchorWidget(GetContext());
   PickerPreviewBubbleController controller;
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
 
   // CloseBubble is asynchronous.
   controller.CloseBubble();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   views::View* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
@@ -156,7 +201,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
   PickerPreviewBubbleController controller;
 
   ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
@@ -180,7 +226,8 @@ TEST_F(PickerPreviewBubbleControllerTest,
           }));
   PickerPreviewBubbleController controller;
 
-  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
+  controller.ShowBubbleImmediatelyForTesting(&async_preview_image,
+                                             anchor_widget->GetContentsView());
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 

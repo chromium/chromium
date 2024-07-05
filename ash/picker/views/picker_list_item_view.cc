@@ -268,7 +268,8 @@ void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
   PickerItemView::OnMouseEntered(event);
 
   if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubble(async_preview_image_.get(), this);
+    preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
+                                                     this);
   }
 }
 

@@ -76,8 +76,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
       .BuildChildren();
 
   // Show the widget.
-  auto* widget = views::BubbleDialogDelegateView::CreateBubble(this);
-  widget->Show();
+  views::BubbleDialogDelegateView::CreateBubble(this);
 
   // We need an anchor_view until show is called, but we actually want to inset
   // this bubble, so fix the anchor_rect now.
