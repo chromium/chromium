@@ -8,15 +8,18 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -75,13 +78,11 @@ class ManagementUITest : public InProcessBrowserTest {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/40267322): flaky.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ManagementStateChange DISABLED_ManagementStateChange
-#else
-#define MAYBE_ManagementStateChange ManagementStateChange
-#endif
-IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
+IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
+  // Ensure the device is not considered managed.
+  policy::ScopedManagementServiceOverrideForTesting plattform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
   profile_policy_connector()->OverrideIsManagedForTesting(false);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://management")));
