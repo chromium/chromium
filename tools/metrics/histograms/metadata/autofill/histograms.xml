@@ -2188,7 +2188,7 @@ chromium-metrics-reviews@google.com.
   <summary>Number of fields in a form that Autofill encounters.</summary>
 </histogram>
 
-<histogram name="Autofill.FieldFillingStats.{FillingProduct}"
+<histogram name="Autofill.FieldFillingStats.{FormType}"
     enum="FieldFillingStatus" expires_after="2024-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2196,9 +2196,10 @@ chromium-metrics-reviews@google.com.
     Logs the status (see FieldFillingStatus) of a submitted field. Emitted once
     per field at submission time.
   </summary>
-  <token key="FillingProduct">
+  <token key="FormType">
     <variant name="Address"/>
     <variant name="CreditCard"/>
+    <variant name="PostalAddress"/>
     <variant name="VirtualCard.StandaloneCvc"/>
   </token>
 </histogram>

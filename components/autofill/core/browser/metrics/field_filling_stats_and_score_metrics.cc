@@ -25,7 +25,7 @@ namespace {
 // appended by the `form_type`. The filling status consists of the
 // number of accepted, corrected or and unfilled fields.
 void LogFieldFillingStatsWithHistogramPrefix(
-    FormType form_type,
+    FormTypeNameForLogging form_type,
     const std::string& histogram_prefix,
     const FormGroupFillingStats& filling_stats) {
   // Do not acquire metrics if autofill was not used in this form group.
@@ -33,8 +33,8 @@ void LogFieldFillingStatsWithHistogramPrefix(
     return;
   }
 
-  const std::string histogram_prefix_with_form_type =
-      base::StrCat({histogram_prefix, FormTypeToStringView(form_type), "."});
+  const std::string histogram_prefix_with_form_type = base::StrCat(
+      {histogram_prefix, FormTypeNameForLoggingToStringView(form_type), "."});
   // Counts into those histograms are mutually exclusive.
   base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix_with_form_type, "Accepted"}),
@@ -143,7 +143,7 @@ void LogCompactFieldFillingStats(const std::string& histogram_name,
   }
 }
 
-void LogFieldFillingStats(FormType form_type,
+void LogFieldFillingStats(FormTypeNameForLogging form_type,
                           const FormGroupFillingStats& filling_stats) {
   LogFieldFillingStatsWithHistogramPrefix(
       form_type, base::StrCat({"Autofill.FieldFillingStats."}), filling_stats);
@@ -153,7 +153,7 @@ void LogAddressFieldFillingStatsForFillingMethod(
     FillingMethod filling_method,
     const FormGroupFillingStats& filling_stats) {
   LogFieldFillingStatsWithHistogramPrefix(
-      FormType::kAddressForm,
+      FormTypeNameForLogging::kAddressForm,
       base::StrCat({"Autofill.FieldFillingStats.",
                     FillingMethodToCompactStringView(filling_method), "."}),
       filling_stats);
@@ -329,11 +329,13 @@ autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
 void LogFieldFillingStatsAndScore(const FormStructure& form) {
   // Tracks how many fields are filled, unfilled or corrected.
   autofill_metrics::FormGroupFillingStats address_field_stats;
+  autofill_metrics::FormGroupFillingStats postal_address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
   autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
   // Same as above, but keyed by `FillingMethod`.
   base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
       address_field_stats_by_filling_method;
+  const bool is_postal_address_form = internal::IsPostalAddressForm(form);
   for (const std::unique_ptr<AutofillField>& field : form) {
     // For any field that belongs to either an address or a credit card form,
     // collect the type-unspecific field filling statistics.
@@ -352,6 +354,10 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
         (field->filling_product() == FillingProduct::kAddress ||
          field->filling_product() == FillingProduct::kNone)) {
       address_field_stats.AddFieldFillingStatus(GetFieldFillingStatus(*field));
+      if (is_postal_address_form) {
+        postal_address_field_stats.AddFieldFillingStatus(
+            GetFieldFillingStatus(*field));
+      }
     }
     if (is_credit_card_form_field &&
         (field->filling_product() == FillingProduct::kCreditCard ||
@@ -376,8 +382,11 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
                                       address_field_stats_by_filling_method);
     }
   }
-  LogFieldFillingStats(FormType::kAddressForm, address_field_stats);
-  LogFieldFillingStats(FormType::kCreditCardForm, cc_field_stats);
+  LogFieldFillingStats(FormTypeNameForLogging::kAddressForm,
+                       address_field_stats);
+  LogFieldFillingStats(FormTypeNameForLogging::kPostalAddressForm,
+                       postal_address_field_stats);
+  LogFieldFillingStats(FormTypeNameForLogging::kCreditCardForm, cc_field_stats);
   LogCompactFieldFillingStats("Autofill.FieldFillingStats.Address",
                               address_field_stats);
   LogCompactFieldFillingStats("Autofill.FieldFillingStats.CreditCard",
@@ -400,8 +409,8 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
     MergeFormGroupFillingStats(filling_stats.second, any);
   }
   LogFieldFillingStatsWithHistogramPrefix(
-      FormType::kAddressForm, base::StrCat({"Autofill.FieldFillingStats.Any."}),
-      any);
+      FormTypeNameForLogging::kAddressForm,
+      base::StrCat({"Autofill.FieldFillingStats.Any."}), any);
 }
 
 }  // namespace autofill::autofill_metrics
