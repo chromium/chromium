@@ -54,6 +54,7 @@ jobs:
       SCCACHE_GCS_SERVICE_ACCOUNT: runner@cobalt-actions-devel.iam.gserviceaccount.com
       SCCACHE_GCS_RW_MODE: READ_WRITE
       SCCACHE_IDLE_TIMEOUT: 0 # prevent sccache server from shutting down after long idle.
+      BUILD_DIR: out/Default
 
     steps:
       - name: Checkout
@@ -63,7 +64,8 @@ jobs:
       # - name: Dump context
       #   uses: crazy-max/ghaction-dump-context@v2
       - name: Get depot tools
-        run: git clone -b dev https://github.com/kaidokert/depot_tools.git
+        # run: git clone -b dev https://github.com/kaidokert/depot_tools.git
+        run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
       - name: Add directory to PATH
         run: echo "$GITHUB_WORKSPACE/depot_tools" >> $GITHUB_PATH
       - name: Generate gclient file
@@ -79,48 +81,54 @@ jobs:
       - name: gn gen
         run: |
           cd src
-          gn gen out/Default --args-file=chrobalt/linux/args.gn
+          mkdir -p ${BUILD_DIR}
+          cp chrobalt/linux/args.gn ${BUILD_DIR}
+          gn gen ${BUILD_DIR}
+      - name: gn dump args
+        run: |
+          cd src
+          gn args --list --short ${BUILD_DIR}
       - name: ninja base_unittests
         run: |
           cd src
-          ninja -C out/Default base_unittests
+          ninja -C ${BUILD_DIR} base_unittests
       - name: ninja sql_unittests
         run: |
           cd src
-          ninja -C out/Default sql_unittests
+          ninja -C ${BUILD_DIR} sql_unittests
       - name: ninja net_unittests
         run: |
           cd src
-          ninja -C out/Default net_unittests
+          ninja -C ${BUILD_DIR} net_unittests
       - name: ninja url_unittests
         run: |
           cd src
-          ninja -C out/Default url_unittests
+          ninja -C ${BUILD_DIR} url_unittests
       - name: ninja ipc_tests
         run: |
           cd src
-          ninja -C out/Default ipc_tests
+          ninja -C ${BUILD_DIR} ipc_tests
       - name: ninja mojo_unittests
         run: |
           cd src
-          ninja -C out/Default mojo_unittests
+          ninja -C ${BUILD_DIR} mojo_unittests
       - name: ninja gpu_unittests
         run: |
           cd src
-          ninja -C out/Default gpu_unittests
+          ninja -C ${BUILD_DIR} gpu_unittests
       # V8 utility stuff
       - name: ninja gin_unittests
         run: |
           cd src
-          ninja -C out/Default gin_unittests
+          ninja -C ${BUILD_DIR} gin_unittests
       - name: ninja blink_unittests
         run: |
           cd src
-          ninja -C out/Default blink_unittests
+          ninja -C ${BUILD_DIR} blink_unittests
       - name: ninja content_shell
         run: |
           cd src
-          ninja -C out/Default content_shell
+          ninja -C ${BUILD_DIR} content_shell
       - name: sccache check
         run: sccache -s
       - name: Any speed
