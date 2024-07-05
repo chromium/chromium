@@ -2652,9 +2652,7 @@ CSSValue* ConsumeColorInternal(T& range,
     }
   }
 
-  if ((IsUASheetBehavior(context.Mode()) ||
-       RuntimeEnabledFeatures::CSSLightDarkColorsEnabled()) &&
-      allowed_colors == AllowedColors::kAll) {
+  if (allowed_colors == AllowedColors::kAll) {
     return ConsumeLightDark(ConsumeColor<CSSParserTokenRange>, range, context);
   }
   return nullptr;

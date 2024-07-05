@@ -936,12 +936,6 @@
       status: "experimental"
     },
     {
-      // Support for 'light-dark()' function to select computed color values
-      // based on the used color-scheme.
-      name: "CSSLightDarkColors",
-      status: "stable",
-    },
-    {
       name: "CSSLineClamp",
       status: "experimental",
     },
