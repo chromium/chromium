@@ -15,10 +15,8 @@
 #include "url/gurl.h"
 
 namespace sync_sessions {
-class SyncSessionsClient;
-}
 
-namespace sync_sessions {
+class SyncSessionsClient;
 
 // A SyncedTabDelegate is used to insulate the sync code from depending
 // directly on WebContents, NavigationController, and the extensions TabHelper.
