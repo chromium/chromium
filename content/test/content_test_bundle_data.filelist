@@ -6249,7 +6249,6 @@ data/find_in_page_frame.html.mock-http-headers
 data/find_in_page_multi_frame.html
 data/find_in_page_simple_frame.html
 data/find_in_page_two_frames.html
-data/find_in_page_with_portal.html
 data/find_in_pdf_page.pdf
 data/find_in_simple_page.html
 data/find_in_simple_page.html.mock-http-headers
@@ -7230,13 +7229,6 @@ data/plain.txt
 data/plain.txt.mock-http-headers
 data/pointerlock_on_dropped_elem.html
 data/popup.html
-data/portals/raster-expected.png
-data/portals/raster-portal.html
-data/portals/raster.html
-data/portals/reactivate-predecessor.html
-data/portals/scroll-portal.html
-data/portals/scroll.html
-data/portals/touch-input-transfer-across-reactivation.html
 data/post_message.html
 data/post_message2.html
 data/preloading/preloading_decider.html
