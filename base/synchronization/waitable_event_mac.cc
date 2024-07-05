@@ -100,10 +100,10 @@ bool WaitableEvent::IsSignaled() {
   absl::optional<recordreplay::AutoDisallowEvents> disallow;
   if (!record_replay_ordered_lock_id_)
     disallow.emplace("WaitableEvent::IsSignaled");
-  else
-    RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
 
-  return PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
+  bool rv = PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
+  RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
+  return rv;
 }
 
 void WaitableEvent::Wait() {
@@ -113,7 +113,6 @@ void WaitableEvent::Wait() {
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   if (wait_delta <= TimeDelta()) {
-    RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
     return IsSignaled();
   }
 
