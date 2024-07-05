@@ -333,7 +333,7 @@ BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
 // typical 24 hour wait.
 BASE_FEATURE(kInterestGroupUpdateIfOlderThan,
              "InterestGroupUpdateIfOlderThan",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable IOSurface based screen capturer.
 #if BUILDFLAG(IS_MAC)
