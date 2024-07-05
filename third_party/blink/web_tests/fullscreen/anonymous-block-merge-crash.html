@@ -9,5 +9,7 @@
       testRunner.notifyDone();
     };
 
-    runWithKeyDown(function(){span.webkitRequestFullScreen()});
+    requestAnimationFrame(()=> {
+      runWithKeyDown(function(){span.webkitRequestFullScreen()});
+    });
 </script>
