@@ -328,6 +328,7 @@ public class SafetyHubModuleViewBinder {
             primaryButtonText = preference.getContext().getString(R.string.got_it);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
+            primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
             expanded = true;
@@ -336,6 +337,8 @@ public class SafetyHubModuleViewBinder {
             iconDrawable = getCheckmarkIcon(preference);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
+            secondaryButtonListener =
+                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
@@ -375,6 +378,7 @@ public class SafetyHubModuleViewBinder {
                             .getString(R.string.safety_hub_notifications_reset_all_button);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
+            primaryButtonListener = model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
             secondaryButtonListener =
                     model.get(SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER);
             expanded = true;
@@ -388,6 +392,8 @@ public class SafetyHubModuleViewBinder {
                     preference
                             .getContext()
                             .getString(R.string.safety_hub_go_to_notifications_button);
+            secondaryButtonListener =
+                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);

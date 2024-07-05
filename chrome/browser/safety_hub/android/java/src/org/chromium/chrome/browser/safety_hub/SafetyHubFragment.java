@@ -8,10 +8,16 @@ import android.os.Bundle;
 
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
@@ -34,6 +40,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public void onCreatePreferences(Bundle bundle, String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         getActivity().setTitle(R.string.prefs_safety_check);
+
+        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
+        mNotificationPermissionReviewBridge =
+                NotificationPermissionReviewBridge.getForProfile(getProfile());
+
         setUpAccountPasswordCheckModule();
         setUpUpdateCheckModule();
         setUpPermissionsRevocationModule();
@@ -99,8 +110,34 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                v -> {
+                                    PermissionsData[] permissionsDataList =
+                                            mUnusedSitePermissionsBridge.getRevokedPermissions();
+                                    mUnusedSitePermissionsBridge
+                                            .clearRevokedPermissionsReviewList();
+                                    showSnackbar(
+                                            getString(
+                                                    R.string
+                                                            .safety_hub_multiple_permissions_snackbar,
+                                                    permissionsDataList.length),
+                                            Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
+                                            new SnackbarManager.SnackbarController() {
+                                                @Override
+                                                public void onAction(Object actionData) {
+                                                    mUnusedSitePermissionsBridge
+                                                            .restoreRevokedPermissionsReviewList(
+                                                                    (PermissionsData[]) actionData);
+                                                }
+                                            },
+                                            permissionsDataList);
+                                })
+                        .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> launchSettingsActivity(SafetyHubPermissionsFragment.class))
+                        .with(
+                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                v -> launchSettingsActivity(SiteSettings.class))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -108,7 +145,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 permissionsPreference,
                 SafetyHubModuleViewBinder::bindPermissionsProperties);
 
-        mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mUnusedSitePermissionsBridge.addObserver(this);
     }
 
@@ -121,8 +157,38 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                v -> {
+                                    List<NotificationPermissions> notificationPermissionsList =
+                                            mNotificationPermissionReviewBridge
+                                                    .getNotificationPermissions();
+                                    mNotificationPermissionReviewBridge
+                                            .bulkResetNotificationPermissions();
+                                    showSnackbar(
+                                            getString(
+                                                    R.string
+                                                            .safety_hub_notifications_bulk_reset_snackbar,
+                                                    notificationPermissionsList.size()),
+                                            Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
+                                            new SnackbarManager.SnackbarController() {
+                                                @Override
+                                                public void onAction(Object actionData) {
+                                                    mNotificationPermissionReviewBridge
+                                                            .bulkAllowNotificationPermissions(
+                                                                    (List<NotificationPermissions>)
+                                                                            actionData);
+                                                }
+                                            },
+                                            notificationPermissionsList);
+                                })
+                        .with(
                                 SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
                                 v -> launchSettingsActivity(SafetyHubNotificationsFragment.class))
+                        .with(
+                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                v ->
+                                        launchSiteSettingsActivity(
+                                                SiteSettingsCategory.Type.NOTIFICATIONS))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -130,8 +196,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 notificationsPreference,
                 SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
 
-        mNotificationPermissionReviewBridge =
-                NotificationPermissionReviewBridge.getForProfile(getProfile());
         mNotificationPermissionReviewBridge.addObserver(this);
     }
 
@@ -162,6 +226,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         updatePermissionsPreference();
         updateNotificationsReviewPreference();
         updateSafeBrowsingPreference();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mNotificationPermissionReviewBridge.removeObserver(this);
+        mUnusedSitePermissionsBridge.removeObserver(this);
     }
 
     @Override

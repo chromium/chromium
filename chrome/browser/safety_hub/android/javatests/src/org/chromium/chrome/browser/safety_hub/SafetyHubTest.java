@@ -20,8 +20,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -68,6 +71,8 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /** Tests for various Safety Hub settings surfaces. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -383,9 +388,8 @@ public final class SafetyHubTest {
         // Expand the module to show the buttons.
         clickOnExpandButtonNextToText(safeBrowsingTitle);
 
-        // Open the Safe Browsing settings.
+        // Click on the secondary button and verity that the Safe Browsing settings is opened.
         clickOnSecondaryButtonNextToText(safeBrowsingTitle);
-
         onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
     }
 
@@ -452,6 +456,141 @@ public final class SafetyHubTest {
         clickOnExpandButtonNextToText(safeBrowsingTitle);
         verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
         verifySummaryNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    public void testPermissionsModule_ClearList() {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the permissions module is displaying the warning state.
+        String permissionsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
+        scrollToPreference(withText(permissionsTitle));
+        onView(withText(permissionsTitle)).check(matches(isDisplayed()));
+
+        // Module should be expanded initially since it's in a warning state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, true);
+
+        // Click on the Got it button and verify the permissions module has changed to a safe state.
+        clickOnPrimaryButtonNextToText(permissionsTitle);
+        onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
+                .check(matches(isDisplayed()));
+
+        // Click on the snackbar action button and verify that the warning is displayed
+        // again.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
+
+        List<PermissionsData> permissionsList =
+                Arrays.asList(
+                        mUnusedPermissionsBridge.getRevokedPermissions(
+                                safetyHubFragment.getProfile()));
+        assertEquals(2, permissionsList.size());
+        assertThat(permissionsList, containsInAnyOrder(PERMISSIONS_DATA_1, PERMISSIONS_DATA_2));
+    }
+
+    @Test
+    @MediumTest
+    public void testPermissionsModule_SafeState() {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(new PermissionsData[] {});
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the permissions module is displaying the safe state.
+        String permissionsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_permissions_ok_title);
+
+        scrollToPreference(withText(permissionsTitle));
+        onView(withText(permissionsTitle)).check(matches(isDisplayed()));
+
+        // Module should be collapsed initially since it's in a safe state.
+        verifyButtonsNextToTextVisibility(permissionsTitle, false);
+        clickOnExpandButtonNextToText(permissionsTitle);
+
+        // Click on the secondary button and verify that the site settings page is opened.
+        clickOnSecondaryButtonNextToText(permissionsTitle);
+        onViewWaiting(withText(R.string.prefs_site_settings)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationReviewModule_ResetAll() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {
+                    NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2
+                });
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the notifications module is displaying the warning state.
+        String notificationsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
+
+        scrollToPreference(withText(notificationsTitle));
+        onView(withText(notificationsTitle)).check(matches(isDisplayed()));
+
+        // Module should be expanded initially since it's in a warning state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, true);
+
+        // Click on the reset all button and verify the notification module has changed to a
+        // safe state.
+        clickOnPrimaryButtonNextToText(notificationsTitle);
+        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
+                .check(matches(isDisplayed()));
+
+        // Click on the snackbar action button and verify that the notifications are allowed again
+        // and the warning is displayed.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
+
+        List<NotificationPermissions> notificationPermissions =
+                Arrays.asList(
+                        mNotificationPermissionReviewBridge.getNotificationPermissions(
+                                safetyHubFragment.getProfile()));
+        assertEquals(2, notificationPermissions.size());
+        assertThat(
+                notificationPermissions,
+                containsInAnyOrder(NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2));
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationReviewModule_SafeState() {
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {});
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+
+        // Verify the notifications module is displaying the safe state.
+        String notificationsTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_notifications_review_ok_title);
+
+        scrollToPreference(withText(notificationsTitle));
+        onView(withText(notificationsTitle)).check(matches(isDisplayed()));
+
+        // Module should be collapsed initially since it's in a safe state.
+        verifyButtonsNextToTextVisibility(notificationsTitle, false);
+        clickOnExpandButtonNextToText(notificationsTitle);
+
+        // Click on the secondary button and verify that notifications site settings page is opened.
+        clickOnSecondaryButtonNextToText(notificationsTitle);
+        onViewWaiting(
+                        allOf(
+                                withText(R.string.push_notifications_permission_title),
+                                withParent(withId(R.id.action_bar))))
+                .check(matches(isDisplayed()));
     }
 
     private void clickOnButtonNextToText(String text) {
