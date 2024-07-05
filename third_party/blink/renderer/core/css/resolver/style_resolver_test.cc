@@ -2472,8 +2472,6 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
 }
 
 TEST_F(StyleResolverTest, IsInertWithBackdrop) {
-  ScopedBackdropInheritOriginatingForTest backdrop_inherit(true);
-
   Document& document = GetDocument();
   NonThrowableExceptionState exception_state;
 

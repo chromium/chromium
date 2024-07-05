@@ -419,10 +419,6 @@
       depends_on: ["NoIntrinsicSizeOverride"],
       status: "stable",
     },
-    {
-      name: "BackdropInheritOriginating",
-      status: "stable",
-    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {

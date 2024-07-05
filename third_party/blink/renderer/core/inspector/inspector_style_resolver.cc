@@ -46,12 +46,10 @@ InspectorStyleResolver::InspectorStyleResolver(
   // Skip only if the pseudo element is not tree-abiding.
   // ::placeholder and ::file-selector-button are treated as regular elements
   // and hence don't need to be included here.
-  if (element_pseudo_id &&
-      !(element_pseudo_id == kPseudoIdBefore ||
-        element_pseudo_id == kPseudoIdAfter ||
-        element_pseudo_id == kPseudoIdMarker ||
-        (RuntimeEnabledFeatures::BackdropInheritOriginatingEnabled() &&
-         element_pseudo_id == kPseudoIdBackdrop))) {
+  if (element_pseudo_id && !(element_pseudo_id == kPseudoIdBefore ||
+                             element_pseudo_id == kPseudoIdAfter ||
+                             element_pseudo_id == kPseudoIdMarker ||
+                             element_pseudo_id == kPseudoIdBackdrop)) {
     return;
   }
 

@@ -1489,9 +1489,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
         style_request.pseudo_id);
   }
 
-  if (!state.ParentStyle() ||
-      (style_request.pseudo_id == kPseudoIdBackdrop &&
-       !RuntimeEnabledFeatures::BackdropInheritOriginatingEnabled())) {
+  if (!state.ParentStyle()) {
     // We have no parent so use the initial style as the parent. Note that we
     // need to do this before MPC lookup, so that the parent comparison (to
     // determine if we have a hit on inherited properties) is correctly
