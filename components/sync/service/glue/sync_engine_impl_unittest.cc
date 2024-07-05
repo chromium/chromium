@@ -86,7 +86,7 @@ class MockSyncEngineHost : public SyncEngineHost {
 
 class FakeSyncManagerFactory : public SyncManagerFactory {
  public:
-  explicit FakeSyncManagerFactory(
+  FakeSyncManagerFactory(
       raw_ptr<FakeSyncManager>* fake_manager,
       network::NetworkConnectionTracker* network_connection_tracker)
       : SyncManagerFactory(network_connection_tracker),
@@ -187,8 +187,6 @@ class SyncEngineImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    fake_manager_ = nullptr;
-
     if (backend_) {
       ShutdownBackend(ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA);
     }
@@ -227,6 +225,8 @@ class SyncEngineImplTest : public testing::Test {
   void ShutdownBackend(ShutdownReason reason) {
     DCHECK(backend_);
     backend_->StopSyncingForShutdown();
+    // Reset `fake_manager_` to avoid dangling pointer.
+    fake_manager_ = nullptr;
     backend_->Shutdown(reason);
     backend_.reset();
   }
@@ -524,6 +524,8 @@ TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   backend_->StopSyncingForShutdown();
   // Verify that call to DisconnectDataType doesn't assert.
   backend_->DisconnectDataType(AUTOFILL);
+  // Reset `fake_manager_` to avoid dangling pointer.
+  fake_manager_ = nullptr;
   backend_->Shutdown(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   backend_.reset();
 }
