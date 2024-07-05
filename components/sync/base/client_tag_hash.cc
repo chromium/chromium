@@ -15,7 +15,7 @@ namespace syncer {
 
 // static
 ClientTagHash ClientTagHash::FromUnhashed(ModelType model_type,
-                                          const std::string& client_tag) {
+                                          std::string_view client_tag) {
   // Blank PB with just the field in it has termination symbol,
   // handy for delimiter.
   sync_pb::EntitySpecifics serialized_type;
@@ -24,9 +24,8 @@ ClientTagHash ClientTagHash::FromUnhashed(ModelType model_type,
   serialized_type.AppendToString(&hash_input);
   hash_input.append(client_tag);
 
-  std::string encode_output =
-      base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
-  return FromHashed(encode_output);
+  return FromHashed(
+      base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input))));
 }
 
 // static

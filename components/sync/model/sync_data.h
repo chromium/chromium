@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -46,10 +47,10 @@ class SyncData {
   // the same as |client_tag_unhashed|) must be specfied.  Note:
   // |non_unique_title| is primarily for debug purposes, and will be overwritten
   // if the datatype is encrypted.
-  static SyncData CreateLocalDelete(const std::string& client_tag_unhashed,
+  static SyncData CreateLocalDelete(std::string_view client_tag_unhashed,
                                     ModelType datatype);
-  static SyncData CreateLocalData(const std::string& client_tag_unhashed,
-                                  const std::string& non_unique_title,
+  static SyncData CreateLocalData(std::string_view client_tag_unhashed,
+                                  std::string_view non_unique_title,
                                   const sync_pb::EntitySpecifics& specifics);
 
   // Helper method for creating SyncData objects originating from the syncer.

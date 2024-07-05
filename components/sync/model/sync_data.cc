@@ -47,16 +47,16 @@ SyncData& SyncData::operator=(SyncData&& other) = default;
 SyncData::~SyncData() = default;
 
 // Static.
-SyncData SyncData::CreateLocalDelete(const std::string& client_tag_unhashed,
+SyncData SyncData::CreateLocalDelete(std::string_view client_tag_unhashed,
                                      ModelType datatype) {
   sync_pb::EntitySpecifics specifics;
   AddDefaultFieldValue(datatype, &specifics);
-  return CreateLocalData(client_tag_unhashed, std::string(), specifics);
+  return CreateLocalData(client_tag_unhashed, {}, specifics);
 }
 
 // Static.
-SyncData SyncData::CreateLocalData(const std::string& client_tag_unhashed,
-                                   const std::string& non_unique_title,
+SyncData SyncData::CreateLocalData(std::string_view client_tag_unhashed,
+                                   std::string_view non_unique_title,
                                    const sync_pb::EntitySpecifics& specifics) {
   const ModelType model_type = GetModelTypeFromSpecifics(specifics);
   DCHECK(IsRealDataType(model_type));

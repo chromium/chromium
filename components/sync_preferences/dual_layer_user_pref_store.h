@@ -64,7 +64,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // pref `key` is syncable.
   // TODO(crbug.com/40277783): Implement a better way to handle this usage by
   // the sync components.
-  void SetValueInAccountStoreOnly(const std::string& key,
+  void SetValueInAccountStoreOnly(std::string_view key,
                                   base::Value value,
                                   uint32_t flags);
 

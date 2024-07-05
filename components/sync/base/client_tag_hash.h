@@ -8,6 +8,7 @@
 #include <compare>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 #include "base/hash/hash.h"
 #include "components/sync/base/model_type.h"
@@ -30,7 +31,7 @@ class ClientTagHash {
 
   // Creates ClientTagHash based on |client_tag|.
   static ClientTagHash FromUnhashed(ModelType type,
-                                    const std::string& client_tag);
+                                    std::string_view client_tag);
 
   // Creates ClientTagHash from already hashed client tag.
   static ClientTagHash FromHashed(std::string hash_value);

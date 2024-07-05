@@ -127,9 +127,9 @@ class PrefServiceSyncable : public PrefService,
 
   // PrefServiceForAssociator:
   base::Value::Type GetRegisteredPrefType(
-      const std::string& pref_name) const override;
+      std::string_view pref_name) const override;
   void OnIsSyncingChanged() override;
-  uint32_t GetWriteFlags(const std::string& pref_name) const override;
+  uint32_t GetWriteFlags(std::string_view pref_name) const override;
 
   // Whether CreateIncognitoPrefService() has been called to create a
   // "forked" PrefService.

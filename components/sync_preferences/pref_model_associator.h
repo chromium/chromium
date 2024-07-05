@@ -42,9 +42,9 @@ class PrefModelAssociatorClient;
 class PrefServiceForAssociator {
  public:
   virtual base::Value::Type GetRegisteredPrefType(
-      const std::string& pref_name) const = 0;
+      std::string_view pref_name) const = 0;
   virtual void OnIsSyncingChanged() = 0;
-  virtual uint32_t GetWriteFlags(const std::string& pref_name) const = 0;
+  virtual uint32_t GetWriteFlags(std::string_view pref_name) const = 0;
 };
 
 // Contains all preference sync related logic.
@@ -110,7 +110,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
   // Exposed for testing.
-  bool CreatePrefSyncData(const std::string& name,
+  bool CreatePrefSyncData(std::string_view name,
                           const base::Value& value,
                           syncer::SyncData* sync_data) const;
 
@@ -144,14 +144,14 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // controlled by policy (are not user modifiable) or have their default value
   // (are not user controlled).
   void InitPrefAndAssociate(const syncer::SyncData& sync_pref,
-                            const std::string& pref_name,
+                            std::string_view pref_name,
                             syncer::SyncChangeList* sync_changes);
 
-  void NotifySyncedPrefObservers(const std::string& path, bool from_sync) const;
+  void NotifySyncedPrefObservers(std::string_view path, bool from_sync) const;
 
   // Sets |pref_name| to |new_value| and returns true if |new_value| has an
   // appropriate type for this preference. Otherwise returns false.
-  bool SetPrefWithTypeCheck(const std::string& pref_name,
+  bool SetPrefWithTypeCheck(std::string_view pref_name,
                             const base::Value& new_value);
 
   // Notifies the synced pref observers that the pref for the given |path| is
@@ -206,7 +206,13 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // from sync.
   using SyncedPrefObserverList =
       base::ObserverList<SyncedPrefObserver>::Unchecked;
-  std::unordered_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
+  struct StringViewHasher : public std::hash<std::string_view> {
+    using is_transparent = void;
+  };
+  std::unordered_map<std::string,
+                     std::unique_ptr<SyncedPrefObserverList>,
+                     StringViewHasher,
+                     std::equal_to<>>
       synced_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

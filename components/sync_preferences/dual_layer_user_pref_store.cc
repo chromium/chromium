@@ -779,7 +779,7 @@ void DualLayerUserPrefStore::OnSyncShutdown(syncer::SyncService* sync_service) {
   sync_service->RemoveObserver(this);
 }
 
-void DualLayerUserPrefStore::SetValueInAccountStoreOnly(const std::string& key,
+void DualLayerUserPrefStore::SetValueInAccountStoreOnly(std::string_view key,
                                                         base::Value value,
                                                         uint32_t flags) {
   const base::Value* initial_value = nullptr;

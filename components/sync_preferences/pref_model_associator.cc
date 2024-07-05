@@ -134,7 +134,7 @@ sync_pb::PreferenceSpecifics* PrefModelAssociator::GetMutableSpecifics(
 
 void PrefModelAssociator::InitPrefAndAssociate(
     const syncer::SyncData& sync_pref,
-    const std::string& pref_name,
+    std::string_view pref_name,
     syncer::SyncChangeList* sync_changes) {
   VLOG(1) << "Associating preference " << pref_name;
 
@@ -163,7 +163,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
       // Update the local preference based on what we got from the sync
       // server.
       if (new_value.is_none()) {
-        LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
+        LOG(WARNING) << "Sync has null value for pref " << pref_name;
         user_prefs_->RemoveValue(pref_name,
                                  pref_service_->GetWriteFlags(pref_name));
       } else if (*user_pref_value != new_value) {
@@ -185,7 +185,7 @@ void PrefModelAssociator::InitPrefAndAssociate(
       // Only a server value exists. Just set the local user value.
       SetPrefWithTypeCheck(pref_name, sync_value);
     } else {
-      LOG(WARNING) << "Sync has null value for pref " << pref_name.c_str();
+      LOG(WARNING) << "Sync has null value for pref " << pref_name;
     }
     synced_preferences_.insert(preference.name());
   } else if (user_pref_value) {
@@ -196,9 +196,9 @@ void PrefModelAssociator::InitPrefAndAssociate(
       LOG(ERROR) << "Failed to update preference.";
       return;
     }
-    sync_changes->push_back(syncer::SyncChange(
-        FROM_HERE, syncer::SyncChange::ACTION_ADD, sync_data));
-    synced_preferences_.insert(pref_name);
+    sync_changes->emplace_back(FROM_HERE, syncer::SyncChange::ACTION_ADD,
+                               sync_data);
+    synced_preferences_.insert(std::string(pref_name));
   }
   // Else: This pref has neither a sync value nor a user-controlled value, so
   // ignore it for now. If it gets a new user-controlled value in the future,
@@ -288,7 +288,7 @@ void PrefModelAssociator::Stop(bool is_browser_shutdown) {
 }
 
 bool PrefModelAssociator::CreatePrefSyncData(
-    const std::string& name,
+    std::string_view name,
     const base::Value& value,
     syncer::SyncData* sync_data) const {
   if (value.is_none()) {
@@ -307,7 +307,7 @@ bool PrefModelAssociator::CreatePrefSyncData(
   sync_pb::PreferenceSpecifics* pref_specifics =
       GetMutableSpecifics(type_, &specifics);
 
-  pref_specifics->set_name(name);
+  pref_specifics->set_name(std::string(name));
   pref_specifics->set_value(serialized);
   *sync_data = syncer::SyncData::CreateLocalData(name, name, specifics);
   return true;
@@ -433,10 +433,7 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
 
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
-  // TODO: crbug.com/349741884: Eliminate this copy once the underlying methods
-  // accept std::string_view.
-  std::string name_str = std::string(name);
-  NotifySyncedPrefObservers(name_str, /*from_sync=*/false);
+  NotifySyncedPrefObservers(name, /*from_sync=*/false);
 
   syncer::SyncChangeList changes;
 
@@ -444,7 +441,7 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
     // Not in synced_preferences_ means no synced data. InitPrefAndAssociate(..)
     // will determine if we care about its data (e.g. if it has a default value
     // and hasn't been changed yet we don't) and take care syncing any new data.
-    InitPrefAndAssociate(syncer::SyncData(), name_str, &changes);
+    InitPrefAndAssociate(syncer::SyncData(), name, &changes);
   } else {
     // We are already syncing this preference, just update or delete its sync
     // node.
@@ -453,7 +450,7 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
     if (user_pref_value) {
       // If the pref was updated, update it.
       syncer::SyncData sync_data;
-      if (!CreatePrefSyncData(name_str, *user_pref_value, &sync_data)) {
+      if (!CreatePrefSyncData(name, *user_pref_value, &sync_data)) {
         LOG(ERROR) << "Failed to update preference.";
         return;
       }
@@ -461,9 +458,8 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
                            sync_data);
     } else {
       // Otherwise, the pref must have been cleared and hence delete it.
-      changes.emplace_back(
-          FROM_HERE, syncer::SyncChange::ACTION_DELETE,
-          syncer::SyncData::CreateLocalDelete(name_str, type_));
+      changes.emplace_back(FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+                           syncer::SyncData::CreateLocalDelete(name, type_));
     }
   }
 
@@ -481,7 +477,7 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
 
 void PrefModelAssociator::OnInitializationCompleted(bool succeeded) {}
 
-void PrefModelAssociator::NotifySyncedPrefObservers(const std::string& path,
+void PrefModelAssociator::NotifySyncedPrefObservers(std::string_view path,
                                                     bool from_sync) const {
   auto observer_iter = synced_pref_observers_.find(path);
   if (observer_iter == synced_pref_observers_.end()) {
@@ -492,7 +488,7 @@ void PrefModelAssociator::NotifySyncedPrefObservers(const std::string& path,
   }
 }
 
-bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
+bool PrefModelAssociator::SetPrefWithTypeCheck(std::string_view pref_name,
                                                const base::Value& new_value) {
   base::Value::Type registered_type =
       pref_service_->GetRegisteredPrefType(pref_name);
