@@ -14,8 +14,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-// TODO(dcheng): Remove this.
-#include "base/template_util.h"
 
 namespace base {
 
