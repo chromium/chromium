@@ -40,9 +40,10 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
       RenderFrameHost&,
       mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest>);
 
-  // Returns true is the passed-in OpenId4Vp request is solely requesting an
-  // mdoc age_over_xx assertion.
-  static bool IsOnlyRequestingAge(const base::Value& request);
+  // Returns the type of interstitial to show based on the request contents.
+  static std::optional<content::DigitalIdentityInterstitialType>
+  ComputeInterstitialType(
+      const data_decoder::DataDecoder::ValueOrError& request);
 
   DigitalIdentityRequestImpl(const DigitalIdentityRequestImpl&) = delete;
   DigitalIdentityRequestImpl& operator=(const DigitalIdentityRequestImpl&) =

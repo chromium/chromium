@@ -7,11 +7,16 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/public/common/content_features.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 namespace {
+
+using InterstitialType = content::DigitalIdentityInterstitialType;
 
 base::Value ParseJsonAndCheck(const std::string& json) {
   std::optional<base::Value> parsed = base::JSONReader::Read(json);
@@ -83,8 +88,12 @@ base::Value* FindValueWithKey(base::Value& root, const std::string& find_key) {
   return nullptr;
 }
 
+bool HasNoListElements(const base::Value* value) {
+  return !value || !value->is_list() || value->GetList().size() == 0u;
+}
+
 bool IsNonEmptyList(const base::Value* value) {
-  return value && value->is_list() && value->GetList().size() > 0u;
+  return !HasNoListElements(value);
 }
 
 // Removes `find_key` if present from `dict`. Ignores nested base::Value::Dicts.
@@ -97,23 +106,78 @@ void RemoveDictKey(base::Value::Dict& dict, const std::string& find_key) {
   }
 }
 
-}  // anonymous namespace
-
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_OnlyAge) {
-  EXPECT_TRUE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(
-      GenerateOnlyAgeOpenid4VpRequest()));
+bool SetPathItem(base::Value& to_modify, const std::string& path_item) {
+  base::Value* paths = FindValueWithKey(to_modify, "path");
+  if (HasNoListElements(paths)) {
+    return false;
+  }
+  paths->GetList().resize(0);
+  paths->GetList().Append(path_item);
+  return true;
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestinAge_EmptyPathList) {
+}  // anonymous namespace
+
+class DigitalIdentityRequestImplTest : public testing::Test {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kWebIdentityDigitalCredentials, {{"dialog", ""}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_OnlyAgeOver) {
+  EXPECT_EQ(std::nullopt, DigitalIdentityRequestImpl::ComputeInterstitialType(
+                              GenerateOnlyAgeOpenid4VpRequest()));
+}
+
+TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_OnlyAgeInYears) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+  ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_in_years']"));
+  EXPECT_EQ(std::nullopt, DigitalIdentityRequestImpl::ComputeInterstitialType(
+                              std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeIntersitialType_OnlyAgeBirthYear) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+  ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['age_birth_year']"));
+  EXPECT_EQ(std::nullopt, DigitalIdentityRequestImpl::ComputeInterstitialType(
+                              std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplTest, ComputeIntersitialType_OnlyBirthDate) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+  ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['birth_date']"));
+  EXPECT_EQ(std::nullopt, DigitalIdentityRequestImpl::ComputeInterstitialType(
+                              std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeIntersitialType_OnlyNonAgeDataElement) {
+  base::Value request = GenerateOnlyAgeOpenid4VpRequest();
+  ASSERT_TRUE(SetPathItem(request, "$['org.iso.18013.5.1']['given_name']"));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
+}
+
+TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_EmptyPathList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* paths = FindValueWithKey(request, "path");
   ASSERT_TRUE(IsNonEmptyList(paths));
   paths->GetList().resize(0);
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultiplePaths) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_RequestMultiplePaths) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* paths = FindValueWithKey(request, "path");
   ASSERT_TRUE(IsNonEmptyList(paths));
@@ -121,29 +185,36 @@ TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultiplePaths) {
   base::Value::List& path_list = paths->GetList();
   path_list.Append(path_list.front().Clone());
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_NoPath) {
+TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_NoPath) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
   RemoveDictKey(fields->GetList().front().GetDict(), "path");
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_EmptyFieldsList) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_EmptyFieldsList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
   fields->GetList().resize(0);
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl,
-     IsOnlyRequestingAge_RequestMultipleAgeAssertions) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_RequestMultipleAgeAssertions) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
@@ -155,10 +226,13 @@ TEST(DigitalIdentityRequestImpl,
   })");
   fields->GetList().Append(std::move(new_field));
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultipleFields) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_RequestMultipleFields) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* fields = FindValueWithKey(request, "fields");
   ASSERT_TRUE(IsNonEmptyList(fields));
@@ -170,30 +244,38 @@ TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultipleFields) {
   })");
   fields->GetList().Append(std::move(new_field));
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_NoConstraints) {
+TEST_F(DigitalIdentityRequestImplTest, ComputeInterstitialType_NoConstraints) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
   RemoveDictKey(input_descriptors->GetList().front().GetDict(), "constraints");
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_EmptyInputDescriptorList) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_EmptyInputDescriptorList) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
   ASSERT_TRUE(IsNonEmptyList(input_descriptors));
   input_descriptors->GetList().resize(0);
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultipleDocuments) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_RequestMultipleDocuments) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
@@ -202,10 +284,13 @@ TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_RequestMultipleDocuments) {
   base::Value::List& input_descriptor_list = input_descriptors->GetList();
   input_descriptor_list.Append(input_descriptor_list.front().Clone());
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_NonMdlInputDescriptorId) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_NonMdlInputDescriptorId) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   base::Value* input_descriptors =
       FindValueWithKey(request, "input_descriptors");
@@ -215,14 +300,19 @@ TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_NonMdlInputDescriptorId) {
   ASSERT_TRUE(input_descriptor_list.front().is_dict());
   input_descriptor_list.front().GetDict().Set("id", "not_mdl");
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
-TEST(DigitalIdentityRequestImpl, IsOnlyRequestingAge_NoPresentationDefinition) {
+TEST_F(DigitalIdentityRequestImplTest,
+       ComputeInterstitialType_NoPresentationDefinition) {
   base::Value request = GenerateOnlyAgeOpenid4VpRequest();
   RemoveDictKey(request.GetDict(), "presentation_definition");
 
-  EXPECT_FALSE(DigitalIdentityRequestImpl::IsOnlyRequestingAge(request));
+  EXPECT_EQ(
+      InterstitialType::kHighRisk,
+      DigitalIdentityRequestImpl::ComputeInterstitialType(std::move(request)));
 }
 
 }  // namespace content
