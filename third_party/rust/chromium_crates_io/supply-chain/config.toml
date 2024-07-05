@@ -275,7 +275,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."windows-targets:0.52.5"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."windows_aarch64_gnullvm:0.52.5"]
+[policy."windows_aarch64_gnullvm:0.52.6"]
 criteria = []
 
 [policy."windows_aarch64_msvc:0.52.5"]
