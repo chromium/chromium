@@ -628,13 +628,23 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // (unless changed by something like z-index on the pseudo-elements).
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
-  if (root_style.ViewTransitionName() && !root_object.IsFragmented()) {
+
+  const auto& view_transition_name = root_style.ViewTransitionName();
+  if (view_transition_name && !root_object.IsFragmented()) {
     auto* node = root_object.GetNode();
     DCHECK(node);
     DCHECK(node->IsElementNode());
-    if (node->GetTreeScope() == tree_scope) {
+
+    // ATM this will be null if the scope of the view-transition-name comes from
+    // e.g. devtools.
+    auto* relevant_tree_scope =
+        RuntimeEnabledFeatures::ViewTransitionTreeScopedNamesEnabled()
+            ? view_transition_name->GetTreeScope()
+            : &node->GetTreeScope();
+
+    if (relevant_tree_scope == tree_scope || !relevant_tree_scope) {
       AddTransitionElement(DynamicTo<Element>(node),
-                           root_style.ViewTransitionName());
+                           root_style.ViewTransitionName()->GetName());
     }
   }
 

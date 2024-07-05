@@ -2356,16 +2356,10 @@ scoped_refptr<SVGDashArray> StyleBuilderConverter::ConvertStrokeDasharray(
   return array;
 }
 
-AtomicString StyleBuilderConverter::ConvertViewTransitionName(
+ScopedCSSName* StyleBuilderConverter::ConvertViewTransitionName(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value)) {
-    return AtomicString(custom_ident_value->Value());
-  }
-  DCHECK(DynamicTo<CSSIdentifierValue>(value));
-  DCHECK_EQ(DynamicTo<CSSIdentifierValue>(value)->GetValueID(),
-            CSSValueID::kNone);
-  return AtomicString();
+  return ConvertNoneOrCustomIdent(state, value);
 }
 
 Vector<AtomicString> StyleBuilderConverter::ConvertViewTransitionClass(

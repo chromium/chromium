@@ -6847,10 +6847,11 @@ const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (style.ViewTransitionName().IsNull()) {
+  if (!style.ViewTransitionName()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.ViewTransitionName());
+  return MakeGarbageCollected<CSSCustomIdentValue>(
+      style.ViewTransitionName()->GetName());
 }
 
 const CSSValue* ViewTransitionClass::ParseSingleValue(
