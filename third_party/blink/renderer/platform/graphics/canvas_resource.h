@@ -598,7 +598,9 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
 
-  GLenum TextureTarget() const final { return GL_TEXTURE_2D; }
+  GLenum TextureTarget() const final {
+    return back_buffer_shared_image_->GetTextureTarget();
+  }
 
   GLuint GetBackBufferTextureId() const { return back_buffer_texture_id_; }
   const gpu::Mailbox& GetBackBufferMailbox() {
