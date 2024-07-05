@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
@@ -63,13 +64,15 @@ base::Time GetTimeInTenMinutes() {
 }
 
 bound_session_credentials::Credential CreateCookieCredential(
-    const std::string& cookie_name) {
+    const std::string& cookie_name,
+    const std::string& domain,
+    const std::string& path) {
   bound_session_credentials::Credential credential;
   bound_session_credentials::CookieCredential* cookie_credential =
       credential.mutable_cookie_credential();
   cookie_credential->set_name(cookie_name);
-  cookie_credential->set_domain(".google.com");
-  cookie_credential->set_path("/");
+  cookie_credential->set_domain(domain);
+  cookie_credential->set_path(path);
   return credential;
 }
 
@@ -176,7 +179,7 @@ class BoundSessionCookieControllerImplTest
   void SimulateCookieChange(const std::string& cookie_name,
                             std::optional<base::Time> cookie_expiration) {
     net::CanonicalCookie cookie = BoundSessionTestCookieManager::CreateCookie(
-        bound_session_cookie_controller()->url(), cookie_name,
+        bound_session_cookie_controller()->scope_url(), cookie_name,
         cookie_expiration);
     cookie_observer(cookie_name)
         ->OnCookieChange(
@@ -345,9 +348,9 @@ class BoundSessionCookieControllerImplTest
     bound_session_params.set_wrapped_key(
         std::string(wrapped_key.begin(), wrapped_key.end()));
     *bound_session_params.add_credentials() =
-        CreateCookieCredential(k1PSIDTSCookieName);
+        CreateCookieCredential(k1PSIDTSCookieName, ".google.com", "/");
     *bound_session_params.add_credentials() =
-        CreateCookieCredential(k3PSIDTSCookieName);
+        CreateCookieCredential(k3PSIDTSCookieName, ".google.com", "/");
     return bound_session_params;
   }
 
@@ -972,16 +975,58 @@ TEST_F(BoundSessionCookieControllerImplNoDefaultControllerTest,
   BuildBoundSessionCookieController(params);
   const BoundSessionCookieControllerImpl* const controller =
       bound_session_cookie_controller();
-  EXPECT_EQ(controller->url(), GURL("https://google.com"));
+  EXPECT_EQ(controller->scope_url(), GURL("https://google.com"));
   EXPECT_EQ(controller->session_id(), kSessionId);
   EXPECT_EQ(controller->session_creation_time(), kInitTime);
   EXPECT_EQ(controller->refresh_url(), GURL(kRefreshUrl));
+  EXPECT_EQ(controller->site(), GURL("https://google.com"));
   EXPECT_THAT(
       controller->bound_cookie_names(),
       testing::UnorderedElementsAre(k1PSIDTSCookieName, k3PSIDTSCookieName));
+  const BoundSessionKey kExpectedKey{.site = GURL("https://google.com"),
+                                     .session_id = kSessionId};
+  EXPECT_EQ(controller->GetBoundSessionKey(), kExpectedKey);
   auto throttler_params = controller->bound_session_throttler_params();
   EXPECT_EQ(throttler_params->domain, "google.com");
   EXPECT_EQ(throttler_params->path, "/");
+}
+
+TEST_F(BoundSessionCookieControllerImplNoDefaultControllerTest,
+       SessionParametersScopedSession) {
+  constexpr char kRefreshUrl[] = "https://accounts.google.com/refresh";
+  constexpr base::Time kInitTime =
+      base::Time::FromMillisecondsSinceUnixEpoch(12345);
+
+  bound_session_credentials::BoundSessionParams params =
+      CreateDefaultBoundSessionParams();
+  params.set_refresh_url(kRefreshUrl);
+  *params.mutable_creation_time() =
+      bound_session_credentials::TimeToTimestamp(kInitTime);
+  params.clear_credentials();
+  *params.add_credentials() = CreateCookieCredential(
+      k1PSIDTSCookieName, ".accounts.google.com", "/secure");
+  *params.add_credentials() = CreateCookieCredential(
+      k3PSIDTSCookieName, ".accounts.google.com", "/secure");
+
+  BuildBoundSessionCookieController(params);
+  const BoundSessionCookieControllerImpl* const controller =
+      bound_session_cookie_controller();
+
+  EXPECT_EQ(controller->scope_url(),
+            GURL("https://accounts.google.com/secure"));
+  EXPECT_EQ(controller->session_id(), kSessionId);
+  EXPECT_EQ(controller->session_creation_time(), kInitTime);
+  EXPECT_EQ(controller->refresh_url(), GURL(kRefreshUrl));
+  EXPECT_EQ(controller->site(), GURL("https://google.com"));
+  EXPECT_THAT(
+      controller->bound_cookie_names(),
+      testing::UnorderedElementsAre(k1PSIDTSCookieName, k3PSIDTSCookieName));
+  const BoundSessionKey kExpectedKey{.site = GURL("https://google.com"),
+                                     .session_id = kSessionId};
+  EXPECT_EQ(controller->GetBoundSessionKey(), kExpectedKey);
+  auto throttler_params = controller->bound_session_throttler_params();
+  EXPECT_EQ(throttler_params->domain, "accounts.google.com");
+  EXPECT_EQ(throttler_params->path, "/secure");
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,

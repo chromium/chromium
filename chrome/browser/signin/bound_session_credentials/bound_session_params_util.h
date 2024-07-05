@@ -21,10 +21,14 @@ base::Time TimestampToTime(const Timestamp& timestamp);
 
 bool AreParamsValid(const BoundSessionParams& bound_session_params);
 
-bool IsCookieCredentialValid(const Credential& credential, const GURL& site);
-
 BoundSessionKey GetBoundSessionKey(
     const BoundSessionParams& bound_session_params);
+
+// Computes the session scope based on cookie domains.
+// The current implementation only supports a single scope URL for the whole
+// session. If such a URL cannot be built based on cookie domains, this function
+// will return an empty URL.
+GURL GetBoundSessionScope(const BoundSessionParams& bound_session_params);
 
 bool AreSameSessionParams(const BoundSessionParams& lhs,
                           const BoundSessionParams& rhs);

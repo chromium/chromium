@@ -59,6 +59,7 @@ using testing::Pointee;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
 constexpr std::string_view kDomain = "google.com";
+constexpr std::string_view kSubdomain = "accounts.google.com";
 constexpr std::string_view KTriggerRegistrationPath = "/TriggerRegistration";
 constexpr base::cstring_view kChallenge = "test_challenge";
 
@@ -435,7 +436,8 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
       public ChromeBrowserMainExtraParts {
  public:
   void SetUp() override {
-    embedded_https_test_server().SetCertHostnames({std::string(kDomain)});
+    embedded_https_test_server().SetCertHostnames(
+        {std::string(kDomain), std::string(kSubdomain)});
     CHECK(embedded_https_test_server().InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -506,14 +508,15 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
     ExpectSessionParamsUpdate(registration_params_update.QuitClosure());
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_https_test_server().GetURL(
-                       kDomain, KTriggerRegistrationPath)));
+        browser(),
+        embedded_https_test_server().GetURL(server_host().params().domain,
+                                            KTriggerRegistrationPath)));
     registration_params_update.Run();
 
     std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
         throttler_params = service()->GetBoundSessionThrottlerParams();
     ASSERT_EQ(throttler_params.size(), 1U);
-    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->domain, server_host().params().domain);
     EXPECT_EQ(throttler_params[0]->path, "/");
 
     // Cookie rotation request comes immediately after session registration.
@@ -562,8 +565,8 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
         &net::test_server::HandlePrefixedRequest,
         std::string(KTriggerRegistrationPath),
         base::BindRepeating(&HandleTriggerRegistrationRequest,
-                            std::vector<std::string>{std::string(
-                                server_host_->params().registration_path)})));
+                            std::vector<std::string>{
+                                server_host_->params().registration_path})));
 
     embedded_test_server_handle_ =
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
@@ -650,4 +653,48 @@ IN_PROC_BROWSER_TEST_F(
     BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest,
     TerminateSessionClearsStorage) {
   EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+}
+
+class BoundSessionCookieRefreshServiceImplSubdomainSessionBrowserTest
+    : public BoundSessionCookieRefreshServiceImplBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BoundSessionCookieRefreshServiceImplBrowserTest::SetUpCommandLine(
+        command_line);
+    // Overwrite `kGaiaUrl` to `kSubdomain`.
+    command_line->AppendSwitchASCII(
+        switches::kGaiaUrl,
+        embedded_https_test_server().GetURL(kSubdomain, "/").spec());
+  }
+
+ protected:
+  std::unique_ptr<FakeServerHost> CreateAndInitializeFakeServerHost(
+      net::test_server::EmbeddedTestServer& embedded_test_server) override {
+    auto fake_server_host = std::make_unique<FakeServerHost>(
+        FakeServer::Params{.domain = std::string(kSubdomain),
+                           .registration_path = "/RegisterSession",
+                           .rotation_path = "/RotateBoundCookies",
+                           .session_id = "007"});
+    base::queue<CookieRotationResponseParams> rotation_responses_params;
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateChallengeRequired(
+            fake_server_host->params().session_id));
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateSuccessWithCookies(
+            embedded_test_server.GetURL(kSubdomain, "/"),
+            /*block_server_response=*/true));
+
+    fake_server_host->Initialize(embedded_test_server,
+                                 std::move(rotation_responses_params));
+
+    return fake_server_host;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BoundSessionCookieRefreshServiceImplSubdomainSessionBrowserTest,
+    RegisterAndRotateSession) {
+  EXPECT_TRUE(service()->GetBoundSessionThrottlerParams().empty());
+  RegisterNewSession();
+  EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
 }

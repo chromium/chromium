@@ -43,15 +43,25 @@ bound_session_credentials::BoundSessionParams CreateValidBoundSessionParams() {
   return params;
 }
 
+void UpdateAllCookieCredentialsDomains(
+    bound_session_credentials::BoundSessionParams& params,
+    const std::string& domain) {
+  for (auto& credential : *params.mutable_credentials()) {
+    credential.mutable_cookie_credential()->set_domain(domain);
+  }
+}
+
 void PopulateSameSiteParams(
     const std::string& site,
     std::vector<bound_session_credentials::BoundSessionParams>& params) {
+  GURL site_url(site);
   for (size_t i = 0; i < 3; ++i) {
     bound_session_credentials::BoundSessionParams same_site_params =
         CreateValidBoundSessionParams();
-    same_site_params.set_site(site);
+    same_site_params.set_site(site_url.spec());
     same_site_params.set_session_id(
         base::StrCat({"session_", base::NumberToString(i)}));
+    UpdateAllCookieCredentialsDomains(same_site_params, site_url.host());
     params.push_back(std::move(same_site_params));
   }
 }
@@ -63,8 +73,10 @@ void PopulateSameSessionIdParams(
     bound_session_credentials::BoundSessionParams same_session_id_params =
         CreateValidBoundSessionParams();
     same_session_id_params.set_session_id(session_id);
-    same_session_id_params.set_site(base::StrCat(
+    GURL site(base::StrCat(
         {"https://domain", base::NumberToString(i), ".google.com/"}));
+    same_session_id_params.set_site(site.spec());
+    UpdateAllCookieCredentialsDomains(same_session_id_params, site.host());
     params.push_back(std::move(same_session_id_params));
   }
 }
@@ -173,6 +185,8 @@ TEST_P(BoundSessionParamsStorageTest, Clear) {
       CreateValidBoundSessionParams();
   params_to_be_removed.set_site(kSite);
   params_to_be_removed.set_session_id(kSessionId);
+  UpdateAllCookieCredentialsDomains(params_to_be_removed,
+                                    "mydomain.google.com");
 
   // Populate storage with params matching by either a site or a session_id.
   std::vector<bound_session_credentials::BoundSessionParams> expected_params;

@@ -91,8 +91,10 @@ MATCHER(IsCookieCredential, "") {
 MATCHER(IsThrottlerParams, "") {
   const auto& [throttler_params, bound_session_params] = arg;
 
-  return GURL(bound_session_params.site()).DomainIs(throttler_params->domain) &&
-         throttler_params->path == "/";
+  GURL scope_url =
+      bound_session_credentials::GetBoundSessionScope(bound_session_params);
+  return throttler_params->domain == scope_url.host_piece() &&
+         throttler_params->path == scope_url.path_piece();
 }
 
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
@@ -216,20 +218,24 @@ class FakeBoundSessionRegistrationFetcher
 // `bound_session_credentials::BoundSessionParams`.
 MATCHER_P(IsBoundSessionCookieController, bound_session_params, "") {
   return testing::ExplainMatchResult(
-      AllOf(NotNull(),
-            Property("session_id()",
-                     &FakeBoundSessionCookieController::session_id,
-                     bound_session_params.session_id()),
-            Property("url()", &FakeBoundSessionCookieController::url,
-                     bound_session_params.site()),
-            Property("wrapped_key()",
-                     &FakeBoundSessionCookieController::wrapped_key,
-                     ElementsAreArray(base::as_bytes(
-                         base::make_span(bound_session_params.wrapped_key())))),
-            Property("bound_cookie_names()",
-                     &FakeBoundSessionCookieController::bound_cookie_names,
-                     UnorderedPointwise(IsCookieCredential(),
-                                        bound_session_params.credentials()))),
+      AllOf(
+          NotNull(),
+          Property("session_id()",
+                   &FakeBoundSessionCookieController::session_id,
+                   bound_session_params.session_id()),
+          Property("scope_url()", &FakeBoundSessionCookieController::scope_url,
+                   bound_session_credentials::GetBoundSessionScope(
+                       bound_session_params)),
+          Property("site()", &FakeBoundSessionCookieController::site,
+                   bound_session_params.site()),
+          Property("wrapped_key()",
+                   &FakeBoundSessionCookieController::wrapped_key,
+                   ElementsAreArray(base::as_bytes(
+                       base::make_span(bound_session_params.wrapped_key())))),
+          Property("bound_cookie_names()",
+                   &FakeBoundSessionCookieController::bound_cookie_names,
+                   UnorderedPointwise(IsCookieCredential(),
+                                      bound_session_params.credentials()))),
       arg, result_listener);
 }
 
@@ -544,6 +550,20 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_EQ(bound_session_throttler_params[0]->domain, kTestGoogleURL.host());
   EXPECT_EQ(bound_session_throttler_params[0]->path,
             kTestGoogleURL.path_piece());
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       VerifyBoundSessionWithSubdomainScope) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateBoundSessionParams(GURL("https://google.com"), kTestSessionId, {});
+  *params.add_credentials() =
+      CreateCookieCredential("cookieA", GURL("https://accounts.google.com"));
+  *params.add_credentials() =
+      CreateCookieCredential("cookieB", GURL("https://accounts.google.com"));
+
+  ASSERT_TRUE(storage()->SaveParams(params));
+  GetCookieRefreshServiceImpl();
+  VerifyBoundSession(params);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,

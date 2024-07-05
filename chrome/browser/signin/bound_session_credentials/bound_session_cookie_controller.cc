@@ -13,22 +13,22 @@
 BoundSessionCookieController::BoundSessionCookieController(
     const bound_session_credentials::BoundSessionParams& bound_session_params,
     Delegate* delegate)
-    : url_(bound_session_params.site()),
+    : scope_url_(bound_session_credentials::GetBoundSessionScope(
+          bound_session_params)),
       session_id_(bound_session_params.session_id()),
       session_creation_time_(bound_session_credentials::TimestampToTime(
           bound_session_params.creation_time())),
       refresh_url_(bound_session_params.refresh_url()),
+      site_(bound_session_params.site()),
       delegate_(delegate) {
-  CHECK(!url_.is_empty());
+  CHECK(!scope_url_.is_empty());
+  CHECK(!site_.is_empty());
   CHECK(!bound_session_params.credentials().empty());
   // Note:
   // - Same cookie name with a different scope (Domain, Path) is not
   //   supported. We expect cookie names to be unique.
   // - The scope of the cookie is ignored and is assumed to have the same scope
   //   of the session.
-  // - The scope of the session is site based (not origin) and is specified in
-  //   `url`.
-  // - A cookie path other than '/' isn't supported.
   for (const bound_session_credentials::Credential& credential :
        bound_session_params.credentials()) {
     bound_cookies_info_.insert(
@@ -56,7 +56,7 @@ BoundSessionCookieController::bound_session_throttler_params() const {
   }
 
   return chrome::mojom::BoundSessionThrottlerParams::New(
-      url().host(), url().path(), min_cookie_expiration_time());
+      scope_url().host(), scope_url().path(), min_cookie_expiration_time());
 }
 
 base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()
@@ -66,6 +66,6 @@ base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()
       [](const auto& bound_cookie_info) { return bound_cookie_info.first; });
 }
 
-BoundSessionKey BoundSessionCookieController::GetBoundSessionKey() {
-  return {.site = url(), .session_id = session_id()};
+BoundSessionKey BoundSessionCookieController::GetBoundSessionKey() const {
+  return {.site = site(), .session_id = session_id()};
 }

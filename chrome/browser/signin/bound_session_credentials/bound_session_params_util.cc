@@ -65,31 +65,17 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
     }
   }
 
+  GURL scope = GetBoundSessionScope(bound_session_params);
+  if (scope.is_empty()) {
+    return false;
+  }
+
   return base::ranges::all_of(
-      bound_session_params.credentials(), [&site](const auto& credential) {
-        return IsCookieCredentialValid(credential, site);
+      bound_session_params.credentials(), [](const auto& credential) {
+        return credential.has_cookie_credential() &&
+               !credential.cookie_credential().name().empty() &&
+               !credential.cookie_credential().domain().empty();
       });
-}
-
-bool IsCookieCredentialValid(const Credential& credential, const GURL& site) {
-  if (!credential.has_cookie_credential() ||
-      credential.cookie_credential().name().empty()) {
-    return false;
-  }
-
-  // Empty cookie domain is considered `host-only` cookie.
-  // Note: `host-only` isn't supported yet in the current implementation to
-  // narrow the scope of throttling.
-  // `cookie_domain` is currently not used. We rely on the `site` param which
-  // defines the scope of the session. `cookie_domain` might be set on a higher
-  // level domain (e.g. site: `foo.bar.baz.com/`, cookie domain: `bar.baz.com`,
-  // throttling will be limited to `foo.bar.baz.com/`).
-  const std::string& cookie_domain = credential.cookie_credential().domain();
-  if (!cookie_domain.empty() &&
-      !site.DomainIs(net::cookie_util::CookieDomainAsHost(cookie_domain))) {
-    return false;
-  }
-  return true;
 }
 
 BoundSessionKey GetBoundSessionKey(
@@ -97,6 +83,46 @@ BoundSessionKey GetBoundSessionKey(
   DCHECK(AreParamsValid(bound_session_params));
   return {.site = GURL(bound_session_params.site()),
           .session_id = bound_session_params.session_id()};
+}
+
+GURL GetBoundSessionScope(const BoundSessionParams& bound_session_params) {
+  GURL site(bound_session_params.site());
+  GURL scope;
+
+  for (const auto& credential : bound_session_params.credentials()) {
+    if (!credential.has_cookie_credential()) {
+      continue;
+    }
+
+    std::string cookie_domain = net::cookie_util::CookieDomainAsHost(
+        credential.cookie_credential().domain());
+    if (cookie_domain.empty()) {
+      // Domain must be non-empty in DBSC parameters even if the cookie itself
+      // has an empty domain attribute.
+      // Note: the current implementation doesn't support `host-only` for
+      // narrowing the scope of throttling.
+      return GURL();
+    }
+    GURL::Replacements replacements;
+    replacements.SetHostStr(cookie_domain);
+    replacements.SetPathStr(credential.cookie_credential().path());
+    // Domain+path is not enough to build a URL. Inherit all other URL
+    // components (like scheme and port) from `site`.
+    GURL credential_scope = site.ReplaceComponents(replacements);
+    if (!credential_scope.is_valid() ||
+        !credential_scope.DomainIs(site.host_piece())) {
+      return GURL();
+    }
+
+    if (scope.is_empty()) {
+      scope = std::move(credential_scope);
+    } else if (scope != credential_scope) {
+      return GURL();
+    }
+  }
+
+  // If none of the cookies specifies a domain, use the site scope.
+  return scope.is_empty() ? site : scope;
 }
 
 bool AreSameSessionParams(const BoundSessionParams& lhs,

@@ -91,7 +91,8 @@ GetThrottlerParamsForRequestCoverage(
   // Note: This is needed to ensure the correctness of metrics in case of
   // outages.
   return chrome::mojom::BoundSessionThrottlerParams::New(
-      controller->url().host(), controller->url().path(), base::Time());
+      controller->scope_url().host(), controller->scope_url().path(),
+      base::Time());
 }
 }  // namespace
 
@@ -167,7 +168,7 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
       bool clear_params = controller->GetBoundSessionKey() !=
                           bound_session_credentials::GetBoundSessionKey(params);
       if (clear_params) {
-        session_params_storage_->ClearParams(controller->url(),
+        session_params_storage_->ClearParams(controller->site(),
                                              controller->session_id());
       }
       cookie_controllers_.clear();
@@ -430,7 +431,7 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     // Bound sessions are only supported in first-party contexts, so it's
     // acceptable to use `blink::StorageKey::CreateFirstParty()`.
     if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(controller->url())))) {
+            url::Origin::Create(controller->scope_url())))) {
       continue;
     }
 
