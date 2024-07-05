@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/layout/floats_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
-#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
