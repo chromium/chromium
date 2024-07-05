@@ -271,7 +271,7 @@ const char kGStatic[] = ".gstatic.com";
   switch (item.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       [self.NTPMetricsDelegate distantTabResumptionOpenedAtIndex:index];
-      [self openDistantTab];
+      [self openDistantTab:item];
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpenedAtIndex:index];
@@ -287,7 +287,7 @@ const char kGStatic[] = ".gstatic.com";
   [self.delegate removeTabResumptionModule];
 }
 
-- (void)openDistantTab {
+- (void)openDistantTab:(TabResumptionItem*)item {
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   sync_sessions::OpenTabsUIDelegate* openTabsDelegate =
       SessionSyncServiceFactory::GetForBrowserState(browserState)
@@ -307,6 +307,12 @@ const char kGStatic[] = ".gstatic.com";
             sessionTab->navigations);
     _webStateList->ReplaceWebStateAt(_webStateList->active_index(),
                                      std::move(webState));
+  } else {
+    web::NavigationManager::WebLoadParams webLoadParams =
+        web::NavigationManager::WebLoadParams(item.tabURL);
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(webLoadParams);
+    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    _URLLoadingBrowserAgent->Load(params);
   }
 }
 
