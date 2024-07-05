@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/compositor/layer.h"
 
 ExclusiveAccessPermissionPrompt::ExclusiveAccessPermissionPrompt(
     Browser* browser,
@@ -59,6 +60,8 @@ void ExclusiveAccessPermissionPrompt::ShowPrompt() {
       EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
           weak_factory_.GetWeakPtr(),
           web_contents()->GetColorProvider().GetColor(ui::kColorSysStateScrim));
+  content_scrim_widget_->GetContentsView()->SetPaintToLayer(ui::LAYER_TEXTURED);
+  content_scrim_widget_->GetContentsView()->layer()->SetBackgroundBlur(4.0f);
   prompt_view->UpdateAnchor(content_scrim_widget_.get());
   prompt_view->Show();
 }
