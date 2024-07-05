@@ -823,7 +823,7 @@ UIImage* DefaultFavicon() {
         constraintEqualToConstant:TabStripStaticSeparatorConstants
                                       .separatorWidth],
     [_leadingSeparatorView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_closeButton.centerYAnchor],
   ]];
 
   /// `_trailingSeparatorView` constraints.
@@ -835,7 +835,7 @@ UIImage* DefaultFavicon() {
         constraintEqualToConstant:TabStripStaticSeparatorConstants
                                       .separatorWidth],
     [_trailingSeparatorView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_closeButton.centerYAnchor],
   ]];
 
   [self setSeparatorsHeight:TabStripStaticSeparatorConstants
