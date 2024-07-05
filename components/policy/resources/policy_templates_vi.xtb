@@ -139,7 +139,7 @@ Cả hai có tác động như nhau đối với hành vi của trình duyệt.<
 
       Nếu chính sách này được đặt, màn hình đăng nhập sẽ luôn được hiển thị bằng ngôn ngữ được cung cấp theo giá trị đầu tiên của chính sách (chính sách được định nghĩa là danh sách về khả năng tương thích chuyển tiếp).  Nếu chính sách này chưa được đặt hoặc được đặt thành danh sách trống, màn hình đăng nhập sẽ được hiển thị bằng ngôn ngữ của phiên người dùng cuối cùng.  Nếu chính sách này được đặt thành giá trị không phải là ngôn ngữ hợp lệ, màn hình đăng nhập sẽ được hiển thị bằng ngôn ngữ dự phòng (hiện tại là en-US).</translation>
 <translation id="1050158007881386475">Tắt tính năng báo cáo trạng thái bảng thiết bị</translation>
-<translation id="1052499923181221200">Chính sách này không có hiệu lực trừ khi chính sách SamlInSessionPasswordChangeEnabled là true.
+<translation id="1052499923181221200">Chính sách này không có hiệu lực trừ phi chính sách SamlInSessionPasswordChangeEnabled là true.
       Nếu chính sách đó là true và chính sách này được đặt thành 14 chẳng hạn, thì điều đó có nghĩa là người dùng SAML sẽ nhận được thông báo trước 14 ngày rằng mật khẩu của họ sẽ hết hạn vào một ngày nhất định.
       Sau đó, họ có thể giải quyết ngay vấn đề này bằng cách đổi mật khẩu ngay trong phiên đăng nhập và cập nhật mật khẩu trước khi hết hạn.
       Tuy nhiên, các thông báo này sẽ chỉ hiển thị nếu nhà cung cấp danh tính SAML gửi thông tin hết hạn mật khẩu tới thiết bị trong quy trình đăng nhập SAML.
@@ -487,7 +487,7 @@ Nếu bạn đặt chính sách này thành PromptInTab, thì khi phiên xác th
       Để mọi người luôn tìm thấy các máy in đích <ph name="CLOUD_PRINT_NAME" />, bạn phải đặt chính sách này thành Bật và xóa <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> khỏi chính sách <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME" />.</translation>
 <translation id="1390901586107713894">Cho phép bạn chỉ định những tiện ích mà người dùng KHÔNG THỂ cài đặt. Những tiện ích đã cài đặt sẽ tắt nếu bị chặn. Người dùng không có cách nào để bật những tiện ích đó. Sau khi bạn xóa một tiện ích (bị tắt do thuộc danh sách chặn) khỏi danh sách chặn, thì tiện ích này sẽ tự động được bật lại.
 
-          Giá trị danh sách chặn là "*" có nghĩa là tất cả tiện ích đều bị chặn trừ khi những tiện ích đó được liệt kê rõ ràng trong danh sách cho phép.
+          Giá trị danh sách chặn là "*" có nghĩa là tất cả tiện ích đều bị chặn trừ phi những tiện ích đó được liệt kê rõ ràng trong danh sách cho phép.
 
           Nếu bạn không đặt chính sách này, thì người dùng có thể cài đặt bất kỳ tiện ích nào trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1392703142209771447">Biểu thức chính quy để so khớp với mã máy in.</translation>
@@ -1045,7 +1045,7 @@ Chính sách này không có hiệu lực nếu không có tuỳ chọn lưu gi�
 <translation id="1798559516913615713">Thời gian tồn tại của bộ nhớ đệm GPO</translation>
 <translation id="180130467244315277">Chính sách này cho phép quản trị viên thiết lập thứ tự của ngôn ngữ ưu tiên trong phần cài đặt của <ph name="PRODUCT_NAME" />.
 
-      Thứ tự của các ngôn ngữ trong danh sách này sẽ giống với thứ tự trong phần "Sắp xếp ngôn ngữ dựa trên lựa chọn ưu tiên của bạn" trong chrome://settings/languages. Người dùng sẽ không thể xóa hoặc sắp xếp lại thứ tự của những ngôn ngữ đã được đặt theo chính sách này, nhưng có thể thêm ngôn ngữ ở bên dưới những ngôn ngữ đó. Người dùng cũng sẽ có toàn quyền kiểm soát đối với các chế độ cài đặt về kiểm tra lỗi chính tả/bản dịch cũng như ngôn ngữ trên giao diện người dùng của trình duyệt, trừ khi các chế độ đó được thực thi bằng các chính sách khác.
+      Thứ tự của các ngôn ngữ trong danh sách này sẽ giống với thứ tự trong phần "Sắp xếp ngôn ngữ dựa trên lựa chọn ưu tiên của bạn" trong chrome://settings/languages. Người dùng sẽ không thể xóa hoặc sắp xếp lại thứ tự của những ngôn ngữ đã được đặt theo chính sách này, nhưng có thể thêm ngôn ngữ ở bên dưới những ngôn ngữ đó. Người dùng cũng sẽ có toàn quyền kiểm soát đối với các chế độ cài đặt về kiểm tra lỗi chính tả/bản dịch cũng như ngôn ngữ trên giao diện người dùng của trình duyệt, trừ phi các chế độ đó được thực thi bằng các chính sách khác.
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể thao tác trên toàn bộ danh sách gồm các ngôn ngữ ưu tiên.</translation>
 <translation id="1803646570632580723">Danh sách các ứng dụng được ghim sẽ hiển thị trong trình chạy</translation>
@@ -1463,7 +1463,7 @@ cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.</translation>
 <translation id="2096932573113293941">Yêu cầu người dùng cấp quyền để chạy các trình bổ trợ đòi hỏi uỷ quyền</translation>
 <translation id="2098658257603918882">Bật tính năng báo cáo sử dụng và dữ liệu liên quan đến sự cố</translation>
 <translation id="2099380339157427935">Không hiện nút đăng xuất trong khay</translation>
-<translation id="2100630160869631650">Thêm các tài khoản Kerberos đã điền trước. Nếu thông tin xác thực Kerberos khớp với thông tin đăng nhập, thì bạn có thể định cấu hình một tài khoản để sử dụng lại thông tin đăng nhập bằng cách chỉ định "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" và "<ph name="PASSWORD_PLACEHOLDER" />" tương ứng với tài khoản chính và mật khẩu. Nhờ vậy, hệ thống có thể tự động truy xuất các phiếu Kerberos, trừ khi bạn định cấu hình tính năng xác thực hai yếu tố. Người dùng không thể sửa đổi các tài khoản đã thêm thông qua chính sách này.
+<translation id="2100630160869631650">Thêm các tài khoản Kerberos đã điền trước. Nếu thông tin xác thực Kerberos khớp với thông tin đăng nhập, thì bạn có thể định cấu hình một tài khoản để sử dụng lại thông tin đăng nhập bằng cách chỉ định "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" và "<ph name="PASSWORD_PLACEHOLDER" />" tương ứng với tài khoản chính và mật khẩu. Nhờ vậy, hệ thống có thể tự động truy xuất các phiếu Kerberos, trừ phi bạn định cấu hình tính năng xác thực hai yếu tố. Người dùng không thể sửa đổi các tài khoản đã thêm thông qua chính sách này.
 
           Nếu bạn bật chính sách này, thì danh sách các tài khoản do chính sách xác định sẽ được thêm vào phần cài đặt của Tài khoản Kerberos.
 
@@ -2762,7 +2762,7 @@ Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_E
 Nếu bạn đặt chính sách thành Tắt, các phương thức yêu cầu sẽ được viết hoa.
 Đây là hành vi diễn ra trên hoặc trước <ph name="PRODUCT_NAME" /> 108.
 
-Nếu bạn đặt chính sách thành Bật hoặc không đặt chính sách, các phương thức yêu cầu sẽ không được viết hoa, trừ khi được khớp không phân biệt chữ hoa chữ thường với <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> hoặc <ph name="PUT_METHOD_NAME" />.
+Nếu bạn đặt chính sách thành Bật hoặc không đặt chính sách, các phương thức yêu cầu sẽ không được viết hoa, trừ phi được khớp không phân biệt chữ hoa chữ thường với <ph name="DELETE_METHOD_NAME" />, <ph name="GET_METHOD_NAME" />, <ph name="HEAD_METHOD_NAME" />, <ph name="OPTIONS_METHOD_NAME" />, <ph name="POST_METHOD_NAME" /> hoặc <ph name="PUT_METHOD_NAME" />.
 Do đó, tiêu đề phản hồi <ph name="REJECTED_CASE" /> sẽ bị từ chối, còn tiêu đề phản hồi <ph name="ACCEPTED_CASE" /> sẽ được chấp nhận.
 
 Lưu ý: Các phương thức yêu cầu <ph name="POST_LOWERCASE_METHOD_NAME" /> và <ph name="PUT_LOWERCASE_METHOD_NAME" /> không bị ảnh hưởng, còn <ph name="PATCH_LOWERCASE_METHOD_NAME" /> thì bị ảnh hưởng.
@@ -3551,7 +3551,7 @@ Hãy truy cập https://wicg.github.io/private-network-access/ để biết các
       Nếu bạn tắt chính sách này, thì <ph name="PRODUCT_NAME" /> và <ph name="LACROS_NAME" /> sẽ không cho phép thêm người mới trong trình quản lý người dùng.
 
       Lưu ý: Nếu bạn bật hoặc không thiết lập chính này nhưng lại tắt <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" />, thì <ph name="LACROS_NAME" /> sẽ không cho phép thêm người mới trong trình quản lý người dùng.</translation>
-<translation id="3727476641336727380">Trừ khi bạn đặt <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> thành Tắt, việc đặt thành Bật hoặc không đặt <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> sẽ cho phép khóa chế độ thức của màn hình để quản lý nguồn điện. Các tiện ích có thể yêu cầu khóa chế độ thức của màn hình thông qua API tiện ích quản lý nguồn điện và các ứng dụng dùng ARC.
+<translation id="3727476641336727380">Trừ phi bạn đặt <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> thành Tắt, việc đặt thành Bật hoặc không đặt <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> sẽ cho phép khóa chế độ thức của màn hình để quản lý nguồn điện. Các tiện ích có thể yêu cầu khóa chế độ thức của màn hình thông qua API tiện ích quản lý nguồn điện và các ứng dụng dùng ARC.
 
       Việc đặt chính sách này thành Tắt sẽ giảm hạng yêu cầu khóa chế độ thức của màn hình thành yêu cầu khóa chế độ thức của hệ thống.</translation>
 <translation id="3727675072430693164">Nếu bạn đặt chính sách này thành Bật, thiết bị đã đăng ký sẽ báo cáo số liệu thống kê về phần cứng cho các thành phần SoC.
@@ -3889,7 +3889,7 @@ Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm
 <translation id="3996325823532867220">Chính sách này không còn được hỗ trợ. Tuy nhiên, chính sách liên quan <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> có thể được hỗ trợ trên một số nền tảng nhất định.
 
       Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
-      Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ, trừ khi bạn bật <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+      Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ, trừ phi bạn bật <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
       Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.</translation>
 <translation id="3997519162482760140">URL sẽ được cấp quyền truy cập thiết bị quay video trên các trang đăng nhập SAML</translation>
 <translation id="4004523942550416237">Không hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
@@ -3902,7 +3902,7 @@ Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, thì hệ thống sẽ ghim thông báo cảnh báo về quyền riêng tư cho đến khi người dùng đóng thông báo đó.</translation>
 <translation id="4008507541867797979">Nếu đặt chính sách này thành true hoặc không định cấu hình chính sách này, thì <ph name="PRODUCT_OS_NAME" /> sẽ hiển thị người dùng hiện có trên màn hình đăng nhập và cho phép chọn một người dùng.
 
-      Nếu đặt chính sách này thành false, <ph name="PRODUCT_OS_NAME" /> sẽ không hiển thị người dùng hiện có trên màn hình đăng nhập. Thay vào đó, màn hình đăng nhập thông thường (nhắc người dùng nhập email và mật khẩu hoặc số điện thoại) hoặc màn hình SAML xem kẽ (nếu đã bật qua chính sách <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) sẽ hiển thị, trừ khi đã định cấu hình phiên được quản lý. Khi đã định cấu hình phiên được quản lý, thì chỉ có các tài khoản của phiên được quản lý hiển thị, cho phép bạn chọn một trong số các tài khoản đó.
+      Nếu đặt chính sách này thành false, <ph name="PRODUCT_OS_NAME" /> sẽ không hiển thị người dùng hiện có trên màn hình đăng nhập. Thay vào đó, màn hình đăng nhập thông thường (nhắc người dùng nhập email và mật khẩu hoặc số điện thoại) hoặc màn hình SAML xem kẽ (nếu đã bật qua chính sách <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) sẽ hiển thị, trừ phi đã định cấu hình phiên được quản lý. Khi đã định cấu hình phiên được quản lý, thì chỉ có các tài khoản của phiên được quản lý hiển thị, cho phép bạn chọn một trong số các tài khoản đó.
 
       Hãy lưu ý rằng chính sách này không ảnh hưởng đến việc thiết bị có lưu hoặc hủy bỏ dữ liệu trên máy của người dùng hay không.</translation>
 <translation id="4009741515395221389">Cho phép di chuyển các thiết bị được <ph name="MS_AD_NAME" /> quản lý sang chế độ quản lý qua đám mây.</translation>
@@ -5751,7 +5751,7 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
 
       Khi bạn đặt chính sách này thành -2, chính sách này sẽ khớp với giá trị của giới hạn thời gian đăng nhập ngoại tuyến trên màn hình đăng nhập trong chính sách <ph name="POLICY" />.
 
-      Khi bạn không đặt chính sách này hoặc đặt chính sách này thành -1, chính sách này sẽ không thực thi quá trình xác thực trực tuyến trên màn hình khóa, đồng thời người dùng có thể xác thực ngoại tuyến, trừ khi có một lý do khác (không phải là chính sách này) buộc họ phải xác thực trực tuyến.
+      Khi bạn không đặt chính sách này hoặc đặt chính sách này thành -1, chính sách này sẽ không thực thi quá trình xác thực trực tuyến trên màn hình khóa, đồng thời người dùng có thể xác thực ngoại tuyến, trừ phi có một lý do khác (không phải là chính sách này) buộc họ phải xác thực trực tuyến.
 
       Nếu bạn đặt chính sách này thành 0, thì người dùng bắt buộc phải xác thực trực tuyến.
 
@@ -5903,7 +5903,7 @@ Lưu ý: Chính sách này không áp dụng cho Chế độ ẩn danh hoặc Ch
       Nếu chính sách này chưa được đặt hoặc được đặt thành false, chứng chỉ máy chủ thiếu tiện ích subjectAlternativeName chứa tên DNS hoặc địa chỉ IP sẽ không được tin tưởng.</translation>
 <translation id="5576377426850850084">Sử dụng tuỳ chọn xác thực NTLM</translation>
 <translation id="5577475143148445339">Chứa số ngày và tỷ lệ phần trăm của nhóm thiết bị nên được cập nhật sau những ngày đó.</translation>
-<translation id="5579179012798142131">Trừ khi Chế độ tạm thời hoặc đăng nhập nhiều tài khoản đang bật trong phiên của người dùng, thì khi đặt ArcEnabled thành True, ARC cho người dùng mới được bật. Nếu bạn đặt chính sách này thành False hoặc không đặt, thì người dùng doanh nghiệp sẽ không thể sử dụng ARC.</translation>
+<translation id="5579179012798142131">Trừ phi Chế độ tạm thời hoặc đăng nhập nhiều tài khoản đang bật trong phiên của người dùng, thì khi đặt ArcEnabled thành True, ARC cho người dùng mới được bật. Nếu bạn đặt chính sách này thành False hoặc không đặt, thì người dùng doanh nghiệp sẽ không thể sử dụng ARC.</translation>
 <translation id="5582429816116769246">Cho phép bạn kiểm soát xem người dùng có thể truy cập vào các máy in không dành cho doanh nghiệp hay không
 
       Nếu bạn đặt chính sách này thành Bật hoặc không đặt bất kỳ chính sách nào, thì người dùng có thể thêm, định cấu hình và in bằng máy in gốc của riêng họ.
@@ -6069,7 +6069,7 @@ Chính sách này ảnh hưởng đến cả quy trình xác thực khi đăng n
           Chính sách này chỉ được áp dụng khi chính sách <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> bật và không được áp dụng trong những trường hợp khác.</translation>
 <translation id="5695907219125832836">Bật tính năng này nhưng không gửi dữ liệu cho hoạt động đào tạo mô hình AI</translation>
 <translation id="5697306356229823047">Báo cáo người dùng thiết bị</translation>
-<translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống cho tiện ích dành cho doanh nghiệp</translation>
+<translation id="5697387906103995839">Tắt tính năng ghi nhật ký hệ thống của tiện ích dành cho doanh nghiệp</translation>
 <translation id="569777361305162263">Tắt chính sách hiển thị nội dung quảng cáo dưới dạng toàn bộ thẻ</translation>
 <translation id="5698923148503075597">Nếu đặt chính sách này thành Bật, thì chính sách đám mây sẽ được ưu tiên nếu chính sách này xung đột với chính sách nền tảng.
 
@@ -6478,7 +6478,7 @@ Chính sách này không còn được dùng kể từ M124.</translation>
 <translation id="6053260874233331700">Không cho phép truy cập vào thông tin định vị vị trí trên màn hình đăng nhập.</translation>
 <translation id="6053681087509103368">Cho phép WebRTC sử dụng các phiên bản cũ của giao thức TLD/DTLS</translation>
 <translation id="6056517174496942473">Bật quy trình chứng thực <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL</translation>
-<translation id="6058879286588763839">Trừ khi bạn chỉ định <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> để ghi đè <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> sẽ chỉ định chính sách quản lý nguồn điện của chế độ sạc pin (nếu được hỗ trợ trên thiết bị). Để kéo dài thời lượng pin, chính sách này tự động kiểm soát hoạt động sạc pin bằng cách giảm thiểu ứng suất và mức độ hao mòn pin.
+<translation id="6058879286588763839">Trừ phi bạn chỉ định <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> để ghi đè <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, tùy chọn cài đặt <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> sẽ chỉ định chính sách quản lý nguồn điện của chế độ sạc pin (nếu được hỗ trợ trên thiết bị). Để kéo dài thời lượng pin, chính sách này tự động kiểm soát hoạt động sạc pin bằng cách giảm thiểu ứng suất và mức độ hao mòn pin.
 
       Khi bạn không đặt chính sách này (nếu được hỗ trợ trên thiết bị), chế độ sạc pin chuẩn sẽ áp dụng và người dùng sẽ không thể thay đổi chế độ này.
 
@@ -7074,7 +7074,7 @@ Nếu bạn không đặt chính sách này thì người dùng có thể bật 
 <translation id="6453641799812499182">Bật tùy chọn giảm thiểu kiểm tra <ph name="CORS" /> trong quy trình triển khai <ph name="CORS" /> mới</translation>
 <translation id="645425387487868471">Bật bắt buộc đăng nhập cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="6454450724849956537">Bật trình cuộn có thể lấy tiêu điểm bằng bàn phím</translation>
-<translation id="645467061280066516">Nếu bạn đặt chính sách này thành Bật, trang chủ của người dùng sẽ là trang Thẻ mới và mọi vị trí URL trang chủ sẽ bị bỏ qua. Nếu bạn đặt chính sách này thành Tắt, trang chủ của người dùng sẽ không bao giờ là trang Thẻ mới, trừ khi URL trang chủ của họ được đặt thành chrome://newtab.
+<translation id="645467061280066516">Nếu bạn đặt chính sách này thành Bật, trang chủ của người dùng sẽ là trang Thẻ mới và mọi vị trí URL trang chủ sẽ bị bỏ qua. Nếu bạn đặt chính sách này thành Tắt, trang chủ của người dùng sẽ không bao giờ là trang Thẻ mới, trừ phi URL trang chủ của họ được đặt thành chrome://newtab.
 
 Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi loại trang chủ của họ trong <ph name="PRODUCT_NAME" />. Nếu bạn không đặt chính sách này, người dùng sẽ quyết định liệu trang Thẻ mới có phải là trang chủ của họ hay không.
 
@@ -8155,7 +8155,7 @@ Lưu ý quan trọng: Lịch biểu do chính sách này đặt có thể không
 
       Máy chủ Chrome Remote Desktop là dịch vụ gốc chạy trên máy đích mà người dùng có thể kết nối đến bằng ứng dụng Chrome Remote Desktop.  Dịch vụ gốc này được đóng gói và thực thi riêng biệt với trình duyệt <ph name="PRODUCT_NAME" />.
 
-      Các chính sách này bị bỏ qua trừ khi
+      Các chính sách này bị bỏ qua trừ phi
       máy chủ Chrome Remote Desktop được cài đặt.</translation>
 <translation id="7202925763179776247">Cho phép hạn chế tải xuống</translation>
 <translation id="7207095846245296855">Bắt buộc bật Tìm kiếm an toàn của Google</translation>
@@ -9042,7 +9042,7 @@ Nếu bạn đặt chính sách <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> th
 
       Các tùy chọn cài đặt trang chủ của người dùng chỉ bị khóa hoàn toàn nếu bạn chọn trang chủ là trang thẻ mới, hoặc đặt trang chủ là một URL và chỉ định một URL trang chủ. Nếu bạn không chỉ định URL trang chủ, thì người dùng vẫn có thể đặt trang chủ là trang thẻ mới bằng cách chỉ định 'chrome://newtab'.
 
-      Chính sách 'Các URL sẽ mở khi khởi động' sẽ bị bỏ qua trừ khi bạn chọn mục 'Mở danh sách các URL' trong 'Hành động khi khởi động'.</translation>
+      Chính sách 'Các URL sẽ mở khi khởi động' sẽ bị bỏ qua trừ phi bạn chọn mục 'Mở danh sách các URL' trong 'Hành động khi khởi động'.</translation>
 <translation id="7952958573604504839">Chính sách này không còn dùng trong M48 nữa mà thay vào đó là <ph name="NETWORK_PREDICTION_OPTIONS_POLICY_NAME" />, và đã bị xóa trong M54.
 
       Bật tính năng dự đoán mạng trong <ph name="PRODUCT_NAME" /> và ngăn người dùng thay đổi tùy chọn cài đặt này.
@@ -10271,7 +10271,7 @@ Nếu bạn Tắt chính sách, thì hệ thống sẽ chỉ gửi dữ liệu p
 
       Khi bạn đặt chính sách này thành -2, chính sách này sẽ khớp với giá trị của giới hạn thời gian đăng nhập ngoại tuyến trên màn hình đăng nhập trong chính sách <ph name="POLICY" />.
 
-      Khi bạn không đặt chính sách này hoặc đặt chính sách này thành -1, chính sách này sẽ không thực thi quá trình xác thực trực tuyến trên màn hình khóa, đồng thời người dùng có thể xác thực ngoại tuyến, trừ khi có một lý do khác (không phải là chính sách này) buộc họ phải xác thực trực tuyến.
+      Khi bạn không đặt chính sách này hoặc đặt chính sách này thành -1, chính sách này sẽ không thực thi quá trình xác thực trực tuyến trên màn hình khóa, đồng thời người dùng có thể xác thực ngoại tuyến, trừ phi có một lý do khác (không phải là chính sách này) buộc họ phải xác thực trực tuyến.
 
       Nếu bạn đặt chính sách này thành 0, thì người dùng bắt buộc phải xác thực trực tuyến.
 

@@ -172,6 +172,7 @@
 <translation id="3859306556332390985">前进</translation>
 <translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3908288065506437185">在无痕模式下阻止第三方 Cookie</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能无法正常运行。相关网站仍然可以使用第三方 Cookie。</translation>
 <translation id="3933121352599513978">收起不需要的请求（推荐）</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>

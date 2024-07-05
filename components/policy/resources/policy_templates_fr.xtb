@@ -1502,7 +1502,7 @@ Si cette règle n'est pas configurée : pour les utilisateurs standards, c'est 
       Si cette règle est configurée, le navigateur commence à ignorer des onglets pour économiser de la mémoire lorsque la limite est dépassée. Il n'est cependant pas garanti que le navigateur fonctionne toujours en deçà de cette limite. Toute valeur inférieure à 1024 est arrondie à ce nombre.
 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
-<translation id="2161348910646846717">Autoriser les utilisateurs à changer la version disponible</translation>
+<translation id="2161348910646846717">Autoriser les utilisateurs à changer le canal de publication</translation>
 <translation id="2162703823039992020">Intégrations contextuelles des services Google sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2165567959657265531">Permet de rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies définis sur les domaines correspondant à ces formats. Si vous rétablissez l'ancien comportement, les cookies dont la valeur de l'attribut "<ph name="ATTRIBUTE_SAMESITE_NAME" />" n'est pas spécifiée sont traités comme si la valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" était définie. De plus, ceux dont l'attribut a pour valeur "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" n'exigent plus que la valeur de l'attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" soit spécifiée. Enfin, les schémas ne sont pas non plus comparés pour déterminer si deux sites sont identiques ou non. Pour une description complète, accédez à https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -6099,7 +6099,7 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 <translation id="5830196507442186669">Autoriser les appareils à utiliser <ph name="BOREALIS_NAME" /> sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5831286647961890695">Activer le modèle de recharge adaptative sur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Règles obsolètes</translation>
-<translation id="5834583755928064072">Empêcher les utilisateurs de changer la version disponible</translation>
+<translation id="5834583755928064072">Empêcher les utilisateurs de changer le canal de publication</translation>
 <translation id="5835312413892670446">Paramètres de capture d'écran</translation>
 <translation id="5835674781974810379">Effacer les cookies et autres données de sites</translation>
 <translation id="5836064773277134605">Restreindre la plage de ports UDP utilisés par l'hôte d'accès à distance</translation>
@@ -9995,7 +9995,7 @@ Si cette règle est activée ou n'est pas configurée, la recherche d'une protec
 Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les hachages partiels d'URL sont importés directement sur Google avec une fréquence beaucoup plus faible, ce qui réduit la protection.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
-<translation id="8860894781631833477">Les utilisateurs peuvent configurer la version disponible de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8860894781631833477">Les utilisateurs peuvent configurer le canal de publication de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8862086508140571198">Cette règle permet de définir une liste de contenus téléchargeables à télécharger dès que possible. Les contenus téléchargeables téléchargés sont ensuite disponibles pour tous les utilisateurs de l'appareil.
 
 Cette option est utile lorsque l'administrateur sait qu'une fonctionnalité nécessitant la présence du contenu téléchargeable sera probablement utilisée par les utilisateurs de l'appareil.</translation>

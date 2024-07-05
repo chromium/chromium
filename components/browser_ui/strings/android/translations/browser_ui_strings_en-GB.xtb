@@ -172,6 +172,7 @@
 <translation id="3859306556332390985">Seek forward</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3908288065506437185">Block third-party cookies in Incognito mode</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Some features may not work. Related sites can still use third-party cookies.</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3955193568934677022">Allow sites to play protected content (recommended)</translation>

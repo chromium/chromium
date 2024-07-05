@@ -172,6 +172,7 @@
 <translation id="3859306556332390985">快轉到特定的播放時間點</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能無法運作，相關網站仍可使用第三方 Cookie。</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
