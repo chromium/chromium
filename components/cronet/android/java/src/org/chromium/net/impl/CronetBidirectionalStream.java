@@ -19,6 +19,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.CallbackException;
+import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.NetworkException;
@@ -703,6 +704,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int errorCode,
             int nativeError,
             int nativeQuicError,
+            @ConnectionCloseSource int source,
             String errorString,
             long receivedByteCount) {
         if (mResponseInfo != null) {
@@ -715,7 +717,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                             "Exception in BidirectionalStream: " + errorString,
                             errorCode,
                             nativeError,
-                            nativeQuicError));
+                            nativeQuicError,
+                            source));
         } else {
             failWithException(
                     new BidirectionalStreamNetworkException(

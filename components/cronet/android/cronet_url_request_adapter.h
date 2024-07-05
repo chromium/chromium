@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/cronet/cronet_url_request.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -126,6 +127,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   void OnSucceeded(int64_t received_byte_count) override;
   void OnError(int net_error,
                int quic_error,
+               quic::ConnectionCloseSource source,
                const std::string& error_string,
                int64_t received_byte_count) override;
   void OnCanceled() override;

@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
+#include "components/cronet/android/url_request_close_source.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
 #include "net/base/idempotency.h"
@@ -259,11 +260,13 @@ void CronetURLRequestAdapter::OnSucceeded(int64_t received_byte_count) {
 
 void CronetURLRequestAdapter::OnError(int net_error,
                                       int quic_error,
+                                      quic::ConnectionCloseSource source,
                                       const std::string& error_string,
                                       int64_t received_byte_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetUrlRequest_onError(
       env, owner_, NetErrorToUrlRequestError(net_error), net_error, quic_error,
+      (int)NetSourceToJavaSource(source),
       ConvertUTF8ToJavaString(env, error_string), received_byte_count);
 }
 

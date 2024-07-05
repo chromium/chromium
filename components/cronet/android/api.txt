@@ -368,6 +368,7 @@ public abstract class org.chromium.net.NetworkQualityThroughputListener {
 public abstract class org.chromium.net.QuicException extends org.chromium.net.NetworkException {
   protected org.chromium.net.QuicException(java.lang.String, java.lang.Throwable);
   public abstract int getQuicDetailedErrorCode();
+  public int getConnectionCloseSource();
 }
 public class org.chromium.net.QuicOptions$Builder {
   public org.chromium.net.QuicOptions$Builder addAllowedQuicHost(java.lang.String);
@@ -635,4 +636,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 31ef5e660d31d43015f23b6d5d5d2ce0
+Stamp: 373f90cf8fd10bf187e827fa2a4701af

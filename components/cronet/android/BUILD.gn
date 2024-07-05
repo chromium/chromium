@@ -76,6 +76,10 @@ java_cpp_enum("url_request_error_java") {
   sources = [ "url_request_error.h" ]
 }
 
+java_cpp_enum("url_request_close_source_java") {
+  sources = [ "url_request_close_source.h" ]
+}
+
 java_cpp_enum("http_cache_type_java") {
   sources = [ "//components/cronet/url_request_context_config.h" ]
 }
@@ -200,6 +204,8 @@ source_set("cronet_static") {
     "//components/cronet/android/cronet_url_request_adapter.h",
     "//components/cronet/android/io_buffer_with_byte_buffer.cc",
     "//components/cronet/android/io_buffer_with_byte_buffer.h",
+    "//components/cronet/android/url_request_close_source.cc",
+    "//components/cronet/android/url_request_close_source.h",
     "//components/cronet/android/url_request_error.cc",
     "//components/cronet/android/url_request_error.h",
   ]
@@ -261,6 +267,7 @@ cronet_shared_java_deps_to_package = [ ":cronet_stats_log_java" ]
 # cross the boundary. These classes should be shipped in `cronet_api_java`
 # instead.
 android_library("cronet_shared_java") {
+  srcjar_deps = [ ":url_request_close_source_java" ]
   sources = [
     "java/src/org/chromium/net/impl/CronetLogger.java",
     "java/src/org/chromium/net/impl/CronetLoggerFactory.java",

@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
+#include "components/cronet/android/url_request_close_source.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
 #include "net/base/http_user_agent_settings.h"
@@ -346,6 +347,7 @@ void CronetBidirectionalStreamAdapter::OnFailed(int error) {
   cronet::Java_CronetBidirectionalStream_onError(
       env, owner_, NetErrorToUrlRequestError(error), error,
       net_error_details.quic_connection_error,
+      (int)NetSourceToJavaSource(net_error_details.source),
       ConvertUTF8ToJavaString(env, net::ErrorToString(error)),
       bidi_stream_->GetTotalReceivedBytes());
 }

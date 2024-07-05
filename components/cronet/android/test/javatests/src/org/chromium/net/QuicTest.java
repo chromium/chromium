@@ -74,6 +74,9 @@ public class QuicTest {
                                             .put("connection_options", "PACE,IW10,FOO,DEADBEEF")
                                             .put("max_server_configs_stored_in_properties", 2)
                                             .put("idle_connection_timeout_seconds", 300)
+                                            // Disable Retry on TCP when QUIC fails before headers
+                                            // are received
+                                            .put("retry_without_alt_svc_on_quic_errors", false)
                                             .put("migrate_sessions_on_network_change_v2", false)
                                             .put("migrate_sessions_early_v2", false)
                                             .put("race_cert_verification", true);
@@ -295,6 +298,29 @@ public class QuicTest {
         MetricsTestUtil.checkNoConnectTiming(implementationUnderTest, requestInfo.getMetrics());
 
         cronetEngine.shutdown();
+    }
+
+    @Test
+    @SmallTest
+    public void testQuicCloseConnectionFromServer() throws Exception {
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
+        String quicURL = QuicTestServer.getServerURL() + QuicTestServer.getConnectionClosePath();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+
+        UrlRequest.Builder requestBuilder =
+                cronetEngine.newUrlRequestBuilder(quicURL, callback, callback.getExecutor());
+        requestBuilder.build().start();
+        callback.blockForDone();
+
+        assertThat(callback.getResponseInfo()).isNull();
+        assertThat(callback.mError).isInstanceOf(QuicException.class);
+        QuicException quicException = (QuicException) callback.mError;
+        // 0 is QUIC_NO_ERROR, This is expected because of the test-server behavior, see
+        // https://source.chromium.org/chromium/_/quiche/quiche/+/86e3e869377b05a7143dfa07a4d1219881396661:quiche/quic/tools/quic_simple_server_stream.cc;l=286;
+        assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(0);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.PEER);
+        assertThat(quicException.getErrorCode())
+                .isEqualTo(NetworkException.ERROR_QUIC_PROTOCOL_FAILED);
     }
 
     // Helper method to assert that the request is negotiated over QUIC.

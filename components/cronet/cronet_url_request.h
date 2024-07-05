@@ -98,8 +98,11 @@ class CronetURLRequest {
     // Invoked if request failed for any reason after CronetURLRequest::Start().
     // |net_error| provides information about the failure. |quic_error| is only
     // valid if |net_error| is net::QUIC_PROTOCOL_ERROR.
+    // |source| represents who asked to terminate the connection, it is only
+    // valid if the |net_error| is net::QUIC_PROTOCOL_ERROR.
     virtual void OnError(int net_error,
                          int quic_error,
+                         quic::ConnectionCloseSource source,
                          const std::string& error_string,
                          int64_t received_byte_count) = 0;
 

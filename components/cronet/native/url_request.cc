@@ -277,6 +277,7 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
   void OnSucceeded(int64_t received_byte_count) override;
   void OnError(int net_error,
                int quic_error,
+               quic::ConnectionCloseSource source,
                const std::string& error_string,
                int64_t received_byte_count) override;
   void OnCanceled() override;
@@ -768,6 +769,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnSucceeded(
 void Cronet_UrlRequestImpl::NetworkTasks::OnError(
     int net_error,
     int quic_error,
+    quic::ConnectionCloseSource source,
     const std::string& error_string,
     int64_t received_byte_count) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);

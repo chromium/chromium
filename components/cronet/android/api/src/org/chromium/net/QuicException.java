@@ -30,4 +30,9 @@ public abstract class QuicException extends NetworkException {
      * QuicErrorCode</a>.
      */
     public abstract int getQuicDetailedErrorCode();
+
+    /** Returns the side responsible for terminating the QUIC connection. */
+    public @ConnectionCloseSource int getConnectionCloseSource() {
+        return ConnectionCloseSource.UNKNOWN;
+    }
 }

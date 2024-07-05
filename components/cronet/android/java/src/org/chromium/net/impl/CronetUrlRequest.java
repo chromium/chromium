@@ -18,6 +18,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.net.CallbackException;
+import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.Idempotency;
@@ -729,10 +730,10 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     /**
      * Called when error has occurred, no callbacks will be called afterwards.
      *
-     * @param errorCode Error code represented by {@code UrlRequestError} that should be mapped
-     *                  to one of {@link NetworkException#ERROR_HOSTNAME_NOT_RESOLVED
-     *                  NetworkException.ERROR_*}.
+     * @param errorCode Error code represented by {@code UrlRequestError} that should be mapped to
+     *     one of {@link NetworkException#ERROR_HOSTNAME_NOT_RESOLVED NetworkException.ERROR_*}.
      * @param nativeError native net error code.
+     * @param source Represented by {@code ErrorSource} which is the initiator of the error.
      * @param errorString textual representation of the error code.
      * @param receivedByteCount number of bytes received.
      */
@@ -742,6 +743,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             int errorCode,
             int nativeError,
             int nativeQuicError,
+            @ConnectionCloseSource int source,
             String errorString,
             long receivedByteCount) {
         if (mResponseInfo != null) {
@@ -754,7 +756,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                             "Exception in CronetUrlRequest: " + errorString,
                             errorCode,
                             nativeError,
-                            nativeQuicError));
+                            nativeQuicError,
+                            source));
         } else {
             int javaError = mapUrlRequestErrorToApiErrorCode(errorCode);
             failWithException(

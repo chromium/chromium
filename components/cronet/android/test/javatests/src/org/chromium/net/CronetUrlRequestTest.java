@@ -2705,6 +2705,7 @@ public class CronetUrlRequestTest {
         QuicException quicException = (QuicException) callback.mError;
         // 1 is QUIC_INTERNAL_ERROR
         assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(1);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.SELF);
         assertThat(quicException.getErrorCode())
                 .isEqualTo(NetworkException.ERROR_QUIC_PROTOCOL_FAILED);
     }
@@ -2728,6 +2729,7 @@ public class CronetUrlRequestTest {
         // URLRequestFailedJob::PopulateNetErrorDetails for this test.
         final int quicErrorCode = 83;
         assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(quicErrorCode);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.SELF);
         assertThat(quicException.getErrorCode()).isEqualTo(NetworkException.ERROR_NETWORK_CHANGED);
     }
 
