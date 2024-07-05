@@ -73,6 +73,12 @@ void LogAuthSource(device_reauth::DeviceAuthSource source) {
 
 void LogCanAuthenticate(BiometricsAvailability availability) {
   base::UmaHistogramEnumeration(
+      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
+      availability);
+  // TODO (crbug.com/350658581): Remove this histogram in favor of the above
+  // because its name is misleading. Keeping now to track
+  // `DeviceAuthenticatorAndroidx` experiment.
+  base::UmaHistogramEnumeration(
       "PasswordManager.BiometricAuthPwdFill.CanAuthenticate", availability);
 }
 

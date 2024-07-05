@@ -659,6 +659,17 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
 </enum>
 
+<enum name="BiometricsAvailability">
+  <int value="0" label="Other error"/>
+  <int value="1" label="Available"/>
+  <int value="2" label="Available, but no fallback"/>
+  <int value="3" label="No hardware"/>
+  <int value="4" label="Hardware unavailable"/>
+  <int value="5" label="Not enrolled"/>
+  <int value="6" label="Security update required"/>
+  <int value="7" label="Android version not supported"/>
+</enum>
+
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>

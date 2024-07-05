@@ -1035,7 +1035,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DeviceAuthenticator.AuthSource"
-    enum="DeviceAuthSource" expires_after="2024-12-08">
+    enum="DeviceAuthSource" expires_after="2025-01-01">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <owner>theocristea@google.com</owner>
@@ -1044,6 +1044,19 @@ chromium-metrics-reviews@google.com.
     Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
     user. It records where the request comes from (Password Manager, Autofill,
     Incognito or Device Lock Page).
+  </summary>
+</histogram>
+
+<histogram name="Android.DeviceAuthenticator.CanAuthenticateWithBiometrics"
+    enum="BiometricsAvailability" expires_after="2025-01-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    Recorded when a UI surface/flow in Chrome on Android checks whether
+    biometric authentication is available on the device. It may be called from
+    various places which need to perform biometric re-auth (Password Manager,
+    Autofill, Incognito or Device Lock Page).
   </summary>
 </histogram>
 
