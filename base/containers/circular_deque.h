@@ -21,7 +21,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
-#include "base/template_util.h"
 
 #if DCHECK_IS_ON()
 #include <ostream>
@@ -494,8 +493,8 @@ class circular_deque {
 
   // This variant should be enabled only when InputIterator is an iterator.
   template <typename InputIterator>
-  std::enable_if_t<::base::internal::is_iterator<InputIterator>::value, void>
-  assign(InputIterator first, InputIterator last) {
+    requires(std::input_iterator<InputIterator>)
+  void assign(InputIterator first, InputIterator last) {
     // Possible future enhancement, dispatch on iterator tag type. For forward
     // iterators we can use std::difference to preallocate the space required
     // and only do one copy.
@@ -709,8 +708,8 @@ class circular_deque {
   // This enable_if keeps this call from getting confused with the (pos, count,
   // value) version when value is an integer.
   template <class InputIterator>
-  std::enable_if_t<::base::internal::is_iterator<InputIterator>::value, void>
-  insert(const_iterator pos, InputIterator first, InputIterator last) {
+    requires(std::input_iterator<InputIterator>)
+  void insert(const_iterator pos, InputIterator first, InputIterator last) {
     ValidateIterator(pos);
 
     const difference_type inserted_items_signed = std::distance(first, last);
