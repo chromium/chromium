@@ -902,7 +902,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_app_launch_20240705",
+                    "params": {
+                        "activate_on_app_launch": "true"
+                    },
                     "enable_features": [
                         "ArcOnDemandV2"
                     ]
