@@ -320,7 +320,7 @@ source_set("dns_client") {
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Result parsing for results read through MdnsClient.
     # TODO(crbug.com/41424787): Remove once migrated to network service.
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/smb_client/discovery",
 
     # Tests and test support
     "//chrome/browser:test_support",
@@ -381,7 +381,7 @@ source_set("mdns_client") {
     # chrome/browser/ash/smb_client/discovery/mdns_host_locator.cc
     # Makes MDNS queries using MDnsClient.
     # TODO(crbug.com/41424787): Remove once migrated to network service.
-    "//chrome/browser/ash",
+    "//chrome/browser/ash/smb_client/discovery",
 
     # Tests and test support
     "//chrome/browser:test_support",
