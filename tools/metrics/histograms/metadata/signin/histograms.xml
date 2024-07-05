@@ -1893,6 +1893,18 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SignoutAndClearDataFromManagedAccount"
+    enum="BooleanSignoutFromManagedAccount" expires_after="2024-11-30">
+  <owner>esalma@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Logs whether a managed user using an unmanaged browser chooses to proceed
+    with signout or not, after a warning dialog about data clearing is shown.
+
+    Note: iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SignoutProfile" enum="SigninSignoutProfile"
     expires_after="never">
 <!-- expires-never: This reports how a profile gets signed out and needs to be

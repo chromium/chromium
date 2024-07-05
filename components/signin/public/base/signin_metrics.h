@@ -543,6 +543,16 @@ enum class SyncButtonClicked : int {
   kMaxValue = kSyncSettingsUnknownWeighted,
 };
 
+#if BUILDFLAG(IS_IOS)
+// The reason an alert dialog is shown when the user is about to sign out.
+enum class SignoutDataLossAlertReason : int {
+  // The user has unsynced data that will be lost on signout.
+  kSignoutWithUnsyncedData = 0,
+  // A managed user is signing out and the data will be cleared from the device.
+  kSignoutWithClearDataForManagedUser = 1,
+};
+#endif  // BUILDFLAG(IS_IOS)
+
 // -----------------------------------------------------------------------------
 // Histograms
 // -----------------------------------------------------------------------------
@@ -633,6 +643,16 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
+
+#if BUILDFLAG(IS_IOS)
+// Records whether the user choose to "Sign Out" or "Cancel" when an alert for
+// data loss is displayed.
+void RecordSignoutConfirmationFromDataLossAlert(
+    SignoutDataLossAlertReason reason,
+    bool signout_confirmed);
+// Records whether the user chooses to "Clear Data" or "Keep Data" on signout.
+void RecordSignoutForceClearDataChoice(bool force_clear_data);
+#endif  // BUILDFLAG(IS_IOS)
 
 // -----------------------------------------------------------------------------
 // User actions

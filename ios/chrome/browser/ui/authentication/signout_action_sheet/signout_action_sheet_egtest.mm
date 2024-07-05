@@ -5,6 +5,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -146,6 +147,9 @@ void ClickSignOutInAccountSettings() {
 // signout. A dialog should be displayed, and clicking on the `Sign Out` button
 // should sign the user out.
 - (void)testSignoutConfirmationForManagedIdentity {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
   // Sign in with managed account.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
@@ -162,12 +166,30 @@ void ClickSignOutInAccountSettings() {
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];
+
+  // Verify histogram metric for confirming signout is recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:1
+          forHistogram:@"Signin.SignoutAndClearDataFromManagedAccount"],
+      @"Signin.SignoutAndClearDataFromManagedAccount metric was not recorded "
+      @"when managed clicked cancel in the data clearing dialog shown on "
+      @"signout.");
+
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Tests the signout flow for managed users that require clearing data on
 // signout. A dialog should be displayed, and clicking on the `Cancel` button
 // should keep the user signed in.
 - (void)testCancelSignoutForManagedIdentity {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+
   // Sign in with managed account.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
@@ -180,6 +202,20 @@ void ClickSignOutInAccountSettings() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+
+  // Verify histogram metric for cancelling signout is recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+           expectCount:1
+             forBucket:0
+          forHistogram:@"Signin.SignoutAndClearDataFromManagedAccount"],
+      @"Signin.SignoutAndClearDataFromManagedAccount metric was not recorded "
+      @"when managed clicked cancel in the data clearing dialog shown on "
+      @"signout.");
+
+  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Tests the signout flow for managed users in a managed browser does not show

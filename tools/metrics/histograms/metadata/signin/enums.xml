@@ -169,6 +169,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is Shared"/>
 </enum>
 
+<enum name="BooleanSignoutFromManagedAccount">
+  <int value="0" label="Cancel sign-out"/>
+  <int value="1" label="Continue with sign-out"/>
+</enum>
+
 <enum name="BooleanWasDeferred">
   <int value="0" label="Was not deferred"/>
   <int value="1" label="Was deferred"/>

@@ -272,6 +272,28 @@ void RecordRefreshTokenRevokedFromSource(
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
 }
 
+#if BUILDFLAG(IS_IOS)
+void RecordSignoutConfirmationFromDataLossAlert(
+    SignoutDataLossAlertReason reason,
+    bool signout_confirmed) {
+  const char* histogram;
+  switch (reason) {
+    case SignoutDataLossAlertReason::kSignoutWithUnsyncedData:
+      histogram = "Sync.SignoutWithUnsyncedData";
+      break;
+    case SignoutDataLossAlertReason::kSignoutWithClearDataForManagedUser:
+      histogram = "Signin.SignoutAndClearDataFromManagedAccount";
+      break;
+  }
+  base::UmaHistogramBoolean(histogram, signout_confirmed);
+}
+
+void RecordSignoutForceClearDataChoice(bool force_clear_data) {
+  base::UmaHistogramBoolean("Signin.UserRequestedWipeDataOnSignout",
+                            force_clear_data);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 // --------------------------------------------------------------
 // User actions
 // --------------------------------------------------------------

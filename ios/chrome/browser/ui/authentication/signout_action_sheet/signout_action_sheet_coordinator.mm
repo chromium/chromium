@@ -33,6 +33,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using signin_metrics::SignoutDataLossAlertReason;
+
 // Enum to describe all 5 cases for a user being signed-in. This enum is used
 // internaly by SignoutActionSheetCoordinator().
 typedef NS_ENUM(NSUInteger, SignedInUserState) {
@@ -356,17 +358,18 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
-                      base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
-                                                true);
-                      [weakSelf signoutWithForceClearData:NO];
+                      [weakSelf signoutWithForceClearData:NO
+                                          recordHistogram:
+                                              SignoutDataLossAlertReason::
+                                                  kSignoutWithUnsyncedData];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
           addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                     action:^{
-                      base::UmaHistogramBoolean("Sync.SignoutWithUnsyncedData",
-                                                false);
-                      [weakSelf cancelSignout];
+                      [weakSelf cancelSignoutAndRecordHistogram:
+                                    SignoutDataLossAlertReason::
+                                        kSignoutWithUnsyncedData];
                     }
                      style:UIAlertActionStyleCancel];
       [self.actionSheetCoordinator start];
@@ -393,10 +396,23 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                       // `clearData` should not be set
                       // based on the useer choice, but based on the account
                       // state in `AuthenticationService`.
-                      [weakSelf signoutWithForceClearData:NO];
+                      [weakSelf
+                          signoutWithForceClearData:NO
+                                    recordHistogram:
+                                        SignoutDataLossAlertReason::
+                                            kSignoutWithClearDataForManagedUser];
                     }
                      style:UIAlertActionStyleDestructive];
-      break;
+      [self.actionSheetCoordinator
+          addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                    action:^{
+                      [weakSelf cancelSignoutAndRecordHistogram:
+                                    SignoutDataLossAlertReason::
+                                        kSignoutWithClearDataForManagedUser];
+                    }
+                     style:UIAlertActionStyleCancel];
+      [self.actionSheetCoordinator start];
+      return;
     }
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing: {
@@ -465,9 +481,20 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   [self.actionSheetCoordinator start];
 }
 
+- (void)cancelSignoutAndRecordHistogram:(SignoutDataLossAlertReason)reason {
+  signin_metrics::RecordSignoutConfirmationFromDataLossAlert(reason, false);
+  [self cancelSignout];
+}
+
 - (void)cancelSignout {
   [self callCompletionBlock:NO];
   [self dismissActionSheetCoordinator];
+}
+
+- (void)signoutWithForceClearData:(BOOL)clearData
+                  recordHistogram:(SignoutDataLossAlertReason)reason {
+  signin_metrics::RecordSignoutConfirmationFromDataLossAlert(reason, true);
+  [self signoutWithForceClearData:clearData];
 }
 
 - (void)signoutWithForceClearData:(BOOL)clearData {
@@ -510,8 +537,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // for users with non-managed accounts.
   if (!self.authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin)) {
-    UMA_HISTOGRAM_BOOLEAN("Signin.UserRequestedWipeDataOnSignout",
-                          forceClearData);
+    signin_metrics::RecordSignoutForceClearDataChoice(forceClearData);
   }
   signin_metrics::RecordSignoutUserAction(forceClearData);
 }
