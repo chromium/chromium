@@ -144,6 +144,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",
     "//chrome/browser/web_applications",

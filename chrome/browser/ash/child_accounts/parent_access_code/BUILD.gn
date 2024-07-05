@@ -73,6 +73,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support_ui",
     "//components/account_id",

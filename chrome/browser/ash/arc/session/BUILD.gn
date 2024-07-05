@@ -81,6 +81,7 @@ static_library("session") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:channel_info",

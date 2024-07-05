@@ -36,6 +36,7 @@ static_library("web_app") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/image_decoder",
     "//chromeos/ash/components/settings",
     "//components/prefs",

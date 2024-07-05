@@ -46,6 +46,7 @@ static_library("cert_provisioning") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/core",
     "//chrome/common:constants",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/attestation",
@@ -58,6 +59,8 @@ static_library("cert_provisioning") {
     "//components/user_manager:user_manager",
     "//content/public/browser",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
 }
 
 source_set("unit_tests") {

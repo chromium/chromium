@@ -41,6 +41,7 @@ static_library("attestation") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash:attestation_proto",
     "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/attestation",
@@ -61,6 +62,8 @@ static_library("attestation") {
     "//content/public/browser",
     "//third_party/securemessage/proto",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
 }
 
 static_library("test_support") {

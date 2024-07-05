@@ -47,6 +47,7 @@ static_library("notifications") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
@@ -73,6 +74,8 @@ static_library("notifications") {
     "//ui/message_center",
     "//ui/views",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
 }
 
 source_set("unit_tests") {

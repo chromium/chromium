@@ -49,6 +49,8 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/extensions:test_support",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
     "//chrome/test:test_support",
     "//components/consent_auditor:test_support",
     "//components/metrics:test_support",

@@ -29,6 +29,7 @@ static_library("notification") {
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/components/mgs",

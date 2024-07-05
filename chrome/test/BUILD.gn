@@ -911,6 +911,8 @@ static_library("test_support") {
       "//chrome/browser/ash/guest_os/public",
       "//chrome/browser/ash/input_method",
       "//chrome/browser/ash/net",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/ash/printing/history:print_job_info_proto",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ui/ash/system_web_apps",
@@ -2235,6 +2237,8 @@ if (!is_android) {
         "//chrome/browser/ash/input_method/ui",
         "//chrome/browser/ash/plugin_vm",
         "//chrome/browser/ash/plugin_vm:test_support",
+        "//chrome/browser/ash/policy/core",
+        "//chrome/browser/ash/policy/core:test_support",
         "//remoting/host/chromeos:features",
 
         # TODO(b/335293584) : Remove after c/b/a/login/ has been migrated.
@@ -8887,6 +8891,8 @@ test("unit_tests") {
       "//chrome/browser/ash/magic_boost:test_support",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/ownership",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/policy/core:test_support",
       "//chrome/browser/ash/release_notes",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
       "//chrome/browser/ash/system_web_apps/apps/media_app",

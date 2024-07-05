@@ -24,6 +24,7 @@ static_library("ownership") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/session_manager",
@@ -43,6 +44,8 @@ static_library("ownership") {
     "//crypto",
     "//net",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
 }
 
 source_set("unit_tests") {
@@ -60,6 +63,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",

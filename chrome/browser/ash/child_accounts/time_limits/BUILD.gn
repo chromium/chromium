@@ -120,6 +120,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",

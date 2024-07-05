@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/network:test_support",
