@@ -18,6 +18,8 @@ per-file autotest.py=agrieve@chromium.org
 per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
+per-file bisect*.py=wnwen@chromium.org
+
 per-file check_git_config.py=iannucci@chromium.org
 
 per-file check_grd_for_unused_strings.py=estade@chromium.org
