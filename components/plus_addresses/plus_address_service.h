@@ -244,11 +244,6 @@ class PlusAddressService : public KeyedService,
   // supported.
   base::flat_set<std::string> excluded_sites_;
 
-  // Stores last auth error (potentially NONE) to toggle IsEnabled() on/off.
-  // Defaults to NONE to enable this service while refresh tokens (and potential
-  // auth errors) are loading.
-  GoogleServiceAuthError primary_account_auth_error_;
-
   // Counts the number of HTTP_FORBIDDEN that the client has received.
   int http_forbidden_responses_ = 0;
 

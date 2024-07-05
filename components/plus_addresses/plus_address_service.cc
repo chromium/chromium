@@ -390,13 +390,17 @@ bool PlusAddressService::IsEnabled() const {
       account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(features::kPlusAddressesEnabled) &&
-         (features::kEnterprisePlusAddressServerUrl.Get() != "") &&
-         // Note that having a primary account implies that account's email will
-         // be populated.
-         identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-         primary_account_auth_error_.state() ==
-             GoogleServiceAuthError::State::NONE;
+  if (!base::FeatureList::IsEnabled(features::kPlusAddressesEnabled) ||
+      features::kEnterprisePlusAddressServerUrl.Get().empty()) {
+    return false;
+  }
+
+  const auto primary_account_id =
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return !primary_account_id.empty() &&
+         identity_manager_
+                 ->GetErrorStateOfRefreshTokenForAccount(primary_account_id)
+                 .state() == GoogleServiceAuthError::State::NONE;
 }
 
 void PlusAddressService::CreateAndStartTimer() {
@@ -543,7 +547,6 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
       primary_account.account_id != account_info.account_id) {
     return;
   }
-  primary_account_auth_error_ = error;
   if (error.state() != GoogleServiceAuthError::NONE) {
     HandleSignout();
   } else {
