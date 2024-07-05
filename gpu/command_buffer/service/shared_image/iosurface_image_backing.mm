@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -26,7 +27,6 @@
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
@@ -1095,8 +1095,8 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
     DCHECK_LE(copy_bytes, io_surface_row_bytes);
     DCHECK_LE(copy_bytes, dst_bytes_per_row);
 
-    libyuv::CopyPlane(src_ptr, io_surface_row_bytes, dst_ptr, dst_bytes_per_row,
-                      copy_bytes, plane_size.height());
+    CopyImagePlane(src_ptr, io_surface_row_bytes, dst_ptr, dst_bytes_per_row,
+                   copy_bytes, plane_size.height());
   }
 
   return true;
@@ -1146,8 +1146,8 @@ bool IOSurfaceImageBacking::UploadFromMemory(
 
     uint8_t* dst_ptr = static_cast<uint8_t*>(io_surface_base_address);
 
-    libyuv::CopyPlane(src_ptr, src_bytes_per_row, dst_ptr, io_surface_row_bytes,
-                      copy_bytes, plane_size.height());
+    CopyImagePlane(src_ptr, src_bytes_per_row, dst_ptr, io_surface_row_bytes,
+                   copy_bytes, plane_size.height());
   }
 
   return true;

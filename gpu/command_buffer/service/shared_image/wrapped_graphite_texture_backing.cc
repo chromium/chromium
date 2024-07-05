@@ -9,10 +9,10 @@
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -315,7 +315,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
   for (int i = 0; i < format().NumberOfPlanes(); i++) {
     CHECK(contexts[i].finished);
     const gfx::Size plane_size = format().GetPlaneSize(i, size());
-    libyuv::CopyPlane(
+    CopyImagePlane(
         static_cast<const uint8_t*>(contexts[i].async_result->data(0)),
         contexts[i].async_result->rowBytes(0),
         static_cast<uint8_t*>(pixmaps[i].writable_addr()),

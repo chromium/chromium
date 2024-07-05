@@ -11,8 +11,8 @@
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
-#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
@@ -314,7 +314,7 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
     InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
     ASSERT_TRUE(context.finished) << "plane_index=" << plane;
     if (context.async_result) {
-      libyuv::CopyPlane(
+      CopyImagePlane(
           static_cast<const uint8_t*>(context.async_result->data(0)),
           context.async_result->rowBytes(0),
           static_cast<uint8_t*>(dst_bitmap.getPixels()), dst_bitmap.rowBytes(),

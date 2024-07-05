@@ -242,6 +242,8 @@ target(link_target_type, "gles2_sources") {
     "shared_context_state.h",
     "shared_image/compound_image_backing.cc",
     "shared_image/compound_image_backing.h",
+    "shared_image/copy_image_plane.cc",
+    "shared_image/copy_image_plane.h",
     "shared_image/egl_image_backing.cc",
     "shared_image/egl_image_backing.h",
     "shared_image/egl_image_backing_factory.cc",

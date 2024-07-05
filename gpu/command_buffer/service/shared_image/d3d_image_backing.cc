@@ -21,13 +21,13 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
@@ -70,18 +70,6 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
     default:
       NOTREACHED_NORETURN() << "Unsupported DXGI format: " << dxgi_format;
   }
-}
-
-// `row_bytes` is the number of bytes that need to be copied in each row, which
-// can be smaller than `source_stride` or `dest_stride`.
-void CopyPlane(const uint8_t* source_memory,
-               size_t source_stride,
-               uint8_t* dest_memory,
-               size_t dest_stride,
-               size_t row_bytes,
-               const gfx::Size& size) {
-  libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-                    row_bytes, size.height());
 }
 
 bool BindEGLImageToTexture(GLenum texture_target, void* egl_image) {
@@ -410,8 +398,8 @@ bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
     const size_t dest_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
-    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-              pixmap.info().minRowBytes(), plane_size);
+    CopyImagePlane(source_memory, source_stride, dest_memory, dest_stride,
+                   pixmap.info().minRowBytes(), plane_size.height());
 
     dest_offset += mapped_resource.RowPitch * plane_size.height();
   }
@@ -464,8 +452,8 @@ bool D3DImageBacking::ReadbackFromStagingTexture(
     const size_t source_stride = mapped_resource.RowPitch;
 
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
-    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-              pixmap.info().minRowBytes(), plane_size);
+    CopyImagePlane(source_memory, source_stride, dest_memory, dest_stride,
+                   pixmap.info().minRowBytes(), plane_size.height());
 
     source_offset += mapped_resource.RowPitch * plane_size.height();
   }
