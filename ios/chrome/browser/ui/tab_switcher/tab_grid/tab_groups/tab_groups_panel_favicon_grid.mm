@@ -128,7 +128,7 @@ using LayoutSides::kTrailing;
 // Makes a new rounded rectangle image view to display as part of the 2×2 grid.
 - (UIImageView*)makeFaviconImageView {
   UIImageView* imageView = [[UIImageView alloc] init];
-  imageView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  imageView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   imageView.layer.cornerRadius = kFaviconCornerRadius;
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;

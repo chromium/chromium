@@ -22,7 +22,7 @@ const CGFloat kDotSize = 14;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
 
     _faviconsGrid = [[TabGroupsPanelFaviconGrid alloc] init];

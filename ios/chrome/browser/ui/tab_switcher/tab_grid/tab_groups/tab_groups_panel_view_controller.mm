@@ -25,7 +25,7 @@ namespace {
 // Layout.
 const CGFloat kInterItemSpacing = 24;
 const CGFloat kInterGroupSpacing = 16;
-const CGFloat kEstimatedItemHeight = 106;
+const CGFloat kEstimatedItemHeight = 80;
 // The minimum width to display two columns. Under that value, display only one
 // column.
 const CGFloat kColumnCountWidthThreshold = 1000;
