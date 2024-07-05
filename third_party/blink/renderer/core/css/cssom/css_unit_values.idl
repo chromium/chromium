@@ -21,8 +21,8 @@
   [NewObject] CSSUnitValue ric(double value);
   [NewObject] CSSUnitValue lh(double value);
   [NewObject] CSSUnitValue rlh(double value);
-  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue cap(double value);
-  [NewObject, RuntimeEnabled=CSSCapFontUnits] CSSUnitValue rcap(double value);
+  [NewObject] CSSUnitValue cap(double value);
+  [NewObject] CSSUnitValue rcap(double value);
   [NewObject] CSSUnitValue vw(double value);
   [NewObject] CSSUnitValue vh(double value);
   [NewObject] CSSUnitValue vi(double value);

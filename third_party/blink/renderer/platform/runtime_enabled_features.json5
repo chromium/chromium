@@ -814,10 +814,6 @@
       status: "experimental",
     },
     {
-      name: "CSSCapFontUnits",
-      status: "stable",
-    },
-    {
       // Support case-sensitive attribute selector modifier
       // https://drafts.csswg.org/selectors-4/#attribute-case
       name: "CSSCaseSensitiveSelector",

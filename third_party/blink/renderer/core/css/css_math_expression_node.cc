@@ -92,11 +92,8 @@ static CalculationResultCategory UnitCategory(
     case CSSPrimitiveValue::UnitType::kRlhs:
     case CSSPrimitiveValue::UnitType::kIcs:
     case CSSPrimitiveValue::UnitType::kLhs:
-      return kCalcLength;
     case CSSPrimitiveValue::UnitType::kCaps:
     case CSSPrimitiveValue::UnitType::kRcaps:
-      return RuntimeEnabledFeatures::CSSCapFontUnitsEnabled() ? kCalcLength
-                                                              : kCalcOther;
     case CSSPrimitiveValue::UnitType::kViewportInlineSize:
     case CSSPrimitiveValue::UnitType::kViewportBlockSize:
     case CSSPrimitiveValue::UnitType::kSmallViewportWidth:

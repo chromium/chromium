@@ -1331,13 +1331,8 @@ CSSPrimitiveValue* ConsumeLengthInternal(
       case CSSPrimitiveValue::UnitType::kRchs:
       case CSSPrimitiveValue::UnitType::kRics:
       case CSSPrimitiveValue::UnitType::kRlhs:
-        break;
       case CSSPrimitiveValue::UnitType::kCaps:
       case CSSPrimitiveValue::UnitType::kRcaps:
-        if (!RuntimeEnabledFeatures::CSSCapFontUnitsEnabled()) {
-          return nullptr;
-        }
-        break;
       case CSSPrimitiveValue::UnitType::kViewportInlineSize:
       case CSSPrimitiveValue::UnitType::kViewportBlockSize:
       case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
