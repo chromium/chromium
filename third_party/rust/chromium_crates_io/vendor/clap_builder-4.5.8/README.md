@@ -1,4 +1,4 @@
-# clap_builder
+# `clap_builder`
 
 Builder implementation for clap.
 

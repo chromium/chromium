@@ -23,7 +23,7 @@ use crate::output::fmt::Colorizer;
 use crate::output::fmt::Stream;
 use crate::parser::features::suggestions;
 use crate::util::FlatMap;
-use crate::util::{color::ColorChoice, safe_exit, SUCCESS_CODE, USAGE_CODE};
+use crate::util::{color::ColorChoice, SUCCESS_CODE, USAGE_CODE};
 use crate::Command;
 
 #[cfg(feature = "error-context")]
@@ -233,7 +233,7 @@ impl<F: ErrorFormatter> Error<F> {
     pub fn exit(&self) -> ! {
         // Swallow broken pipe errors
         let _ = self.print();
-        safe_exit(self.exit_code())
+        std::process::exit(self.exit_code());
     }
 
     /// Prints formatted and colored error to `stdout` or `stderr` according to its error kind

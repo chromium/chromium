@@ -677,7 +677,7 @@ impl<'cmd> Parser<'cmd> {
             debug!("Parser::is_new_arg: --<something> found");
             true
         } else if next.is_short() {
-            // If this is a short flag, this is a new arg. But a singe '-' by
+            // If this is a short flag, this is a new arg. But a single '-' by
             // itself is a value and typically means "stdin" on unix systems.
             debug!("Parser::is_new_arg: -<something> found");
             true

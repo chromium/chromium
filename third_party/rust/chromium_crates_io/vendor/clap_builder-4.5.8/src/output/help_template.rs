@@ -6,7 +6,6 @@
 // Std
 use std::borrow::Cow;
 use std::cmp;
-use std::usize;
 
 // Internal
 use crate::builder::PossibleValue;

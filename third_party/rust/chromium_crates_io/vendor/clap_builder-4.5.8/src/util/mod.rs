@@ -29,15 +29,6 @@ pub(crate) const SUCCESS_CODE: i32 = 0;
 // - Python's `argparse` returns 2
 pub(crate) const USAGE_CODE: i32 = 2;
 
-pub(crate) fn safe_exit(code: i32) -> ! {
-    use std::io::Write;
-
-    let _ = std::io::stdout().lock().flush();
-    let _ = std::io::stderr().lock().flush();
-
-    std::process::exit(code)
-}
-
 #[cfg(not(feature = "unicode"))]
 pub(crate) fn eq_ignore_case(left: &str, right: &str) -> bool {
     left.eq_ignore_ascii_case(right)

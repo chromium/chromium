@@ -339,6 +339,11 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.4 -> 4.5.7"
 
+[[audits.clap]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.7 -> 4.5.8"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -380,6 +385,11 @@ notes = "Reviewed in https://crrev.com/c/5362201"
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.2 -> 4.5.7"
+
+[[audits.clap_builder]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.7 -> 4.5.8"
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"

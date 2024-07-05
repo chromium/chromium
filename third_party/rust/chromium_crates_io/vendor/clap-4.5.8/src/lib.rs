@@ -11,7 +11,7 @@
 //! - [Cookbook][_cookbook]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.7/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.8/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations
@@ -64,7 +64,7 @@
 //! - [clap_complete](https://crates.io/crates/clap_complete) for shell completion support
 //!
 //! CLI Helpers
-//! - [cio](https://crates.io/crates/clio) for reading/writing to files specified as arguments
+//! - [clio](https://crates.io/crates/clio) for reading/writing to files specified as arguments
 //! - [clap-verbosity-flag](https://crates.io/crates/clap-verbosity-flag)
 //! - [clap-cargo](https://crates.io/crates/clap-cargo)
 //! - [concolor-clap](https://crates.io/crates/concolor-clap)
