@@ -191,7 +191,7 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
       /// value greater than max_int64 / 64 cannot be precisely expressed
       // (crbug.com/1349686).
       if (std::isfinite(before_length) && std::isfinite(after_length) &&
-          std::abs(before_length) < kIntMaxForLayoutUnit) {
+          std::abs(before_length) < LayoutUnit::kIntMax) {
         // Test relative difference for large values to avoid floating point
         // inaccuracies tripping the check.
         const float delta =

@@ -100,7 +100,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
         // "If maxsize < minsize then set maxsize to minsize."
         LayoutUnit max_size = std::max<LayoutUnit>(
             (Style().GetMathMaxSize().GetType() == Length::kAuto
-                 ? LayoutUnit(kIntMaxForLayoutUnit)
+                 ? LayoutUnit(LayoutUnit::kIntMax)
                  : ValueForLength(Style().GetMathMaxSize(), unstretched_size)),
             min_size);
         // "Then 0 ≤ minsize ≤ maxsize:"

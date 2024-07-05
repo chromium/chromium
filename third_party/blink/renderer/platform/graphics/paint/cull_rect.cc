@@ -20,7 +20,7 @@ namespace blink {
 
 namespace {
 
-constexpr int kReasonablePixelLimit = kIntMaxForLayoutUnit;
+constexpr int kReasonablePixelLimit = LayoutUnit::kIntMax;
 constexpr int kChangedEnoughMinimumDistance = 512;
 
 // Returns the number of pixels to expand the cull rect for composited scroll

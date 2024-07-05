@@ -46,8 +46,10 @@ namespace {
 // max/min values to allow for rounding without overflowing.
 // Subtract two (rather than one) to allow for values to be converted to float
 // and back without exceeding the LayoutUnit::Max.
-const int kMaxValueForCssLength = INT_MAX / kFixedPointDenominator - 2;
-const int kMinValueForCssLength = INT_MIN / kFixedPointDenominator + 2;
+const int kMaxValueForCssLength =
+    INT_MAX / LayoutUnit::kFixedPointDenominator - 2;
+const int kMinValueForCssLength =
+    INT_MIN / LayoutUnit::kFixedPointDenominator + 2;
 
 }  // namespace
 

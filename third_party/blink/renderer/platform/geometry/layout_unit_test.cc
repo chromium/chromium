@@ -36,14 +36,14 @@
 namespace blink {
 
 TEST(LayoutUnitTest, LayoutUnitInt) {
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(INT_MIN).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(INT_MIN / 2).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(kIntMinForLayoutUnit - 1).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(kIntMinForLayoutUnit).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit + 1,
-            LayoutUnit(kIntMinForLayoutUnit + 1).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit / 2,
-            LayoutUnit(kIntMinForLayoutUnit / 2).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(INT_MIN / 2).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(LayoutUnit::kIntMin - 1).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(LayoutUnit::kIntMin).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin + 1,
+            LayoutUnit(LayoutUnit::kIntMin + 1).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin / 2,
+            LayoutUnit(LayoutUnit::kIntMin / 2).ToInt());
   EXPECT_EQ(-10000, LayoutUnit(-10000).ToInt());
   EXPECT_EQ(-1000, LayoutUnit(-1000).ToInt());
   EXPECT_EQ(-100, LayoutUnit(-100).ToInt());
@@ -54,52 +54,53 @@ TEST(LayoutUnitTest, LayoutUnitInt) {
   EXPECT_EQ(100, LayoutUnit(100).ToInt());
   EXPECT_EQ(1000, LayoutUnit(1000).ToInt());
   EXPECT_EQ(10000, LayoutUnit(10000).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit / 2,
-            LayoutUnit(kIntMaxForLayoutUnit / 2).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit - 1,
-            LayoutUnit(kIntMaxForLayoutUnit - 1).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(kIntMaxForLayoutUnit).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(kIntMaxForLayoutUnit + 1).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(INT_MAX / 2).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(INT_MAX).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax / 2,
+            LayoutUnit(LayoutUnit::kIntMax / 2).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax - 1,
+            LayoutUnit(LayoutUnit::kIntMax - 1).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(LayoutUnit::kIntMax).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(LayoutUnit::kIntMax + 1).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(INT_MAX / 2).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(INT_MAX).ToInt());
 
   // Test the raw unsaturated value
   EXPECT_EQ(0, LayoutUnit(0).RawValue());
   // Internally the max number we can represent (without saturating)
   // is all the (non-sign) bits set except for the bottom n fraction bits
   const int max_internal_representation =
-      std::numeric_limits<int>::max() ^ ((1 << kLayoutUnitFractionalBits) - 1);
+      std::numeric_limits<int>::max() ^
+      ((1 << LayoutUnit::kFractionalBits) - 1);
   EXPECT_EQ(max_internal_representation,
-            LayoutUnit(kIntMaxForLayoutUnit).RawValue());
+            LayoutUnit(LayoutUnit::kIntMax).RawValue());
   EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
-            LayoutUnit(kIntMaxForLayoutUnit + 100).RawValue());
-  EXPECT_EQ((kIntMaxForLayoutUnit - 100) << kLayoutUnitFractionalBits,
-            LayoutUnit(kIntMaxForLayoutUnit - 100).RawValue());
+            LayoutUnit(LayoutUnit::kIntMax + 100).RawValue());
+  EXPECT_EQ((LayoutUnit::kIntMax - 100) << LayoutUnit::kFractionalBits,
+            LayoutUnit(LayoutUnit::kIntMax - 100).RawValue());
   EXPECT_EQ(GetMinSaturatedSetResultForTesting(),
-            LayoutUnit(kIntMinForLayoutUnit).RawValue());
+            LayoutUnit(LayoutUnit::kIntMin).RawValue());
   EXPECT_EQ(GetMinSaturatedSetResultForTesting(),
-            LayoutUnit(kIntMinForLayoutUnit - 100).RawValue());
+            LayoutUnit(LayoutUnit::kIntMin - 100).RawValue());
   // Shifting negative numbers left has undefined behavior, so use
   // multiplication instead of direct shifting here.
-  EXPECT_EQ((kIntMinForLayoutUnit + 100) * (1 << kLayoutUnitFractionalBits),
-            LayoutUnit(kIntMinForLayoutUnit + 100).RawValue());
+  EXPECT_EQ((LayoutUnit::kIntMin + 100) * (1 << LayoutUnit::kFractionalBits),
+            LayoutUnit(LayoutUnit::kIntMin + 100).RawValue());
 }
 
 TEST(LayoutUnitTest, LayoutUnitUnsigned) {
   // Test the raw unsaturated value
   EXPECT_EQ(0, LayoutUnit((unsigned)0).RawValue());
   EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
-            LayoutUnit((unsigned)kIntMaxForLayoutUnit).RawValue());
-  const unsigned kOverflowed = kIntMaxForLayoutUnit + 100;
+            LayoutUnit((unsigned)LayoutUnit::kIntMax).RawValue());
+  const unsigned kOverflowed = LayoutUnit::kIntMax + 100;
   EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
             LayoutUnit(kOverflowed).RawValue());
-  const unsigned kNotOverflowed = kIntMaxForLayoutUnit - 100;
-  EXPECT_EQ((kIntMaxForLayoutUnit - 100) << kLayoutUnitFractionalBits,
+  const unsigned kNotOverflowed = LayoutUnit::kIntMax - 100;
+  EXPECT_EQ((LayoutUnit::kIntMax - 100) << LayoutUnit::kFractionalBits,
             LayoutUnit(kNotOverflowed).RawValue());
 }
 
 TEST(LayoutUnitTest, LayoutUnitFloat) {
-  const float kTolerance = 1.0f / kFixedPointDenominator;
+  const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_FLOAT_EQ(1.0f, LayoutUnit(1.0f).ToFloat());
   EXPECT_FLOAT_EQ(1.25f, LayoutUnit(1.25f).ToFloat());
   EXPECT_EQ(LayoutUnit(1.25f), LayoutUnit(1.25f + kTolerance / 2));
@@ -125,7 +126,7 @@ TEST(LayoutUnitTest, LayoutUnitFloat) {
 }
 
 TEST(LayoutUnitTest, FromFloatCeil) {
-  const float kTolerance = 1.0f / kFixedPointDenominator;
+  const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_EQ(LayoutUnit(1.25f), LayoutUnit::FromFloatCeil(1.25f));
   EXPECT_EQ(LayoutUnit(1.25f + kTolerance),
             LayoutUnit::FromFloatCeil(1.25f + kTolerance / 2));
@@ -143,7 +144,7 @@ TEST(LayoutUnitTest, FromFloatCeil) {
 }
 
 TEST(LayoutUnitTest, FromFloatFloor) {
-  const float kTolerance = 1.0f / kFixedPointDenominator;
+  const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_EQ(LayoutUnit(1.25f), LayoutUnit::FromFloatFloor(1.25f));
   EXPECT_EQ(LayoutUnit(1.25f),
             LayoutUnit::FromFloatFloor(1.25f + kTolerance / 2));
@@ -162,7 +163,7 @@ TEST(LayoutUnitTest, FromFloatFloor) {
 }
 
 TEST(LayoutUnitTest, FromFloatRound) {
-  const float kTolerance = 1.0f / kFixedPointDenominator;
+  const float kTolerance = 1.0f / LayoutUnit::kFixedPointDenominator;
   EXPECT_EQ(LayoutUnit(1.25f), LayoutUnit::FromFloatRound(1.25f));
   EXPECT_EQ(LayoutUnit(1.25f),
             LayoutUnit::FromFloatRound(1.25f + kTolerance / 4));
@@ -205,14 +206,17 @@ TEST(LayoutUnitTest, LayoutUnitRounding) {
   EXPECT_EQ(2, LayoutUnit::FromFloatRound(1.5f).Round());
   EXPECT_EQ(2, LayoutUnit::FromFloatRound(1.51f).Round());
   // The fractional part of LayoutUnit::Max() is 0x3f, so it should round up.
-  EXPECT_EQ(((std::numeric_limits<int>::max() / kFixedPointDenominator) + 1),
-            LayoutUnit::Max().Round());
+  EXPECT_EQ(
+      ((std::numeric_limits<int>::max() / LayoutUnit::kFixedPointDenominator) +
+       1),
+      LayoutUnit::Max().Round());
   // The fractional part of LayoutUnit::Min() is 0, so the next bigger possible
   // value should round down.
   LayoutUnit epsilon;
   epsilon.SetRawValue(1);
-  EXPECT_EQ(((std::numeric_limits<int>::min() / kFixedPointDenominator)),
-            (LayoutUnit::Min() + epsilon).Round());
+  EXPECT_EQ(
+      ((std::numeric_limits<int>::min() / LayoutUnit::kFixedPointDenominator)),
+      (LayoutUnit::Min() + epsilon).Round());
 }
 
 TEST(LayoutUnitTest, LayoutUnitSnapSizeToPixel) {
@@ -244,11 +248,10 @@ TEST(LayoutUnitTest, LayoutUnitSnapSizeToPixel) {
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1.5), LayoutUnit(1.5)));
 
   EXPECT_EQ(101, SnapSizeToPixel(LayoutUnit(100.5), LayoutUnit(100)));
-  EXPECT_EQ(kIntMaxForLayoutUnit,
-            SnapSizeToPixel(LayoutUnit(kIntMaxForLayoutUnit), LayoutUnit(0.3)));
-  EXPECT_EQ(
-      kIntMinForLayoutUnit,
-      SnapSizeToPixel(LayoutUnit(kIntMinForLayoutUnit), LayoutUnit(-0.3)));
+  EXPECT_EQ(LayoutUnit::kIntMax,
+            SnapSizeToPixel(LayoutUnit(LayoutUnit::kIntMax), LayoutUnit(0.3)));
+  EXPECT_EQ(LayoutUnit::kIntMin,
+            SnapSizeToPixel(LayoutUnit(LayoutUnit::kIntMin), LayoutUnit(-0.3)));
 }
 
 TEST(LayoutUnitTest, LayoutUnitMultiplication) {
@@ -282,20 +285,18 @@ TEST(LayoutUnitTest, LayoutUnitMultiplication) {
   EXPECT_EQ(400, (a_hundred_size_t * LayoutUnit(4)).ToInt());
   EXPECT_EQ(400, (LayoutUnit(4) * a_hundred_size_t).ToInt());
 
-  int quarter_max = kIntMaxForLayoutUnit / 4;
+  int quarter_max = LayoutUnit::kIntMax / 4;
   EXPECT_EQ(quarter_max * 2, (LayoutUnit(quarter_max) * LayoutUnit(2)).ToInt());
   EXPECT_EQ(quarter_max * 3, (LayoutUnit(quarter_max) * LayoutUnit(3)).ToInt());
   EXPECT_EQ(quarter_max * 4, (LayoutUnit(quarter_max) * LayoutUnit(4)).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit,
+  EXPECT_EQ(LayoutUnit::kIntMax,
             (LayoutUnit(quarter_max) * LayoutUnit(5)).ToInt());
 
-  size_t overflow_int_size_t = kIntMaxForLayoutUnit * 4;
-  EXPECT_EQ(kIntMaxForLayoutUnit,
+  size_t overflow_int_size_t = LayoutUnit::kIntMax * 4;
+  EXPECT_EQ(LayoutUnit::kIntMax,
             (LayoutUnit(overflow_int_size_t) * LayoutUnit(2)).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit,
-            (overflow_int_size_t * LayoutUnit(4)).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit,
-            (LayoutUnit(4) * overflow_int_size_t).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, (overflow_int_size_t * LayoutUnit(4)).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, (LayoutUnit(4) * overflow_int_size_t).ToInt());
 
   {
     // Multiple by float 1.0 can produce a different value.
@@ -340,10 +341,10 @@ TEST(LayoutUnitTest, LayoutUnitDivision) {
   EXPECT_EQ(25, (a_hundred_size_t / LayoutUnit(4)).ToInt());
   EXPECT_EQ(4, (LayoutUnit(400) / a_hundred_size_t).ToInt());
 
-  EXPECT_EQ(kIntMaxForLayoutUnit / 2,
-            (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(2)).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit,
-            (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(0.5)).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax / 2,
+            (LayoutUnit(LayoutUnit::kIntMax) / LayoutUnit(2)).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax,
+            (LayoutUnit(LayoutUnit::kIntMax) / LayoutUnit(0.5)).ToInt());
 }
 
 TEST(LayoutUnitTest, LayoutUnitMulDiv) {
@@ -377,13 +378,13 @@ TEST(LayoutUnitTest, LayoutUnitCeil) {
   EXPECT_EQ(0, LayoutUnit(-0.9).Ceil());
   EXPECT_EQ(-1, LayoutUnit(-1.0).Ceil());
 
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(kIntMaxForLayoutUnit).Ceil());
-  EXPECT_EQ(kIntMaxForLayoutUnit,
-            (LayoutUnit(kIntMaxForLayoutUnit) - LayoutUnit(0.5)).Ceil());
-  EXPECT_EQ(kIntMaxForLayoutUnit - 1,
-            (LayoutUnit(kIntMaxForLayoutUnit) - LayoutUnit(1)).Ceil());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(LayoutUnit::kIntMax).Ceil());
+  EXPECT_EQ(LayoutUnit::kIntMax,
+            (LayoutUnit(LayoutUnit::kIntMax) - LayoutUnit(0.5)).Ceil());
+  EXPECT_EQ(LayoutUnit::kIntMax - 1,
+            (LayoutUnit(LayoutUnit::kIntMax) - LayoutUnit(1)).Ceil());
 
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(kIntMinForLayoutUnit).Ceil());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(LayoutUnit::kIntMin).Ceil());
 }
 
 TEST(LayoutUnitTest, LayoutUnitFloor) {
@@ -399,21 +400,21 @@ TEST(LayoutUnitTest, LayoutUnitFloor) {
   EXPECT_EQ(-1, LayoutUnit(-0.9).Floor());
   EXPECT_EQ(-1, LayoutUnit(-1.0).Floor());
 
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(kIntMaxForLayoutUnit).Floor());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(LayoutUnit::kIntMax).Floor());
 
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(kIntMinForLayoutUnit).Floor());
-  EXPECT_EQ(kIntMinForLayoutUnit,
-            (LayoutUnit(kIntMinForLayoutUnit) + LayoutUnit(0.5)).Floor());
-  EXPECT_EQ(kIntMinForLayoutUnit + 1,
-            (LayoutUnit(kIntMinForLayoutUnit) + LayoutUnit(1)).Floor());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(LayoutUnit::kIntMin).Floor());
+  EXPECT_EQ(LayoutUnit::kIntMin,
+            (LayoutUnit(LayoutUnit::kIntMin) + LayoutUnit(0.5)).Floor());
+  EXPECT_EQ(LayoutUnit::kIntMin + 1,
+            (LayoutUnit(LayoutUnit::kIntMin) + LayoutUnit(1)).Floor());
 }
 
 TEST(LayoutUnitTest, LayoutUnitFloatOverflow) {
   // These should overflow to the max/min according to their sign.
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(176972000.0f).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(-176972000.0f).ToInt());
-  EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(176972000.0).ToInt());
-  EXPECT_EQ(kIntMinForLayoutUnit, LayoutUnit(-176972000.0).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(176972000.0f).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(-176972000.0f).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMax, LayoutUnit(176972000.0).ToInt());
+  EXPECT_EQ(LayoutUnit::kIntMin, LayoutUnit(-176972000.0).ToInt());
 }
 
 TEST(LayoutUnitTest, UnaryMinus) {

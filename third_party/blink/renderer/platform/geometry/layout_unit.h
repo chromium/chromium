@@ -62,12 +62,6 @@ namespace blink {
 #define REPORT_OVERFLOW(doesOverflow) ((void)0)
 #endif
 
-inline constexpr unsigned kLayoutUnitFractionalBits = 6;
-inline constexpr int kFixedPointDenominator = 1 << kLayoutUnitFractionalBits;
-
-inline constexpr int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
-inline constexpr int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
-
 // TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
 class PLATFORM_EXPORT LayoutUnit;
 constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
@@ -78,13 +72,18 @@ class LayoutUnit {
   DISALLOW_NEW();
 
  public:
+  static constexpr unsigned kFractionalBits = 6;
+  static constexpr int kFixedPointDenominator = 1 << kFractionalBits;
+  static constexpr int kIntMax = INT_MAX / kFixedPointDenominator;
+  static constexpr int kIntMin = INT_MIN / kFixedPointDenominator;
+
   constexpr LayoutUnit() : value_(0) {}
   // Creates a LayoutUnit with the specified integer value.
   // If the specified value is smaller than LayoutUnit::Min(), the new
   // LayoutUnit is equivalent to LayoutUnit::Min().
   // If the specified value is greater than the maximum integer value which
   // LayoutUnit can represent, the new LayoutUnit is equivalent to
-  // LayoutUnit(kIntMaxForLayoutUnit) in 32-bit Arm, or is equivalent to
+  // LayoutUnit(LayoutUnit::kIntMax) in 32-bit Arm, or is equivalent to
   // LayoutUnit::Max() otherwise.
   template <typename IntegerType>
   constexpr explicit LayoutUnit(IntegerType value) : value_(0) {
@@ -187,7 +186,7 @@ class LayoutUnit {
   }
   int Ceil() const {
     if (UNLIKELY(value_ >= INT_MAX - kFixedPointDenominator + 1))
-      return kIntMaxForLayoutUnit;
+      return kIntMax;
 
     if (value_ >= 0)
       return (value_ + kFixedPointDenominator - 1) / kFixedPointDenominator;
@@ -195,14 +194,14 @@ class LayoutUnit {
   }
   ALWAYS_INLINE int Round() const {
     return ToInt() + ((Fraction().RawValue() + (kFixedPointDenominator / 2)) >>
-                      kLayoutUnitFractionalBits);
+                      kFractionalBits);
   }
 
   int Floor() const {
     if (UNLIKELY(value_ <= INT_MIN + kFixedPointDenominator - 1))
-      return kIntMinForLayoutUnit;
+      return kIntMin;
 
-    return value_ >> kLayoutUnitFractionalBits;
+    return value_ >> kFractionalBits;
   }
 
   LayoutUnit ClampNegativeToZero() const {
@@ -313,14 +312,14 @@ class LayoutUnit {
   inline void SaturatedSetAsm(int value) {
     // Figure out how many bits are left for storing the integer part of
     // the fixed point number, and saturate our input to that
-    enum { Saturate = 32 - kLayoutUnitFractionalBits };
+    enum { Saturate = 32 - kFractionalBits };
 
     int result;
 
     // The following ARM code will Saturate the passed value to the number of
     // bits used for the whole part of the fixed point representation, then
     // shift it up into place. This will result in the low
-    // <kLayoutUnitFractionalBits> bits all being 0's. When the value saturates
+    // <kFractionalBits> bits all being 0's. When the value saturates
     // this gives a different result to from the C++ case; in the C++ code a
     // saturated value has all the low bits set to 1 (for a +ve number at
     // least). This cannot be done rapidly in ARM ... we live with the
@@ -330,7 +329,7 @@ class LayoutUnit {
         "lsl  %[output],%[shift]"
         : [output] "=r"(result)
         : [value] "r"(value), [saturate] "n"(Saturate),
-          [shift] "n"(kLayoutUnitFractionalBits));
+          [shift] "n"(kFractionalBits));
 
     value_ = result;
   }
@@ -348,12 +347,12 @@ class LayoutUnit {
     // instruction for unsigned saturation therefore needs to be given one
     // less bit (i.e. the sign bit) for the saturation to work correctly; hence
     // the '31' below.
-    enum { Saturate = 31 - kLayoutUnitFractionalBits };
+    enum { Saturate = 31 - kFractionalBits };
 
     // The following ARM code will Saturate the passed value to the number of
     // bits used for the whole part of the fixed point representation, then
     // shift it up into place. This will result in the low
-    // <kLayoutUnitFractionalBits> bits all being 0's. When the value saturates
+    // <kFractionalBits> bits all being 0's. When the value saturates
     // this gives a different result to from the C++ case; in the C++ code a
     // saturated value has all the low bits set to 1. This cannot be done
     // rapidly in ARM, so we live with the difference, for the sake of speed.
@@ -364,7 +363,7 @@ class LayoutUnit {
         "lsl  %[output],%[shift]"
         : [output] "=r"(result)
         : [value] "r"(value), [saturate] "n"(Saturate),
-          [shift] "n"(kLayoutUnitFractionalBits));
+          [shift] "n"(kFractionalBits));
 
     value_ = result;
   }
@@ -379,19 +378,21 @@ class LayoutUnit {
 #endif
 
   ALWAYS_INLINE constexpr void SaturatedSetNonAsm(int value) {
-    if (value > kIntMaxForLayoutUnit)
+    if (value > kIntMax) {
       value_ = std::numeric_limits<int>::max();
-    else if (value < kIntMinForLayoutUnit)
+    } else if (value < kIntMin) {
       value_ = std::numeric_limits<int>::min();
-    else
-      value_ = static_cast<unsigned>(value) << kLayoutUnitFractionalBits;
+    } else {
+      value_ = static_cast<unsigned>(value) << kFractionalBits;
+    }
   }
 
   ALWAYS_INLINE constexpr void SaturatedSetNonAsm(unsigned value) {
-    if (value >= static_cast<unsigned>(kIntMaxForLayoutUnit))
+    if (value >= static_cast<unsigned>(kIntMax)) {
       value_ = std::numeric_limits<int>::max();
-    else
-      value_ = value << kLayoutUnitFractionalBits;
+    } else {
+      value_ = value << kFractionalBits;
+    }
   }
 
   int value_;
@@ -538,7 +539,8 @@ constexpr bool operator==(const float a, const LayoutUnit& b) {
 // LayoutUnit::max() and ::min()
 inline LayoutUnit BoundedMultiply(const LayoutUnit& a, const LayoutUnit& b) {
   int64_t result = static_cast<int64_t>(a.RawValue()) *
-                   static_cast<int64_t>(b.RawValue()) / kFixedPointDenominator;
+                   static_cast<int64_t>(b.RawValue()) /
+                   LayoutUnit::kFixedPointDenominator;
   int32_t high = static_cast<int32_t>(result >> 32);
   int32_t low = static_cast<int32_t>(result);
   uint32_t saturated =
@@ -586,7 +588,7 @@ constexpr double operator*(const double a, const LayoutUnit& b) {
 
 inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
   LayoutUnit return_val;
-  int64_t raw_val = static_cast<int64_t>(kFixedPointDenominator) *
+  int64_t raw_val = static_cast<int64_t>(LayoutUnit::kFixedPointDenominator) *
                     a.RawValue() / b.RawValue();
   return_val.SetRawValue(base::saturated_cast<int>(raw_val));
   return return_val;
@@ -819,7 +821,8 @@ inline int GetMaxSaturatedSetResultForTesting() {
   // For ARM Asm version the set function maxes out to the biggest
   // possible integer part with the fractional part zero'd out.
   // e.g. 0x7fffffc0.
-  return std::numeric_limits<int>::max() & ~(kFixedPointDenominator - 1);
+  return std::numeric_limits<int>::max() &
+         ~(LayoutUnit::kFixedPointDenominator - 1);
 }
 
 inline int GetMinSaturatedSetResultForTesting() {

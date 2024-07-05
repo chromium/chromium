@@ -82,7 +82,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   DOMRect* rect = target->GetBoundingClientRect();
-  const float kOneLayoutUnit = 1.f / kFixedPointDenominator;
+  const float kOneLayoutUnit = 1.f / LayoutUnit::kFixedPointDenominator;
   EXPECT_NEAR(LayoutUnit(800.f - 700.5f), rect->left(), kOneLayoutUnit);
   EXPECT_NEAR(LayoutUnit(600.f - 500.6f), rect->top(), kOneLayoutUnit);
 }
