@@ -860,6 +860,78 @@ TEST_F(EnclaveManagerTest, ChangePIN) {
               GetAssertionResponseExpectation());
 }
 
+TEST_F(EnclaveManagerTest, ChangePINWithTwoDevices) {
+  security_domain_service_->pretend_there_are_members();
+  const std::string pin = "pin";
+  const std::string intermediate_pin = "intermediate_pin";
+  const std::string new_pin = "newpin";
+
+  EnclaveManager second_manager(
+      temp_dir_.GetPath(), identity_test_env_.identity_manager(),
+      base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+        return network_context_.get();
+      }),
+      url_loader_factory_.GetSafeWeakWrapper());
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {key},
+                     /*last_key_version=*/kSecretVersion);
+  second_manager.StoreKeys(gaia_id_, {key},
+                           /*last_key_version=*/kSecretVersion);
+
+  LOG(INFO) << "Adding first manager";
+  {
+    BoolFuture add_future;
+    manager_.AddDeviceAndPINToAccount(pin, add_future.GetCallback());
+    EXPECT_TRUE(add_future.Wait());
+    ASSERT_TRUE(add_future.Get());
+  }
+  const std::vector<uint8_t> security_domain_secret =
+      std::move(manager_.TakeSecret()->second);
+
+  LOG(INFO) << "Adding second manager";
+  {
+    BoolFuture add_future;
+    second_manager.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
+    EXPECT_TRUE(add_future.Wait());
+  }
+
+  LOG(INFO) << "First PIN change";
+  {
+    BoolFuture change_future;
+    // `second_manager` must fetch PIN information from the security domain in
+    // order to change it.
+    second_manager.ChangePIN(intermediate_pin, "rapt",
+                             change_future.GetCallback());
+    EXPECT_TRUE(change_future.Wait());
+    ASSERT_TRUE(change_future.Get());
+  }
+
+  LOG(INFO) << "Second PIN change";
+  {
+    BoolFuture change_future;
+    manager_.ChangePIN(new_pin, "rapt", change_future.GetCallback());
+    EXPECT_TRUE(change_future.Wait());
+    ASSERT_TRUE(change_future.Get());
+  }
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 2u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+  EXPECT_EQ(recovery_key_store_->vaults().size(), 3u);
+  const std::optional<std::vector<uint8_t>> recovered_security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(new_pin, *security_domain_service_,
+                                    *recovery_key_store_);
+  CHECK(recovered_security_domain_secret.has_value());
+  EXPECT_EQ(*recovered_security_domain_secret, security_domain_secret);
+
+  std::unique_ptr<device::enclave::ClaimedPIN> claimed_pin =
+      EnclaveManager::MakeClaimedPINSlowly(new_pin, manager_.GetWrappedPIN());
+  std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
+  DoCreate(/*claimed_pin=*/nullptr, &entity);
+  DoAssertion(std::move(entity), std::move(claimed_pin),
+              GetAssertionResponseExpectation());
+}
+
 TEST_F(EnclaveManagerTest, EnclaveForgetsClient_SetupWithPIN) {
   ASSERT_TRUE(Register());
   CorruptDeviceId();

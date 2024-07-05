@@ -1083,6 +1083,7 @@ class EnclaveManager::StateMachine {
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
     kUpdatingPINHighWater,
+    kSyncingWithSecurityDomain,
   };
 
   enum class FetchedFile {
@@ -1115,17 +1116,19 @@ class EnclaveManager::StateMachine {
   using PINHashed =
       base::StrongAlias<class PINHashed, std::unique_ptr<HashedPIN>>;
   using Response = base::StrongAlias<class Response, std::string>;
-  using Event = absl::variant<None,
-                              Failure,
-                              FileContents,
-                              KeyReady,
-                              EnclaveResponse,
-                              AccessToken,
-                              JoinStatus,
-                              FileFetched,
-                              PINHashed,
-                              Response,
-                              trusted_vault::UpdateRecoveryKeyStoreStatus>;
+  using Event = absl::variant<
+      None,
+      Failure,
+      FileContents,
+      KeyReady,
+      EnclaveResponse,
+      AccessToken,
+      JoinStatus,
+      FileFetched,
+      PINHashed,
+      Response,
+      trusted_vault::UpdateRecoveryKeyStoreStatus,
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>;
 
   void Process(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1225,6 +1228,10 @@ class EnclaveManager::StateMachine {
       case State::kUpdatingPINHighWater:
         DoUpdatingPINHighWater(std::move(event));
         break;
+
+      case State::kSyncingWithSecurityDomain:
+        DoSyncingWithSecurityDomain(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1304,6 +1311,8 @@ class EnclaveManager::StateMachine {
         return "Unregistering";
       case State::kUpdatingPINHighWater:
         return "UpdatingPINHighWater";
+      case State::kSyncingWithSecurityDomain:
+        return "kSyncingWithSecurityDomain";
     }
   }
 
@@ -1325,6 +1334,25 @@ class EnclaveManager::StateMachine {
         return "NetworkError";
       case trusted_vault::UpdateRecoveryKeyStoreStatus::kOtherError:
         return "OtherError";
+    }
+  }
+
+  static const char* ToString(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::State
+          state) {
+    switch (state) {
+      case trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+          State::kError:
+        return "Error";
+      case trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+          State::kEmpty:
+        return "kEmpty";
+      case trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+          State::kRecoverable:
+        return "kRecoverable";
+      case trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+          State::kIrrecoverable:
+        return "Irrecoverable";
     }
   }
 
@@ -1364,6 +1392,14 @@ class EnclaveManager::StateMachine {
             [](const trusted_vault::UpdateRecoveryKeyStoreStatus& status) {
               return base::StrCat(
                   {"UpdateRecoveryKeyStoreStatus(", ToString(status), ")"});
+            },
+            [](const trusted_vault::
+                   DownloadAuthenticationFactorsRegistrationStateResult&
+                       result) {
+              return base::StrCat(
+                  {"DownloadAuthenticationFactorsRegistrationStateResult(",
+                   ToString(result.state), " ", "has_gpm_pin: ",
+                   result.gpm_pin_metadata.has_value() ? "yes" : "no", ")"});
             },
         },
         event);
@@ -1448,8 +1484,7 @@ class EnclaveManager::StateMachine {
 
       is_pin_update_ = true;
       rapt_ = std::move(action_->rapt);
-      state_ = State::kHashingPIN;
-      HashPIN(std::move(action_->updated_pin));
+      SyncWithSecurityDomain();
       return;
     }
 
@@ -1835,6 +1870,59 @@ class EnclaveManager::StateMachine {
     } else {
       state_ = State::kStop;
     }
+  }
+
+  void SyncWithSecurityDomain() {
+    state_ = State::kSyncingWithSecurityDomain;
+    download_account_state_request_ =
+        manager_->trusted_vault_conn_
+            ->DownloadAuthenticationFactorsRegistrationState(
+                *primary_account_info_,
+                base::BindOnce(
+                    [](base::WeakPtr<EnclaveManager::StateMachine> machine,
+                       trusted_vault::
+                           DownloadAuthenticationFactorsRegistrationStateResult
+                               result) {
+                      if (!machine) {
+                        return;
+                      }
+                      machine->Process(std::move(result));
+                    },
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void DoSyncingWithSecurityDomain(Event event) {
+    CHECK(absl::holds_alternative<
+          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
+        event));
+
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult*
+        result = absl::get_if<
+            trusted_vault::
+                DownloadAuthenticationFactorsRegistrationStateResult>(&event);
+    if (result->state ==
+        trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult::
+            State::kError) {
+      state_ = State::kStop;
+      return;
+    }
+    if (result->gpm_pin_metadata) {
+      auto& metadata = *result->gpm_pin_metadata;
+      auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+      if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
+          !CheckPINInvariants(*wrapped_pin).has_value()) {
+        if (metadata.public_key.has_value() &&
+            (!user_->has_wrapped_pin() ||
+             user_->wrapped_pin().generation() != wrapped_pin->generation())) {
+          FIDO_LOG(EVENT) << "GPM PIN updated prior to change";
+          *user_->mutable_wrapped_pin() = std::move(*wrapped_pin);
+          user_->set_pin_public_key(std::move(*metadata.public_key));
+        }
+      }
+    }
+
+    state_ = State::kHashingPIN;
+    HashPIN(std::move(action_->updated_pin));
   }
 
   void DoHashingPIN(Event event) {
@@ -2453,6 +2541,8 @@ class EnclaveManager::StateMachine {
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
   base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
+  std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
+      download_account_state_request_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> cert_xml_loader_;
@@ -2637,7 +2727,6 @@ void EnclaveManager::ChangePIN(std::string updated_pin,
                                EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_->registered());
-  CHECK(user_->has_wrapped_pin());
 
   auto action = std::make_unique<PendingAction>();
   action->callback = std::move(callback);
