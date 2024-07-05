@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 #include "components/prefs/writeable_pref_store.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_data.h"
@@ -206,13 +207,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // from sync.
   using SyncedPrefObserverList =
       base::ObserverList<SyncedPrefObserver>::Unchecked;
-  struct StringViewHasher : public std::hash<std::string_view> {
-    using is_transparent = void;
-  };
-  std::unordered_map<std::string,
-                     std::unique_ptr<SyncedPrefObserverList>,
-                     StringViewHasher,
-                     std::equal_to<>>
+  TransparentUnorderedStringMap<std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

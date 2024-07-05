@@ -47,6 +47,7 @@ component("prefs") {
     "scoped_user_pref_update.h",
     "segregated_pref_store.cc",
     "segregated_pref_store.h",
+    "transparent_unordered_string_map.h",
     "value_map_pref_store.cc",
     "value_map_pref_store.h",
     "wrap_with_prefix_pref_store.cc",

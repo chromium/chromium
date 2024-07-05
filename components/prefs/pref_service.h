@@ -34,6 +34,7 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -451,11 +452,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // string comparisons. Order is unimportant, and deletions are rare.
   // Confirmed on Android where this speeded Chrome startup by roughly 50ms
   // vs. std::map, and by roughly 180ms vs. std::set of Preference pointers.
-  struct StringViewHasher : public std::hash<std::string_view> {
-    using is_transparent = void;
-  };
-  using PreferenceMap = std::
-      unordered_map<std::string, Preference, StringViewHasher, std::equal_to<>>;
+  using PreferenceMap = TransparentUnorderedStringMap<Preference>;
 
   // Give access to ReportUserPrefChanged() and GetMutableUserPref().
   friend class subtle::ScopedUserPrefUpdateBase;

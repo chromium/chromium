@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -138,14 +139,8 @@ class PrefHashFilter final : public InterceptablePrefFilter {
 
   // A map of paths to TrackedPreferences; this map owns this individual
   // TrackedPreference objects.
-  struct StringViewHasher : public std::hash<std::string_view> {
-    using is_transparent = void;
-  };
   using TrackedPreferencesMap =
-      std::unordered_map<std::string,
-                         std::unique_ptr<TrackedPreference>,
-                         StringViewHasher,
-                         std::equal_to<>>;
+      TransparentUnorderedStringMap<std::unique_ptr<TrackedPreference>>;
 
   // A map from changed paths to their corresponding TrackedPreferences (which
   // aren't owned by this map).
