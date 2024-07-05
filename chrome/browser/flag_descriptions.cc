@@ -4205,9 +4205,17 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
+const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[] =
+    "This feature clears LoginDatabase for all users when UPM is properly "
+    "enabled and the credentials were migrated to GMS Core.";
+const char kClearLoginDatabaseForAllMigratedUPMUsersName[] =
+    "Clear LoginDatabase for all migrated UPM users";
+
 const char kClearLoginDatabaseForUPMUsersDescription[] =
-    "This feature clears LoginDatabase for syncing users when UPM is properly "
-    "enabled. Only works if UnifiedPasswordManagerSyncOnlyInGMSCore feature "
+    "This feature clears LoginDatabase for syncing users when UPM is "
+    "properly "
+    "enabled. Only works if UnifiedPasswordManagerSyncOnlyInGMSCore "
+    "feature "
     "flag is also enabled.";
 const char kClearLoginDatabaseForUPMUsersName[] =
     "Clear LoginDatabase for UPM users";

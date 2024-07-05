@@ -2479,6 +2479,9 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
+extern const char kClearLoginDatabaseForAllMigratedUPMUsersDescription[];
+extern const char kClearLoginDatabaseForAllMigratedUPMUsersName[];
+
 extern const char kClearLoginDatabaseForUPMUsersDescription[];
 extern const char kClearLoginDatabaseForUPMUsersName[];
 

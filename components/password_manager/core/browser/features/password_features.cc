@@ -150,6 +150,10 @@ BASE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore,
              "UnifiedPasswordManagerSyncOnlyInGMSCore",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,
+             "ClearLoginDatabaseForAllMigratedUPMUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClearLoginDatabaseForUPMUsers,
              "ClearLoginDatabaseForUPMUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);

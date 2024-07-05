@@ -16905,6 +16905,8 @@ from previous Chrome versions.
   <int value="-1609065859" label="ClipboardCustomFormats:enabled"/>
   <int value="-1608869911" label="RobustAudioDeviceSelectLogic:enabled"/>
   <int value="-1608717313" label="TabStripCollectionStorage:enabled"/>
+  <int value="-1608259870"
+      label="ClearLoginDatabaseForAllMigratedUPMUsers:disabled"/>
   <int value="-1607953813"
       label="AndroidPartnerCustomizationPhenotype:enabled"/>
   <int value="-1607691647" label="MojoVideoEncodeAccelerator:disabled"/>
@@ -20173,6 +20175,8 @@ from previous Chrome versions.
   <int value="-214859547" label="OmniboxActionsUISimplification:enabled"/>
   <int value="-214763255" label="AndroidHub:disabled"/>
   <int value="-214618160" label="ESimPolicy:enabled"/>
+  <int value="-213952444"
+      label="ClearLoginDatabaseForAllMigratedUPMUsers:enabled"/>
   <int value="-213893901"
       label="AutofillUpstreamAuthenticatePreflightCall:disabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>

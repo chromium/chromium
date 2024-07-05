@@ -11675,6 +11675,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"clear-login-database-for-all-migrated-upm-users",
+     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersName,
+     flag_descriptions::kClearLoginDatabaseForAllMigratedUPMUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kClearLoginDatabaseForAllMigratedUPMUsers)},
     {"clear-login-database-for-upm-users",
      flag_descriptions::kClearLoginDatabaseForUPMUsersName,
      flag_descriptions::kClearLoginDatabaseForUPMUsersDescription, kOsAndroid,
