@@ -4744,6 +4744,7 @@ if (use_fuzzing_engine_with_lpm) {
       "//base:i18n",
       "//base/test:test_support",
       "//chrome/browser",
+      "//chrome/browser/ash/policy/core",
       "//chrome/common:constants",
       "//chromeos/ash/components/install_attributes",
       "//components/exo/wayland:test_controller_stub",
