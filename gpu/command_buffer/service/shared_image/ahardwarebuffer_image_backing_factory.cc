@@ -22,7 +22,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -975,29 +974,6 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
 
   backing->SetCleared();
   return backing;
-}
-
-std::unique_ptr<SharedImageBacking>
-AHardwareBufferImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
-    return nullptr;
-  }
-
-  return CreateSharedImage(mailbox,
-                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
-                           size, color_space, surface_origin, alpha_type, usage,
-                           std::move(debug_label), std::move(handle));
 }
 
 SharedImageBackingType AHardwareBufferImageBackingFactory::GetBackingType() {

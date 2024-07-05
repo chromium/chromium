@@ -86,7 +86,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       SharedImageUsageSet usage,
-      std::string debug_label) = 0;
+      std::string debug_label);
 
   // This new api is introduced for MappableSI work where client code sends
   // |buffer_usage| info while creating shared image. This info is used in some

@@ -204,20 +204,6 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
     NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
-      const gpu::Mailbox& mailbox,
-      gfx::GpuMemoryBufferHandle handle,
-      gfx::BufferFormat format,
-      gfx::BufferPlane plane,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
   bool IsSupported(gpu::SharedImageUsageSet usage,
                    SharedImageFormat format,
                    const gfx::Size& size,

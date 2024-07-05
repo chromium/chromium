@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing.h"
@@ -114,24 +113,6 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
   }
 
   return backing;
-}
-
-std::unique_ptr<SharedImageBacking>
-AngleVulkanImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  return CreateSharedImage(mailbox,
-                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
-                           size, color_space, surface_origin, alpha_type, usage,
-                           std::move(debug_label), std::move(handle));
 }
 
 bool AngleVulkanImageBackingFactory::IsGMBSupported(

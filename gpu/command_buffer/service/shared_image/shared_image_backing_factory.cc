@@ -22,6 +22,21 @@ SharedImageBackingFactory::GetWeakPtr() {
 
 std::unique_ptr<SharedImageBacking>
 SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
+                                             gfx::GpuMemoryBufferHandle handle,
+                                             gfx::BufferFormat format,
+                                             gfx::BufferPlane plane,
+                                             const gfx::Size& size,
+                                             const gfx::ColorSpace& color_space,
+                                             GrSurfaceOrigin surface_origin,
+                                             SkAlphaType alpha_type,
+                                             SharedImageUsageSet usage,
+                                             std::string debug_label) {
+  NOTREACHED_IN_MIGRATION();
+  return nullptr;
+}
+
+std::unique_ptr<SharedImageBacking>
+SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                              viz::SharedImageFormat format,
                                              SurfaceHandle surface_handle,
                                              const gfx::Size& size,
@@ -32,8 +47,7 @@ SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                              std::string debug_label,
                                              bool is_thread_safe,
                                              gfx::BufferUsage buffer_usage) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool SharedImageBackingFactory::CanCreateSharedImage(

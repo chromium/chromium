@@ -105,22 +105,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
   NOTREACHED_NORETURN();
 }
 
-std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 bool GLTextureImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,

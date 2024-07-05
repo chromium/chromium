@@ -104,21 +104,6 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
   NOTREACHED_NORETURN();
 }
 
-std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
 bool DCompImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,
