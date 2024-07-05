@@ -6093,24 +6093,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NQE.RTT.ObservationSource" enum="NQEObservationSource"
-    expires_after="2022-02-20">
-  <owner>tbansal@chromium.org</owner>
-  <owner>bengr@chromium.org</owner>
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Number of RTT observations indexed by the source of the observation.
     Recorded by the network quality estimator every time a new observation is
     made or synthesized.
+
+    Warning: this histogram was expired from 2022-02-20 to 2024-07-04; data may
+    missing.
   </summary>
 </histogram>
 
 <histogram name="NQE.RTT.OnECTComputation" units="ms"
-    expires_after="2022-01-16">
-  <owner>bengr@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Rough estimate of the round trip time at the URLRequest layer. Recorded by
     the network quality estimator every time the effective connection type is
     computed.
+
+    Warning: this histogram was expired from 2022-01-16 to 2024-07-04; data may
+    missing.
   </summary>
 </histogram>
 
