@@ -28,16 +28,13 @@ import org.chromium.url.GURL;
 public class SafetyHubNotificationsPreference extends ChromeBasePreference
         implements ListMenu.Delegate {
     static interface MenuClickListener {
-        void onBlockClicked(SafetyHubNotificationsPreference preference);
-
         void onAllowClicked(SafetyHubNotificationsPreference preference);
 
-        void onAskClicked(SafetyHubNotificationsPreference preference);
+        void onResetClicked(SafetyHubNotificationsPreference preference);
     }
 
-    private static final int MENU_BLOCK_NOTIFICATIONS_ITEM_ID = 0;
+    private static final int MENU_RESET_NOTIFICATIONS_ITEM_ID = 0;
     private static final int MENU_ALLOW_NOTIFICATIONS_ITEM_ID = 1;
-    private static final int MENU_ASK_NOTIFICATIONS_ITEM_ID = 2;
 
     private final NotificationPermissions mNotificationPermissions;
     private final LargeIconBridge mLargeIconBridge;
@@ -96,14 +93,11 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
 
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         switch (itemId) {
-            case MENU_BLOCK_NOTIFICATIONS_ITEM_ID:
-                mMenuClickListener.onBlockClicked(this);
-                break;
             case MENU_ALLOW_NOTIFICATIONS_ITEM_ID:
                 mMenuClickListener.onAllowClicked(this);
                 break;
-            case MENU_ASK_NOTIFICATIONS_ITEM_ID:
-                mMenuClickListener.onAskClicked(this);
+            case MENU_RESET_NOTIFICATIONS_ITEM_ID:
+                mMenuClickListener.onResetClicked(this);
                 break;
             default:
                 assert false : "Not a valid menu item Id.";
@@ -123,18 +117,13 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
         ModelList listItems = new ModelList();
         listItems.add(
                 buildMenuListItem(
-                        R.string.safety_hub_block_notifications_menu_item,
-                        MENU_BLOCK_NOTIFICATIONS_ITEM_ID,
+                        R.string.safety_hub_reset_notifications_menu_item,
+                        MENU_RESET_NOTIFICATIONS_ITEM_ID,
                         0));
         listItems.add(
                 buildMenuListItem(
                         R.string.safety_hub_allow_notifications_menu_item,
                         MENU_ALLOW_NOTIFICATIONS_ITEM_ID,
-                        0));
-        listItems.add(
-                buildMenuListItem(
-                        R.string.safety_hub_ask_notifications_menu_item,
-                        MENU_ASK_NOTIFICATIONS_ITEM_ID,
                         0));
         return BrowserUiListMenuUtils.getBasicListMenu(getContext(), listItems, this);
     }

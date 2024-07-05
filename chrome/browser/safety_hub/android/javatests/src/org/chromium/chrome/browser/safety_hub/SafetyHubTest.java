@@ -266,25 +266,6 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
-    public void testNotificationBlock() {
-        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
-                new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
-        mNotificationsFragmentTestRule.startSettingsActivity();
-
-        // Block the notification by clicking the corresponding menu button.
-        clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
-        onViewWaiting(withText(R.string.safety_hub_block_notifications_menu_item)).perform(click());
-        onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
-
-        // Click on the action button of the snackbar to undo the above action.
-        onViewWaiting(withText(R.string.undo)).perform(click());
-        onViewWaiting(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"SafetyHubNotifications"})
     public void testNotificationAllow() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
@@ -304,14 +285,14 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
-    public void testNotificationAsk() {
+    public void testNotificationReset() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {NOTIFICATION_PERMISSIONS_1});
         mNotificationsFragmentTestRule.startSettingsActivity();
 
         // Reset the notification by clicking the corresponding menu button.
         clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
-        onViewWaiting(withText(R.string.safety_hub_ask_notifications_menu_item)).perform(click());
+        onViewWaiting(withText(R.string.safety_hub_reset_notifications_menu_item)).perform(click());
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
 
         // Click on the action button of the snackbar to undo the above action.
@@ -323,7 +304,7 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubNotifications"})
-    public void testBlockAllNotifications() {
+    public void testResetAllNotifications() {
         mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
                 new NotificationPermissions[] {
                     NOTIFICATION_PERMISSIONS_1, NOTIFICATION_PERMISSIONS_2
@@ -353,7 +334,7 @@ public final class SafetyHubTest {
                 .check(matches(isDisplayed()));
 
         // Click the button at the bottom of the page.
-        onView(withText(R.string.safety_hub_notifications_block_all_button)).perform(click());
+        onView(withText(R.string.safety_hub_notifications_reset_all_button)).perform(click());
 
         // Verify tha the notifications subpage has been dismissed and the state of the
         // notification module has changed.

@@ -372,7 +372,7 @@ public class SafetyHubModuleViewBinder {
             primaryButtonText =
                     preference
                             .getContext()
-                            .getString(R.string.safety_hub_notifications_block_all_button);
+                            .getString(R.string.safety_hub_notifications_reset_all_button);
             secondaryButtonText =
                     preference.getContext().getString(R.string.safety_hub_view_sites_button);
             secondaryButtonListener =

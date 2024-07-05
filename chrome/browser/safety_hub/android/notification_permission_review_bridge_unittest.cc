@@ -182,23 +182,6 @@ TEST_F(NotificationPermissionReviewBridgeTest,
 }
 
 TEST_F(NotificationPermissionReviewBridgeTest,
-       BlockNotificationPermissionForOrigin) {
-  hcsm()->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromString(kOrigin1),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      CONTENT_SETTING_DEFAULT);
-  auto type = hcsm()->GetContentSetting(GURL(kOrigin1), GURL(),
-                                        ContentSettingsType::NOTIFICATIONS);
-  ASSERT_EQ(CONTENT_SETTING_ASK, type);
-
-  BlockNotificationPermissionForOrigin(profile(), kOrigin1);
-
-  type = hcsm()->GetContentSetting(GURL(kOrigin1), GURL(),
-                                   ContentSettingsType::NOTIFICATIONS);
-  ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
-}
-
-TEST_F(NotificationPermissionReviewBridgeTest,
        AllowNotificationPermissionForOrigin) {
   auto pattern = ContentSettingsPattern::FromString(kOrigin1);
   hcsm()->SetContentSettingCustomScope(

@@ -33,9 +33,6 @@ void IgnoreOriginForNotificationPermissionReview(Profile* profile,
 void UndoIgnoreOriginForNotificationPermissionReview(Profile* profile,
                                                      const std::string& origin);
 
-void BlockNotificationPermissionForOrigin(Profile* profile,
-                                          const std::string& origin);
-
 void AllowNotificationPermissionForOrigin(Profile* profile,
                                           const std::string& origin);
 

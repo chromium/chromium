@@ -45,11 +45,6 @@ class FakeNotificationPermissionReviewBridge implements NotificationPermissionRe
     }
 
     @Override
-    public void blockNotificationPermissionForOrigin(Profile profile, String origin) {
-        mActiveOriginSet.remove(origin);
-    }
-
-    @Override
     public void allowNotificationPermissionForOrigin(Profile profile, String origin) {
         mActiveOriginSet.add(origin);
     }

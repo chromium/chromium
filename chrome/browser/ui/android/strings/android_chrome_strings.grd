@@ -1703,14 +1703,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_SUBLABEL" translateable="false">
         {NUM_SITES, plural, =1 {About 1 notification a day} other {About # notifications a day}}
       </message>
-      <message name="IDS_SAFETY_HUB_BLOCK_NOTIFICATIONS_MENU_ITEM" translateable="false">
-        Block notifications from this site
+      <message name="IDS_SAFETY_HUB_RESET_NOTIFICATIONS_MENU_ITEM" translateable="false">
+        Unsubscribe notifications from this site
       </message>
       <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" translateable="false">
         Always allow notifications from this site
-      </message>
-      <message name="IDS_SAFETY_HUB_ASK_NOTIFICATIONS_MENU_ITEM" translateable="false">
-        Don’t allow but ask later
       </message>
       <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" translateable="false">
         Safety at a glance
@@ -1721,8 +1718,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_DESCRIPTION" translateable="false">
         Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BLOCK_ALL_BUTTON" translateable="false">
-        Block all
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_ALL_BUTTON" translateable="false">
+        Unsubscribe all
       </message>
       <message name="IDS_SAFETY_HUB_REMOVED_ONE_PERMISSION_SUBLABEL" translateable="false">
         You haven't visited recently. Chrome removed <ph name="PERMISSION">%1$s<ex>location</ex></ph>
@@ -1739,16 +1736,13 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" translateable="false">
         Dangerous site. Chrome removed notifications.
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BLOCK_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" translateable="false">
         Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" translateable="false">
         Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ASK_SNACKBAR" translateable="false">
-        Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_BLOCK_SNACKBAR" translateable="false">
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" translateable="false">
         Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" translateable="false">

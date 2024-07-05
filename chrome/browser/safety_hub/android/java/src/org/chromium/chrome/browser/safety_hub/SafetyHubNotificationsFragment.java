@@ -44,10 +44,10 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         if (mBulkActionConfirmed) {
             List<NotificationPermissions> notificationPermissionsList =
                     mNotificationPermissionReviewBridge.getNotificationPermissions();
-            mNotificationPermissionReviewBridge.bulkBlockNotificationPermissions();
+            mNotificationPermissionReviewBridge.bulkResetNotificationPermissions();
             showSnackbarOnLastFocusedActivity(
                     getString(
-                            R.string.safety_hub_notifications_bulk_block_snackbar,
+                            R.string.safety_hub_notifications_bulk_reset_snackbar,
                             notificationPermissionsList.size()),
                     Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
                     new SnackbarManager.SnackbarController() {
@@ -78,24 +78,13 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     }
 
     @Override
-    public void onBlockClicked(SafetyHubNotificationsPreference preference) {
-        NotificationPermissions notificationPermissions =
-                ((SafetyHubNotificationsPreference) preference).getNotificationsPermissions();
-        mNotificationPermissionReviewBridge.blockNotificationPermissionForOrigin(
-                notificationPermissions.getPrimaryPattern());
-        showSingleSiteSnackbar(
-                R.string.safety_hub_notifications_block_snackbar,
-                notificationPermissions.getPrimaryPattern());
-    }
-
-    @Override
-    public void onAskClicked(SafetyHubNotificationsPreference preference) {
+    public void onResetClicked(SafetyHubNotificationsPreference preference) {
         NotificationPermissions notificationPermissions =
                 ((SafetyHubNotificationsPreference) preference).getNotificationsPermissions();
         mNotificationPermissionReviewBridge.resetNotificationPermissionForOrigin(
                 notificationPermissions.getPrimaryPattern());
         showSingleSiteSnackbar(
-                R.string.safety_hub_notifications_ask_snackbar,
+                R.string.safety_hub_notifications_reset_snackbar,
                 notificationPermissions.getPrimaryPattern());
     }
 
@@ -138,7 +127,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
 
     @Override
     protected @StringRes int getButtonTextId() {
-        return R.string.safety_hub_notifications_block_all_button;
+        return R.string.safety_hub_notifications_reset_all_button;
     }
 
     @Override

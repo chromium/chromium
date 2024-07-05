@@ -295,7 +295,7 @@ public class SafetyHubModuleViewBinderTest {
                                 notificationPermissionsForReviewCount,
                                 notificationPermissionsForReviewCount);
         String expectedPrimaryButtonText =
-                mActivity.getString(R.string.safety_hub_notifications_block_all_button);
+                mActivity.getString(R.string.safety_hub_notifications_reset_all_button);
         String expectedSecondaryButtonText =
                 mActivity.getString(R.string.safety_hub_view_sites_button);
 

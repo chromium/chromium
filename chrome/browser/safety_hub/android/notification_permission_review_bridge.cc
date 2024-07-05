@@ -80,15 +80,6 @@ void UndoIgnoreOriginForNotificationPermissionReview(
       primary_pattern, ContentSettingsPattern::Wildcard());
 }
 
-void BlockNotificationPermissionForOrigin(Profile* profile,
-                                          const std::string& origin) {
-  NotificationPermissionsReviewService* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile);
-  CHECK(service);
-
-  service->SetNotificationPermissionsForOrigin(origin, CONTENT_SETTING_BLOCK);
-}
-
 void AllowNotificationPermissionForOrigin(Profile* profile,
                                           const std::string& origin) {
   NotificationPermissionsReviewService* service =
@@ -128,14 +119,6 @@ JNI_NotificationPermissionReviewBridge_UndoIgnoreOriginForNotificationPermission
     Profile* profile,
     std::string& origin) {
   UndoIgnoreOriginForNotificationPermissionReview(profile, origin);
-}
-
-static void
-JNI_NotificationPermissionReviewBridge_BlockNotificationPermissionForOrigin(
-    JNIEnv* env,
-    Profile* profile,
-    std::string& origin) {
-  BlockNotificationPermissionForOrigin(profile, origin);
 }
 
 static void

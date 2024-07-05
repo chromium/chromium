@@ -63,21 +63,14 @@ public class NotificationPermissionReviewBridge {
         notifyNotificationPermissionsChanged();
     }
 
-    /** Blocks the notification permission for the given origin. */
-    void blockNotificationPermissionForOrigin(String origin) {
-        NotificationPermissionReviewBridgeJni.get()
-                .blockNotificationPermissionForOrigin(mProfile, origin);
-        notifyNotificationPermissionsChanged();
-    }
-
     /**
-     * Blocks the notification permission for several origins in bulk and notifies the observers at
+     * Resets the notification permission for several origins in bulk and notifies the observers at
      * the end.
      */
-    void bulkBlockNotificationPermissions() {
+    void bulkResetNotificationPermissions() {
         for (NotificationPermissions notificationPermissions : getNotificationPermissions()) {
             NotificationPermissionReviewBridgeJni.get()
-                    .blockNotificationPermissionForOrigin(
+                    .resetNotificationPermissionForOrigin(
                             mProfile, notificationPermissions.getPrimaryPattern());
         }
         notifyNotificationPermissionsChanged();
@@ -126,9 +119,6 @@ public class NotificationPermissionReviewBridge {
                 @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
         void undoIgnoreOriginForNotificationPermissionReview(
-                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
-
-        void blockNotificationPermissionForOrigin(
                 @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
         void allowNotificationPermissionForOrigin(
