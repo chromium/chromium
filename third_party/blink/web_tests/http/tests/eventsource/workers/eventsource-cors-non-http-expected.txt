@@ -1,7 +1,7 @@
 CONSOLE ERROR: Not allowed to load local resource: motd
-CONSOLE ERROR: Access to resource at 'ftp://127.0.0.1/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https, chrome-untrusted.
-CONSOLE ERROR: Access to resource at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https, chrome-untrusted.
-CONSOLE ERROR: Access to resource at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https, chrome-untrusted.
+CONSOLE ERROR: Access to resource at 'ftp://127.0.0.1/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-untrusted, data, http, https.
+CONSOLE ERROR: Access to resource at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-untrusted, data, http, https.
+CONSOLE ERROR: Access to resource at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-untrusted, data, http, https.
 [Worker] Test EventSource with non-HTTP protocol schemes in the URL.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
