@@ -10461,7 +10461,7 @@
                     "params": {
                         "prob": "0.01",
                         "survey_cycle_length": "90",
-                        "survey_start_date_ms": "1717941600000",
+                        "survey_start_date_ms": "1721606400000",
                         "trigger_id": "ZMEQmwKYE0jBnuKU19R0Uk7d5aG4"
                     },
                     "enable_features": [

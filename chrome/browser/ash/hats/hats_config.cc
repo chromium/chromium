@@ -265,8 +265,9 @@ const HatsConfig kHatsLauncherAppsNeedingSurvey = {
     prefs::kHatsLauncherAppsSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
-// Office integration survey -- Shown 1 minute after the user opens an Office
-// file (MS365 PWA, Docs/Sheets/Slides, or QuickOffice).
+// Office integration survey -- Shown after the user opens an Office file:
+// For MS365 and Docs/Sheets/Slides, shown when the app is inactive or closed.
+// For QuickOffice, shown 1 minute after launch.
 const HatsConfig kHatsOfficeSurvey = {
     ::features::kHappinessTrackingOffice,  // feature
     base::Days(1),                         // new_device_threshold
