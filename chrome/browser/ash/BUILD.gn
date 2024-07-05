@@ -1096,12 +1096,6 @@ static_library("ash") {
     "policy/handlers/system_proxy_handler.h",
     "policy/handlers/tpm_auto_update_mode_policy_handler.cc",
     "policy/handlers/tpm_auto_update_mode_policy_handler.h",
-    "policy/invalidation/affiliated_cloud_policy_invalidator.cc",
-    "policy/invalidation/affiliated_cloud_policy_invalidator.h",
-    "policy/invalidation/affiliated_invalidation_service_provider.cc",
-    "policy/invalidation/affiliated_invalidation_service_provider.h",
-    "policy/invalidation/affiliated_invalidation_service_provider_impl.cc",
-    "policy/invalidation/affiliated_invalidation_service_provider_impl.h",
     "policy/login/login_profile_policy_provider.cc",
     "policy/login/login_profile_policy_provider.h",
     "policy/login/wildcard_login_checker.cc",
@@ -1873,6 +1867,7 @@ static_library("ash") {
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/history",
@@ -2499,6 +2494,7 @@ static_library("ash") {
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/invalidation",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/enterprise:managed_printer_proto",
@@ -3601,10 +3597,6 @@ source_set("unit_tests") {
     "policy/handlers/screen_capture_location_policy_handler_unittest.cc",
     "policy/handlers/system_proxy_handler_unittest.cc",
     "policy/handlers/tpm_auto_update_mode_policy_handler_unittest.cc",
-    "policy/invalidation/affiliated_cloud_policy_invalidator_unittest.cc",
-    "policy/invalidation/affiliated_invalidation_service_provider_impl_unittest.cc",
-    "policy/invalidation/fake_affiliated_invalidation_service_provider.cc",
-    "policy/invalidation/fake_affiliated_invalidation_service_provider.h",
     "policy/networking/euicc_status_uploader_unittest.cc",
     "policy/off_hours/device_off_hours_controller_unittest.cc",
     "policy/off_hours/off_hours_policy_applier_unittest.cc",
@@ -3918,6 +3910,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/plugin_vm:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/invalidation:test_support",
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/ash/power/ml/smart_dim",
     "//chrome/browser/ash/printing/enterprise",
@@ -4445,6 +4438,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/platform_keys:unit_tests",
     "//chrome/browser/ash/plugin_vm:unit_tests",
     "//chrome/browser/ash/policy/core:unit_tests",
+    "//chrome/browser/ash/policy/invalidation:unit_tests",
     "//chrome/browser/ash/printing/enterprise:unit_tests",
     "//chrome/browser/ash/release_notes:unit_tests",
     "//chrome/browser/ash/remote_apps:unit_tests",
@@ -4460,12 +4454,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/usb:unit_tests",
     "//chrome/browser/ash/video_conference:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",
-  ]
-
-  allow_circular_includes_from = [
-    # For chrome/browser/ash/policy/invalidation/* include.
-    # TODO(b/335294371): Remove.
-    "//chrome/browser/ash/policy/core:unit_tests",
   ]
 
   if (is_cfm) {
