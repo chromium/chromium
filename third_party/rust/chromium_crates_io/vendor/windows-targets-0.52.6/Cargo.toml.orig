@@ -1,7 +1,7 @@
 
 [package]
 name = "windows-targets"
-version = "0.52.5"
+version = "0.52.6"
 authors = ["Microsoft"]
 edition = "2021"
 rust-version = "1.56"
@@ -14,25 +14,25 @@ readme = "readme.md"
 workspace = true
 
 [target.'cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))'.dependencies]
-windows_i686_msvc = { path = "../../targets/i686_msvc", version = "0.52.5" }
+windows_i686_msvc = { path = "../../targets/i686_msvc", version = "0.52.6" }
 
 [target.'cfg(all(any(target_arch = "x86_64", target_arch = "arm64ec"), target_env = "msvc", not(windows_raw_dylib)))'.dependencies]
-windows_x86_64_msvc = { path = "../../targets/x86_64_msvc", version = "0.52.5" }
+windows_x86_64_msvc = { path = "../../targets/x86_64_msvc", version = "0.52.6" }
 
 [target.'cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))'.dependencies]
-windows_aarch64_msvc = { path = "../../targets/aarch64_msvc", version = "0.52.5" }
+windows_aarch64_msvc = { path = "../../targets/aarch64_msvc", version = "0.52.6" }
 
 [target.'cfg(all(target_arch = "x86", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))'.dependencies]
-windows_i686_gnu = { path = "../../targets/i686_gnu", version = "0.52.5" }
+windows_i686_gnu = { path = "../../targets/i686_gnu", version = "0.52.6" }
 
 [target.'cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))'.dependencies]
-windows_x86_64_gnu = { path = "../../targets/x86_64_gnu", version = "0.52.5" }
+windows_x86_64_gnu = { path = "../../targets/x86_64_gnu", version = "0.52.6" }
 
 [target.i686-pc-windows-gnullvm.dependencies]
-windows_i686_gnullvm = { path = "../../targets/i686_gnullvm", version = "0.52.5" }
+windows_i686_gnullvm = { path = "../../targets/i686_gnullvm", version = "0.52.6" }
 
 [target.x86_64-pc-windows-gnullvm.dependencies]
-windows_x86_64_gnullvm = { path = "../../targets/x86_64_gnullvm", version = "0.52.5" }
+windows_x86_64_gnullvm = { path = "../../targets/x86_64_gnullvm", version = "0.52.6" }
 
 [target.aarch64-pc-windows-gnullvm.dependencies]
-windows_aarch64_gnullvm = { path = "../../targets/aarch64_gnullvm", version = "0.52.5" }
+windows_aarch64_gnullvm = { path = "../../targets/aarch64_gnullvm", version = "0.52.6" }

@@ -614,7 +614,7 @@ dependencies = [
 
 [[package]]
 name = "windows-targets"
-version = "0.52.5"
+version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "windows_aarch64_gnullvm",

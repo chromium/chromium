@@ -3,7 +3,7 @@
 The [windows-targets](https://crates.io/crates/windows-targets) crate includes import libs, supports semantic versioning, and optional support for raw-dylib. 
 
 * [Getting started](https://kennykerr.ca/rust-getting-started/)
-* [Samples](https://github.com/microsoft/windows-rs/tree/0.56.0/crates/samples) <!-- link to samples for upcoming release -->
+* [Samples](https://github.com/microsoft/windows-rs/tree/0.58.0/crates/samples)
 * [Releases](https://github.com/microsoft/windows-rs/releases)
 
 Start by adding the following to your Cargo.toml file:
