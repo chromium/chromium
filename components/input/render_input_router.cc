@@ -403,6 +403,8 @@ void RenderInputRouter::OnGestureEventAck(
     const input::GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
+  TRACE_EVENT1("input", "RenderInputRouter::OnGestureEventAck", "type",
+               blink::WebInputEvent::GetName(event.event.GetType()));
   latency_tracker_->OnInputEventAck(event.event, &event.latency, ack_result);
   delegate_->NotifyObserversOfInputEventAcks(ack_source, ack_result,
                                              event.event);

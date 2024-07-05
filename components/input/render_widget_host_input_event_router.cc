@@ -1152,6 +1152,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     RenderWidgetHostViewInput* target_view,
     RenderWidgetHostViewInput* resending_view,
     const blink::WebGestureEvent& event) {
+  TRACE_EVENT1("input", "RenderWidgetHostInputEventRouter::BubbleScrollEvent",
+               "type", blink::WebInputEvent::GetName(event.GetType()));
   DCHECK(target_view);
   DCHECK(event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin ||
          event.GetType() == blink::WebInputEvent::Type::kGestureScrollUpdate ||
@@ -1202,6 +1204,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
       // TODO(mcnee): If we inform |bubbling_gesture_scroll_origin_| and the
       // intermediate views of the end of bubbling, we could presumably DCHECK
       // that we have a target.
+      TRACE_EVENT_INSTANT0("input", "Drop_Event_Target_Gone",
+                           TRACE_EVENT_SCOPE_THREAD);
       return false;
     }
 
@@ -1209,6 +1213,9 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     // bubbling targets.
     if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd &&
         resending_view != bubbling_gesture_scroll_origin_) {
+      TRACE_EVENT_INSTANT0("input",
+                           "Dont_Bubble_GestureScrollEnd_Intermediate_Sender",
+                           TRACE_EVENT_SCOPE_THREAD);
       return true;
     }
   }
@@ -1246,6 +1253,8 @@ bool RenderWidgetHostInputEventRouter::BubbleScrollEvent(
     }
   }
 
+  TRACE_EVENT_INSTANT0("input", "Did_Bubble_Scroll_Event_To_Target",
+                       TRACE_EVENT_SCOPE_THREAD);
   bubbling_gesture_scroll_target_->ProcessGestureEvent(
       GestureEventInTarget(event, bubbling_gesture_scroll_target_),
       latency_info);

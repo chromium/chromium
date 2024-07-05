@@ -556,6 +556,8 @@ void RenderWidgetHostViewChildFrame::StopFlingingIfNecessary(
 void RenderWidgetHostViewChildFrame::GestureEventAck(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {
+  TRACE_EVENT1("input", "RenderWidgetHostViewChildFrame::GestureEventAck",
+               "type", blink::WebInputEvent::GetName(event.GetType()));
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
@@ -590,6 +592,8 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
     }
   }
 
+  TRACE_EVENT_INSTANT0("input", "Did_Ack_To_Frame_Connector",
+                       TRACE_EVENT_SCOPE_THREAD);
   frame_connector_->DidAckGestureEvent(event, ack_result);
 }
 
