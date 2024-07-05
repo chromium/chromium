@@ -26,6 +26,19 @@ static_library("invalidation") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_support/fake_registration_token_handler.cc",
+    "test_support/fake_registration_token_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/invalidation:invalidation",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "invalidation_listener_impl_unittest.cc" ]
@@ -33,7 +46,8 @@ source_set("unit_tests") {
     "//base",
     "//components/gcm_driver:test_support",
     "//components/gcm_driver/instance_id:test_support",
-    "//components/invalidation",
+    "//components/invalidation:invalidation",
+    "//components/invalidation:test_support",
     "//google_apis:test_support",
     "//google_apis/gcm:gcm",
     "//testing/gmock",

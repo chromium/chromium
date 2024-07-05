@@ -15,6 +15,7 @@
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/test_support/fake_registration_token_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -122,23 +123,6 @@ class FakeObserver : public InvalidationListener::Observer {
  private:
   InvalidationsExpected current_expectation_;
   std::vector<DirectInvalidation> received_invalidations_;
-};
-
-class FakeRegistrationTokenHandler : public RegistrationTokenHandler {
- public:
-  ~FakeRegistrationTokenHandler() override = default;
-
-  void OnRegistrationTokenReceived(const std::string& registration_token,
-                                   base::Time token_end_of_live) override {
-    registration_token_ = registration_token;
-    token_end_of_live_ = token_end_of_live;
-  }
-
-  std::string get_registration_token() { return registration_token_; }
-
- private:
-  std::string registration_token_;
-  base::Time token_end_of_live_;
 };
 
 }  // namespace
