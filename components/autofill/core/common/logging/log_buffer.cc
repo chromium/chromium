@@ -240,6 +240,12 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib) {
   return std::move(buf);
 }
 
+LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf,
+                               SetParentTagContainsPII&& attrib) {
+  *buf.parent_ << Attrib{"data-pii", "true"};
+  return std::move(buf);
+}
+
 namespace {
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
 template <typename T, typename CharT = typename T::value_type>

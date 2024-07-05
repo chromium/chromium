@@ -876,11 +876,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
                                                  SubmissionSource source) {
   base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
                                 client().GetProfileType());
-  LOG_AF(log_manager()) << LoggingScope::kSubmission
-                        << LogMessage::kFormSubmissionDetected << Br{}
-                        << "known_success: " << known_success << Br{}
-                        << "source: " << SubmissionSourceToString(source)
-                        << Br{} << form;
+  const base::TimeTicks form_submitted_timestamp = base::TimeTicks::Now();
+  LOG_AF(log_manager())
+      << LoggingScope::kSubmission << LogMessage::kFormSubmissionDetected
+      << Br{} << "known_success: " << known_success << Br{} << "timestamp: "
+      << form_submitted_timestamp.since_origin().InMilliseconds() << Br{}
+      << "source: " << SubmissionSourceToString(source) << Br{} << form;
 
   // Always upload page language metrics.
   LogLanguageMetrics(client().GetLanguageState());
@@ -907,7 +908,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
-  form_submitted_timestamp_ = base::TimeTicks::Now();
+  form_submitted_timestamp_ = form_submitted_timestamp;
 
   // Log metrics about the autocomplete attribute usage in the submitted form.
   LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);

@@ -261,12 +261,11 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tag{"div"} << Attrib{"class", "form"};
   buffer << Tag{"table"};
   buffer << Tr{} << "Form name:" << form.name();
-  buffer << Tr{} << "Identifiers: "
-         << base::StrCat(
-                {"renderer id: ",
-                 base::NumberToString(form.global_id().renderer_id.value()),
-                 ", host frame: ", form.global_id().frame_token.ToString(),
-                 " (", url::Origin::Create(form.url()).Serialize(), ")"});
+  buffer << Tr{} << "Renderer id:"
+         << base::NumberToString(form.global_id().renderer_id.value());
+  buffer << Tr{} << "Host frame: "
+         << base::StrCat({form.global_id().frame_token.ToString(), " (",
+                          url::Origin::Create(form.url()).Serialize(), ")"});
   buffer << Tr{} << "URL:" << form.url();
   buffer << Tr{} << "Action:" << form.action();
   buffer << Tr{} << "Is action empty:" << form.is_action_empty();

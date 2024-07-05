@@ -711,6 +711,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Is enabled:" << field.is_enabled();
   buffer << Tr{} << "Is readonly:" << field.is_readonly();
   buffer << Tr{} << "Is empty:" << (field.value().empty() ? "Yes" : "No");
+  buffer << Tr{} << "Value:" << field.value() << SetParentTagContainsPII{};
   buffer << CTag{"table"};
   return buffer;
 }

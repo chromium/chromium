@@ -86,6 +86,10 @@ struct Attrib {
   std::string value;
 };
 
+// Sets a html data attribute specificifying that the parent tab contains PII.
+// Used so that it can be potentially stripped.
+struct SetParentTagContainsPII {};
+
 // An <br> HTML tag, note that this does not need to be closed.
 struct Br {};
 
@@ -206,6 +210,9 @@ class LogTableRowBuffer {
   friend LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, T&& value);
   friend LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf,
                                         Attrib&& attrib);
+  friend LogTableRowBuffer&& operator<<(
+      LogTableRowBuffer&& buf,
+      SetParentTagContainsPII&& parent_tag_contains_pii);
 
   raw_ptr<LogBuffer> parent_ = nullptr;
 };
