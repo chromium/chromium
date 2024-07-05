@@ -68,20 +68,21 @@ void AppendBoundSessionInfo(
     BoundSessionCookieRefreshService* bound_session_service) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
+  static constexpr std::string_view kSessionIdKey = "sessionID";
   base::Value::List bound_sessions_list;
   if (!bound_session_service) {
     bound_sessions_list.Append(base::Value::Dict().Set(
-        "domain", "Bound session service is disabled."));
+        kSessionIdKey, "Bound session service is disabled."));
   } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
                  bound_session_service->GetBoundSessionDebugInfo();
              bound_session_info.empty()) {
     bound_sessions_list.Append(
-        base::Value::Dict().Set("domain", "No active bound sessions."));
+        base::Value::Dict().Set(kSessionIdKey, "No active bound sessions."));
   } else {
     for (const auto& info : bound_session_info) {
       bound_sessions_list.Append(
           base::Value::Dict()
-              .Set("sessionID", info.session_id)
+              .Set(kSessionIdKey, info.session_id)
               .Set("domain", info.domain)
               .Set("path", info.path)
               .Set("expirationTime",
