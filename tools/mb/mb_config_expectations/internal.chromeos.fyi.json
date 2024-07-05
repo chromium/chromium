@@ -13,7 +13,7 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-betty-chrome-dchecks": {
+  "chromeos-betty-chrome-dchecks-fyi": {
     "args_file": "//build/args/chromeos/betty.gni",
     "gn_args": {
       "also_build_lacros_chrome_for_architecture": "amd64",
