@@ -43,3 +43,7 @@ AuthenticatorGpmPinSheetView::BuildStepSpecificContent() {
 void AuthenticatorGpmPinSheetView::OnPinChanged(std::u16string pin) {
   gpm_pin_sheet_model()->SetPin(std::move(pin));
 }
+
+void AuthenticatorGpmPinSheetView::PinCharTyped(bool is_digit) {
+  gpm_pin_sheet_model()->PinCharTyped(is_digit);
+}

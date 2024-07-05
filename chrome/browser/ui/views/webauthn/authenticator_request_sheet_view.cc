@@ -295,6 +295,14 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
     child_views_.error_label_ = contents->AddChildView(std::move(error_label));
   }
 
+  std::u16string hint = model()->GetHint();
+  if (!hint.empty()) {
+    auto hint_label = std::make_unique<views::Label>(
+        std::move(hint), views::style::CONTEXT_LABEL, views::style::STYLE_HINT);
+    hint_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    child_views_.hint_label_ = contents->AddChildView(std::move(hint_label));
+  }
+
   return contents;
 }
 

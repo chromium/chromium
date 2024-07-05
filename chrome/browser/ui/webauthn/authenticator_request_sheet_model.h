@@ -63,6 +63,7 @@ class AuthenticatorRequestSheetModel {
   virtual std::u16string GetStepDescription() const = 0;
   virtual std::u16string GetAdditionalDescription() const;
   virtual std::u16string GetError() const;
+  virtual std::u16string GetHint() const;
 
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;

@@ -24,6 +24,7 @@ class AuthenticatorGPMPinView : public views::View,
   class Delegate {
    public:
     virtual void OnPinChanged(std::u16string pin) = 0;
+    virtual void PinCharTyped(bool is_digit) = 0;
   };
 
   explicit AuthenticatorGPMPinView(int pin_digits_count,

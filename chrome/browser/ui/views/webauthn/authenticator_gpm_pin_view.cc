@@ -50,7 +50,8 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
 
   bool pin_changed = false;
   char16_t c = event.GetCharacter();
-  if (base::IsAsciiDigit(c)) {
+  bool is_digit = base::IsAsciiDigit(c);
+  if (is_digit) {
     pin_changed = pin_textfield_->AppendDigit(std::u16string(1, c));
   } else if (event.key_code() == ui::VKEY_BACK) {
     pin_changed = pin_textfield_->RemoveDigit();
@@ -58,6 +59,12 @@ bool AuthenticatorGPMPinView::HandleKeyEvent(views::Textfield* textfield,
 
   if (pin_changed) {
     delegate_->OnPinChanged(pin_textfield_->GetPin());
+  }
+
+  // This might result in recreating this view if the hint visibility changes,
+  // hence it should be the last call in this function.
+  if (base::IsAsciiPrintable(c)) {
+    delegate_->PinCharTyped(is_digit);
   }
 
   return true;

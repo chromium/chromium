@@ -758,8 +758,11 @@ class AuthenticatorGpmPinSheetModel : public AuthenticatorGpmPinSheetModelBase {
       Mode mode);
   ~AuthenticatorGpmPinSheetModel() override;
 
+  void PinCharTyped(bool is_digit);
+
   int pin_digits_count() const;
 
+  // AuthenticatorGpmPinSheetModelBase:
   void SetPin(std::u16string pin) override;
 
  private:
@@ -769,8 +772,12 @@ class AuthenticatorGpmPinSheetModel : public AuthenticatorGpmPinSheetModelBase {
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
+  std::u16string GetHint() const override;
 
   const int pin_digits_count_;
+
+  // Whether a hint explaining that only digits are allowed should be shown.
+  bool show_digit_hint_ = false;
 };
 
 // The sheet shown when the user is entering an arbitrary (alphanumeric) pin.

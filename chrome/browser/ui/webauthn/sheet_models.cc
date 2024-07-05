@@ -1740,6 +1740,15 @@ AuthenticatorGpmPinSheetModel::AuthenticatorGpmPinSheetModel(
 
 AuthenticatorGpmPinSheetModel::~AuthenticatorGpmPinSheetModel() = default;
 
+void AuthenticatorGpmPinSheetModel::PinCharTyped(bool is_digit) {
+  if (show_digit_hint_ != is_digit) {
+    return;
+  }
+
+  show_digit_hint_ = !is_digit;
+  dialog_model()->OnSheetModelChanged();
+}
+
 int AuthenticatorGpmPinSheetModel::pin_digits_count() const {
   return pin_digits_count_;
 }
@@ -1774,6 +1783,12 @@ bool AuthenticatorGpmPinSheetModel::IsAcceptButtonEnabled() const {
 
 std::u16string AuthenticatorGpmPinSheetModel::GetAcceptButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CONFIRM);
+}
+
+std::u16string AuthenticatorGpmPinSheetModel::GetHint() const {
+  return show_digit_hint_
+             ? l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PIN_DIGIT_HINT)
+             : std::u16string();
 }
 
 // AuthenticatorGpmArbitraryPinSheetModel --------------------------------------

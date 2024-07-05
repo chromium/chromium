@@ -15,6 +15,10 @@ std::u16string AuthenticatorRequestSheetModel::GetError() const {
   return std::u16string();
 }
 
+std::u16string AuthenticatorRequestSheetModel::GetHint() const {
+  return std::u16string();
+}
+
 bool AuthenticatorRequestSheetModel::IsManageDevicesButtonVisible() const {
   return false;
 }

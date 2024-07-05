@@ -41,6 +41,7 @@ class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
 
   // AuthenticatorGPMPinView::Delegate:
   void OnPinChanged(std::u16string pin) override;
+  void PinCharTyped(bool is_digit) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_PIN_SHEET_VIEW_H_
