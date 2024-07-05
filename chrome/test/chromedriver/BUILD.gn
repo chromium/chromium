@@ -547,6 +547,7 @@ test("chromedriver_unittests") {
     "chrome/stub_web_view.cc",
     "chrome/stub_web_view.h",
     "chrome/web_view_impl_unittest.cc",
+    "chrome/web_view_info_unittest.cc",
     "chrome_launcher_unittest.cc",
     "command_listener_proxy_unittest.cc",
     "commands_unittest.cc",
