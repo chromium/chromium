@@ -66,7 +66,9 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
     allows_negative_percentage_reference_ = true;
   }
 
-  bool IsZero() const;
+  BoolStatus IsZero() const;
+  BoolStatus IsOne() const;
+  BoolStatus IsNegative() const;
 
   bool IsComputationallyIndependent() const;
 

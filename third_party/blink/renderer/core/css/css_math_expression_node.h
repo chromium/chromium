@@ -126,7 +126,9 @@ class CORE_EXPORT CSSMathExpressionNode
 
   virtual bool IsMathFunction() const { return false; }
 
-  virtual bool IsZero() const = 0;
+  virtual CSSPrimitiveValue::BoolStatus IsZero() const = 0;
+  virtual CSSPrimitiveValue::BoolStatus IsOne() const = 0;
+  virtual CSSPrimitiveValue::BoolStatus IsNegative() const = 0;
 
   // Resolves the expression into one value *without doing any type conversion*.
   // Hits DCHECK if type conversion is required.
@@ -295,7 +297,9 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
     return false;
   }
 
-  bool IsZero() const final;
+  CSSPrimitiveValue::BoolStatus IsZero() const final;
+  CSSPrimitiveValue::BoolStatus IsOne() const final;
+  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -367,7 +371,15 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     return false;
   }
 
-  bool IsZero() const final { return false; }
+  CSSPrimitiveValue::BoolStatus IsZero() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsOne() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsNegative() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
   String CustomCSSText() const final { return identifier_; }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -468,7 +480,15 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
     return false;
   }
 
-  bool IsZero() const final { return false; }
+  CSSPrimitiveValue::BoolStatus IsZero() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsOne() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsNegative() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
   String CustomCSSText() const final { return getValueName(keyword_); }
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -650,7 +670,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   String CSSTextAsClamp() const;
 
-  bool IsZero() const final;
+  CSSPrimitiveValue::BoolStatus IsZero() const final;
+  CSSPrimitiveValue::BoolStatus IsOne() const final;
+  CSSPrimitiveValue::BoolStatus IsNegative() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
@@ -747,7 +769,15 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
 
   CSSValueID GetValue() const { return size_feature_->GetValueID(); }
 
-  bool IsZero() const final { return false; }
+  CSSPrimitiveValue::BoolStatus IsZero() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsOne() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsNegative() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
       const CSSLengthResolver&) const final;
@@ -835,7 +865,15 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   bool IsMathFunction() const final { return true; }
 
   bool IsAnchorQuery() const final { return true; }
-  bool IsZero() const final { return false; }
+  CSSPrimitiveValue::BoolStatus IsZero() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsOne() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  CSSPrimitiveValue::BoolStatus IsNegative() const final {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
     return CSSPrimitiveValue::UnitType::kUnknown;
   }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -198,11 +199,34 @@ double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
   }
 }
 
-bool CSSMathFunctionValue::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsZero() const {
+  if (IsCalculatedPercentageWithLength()) {
+    return BoolStatus::kUnresolvable;
+  }
   if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
-    return false;
+    return BoolStatus::kUnresolvable;
   }
   return expression_->IsZero();
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsOne() const {
+  if (IsCalculatedPercentageWithLength()) {
+    return BoolStatus::kUnresolvable;
+  }
+  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
+    return BoolStatus::kUnresolvable;
+  }
+  return expression_->IsOne();
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsNegative() const {
+  if (IsCalculatedPercentageWithLength()) {
+    return BoolStatus::kUnresolvable;
+  }
+  if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
+    return BoolStatus::kUnresolvable;
+  }
+  return expression_->IsNegative();
 }
 
 bool CSSMathFunctionValue::IsPx() const {

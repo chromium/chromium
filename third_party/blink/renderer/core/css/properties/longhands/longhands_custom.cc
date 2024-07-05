@@ -6547,7 +6547,8 @@ const CSSValue* OverflowClipMargin::ParseSingleValue(
     if (!length) {
       length = CSSPrimitiveValue::CreateFromLength(Length::Fixed(0), 1.f);
     }
-  } else if (reference_box && length && length->IsZero()) {
+  } else if (reference_box && length &&
+             length->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
     length = nullptr;
   }
 
@@ -9326,11 +9327,12 @@ const CSSValue* Translate::ParseSingleValue(
     CSSPrimitiveValue* translate_z = css_parsing_utils::ConsumeLength(
         stream, context, CSSPrimitiveValue::ValueRange::kAll);
 
-    if (translate_z && translate_z->IsZero()) {
+    if (translate_z &&
+        translate_z->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
       translate_z = nullptr;
     }
-    if (translate_y->IsZero() && !translate_y->HasPercentage() &&
-        !translate_z) {
+    if (translate_y->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue &&
+        !translate_y->HasPercentage() && !translate_z) {
       return list;
     }
 

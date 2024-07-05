@@ -217,7 +217,8 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
 static inline bool FeatureWithValidLength(const String& media_feature,
                                           const CSSPrimitiveValue* value) {
   if (!(value->IsLength() ||
-        (value->IsNumber() && value->GetDoubleValue() == 0))) {
+        (value->IsNumber() &&
+         value->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue))) {
     return false;
   }
 
@@ -246,7 +247,8 @@ static inline bool FeatureWithValidDensity(const String& media_feature,
   // NOTE: The allowed range of <resolution> values always excludes negative
   // values, in addition to any explicit ranges that might be specified.
   // https://drafts.csswg.org/css-values/#resolution
-  if (!value->IsResolution() || value->GetDoubleValue() < 0) {
+  if (!value->IsResolution() ||
+      value->IsNegative() == CSSPrimitiveValue::BoolStatus::kTrue) {
     return false;
   }
 
@@ -306,7 +308,8 @@ static inline bool FeatureWithNumber(const String& media_feature,
 static inline bool FeatureWithZeroOrOne(const String& media_feature,
                                         const CSSPrimitiveValue* value) {
   if (!value->IsInteger() ||
-      !(value->GetDoubleValue() == 1 || !value->GetDoubleValue())) {
+      (value->IsOne() == CSSPrimitiveValue::BoolStatus::kFalse &&
+       value->IsZero() == CSSPrimitiveValue::BoolStatus::kFalse)) {
     return false;
   }
 
@@ -467,7 +470,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
   // Now we have |value| as a number, length or resolution
   // Create value for media query expression that must have 1 or more values.
   if (FeatureWithAspectRatio(media_feature)) {
-    if (value->GetDoubleValue() < 0) {
+    if (value->IsNegative() == CSSPrimitiveValue::BoolStatus::kTrue) {
       return std::nullopt;
     }
     if (!css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
@@ -480,7 +483,8 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     if (!denominator) {
       return std::nullopt;
     }
-    if (value->GetDoubleValue() == 0 && denominator->GetDoubleValue() == 0) {
+    if (value->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue &&
+        denominator->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
       return MediaQueryExpValue(*CSSNumericLiteralValue::Create(
                                     1, CSSPrimitiveValue::UnitType::kNumber),
                                 *CSSNumericLiteralValue::Create(

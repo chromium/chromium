@@ -566,9 +566,19 @@ double CSSPrimitiveValue::GetDoubleValueWithoutClamping() const {
                         : To<CSSNumericLiteralValue>(this)->DoubleValue();
 }
 
-bool CSSPrimitiveValue::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsZero() const {
   return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsZero()
                         : To<CSSNumericLiteralValue>(this)->IsZero();
+}
+
+CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsOne() const {
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsOne()
+                        : To<CSSNumericLiteralValue>(this)->IsOne();
+}
+
+CSSPrimitiveValue::BoolStatus CSSPrimitiveValue::IsNegative() const {
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->IsNegative()
+                        : To<CSSNumericLiteralValue>(this)->IsNegative();
 }
 
 CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(

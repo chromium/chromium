@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -785,8 +786,32 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
   }
 }
 
-bool CSSMathExpressionNumericLiteral::IsZero() const {
-  return !value_->GetDoubleValue();
+CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsZero() const {
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsOne() const {
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathExpressionNumericLiteral::IsNegative()
+    const {
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() < 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                   : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 String CSSMathExpressionNumericLiteral::CustomCSSText() const {
@@ -2109,9 +2134,31 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
                             false),
       operator_(op) {}
 
-bool CSSMathExpressionOperation::IsZero() const {
+CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsZero() const {
   std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
-  return maybe_value && !*maybe_value;
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() == 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsOne() const {
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() == 1.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                    : CSSPrimitiveValue::BoolStatus::kFalse;
+}
+
+CSSPrimitiveValue::BoolStatus CSSMathExpressionOperation::IsNegative() const {
+  std::optional<double> maybe_value = ComputeValueInCanonicalUnit();
+  if (!maybe_value.has_value()) {
+    return CSSPrimitiveValue::BoolStatus::kUnresolvable;
+  }
+  return maybe_value.value() < 0.0 ? CSSPrimitiveValue::BoolStatus::kTrue
+                                   : CSSPrimitiveValue::BoolStatus::kFalse;
 }
 
 std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(

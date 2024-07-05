@@ -75,7 +75,8 @@ inline TextWrap ToTextWrap(const CSSValue* value) {
 
 bool IsZeroPercent(const CSSValue* value) {
   if (const auto* num = DynamicTo<CSSNumericLiteralValue>(value)) {
-    return num->IsZero() && num->IsPercentage();
+    return num->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue &&
+           num->IsPercentage();
   }
 
   return false;
@@ -1672,7 +1673,8 @@ String StylePropertySerializer::GetLayeredShorthandValue(
         if (property->IDEquals(CSSPropertyID::kTransitionDelay) ||
             property->IDEquals(CSSPropertyID::kTransitionDuration)) {
           auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(value);
-          if (numeric_value && numeric_value->IsZero()) {
+          if (numeric_value &&
+              numeric_value->IsZero() == CSSPrimitiveValue::BoolStatus::kTrue) {
             omit_value = true;
           }
         } else if (property->IDEquals(
