@@ -6,12 +6,10 @@
 
 #include <optional>
 
-#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
@@ -43,6 +41,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -254,12 +253,12 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // The refresh button.
   if (offer_refresh) {
     refresh_button_ = plus_address_label_container_->AddChildView(
-        views::CreateVectorImageButton(base::BindRepeating(
-            &PlusAddressCreationDialogDelegate::OnRefreshClicked,
-            base::Unretained(this))));
-    views::SetImageFromVectorIconWithColorId(
-        refresh_button_, vector_icons::kReloadIcon, ui::kColorIcon,
-        ui::kColorIcon, kRefreshButtonIconWidth);
+        views::CreateVectorImageButtonWithNativeTheme(
+            base::BindRepeating(
+                &PlusAddressCreationDialogDelegate::OnRefreshClicked,
+                base::Unretained(this)),
+            vector_icons::kReloadIcon, kRefreshButtonIconWidth));
+    views::InstallCircleHighlightPathGenerator(refresh_button_.get());
     refresh_button_->SetProperty(views::kElementIdentifierKey,
                                  kPlusAddressRefreshButtonElementId);
     refresh_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
