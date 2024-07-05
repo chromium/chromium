@@ -1,6 +1,6 @@
 [package]
 name = "windows_x86_64_msvc"
-version = "0.52.5"
+version = "0.52.6"
 authors = ["Microsoft"]
 edition = "2021"
 rust-version = "1.56"

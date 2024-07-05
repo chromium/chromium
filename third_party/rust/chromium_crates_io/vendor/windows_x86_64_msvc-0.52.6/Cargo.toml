@@ -13,12 +13,22 @@
 edition = "2021"
 rust-version = "1.56"
 name = "windows_x86_64_msvc"
-version = "0.52.5"
+version = "0.52.6"
 authors = ["Microsoft"]
+build = "build.rs"
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Import lib for Windows"
+readme = false
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/microsoft/windows-rs"
 
 [package.metadata.docs.rs]
 default-target = "x86_64-pc-windows-msvc"
 targets = []
+
+[lib]
+name = "windows_x86_64_msvc"
+path = "src/lib.rs"
