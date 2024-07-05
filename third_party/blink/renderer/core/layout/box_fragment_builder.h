@@ -42,8 +42,13 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   BoxFragmentBuilder(LayoutInputNode node,
                      const ComputedStyle* style,
                      const ConstraintSpace& space,
-                     WritingDirectionMode writing_direction)
-      : FragmentBuilder(node, style, space, writing_direction),
+                     WritingDirectionMode writing_direction,
+                     const BlockBreakToken* previous_break_token)
+      : FragmentBuilder(node,
+                        style,
+                        space,
+                        writing_direction,
+                        previous_break_token),
         is_inline_formatting_context_(node.IsInline()) {}
 
   // Build a fragment for LayoutObject without LayoutInputNode. LayoutInline
@@ -52,10 +57,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
                      const ComputedStyle* style,
                      const ConstraintSpace& space,
                      WritingDirectionMode writing_direction)
-      : FragmentBuilder(/* node */ nullptr,
+      : FragmentBuilder(/*node=*/nullptr,
                         std::move(style),
                         space,
-                        writing_direction),
+                        writing_direction,
+                        /*previous_break_token=*/nullptr),
         is_inline_formatting_context_(true) {
     layout_object_ = layout_object;
   }
@@ -90,6 +96,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   const FragmentGeometry& InitialFragmentGeometry() const {
     DCHECK(initial_fragment_geometry_);
     return *initial_fragment_geometry_;
+  }
+
+  const BlockBreakToken* PreviousBreakToken() const {
+    return To<BlockBreakToken>(previous_break_token_);
   }
 
   // Use the block-size setters/getters further down instead of the inherited

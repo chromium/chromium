@@ -76,23 +76,23 @@ class CORE_EXPORT LayoutAlgorithm {
                   TextDirection direction,
                   const BreakTokenType* break_token)
       : node_(node),
-        break_token_(break_token),
         container_builder_(node,
                            style,
                            space,
-                           {space.GetWritingMode(), direction}) {}
+                           {space.GetWritingMode(), direction},
+                           break_token) {}
 
   // Constructor for algorithms that use BoxFragmentBuilder and
   // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<InputNodeType>(params.node)),
         early_break_(params.early_break),
-        break_token_(params.break_token),
         container_builder_(
             params.node,
             &params.node.Style(),
             params.space,
-            {params.space.GetWritingMode(), params.space.Direction()}),
+            {params.space.GetWritingMode(), params.space.Direction()},
+            params.break_token),
         additional_early_breaks_(params.additional_early_breaks) {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
@@ -123,7 +123,9 @@ class CORE_EXPORT LayoutAlgorithm {
 
   const InputNodeType& Node() const { return node_; }
 
-  const BreakTokenType* GetBreakToken() const { return break_token_; }
+  const BreakTokenType* GetBreakToken() const {
+    return container_builder_.PreviousBreakToken();
+  }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
@@ -208,9 +210,6 @@ class CORE_EXPORT LayoutAlgorithm {
   // When set, this will specify where to break before or inside. If not set,
   // the algorithm will need to figure out where to break on its own.
   const EarlyBreak* early_break_ = nullptr;
-
-  // The break token from which we are currently resuming layout.
-  const BreakTokenType* break_token_;
 
   BoxFragmentBuilderType container_builder_;
 

@@ -67,13 +67,9 @@ class CORE_EXPORT FragmentBuilder {
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
-  // Store the previous break token, if one exists.
-  void SetPreviousBreakToken(const BlockBreakToken* break_token) {
-    previous_break_token_ = break_token;
-  }
-  const BlockBreakToken* PreviousBreakToken() const {
-    return previous_break_token_;
-  }
+  // Return the previous (incoming) break token that was generated for the
+  // previous fragment of this node.
+  const BreakToken* PreviousBreakToken() const { return previous_break_token_; }
 
   // Either this function or SetBoxType must be called before ToBoxFragment().
   void SetIsNewFormattingContext(bool is_new_fc) { is_new_fc_ = is_new_fc; }
@@ -498,12 +494,14 @@ class CORE_EXPORT FragmentBuilder {
   FragmentBuilder(const LayoutInputNode& node,
                   const ComputedStyle* style,
                   const ConstraintSpace& space,
-                  WritingDirectionMode writing_direction)
+                  WritingDirectionMode writing_direction,
+                  const BreakToken* previous_break_token)
       : node_(node),
         space_(space),
         style_(style),
         writing_direction_(writing_direction),
         style_variant_(StyleVariant::kStandard),
+        previous_break_token_(previous_break_token),
         is_hidden_for_paint_(space.IsHiddenForPaint()) {
     DCHECK(style_);
     layout_object_ = node.GetLayoutBox();
@@ -551,7 +549,7 @@ class CORE_EXPORT FragmentBuilder {
   LayoutObject* layout_object_ = nullptr;
 
   // The break token from the previous fragment, that serves as input now.
-  const BlockBreakToken* previous_break_token_ = nullptr;
+  const BreakToken* previous_break_token_ = nullptr;
 
   // The break token to store in the resulting fragment.
   const BreakToken* break_token_ = nullptr;

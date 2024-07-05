@@ -393,7 +393,6 @@ void SetupFragmentBuilderForFragmentation(
 
   if (space.HasBlockFragmentation())
     builder->SetHasBlockFragmentation();
-  builder->SetPreviousBreakToken(previous_break_token);
 
   if (space.IsInitialColumnBalancingPass())
     builder->SetIsInitialColumnBalancingPass();
@@ -1317,8 +1316,9 @@ BoxFragmentBuilder CreateContainerBuilderForMulticol(
     const ConstraintSpace& space,
     const FragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
-  BoxFragmentBuilder multicol_container_builder(multicol, style, space,
-                                                style->GetWritingDirection());
+  BoxFragmentBuilder multicol_container_builder(
+      multicol, style, space, style->GetWritingDirection(),
+      /*previous_break_token=*/nullptr);
   multicol_container_builder.SetIsNewFormattingContext(true);
   multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);
   multicol_container_builder.SetIsBlockFragmentationContextRoot();

@@ -554,7 +554,7 @@ void FragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
 LayoutUnit FragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
     LayoutUnit fragmentainer_consumed_block_size) const {
   if (IsFragmentainerBoxType() && PreviousBreakToken()) {
-    return PreviousBreakToken()->ConsumedBlockSize();
+    return To<BlockBreakToken>(PreviousBreakToken())->ConsumedBlockSize();
   }
   return fragmentainer_consumed_block_size;
 }

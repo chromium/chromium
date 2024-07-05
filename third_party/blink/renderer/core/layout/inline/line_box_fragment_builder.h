@@ -27,19 +27,25 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   LineBoxFragmentBuilder(InlineNode node,
                          const ComputedStyle* style,
                          const ConstraintSpace& space,
-                         WritingDirectionMode writing_direction)
+                         WritingDirectionMode writing_direction,
+                         const InlineBreakToken* break_token)
       : FragmentBuilder(
             node,
             style,
             space,
             // Always use LTR because line items are in visual order.
-            {writing_direction.GetWritingMode(), TextDirection::kLtr}),
+            {writing_direction.GetWritingMode(), TextDirection::kLtr},
+            break_token),
         line_box_type_(PhysicalLineBoxFragment::kNormalLineBox),
         base_direction_(TextDirection::kLtr) {}
   LineBoxFragmentBuilder(const LineBoxFragmentBuilder&) = delete;
   LineBoxFragmentBuilder& operator=(const LineBoxFragmentBuilder&) = delete;
 
   void Reset();
+
+  const InlineBreakToken* PreviousBreakToken() const {
+    return To<InlineBreakToken>(previous_break_token_);
+  }
 
   LayoutUnit LineHeight() const {
     return metrics_.LineHeight().ClampNegativeToZero();

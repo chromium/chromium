@@ -32,7 +32,8 @@ class LineWidthsTest : public RenderingTest {
     ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     const ComputedStyle& style = node.Style();
     BoxFragmentBuilder container_builder(node, &style, space,
-                                         style.GetWritingDirection());
+                                         style.GetWritingDirection(),
+                                         /*previous_break_token=*/nullptr);
     SimpleInlineChildLayoutContext context(node, &container_builder);
     InlineLayoutAlgorithm algorithm(node, space, /*break_token*/ nullptr,
                                     /*column_spanner_path*/ nullptr, &context);

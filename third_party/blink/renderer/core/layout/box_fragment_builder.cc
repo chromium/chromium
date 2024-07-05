@@ -75,11 +75,11 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
       // can tell where to resume in the inline formatting context in the next
       // fragmentainer.
 
-      if (previous_break_token_) {
+      if (PreviousBreakToken()) {
         // If there's an incoming break token, see if it has a child inline
         // break token, and use that one. We may be past floats or lines that
         // were laid out in earlier fragments.
-        const auto& child_tokens = previous_break_token_->ChildBreakTokens();
+        const auto& child_tokens = PreviousBreakToken()->ChildBreakTokens();
         if (child_tokens.size()) {
           // If there is an inline break token, it will always be the last
           // child.
@@ -549,7 +549,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
   }
 
   if (UNLIKELY(has_block_fragmentation_ && node_)) {
-    if (previous_break_token_ && previous_break_token_->IsAtBlockEnd()) {
+    if (PreviousBreakToken() && PreviousBreakToken()->IsAtBlockEnd()) {
       // Avoid trailing margin propagation from a node that just has overflowing
       // content here in the current fragmentainer. It's in a parallel flow. If
       // we don't prevent such propagation, the trailing margin may push down
