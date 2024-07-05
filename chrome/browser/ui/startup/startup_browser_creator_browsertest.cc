@@ -526,6 +526,32 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::RunLoop().RunUntilIdle();
 }
 
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       LaunchWebAppWhileBrowserShutdown) {
+  // Test callback for verifying browser shutdown is called.
+  base::test::TestFuture<void> browser_shutdown_complete;
+  web_app::startup::SetBrowserShutdownCompleteCallbackForTesting(
+      browser_shutdown_complete.GetCallback());
+
+  // Command line to simulate app launch.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, "app_id_1");
+
+  web_app::startup::MaybeHandleWebAppLaunch(
+      command_line, base::FilePath(FILE_PATH_LITERAL("\\path")),
+      browser()->profile(), chrome::startup::IsFirstRun::kNo);
+  EXPECT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::WEB_APP_INTENT_PICKER));
+
+  // Start browser shutdown to trigger AppTerminatingCallback()
+  chrome::AttemptExit();
+
+  // Make sure OnBrowserShutdown() is called via AppTerminationCallback
+  EXPECT_TRUE(browser_shutdown_complete.Wait());
+  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::WEB_APP_INTENT_PICKER));
+}
+
 namespace {
 
 enum class ChromeAppDeprecationFeatureValue {
