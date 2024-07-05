@@ -39,6 +39,7 @@ namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordManagerDriver;
+class PasswordManualFallbackMetricsRecorder;
 class PasswordSuggestionGenerator;
 
 // This class is responsible for filling password forms.
@@ -220,9 +221,20 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   // Initialized when the user triggers the password manual fallback. This flow
-  // reads all user passworns upon initialization. Hence it's reset upon main
+  // reads all user passwords upon initialization. Hence it's reset upon main
   // frame navigation or if this `PasswordAutofillManager` is destroyed.
   std::unique_ptr<PasswordSuggestionFlow> manual_fallback_flow_;
+
+  // Used to collect metrics around the manual fallback for password. Some of
+  // the metrics are meant to be emitted only on navigation.
+  // `PasswordManualFallbackMetricsRecorder` emits these metrics in its
+  // destructor. Therefore, this object is destroyed and re-created on
+  // navigation.
+  // `AutofillContextMenuManager` accesses this member before suggestions are
+  // shown. Therefore, this object is instantiated before
+  // `manual_fallback_flow_` and dies when `manual_fallback_flow_` dies.
+  std::unique_ptr<PasswordManualFallbackMetricsRecorder>
+      manual_fallback_metrics_recorder_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

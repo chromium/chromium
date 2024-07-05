@@ -14,16 +14,21 @@ class PasswordManualFallbackMetricsRecorder {
  public:
   PasswordManualFallbackMetricsRecorder();
   PasswordManualFallbackMetricsRecorder(
-      const PasswordManualFallbackMetricsRecorder&);
+      const PasswordManualFallbackMetricsRecorder&) = delete;
   PasswordManualFallbackMetricsRecorder& operator=(
-      const PasswordManualFallbackMetricsRecorder&);
+      const PasswordManualFallbackMetricsRecorder&) = delete;
   ~PasswordManualFallbackMetricsRecorder();
+
+  // Assigns the current time to `latency_duration_start_`, which is then used
+  // inside `RecordDataFetchingLatency()` to calculate how much time has passed
+  // between the start of the fetch and the end of the fetch.
+  void DataFetchingStarted();
 
   // Records "PasswordManager.ManualFallback.ShowSuggestions.Latency" metric.
   void RecordDataFetchingLatency() const;
 
  private:
-  base::Time start_ = base::Time::Now();
+  base::Time latency_duration_start_;
 };
 
 }  // namespace password_manager

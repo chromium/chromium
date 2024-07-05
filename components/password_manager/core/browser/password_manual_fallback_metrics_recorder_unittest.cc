@@ -39,8 +39,9 @@ class PasswordManualFallbackMetricsRecorderTest : public testing::Test {
 
 TEST_F(PasswordManualFallbackMetricsRecorderTest, RecordDataFetchingLatency) {
   base::HistogramTester histogram_tester;
-  AdvanceClock(kLatencyDelta);
 
+  metrics_recorder().DataFetchingStarted();
+  AdvanceClock(kLatencyDelta);
   metrics_recorder().RecordDataFetchingLatency();
 
   histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 1);

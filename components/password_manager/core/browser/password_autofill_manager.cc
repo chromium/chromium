@@ -48,6 +48,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
+#include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -160,10 +161,16 @@ PasswordAutofillManager::PasswordAutofillManager(
     : suggestion_generator_(password_manager_driver, password_client),
       password_manager_driver_(password_manager_driver),
       autofill_client_(autofill_client),
-      password_client_(password_client) {}
+      password_client_(password_client),
+      manual_fallback_metrics_recorder_(
+          std::make_unique<PasswordManualFallbackMetricsRecorder>()) {}
 
 PasswordAutofillManager::~PasswordAutofillManager() {
   CancelBiometricReauthIfOngoing();
+  // `manual_fallback_flow_` holds a raw pointer to
+  // `manual_fallback_metrics_recorder_`, so the flow should be reset first.
+  manual_fallback_flow_.reset();
+  manual_fallback_metrics_recorder_.reset();
 }
 
 absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
@@ -422,6 +429,7 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
     if (!manual_fallback_flow_) {
       manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
           password_manager_driver_, autofill_client_, password_client_,
+          manual_fallback_metrics_recorder_.get(),
           password_client_->GetPasswordManager()->GetPasswordFormCache(),
           std::make_unique<SavedPasswordsPresenter>(
               password_client_->GetAffiliationService(),
@@ -472,7 +480,11 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
   CancelBiometricReauthIfOngoing();
   favicon_tracker_.TryCancelAll();
   page_favicon_ = gfx::Image();
+  // `manual_fallback_flow_` holds a raw pointer to
+  // `manual_fallback_metrics_recorder_`, so the flow should be reset first.
   manual_fallback_flow_.reset();
+  manual_fallback_metrics_recorder_ =
+      std::make_unique<PasswordManualFallbackMetricsRecorder>();
 }
 
 bool PasswordAutofillManager::FillSuggestionForTest(

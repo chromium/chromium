@@ -15,16 +15,15 @@ constexpr char kShowSuggestionLatency[] =
 
 PasswordManualFallbackMetricsRecorder::PasswordManualFallbackMetricsRecorder() =
     default;
-PasswordManualFallbackMetricsRecorder::PasswordManualFallbackMetricsRecorder(
-    const PasswordManualFallbackMetricsRecorder&) = default;
-PasswordManualFallbackMetricsRecorder&
-PasswordManualFallbackMetricsRecorder::operator=(
-    const PasswordManualFallbackMetricsRecorder&) = default;
 PasswordManualFallbackMetricsRecorder::
     ~PasswordManualFallbackMetricsRecorder() = default;
 
+void PasswordManualFallbackMetricsRecorder::DataFetchingStarted() {
+  latency_duration_start_ = base::Time::Now();
+}
+
 void PasswordManualFallbackMetricsRecorder::RecordDataFetchingLatency() const {
-  base::TimeDelta duration = base::Time::Now() - start_;
+  base::TimeDelta duration = base::Time::Now() - latency_duration_start_;
 
   base::UmaHistogramTimes(kShowSuggestionLatency, duration);
 }

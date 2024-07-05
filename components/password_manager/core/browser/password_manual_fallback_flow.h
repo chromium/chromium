@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
-#include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -37,6 +36,7 @@ class FormFetcherImpl;
 class PasswordFormCache;
 class PasswordManagerDriver;
 class PasswordManagerClient;
+class PasswordManualFallbackMetricsRecorder;
 
 // Displays all available passwords password suggestions on password and
 // non-password forms for all available passwords.
@@ -49,6 +49,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
       PasswordManagerDriver* password_manager_driver,
       autofill::AutofillClient* autofill_client,
       PasswordManagerClient* password_client,
+      PasswordManualFallbackMetricsRecorder* manual_fallback_metrics_recorder,
       const PasswordFormCache* password_form_cache,
       std::unique_ptr<SavedPasswordsPresenter> passwords_presenter);
   PasswordManualFallbackFlow(const PasswordManualFallbackFlow&) = delete;
@@ -119,11 +120,12 @@ class PasswordManualFallbackFlow : public autofill::AutofillSuggestionDelegate,
   // Cancels an ongoing biometric re-authentication.
   void CancelBiometricReauthIfOngoing();
 
-  const PasswordManualFallbackMetricsRecorder metrics_recorder_;
   const PasswordSuggestionGenerator suggestion_generator_;
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;
   const raw_ptr<PasswordManagerClient> password_client_;
+  const raw_ptr<PasswordManualFallbackMetricsRecorder>
+      manual_fallback_metrics_recorder_;
   const raw_ptr<const PasswordFormCache> password_form_cache_;
 
   // Flow state changes the following way:

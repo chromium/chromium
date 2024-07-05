@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -204,9 +205,13 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
             &affiliation_service(), profile_password_store_,
             /*account_password_store_=*/nullptr);
 
+    manual_fallback_metrics_recorder_ =
+        std::make_unique<PasswordManualFallbackMetricsRecorder>();
+
     flow_ = std::make_unique<PasswordManualFallbackFlow>(
         &driver(), &autofill_client(), &password_manager_client(),
-        &password_form_cache(), std::move(passwords_presenter));
+        manual_fallback_metrics_recorder_.get(), &password_form_cache(),
+        std::move(passwords_presenter));
   }
 
   // The test fixture relies on the fact that `TestPasswordStore` performs all
@@ -224,6 +229,8 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
       password_manager_client_ =
           std::make_unique<NiceMock<MockPasswordManagerClient>>();
   NiceMock<MockPasswordFormCache> password_form_cache_;
+  std::unique_ptr<PasswordManualFallbackMetricsRecorder>
+      manual_fallback_metrics_recorder_;
   std::unique_ptr<NiceMock<MockAffiliationService>> affiliation_service_ =
       std::make_unique<NiceMock<MockAffiliationService>>();
   raw_ptr<MockAffiliatedMatchHelper> mock_affiliated_match_helper_;
