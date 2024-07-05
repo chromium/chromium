@@ -691,6 +691,8 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
       CHECK_EQ(load_state_, LoadState::kEligible);
       break;
   }
+  DVLOG(1) << (*this) << " LoadState " << load_state_ << " -> "
+           << new_load_state;
   load_state_ = new_load_state;
 }
 
@@ -1563,6 +1565,22 @@ std::ostream& operator<<(std::ostream& ostream,
   }
   ostream << ", " << prefetch_key.prefetch_url() << ")";
   return ostream;
+}
+
+std::ostream& operator<<(std::ostream& ostream,
+                         PrefetchContainer::LoadState state) {
+  switch (state) {
+    case PrefetchContainer::LoadState::kNotStarted:
+      return ostream << "NotStarted";
+    case PrefetchContainer::LoadState::kEligible:
+      return ostream << "Eligible";
+    case PrefetchContainer::LoadState::kFailedIneligible:
+      return ostream << "FailedIneligible";
+    case PrefetchContainer::LoadState::kStarted:
+      return ostream << "Started";
+    case PrefetchContainer::LoadState::kFailedHeldback:
+      return ostream << "FailedHeldback";
+  }
 }
 
 CONTENT_EXPORT std::ostream& operator<<(

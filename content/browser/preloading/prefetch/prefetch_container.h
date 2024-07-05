@@ -786,6 +786,9 @@ CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& ostream,
     PrefetchContainer::ServableState servable_state);
 
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
+                                        PrefetchContainer::LoadState state);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_CONTAINER_H_
