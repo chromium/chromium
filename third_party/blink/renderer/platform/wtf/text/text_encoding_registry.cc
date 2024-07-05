@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
@@ -53,42 +54,6 @@ namespace WTF {
 
 const size_t kMaxEncodingNameLength = 63;
 
-// Hash for all-ASCII strings that does case folding.
-struct TextEncodingNameHashTraits : GenericHashTraits<const char*> {
-  static bool Equal(const char* s1, const char* s2) {
-    char c1;
-    char c2;
-    do {
-      c1 = *s1++;
-      c2 = *s2++;
-      if (ToASCIILower(c1) != ToASCIILower(c2))
-        return false;
-    } while (c1 && c2);
-    return !c1 && !c2;
-  }
-
-  // This algorithm is the one-at-a-time hash from:
-  // http://burtleburtle.net/bob/hash/hashfaq.html
-  // http://burtleburtle.net/bob/hash/doobs.html
-  static unsigned GetHash(const char* s) {
-    unsigned h = WTF::kStringHashingStartValue;
-    for (;;) {
-      char c = *s++;
-      if (!c) {
-        h += (h << 3);
-        h ^= (h >> 11);
-        h += (h << 15);
-        return h;
-      }
-      h += ToASCIILower(c);
-      h += (h << 10);
-      h ^= (h >> 6);
-    }
-  }
-
-  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
-};
-
 struct TextCodecFactory {
   NewTextCodecFunction function;
   const void* additional_data;
@@ -96,7 +61,7 @@ struct TextCodecFactory {
       : function(f), additional_data(d) {}
 };
 
-typedef HashMap<const char*, const char*, TextEncodingNameHashTraits>
+typedef HashMap<const char*, const char*, CaseFoldingHashTraits<const char*>>
     TextEncodingNameMap;
 typedef HashMap<const char*, TextCodecFactory> TextCodecMap;
 
