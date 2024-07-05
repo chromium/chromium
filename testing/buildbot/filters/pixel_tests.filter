@@ -25,6 +25,7 @@ CookieControlsBubbleViewPixelTest.*
 CookieControlsBubbleViewTrackingProtectionUiPixelTest.*
 OldCookieControlsBubbleViewTest.*
 *CreatePopupRowViewTest.*
+*CreatePopupRowViewWithNoUserEducationRateLimitTest.*
 CryptoModulePasswordDialogTest.*
 *DataControlsDialogUiTest.*
 DeepScanningFailureModalDialogTest.*

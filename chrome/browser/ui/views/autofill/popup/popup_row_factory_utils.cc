@@ -473,6 +473,7 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
       views::style::STYLE_BODY_3_MEDIUM);
   if (show_new_badge.has_value()) {
     main_text_label->SetDisplayNewBadge(show_new_badge.value());
+    main_text_label->SetPadAfterNewBadge(false);
   }
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label),

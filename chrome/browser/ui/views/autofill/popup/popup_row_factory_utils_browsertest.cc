@@ -20,7 +20,9 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/range/range.h"
@@ -103,12 +105,12 @@ class MockPasswordFaviconLoader : public PasswordFaviconLoader {
 using TestParams =
     std::tuple<Suggestion, std::optional<PopupRowView::CellType>>;
 
-class CreatePopupRowViewTest
+class BaseCreatePopupRowViewTest
     : public UiBrowserTest,
       public ::testing::WithParamInterface<TestParams> {
  public:
-  CreatePopupRowViewTest() = default;
-  ~CreatePopupRowViewTest() override = default;
+  BaseCreatePopupRowViewTest() = default;
+  ~BaseCreatePopupRowViewTest() override = default;
 
   static std::string GetTestName(
       const testing::TestParamInfo<TestParams>& info) {
@@ -194,6 +196,14 @@ class CreatePopupRowViewTest
   NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
   NiceMock<MockPasswordFaviconLoader> favicon_loader_;
+};
+
+class CreatePopupRowViewTest : public BaseCreatePopupRowViewTest {
+ public:
+  CreatePopupRowViewTest() = default;
+  ~CreatePopupRowViewTest() override = default;
+
+ private:
   user_education::NewBadgeController::TestLock disable_new_badges_ =
       user_education::NewBadgeController::DisableNewBadgesForTesting();
 };
@@ -261,6 +271,31 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordCustomIconLoader) {
       Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"));
   CreateRowView(std::move(suggestion),
                 /*selected_cell=*/std::nullopt, /*filter_match=*/std::nullopt);
+  ShowAndVerifyUi();
+}
+
+class CreatePopupRowViewWithNoUserEducationRateLimitTest
+    : public BaseCreatePopupRowViewTest {
+ public:
+  CreatePopupRowViewWithNoUserEducationRateLimitTest() = default;
+  ~CreatePopupRowViewWithNoUserEducationRateLimitTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        user_education::features::kDisableRateLimitingCommandLine);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewWithNoUserEducationRateLimitTest,
+                       ComposeWithNewBadge) {
+  Suggestion suggestion("Compose with a badge", "Minor text", "label",
+                        Suggestion::Icon::kMagic,
+                        SuggestionType::kComposeProactiveNudge);
+  suggestion.feature_for_new_badge =
+      &compose::features::kEnableComposeProactiveNudge;
+
+  CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt,
+                /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();
 }
 
