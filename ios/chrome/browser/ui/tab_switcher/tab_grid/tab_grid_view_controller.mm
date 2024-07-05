@@ -81,14 +81,14 @@ TabGridPage GetPageFromScrollView(UIScrollView* scrollView) {
   // possible, as are large int values if `pageWidth` is somehow very small.
   page = page < TabGridPageIncognitoTabs ? TabGridPageIncognitoTabs : page;
   page = page > TabGridPageRemoteTabs ? TabGridPageRemoteTabs : page;
-  TabGridPage tabGridPage;
+  TabGridPage tabGridPage = static_cast<TabGridPage>(page);
   if (UseRTLLayout()) {
-    // In RTL, page indexes are inverted, so subtract `page` from the highest-
-    // index TabGridPage value.
+    // In RTL, page indexes are inverted, so subtract `page` from the
+    // TabGridPageRemoteTabs value.
     tabGridPage = static_cast<TabGridPage>(TabGridPageRemoteTabs - page);
   }
-  tabGridPage = static_cast<TabGridPage>(page);
   // With Tab Group Sync, the last page is actually Tab Groups, not Remote Tabs.
+  // So do the swap before returning the page.
   if (IsTabGroupSyncEnabled() && tabGridPage == TabGridPageRemoteTabs) {
     tabGridPage = TabGridPageTabGroups;
   }
