@@ -54,7 +54,7 @@ source_set("test_support") {
   deps = [
     ":multi_process",
     "//base",
-    "//base:partition_alloc_test_support",
+    "//base/allocator/partition_allocator/src/partition_alloc:test_support",
     "//base/test:test_support",
     "//components/services/heap_profiling/public/cpp",
     "//content/public/browser",
