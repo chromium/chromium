@@ -425,7 +425,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     const gfx::ColorSpace color_space;
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
-    const GLenum texture_target;
+    GLenum texture_target;
     const GLuint texture_id;
     const bool is_overlay_candidate;
 
