@@ -390,8 +390,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // - Fetch failed.
   // - The argument `timeout` is positive and timeouted.
   // - `PrefetchContainer` dtor if `kPrefetchUnblockOnCancel` enabled.
-  void StartBlockUntilHead(base::OnceClosure on_received_head_callback,
-                           base::TimeDelta timeout);
+  void StartBlockUntilHead(
+      base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback,
+      base::TimeDelta timeout);
   // Note that `PrefetchStreamingURLLoader` calls `OnReceivedHead()` even for
   // failure case.
   //
@@ -572,6 +573,8 @@ class CONTENT_EXPORT PrefetchContainer {
   };
 
   Reader CreateReader();
+
+  bool is_in_dtor() const { return is_in_dtor_; }
 
  protected:
   friend class PrefetchContainerTestBase;
@@ -760,7 +763,7 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<base::OneShotTimer> block_until_head_timer_;
 
   // Called when `OnReceivedHead()` is called.
-  base::OnceClosure on_received_head_callback_;
+  base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
@@ -769,6 +772,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // handled later, according to
   // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
   bool is_javascript_enabled_ = false;
+
+  // True iff the destructor was called.
+  bool is_in_dtor_ = false;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

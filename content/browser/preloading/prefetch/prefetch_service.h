@@ -324,8 +324,7 @@ class CONTENT_EXPORT PrefetchService {
   void OnReceivedHead(
       const PrefetchContainer::Key& key,
       base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
-      const GURL& prefetch_url,
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+      PrefetchContainer& prefetch_container);
 
   // Helper function for |GetPrefetchToServe|, which collects
   // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of

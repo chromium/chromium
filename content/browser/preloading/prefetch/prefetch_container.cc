@@ -500,6 +500,8 @@ PrefetchContainer::PrefetchContainer(
 }
 
 PrefetchContainer::~PrefetchContainer() {
+  is_in_dtor_ = true;
+
   CancelStreamingURLLoaderIfNotServing();
 
   ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
@@ -530,11 +532,6 @@ PrefetchContainer::~PrefetchContainer() {
   if (prefetch_document_manager_) {
     prefetch_document_manager_->PrefetchWillBeDestroyed(this);
   }
-
-  // Make this object appear to be dead from the perspective of other code.
-  // In particular, the on_received_head_callback_ checks a WeakPtr to this
-  // object.
-  weak_method_factory_.InvalidateWeakPtrs();
 
   // If anything was blocked on head, it no longer is.
   OnReceivedHeadFailed();
@@ -1043,7 +1040,7 @@ void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
 }
 
 void PrefetchContainer::StartBlockUntilHead(
-    base::OnceClosure on_received_head_callback,
+    base::OnceCallback<void(PrefetchContainer&)> on_received_head_callback,
     base::TimeDelta timeout) {
   on_received_head_callback_ = std::move(on_received_head_callback);
 
@@ -1069,7 +1066,7 @@ void PrefetchContainer::OnReceivedHead() {
   block_until_head_timer_.reset();
 
   if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run();
+    std::move(on_received_head_callback_).Run(*this);
   }
 }
 
@@ -1077,7 +1074,7 @@ void PrefetchContainer::OnReceivedHeadFailed() {
   block_until_head_timer_.reset();
 
   if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run();
+    std::move(on_received_head_callback_).Run(*this);
   }
 }
 

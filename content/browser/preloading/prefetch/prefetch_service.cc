@@ -1562,8 +1562,7 @@ PrefetchService::HandlePrefetchContainerToServe(
       prefetch_container.OnGetPrefetchToServe(/*blocked_until_head=*/true);
       auto on_received_head = base::BindOnce(
           &PrefetchService::OnReceivedHead, weak_method_factory_.GetWeakPtr(),
-          key, prefetch_match_resolver.GetWeakPtr(),
-          prefetch_container.GetURL(), prefetch_container.GetWeakPtr());
+          key, prefetch_match_resolver.GetWeakPtr());
       base::TimeDelta timeout =
           PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
       prefetch_container.StartBlockUntilHead(std::move(on_received_head),
@@ -1624,10 +1623,12 @@ void PrefetchService::GetPrefetchToServe(
 void PrefetchService::OnReceivedHead(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchMatchResolver> prefetch_match_resolver,
-    const GURL& prefetch_url,
-    base::WeakPtr<PrefetchContainer> prefetch_container) {
+    PrefetchContainer& prefetch_container) {
+  const GURL& prefetch_url = prefetch_container.GetURL();
+
   DVLOG(1) << "PrefetchService::OnReceivedHead:" << "prefetch_url = "
            << prefetch_url;
+
   if (!prefetch_match_resolver) {
     // Since prefetch_match_resolver is a NavigationHandleUserData,
     // if it is null it means the navigation has finished so there is nothing to
@@ -1643,7 +1644,7 @@ void PrefetchService::OnReceivedHead(
   // Make sure we are not waiting on this prefetch_url anymore.
   CHECK(!prefetch_match_resolver->IsWaitingForPrefetch(prefetch_url));
 
-  if (!prefetch_container) {
+  if (prefetch_container.is_in_dtor()) {
     DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
              << "): deleted while waiting for head";
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
@@ -1652,19 +1653,13 @@ void PrefetchService::OnReceivedHead(
 
   DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
            << "): PrefetchContainer head received for " << prefetch_url << "!";
-  // This method is registered with the prefetch_container as the
-  // ReceivedHeadCallback. We only call this method immediately after
-  // requesting the ReceivedHeadCallback from `prefetch_container` (in which
-  // case it is alive) or during its destruction after invalidating weak
-  // pointers (in which case we should have bailed just now).
-  CHECK(prefetch_container);
 
-  switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
+  switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
       DVLOG(1) << "PrefetchService::OnReceivedHead(" << key
-               << "): " << *prefetch_container << " not servable!";
-      prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+               << "): " << prefetch_container << " not servable!";
+      prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
       ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
       return;
     }
@@ -1673,27 +1668,27 @@ void PrefetchService::OnReceivedHead(
   }
 
   const GURL& nav_url = key.prefetch_url();
-  if (nav_url == prefetch_container->GetURL()) {
-    HandlePrefetchContainerToServe(key, *prefetch_container,
+  if (nav_url == prefetch_container.GetURL()) {
+    HandlePrefetchContainerToServe(key, prefetch_container,
                                    *prefetch_match_resolver);
     return;
   }
 
   // No-Vary-Search response header is already populated by
   // PrefetchContainer::OnReceivedHead.
-  auto no_vary_search_data = prefetch_container->GetNoVarySearchData();
+  auto no_vary_search_data = prefetch_container.GetNoVarySearchData();
   if (!no_vary_search_data.has_value() ||
-      !no_vary_search_data.value().AreEquivalent(
-          nav_url, prefetch_container->GetURL())) {
-    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    prefetch_container->UpdateServingPageMetrics();
+      !no_vary_search_data.value().AreEquivalent(nav_url,
+                                                 prefetch_container.GetURL())) {
+    prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
+    prefetch_container.UpdateServingPageMetrics();
     ReturnPrefetchToServe(prefetch_url, {}, *prefetch_match_resolver);
     return;
   }
   DVLOG(1) << "PrefetchService::OnReceivedHead::" << "url = " << nav_url
            << "::" << "matches by NVS header the prefetch "
-           << prefetch_container->GetURL();
-  if (auto attempt = prefetch_container->preloading_attempt()) {
+           << prefetch_container.GetURL();
+  if (auto attempt = prefetch_container.preloading_attempt()) {
     // Before No-Vary-Search hint, the decision to use a prefetched response
     // was made in `DidStartNavigation`. `SetIsAccurateTriggering` is called
     // by `PreloadingDataImpl::DidStartNavigation`. With No-Vary-Search
@@ -1705,7 +1700,7 @@ void PrefetchService::OnReceivedHead(
     static_cast<PreloadingAttemptImpl*>(attempt.get())
         ->SetIsAccurateTriggering(nav_url);
   }
-  HandlePrefetchContainerToServe(key, *prefetch_container,
+  HandlePrefetchContainerToServe(key, prefetch_container,
                                  *prefetch_match_resolver);
 }
 
