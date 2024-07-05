@@ -1728,6 +1728,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
+  histogram_tester_->ExpectTotalCount(
+      "Blink.FedCm.ChooseAnAccountSelected.Desktop", 0);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest,
@@ -1772,6 +1774,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
+  histogram_tester_->ExpectUniqueSample(
+      "Blink.FedCm.ChooseAnAccountSelected.Desktop", 1, 1);
 }
 
 // Tests that if a pop-up window is opened in button flow mode, closing the

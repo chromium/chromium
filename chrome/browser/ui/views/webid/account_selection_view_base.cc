@@ -220,15 +220,19 @@ class AccountHoverButton : public HoverButton {
                      std::unique_ptr<views::View> secondary_view,
                      bool add_vertical_label_spacing,
                      const std::u16string& footer,
-                     BrandIconImageView* brand_icon_image_view)
-      : HoverButton(std::move(callback),
+                     BrandIconImageView* brand_icon_image_view,
+                     int button_position)
+      : HoverButton(base::BindRepeating(&AccountHoverButton::OnPressed,
+                                        base::Unretained(this)),
                     std::move(icon_view),
                     title,
                     subtitle,
                     std::move(secondary_view),
                     add_vertical_label_spacing,
                     footer),
-        brand_icon_image_view_(brand_icon_image_view) {}
+        callback_(std::move(callback)),
+        brand_icon_image_view_(brand_icon_image_view),
+        button_position_(button_position) {}
 
   AccountHoverButton(const AccountHoverButton&) = delete;
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
@@ -278,9 +282,27 @@ class AccountHoverButton : public HoverButton {
     }
   }
 
+  void OnPressed(const ui::Event& event) {
+    // Log the metric before invoking the callback since the callback may
+    // destroy this object.
+    LOG(ERROR) << button_position_;
+    base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
+                                   button_position_,
+                                   /*min=*/0,
+                                   /*exclusive_max=*/10, /*buckets=*/11);
+    if (callback_) {
+      callback_.Run(event);
+    }
+  }
+
  private:
+  PressedCallback callback_;
   // Owned by its views::BoxLayoutView container.
   raw_ptr<BrandIconImageView> brand_icon_image_view_;
+  // The order of this account button relative to other account buttons in
+  // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
+  // to record a metric when the button is clicked.
+  int button_position_;
 };
 
 }  // namespace
@@ -385,7 +407,7 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
-    bool should_hover,
+    std::optional<int> clickable_position,
     bool should_include_idp,
     bool is_modal_dialog,
     int additional_vertical_padding,
@@ -401,8 +423,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   std::unique_ptr<views::View> avatar_view;
   auto account_image_view = std::make_unique<AccountImageView>();
   account_image_view->SetImageSize({avatar_size, avatar_size});
-  CHECK(should_hover || !should_include_idp);
-  if (should_hover) {
+  CHECK(clickable_position || !should_include_idp);
+  if (clickable_position) {
     BrandIconImageView* brand_icon_image_view_ptr = nullptr;
     if (should_include_idp) {
       account_image_view->SetAccountImage(account, *image_fetcher_,
@@ -483,7 +505,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         /*title=*/base::UTF8ToUTF16(account.name),
         /*subtitle=*/base::UTF8ToUTF16(account.email),
         /*secondary_view=*/std::move(arrow_icon_view),
-        /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr);
+        /*add_vertical_label_spacing=*/true, footer, brand_icon_image_view_ptr,
+        *clickable_position);
     row->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         /*vertical=*/additional_vertical_padding,
         /*horizontal=*/is_modal_dialog ? kModalHorizontalSpacing

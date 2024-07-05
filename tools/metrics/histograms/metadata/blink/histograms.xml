@@ -1209,6 +1209,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.AccountChosenPosition.Desktop" units="count"
+    expires_after="2025-07-04">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the 0-based position of the account that was selected by the user in
+    a FedCM dialog. Recorded whenever the user clicks on a clickable account in
+    the FedCM dialog. Currently only recorded on desktop.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.AccountLabel.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2025-02-12">
   <owner>cbiesinger@chromium.org</owner>
@@ -1383,6 +1394,17 @@ chromium-metrics-reviews@google.com.
     user selecting an account. This includes instances where the close action is
     less intentional such as the virtual keyboard showing trigerring the dialog
     close.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.ChooseAnAccountSelected.Desktop" enum="BooleanHit"
+    expires_after="2025-07-04">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records a 1 each time the &quot;Choose an account&quot; FedCM desktop button
+    is clicked. This button is only shown in the FedCM UI showing multiple
+    identity providers.
   </summary>
 </histogram>
 

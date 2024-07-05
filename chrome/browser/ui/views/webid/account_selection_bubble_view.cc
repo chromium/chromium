@@ -345,7 +345,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
   row->AddChildView(CreateAccountRow(account, idp_display_data,
-                                     /*should_hover=*/false,
+                                     /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
   AddChildView(std::move(row));
 
@@ -741,7 +741,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
   row->AddChildView(CreateAccountRow(account, idp_display_data,
-                                     /*should_hover=*/false,
+                                     /*clickable_position=*/std::nullopt,
                                      /*should_include_idp=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
@@ -785,9 +785,10 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       views::BoxLayout::Orientation::kVertical));
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   // Add returning accounts first and then other accounts.
-  AddSignInAccounts(idp_display_data_list, accounts_content);
+  int position = 0;
+  AddSignInAccounts(idp_display_data_list, accounts_content, position);
   AddAccounts(idp_display_data_list, accounts_content,
-              Account::LoginState::kSignUp);
+              Account::LoginState::kSignUp, position);
   size_t num_rows = 0;
   bool has_mismatches = false;
   for (const auto& idp_display_data : idp_display_data_list) {
@@ -864,14 +865,15 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
 void AccountSelectionBubbleView::AddAccounts(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
     views::View* accounts_content,
-    Account::LoginState login_state) {
+    Account::LoginState login_state,
+    int& out_position) {
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       if (account.login_state == login_state) {
-        accounts_content->AddChildView(
-            CreateAccountRow(account, idp_display_data, /*should_hover=*/true,
-                             /*should_include_idp=*/is_multi_idp));
+        accounts_content->AddChildView(CreateAccountRow(
+            account, idp_display_data, /*clickable_position=*/out_position++,
+            /*should_include_idp=*/is_multi_idp));
       }
     }
   }
@@ -879,12 +881,13 @@ void AccountSelectionBubbleView::AddAccounts(
 
 void AccountSelectionBubbleView::AddSignInAccounts(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-    views::View* accounts_content) {
+    views::View* accounts_content,
+    int& out_position) {
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   if (!is_multi_idp) {
     // Optimization for single IDP case: no need to re-sort accounts.
     AddAccounts(idp_display_data_list, accounts_content,
-                Account::LoginState::kSignIn);
+                Account::LoginState::kSignIn, out_position);
     return;
   }
 
@@ -941,7 +944,7 @@ void AccountSelectionBubbleView::AddSignInAccounts(
       }
     }
     accounts_content->AddChildView(CreateAccountRow(
-        *pair.first, *pair.second, /*should_hover=*/true,
+        *pair.first, *pair.second, /*clickable_position=*/out_position++,
         /*should_include_idp=*/is_multi_idp, /*is_modal_dialog=*/false,
         /*additional_vertical_padding=*/0, last_used_string));
   }
@@ -981,7 +984,7 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
                 IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE))
           : std::nullopt;
   content->AddChildView(CreateAccountRow(*returning_account, *returning_idp,
-                                         /*should_hover=*/true,
+                                         /*clickable_position=*/0,
                                          /*should_include_idp=*/true,
                                          /*is_modal_dialog=*/false,
                                          /*additional_vertical_padding=*/0,

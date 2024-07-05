@@ -271,12 +271,13 @@ class AccountSelectionViewBase {
 
   // Returns a View containing information about an account: the picture for
   // the account on the left, and information about the account on the right.
-  // |should_hover| determines whether the account row is a HoverButton or
-  // not.
+  // |clickable_position| contains an int if and only if the account is a
+  // HoverButton, and in that case the number is the 0-based position of that
+  // account in the overall dialog.
   std::unique_ptr<views::View> CreateAccountRow(
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
-      bool should_hover,
+      std::optional<int> clickable_position,
       bool should_include_idp,
       bool is_modal_dialog = false,
       int additional_vertical_padding = 0,

@@ -390,20 +390,19 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
   // Add separator before the account rows.
   content->AddChildView(std::make_unique<views::Separator>());
 
-  size_t num_rows = 0;
+  int num_rows = 0;
   constexpr int kMultipleAccountsVerticalPadding = 2;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
       content->AddChildView(CreateAccountRow(
           account, idp_display_data,
-          /*should_hover=*/true,
+          /*clickable_position=*/num_rows++,
           /*should_include_idp=*/false,
           /*is_modal_dialog=*/true,
           /*additional_vertical_padding=*/kMultipleAccountsVerticalPadding));
       // Add separator after each account row.
       content->AddChildView(std::make_unique<views::Separator>());
     }
-    num_rows += idp_display_data.accounts.size();
   }
 
   const int per_account_size = content->GetPreferredSize().height() / num_rows;
@@ -507,10 +506,11 @@ AccountSelectionModalView::CreateSingleAccountChooser(
   }
 
   // Add account row.
-  row->AddChildView(CreateAccountRow(account, idp_display_data, should_hover,
-                                     /*should_include_idp=*/false,
-                                     /*is_modal_dialog=*/true,
-                                     additional_row_vertical_padding));
+  row->AddChildView(CreateAccountRow(
+      account, idp_display_data,
+      should_hover ? std::make_optional<int>(0) : std::nullopt,
+      /*should_include_idp=*/false,
+      /*is_modal_dialog=*/true, additional_row_vertical_padding));
 
   // Add separator after the account row.
   if (show_separator) {

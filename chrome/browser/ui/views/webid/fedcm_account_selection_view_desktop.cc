@@ -896,6 +896,8 @@ void FedCmAccountSelectionView::OnChooseAnAccount() {
   state_ = State::MULTI_ACCOUNT_PICKER;
   account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_,
                                                   /*show_back_button=*/true);
+  base::UmaHistogramBoolean("Blink.FedCm.ChooseAnAccountSelected.Desktop",
+                            true);
 }
 
 void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
