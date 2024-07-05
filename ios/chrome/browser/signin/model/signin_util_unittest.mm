@@ -118,21 +118,53 @@ TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetch) {
   fake_system_identity_manager()->AddIdentity(identity);
 
   AccountCapabilitiesTestMutator* mutator =
-      fake_system_identity_manager()->GetCapabilitiesMutator(identity);
+      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity);
   mutator->SetAllSupportedCapabilities(true);
+  ASSERT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity)
+                   .AreAllCapabilitiesKnown());
 
-  base::RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  auto callback = base::BindOnce(
-      ^(std::map<std::string, SystemIdentityCapabilityResult> result) {
-        ASSERT_EQ(result.size(), GetAccountCapabilityNamesForPrefetch().size());
-        for (const auto& pair : result) {
-          EXPECT_EQ(pair.second, SystemIdentityCapabilityResult::kTrue);
-        }
-        std::move(quit_closure).Run();
-      });
+  RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities());
+  base::RunLoop().RunUntilIdle();
 
-  RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities(),
-                                std::move(callback));
-  run_loop.Run();
+  EXPECT_TRUE(fake_system_identity_manager()
+                  ->GetVisibleCapabilities(identity)
+                  .AreAllCapabilitiesKnown());
+}
+
+TEST_F(SigninUtilTest, RunSystemCapabilitiesPrefetchMultipleIdentities) {
+  FakeSystemIdentity* identity1 =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity1);
+  FakeSystemIdentity* identity2 =
+      [FakeSystemIdentity identityWithEmail:@"foo2@gmail.com"
+                                     gaiaID:@"foo2ID"
+                                       name:@"Fake Foo 2"];
+  fake_system_identity_manager()->AddIdentity(identity2);
+
+  AccountCapabilitiesTestMutator* mutator1 =
+      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity1);
+  mutator1->SetAllSupportedCapabilities(true);
+  ASSERT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity1)
+                   .AreAllCapabilitiesKnown());
+
+  AccountCapabilitiesTestMutator* mutator2 =
+      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity2);
+  mutator2->SetAllSupportedCapabilities(true);
+  ASSERT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity2)
+                   .AreAllCapabilitiesKnown());
+
+  RunSystemCapabilitiesPrefetch(account_manager_service_->GetAllIdentities());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(fake_system_identity_manager()
+                  ->GetVisibleCapabilities(identity1)
+                  .AreAllCapabilitiesKnown());
+  EXPECT_TRUE(fake_system_identity_manager()
+                  ->GetVisibleCapabilities(identity2)
+                  .AreAllCapabilitiesKnown());
 }

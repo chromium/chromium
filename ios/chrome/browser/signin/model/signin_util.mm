@@ -145,8 +145,7 @@ const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
-void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities,
-                                   FetchCapabilitiesCallback callback) {
+void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
   const std::vector<std::string>& supported_capabilities =
       GetAccountCapabilityNamesForPrefetch();
   std::set<std::string> supported_capabilities_set(
@@ -154,6 +153,9 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities,
 
   for (id<SystemIdentity> identity : identities) {
     GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity, supported_capabilities_set, std::move(callback));
+        identity, supported_capabilities_set,
+        base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
+            // Ignore the result.
+        }));
   }
 }

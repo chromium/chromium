@@ -75,7 +75,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
         capability_fetched.value() !=
             SystemIdentityCapabilityResult::kUnknown) {
       AccountCapabilitiesTestMutator* mutator =
-          system_identity_manager->GetCapabilitiesMutator(identity);
+          system_identity_manager->GetPendingCapabilitiesMutator(identity);
       bool has_capability =
           capability_fetched.value() == SystemIdentityCapabilityResult::kTrue;
       mutator->set_can_have_email_address_displayed(has_capability);

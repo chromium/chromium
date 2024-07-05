@@ -24,10 +24,6 @@ namespace signin {
 enum class Tribool;
 }  // namespace signin
 
-// Callback invoked when the `FetchCapabilitie()` operation completes.
-using FetchCapabilitiesCallback = base::OnceCallback<void(
-    std::map<std::string, SystemIdentityCapabilityResult>)>;
-
 // Returns an NSArray of `scopes` as NSStrings.
 NSArray* GetScopeArray(const std::set<std::string>& scopes);
 
@@ -67,7 +63,6 @@ const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
 
 // Pre-fetches system capabilities for the given identities so that they
 // can be cached for later usage.
-void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities,
-                                   FetchCapabilitiesCallback callback);
+void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_H_

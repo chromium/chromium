@@ -63,8 +63,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void ForgetIdentityFromOtherApplication(id<SystemIdentity> identity);
 
   // Returns a test object that enables changes to capability state.
-  AccountCapabilitiesTestMutator* GetCapabilitiesMutator(
+  AccountCapabilitiesTestMutator* GetPendingCapabilitiesMutator(
       id<SystemIdentity> identity);
+
+  // Returns the list of account capabilities associated with the identity.
+  AccountCapabilities GetVisibleCapabilities(id<SystemIdentity> identity);
 
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();

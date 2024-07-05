@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "ios/chrome/browser/signin/model/capabilities_types.h"
 
@@ -27,7 +28,7 @@ using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
 
 // The capabilities for the associated SystemIdentity.
 @property(nonatomic, readonly)
-    const FakeSystemIdentityCapabilitiesMap& capabilities;
+    const FakeSystemIdentityCapabilitiesMap& visibleCapabilities;
 
 // The avatar cached for the associated SystemIdentity. May be nil.
 @property(nonatomic, strong) UIImage* cachedAvatar;
@@ -39,13 +40,18 @@ using FakeSystemIdentityCapabilitiesMap = base::flat_map<std::string, bool>;
 
 // Allows callers to modify internal capability state mappings for tests.
 @property(nonatomic, readonly)
-    AccountCapabilitiesTestMutator* capabilitiesMutator;
+    AccountCapabilitiesTestMutator* pendingCapabilitiesMutator;
 
 // Designated initializer.
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Updates the visible capabilities with the changes made to the internal
+// state through the `pendingCapabilitiesMutator`. This simulates Chrome
+// fetching capabilities from the server and copying them to account services.
+- (void)updateVisibleCapabilities;
 
 @end
 

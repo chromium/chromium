@@ -8,14 +8,15 @@
 #import "components/signin/public/identity_manager/account_capabilities.h"
 
 @implementation FakeSystemIdentityDetails {
-  AccountCapabilities _nativeCapabilities;
-  std::unique_ptr<AccountCapabilitiesTestMutator> _capabilitiesMutator;
+  AccountCapabilities _pendingCapabilities;
+  AccountCapabilities _visibleCapabilities;
+  std::unique_ptr<AccountCapabilitiesTestMutator> _pendingCapabilitiesMutator;
 }
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
   if ((self = [super init])) {
-    _capabilitiesMutator =
-        std::make_unique<AccountCapabilitiesTestMutator>(&_nativeCapabilities);
+    _pendingCapabilitiesMutator =
+        std::make_unique<AccountCapabilitiesTestMutator>(&_pendingCapabilities);
     _identity = identity;
     DCHECK(_identity);
   }
@@ -24,12 +25,16 @@
 
 #pragma mark - Properties
 
-- (const FakeSystemIdentityCapabilitiesMap&)capabilities {
-  return _nativeCapabilities.ConvertToAccountCapabilitiesIOS();
+- (void)updateVisibleCapabilities {
+  _visibleCapabilities.UpdateWith(_pendingCapabilities);
 }
 
-- (AccountCapabilitiesTestMutator*)capabilitiesMutator {
-  return _capabilitiesMutator.get();
+- (const FakeSystemIdentityCapabilitiesMap&)visibleCapabilities {
+  return _visibleCapabilities.ConvertToAccountCapabilitiesIOS();
+}
+
+- (AccountCapabilitiesTestMutator*)pendingCapabilitiesMutator {
+  return _pendingCapabilitiesMutator.get();
 }
 
 @end

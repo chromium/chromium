@@ -77,7 +77,8 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
   // opt-in screen for testing.
   // TODO(b/327221052): verify if this should be replaced by a handler for
   // default capabilities.
-  AccountCapabilitiesTestMutator* mutator = GetCapabilitiesMutator(identity);
+  AccountCapabilitiesTestMutator* mutator =
+      GetPendingCapabilitiesMutator(identity);
   mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       true);
 }
@@ -94,7 +95,8 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
     NSDictionary<NSString*, NSNumber*>* capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [storage_ addIdentity:identity];
-  AccountCapabilitiesTestMutator* mutator = GetCapabilitiesMutator(identity);
+  AccountCapabilitiesTestMutator* mutator =
+      GetPendingCapabilitiesMutator(identity);
   for (NSString* name in capabilities) {
     std::string stdString = base::SysNSStringToUTF8(name);
     bool value = capabilities[name].boolValue;
@@ -130,11 +132,20 @@ void FakeSystemIdentityManager::ForgetIdentityFromOtherApplication(
 }
 
 AccountCapabilitiesTestMutator*
-FakeSystemIdentityManager::GetCapabilitiesMutator(id<SystemIdentity> identity) {
+FakeSystemIdentityManager::GetPendingCapabilitiesMutator(
+    id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentity:identity]);
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
-  return details.capabilitiesMutator;
+  return details.pendingCapabilitiesMutator;
+}
+
+AccountCapabilities FakeSystemIdentityManager::GetVisibleCapabilities(
+    id<SystemIdentity> identity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK([storage_ containsIdentity:identity]);
+  FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
+  return details.visibleCapabilities;
 }
 
 void FakeSystemIdentityManager::FireSystemIdentityReloaded() {
@@ -418,7 +429,12 @@ void FakeSystemIdentityManager::FetchCapabilitiesAsync(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentity:identity]);
   FakeSystemIdentityDetails* details = [storage_ detailsForIdentity:identity];
-  const FakeSystemIdentityCapabilitiesMap& capabilities = details.capabilities;
+
+  // Simulates the action to refresh the internal capability state with
+  // the pending changes fetched from the server.
+  [details updateVisibleCapabilities];
+  const FakeSystemIdentityCapabilitiesMap& capabilities =
+      details.visibleCapabilities;
 
   std::map<std::string, CapabilityResult> result;
   for (const std::string& name : names) {

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/app/first_run_app_state_agent.h"
 
-#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -172,8 +171,7 @@
     RunSystemCapabilitiesPrefetch(
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             self.mainBrowser->GetBrowserState())
-            ->GetAllIdentities(),
-        base::DoNothing());
+            ->GetAllIdentities());
   }
 
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
