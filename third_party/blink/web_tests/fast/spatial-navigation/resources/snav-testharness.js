@@ -150,12 +150,6 @@
       window.addEventListener('load', gAsyncTest.step_func(() => {
         stepAndAssertMoves(expectedMoves);
       }));
-    },
-
-    rAF: function() {
-      return new Promise((resolve) => {
-        window.requestAnimationFrame(resolve);
-      });
     }
   }
 })(self);
