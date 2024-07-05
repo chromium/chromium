@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -216,6 +217,17 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
                     GetHistogramSuffix(bubble_parameters.interception_type)});
   // Record aggregated histogram for each interception type.
   base::UmaHistogramEnumeration(histogram_base_name, result);
+
+  // Record histogram for users with ClearOnExit set for the Chrome Signin
+  // Bubble.
+  if (bubble_parameters.interception_type ==
+          WebSigninInterceptor::SigninInterceptionType::kChromeSignin &&
+      ChromeSigninClientFactory::GetForProfile(profile)
+          ->AreSigninCookiesDeletedOnExit()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({histogram_base_name, ".CookiesDeletedOnExit"}), result);
+  }
+
   // Record histogram sliced by Sync.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -230,6 +242,7 @@ void DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
     base::UmaHistogramEnumeration(
         base::StrCat({histogram_base_name, ".SigninPending"}), result);
   }
+
   // For Enterprise, slice per enterprise status for each account.
   if (bubble_parameters.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kEnterprise) {

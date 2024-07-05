@@ -4141,6 +4141,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.SigninStartedAccessPoint"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="SigninInterceptChromeSignin" separator=".">
+  <suffix name="CookiesDeletedOnExit"
+      label="ChromeSignin bubble with Clear Cookies on Exit enabled."/>
+  <affected-histogram name="Signin.InterceptResult.ChromeSignin"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="SigninInterceptEnterpriseStatus" separator=".">
   <suffix name="NewIsEnterprise" label="The new account is enterprise."/>
   <suffix name="PrimaryIsEnterprise"
