@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
@@ -84,6 +86,11 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     scene_state_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     PlatformTest::TearDown();
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
   }
 
  protected:
@@ -399,4 +406,89 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
   histogram_tester_->ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 1);
+}
+
+TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kPrefetchSystemCapabilitiesOnAppStartup);
+
+  // Set up fake identity with account capabilities.
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity);
+
+  AccountCapabilitiesTestMutator* mutator =
+      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity);
+  mutator->SetAllSupportedCapabilities(true);
+
+  // Set up expected app state that prefetches capabilities.
+  app_state_.initStageForTesting = InitStageFinal;
+  [startup_information_ setIsColdStart:YES];
+
+  InsertNewWebState(0, GURL(kURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
+  WebStateList* web_state_list =
+      scene_state_.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  ASSERT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity)
+                   .AreAllCapabilitiesKnown());
+
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(fake_system_identity_manager()
+                  ->GetVisibleCapabilities(identity)
+                  .AreAllCapabilitiesKnown());
+}
+
+TEST_F(StartSurfaceSceneAgentTest, DisablePrefetchCapabilitiesOnAppStart) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kPrefetchSystemCapabilitiesOnAppStartup);
+
+  // Set up fake identity with account capabilities.
+  FakeSystemIdentity* identity =
+      [FakeSystemIdentity identityWithEmail:@"foo1@gmail.com"
+                                     gaiaID:@"foo1ID"
+                                       name:@"Fake Foo 1"];
+  fake_system_identity_manager()->AddIdentity(identity);
+
+  AccountCapabilitiesTestMutator* mutator =
+      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity);
+  mutator->SetAllSupportedCapabilities(true);
+
+  // Set up expected app state that prefetches capabilities.
+  app_state_.initStageForTesting = InitStageFinal;
+  [startup_information_ setIsColdStart:YES];
+
+  InsertNewWebState(0, GURL(kURL));
+  InsertNewWebState(1, GURL(kChromeUINewTabURL));
+  WebStateList* web_state_list =
+      scene_state_.browserProviderInterface.mainBrowserProvider.browser
+          ->GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  ASSERT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity)
+                   .AreAllCapabilitiesKnown());
+
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(fake_system_identity_manager()
+                   ->GetVisibleCapabilities(identity)
+                   .AreAllCapabilitiesKnown());
 }
