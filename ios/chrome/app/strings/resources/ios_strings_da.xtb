@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Vælg "Føj til Google Kalender" eller "Føj til Apple Kalender".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> genbrugte adgangskoder</translation>
+<translation id="1636234353664774105">Få en detaljeret rutevejledning til din destination ved hjælp af navigationsfunktionen</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1641316430523156212">Følg</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2062410130322589403">En guide til dine privatlivsindstillinger</translation>
 <translation id="20638360198452347">Enhedstypevælger</translation>
+<translation id="2067852168641682340">Gem på denne konto hver gang</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="2074131957428911366">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Du kan rulle til højre for at browse i inkognito.</translation>
@@ -313,6 +315,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="261739049332372104">Slå notifikationer til i iOS-indstillingerne for at få opdateringer om indhold, du interesserer dig for.</translation>
 <translation id="2625189173221582860">Adgangskoden er kopieret</translation>
 <translation id="2626236249646841566">Tjek din forbindelse, og prøv at logge ind igen.</translation>
+<translation id="2635918910848538771">Udfyld CVC automatisk</translation>
 <translation id="2637313651144986786">Søg i faner...</translation>
 <translation id="2640733327287333451">Der er intet brugernavn ••••••</translation>
 <translation id="2648721026697078500">Flyt aldrig</translation>
@@ -496,6 +499,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3533202363250687977">Luk alle inkognitofaner</translation>
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3540141921715814660">Føj til Bogmærker</translation>
+<translation id="3547356470684043247">Med anmeldelser kan du læse kundernes vurderinger af produkter, tjenester eller oplevelser for at gøre det nemmere at træffe beslutninger</translation>
 <translation id="355101282835380364">Gem på din konto…</translation>
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4659194143325814340">{count,plural, =1{{count} side på din læseliste}one{{count} side på din læseliste}other{{count} sider på din læseliste}}</translation>
 <translation id="4659667755519643272">Åbn Faneskift</translation>
 <translation id="46614316059270592">Gem adgangskode</translation>
+<translation id="467189612236587057">Kom i kontakt med en virksomhed ved at foretage et telefonopkald</translation>
 <translation id="4682686630151240767">1. Åbn iPhone-indstillingerne</translation>
 <translation id="4689564913179979534">Administrer betalingsmetoder…</translation>
 <translation id="469300482518076788">Luk fane</translation>

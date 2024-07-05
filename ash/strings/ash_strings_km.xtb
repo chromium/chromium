@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">លើស​ចំណុះ</translation>
 <translation id="1341926407152459446">ប្រើ "<ph name="DEVICE_NAME" />" សម្រាប់​ឧបករណ៍​បញ្ចូល និង​បញ្ចេញ​សំឡេង</translation>
 <translation id="1346748346194534595">ស្តាំ</translation>
+<translation id="1350494136075914725">កំពុងដំណើរការ · ប្ដូរទៅផ្ទាំង</translation>
 <translation id="1351937230027495976">បង្រួម​ម៉ឺនុយ​</translation>
 <translation id="1360220746312242196">នៅ​ពេល​ស្វែងរក​​​លើទំព័រ សូម​​ទៅកាន់ខ្លឹមសារដូចគ្នា​មុន​​សម្រាប់​ការ​ស្វែងរក</translation>
 <translation id="1360788414852622716">កំពុងបិទកម្រងព័ត៌មាន។ សកម្មភាពនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">ការជ្រើសរើស​សំឡេង</translation>
 <translation id="4881323000405981760">មិនអាចប្រើ​បែបផែន​នៅលើ​កម្មវិធី linux បានទេ</translation>
 <translation id="4881695831933465202">បើក</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">ផ្ដល់មតិកែលម្អបន្ថែម ដើម្បីកែលម្អការណែនាំ៖</translation>
 <translation id="4890187583552566966">Google ជំនួយការ​ត្រូវបានបិទ​ដោយ​អ្នកគ្រប់គ្រង​របស់​អ្នក។</translation>
 <translation id="4890408602550914571">សូមប្រាកដ​ថា ទូរសព្ទរបស់អ្នក​នៅជិត និងបានបើក​ប៊្លូធូស។</translation>
@@ -1749,6 +1751,7 @@
 <translation id="742594950370306541">កាមេរ៉ាស្ថិតនៅក្នុងការប្រើ។</translation>
 <translation id="742608627846767349">អរុណសួស្ដី</translation>
 <translation id="743058460480092004">កាមេរ៉ា និងម៉ៃក្រូហ្វូនស្ថិតក្នុងការប្រើ។</translation>
+<translation id="7441711280402516925">កំពុងចាក់ · ប្ដូរទៅផ្ទាំង</translation>
 <translation id="7453330308669753048">បានដក​លទ្ធផលប្រវត្តិ​ស្វែងរកចេញ</translation>
 <translation id="7459485586006128091">ដោយសារ​មាន​បញ្ហា​ខាង​ក្នុង ហតស្ប៉ត​ត្រូវ​បានបិទ។ សូម​សាកល្បង​ភ្ជាប់​ឡើងវិញ​ក្នុង​ពេល​បន្តិចទៀត។</translation>
 <translation id="7461924472993315131">លេខសម្គាល់</translation>

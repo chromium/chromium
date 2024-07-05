@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Прекорачење</translation>
 <translation id="1341926407152459446">Користите уређај<ph name="DEVICE_NAME" /> за аудио улаз и излаз</translation>
 <translation id="1346748346194534595">Удесно</translation>
+<translation id="1350494136075914725">У току · Пребаци на картицу</translation>
 <translation id="1351937230027495976">Скупи мени</translation>
 <translation id="1360220746312242196">При претраживању странице иди на претходно подударање за претрагу</translation>
 <translation id="1360788414852622716">Профил се онемогућава. То може да потраје неколико минута.</translation>
@@ -1049,6 +1050,7 @@
 <translation id="4876935764454575645">Избор звука</translation>
 <translation id="4881323000405981760">Ефекти нису подржани у Linux апликацијама</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Пружите опционалне повратне информације ради побољшања предлога:</translation>
 <translation id="4890187583552566966">Администратор је онемогућио Google помоћник.</translation>
 <translation id="4890408602550914571">Уверите се да је телефон у близини и да је Bluetooth укључен.</translation>
@@ -1752,6 +1754,7 @@
 <translation id="742594950370306541">Камера се користи.</translation>
 <translation id="742608627846767349">Добро јутро,</translation>
 <translation id="743058460480092004">Камера и микрофон се користе.</translation>
+<translation id="7441711280402516925">Репродукује се · Пребаци на картицу</translation>
 <translation id="7453330308669753048">Резултат историје претраге је уклоњен</translation>
 <translation id="7459485586006128091">Хотспот је искључен због интерне грешке. Пробајте поново да се повежете за пар минута.</translation>
 <translation id="7461924472993315131">Закачи</translation>

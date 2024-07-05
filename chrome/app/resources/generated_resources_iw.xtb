@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{הדף אינו מגיב}one{הדפים אינם מגיבים}two{הדפים אינם מגיבים}other{הדפים אינם מגיבים}}</translation>
 <translation id="1011003645819296594">המכשירים השמורים</translation>
 <translation id="1011355516189274711">‏עוצמת קול של המרת טקסט לדיבור (TTS)</translation>
+<translation id="1011431628606634753">‏עליך לשנות את קוד האימות לשחזור של מנהל הסיסמאות של Google</translation>
 <translation id="1012794136286421601">‏קובצי המסמכים, הגיליונות, השקפים והשרטוטים מסתנכרנים כעת. יש לפתוח את היישום Google Drive כדי לגשת אליהם אונליין או אופליין.</translation>
 <translation id="1012876632442809908">‏מכשיר עם יציאת USB-C (יציאה קדמית)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1475,7 +1476,6 @@
 <translation id="2048254245884707305">מתבצעת בדיקה לאיתור תוכנות זדוניות…</translation>
 <translation id="2048554637254265991">שגיאה בהפעלת מנהל המאגר. יש לנסות שוב.</translation>
 <translation id="2048653237708779538">הפעולה לא זמינה</translation>
-<translation id="2049021651258469175">‏תהיה לך גם אפשרות להשתמש בסיסמאות שלך ולשמור אותן בחשבון Google.</translation>
 <translation id="204914487372604757">יצירת קיצור דרך</translation>
 <translation id="2050339315714019657">לאורך</translation>
 <translation id="2051266530792296582">‏מנהל הסיסמאות של Google יצר סיסמה חזקה לאתר הזה</translation>
@@ -4064,6 +4064,7 @@
 <translation id="3923221004758245114">להסיר את <ph name="VM_NAME" /> מה-<ph name="DEVICE_TYPE" />? הפעולה הזו תמחק את כל האפליקציות והנתונים במכונה הווירטואלית.</translation>
 <translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3923676227229836009">לדף הזה יש הרשאה להציג קבצים</translation>
+<translation id="3923958273791212723">התראות לגבי בעיות בביצועים</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">גודל הטקסט והתצוגה: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">‏כשההגדרה 'גלישה בטוחה' מופעלת, כתובות URL נשלחות לבדיקה. בנוסף, נשלחת דוגמית קטנה הכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת במטרה לאתר איומים חדשים. כדי להגן עליך בכל האפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
@@ -4080,6 +4081,7 @@
 <translation id="3930737994424905957">חיפוש מכשירים</translation>
 <translation id="3930968231047618417">צבע רקע</translation>
 <translation id="3932356525934356570">הצמדה של <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">אורך מקסימלי של <ph name="MAX" /> תווים</translation>
 <translation id="3933121352599513978">כיווץ בקשות לא רצויות (מומלץ)</translation>
 <translation id="3936260554100916852">‏המכשיר <ph name="DEVICE_NAME" /> משתף איתך רשת Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;פתיחת אודיו בכרטיסייה חדשה</translation>
@@ -5220,6 +5222,7 @@
 <translation id="4807098396393229769">שם על הכרטיס</translation>
 <translation id="4807122856660838973">הפעלת גלישה בטוחה</translation>
 <translation id="4807514039636325497">‏פרטי DBus</translation>
+<translation id="4808525520374557629">אפשר לקבל התראות שמציעות דרכים לשפר בעיות בביצועים שזוהו. <ph name="BEGIN_LINK" />מידע נוסף על התראות לגבי בעיות בביצועים<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">חלונות קופצים חסומים</translation>
 <translation id="4809079943450490359">הוראות ממנהל המכשיר שלך:</translation>
 <translation id="4809447465126035330">מחיקה</translation>
@@ -5522,7 +5525,6 @@
 <translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
 <translation id="5033137252639132982">לא מורשים להשתמש בחיישני תנועה</translation>
 <translation id="5033266061063942743">צורות גיאומטריות</translation>
-<translation id="503441068567788948">‏צריך ליצור קוד אימות חדש למנהל הסיסמאות של Google</translation>
 <translation id="5035846135112863536">לקבלת מידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, צריך לבחור באפשרות 'פרטים נוספים' למטה.</translation>
 <translation id="5037676449506322593">הכול</translation>
 <translation id="5038818366306248416">בחרת בעבר לא לתת הרשאה לשום תוסף ב‑<ph name="ORIGIN" /></translation>
@@ -6092,6 +6094,7 @@
 <translation id="5457113250005438886">לא חוקי</translation>
 <translation id="5457459357461771897">קריאה ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">הזנת קוד אימות שגוי יותר מדי פעמים. כדי לגשת למפתחות הגישה ולסיסמאות, עליך לשנות את קוד האימות.</translation>
 <translation id="5458998536542739734">הערות במסך הנעילה</translation>
 <translation id="5459864179070366255">המשך להתקנה</translation>
 <translation id="5460641065520325899">ניהול סוגי המידע שאתרים יכולים להשתמש בו כדי לעקוב אחריך במהלך הגלישה.</translation>
@@ -9090,7 +9093,6 @@
 <translation id="7708143783728142771">‏באותו אופן, קובצי Cookie מאפשרים להתאים אישית את ההעדפות שלך באינטרנט. אם נכנסת לאתר מסוים, האתר יכול לשמור קובץ Cookie באחסון הדפדפן של המכשיר כדי לזכור את ההעדפות שלך לגבי האתר, למשל השפה שלך או הפריטים ששמרת בעגלת הקניות. לאחר מכן, בביקור נוסף באתר באמצעות אותו דפדפן, האתר יוכל לקרוא את קובץ ה-Cookie שהוא הגדיר ותהיה לך אפשרות להתחיל מהמקום שבו הפסקת. קובצי ה-Cookie האלה מכונים לעיתים קרובות 'קובצי Cookie מהדומיין הנוכחי', כי הם מוגדרים על ידי האתר שבו ביקרת.</translation>
 <translation id="770831926727930011">הנתונים המקומיים מוגנים באמצעות הסיסמה הישנה שלך. עליך להזין את הסיסמה הישנה כדי לשחזר את הנתונים המקומיים.</translation>
 <translation id="7709152031285164251">נכשל - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">כדאי להגן על כל מפתחות הגישה באמצעות קוד אימות לשחזור</translation>
 <translation id="7710568461918838723">&amp;העברה...</translation>
 <translation id="7711900714716399411">‏יש להשתמש בכבל USB כדי לחבר את הטלפון למחשב. אם הטלפון כבר מחובר, יש לנתק אותו ולאחר מכן לחבר שוב.</translation>
 <translation id="7711968363685835633">השבתה של ההמרות וההצעות בהתאמה אישית ושל מילון המשתמש</translation>

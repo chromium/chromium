@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1622717322707146952">“Google Calendar-এ যোগ করুন“ বা “Apple Calendar-এ যোগ করুন“ বিকল্প বেছে নিন।</translation>
 <translation id="1626771852476987600"><ph name="COUNT" />টি একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে</translation>
+<translation id="1636234353664774105">নেভিগেশন ফিচার ব্যবহার করে এক এক করে আপনার গন্তব্যের দিকনির্দেশ সংক্রান্ত নির্দেশিকা দেখুন</translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="1641316430523156212">ফলো করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2062410130322589403">আপনার গোপনীয়তা সংক্রান্ত পছন্দের গাইড</translation>
 <translation id="20638360198452347">ইউনিটের ধরন বাছাইকারী</translation>
+<translation id="2067852168641682340">প্রতিবার এই অ্যাকাউন্টে সেভ করুন</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2078437078822043850">আপনি 'ছদ্মবেশী' মোডে স্ক্রল করার জন্য বাঁদিকে সোয়াইপ করতে পারবেন।</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">আপনার প্রয়োজনীয় কন্টেন্ট সম্পর্কে আপডেট পেতে, আপনার iOS সেটিংসে বিজ্ঞপ্তি চালু করুন।</translation>
 <translation id="2625189173221582860">পাসওয়ার্ড কপি করা হয়েছে</translation>
 <translation id="2626236249646841566">ইন্টারনেট কানেকশন চেক করে আবার সাইন-ইন করার চেষ্টা করুন।</translation>
+<translation id="2635918910848538771">CVC অটোফিল করুন</translation>
 <translation id="2637313651144986786">ট্যাব সার্চ করুন...</translation>
 <translation id="2640733327287333451">কোনও ইউজারনেম নেই ••••••</translation>
 <translation id="2648721026697078500">কখনও সরাবেন না</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
 <translation id="3540141921715814660">বুকমার্কে যোগ করুন</translation>
+<translation id="3547356470684043247">রিভিউ সহ আপনার সিদ্ধান্ত জানানোর ব্যাপারে সহায়তা পেতে প্রোডাক্ট, পরিষেবা অথবা অভিজ্ঞতার বিষয়ে গ্রাহকদের মূল্যায়ন পড়ুন</translation>
 <translation id="355101282835380364">অ্যাকাউন্টে সেভ করুন…</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
 <translation id="3565930036634619844">ট্যাব। <ph name="NUMBER_OF_TABS" />টির মধ্যে <ph name="TAB_INDEX" /> নম্বর।</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{আপনার পড়ার তালিকায় {count}টি পেজ}one{আপনার পড়ার তালিকায় {count}টি পেজ}other{আপনার পড়ার তালিকায় {count}টি পেজ}}</translation>
 <translation id="4659667755519643272">ট্যাব পরিবর্তনকারী আনুন</translation>
 <translation id="46614316059270592">পাসওয়ার্ড সেভ করুন</translation>
+<translation id="467189612236587057">ফোন কল শুরু করে ব্যবসার সাথে কানেক্ট করুন</translation>
 <translation id="4682686630151240767">১. iPhone সেটিংস খুলুন</translation>
 <translation id="4689564913179979534">পেমেন্ট পদ্ধতিগুলি ম্যানেজ করুন...</translation>
 <translation id="469300482518076788">'ট্যাব' বন্ধ করুন</translation>

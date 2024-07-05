@@ -47,8 +47,9 @@
 <translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
 <translation id="1082026381988252344">捲動及縮放已分享分頁的內容</translation>
-<translation id="1088664500620117635">「<ph name="PRODUCT_NAME" />」的一般價格為 <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />，但目前網路上的價格為 <ph name="CURRENT_PRICE" />。</translation>
+<translation id="1088664500620117635">「<ph name="PRODUCT_NAME" />」的一般價格為 <ph name="LOW_PRICE" /> 至<ph name="HIGH_PRICE" />，但目前網上的價格為 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="1089439967362294234">變更密碼</translation>
+<translation id="1089599132348386324">你隨時可以前往 Chrome 設定調整。</translation>
 <translation id="1090629319939036170">VR 選單</translation>
 <translation id="1091779689406092804">螢幕截圖</translation>
 <translation id="1094777233105318927">瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料</translation>
@@ -1218,7 +1219,7 @@
 <translation id="3307649904964670439">自訂 Chrome 按鈕，啟動之後就可以自訂瀏覽器嘅風格</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
 <translation id="3318016344440038475">電視喜劇</translation>
-<translation id="3321152582690622182">未追蹤</translation>
+<translation id="3321152582690622182">沒有追蹤</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">棕紅色</translation>
 <translation id="3325027355611702542">野營車和旅遊車</translation>
@@ -2203,7 +2204,7 @@
 <translation id="5177076414499237632">進一步瞭解此頁面的來源和主題</translation>
 <translation id="5179490652562926740">已儲存付款驗證設定</translation>
 <translation id="5179510805599951267">網頁內容不是<ph name="ORIGINAL_LANGUAGE" />嗎？請報告此錯誤</translation>
-<translation id="5180662470511508940">不允許鎖定鍵盤</translation>
+<translation id="5180662470511508940">唔可以鎖定鍵盤</translation>
 <translation id="5187079891181379721">企業活動</translation>
 <translation id="5190072300954988691">唔批准用攝錄機同咪</translation>
 <translation id="5190835502935405962">書籤列</translation>
@@ -2777,7 +2778,7 @@
 <translation id="6298456705131259420">這裡列出的網站會受到影響。在網域名稱前方插入「[*.]」，可將整個網域設定為例外情況。例如，如果新增「[*.]google.com」，mail.google.com 亦可使用第三方 Cookie，因為該網域屬於 google.com。</translation>
 <translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
-<translation id="6302546952464230349">顯示<ph name="PERMISSION_NAME" />權限詳細資料</translation>
+<translation id="6302546952464230349">顯示<ph name="PERMISSION_NAME" />權限詳情</translation>
 <translation id="6304398603974202180">多媒體軟件</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">此地址將從此裝置和其他已登入的裝置中刪除</translation>
@@ -2920,7 +2921,7 @@
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
 <translation id="6549443526281184652">服飾道具</translation>
-<translation id="6550245281449521513">不允許鎖定滑鼠</translation>
+<translation id="6550245281449521513">唔可以鎖定滑鼠</translation>
 <translation id="6551873053534932690">要將地址儲存在帳戶中嗎？</translation>
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
@@ -4311,7 +4312,7 @@
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (啞面)</translation>
 <translation id="9192947025498305328">潔淨美容</translation>
-<translation id="919455784772793601">開啟新頁面，顯示還有哪些商店販售這項產品。</translation>
+<translation id="919455784772793601">開啟頁面以顯示其他出售此產品的店舖</translation>
 <translation id="9199905725844810519">已封鎖列印功能</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="920643408853370361">旅遊保險</translation>

@@ -1906,13 +1906,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> s'applique à tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sachez toutefois qu'à partir de la version M85, les formats contenant les caractères génériques "*" et "[*.]" dans l'hôte ne sont plus acceptés pour cette règle.</translation>
-<translation id="2421713016375433338">URL d'une image qui servira de badge Enterprise pour le profil. L'URL doit renvoyer vers une image.
-
-Ce badge s'affichera dans le menu du profil sous l'image de profil. L'image sera redimensionnée afin de tenir sur l'espace 16 x 16 réservé au badge.
-
-Si cette règle n'est pas configurée, une icône par défaut représentant un bâtiment s'affichera.
-
-Si une erreur se produit lors de la tentative d'obtention et d'affichage de l'image, une icône par défaut représentant un bâtiment bâtiment s'affichera.</translation>
 <translation id="2421779938235645781">La couleur de rétroéclairage du clavier s'accorde avec le fond d'écran actuel</translation>
 <translation id="2423255396068675416">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs sont autorisés à exécuter<ph name="PRODUCT_CROSTINI_NAME" />, tant que les règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si cette règle est désactivée, <ph name="PRODUCT_CROSTINI_NAME" /> est désactivé pour l'utilisateur. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
 <translation id="2423654977291507457">Désactiver les intégrations</translation>
@@ -2245,13 +2238,6 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
       Cette règle s'applique à l'écran de connexion. Veuillez également consulter celle applicable à la session utilisateur (<ph name="SITE_PER_PROCESS_POLICY_NAME" />). Nous vous recommandons d'attribuer la même valeur à ces deux règles. Si les valeurs ne sont pas identiques, la règle relative aux utilisateurs s'applique. Cela peut ralentir l'ouverture de la session utilisateur.
       </translation>
 <translation id="2697717608663878828">Activer le test TLS Encrypted ClientHello</translation>
-<translation id="2698555428858508691">Cette règle permet de définir un libellé personnalisé servant à identifier un profil connecté.
-
-Si cette règle n'est pas configurée et qu'un libellé doit être affiché, le libellé par défaut ("Professionnel" ou "Scolaire") sera utilisé.
-
-Cette règle prévaut sur la règle <ph name="PROFILE_LABEL_POLICY_NAME" />.
-
-Le libellé personnalisé ne sera pas traduit.</translation>
 <translation id="2699836109975228367">Activer l'audio mono sur l'écran de connexion</translation>
 <translation id="2702023190395322609">Activer les recommandations de contenus multimédias</translation>
 <translation id="2702682139813393777">Forcer le lancement des hôtes de messagerie native Windows via cmd.exe</translation>
@@ -10329,7 +10315,6 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
 <translation id="9020630127193895800">Rétroéclairage du clavier indigo</translation>
 <translation id="9031831501689819108">Activer Legacy Browser Support</translation>
 <translation id="9032595854515551464">Active le service <ph name="PRODUCT_NAME" /> V2 et lance le bureau à distance lors de la connexion</translation>
-<translation id="903334067190374761">Définir un libellé personnalisé de profil</translation>
 <translation id="9034285085962866065">Autoriser la personnalisation des raccourcis système</translation>
 <translation id="9035086760683255833">Active la fonctionnalité d'accessibilité de mise en surbrillance au clavier.
 

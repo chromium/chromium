@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{ट्याब रिस्टोर गर्नुहोस्}other{ट्याबहरू रिस्टोर गर्नुहोस्}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome को <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome का <ph name="TABS_COUNT_MANY" /> वटा लिंक}}</translation>
 <translation id="575494663145460764">मूल्य घटेको कुरासम्बन्धी अलर्ट प्राप्त गर्ने हो?</translation>
 <translation id="58326064309361797">ट्याबहरूलाई समूहबद्ध गर्न तिनीहरूलाई ड्र्याग गर्नुहोस्</translation>

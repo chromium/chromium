@@ -97,6 +97,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Åpne Utforsk</translation>
+<translation id="129469256578833241">Tilbake til sammendraget</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Trykk på <ph name="LAUNCHER_KEY_NAME" /> + G når som helst</translation>
 <translation id="1306549533752902673">ANBEFALTE APPER</translation>
@@ -109,6 +110,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1341926407152459446">Bruk «<ph name="DEVICE_NAME" />» som inn- og utenhet for lyd</translation>
 <translation id="1346748346194534595">Høyre</translation>
+<translation id="1350494136075914725">Aktiv · Bytt til fane</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1360220746312242196">Gå til forrige søketreff når du søker på en side</translation>
 <translation id="1360788414852622716">Deaktiverer profilen. Dette kan ta noen minutter.</translation>
@@ -257,6 +259,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
 <translation id="1925320505152357008">under 1 min</translation>
 <translation id="1928739107511554905">For å laste ned oppdateringen, bruk berøringsskjermen til å starte Chromebooken på nytt med tastaturet tilkoblet.</translation>
+<translation id="1929331825127010451">Tilbake til spørsmålet</translation>
 <translation id="1948405482892809935">Bytt til neste bruker</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Skjermopptaket er fullført</translation>
@@ -1046,6 +1049,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4876935764454575645">Lydvalg</translation>
 <translation id="4881323000405981760">Effekter støttes ikke i Linux-apper</translation>
 <translation id="4881695831933465202">Åpne</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Gi en valgfri tilbakemelding for å gjøre forslagene bedre:</translation>
 <translation id="4890187583552566966">Administratoren din har slått av Google-assistenten.</translation>
 <translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
@@ -1152,6 +1156,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5238719049014159442">Åpne/lukk appoversikten</translation>
 <translation id="5240725217819182328">Rask tilgang til bestemte sider eller handlinger i installerte apper</translation>
 <translation id="5245201184978705914">Kan ikke generere noen transkripsjon</translation>
+<translation id="5251174953851719648">Last inn innholdet på nytt</translation>
 <translation id="5253783950165989294">Koblet til enheten <ph name="DEVICE_NAME" /> – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="5258528442992323769">Ingen lagrede skrivebord</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
@@ -1416,6 +1421,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6147182561428020853">Nå kan du blokkere apper som er installert på denne <ph name="DEVICE_TYPE" />-enheten</translation>
 <translation id="6154006699632741460">Den eksterne enheten støttes ikke</translation>
 <translation id="6156960295318603523">Språkinnstillinger</translation>
+<translation id="6158923546703693047">Informasjon om innholdskilden</translation>
 <translation id="615957422585914272">Vis skjermtastaturet</translation>
 <translation id="616543563528926612">Høyreklikk-hurtigtasten er endret til Alt + klikk fra <ph name="LAUNCHER_KEY_NAME" />-tasten + klikk</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
@@ -1746,6 +1752,7 @@ Nylig installert</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
+<translation id="7441711280402516925">Spiller av · Bytt til fane</translation>
 <translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
 <translation id="7459485586006128091">Wifi-sonen er slått av på grunn av en intern feil. Prøv å koble til på nytt om noen minutter.</translation>
 <translation id="7461924472993315131">Fest</translation>
@@ -2000,6 +2007,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8315514906653279104">Slår på …</translation>
 <translation id="8331351032546853669">Nedlasting venter</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Still et spørsmål.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /><ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Dårlig svar</translation>
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>

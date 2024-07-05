@@ -1935,13 +1935,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questo criterio.</translation>
-<translation id="2421713016375433338">L'URL di un'immagine che verrà utilizzata come badge aziendale per il profilo. L'URL deve indirizzare a un'immagine.
-
-Questo badge verrà mostrato nel menu del profilo sotto l'immagine del profilo e l'immagine verrà ridimensionata per adattarsi a uno spazio pari a 16 x 16 riservato al badge.
-
-Se il criterio non viene configurato, verrà mostrata un'icona predefinita a forma di edificio.
-
-Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine, verrà visualizzata un'icona predefinita a forma di edificio.</translation>
 <translation id="2421779938235645781">Il colore della retroilluminazione della tastiera corrisponde allo sfondo corrente</translation>
 <translation id="2423255396068675416">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono eseguire <ph name="PRODUCT_CROSTINI_NAME" />, finché <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sono impostati su Attivato. Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_CROSTINI_NAME" /> viene disattivato per l'utente. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="2423654977291507457">Disattiva integrazioni</translation>
@@ -2274,13 +2267,6 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
       Questo criterio si applica alla schermata di accesso. Vedi anche il criterio <ph name="SITE_PER_PROCESS_POLICY_NAME" /> che viene applicato alla sessione utente. È consigliabile impostare lo stesso valore per entrambi i criteri. Se i valori non corrispondono, può verificarsi un ritardo quando si accede a una sessione utente mentre viene applicato il valore specificato dai criteri relativi agli utenti.
       </translation>
 <translation id="2697717608663878828">Attiva l'esperimento TLS Encrypted ClientHello</translation>
-<translation id="2698555428858508691">Questo criterio controlla un'etichetta personalizzata utilizzata per identificare un profilo a cui è stato eseguito l'accesso.
-
-Se questo criterio non viene configurato e deve essere visualizzata un'etichetta, verrà utilizzata l'etichetta predefinita "Lavoro" o "Scuola".
-
-Questo criterio sostituirà il criterio <ph name="PROFILE_LABEL_POLICY_NAME" />.
-
-L'etichetta personalizzata non verrà tradotta.</translation>
 <translation id="2699836109975228367">Attiva l'audio in formato mono sulla schermata di accesso</translation>
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
 <translation id="2702682139813393777">Forza l'avvio degli host di messaggistica nativi di Windows tramite cmd.exe</translation>
@@ -10446,7 +10432,6 @@ Nota: al momento verrà presa in considerazione solo la prima voce. Le estension
 <translation id="9020630127193895800">Colore della retroilluminazione della tastiera blu indaco</translation>
 <translation id="9031831501689819108">Attiva Supporto dei browser precedenti</translation>
 <translation id="9032595854515551464">Attiva il servizio <ph name="PRODUCT_NAME" /> V2 e avvia la scrivania remota all'accesso</translation>
-<translation id="903334067190374761">Imposta un'etichetta del profilo personalizzata</translation>
 <translation id="9034285085962866065">Consenti la personalizzazione delle scorciatoie di sistema</translation>
 <translation id="9035086760683255833">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera.
 

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />-г цуцлах.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
 <translation id="3691184985318546178">Синхала</translation>
+<translation id="3702842351052426940">Таны SIM карт эсвэл eSIM профайлыг идэвхгүй болгосон байж магадгүй. SIM картаа солих эсвэл eSIM профайлаа сэлгэж үзнэ үү.</translation>
 <translation id="3722341589402358578">Алдаа гарлаа. Зарим зүйлийг хогийн сав руу зөөгөөгүй байж магадгүй.</translation>
 <translation id="3726463242007121105">Файлын систем нь дэмжигдээгүй учир энэ төхөөрөмжийг нээх боломжгүй.</translation>
 <translation id="3727148787322499904">Энэ тохиргоог өөрчилснөөр хуваалцсан бүх сүлжээнд нөлөөлнө</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Энэ проксиг таны админ идэвхжүүлсэн байна</translation>
 <translation id="3830674330436234648">Дахин тоглуулах боломжгүй</translation>
 <translation id="383652340667548381">Серби</translation>
+<translation id="3839045880592694915">Танай оператор компани таны модемыг холбогдохыг зөвшөөрөөгүй. Илүү дэлгэрэнгүй мэдээлэл авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3855472144336161447">Герман Neo 2</translation>
 <translation id="3858860766373142691">Нэр</translation>
@@ -682,6 +684,7 @@
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
 <translation id="6269630227984243955">Малай</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"-д хангалттай хадгалах сан байхгүй тул файлуудыг байршуулах боломжгүй.</translation>
+<translation id="6279140785485544797">Таны хөдөлгөөнт төхөөрөмжийн дата багцын хугацаа дууссан байж магадгүй. Тусламж авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="6287852322318138013">Аппликейшнээ сонгоод файлаа нээ</translation>
 <translation id="6295542640242147836">SIM-г түгжих</translation>
 <translation id="6296410173147755564">PUK буруу байна</translation>

@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Restauro skedën}other{Restauro skedat}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lidhje nga Chrome}other{<ph name="TABS_COUNT_MANY" /> lidhje nga Chrome}}</translation>
 <translation id="575494663145460764">Dëshiron të marrësh alarme sinjalizuese për rënien e çmimeve?</translation>
 <translation id="58326064309361797">Zvarriti skedat për t'i grupuar</translation>

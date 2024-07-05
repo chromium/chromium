@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">'അടുത്തറിയുക' തുറക്കുക</translation>
+<translation id="129469256578833241">സംഗ്രഹത്തിലേക്ക് മടങ്ങുക</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">ഏതുസമയത്തും <ph name="LAUNCHER_KEY_NAME" /> + g അമർത്തുക</translation>
 <translation id="1306549533752902673">ശുപാർശിത ആപ്പുകൾ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">യാന്ത്രിക ക്ലിക്കുകൾ</translation>
 <translation id="1925320505152357008">ഒരു മിനിറ്റിൽ താഴെ</translation>
 <translation id="1928739107511554905">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോർഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യാൻ ടച്ച്‌സ്‌ക്രീൻ ഉപയോഗിക്കുക.</translation>
+<translation id="1929331825127010451">ചോദ്യത്തിലേക്ക് മടങ്ങുക</translation>
 <translation id="1948405482892809935">അടുത്ത ഉപയോക്താവിലേക്ക് മാറുക</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">സ്ക്രീൻ റെക്കോർഡിംഗ് പൂർത്തിയായി</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">ലോഞ്ചർ തുറക്കുക/അടയ്ക്കുക</translation>
 <translation id="5240725217819182328">ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പുകൾക്കുള്ളിലെ നിർദ്ദിഷ്ട പേജുകളിലേക്കോ പ്രവർത്തനങ്ങളിലേക്കോ ഉള്ള അതിവേഗ ആക്‌സസ്</translation>
 <translation id="5245201184978705914">ട്രാൻസ്ക്രിപ്റ്റ് സൃഷ്ടിക്കാനാകുന്നില്ല</translation>
+<translation id="5251174953851719648">ഉള്ളടക്കം റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="5258528442992323769">സംരക്ഷിച്ച ഡെസ്ക്കുകൾ ഇല്ല</translation>
 <translation id="5260676007519551770">ഡെസ്‌ക് 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">ഈ <ph name="DEVICE_TYPE" /> എന്നതിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന ആപ്പുകൾ നിങ്ങൾക്ക് ഇപ്പോൾ ബ്ലോക്ക് ചെയ്യാം</translation>
 <translation id="6154006699632741460">പെരിഫറലിനെ പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="6156960295318603523">ഭാഷാ ക്രമീകരണം</translation>
+<translation id="6158923546703693047">ഉള്ളടക്ക ഉറവിടം സംബന്ധിച്ച വിവരങ്ങൾ</translation>
 <translation id="615957422585914272">ഓൺ-സ്‌ക്രീൻ കീബോർഡ് ദൃശ്യമാക്കുക</translation>
 <translation id="616543563528926612">വലത്-ക്ലിക്ക് കുറുക്കുവഴി, '<ph name="LAUNCHER_KEY_NAME" /> കീ + ക്ലിക്ക്' എന്നതിൽ നിന്ന് 'Alt + ക്ലിക്ക്' എന്നതാക്കി അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
@@ -2001,6 +2005,7 @@
 <translation id="8315514906653279104">ഓണാക്കുന്നു...</translation>
 <translation id="8331351032546853669">ഡൗൺലോഡ് ശേഷിക്കുന്നു</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">ഒരു ചോദ്യം ചോദിക്കൂ.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">മോശം ഔട്ട്പുട്ട്</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>

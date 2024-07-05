@@ -1465,7 +1465,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2048254245884707305">Buscando software malicioso...</translation>
 <translation id="2048554637254265991">Produciuse un erro ao iniciar o xestor de contedores. Téntao de novo.</translation>
 <translation id="2048653237708779538">Acción non dispoñible</translation>
-<translation id="2049021651258469175">Poderás usar e gardar os teus contrasinais e outros datos da túa Conta de Google.</translation>
 <translation id="204914487372604757">Crear atallo</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">O xestor de contrasinais de Google creou un contrasinal seguro para este sitio web</translation>
@@ -5511,7 +5510,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5032430150487044192">Non se puido crear o código QR</translation>
 <translation id="5033137252639132982">Permiso denegado para usar sensores de movemento</translation>
 <translation id="5033266061063942743">Figuras xeométricas</translation>
-<translation id="503441068567788948">Crea un PIN novo para o xestor de contrasinais de Google</translation>
 <translation id="5035846135112863536">Selecciona a opción Máis detalles que se mostra abaixo para obter máis información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038818366306248416">Escolliches non permitir ningunha extensión en <ph name="ORIGIN" /></translation>
@@ -9071,7 +9069,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7708143783728142771">As cookies permiten desfrutar desa mesma personalización das preferencias na web. Cando visitas un sitio, este pode gardar unha cookie no almacenamento do navegador do teu dispositivo para lembrar as túas preferencias, por exemplo, o idioma que falas ou os produtos que queres ter gardados no carro da compra. Se volves visitar o sitio noutro momento co mesmo navegador, o sitio pode ler a cookie que estableceu de modo que poidas retomar a navegación onde a deixaches a última vez. Este tipo de cookies normalmente denomínase cookies propias, xa que é o propio sitio que visitas o que as establece.</translation>
 <translation id="770831926727930011">Os datos locais están protexidos co contrasinal antigo. Introduce ese contrasinal para recuperalos.</translation>
 <translation id="7709152031285164251">Erro: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protexe todas as túas claves de acceso cun PIN de recuperación</translation>
 <translation id="7710568461918838723">&amp;Emitir...</translation>
 <translation id="7711900714716399411">Utiliza un cable USB para conectar o teléfono ao ordenador. Se o teléfono xa está conectado, desconéctao e vólveo conectar.</translation>
 <translation id="7711968363685835633">Desactivar suxestións e conversións personalizadas, así como o dicionario de usuario</translation>

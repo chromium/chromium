@@ -39,7 +39,6 @@
 <translation id="1516530951338665275">જોડાણ કરવાનું ચાલુ રાખવા માટે, Google Chromeને બ્લૂટૂથના ઍક્સેસની 
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOSને વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બનાવવામાં આવ્યું છે.</translation>
-<translation id="1551749261806528781">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજી ઘણી બાબતો સાચવવા અને તેનો ઉપયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો. તમે સાઇન ઇન કરો તે પછી આ પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે.</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
 <translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
@@ -422,7 +421,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
 
 તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
-<translation id="7037538054043837165">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતો સાચવવા અને તેનો ઉપયોગ કરવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="7048502283602470098">AI વિશે શોધખોળ કરો</translation>
 <translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="7071827361006050863">Chrome ટૂંક સમયમાં જ બ્રાઉઝિંગ ડેટા ડિલીટ કરશે</translation>

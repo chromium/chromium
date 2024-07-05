@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> annuleren.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3691184985318546178">Singalees</translation>
+<translation id="3702842351052426940">Je simkaart of e-simkaartprofiel is misschien gedeactiveerd. Vervang je simkaart of schakel tussen e-simkaartprofielen.</translation>
 <translation id="3722341589402358578">Er is een fout opgetreden. Sommige items zijn misschien niet verwijderd.</translation>
 <translation id="3726463242007121105">Dit apparaat kan niet worden geopend omdat het bijbehorende bestandssysteem niet wordt ondersteund.</translation>
 <translation id="3727148787322499904">Het wijzigen van deze instelling is van invloed op alle gedeelde netwerken</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Deze proxy wordt afgedwongen door je beheerder</translation>
 <translation id="3830674330436234648">Afspelen is niet beschikbaar</translation>
 <translation id="383652340667548381">Servisch</translation>
+<translation id="3839045880592694915">Je modem mag geen verbinding maken van je provider. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3855472144336161447">Duits Neo 2</translation>
 <translation id="3858860766373142691">Naam</translation>
@@ -685,6 +687,7 @@
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, verbinden</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6271903698064569429">Je kunt geen bestanden uploaden, omdat <ph name="SHARED_DRIVE_NAME" /> onvoldoende opslagruimte heeft.</translation>
+<translation id="6279140785485544797">Je mobiele data-abonnement is misschien verlopen. Neem contact op met je provider voor support.</translation>
 <translation id="6287852322318138013">Een app selecteren om dit bestand te openen</translation>
 <translation id="6295542640242147836">Simkaart vergrendelen</translation>
 <translation id="6296410173147755564">Ongeldige pukcode</translation>

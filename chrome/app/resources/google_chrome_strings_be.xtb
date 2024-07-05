@@ -38,7 +38,6 @@
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">Каб захоўваць і выкарыстоўваць паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome. Пароль будзе захаваны ва Уліковым запісе Google пасля ўваходу.</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
@@ -421,7 +420,6 @@
 <translation id="7036251913954633326">Калі вам трэба ўвайсці ў гэты ўліковы запіс адзін раз, можна выкарыстаць <ph name="GUEST_LINK_BEGIN" />Гасцявы рэжым<ph name="GUEST_LINK_END" /> браўзера Chrome. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ, <ph name="LINK_BEGIN" />дадайце новага карыстальніка<ph name="LINK_END" /> на прыладу <ph name="DEVICE_TYPE" />.
 
 Дазволы, якія вы ўжо далі вэб-сайтам і праграмам, могуць дзейнічаць для гэтага ўліковага запісу. Кіраваць Уліковымі запісамі Google можна ў <ph name="SETTINGS_LINK_BEGIN" />Наладах<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">Каб захоўваць і выкарыстоўваць паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome</translation>
 <translation id="7048502283602470098">Даведацца пра AI</translation>
 <translation id="7059914902409643750">Дастасуйце Chrome да сваіх мэт</translation>
 <translation id="7071827361006050863">Даныя пра работу ў Chrome хутка будуць выдалены</translation>

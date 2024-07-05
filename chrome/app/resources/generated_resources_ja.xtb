@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
 <translation id="1011003645819296594">保存済みのデバイス</translation>
 <translation id="1011355516189274711">テキスト読み上げの音量</translation>
+<translation id="1011431628606634753">Google パスワード マネージャーのリカバリ PIN を変更</translation>
 <translation id="1012794136286421601">ドキュメント、スプレッドシート、スライド、図形描画ファイルは同期されています。Google ドライブ アプリを起動すると、これらのファイルにオンラインまたはオフラインでアクセスします。</translation>
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1463,7 +1464,6 @@
 <translation id="2048254245884707305">マルウェアがないか確認しています...</translation>
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2048653237708779538">操作できません</translation>
-<translation id="2049021651258469175">Google アカウントのパスワードなどの使用や保存もできるようになります。</translation>
 <translation id="204914487372604757">ショートカットを作成</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2051266530792296582">Google パスワード マネージャーによりこのウェブサイトの安全なパスワードが作成されました</translation>
@@ -4043,6 +4043,7 @@
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" /> から <ph name="VM_NAME" /> を削除しますか？仮想マシン内のすべてのアプリとデータが削除されます。</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3923676227229836009">このページはファイルの表示が許可されています</translation>
+<translation id="3923958273791212723">パフォーマンスの問題に関するアラート</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">ディスプレイとテキストのサイズ <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
@@ -4059,6 +4060,7 @@
 <translation id="3930737994424905957">デバイスを検索しています</translation>
 <translation id="3930968231047618417">背景の色</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> を固定</translation>
+<translation id="3932477678113677556">最大 <ph name="MAX" /> 文字</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> から Wi-Fi ネットワークが共有されています</translation>
 <translation id="3936390757709632190">オーディオを新しいタブで開く(&amp;O)</translation>
@@ -4707,6 +4709,7 @@
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。障害レポートでは、Chrome OS がクラッシュした時間や使用された機能、通常のメモリ使用量などが送信されます。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">パスワード、パスキー、およびその他のデータが <ph name="BRAND" /> から完全に削除されます</translation>
 <translation id="4426268963847471040"><ph name="FILE_NAME" /> を削除</translation>
 <translation id="4426464032773610160">始める前に、USB または Bluetooth スイッチが Chromebook に接続されていることをご確認ください。キーボードのキーを使うこともできます。</translation>
 <translation id="4426490308207168518">フィードバックを送信したり、問題を報告したりできます</translation>
@@ -5196,6 +5199,7 @@
 <translation id="4807098396393229769">カード名義人（半角英文字）</translation>
 <translation id="4807122856660838973">セーフ ブラウジングをオンにする</translation>
 <translation id="4807514039636325497">DBus の詳細</translation>
+<translation id="4808525520374557629">検出されたパフォーマンスの問題について推奨される改善方法を通知する。<ph name="BEGIN_LINK" />パフォーマンスの問題に関するアラートの詳細<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">ポップアップがブロックされました:</translation>
 <translation id="4809079943450490359">デバイス管理者からの指示:</translation>
 <translation id="4809447465126035330">削除</translation>
@@ -5498,7 +5502,6 @@
 <translation id="5032430150487044192">QR コードを作成できません</translation>
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
 <translation id="5033266061063942743">幾何学模様</translation>
-<translation id="503441068567788948">Google パスワード マネージャーの新しい PIN を作成</translation>
 <translation id="5035846135112863536">下の [詳細] を選択して、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の詳細をご覧ください。</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
 <translation id="5038818366306248416"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
@@ -6065,6 +6068,7 @@
 <translation id="5457113250005438886">無効</translation>
 <translation id="5457459357461771897">パソコンからの写真、音楽、その他のメディアの読み取りと削除</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">間違った PIN の入力回数が上限に達しました。パスキーとパスワードにアクセスするには、PIN を変更してください。</translation>
 <translation id="5458998536542739734">ロック画面のメモ</translation>
 <translation id="5459864179070366255">インストールに進む</translation>
 <translation id="5460641065520325899">サイトがブラウジング中のユーザーのトラッキングに使用できる情報の種類を管理します。</translation>
@@ -7494,6 +7498,7 @@
 <translation id="653920215766444089">ポインティング デバイスを探しています</translation>
 <translation id="6539674013849300372">安全なパスワードでオンラインのセキュリティを強化できます。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="653983593749614101">再開しています...</translation>
+<translation id="6540174167103635041">アプリをインストール</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> データの収集によりパフォーマンスが低下する場合があるため、意図的に行う場合、または指示された場合のみ有効にしてください。</translation>
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
@@ -9056,7 +9061,6 @@
 <translation id="7708143783728142771">Cookie は、こうした好みに合わせたカスタマイズをウェブで実現します。ユーザーが利用したとき、サイトはデバイスのブラウザ ストレージに Cookie を保存して、ユーザーのサイト設定（使用言語、ショッピング カートに保存したい商品アイテムなど）を記憶できます。その後、ユーザーが同じブラウザでそのサイトに再びアクセスすると、設定された Cookie がサイトで読み取られ、前回の続きから始めることができます。このタイプの Cookie は、利用したサイトによって設定されるため、一般的に「ファーストパーティ Cookie」と呼ばれます。</translation>
 <translation id="770831926727930011">ローカルデータは以前のパスワードで保護されています。以前のパスワードを入力するとローカルデータを復元できます。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">リカバリ PIN ですべてのパスキーを保護</translation>
 <translation id="7710568461918838723">キャスト(&amp;C)...</translation>
 <translation id="7711900714716399411">USB ケーブルを使用してスマートフォンとパソコンを接続してください。スマートフォンがすでに接続されている場合は、いったん取り外してから、接続しなおします。</translation>
 <translation id="7711968363685835633">一時的に学習機能、入力履歴からのサジェスト機能、ユーザー辞書機能を無効にする</translation>

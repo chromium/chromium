@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{응답 없는 페이지}other{응답 없는 페이지}}</translation>
 <translation id="1011003645819296594">저장된 기기</translation>
 <translation id="1011355516189274711">텍스트 음성 변환 볼륨</translation>
+<translation id="1011431628606634753">Google 비밀번호 관리자의 복구 PIN을 변경하세요</translation>
 <translation id="1012794136286421601">문서, 스프레드시트, 프레젠테이션, 드로잉 파일을 동기화하는 중입니다. Google Drive 앱을 열어 온라인이든 오프라인이든 관계없이 파일에 액세스할 수 있습니다.</translation>
 <translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1477,7 +1478,6 @@
 <translation id="2048254245884707305">멀웨어 검사 중...</translation>
 <translation id="2048554637254265991">컨테이너 관리자 시작 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
-<translation id="2049021651258469175">Google 계정에서 비밀번호 등의 항목을 사용하고 저장할 수도 있습니다.</translation>
 <translation id="204914487372604757">바로가기 만들기</translation>
 <translation id="2050339315714019657">세로 방향</translation>
 <translation id="2051266530792296582">Google 비밀번호 관리자가 이 웹사이트에 안전한 비밀번호를 생성했습니다.</translation>
@@ -4067,6 +4067,7 @@
 <translation id="3923221004758245114"><ph name="DEVICE_TYPE" />에서 <ph name="VM_NAME" />를 삭제하시겠습니까? 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
 <translation id="3923494859158167397">설정된 모바일 네트워크 없음</translation>
 <translation id="3923676227229836009">이 페이지에서 파일을 볼 수 있습니다.</translation>
+<translation id="3923958273791212723">성능 문제 알림</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">디스플레이 및 텍스트 크기 <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다. 또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다. 사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱에서 사용자를 보호합니다.</translation>
@@ -4083,6 +4084,7 @@
 <translation id="3930737994424905957">기기 검색 중</translation>
 <translation id="3930968231047618417">배경 색상</translation>
 <translation id="3932356525934356570"><ph name="EXTENSION_NAME" /> 고정</translation>
+<translation id="3932477678113677556">최대 <ph name="MAX" />자까지 허용됨</translation>
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" />에서 Wi-Fi 네트워크를 나와 공유 중입니다.</translation>
 <translation id="3936390757709632190">새 탭에서 오디오 열기(&amp;O)</translation>
@@ -4731,6 +4733,7 @@
 <translation id="4423376891418188461">설정 복원</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 ChromeOS가 언제 비정상적으로 종료되는지, 어떤 기능이 사용되었는지, 일반적으로 메모리가 얼마나 많이 사용되는지 등의 정보가 포함됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">비밀번호, 패스키, 기타 데이터가 <ph name="BRAND" />에서 영구적으로 삭제됩니다.</translation>
 <translation id="4426268963847471040"><ph name="FILE_NAME" /> 삭제</translation>
 <translation id="4426464032773610160">시작하려면 USB 또는 블루투스 스위치가 Chromebook에 연결되어 있는지 확인하세요. 키보드 키를 사용할 수도 있습니다.</translation>
 <translation id="4426490308207168518">의견 공유 또는 문제 신고</translation>
@@ -5221,6 +5224,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4807098396393229769">카드 명의</translation>
 <translation id="4807122856660838973">세이프 브라우징 사용 설정</translation>
 <translation id="4807514039636325497">DBus 세부정보</translation>
+<translation id="4808525520374557629">감지된 성능 문제를 개선하는 방법을 제안하는 알림을 받습니다. <ph name="BEGIN_LINK" />성능 문제 알림 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">팝업 차단됨</translation>
 <translation id="4809079943450490359">기기 관리자가 제공하는 지침:</translation>
 <translation id="4809447465126035330">삭제</translation>
@@ -5523,7 +5527,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
 <translation id="5033266061063942743">기하학적 모양</translation>
-<translation id="503441068567788948">Google 비밀번호 관리자에 사용할 새 PIN을 만드세요</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038818366306248416">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
@@ -6093,6 +6096,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
 <translation id="5458214261780477893">드보락</translation>
+<translation id="5458716506062529991">잘못된 PIN을 너무 많이 입력했습니다. 패스키 및 비밀번호에 액세스하려면 PIN을 변경하세요.</translation>
 <translation id="5458998536542739734">잠금 화면 메모</translation>
 <translation id="5459864179070366255">설치 계속</translation>
 <translation id="5460641065520325899">탐색 중에 사이트에서 나를 추적하는 데 사용할 수 있는 정보 유형을 관리합니다.</translation>
@@ -7522,6 +7526,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="653920215766444089">포인팅 기기 검색 중</translation>
 <translation id="6539674013849300372">안전한 비밀번호로 온라인 환경을 더 안전하게 유지하세요. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="653983593749614101">재개하는 중…</translation>
+<translation id="6540174167103635041">앱 설치</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
 <translation id="6540488083026747005">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
@@ -9086,7 +9091,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7708143783728142771">쿠키를 사용하면 웹에서도 동일한 수준의 환경설정을 맞춤설정할 수 있습니다. 사용자가 사이트를 방문하면 사이트에서 기기의 브라우저 저장공간에 쿠키를 저장하여 사용하는 언어, 장바구니에 저장하려는 항목 등 사이트 환경설정을 기억합니다. 나중에 동일한 브라우저로 사이트를 다시 방문하면 사이트에서 설정된 쿠키를 읽을 수 있으므로 중단한 부분부터 시작할 수 있습니다. 이러한 유형의 쿠키는 방문한 사이트에 의해 설정되므로 퍼스트 파티 쿠키라고도 합니다.</translation>
 <translation id="770831926727930011">로컬 데이터는 이전 비밀번호로 보호됩니다. 로컬 데이터를 복구하려면 이전 비밀번호를 입력하세요</translation>
 <translation id="7709152031285164251">실패 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">복구 PIN을 사용해 모든 패스키를 보호하세요</translation>
 <translation id="7710568461918838723">전송(&amp;C)...</translation>
 <translation id="7711900714716399411">USB 케이블로 휴대전화와 컴퓨터를 연결하세요. 휴대전화가 이미 연결되어 있다면 분리했다가 다시 연결하세요.</translation>
 <translation id="7711968363685835633">맞춤 변환, 추천 및 사용자 사전 사용 중지</translation>

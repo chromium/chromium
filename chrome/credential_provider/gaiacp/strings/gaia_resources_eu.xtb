@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
-<translation id="1156061499538526818">Laneko kontuko pasahitza aldatu egin da. Windows-eko kontua laneko kontuarekin sinkroniza dadin, idatzi Windows-eko pasahitza.</translation>
+<translation id="1156061499538526818">Laneko kontuaren pasahitza aldatu egin da. Windows-eko kontua laneko kontuarekin sinkroniza dadin, idatzi Windows-eko pasahitza.</translation>
 <translation id="1383286653814676580">Google-ren Kredentzial-hornitzailea zerbitzuan saioa hasteko orria abiarazteko erabiltzen da.</translation>
-<translation id="2048923169632968961">Arazo bat izan da laneko kontuko pasahitza Windows-eko profilarekin sinkronizatzean. Jarri administratzailearekin harremanetan.</translation>
+<translation id="2048923169632968961">Arazo bat izan da laneko kontuaren pasahitza Windows-eko profilarekin sinkronizatzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2515346402363002066">Saioa iraungi egin da. Hasi saioa laneko kontuarekin.</translation>
 <translation id="2549902055700841962">Ezin da hasi saioa laneko kontuarekin. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2566603360883977759">Helbide elektroniko horrekin ezin duzu hasi saioa. Haren ordez, erabili laneko edo ikastetxeko kontua. Hala ere ezin baduzu hasi saioa, jarri administratzailearekin harremanetan.</translation>
@@ -15,13 +15,13 @@
 <translation id="399130515869721714">Ezin da ireki Google-n saioa hasteko pantaila arazo bat dagoelako gailu honetako Chrome-ren instalazioarekin. Jarri administratzailearekin harremanetan.</translation>
 <translation id="4057329986137569701">Barneko errore bat gertatu da.</translation>
 <translation id="4267670563222825190">Ez da aurkitu domeinuko erabiltzailerik kontuan. Jarri administratzailearekin harremanetan.</translation>
-<translation id="4744575902940448763">Laneko kontuko pasahitza ezin izan da sinkronizatu Windows-eko profilarekin, zure erakundeak mugatu egiten baitu gailuko pasahitzak eguneratzeko aukera. Laguntza lortzeko, jarri administratzailearekin harremanetan.</translation>
+<translation id="4744575902940448763">Laneko kontuaren pasahitza ezin izan da sinkronizatu Windows-eko profilarekin, zure erakundeak mugatu egiten baitu gailuko pasahitzak eguneratzeko aukera. Laguntza lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="5186761973554910131">Pasahitza aldatzen saiatzean emandako ordenagailu-izenak ez du balio. Jarri administratzailearekin harremanetan.</translation>
 <translation id="5265714013989877288">Ezin duzu egin aurrera, errore bat gertatu delako Windows-eko pasahitza aldatzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="5581861273642234526">Laneko beste kontu bat gailu honekin erlazionatuta dago dagoeneko. Hasi saioa Windows-eko kontuarekin.</translation>
 <translation id="6033715878377252112">Windows-erako Google-ren Kredentzial-hornitzailea zerbitzuaren laguntzailea</translation>
 <translation id="6149399665202317746">Windows-erako Google-ren Kredentzial-hornitzailea</translation>
-<translation id="6243062314475217481">Laneko kontuko pasahitza ez da Windows-ek eskatu bezain konplexua. Laguntza lortzeko, jarri administratzailearekin harremanetan.</translation>
+<translation id="6243062314475217481">Laneko kontuaren pasahitza ez da Windows-ek eskatu bezain konplexua. Laguntza lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="6463752215771576050">Ezin da erregistratu ordenagailua enpresak kudeatzeko.  Hasi saioa laneko beste kontu batekin.</translation>
 <translation id="6582876473835446261">Windows-eko pasahitza ez da zuzena. Saiatu berriro.</translation>
 <translation id="6657585470893396449">Pasahitza</translation>

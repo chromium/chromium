@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Atcelt: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="3691184985318546178">Singāļu</translation>
+<translation id="3702842351052426940">Iespējams, jūsu SIM karte vai eSIM profils ir deaktivizēts. Mēģiniet nomainīt SIM karti vai eSIM profilu.</translation>
 <translation id="3722341589402358578">Radās kļūda. Iespējams, daži vienumi netika ievietoti atkritnē.</translation>
 <translation id="3726463242007121105">Šo ierīci nevar atvērt, jo tās failu sistēma netiek atbalstīta.</translation>
 <translation id="3727148787322499904">Nomainot šo iestatījumu, tiks ietekmēti visi koplietotie tīkli.</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Šo starpniekserveri ievieš jūsu administrators.</translation>
 <translation id="3830674330436234648">Atskaņošana nav pieejama</translation>
 <translation id="383652340667548381">Serbu valoda</translation>
+<translation id="3839045880592694915">Jūsu mobilo sakaru operators neļauj izveidot savienojumu ar modemu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3855472144336161447">Vācu Neo 2</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
 <translation id="6269630227984243955">Malajiešu</translation>
 <translation id="6271903698064569429">Failus nevar augšupielādēt, jo kopīgā diska “<ph name="SHARED_DRIVE_NAME" />” krātuvē nav pietiekami daudz vietas.</translation>
+<translation id="6279140785485544797">Iespējams, ir beidzies jūsu mobilo datu plāna derīguma termiņš. Sazinieties ar savu mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="6287852322318138013">Lietotnes atlasīšana šī faila atvēršanai</translation>
 <translation id="6295542640242147836">Bloķēt SIM karti</translation>
 <translation id="6296410173147755564">PUK kods nav derīgs</translation>

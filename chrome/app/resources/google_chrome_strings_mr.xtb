@@ -38,7 +38,6 @@
 <translation id="1516530951338665275">पेअर करणे पुढे सुरू ठेवण्यासाठी, Google Chrome ला ब्लूटूथ ॲक्सेस करण्याची 
  आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
-<translation id="1551749261806528781">तुमच्या सर्व डिव्हाइसवर पासवर्ड आणि बरेच काही सेव्ह करण्यासाठी व वापरण्यासाठी, Chrome मध्ये साइन इन करा. तुम्ही साइन इन केल्यावर हा पासवर्ड तुमच्या Google खाते मध्ये सेव्ह केला जाईल.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
 <translation id="1587223624401073077">Google Chrome तुमचा कॅमेरा वापरत आहे.</translation>
@@ -335,6 +334,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome कॅनरी</translation>
 <translation id="5804318322022881572">Chrome लाँच करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="5809516625706423866">इंटरनेटशी कनेक्ट करता आले नाही. HTTP 401 प्रतिबंधित. कृपया तुमचे प्रॉक्सी कॉन्फिगरेशन तपासा.</translation>
+<translation id="5825922397106002626">Chrome मधून <ph name="EXTENSION_NAME" /> काढून टाका</translation>
 <translation id="5858486459377137936">तुम्ही Chrome वर साइन इन केले असल्यास, सर्व Chrome विंडो बंद केल्यावर तुमचे Google खाते वगळता तुम्हाला बहुतांश साइटवरून साइन आउट केले जाईल. साइटना तुम्हाला लक्षात ठेवू देण्यासाठी, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">असुरक्षित साइट आणि डाउनलोडबद्दल <ph name="BEGIN_LINK" />Chrome तुम्हाला चेतावणी देते<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -420,7 +420,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7036251913954633326">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही Chrome ब्राउझरमध्ये <ph name="GUEST_LINK_BEGIN" />अतिथी मोड<ph name="GUEST_LINK_END" /> वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
 
 तुम्ही वेबसाइट आणि अ‍ॅप्सना आधीपासून दिलेल्या परवानग्या या खात्याला लागू होऊ शकतात. तुम्ही तुमची Google खाती <ph name="SETTINGS_LINK_BEGIN" />सेटिंग्ज<ph name="SETTINGS_LINK_END" /> मध्ये व्यवस्थापित करू शकता.</translation>
-<translation id="7037538054043837165">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि बरेच काही सेव्ह करण्यासाठी व वापरण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="7048502283602470098">AI एक्सप्लोर करा</translation>
 <translation id="7059914902409643750">Chrome ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7071827361006050863">Chrome लवकरच ब्राउझिंग डेटा हटवेल</translation>

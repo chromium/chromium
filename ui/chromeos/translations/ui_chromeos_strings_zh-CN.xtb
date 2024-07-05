@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，<ph name="CONNECTION_STATUS" />，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3691184985318546178">僧伽罗语</translation>
+<translation id="3702842351052426940">您的 SIM 卡或 eSIM 卡配置文件可能已停用。请尝试更换 SIM 卡或切换 eSIM 卡配置文件。</translation>
 <translation id="3722341589402358578">出错了。某些内容可能未成功移至回收站。</translation>
 <translation id="3726463242007121105">系统不支持此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="3727148787322499904">更改此设置将会影响所有共享网络</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">此代理已由您的管理员强制启用</translation>
 <translation id="3830674330436234648">无法播放</translation>
 <translation id="383652340667548381">塞尔维亚语</translation>
+<translation id="3839045880592694915">您的运营商不允许连接到您的调制解调器。如需了解详情，请与运营商联系。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德语Neo 2</translation>
 <translation id="3858860766373142691">名称</translation>
@@ -679,6 +681,7 @@
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>
 <translation id="6271903698064569429">无法上传文件，因为“<ph name="SHARED_DRIVE_NAME" />”的存储空间不足。</translation>
+<translation id="6279140785485544797">您的移动流量套餐可能已过期。请向您的运营商寻求支持。</translation>
 <translation id="6287852322318138013">选择用于打开此文件的应用</translation>
 <translation id="6295542640242147836">锁定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 无效</translation>

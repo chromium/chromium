@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">Google Chrome се нуждае от достъп до Bluetooth, за да продължи
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">Влезте в Chrome, за да запазвате и използвате паролите и още много други неща на всичките си устройства. Тази парола ще бъде запазена в профила ви в Google, след като влезете в него.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
 <translation id="1583073672411044740">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
@@ -331,6 +330,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
 <translation id="5809516625706423866">Не може да се установи връзка с интернет. HTTP код 401 – Достъпът е отказан. Проверете конфигурацията на прокси сървъра си.</translation>
+<translation id="5825922397106002626">Премахване на <ph name="EXTENSION_NAME" /> от Chrome</translation>
 <translation id="5858486459377137936">Когато затворите всички прозорци на Chrome, ще излезете от профилите си в повечето сайтове с изключение на профила си в Google, ако сте влезли в профила си в Chrome. За да позволите на сайтовете да ви помнят, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -416,7 +416,6 @@
 <translation id="7036251913954633326">Ако искате да използвате този профил само веднъж, можете да се възползвате от <ph name="GUEST_LINK_BEGIN" />режима на гост<ph name="GUEST_LINK_END" /> в браузъра Chrome. В случай че искате да добавите профил за друго лице, <ph name="LINK_BEGIN" />добавете нов човек<ph name="LINK_END" /> към вашия <ph name="DEVICE_TYPE" />.
 
 За този профил може да важат разрешенията, които вече сте предоставили на уебсайтове и приложения. Имате възможност да управлявате профилите си в Google в <ph name="SETTINGS_LINK_BEGIN" />Настройки<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">Влезте в Chrome, за да запазвате и използвате паролите си и още много други неща на всичките си устройства</translation>
 <translation id="7048502283602470098">Разглеждане на AI</translation>
 <translation id="7059914902409643750">Персонализирайте Chrome според вкуса си</translation>
 <translation id="7071827361006050863">Chrome скоро ще изтрие данните за сърфирането</translation>

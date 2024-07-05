@@ -1476,7 +1476,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2048254245884707305">Traženje zlonamjernog softvera…</translation>
 <translation id="2048554637254265991">Došlo je do greške prilikom pokretanja upravitelja spremnika. Pokušajte ponovo.</translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
-<translation id="2049021651258469175">Također ćete moći koristiti i pohranjivati lozinke i još mnogo toga s Google računa.</translation>
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2051266530792296582">Google upravitelj lozinki je kreirao jaku lozinku za ovu web lokaciju</translation>
@@ -4390,6 +4389,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada važećoj organizaciji. Kontaktirajte administratora. Ako ste administrator, možete postaviti organizaciju ako posjetite: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>
+<translation id="4166847326079525123">Lokacija je isključena u Postavkama sustava Windows</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> pokušava pristupiti uređaju <ph name="DEVICE_NAME" />. Isključite prekidač za privatnost uređaja <ph name="DEVICE_NAME" /> da dozvolite pristup.</translation>
 <translation id="4167393659000039775">Google nije odgovoran za bilo kakve gubitke podataka i ne garantira da će <ph name="DEVICE_OS" /> funkcionirati na modelima koji nisu certificirani. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Više radnji za prečicu za <ph name="SHORTCUT_TITLE" /></translation>
@@ -4733,6 +4733,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4423376891418188461">Vrati postavke</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno ispraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o padovima ChromeOS-a te o tome koje funkcije su se koristile i koliko memorije je obično korišteno.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama Chrome uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Zaporke, pristupni ključevi i drugi podaci trajno će se izbrisati s usluge <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Brisanje fajla <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Da započnete, provjerite je li USB ili Bluetooth prekidač povezan s Chromebookom. Možete koristiti i tipke na tastaturi.</translation>
 <translation id="4426490308207168518">Podijelite povratne informacije ili prijavite problem</translation>
@@ -5525,7 +5526,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5032430150487044192">Nije moguće kreirati QR kôd</translation>
 <translation id="5033137252639132982">Nije dozvoljeno korištenje senzora kretanja</translation>
 <translation id="5033266061063942743">Geometrijski oblici</translation>
-<translation id="503441068567788948">Kreirajte novi PIN za Google upravitelj lozinki</translation>
 <translation id="5035846135112863536">Odaberite "Više detalja" u nastavku da saznate više informacija od pružaoca usluga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
 <translation id="5038818366306248416">Prethodno ste odabrali ne dozvoliti nijednu ekstenziju na web lokaciji <ph name="ORIGIN" /></translation>
@@ -7525,6 +7525,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="653920215766444089">Traženje uređaja za pokazivanje</translation>
 <translation id="6539674013849300372">Budite sigurniji online uz jaku lozinku. Sačuvat će se na usluzi <ph name="GOOGLE_PASSWORD_MANAGER" /> za račun <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Nastavak…</translation>
+<translation id="6540174167103635041">Instaliranje aplikacije</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Omogućite samo ako znate šta radite ili ako je to od vas zatraženo jer prikupljanje podataka može smanjiti performanse.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane na ovoj web lokaciji</translation>
 <translation id="6541638731489116978">Ovoj web lokaciji je blokiran pristup vašim senzorima pokreta.</translation>
@@ -9094,7 +9095,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7708143783728142771">Kolačići omogućavaju ovaj isti nivo prilagodbe postavki na webu. Kada posjetite web lokaciju, ona može sačuvati kolačić u pohrani preglednika uređaja da zapamti postavke za web lokaciju, kao što su jezik koji govorite ili artikli koje želite sačuvati u kolicima za kupovinu. Kasnije, ako tu web lokaciju ponovo posjetite putem istog preglednika, ona može očitati kolačić koji je postavila i vi možete nastaviti gdje ste stali. Ta vrsta kolačića se često naziva izvornim kolačićima jer ih postavlja web lokacija koju posjetite.</translation>
 <translation id="770831926727930011">Lokalni podaci su zaštićeni vašom starom lozinkom. Unesite staru lozinku da oporavite lokalne podatke.</translation>
 <translation id="7709152031285164251">Neuspješno – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Zaštitite sve pristupne ključeve PIN-om za oporavak</translation>
 <translation id="7710568461918838723">&amp;Emitiraj...</translation>
 <translation id="7711900714716399411">Koristite USB kabl da povežete telefon s računarom. Ako je telefon već povezan, iskopčajte ga i ponovo ga povežite.</translation>
 <translation id="7711968363685835633">Onemogući personalizirana pretvaranja i prijedloge, kao i korisnikov rječnik</translation>

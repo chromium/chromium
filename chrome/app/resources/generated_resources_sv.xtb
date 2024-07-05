@@ -1477,7 +1477,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2048254245884707305">Söker efter skadlig kod …</translation>
 <translation id="2048554637254265991">Ett fel uppstod när hanteraren av behållare skulle startas. Försök igen.</translation>
 <translation id="2048653237708779538">Åtgärden är inte tillgänglig</translation>
-<translation id="2049021651258469175">Du kommer även att kunna använda och spara dina lösenord med mera från ditt Google-konto.</translation>
 <translation id="204914487372604757">Skapa genväg</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2051266530792296582">Google Lösenordshantering har skapat ett starkt lösenord för den här webbplatsen</translation>
@@ -3478,7 +3477,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3511307672085573050">Kopiera länk&amp;adress</translation>
 <translation id="351152300840026870">Teckensnitt med fast bredd</translation>
 <translation id="3511528412952710609">Kort</translation>
-<translation id="3513563267917474897">Reglage för färgnyans från <ph name="MIN_VALUE" /> till <ph name="MAX_VALUE" /></translation>
+<translation id="3513563267917474897">Nyansreglage från <ph name="MIN_VALUE" /> till <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Spelinställningar</translation>
 <translation id="3514373592552233661">Prioriterade nätverk väljs före andra kända nätverk när det finns flera nätverk tillgängliga</translation>
 <translation id="3514647716686280777">Du har nu standardsäkerhetsskydd. Aktivera Förbättrad säker webbsökning i Chrome-inställningarna om du vill få ett bättre skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
@@ -5527,7 +5526,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
 <translation id="5033137252639132982">Får inte använda rörelsesensorer</translation>
 <translation id="5033266061063942743">Geometriska former</translation>
-<translation id="503441068567788948">Skapa en ny pinkod för Google Lösenordshantering</translation>
 <translation id="5035846135112863536">Välj Mer information nedan om du vill ha mer information från <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Markera alla</translation>
 <translation id="5038818366306248416">Du har tidigare valt att inte ge något tillägg behörighet på <ph name="ORIGIN" /></translation>
@@ -9093,7 +9091,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7708143783728142771">Med cookies kan du anpassa dina inställningar på webben på samma sätt. När du besöker en webbplats kan webbplatsen spara en cookie i enhetens webbläsarlagring för att komma ihåg dina webbplatsinställningar, till exempel vilket språk du talar eller vilka artiklar du vill spara i kundvagnen. Om du senare besöker webbplatsen igen med samma webbläsare kan webbplatsen läsa cookien som skapades så att du kan fortsätta där du slutade. Den här typen av cookies kallas ofta förstapartscookies eftersom de anges av webbplatsen du besöker.</translation>
 <translation id="770831926727930011">Lokala uppgifter skyddas med ditt gamla lösenord. Ange ditt gamla lösenord för att återställa dem.</translation>
 <translation id="7709152031285164251">Misslyckades – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Skydda alla dina nycklar med en pinkod för återställning</translation>
 <translation id="7710568461918838723">&amp;Casta …</translation>
 <translation id="7711900714716399411">Anslut telefonen till datorn med en USB-kabel. Om telefonen redan är ansluten kopplar du bort den och kopplar sedan in den igen.</translation>
 <translation id="7711968363685835633">Inaktivera anpassade konversationer och förslag samt egen ordlista</translation>

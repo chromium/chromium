@@ -1480,7 +1480,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2048254245884707305">Tikrinama, ar nėra kenkėjiškų programų...</translation>
 <translation id="2048554637254265991">Paleidžiant sudėtinių rodinių tvarkytuvę įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="2048653237708779538">Negalima atlikti veiksmo</translation>
-<translation id="2049021651258469175">Taip pat galėsite naudoti ir išsaugoti slaptažodžius bei kitą informaciją „Google“ paskyroje.</translation>
 <translation id="204914487372604757">Kurti spartųjį klavišą</translation>
 <translation id="2050339315714019657">Portreto režimas</translation>
 <translation id="2051266530792296582">„Google“ slaptažodžių tvarkyklė sukūrė sudėtingą šios svetainės slaptažodį</translation>
@@ -4737,6 +4736,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4423376891418188461">Atkurti nustatymus</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Leisdami „ChromeOS“ įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „ChromeOS“. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kada „ChromeOS“ užstringa, kurios funkcijos buvo naudojamos ir kiek įprastai atminties naudojama.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas „Chrome“ įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Slaptažodžiai, prieigos raktai ir kiti duomenys bus visam laikui ištrinti iš paslaugos <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Ištrinti <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Jei norite pradėti, įsitikinkite, kad USB arba „Bluetooth“ jungiklis prijungtas prie „Chromebook“. Taip pat galite naudoti klaviatūros klavišus.</translation>
 <translation id="4426490308207168518">Bendrinti atsiliepimą ar pranešti apie problemą</translation>
@@ -5529,7 +5529,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5033137252639132982">Neleidžiama naudoti judesio jutiklių</translation>
 <translation id="5033266061063942743">Geometrinės figūros</translation>
-<translation id="503441068567788948">Sukurkite naują „Google“ slaptažodžių tvarkyklės PIN kodą</translation>
 <translation id="5035846135112863536">Toliau pasirinkite „Daugiau išsamios informacijos“, kad gautumėte daugiau informacijos iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
 <translation id="5037676449506322593">Pasirinkti viską</translation>
 <translation id="5038818366306248416">Anksčiau pasirinkote neleisti jokių plėtinių <ph name="ORIGIN" /></translation>
@@ -7530,6 +7529,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="653920215766444089">Ieškoma manipuliatoriaus</translation>
 <translation id="6539674013849300372">Būkite saugesni prisijungę naudodami sudėtingą slaptažodį. Jį išsaugos <ph name="GOOGLE_PASSWORD_MANAGER" /> kaip priskirtą el. pašto adresui <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Tęsiama…</translation>
+<translation id="6540174167103635041">Įdiekite programą</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> įgalinkite, tik jei žinote, ką darote, arba jei jūsų paprašė tai atlikti, nes renkant duomenis gali sumažėti našumas.</translation>
 <translation id="6540488083026747005">Leidote trečiųjų šalių slapukus šioje svetainėje</translation>
 <translation id="6541638731489116978">Ši svetainė užblokuota, kad nepasiektų judesio jutiklių.</translation>
@@ -9101,7 +9101,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7708143783728142771">Slapukai leidžia nustatyti tą patį nuostatų tinkinimo lygį žiniatinklyje. Kai lankotės svetainėje, svetainė gali išsaugoti slapuką įrenginio naršyklės saugykloje, kad įsimintų svetainės nuostatas, pvz., kalbą, kuria kalbate, arba prekes, kurias norite išsaugoti pirkinių krepšelyje. Vėliau, jei dar kartą apsilankysite svetainėje naudodami tą pačią naršyklę, ta svetainė galės nuskaityti nustatytą slapuką ir galėsite pradėti nuo ten, kur baigėte. Šių tipų slapukai dažnai vadinami pirmosios šalies slapukais, nes juos nustato svetainė, kurioje lankotės.</translation>
 <translation id="770831926727930011">Vietiniai duomenys saugomi naudojant senąjį slaptažodį. Įveskite senąjį slaptažodį, kad atkurtumėte vietinius duomenis.</translation>
 <translation id="7709152031285164251">Įvyko klaida – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Apsaugokite visus prieigos raktus naudodami atkūrimo PIN kodą</translation>
 <translation id="7710568461918838723">&amp;Perduoti...</translation>
 <translation id="7711900714716399411">Naudodami USB laidą prijunkite telefoną prie kompiuterio. Jei telefonas jau prijungtas, atjunkite jį ir vėl prijunkite.</translation>
 <translation id="7711968363685835633">Išjungti suasmenintas konversijas, pasiūlymus ir naudotojo žodyną</translation>

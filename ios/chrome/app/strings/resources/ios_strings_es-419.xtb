@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622717322707146952">Selecciona "Agregar al Calendario de Google" o "Agregar al Calendario de Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contraseñas reutilizadas</translation>
+<translation id="1636234353664774105">Usar la función de navegación para obtener instrucciones paso a paso sobre cómo llegar a tu destino</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Municipalidad</translation>
 <translation id="2062410130322589403">Una guía de tus opciones de privacidad</translation>
 <translation id="20638360198452347">Selector de tipos de unidad</translation>
+<translation id="2067852168641682340">Guardar siempre en esta cuenta</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2078437078822043850">Puedes desplazar el dedo hacia la derecha para navegar en modo Incógnito.</translation>
@@ -313,6 +315,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="261739049332372104">Para recibir actualizaciones sobre el contenido que te interesa, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="2625189173221582860">Se copió la contraseña</translation>
 <translation id="2626236249646841566">Comprueba tu conexión y vuelve a intentar acceder.</translation>
+<translation id="2635918910848538771">Autocompletar el CVC</translation>
 <translation id="2637313651144986786">Buscar pestañas…</translation>
 <translation id="2640733327287333451">Sin nombre de usuario ••••••</translation>
 <translation id="2648721026697078500">No mover nunca</translation>
@@ -496,6 +499,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
 <translation id="3540141921715814660">Agregar a Favoritos</translation>
+<translation id="3547356470684043247">Leer evaluaciones de los clientes sobre productos, servicios o experiencias para tomar decisiones fundamentadas</translation>
 <translation id="355101282835380364">Guardar en la cuenta…</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4659194143325814340">{count,plural, =1{{count} página en tu Lista de lectura}other{{count} páginas en tu Lista de lectura}}</translation>
 <translation id="4659667755519643272">Acceder al alternador de pestañas</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
+<translation id="467189612236587057">Iniciar una llamada telefónica para conectarte con una empresa</translation>
 <translation id="4682686630151240767">1. Abre Configuración en el iPhone.</translation>
 <translation id="4689564913179979534">Administrar formas de pago…</translation>
 <translation id="469300482518076788">Cerrar pestaña</translation>

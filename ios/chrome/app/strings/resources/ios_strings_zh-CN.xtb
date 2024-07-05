@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1626771852476987600">有 <ph name="COUNT" /> 个重复使用的密码</translation>
+<translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
 <translation id="1641113438599504367">安全浏览</translation>
 <translation id="1641316430523156212">关注</translation>
 <translation id="1644574205037202324">历史记录</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2062410130322589403">隐私控制选项指南</translation>
 <translation id="20638360198452347">单位类型选择器</translation>
+<translation id="2067852168641682340">每次都保存到此账号</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2078437078822043850">向右滚动即可在无痕模式下浏览内容。</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">若要接收重要内容的最新动态，请在 iOS 设置中开启通知功能。</translation>
 <translation id="2625189173221582860">已复制密码</translation>
 <translation id="2626236249646841566">请检查网络连接状况并尝试重新登录。</translation>
+<translation id="2635918910848538771">自动填充银行卡验证码 (CVC)</translation>
 <translation id="2637313651144986786">搜索标签页…</translation>
 <translation id="2640733327287333451">无用户名 ••••••</translation>
 <translation id="2648721026697078500">一律不移动</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">关闭所有无痕式标签页</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
 <translation id="3540141921715814660">添加到书签</translation>
+<translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
 <translation id="355101282835380364">保存在账号中…</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{您的阅读清单中有 {count} 个页面}other{您的阅读清单中有 {count} 个页面}}</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
 <translation id="46614316059270592">保存密码</translation>
+<translation id="467189612236587057">拨打电话联系商家</translation>
 <translation id="4682686630151240767">1. 打开 iPhone 设置</translation>
 <translation id="4689564913179979534">管理付款方式…</translation>
 <translation id="469300482518076788">关闭标签页</translation>
@@ -758,7 +763,7 @@
 <translation id="4854345657858711387">设置密码</translation>
 <translation id="4856498338299082007">保存在您的 Google 账号中</translation>
 <translation id="4856841893565072365">智能排序菜单栏</translation>
-<translation id="4860895144060829044">拨打</translation>
+<translation id="4860895144060829044">致电</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4883824756452868502">检测单位</translation>
 <translation id="488785315393301722">显示详细信息</translation>
@@ -920,7 +925,7 @@
 <translation id="5684761169742812828">此密码已在互联网上遭遇数据泄露。如果您现在没有时间更改密码，Google 建议您保留此警告，以便之后继续提醒自己。</translation>
 <translation id="5694848685995373177">已保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
 <translation id="5701270923492462699">已启用摄像头使用权限</translation>
-<translation id="5702108177581350218">当您分享用户名和密码的副本之后，您的家庭成员可以使用 Google 密码管理工具填充这些信息。</translation>
+<translation id="5702108177581350218">当您分享您的用户名和密码之后，您的家庭成员可以使用 Google 密码管理工具填充这些信息。</translation>
 <translation id="5704908597376970822">无法登录。</translation>
 <translation id="5706552126692816153">1 天前曾有活动</translation>
 <translation id="5718049162805123412">您应立即更改密码</translation>
@@ -1263,7 +1268,7 @@
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="7367530036083223701">使用“密码管理工具”小组件从主屏幕安全地获取您的密码。</translation>
-<translation id="7380220816562673297">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
+<translation id="7380220816562673297">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="739101637685146669">您想为哪个网址添加书签？</translation>
 <translation id="7396331865858820922">未能分享密码</translation>
 <translation id="7398893703713203428">创建链接</translation>
@@ -1675,5 +1680,5 @@
 <translation id="988141524645182168">其他设备</translation>
 <translation id="989988560359834682">修改地址</translation>
 <translation id="994757059139821576">文章推荐</translation>
-<translation id="999768147936949692">目前，您只能向家庭成员分享密码。<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
+<translation id="999768147936949692">目前，您只能与家庭成员分享密码。您可以<ph name="BEGIN_LINK" />邀请家庭成员<ph name="END_LINK" />加入您的群组，与他们一起充分利用您所用的 Google 产品和订阅。</translation>
 </translationbundle>

@@ -1466,7 +1466,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2048254245884707305">Zararli dasturlar qidirilmoqda...</translation>
 <translation id="2048554637254265991">Konteynerlar menejeri ishga tushmadi. Qayta urining.</translation>
 <translation id="2048653237708779538">Bu amal ishlamaydi</translation>
-<translation id="2049021651258469175">Bunda Google hisobidagi parollar kabi maʼlumotlardan foydalanish va ularni saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="204914487372604757">Yorliq yaratish</translation>
 <translation id="2050339315714019657">Tik</translation>
 <translation id="2051266530792296582">Google Parollar menejeri bu sayt uchun ishonchli parol yaratdi</translation>
@@ -5514,7 +5513,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5032430150487044192">QR kod yaratilmadi</translation>
 <translation id="5033137252639132982">Harakat sensorlaridan foydalanish taqiqlangan</translation>
 <translation id="5033266061063942743">Geometrik shakllar</translation>
-<translation id="503441068567788948">Google Parollar menejeri uchun yangi PIN kod yarating</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali batafsil axborot olish uchun "Batafsil" bandini tanlang.</translation>
 <translation id="5037676449506322593">Hammasini belgilash</translation>
 <translation id="5038818366306248416">Avvalroq <ph name="ORIGIN" /> saytidagi barcha kengaytmalarga ruxsat bermaslikni tanlagansiz</translation>
@@ -9079,7 +9077,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7708143783728142771">Cookie fayllari internetdagi afzalliklarni bi xil darajada moslash imkonini beradi. Saytga tashrif buyursangiz, saytdagi til yoki xarid savatchasidagi mahsulotlar kabi afzalliklaringizni eslab qolish uchun sayt qurilmadagi brauzer xotirasida cookie faylni saqlashi mumkin. Keyin esa, saytga shu brauzer orqali qayta tashrifingizda sayt saqlangan cookie faylni oʻqishi va siz ishni oxirgi nuqtadan davom ettirishingiz mumkin. Bunday cookie fayllar odatda birlamchi cookie fayllar deb nomlanadi va ochiladigan saytlar tomonidan belgilanadi.</translation>
 <translation id="770831926727930011">Qurilmadagi axborot eski parolingiz bilan himoyalangan. Ularni tiklash uchun eski parolingizni kiriting.</translation>
 <translation id="7709152031285164251">Xatolik: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Barcha kalitlarni zaxiraviy PIN kod bilan himoyalang</translation>
 <translation id="7710568461918838723">&amp;Translatsiya...</translation>
 <translation id="7711900714716399411">Telefonni kompyuterga USB kabel orqali ulang. Telefon allaqachon ulangan boʻlsa, kabelni chiqaring va qaytadan ulang.</translation>
 <translation id="7711968363685835633">Konversiya va takliflar moslashtirilishini foydalanuvchi lugʻatlari kabi faolsizlashtirish</translation>

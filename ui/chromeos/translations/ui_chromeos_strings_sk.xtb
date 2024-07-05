@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Zrušiť <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivovaná, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">Sinhálska klávesnica</translation>
+<translation id="3702842351052426940">Váš profil SIM alebo eSIM môže byť deaktivovaný. Skúste vymeniť SIM kartu alebo prepnúť profily eSIM.</translation>
 <translation id="3722341589402358578">Vyskytla sa chyba. Niektoré položky sa zrejme nepodarilo presunúť do koša.</translation>
 <translation id="3726463242007121105">Toto zariadenie nie je možné otvoriť, pretože jeho systém súborov nie je podporovaný.</translation>
 <translation id="3727148787322499904">Zmena tohto nastavenia ovplyvní všetky zdieľané siete</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Tento proxy server je vynútený správcom</translation>
 <translation id="3830674330436234648">Prehrávanie nie je k dispozícii</translation>
 <translation id="383652340667548381">Srbčina</translation>
+<translation id="3839045880592694915">Váš operátor nepovoľuje pripojenie daného modemu. Ďalšie podrobnosti vám poskytne operátor.</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
 <translation id="3858860766373142691">Názov</translation>
@@ -684,6 +686,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
 <translation id="6269630227984243955">Malajská klávesnica</translation>
 <translation id="6271903698064569429">Súbory sa nedajú nahrať, pretože na disku <ph name="SHARED_DRIVE_NAME" /> nie je dostatok priestoru.</translation>
+<translation id="6279140785485544797">Vaša mobilná dátová tarifa zrejme vypršala. Kontaktujte svojho operátora a požiadajte o podporu.</translation>
 <translation id="6287852322318138013">Vyberte aplikáciu na otvorenie tohto súboru</translation>
 <translation id="6295542640242147836">Uzamknúť SIM</translation>
 <translation id="6296410173147755564">Neplatný kód PUK</translation>

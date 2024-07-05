@@ -110,6 +110,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1341651618736211726">Prekoračenje</translation>
 <translation id="1341926407152459446">Koristite uređaj<ph name="DEVICE_NAME" /> za audio ulaz i izlaz</translation>
 <translation id="1346748346194534595">Udesno</translation>
+<translation id="1350494136075914725">U toku · Prebaci na karticu</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
 <translation id="1360220746312242196">Pri pretraživanju stranice idi na prethodno podudaranje za pretragu</translation>
 <translation id="1360788414852622716">Profil se onemogućava. To može da potraje nekoliko minuta.</translation>
@@ -1049,6 +1050,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4876935764454575645">Izbor zvuka</translation>
 <translation id="4881323000405981760">Efekti nisu podržani u Linux aplikacijama</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Pružite opcionalne povratne informacije radi poboljšanja predloga:</translation>
 <translation id="4890187583552566966">Administrator je onemogućio Google pomoćnik.</translation>
 <translation id="4890408602550914571">Uverite se da je telefon u blizini i da je Bluetooth uključen.</translation>
@@ -1752,6 +1754,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="742594950370306541">Kamera se koristi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon se koriste.</translation>
+<translation id="7441711280402516925">Reprodukuje se · Prebaci na karticu</translation>
 <translation id="7453330308669753048">Rezultat istorije pretrage je uklonjen</translation>
 <translation id="7459485586006128091">Hotspot je isključen zbog interne greške. Probajte ponovo da se povežete za par minuta.</translation>
 <translation id="7461924472993315131">Zakači</translation>

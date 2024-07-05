@@ -1466,7 +1466,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2048254245884707305">Verifica della presenza di malware in corso…</translation>
 <translation id="2048554637254265991">Errore durante l'avvio del gestore di container. Riprova.</translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
-<translation id="2049021651258469175">Potrai anche usare e salvare le password e altri dati del tuo Account Google.</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2051266530792296582">Gestore delle password di Google ha creato una password efficace per questo sito web</translation>
@@ -5508,7 +5507,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5033137252639132982">Non possono utilizzare i sensori di movimento</translation>
 <translation id="5033266061063942743">Forme geometriche</translation>
-<translation id="503441068567788948">Crea un nuovo PIN per il Gestore delle password di Google</translation>
 <translation id="5035846135112863536">Scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
 <translation id="5038818366306248416">In precedenza hai scelto di non consentire nessuna estensione su <ph name="ORIGIN" /></translation>
@@ -9069,7 +9067,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7708143783728142771">I cookie consentono lo stesso livello di personalizzazione delle preferenze sul web. Quando visiti un sito, il sito può salvare un cookie nella memoria del browser del tuo dispositivo per memorizzare le tue preferenze relative ai siti, ad esempio la lingua parlata o gli articoli che vuoi salvare nel carrello degli acquisti. Se in un secondo momento visiti nuovamente il sito utilizzando lo stesso browser, il sito può leggere il cookie che ha impostato e tu puoi riprendere da dove avevi interrotto. Questi tipi di cookie sono spesso definiti cookie proprietari, in quanto vengono impostati dal sito visitato.</translation>
 <translation id="770831926727930011">I dati locali sono protetti dalla password precedente. Inseriscila per recuperarli.</translation>
 <translation id="7709152031285164251">Operazione non riuscita. <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Proteggi tutte le tue passkey con un PIN di recupero</translation>
 <translation id="7710568461918838723">&amp;Trasmetti...</translation>
 <translation id="7711900714716399411">Usa un cavo USB per collegare il telefono al computer. Se il telefono è già collegato, scollegalo e ricollegalo.</translation>
 <translation id="7711968363685835633">Disattiva conversioni e suggerimenti personalizzati, oltre al dizionario utente</translation>

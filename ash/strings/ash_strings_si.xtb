@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">ගොනු</translation>
 <translation id="1293699935367580298">පිට වීම</translation>
 <translation id="1294046132466831888">ගවේෂණය විවෘත කිරීම</translation>
+<translation id="129469256578833241">ආපසු සාරාංශය වෙත යන්න</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">ඕනෑම අවස්ථාවක <ph name="LAUNCHER_KEY_NAME" /> + g ඔබන්න</translation>
 <translation id="1306549533752902673">නිර්දේශිත යෙදුම්</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">ස්වයංක්‍රීය ක්ලික්</translation>
 <translation id="1925320505152357008">1 විනාඩියකට අඩු</translation>
 <translation id="1928739107511554905">යාවත්කාලීනය ලබා ගැනීමට, අමුණා ඇති යතුරු පුවරුව සමග ඔබගේ Chromebook නැවත ආරම්භ කිරීමට ස්පර්ශ තිරය භාවිතා කරන්න.</translation>
+<translation id="1929331825127010451">ආපසු ප්‍රශ්නයට</translation>
 <translation id="1948405482892809935">ඊළඟ පරිශීලක වෙත මාරු කරන්න</translation>
 <translation id="1951012854035635156">සහායක</translation>
 <translation id="1954252331066828794">තිර පටිගත කිරීම සම්පූර්ණ කරන ලදි</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">දියත්කරණය විවෘත කරන්න/වසන්න</translation>
 <translation id="5240725217819182328">ස්ථාපිත යෙදුම් තුළ නිශ්චිත පිටු හෝ ක්‍රියා වෙත ඉක්මන් ප්‍රවේශය</translation>
 <translation id="5245201184978705914">අනුපත ජනනය කළ නොහැකිය</translation>
+<translation id="5251174953851719648">අන්තර්ගතය නැවුම් කරන්න</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> නම් වූ උපාංගයකට සම්බන්ධ විය, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">සුරැකි මේස නැත</translation>
 <translation id="5260676007519551770">4 වෙනි මේසය</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">ඔබට දැන් මෙම <ph name="DEVICE_TYPE" /> මත ස්ථාපනය කර ඇති යෙදුම් අවහිර කළ හැක</translation>
 <translation id="6154006699632741460">උපාංග සහාය නොදක්වයි</translation>
 <translation id="6156960295318603523">භාෂා සැකසීම්</translation>
+<translation id="6158923546703693047">අන්තර්ගත මූලාශ්‍ර තොරතුරු</translation>
 <translation id="615957422585914272">තිරය-මත යතුරුපුවරුව පෙන්වන්න</translation>
 <translation id="616543563528926612">දකුණු-ක්ලික් කිරීමේ කෙටිමඟ alt + <ph name="LAUNCHER_KEY_NAME" /> යතුරෙන් ක්ලික් කිරීම + ක්ලික් කිරීම වෙත යාවත්කාලීන කර ඇත</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">ක්‍රියාත්මක කරමින්…</translation>
 <translation id="8331351032546853669">බාගැනීම පොරොත්තුවෙන්</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">ප්‍රශ්නයක් අසන්න.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">අයහපත් ප්‍රතිදානය</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> කවුළුව තෝරා ගන්නා ලදී</translation>

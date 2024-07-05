@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">అతివ్యాప్తి అంశాలు</translation>
 <translation id="1341926407152459446">ఆడియో ఇన్‌పుట్, అవుట్‌పుట్‌కు "<ph name="DEVICE_NAME" />"‌ను ఉపయోగించండి</translation>
 <translation id="1346748346194534595">కుడి</translation>
+<translation id="1350494136075914725">జరుగుతున్నది · ట్యాబ్‌కు మారండి</translation>
 <translation id="1351937230027495976">మెనూను కుదించు</translation>
 <translation id="1360220746312242196">ఒక పేజీని సెర్చ్ చేస్తున్నప్పుడు, మునుపటి మ్యాచ్‌కు వెళ్లండి</translation>
 <translation id="1360788414852622716">ప్రొఫైల్ డిజేబుల్ అవుతోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
@@ -1049,6 +1050,7 @@
 <translation id="4876935764454575645">ఆడియో ఎంపిక</translation>
 <translation id="4881323000405981760">Linux యాప్‌లలో ఎఫెక్ట్‌లు పని చేయవు</translation>
 <translation id="4881695831933465202">తెరువు</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">సూచనలను మెరుగుపరచడానికి ఆప్షనల్ ఫీడ్‌బ్యాక్ ఇవ్వండి:</translation>
 <translation id="4890187583552566966">Google Assistantను మీ నిర్వాహ‌కుడు నిలిపివేశారు.</translation>
 <translation id="4890408602550914571">మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే బ్లూటూత్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి.</translation>
@@ -1751,6 +1753,7 @@
 <translation id="742594950370306541">కెమెరా ఉపయోగంలో ఉంది.</translation>
 <translation id="742608627846767349">శుభోదయం,</translation>
 <translation id="743058460480092004">కెమెరా మరియు మైక్రోఫోన్ ఉపయోగంలో ఉన్నాయి.</translation>
+<translation id="7441711280402516925">ప్లే అవుతోంది · ట్యాబ్‌కు మారండి</translation>
 <translation id="7453330308669753048">సెర్చ్ హిస్టరీ ఫలితం తీసివేయబడింది</translation>
 <translation id="7459485586006128091">అంతర్గత ఎర్రర్ కారణంగా, హాట్‌స్పాట్ ఆఫ్ చేయబడింది. కొన్ని నిమిషాల్లో మళ్లీ కనెక్ట్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="7461924472993315131">పిన్ చేయండి</translation>

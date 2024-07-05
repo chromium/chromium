@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> megszakítása.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" /> hálózat, <ph name="NETWORK_NAME" />, Inaktiválva, <ph name="CONNECTION_STATUS" />, Jelerősség <ph name="SIGNAL_STRENGTH" />%, Részletek</translation>
 <translation id="3691184985318546178">szingaléz</translation>
+<translation id="3702842351052426940">Előfordulhat, hogy SIM-kártyája vagy eSIM-profilja inaktiválva van. Próbálja meg kicserélni a SIM-kártyát, vagy váltson eSIM-profilt.</translation>
 <translation id="3722341589402358578">Hiba történt. Előfordulhat, hogy egyes elemek kukába helyezésére nem került sor.</translation>
 <translation id="3726463242007121105">Ezt az eszközt nem lehet megnyitni, mert a fájlrendszere nem támogatott.</translation>
 <translation id="3727148787322499904">A beállítás módosítása az összes megosztott hálózatot érinti</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Ezt a proxyt a rendszergazda lépteti életbe</translation>
 <translation id="3830674330436234648">Nincs lejátszási lehetőség</translation>
 <translation id="383652340667548381">szerb</translation>
+<translation id="3839045880592694915">Szolgáltatója nem engedélyezi a modem csatlakoztatását. További információért forduljon a szolgáltatóhoz.</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3855472144336161447">német Neo 2</translation>
 <translation id="3858860766373142691">Név</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, csatlakozás</translation>
 <translation id="6269630227984243955">maláj</translation>
 <translation id="6271903698064569429">Nem tölthet fel fájlokat, mert a(z) „<ph name="SHARED_DRIVE_NAME" />” nem rendelkezik elegendő tárhellyel.</translation>
+<translation id="6279140785485544797">Előfordulhat, hogy mobiladatcsomagja lejárt. Ha segítségre van szüksége, forduljon szolgáltatójához.</translation>
 <translation id="6287852322318138013">Válasszon egy alkalmazást a fájl megnyitásához</translation>
 <translation id="6295542640242147836">SIM zárolása</translation>
 <translation id="6296410173147755564">Érvénytelen PUK-kód</translation>

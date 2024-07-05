@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изберете „Додај во „Календар“ на Google“ или „Додај во „Календар“ на Apple“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> повторно употребени лозинки</translation>
+<translation id="1636234353664774105">Добијте детални насоки до вашата дестинација со упатства чекор по чекор со функцијата за навигација.</translation>
 <translation id="1641113438599504367">Безбедно прелистување</translation>
 <translation id="1641316430523156212">Следи</translation>
 <translation id="1644574205037202324">Историја</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2062410130322589403">Упатство за вашите опции за приватност</translation>
 <translation id="20638360198452347">Избирач на типови единици</translation>
+<translation id="2067852168641682340">Секогаш зачувувај на оваа сметка</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Може да лизгате надесно за да прелистувате во „Инкогнито“.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">За да добивате новости за содржините што ви значат, вклучете известување во вашите поставки за iOS.</translation>
 <translation id="2625189173221582860">Лозинката е копирана</translation>
 <translation id="2626236249646841566">Проверете ја врската и обидете се повторно да се најавите.</translation>
+<translation id="2635918910848538771">Пополни го CVC автоматски</translation>
 <translation id="2637313651144986786">Пребарајте ги картичките…</translation>
 <translation id="2640733327287333451">Нема корисничко име ••••••</translation>
 <translation id="2648721026697078500">Никогаш не преместувај</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Затвори ги сите инкогнито картички</translation>
 <translation id="3533436815740441613">Нова картичка</translation>
 <translation id="3540141921715814660">Додај во „Обележувачи“</translation>
+<translation id="3547356470684043247">Прочитајте ги процените на клиентите за производите, услугите или доживувањето за да ви помогнат да носите информирани одлуки со рецензии</translation>
 <translation id="355101282835380364">Зачувај во сметката…</translation>
 <translation id="3551320343578183772">Затвори ја картичката</translation>
 <translation id="3565930036634619844">Картичка. <ph name="TAB_INDEX" /> од <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} страница во вашиот „Список за читање“}one{{count} страница во вашиот „Список за читање“}other{{count} страници во вашиот „Список за читање“}}</translation>
 <translation id="4659667755519643272">Влези во менувачот на картички</translation>
 <translation id="46614316059270592">Зачувај ја лозинката</translation>
+<translation id="467189612236587057">Поврзете се со бизнис така што ќе започнете телефонски повик</translation>
 <translation id="4682686630151240767">1. Отворете ги поставките за iPhone</translation>
 <translation id="4689564913179979534">Управувајте со начините на плаќање…</translation>
 <translation id="469300482518076788">Затвори ја картичката</translation>

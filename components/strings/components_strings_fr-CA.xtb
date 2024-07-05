@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Adapter à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1082026381988252344">Faites défiler et zoomer le contenu de votre onglet partagé</translation>
+<translation id="1088664500620117635">Le prix habituel pour <ph name="PRODUCT_NAME" /> est compris entre <ph name="LOW_PRICE" /> et <ph name="HIGH_PRICE" />, mais le prix actuel est de <ph name="CURRENT_PRICE" /> sur le Web.</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1090629319939036170">Menu RV</translation>
 <translation id="1091779689406092804">captures d'écran</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, plusieurs actions sont possibles, appuyez sur la touche Tabulation pour les parcourir</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Détails de la carte virtuelle</translation>
+<translation id="1803254472779303354">Verrouillage de la souris autorisé</translation>
 <translation id="1803351196216024260">Les sites peuvent demander à utiliser votre microphone</translation>
 <translation id="1806174020048213474">Cette application demande l'autorisation d'installer les authentifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces authentifiant, désinstallez l'application.</translation>
 <translation id="1807246157184219062">Clair</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">Option à bas prix</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="270415722347413271">Disque optique (mat)</translation>
+<translation id="2704192696317130398">Verrouiller votre souris?</translation>
 <translation id="2704283930420550640">La valeur ne correspond pas au format.</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2705137772291741111">La copie sauvegardée (mise en cache) de ce site était illisible.</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3307649904964670439">Bouton Personnaliser Chrome, activez-le pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
 <translation id="3318016344440038475">Séries télévisées comiques</translation>
+<translation id="3321152582690622182">Pas de suivi</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
 <translation id="3325027355611702542">Fourgonnettes de camping et véhicules de plaisance</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">URL incorrecte.</translation>
 <translation id="512592033764059484">Soccer</translation>
 <translation id="512670116361803001">L'application <ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Utilisez des tailles de fenêtre préréglées pour éviter que l'application rencontre des problèmes.</translation>
+<translation id="512756860033933700">Verrouillage du clavier autorisé</translation>
 <translation id="5127934926273826089">Fleurs</translation>
 <translation id="5129534298163637277">Boîte de dialogue de confirmation</translation>
 <translation id="5135404736266831032">Gérer les adresses</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">En savoir plus sur la source et le sujet de cette page</translation>
 <translation id="5179490652562926740">Paramètres de vérification des paiements enregistrés</translation>
 <translation id="5179510805599951267">Cette page n'est pas rédigée en <ph name="ORIGINAL_LANGUAGE" />? Signaler l'erreur.</translation>
+<translation id="5180662470511508940">Le verrouillage du clavier n'est pas autorisé</translation>
 <translation id="5187079891181379721">Événements d'entreprise</translation>
 <translation id="5190072300954988691">Accès à l'appareil photo et au microphone non autorisé</translation>
 <translation id="5190835502935405962">Barre de favoris</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">A une incidence sur les sites répertoriés ici. L'insertion de « [*.] » avant un nom de domaine crée une exception pour l'ensemble du domaine. Par exemple, en ajoutant « [*.]google.com », les témoins tiers peuvent également être actifs pour mail.google.com, car ce dernier fait partie de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
+<translation id="6302546952464230349">Afficher les détails de l'autorisation <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Logiciels multimédias</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Cette adresse sera supprimée de cet appareil et des autres appareils sur lesquels vous êtes connecté</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
 <translation id="6547208576736763147">Double perforation à gauche</translation>
 <translation id="6549443526281184652">Costumes</translation>
+<translation id="6550245281449521513">Le verrouillage de la souris n'est pas autorisé</translation>
 <translation id="6551873053534932690">Enregistrer l'adresse dans le compte?</translation>
 <translation id="6554732001434021288">Dernière visite il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6556866813142980365">Rétablir</translation>
@@ -3832,6 +3840,7 @@ Détails supplémentaires :
 <translation id="8278544367771164040">Prêts commerciaux</translation>
 <translation id="8279290844152565425">Concerts et festivals musicaux</translation>
 <translation id="8279611986089885641">Les notifications de Chrome doivent être activées. Vous pouvez les activer dans <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Verrouiller votre clavier?</translation>
 <translation id="8280630997017109758">Bac 11</translation>
 <translation id="8281730697546299650">Autres fonctionnalités de confidentialité des annonces désormais offertes</translation>
 <translation id="8281886186245836920">Ignorer</translation>
@@ -4303,6 +4312,7 @@ Détails supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Produits de beauté responsables</translation>
+<translation id="919455784772793601">Ouvrez une page qui montre d'autres magasins qui vendent ce produit.</translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>

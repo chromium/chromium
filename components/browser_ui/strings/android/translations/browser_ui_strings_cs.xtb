@@ -172,6 +172,7 @@
 <translation id="3859306556332390985">Přetočit dopředu</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
 <translation id="3908288065506437185">V anonymním režimu blokovat soubory cookie třetích stran</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">Některé funkce mohou být omezeny. Související weby mohou soubory cookie třetích stran používat i nadále.</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
@@ -473,6 +474,7 @@
 <translation id="8681886425883659911">Na webech, o kterých je známo, že zobrazují rušivé nebo zavádějící reklamy, jsou reklamy blokovány</translation>
 <translation id="868929229000858085">Vyhledat v kontaktech</translation>
 <translation id="8712637175834984815">Hotovo</translation>
+<translation id="8715862698998036666">Celou obrazovku ukončíte přetažením shora a přejetím z levého nebo pravého okraje.</translation>
 <translation id="8719283222052720129">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="8721719390026067591">Když je tato možnost zapnutá, weby mohou žádat o vyhledání zařízení Bluetooth. Když je vypnutá, weby zařízení Bluetooth vyhledávat nemohou.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>

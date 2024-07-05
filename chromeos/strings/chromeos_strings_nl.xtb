@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1049663189809099096">pastelgeel</translation>
+<translation id="1053371972724535586">Mijn opnamen</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
 <translation id="1061864016440983342">Gebruiken zonder locatie</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="1435763214710588005">Het datagebruik wordt elke maand automatisch gereset op de geselecteerde datum</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
+<translation id="1445573806602812670">Een transcriptie van je opname krijgen</translation>
 <translation id="1446954767133808402">saffier</translation>
 <translation id="1449035143498573192">Openen in Google Zoeken</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">meer</translation>
 <translation id="1720424726586960395">bos met vuurvliegjes</translation>
 <translation id="1726100011689679555">Naamservers</translation>
+<translation id="1728792932018505912">Je kunt dit aanpassen in Instellingen of in het menu <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Bluetooth-touchpad</translation>
 <translation id="1738949837603788263">Zone <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Kan afbeeldingen niet laden. Check de netwerkverbinding of probeer de afbeeldingen opnieuw te laden.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">Mislukte UDP-verzoeken</translation>
 <translation id="1908394185991500139">pijl-links</translation>
 <translation id="1923388006036088459">Accentkleuren</translation>
+<translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">Afgedrukt</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954818433534793392">gebouw</translation>
@@ -224,8 +228,10 @@
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
 <translation id="2086091080968010660">Tijdgebaseerde wijzigingen zijn misschien niet nauwkeurig. Zet locatietoegang voor het systeem aan in de instellingen.</translation>
 <translation id="2102231663024125441">Tekstbewerking</translation>
+<translation id="2102648867808308635">Help me deze pagina te lezen</translation>
 <translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Op dit moment alleen beschikbaar in het Engels (VS)</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar</translation>
 <translation id="2135668738111962377"><ph name="ACTION_NAME" /> bewerken</translation>
 <translation id="2138109643290557664">Voorbijzweven</translation>
@@ -262,6 +268,7 @@
 <translation id="2267285889943769271">Screenshot toevoegen</translation>
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
 <translation id="2276999893457278469">Belangrijkste Help-content</translation>
+<translation id="2277631741861284101">Je audio makkelijk opnemen en delen</translation>
 <translation id="2279051792571591988">Standaardwaarden herstellen</translation>
 <translation id="2286454467119466181">Eenvoudig</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -287,6 +294,7 @@
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2418150275289244458">Openen in instellingen</translation>
 <translation id="2421798028054665193">Afbeelding <ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
+<translation id="242825218556404975">Geen spraak waargenomen</translation>
 <translation id="2446553403094072641">Nauwkeurigheid van zwevendekommagetallen</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2472215337771558851">Gebruik Help me met schrijven om een conceptversie te maken of bestaand werk te verfijnen, mogelijk gemaakt door AI van Google</translation>
@@ -330,6 +338,7 @@
 <translation id="2656001153562991489">Exclusief voor de Chromebook Plus</translation>
 <translation id="2665671725390405060">Luisteren naar de uitspraak</translation>
 <translation id="267442004702508783">vernieuwen</translation>
+<translation id="2675392311492541028">Transcriptie en samenvatting</translation>
 <translation id="268270014981824665">toetsenbord gedimd</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
@@ -430,6 +439,7 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> achtergrond met de letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusief</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
+<translation id="3410165745972100556">Transcript staat uit</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3428551088151258685">buiten</translation>
 <translation id="3428971106895559033">pastel</translation>
@@ -475,6 +485,7 @@
 <translation id="3621072146987826699">olifanten</translation>
 <translation id="3632040286124154621">Goede suggestie</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
+<translation id="3639873154908477486">Naam (van A tot Z)</translation>
 <translation id="3644695927181369554">Slechte suggestie</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
 <translation id="3661106764436337772">Schrijf sneller en met meer vertrouwen</translation>
@@ -541,6 +552,7 @@
 <translation id="4044093238444069296">Kan geen verbinding maken met de gateway</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="404928562651467259">WAARSCHUWING</translation>
+<translation id="4050208988451295487">Een paar opties:</translation>
 <translation id="4054683689023980771">Afbeelding downloaden</translation>
 <translation id="4063039537646912479">lichtblauw</translation>
 <translation id="4070799384363688067">anime</translation>
@@ -569,8 +581,10 @@
 <translation id="4171077696775491955">helderheid omlaag</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4176659219503619100">Dashboard</translation>
+<translation id="4193496492959950834">Recorderinstellingen</translation>
 <translation id="4198398257084619072">panda's</translation>
 <translation id="420283545744377356">Screensaver uitzetten</translation>
+<translation id="4210636113897977670">Opslaan en afsluiten</translation>
 <translation id="4210659479607886331">gletsjerrivier</translation>
 <translation id="4213104098953699324">USB-toetsenbord</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
@@ -643,6 +657,7 @@
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="463791356324567266">Scannen annuleren…</translation>
+<translation id="4644611440022666152">Aanzetten en downloaden</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="4650608062294027130">Shift rechts</translation>
 <translation id="4654549501020883054">Dagelijks wijzigen</translation>
@@ -733,6 +748,7 @@
 <translation id="5099354524039520280">omhoog</translation>
 <translation id="5107243100836678918">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Vergelijkbaar:</translation>
+<translation id="5109744590306245079">Recorder kan transcripten maken van opnamen met spraak. Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijgen.</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
 <translation id="5142961317498132443">Verificatie</translation>
@@ -842,6 +858,7 @@
 <translation id="5760715441271661976">Status van portal</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> opnieuw opstarten en updaten</translation>
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
+<translation id="5779818640587041940">Scherm aan laten tijdens opnemen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
@@ -916,6 +933,7 @@
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
+<translation id="6141004321363227868">Als je deze functie aanzet, worden er ook live transcripten getoond terwijl je opneemt.</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
 <translation id="6147514244879357420">Png</translation>
 <translation id="6156030503438652198">kastanjebruin en roze</translation>
@@ -984,6 +1002,7 @@
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Exclusieve <ph name="PRODUCT_NAME" />-screensaver</translation>
 <translation id="649050271426829538">Gestopt: papierstoring</translation>
+<translation id="6490861263572002431">Automatisch scrollen</translation>
 <translation id="6492891353338939218">verweerd</translation>
 <translation id="6494974875566443634">Aanpassing</translation>
 <translation id="6500818810472529210">Resultaat bekijken in Google Zoeken</translation>
@@ -997,6 +1016,7 @@
 <translation id="6543412779435705598">taco's</translation>
 <translation id="6551839203326557324">appels</translation>
 <translation id="65526652485742171">De knop Bevestigen staat nu aan</translation>
+<translation id="6556016675518580850">Als je deze pagina verlaat, wordt je huidige opname beëindigd.</translation>
 <translation id="6557784757915238407">APN is van het type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Levendig</translation>
@@ -1007,6 +1027,7 @@
 <translation id="6576005492601044801">links</translation>
 <translation id="6579509898032828423">Deze foto gebruiken</translation>
 <translation id="6587870930887634392">vetplant</translation>
+<translation id="6595046262780525922">Transcriptie aanzetten en transcriptiemodel downloaden?</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6599673642868607614">Bedankt voor je feedback. Met jouw feedback kunnen we de functionaliteit van de Chromebook verbeteren. Je feedback wordt beoordeeld door ons team. Vanwege het grote aantal rapporten kunnen we je geen antwoord sturen.</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
@@ -1048,6 +1069,8 @@
 <translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
+<translation id="6818844233294698434">Luisteren naar spraak...</translation>
+<translation id="6837645039518471192">Opname afsluiten</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6866732840889595464">madeliefje</translation>
 <translation id="6871256179359663621">lichtpaars</translation>
@@ -1087,6 +1110,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7035168792582749309">aardappelen</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7040729769968826896">Identificatie van sprekers toestaan</translation>
 <translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
 <translation id="7046522406494308071">Alle sneltoetsen resetten naar standaardinstellingen?</translation>
 <translation id="7058278511608979688">Stoppen en opslaan</translation>
@@ -1242,6 +1266,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7850847810298646851">Achtergrond mogelijk gemaakt door AI van Google</translation>
 <translation id="785170686607360576">tulp</translation>
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
+<translation id="7857744683152972248">Toestaan dat Recorder sprekers identificeert?</translation>
 <translation id="7859006200041800233">cactusbloem</translation>
 <translation id="7869143217755017858">Donkere modus uitzetten</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1274,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7882501334836096755">Openbare sleutel</translation>
 <translation id="78957024357676568">links</translation>
 <translation id="7897043345768902965">voetpad</translation>
+<translation id="7902285181767404769">Meldingen op stil zetten tijdens opnemen</translation>
 <translation id="7903695460270716054">Beheerde kunst en afbeeldingen kiezen</translation>
 <translation id="7915220255123750251">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet.</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
@@ -1295,6 +1321,8 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8156233298086717232">magisch</translation>
 <translation id="8162776280680283326">vossen</translation>
 <translation id="8167413449582155132">Achtergrond mogelijk gemaakt door AI van Google</translation>
+<translation id="8171020708598805594">Maak automatisch transcripties, krijg samenvattingen van opnamen met AI van Google en doorzoek audio. Maak opnamen, ook als je geen verbinding met internet hebt.</translation>
+<translation id="8174280683348521982">Huidige opname verwijderen?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strand</translation>
 <translation id="819278132617411009">AI van Google gebruiken om productiever te zijn</translation>
@@ -1332,6 +1360,9 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8372477600026034341">Extra hosts</translation>
 <translation id="8372667721254470022">olijfgroen</translation>
 <translation id="8373046809163484087">Gebruik kleurensets die passen bij je achtergrond</translation>
+<translation id="8379123594780452422">Als je dit toestaat, verwerkt Recorder je audio-opnamen met geavanceerde audio-analyse.
+
+Je kunt dit altijd uitzetten in Instellingen.</translation>
 <translation id="8380114448424469341">Venster vastzetten op de <ph name="DIRECTION" />helft van het scherm</translation>
 <translation id="8391349326751432483">Je hebt minimaal 500 MB vrije ruimte nodig om een geheugentest uit te voeren. Sluit tabbladen en apps om geheugen vrij te maken.</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
@@ -1372,10 +1403,12 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>
+<translation id="8647595191512746911">Audiotranscriptie</translation>
 <translation id="8651481478098336970">geluid uitzetten</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655828773034788261">URL delen:</translation>
 <translation id="8660881923941176839">pound</translation>
+<translation id="8670057600920888023">Generatieve AI is experimenteel en content kan onjuist, misleidend of aanstootgevend zijn.</translation>
 <translation id="8670574982334489519">rechts</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
 <translation id="8677859815076891398">Geen albums. Maak een album in <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" />.</translation>
@@ -1476,6 +1509,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="9122602430962285795">Ga naar Instellingen als je weer verbinding wilt maken</translation>
 <translation id="9122865513525855321">zen</translation>
 <translation id="9126720536733509015">Meerdere pagina's opslaan in 1 pdf-bestand</translation>
+<translation id="9129549320890412487">Transcriptiefunctie</translation>
 <translation id="9133772297793293778">Druk op 1-4 functietoetsen en 1 andere toets op je toetsenbord. Druk op Alt + Esc om de bewerkingsmodus te sluiten.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9138630967333032450">Shift links</translation>

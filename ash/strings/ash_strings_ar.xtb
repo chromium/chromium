@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">القائمة الكاملة</translation>
 <translation id="1341926407152459446">استخدام "<ph name="DEVICE_NAME" />" كمصدر إدخال الصوت وإخراجه</translation>
 <translation id="1346748346194534595">يمين</translation>
+<translation id="1350494136075914725">اجتماع جارٍ · التبديل إلى علامة التبويب</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1360220746312242196">الانتقال إلى النتيجة المطابِقة السابقة عند البحث في صفحة</translation>
 <translation id="1360788414852622716">جارٍ إيقاف الملف الشخصي. قد يستغرق ذلك بضع دقائق.</translation>
@@ -395,7 +396,7 @@
 <translation id="2486405091093637109">‏تم تغيير درجة دقة "<ph name="DISPLAY_NAME" />" إلى ‎<ph name="RESOLUTION" /> (بمعدّل التحديث <ph name="REFRESH_RATE" /> هرتز). في حال عدم التأكيد، ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">انضمام</translation>
 <translation id="2499445554382787206">قائمة الملف الشخصي على جهاز سطح المكتب "<ph name="DESK_NAME" />"</translation>
-<translation id="2501920221385095727">مفاتيح الثبات</translation>
+<translation id="2501920221385095727">تثبيت المفاتيح</translation>
 <translation id="2504454902900101003">عدم إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
 <translation id="2505378917951323738">تعذَّر تعديل المهمة. يُرجى إعادة المحاولة بعد الاتصال بالإنترنت.</translation>
 <translation id="2509468283778169019">‏مفتاح CAPS LOCK قيد التفعيل</translation>
@@ -1050,6 +1051,7 @@
 <translation id="4876935764454575645">اختيار المحتوى الصوتي</translation>
 <translation id="4881323000405981760">‏التأثيرات غير متاحة على تطبيقات Linux.</translation>
 <translation id="4881695831933465202">فتح</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">يُرجى تقديم ملاحظات اختيارية لتحسين الاقتراحات:</translation>
 <translation id="4890187583552566966">‏تم إيقاف مساعد Google من قِبل المشرف.</translation>
 <translation id="4890408602550914571">يُرجى التأكُّد من أنّ هاتفك قريب وأنّ البلوتوث مفعَّل عليه.</translation>
@@ -1753,6 +1755,7 @@
 <translation id="742594950370306541">الكاميرا قيد الاستخدام.</translation>
 <translation id="742608627846767349">صباح الخير،</translation>
 <translation id="743058460480092004">الكاميرا والميكروفون قيد الاستخدام.</translation>
+<translation id="7441711280402516925">محتوى قيد التشغيل · التبديل إلى علامة التبويب</translation>
 <translation id="7453330308669753048">تمت إزالة نتائج سجلّ البحث.</translation>
 <translation id="7459485586006128091">تم إيقاف نقطة الاتصال بسبب خطأ داخلي. يُرجى إعادة الاتصال بعد بضع دقائق.</translation>
 <translation id="7461924472993315131">تثبيت</translation>

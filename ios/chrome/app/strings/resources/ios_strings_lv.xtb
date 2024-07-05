@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Atlasiet “Pievienot Google kalendāram” vai “Pievienot kalendāram Apple Calendar”.</translation>
 <translation id="1626771852476987600">Atkārtoti izmantoto paroļu skaits: <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">Iegūt detalizētas norādes nokļūšanai galamērķī, izmantojot navigācijas funkciju</translation>
 <translation id="1641113438599504367">Droša pārlūkošana</translation>
 <translation id="1641316430523156212">Sekot</translation>
 <translation id="1644574205037202324">Vēsture</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="2062410130322589403">Konfidencialitātes iestatījumu ceļvedis</translation>
 <translation id="20638360198452347">Mērvienību veidu atlasītājs</translation>
+<translation id="2067852168641682340">Katru reizi saglabāt šajā kontā</translation>
 <translation id="2073572773299281212">Aktīvs pirms <ph name="DAYS" /> dienām</translation>
 <translation id="2074131957428911366">Jūs jebkurā laikā <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" /> varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="2078437078822043850">Varat ritināt pa labi, lai pārlūkotu inkognito režīmā.</translation>
@@ -313,6 +315,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="261739049332372104">Lai saņemtu jaunumus par jums svarīgu saturu, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="2625189173221582860">Parole ir nokopēta.</translation>
 <translation id="2626236249646841566">Pārbaudiet savienojumu un mēģiniet pierakstīties vēlreiz.</translation>
+<translation id="2635918910848538771">Automātiski aizpildīt CVC kodu</translation>
 <translation id="2637313651144986786">Meklēt cilnēs…</translation>
 <translation id="2640733327287333451">Nav lietotājvārda ••••••</translation>
 <translation id="2648721026697078500">Nekad nepārvietot</translation>
@@ -496,6 +499,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3533202363250687977">Aizvērt visas inkognito cilnes</translation>
 <translation id="3533436815740441613">Jauna cilne</translation>
 <translation id="3540141921715814660">Pievienot grāmatzīmēm</translation>
+<translation id="3547356470684043247">Lasīt, kā klienti vērtē produktus, pakalpojumus vai pieredzi, lai pieņemtu pārdomātus lēmumus, izmantojot atsauksmes.</translation>
 <translation id="355101282835380364">Saglabāt kontā…</translation>
 <translation id="3551320343578183772">Aizvērt cilni</translation>
 <translation id="3565930036634619844">Cilne numur <ph name="TAB_INDEX" />, kopējais skaits ir <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4659194143325814340">{count,plural, =1{Jūsu lasīšanas sarakstā ir {count} lapa}zero{Jūsu lasīšanas sarakstā ir {count} lapas}one{Jūsu lasīšanas sarakstā ir {count} lapa}other{Jūsu lasīšanas sarakstā ir {count} lapas}}</translation>
 <translation id="4659667755519643272">Atvērt ciļņu pārslēdzēju</translation>
 <translation id="46614316059270592">Saglabāt paroli</translation>
+<translation id="467189612236587057">Sazināties ar uzņēmumu, sākot tālruņa zvanu</translation>
 <translation id="4682686630151240767">1. iPhone tālrunī atveriet sadaļu Settings (Iestatījumi).</translation>
 <translation id="4689564913179979534">Pārvaldīt maksājumu veidus...</translation>
 <translation id="469300482518076788">Aizvērt cilni</translation>

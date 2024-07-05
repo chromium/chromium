@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">Өргөний хэмжээнд тааруулах</translation>
 <translation id="1081061862829655580">Тавиур 19</translation>
 <translation id="1082026381988252344">Хуваалцсан табынхаа контентыг гүйлгэж, томруулна уу</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" />-н ердийн үнэ нь <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> хэдий ч веб дээрх одоогийн үнэ нь <ph name="CURRENT_PRICE" /> байна.</translation>
 <translation id="1089439967362294234">Нууц үг солих</translation>
+<translation id="1089599132348386324">Та Chrome-н тохиргоонд хүссэн үедээ бодлоо өөрчлөх боломжтой.</translation>
 <translation id="1090629319939036170">VR-н цэс</translation>
 <translation id="1091779689406092804">дэлгэцийн агшин</translation>
 <translation id="1094777233105318927">Таны хөтөч, OS, төхөөрөмж, суулгасан программ хангамж болон файлуудын талаарх мэдээлэл</translation>
@@ -446,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, олон үйлдэл хийх боломжтой, үйлдэл хооронд шилжихийн тулд Таб дээр дарна уу</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуал картын дэлгэрэнгүй</translation>
+<translation id="1803254472779303354">Хулганын түгжээг зөвшөөрсөн</translation>
 <translation id="1803351196216024260">Таны микрофоныг ашиглахыг хүсэх боломжтой</translation>
 <translation id="1806174020048213474">Энэ апп Wi-Fi-н мандат үнэмлэхүүдийг суулгах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнүүдэд автоматаар холбогдоно. Эдгээр мандат үнэмлэхийг хасахын тулд аппыг устгана уу.</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
@@ -911,6 +914,7 @@
 <translation id="2702592986366989640">Хямд үнэтэй сонголт</translation>
 <translation id="2702801445560668637">Унших жагсаалт</translation>
 <translation id="270415722347413271">Оптик диск (мaтте)</translation>
+<translation id="2704192696317130398">Хулганаа түгжих үү?</translation>
 <translation id="2704283930420550640">Утга нь форматтай таарахгүй байна.</translation>
 <translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2705137772291741111">Энэ сайтын хадгалсан (нөөцөлсөн) хуулбарыг унших боломжгүй.</translation>
@@ -1216,6 +1220,7 @@
 <translation id="3307649904964670439">Chrome-г өөрчлөх товчлуур, хөтчийнхөө харагдах байдлыг өөрчлөхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="3308006649705061278">Байгууллагын нэгж (БН)</translation>
 <translation id="3318016344440038475">ТВ-ийн хошин шогууд</translation>
+<translation id="3321152582690622182">Хянахгүй байна</translation>
 <translation id="3324687287337751929">4 x 6 инч</translation>
 <translation id="3324983252691184275">Улаан хүрэн</translation>
 <translation id="3325027355611702542">Аяллын чиргүүл болон аяллын зориулалттай автомашинууд</translation>
@@ -2170,6 +2175,7 @@
 <translation id="5125751979347152379">Хүчингүй холбоос</translation>
 <translation id="512592033764059484">Хөл бөмбөг</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" />-н хэмжээ сайн өөрчлөгдөхгүй байж магадгүй. Аппыг асуудалтай тулгарахаас сэргийлэхийн тулд урьдчилан тохируулсан цонхны хэмжээг ашиглана уу.</translation>
+<translation id="512756860033933700">Гарын түгжээг зөвшөөрсөн</translation>
 <translation id="5127934926273826089">Цэцэг</translation>
 <translation id="5129534298163637277">Баталгаажуулалтын харилцах цонх</translation>
 <translation id="5135404736266831032">Хаягийг удирдах...</translation>
@@ -2200,6 +2206,7 @@
 <translation id="5177076414499237632">Энэ хуудасны эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
 <translation id="5179490652562926740">Төлбөр баталгаажуулах тохиргоог хадгалсан</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> хэлээр байхгүй байна уу? Энэ алдааг мэдэгдэнэ үү.</translation>
+<translation id="5180662470511508940">Гарын түгжээг зөвшөөрөөгүй</translation>
 <translation id="5187079891181379721">Байгууллагын арга хэмжээнүүд</translation>
 <translation id="5190072300954988691">Камер болон микрофоныг зөвшөөрөөгүй</translation>
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
@@ -2772,6 +2779,7 @@
 <translation id="6298456705131259420">Энд жагсаасан сайтуудад нөлөөлнө. “[*.]”-г домэйн нэрийн өмнө оруулах нь нийт домэйнд онцгой тохиолдол үүсгэнэ. Жишээлбэл “[*.]google.com”-г нэмэх нь мөн гуравдагч талын күүкинүүдийг mail.google.com-д идэвхжүүлэх боломжтой гэсэн үг юм. Учир нь энэ нь google.com-н нэг хэсэг юм.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Таны төхөөрөмжийг одоо эхлүүлнэ}=1{Таны төхөөрөмжийг 1 секундийн дараа эхлүүлнэ}other{Таны төхөөрөмжийг # секундийн дараа эхлүүлнэ}}</translation>
 <translation id="6301104306974789820">Үнэ хянах мэдэгдэл авах</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> зөвшөөрлийн дэлгэрэнгүйг харуулах</translation>
 <translation id="6304398603974202180">Мультимедиа программ хангамж</translation>
 <translation id="6305205051461490394"><ph name="URL" />-г ашиглах боломжгүй байна.</translation>
 <translation id="6306713302480826305">Энэ хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана</translation>
@@ -2914,6 +2922,7 @@
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6547208576736763147">Зүүн ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6549443526281184652">Хувцас</translation>
+<translation id="6550245281449521513">Хулганын түгжээг зөвшөөрөөгүй</translation>
 <translation id="6551873053534932690">Бүртгэлд хаяг хадгалах уу?</translation>
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6556866813142980365">Дахин хийх</translation>
@@ -3832,6 +3841,7 @@
 <translation id="8278544367771164040">Арилжааны зээл</translation>
 <translation id="8279290844152565425">Тоглолт, хөгжмийн наадмууд</translation>
 <translation id="8279611986089885641">Chrome-н мэдэгдэл асаалттай байх ёстой. Та тэдгээрийг <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />-д асаах боломжтой.</translation>
+<translation id="8280387559022105172">Гараа түгжих үү?</translation>
 <translation id="8280630997017109758">Тавиур 11</translation>
 <translation id="8281730697546299650">Зарын нууцлалын бусад онцлог одоо боломжтой боллоо</translation>
 <translation id="8281886186245836920">Алгасах</translation>
@@ -4304,6 +4314,7 @@
 <translation id="9191834167571392248">Зүүн доод буланд нэг нүх цоолох</translation>
 <translation id="9192361865877479444">Металл (мaтте)</translation>
 <translation id="9192947025498305328">Байгалийн гоо сайхны бүтээгдэхүүн</translation>
+<translation id="919455784772793601">Энэ бүтээгдэхүүнийг борлуулдаг бусад дэлгүүрийг харуулдаг хуудсыг нээнэ үү.</translation>
 <translation id="9199905725844810519">Хэвлэхийг блоклосон байна</translation>
 <translation id="9205078245616868884">Таны өгөгдлийг таны синк хийх нэвтрэх үгтэй шифрлэсэн. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
 <translation id="920643408853370361">Аяллын даатгал</translation>

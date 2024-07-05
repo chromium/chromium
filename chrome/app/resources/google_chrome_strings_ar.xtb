@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">‏يجب منح Google Chrome الإذن بالوصول إلى البلوتوث لمواصلة عملية 
 الإقران. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">‏لحفظ كلمات المرور واستخدامها وتنفيذ إجراءات أخرى على جميع أجهزتك، عليك تسجيل الدخول إلى Chrome. سيتم حفظ كلمة المرور هذه في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
 <translation id="1583073672411044740">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">‏يستخدم Google Chrome الكاميرا.</translation>
@@ -333,6 +332,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">‏تعذَّر إطلاق Chrome. يُرجى إعادة المحاولة.</translation>
 <translation id="5809516625706423866">‏تعذر الاتصال بالإنترنت. بروتوكول HTTP 401 محظور. يُرجى التحقق من إعدادات الخادم الوكيل.</translation>
+<translation id="5825922397106002626">‏إزالة "<ph name="EXTENSION_NAME" />" من Chrome</translation>
 <translation id="5858486459377137936">‏سيتم تسجيل خروجك من معظم المواقع الإلكترونية عند إغلاق جميع نوافذ Chrome، باستثناء حسابك على Google إذا كنت مسجلاً الدخول إلى Chrome. للسماح للمواقع الإلكترونية بتذكُّر بياناتك، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">‏<ph name="BEGIN_LINK" />يحذرك Chrome<ph name="END_LINK" /> بشأن المواقع الإلكترونية وعمليات التنزيل غير الآمنة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -416,7 +416,6 @@
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
 <translation id="7036251913954633326">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام <ph name="GUEST_LINK_BEGIN" />وضع الضيف<ph name="GUEST_LINK_END" /> في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">‏لحفظ كلمات مرورك واستخدامها وتنفيذ إجراءات أخرى على جميع أجهزتك، عليك تسجيل الدخول إلى Chrome</translation>
 <translation id="7048502283602470098">استكشاف ميزات الذكاء الاصطناعي</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم.</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>

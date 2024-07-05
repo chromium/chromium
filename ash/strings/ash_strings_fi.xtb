@@ -110,6 +110,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1341651618736211726">Ylivuoto</translation>
 <translation id="1341926407152459446">Valitse "<ph name="DEVICE_NAME" />" äänitulolle ja ‐toistolle</translation>
 <translation id="1346748346194534595">Oikealla</translation>
+<translation id="1350494136075914725">Käynnissä · Vaihda välilehteen</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1360220746312242196">Kun haet sivua, siirry haun edelliseen osumaan</translation>
 <translation id="1360788414852622716">Profiilia poistetaan käytöstä. Tässä voi kulua muutama minuutti.</translation>
@@ -1048,6 +1049,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4876935764454575645">Audion valinta</translation>
 <translation id="4881323000405981760">Linux-sovelluksissa ei tueta tehosteita</translation>
 <translation id="4881695831933465202">Avaa</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Anna valinnaista palautetta ehdotusten parantamiseksi:</translation>
 <translation id="4890187583552566966">Järjestelmänvalvoja on poistanut Google Assistantin käytöstä.</translation>
 <translation id="4890408602550914571">Varmista, että puhelin on lähellä ja sen Bluetooth on päällä.</translation>
@@ -1750,6 +1752,7 @@ Uusi asennus</translation>
 <translation id="742594950370306541">Kamera on käytössä.</translation>
 <translation id="742608627846767349">Huomenta</translation>
 <translation id="743058460480092004">Kamera ja mikrofoni ovat käytössä.</translation>
+<translation id="7441711280402516925">Toistetaan · Vaihda välilehteen</translation>
 <translation id="7453330308669753048">Hakuhistorian tulos poistettu</translation>
 <translation id="7459485586006128091">Hotspot on laitettu pois päältä sisäisen virheen takia. Yritä muodostaa yhteys uudelleen muutaman minuutin kuluttua.</translation>
 <translation id="7461924472993315131">Kiinnitä</translation>

@@ -39,7 +39,6 @@
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">За да ги зачувувате и користите лозинките и друго на сите ваши уреди, најавете се на Chrome. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
 <translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
@@ -422,7 +421,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7036251913954633326">Ако сакате да ја користите сметкава само еднократно, може да го користите <ph name="GUEST_LINK_BEGIN" />Режимот на гостин<ph name="GUEST_LINK_END" /> во прелистувачот Chrome. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> во вашиот <ph name="DEVICE_TYPE" />.
 
 Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">За да ги зачувувате и користите лозинките и друго на сите ваши уреди, најавете се на Chrome</translation>
 <translation id="7048502283602470098">Истражете ја AI</translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
 <translation id="7071827361006050863">Chrome ќе ги избрише податоците од прелистување наскоро</translation>
@@ -438,6 +436,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7177959540995930968">Може да дознаете повеќе за овие функции во поставките за Chrome.</translation>
 <translation id="7193885263065350793">Вашата организација го затвора Chrome кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Се пријавувате со управувана сметка и на нејзиниот администратор му давате контрола врз вашиот профил на Google Chrome. Вашите податоци на Chrome, како апликации, обележувачи, историја, лозинки и други поставки, трајно ќе се поврзат со <ph name="USER_NAME" />. Ќе може да ги избришете податоците преку Информациска табла на сметките на Google, но нема да може да ги поврзувате со друга сметка. Изборно може да направите и нов профил за постоечките податоци од Chrome за да бидат одделни. <ph name="LEARN_MORE" /></translation>
+<translation id="7292266096633803196">Chrome препорачува да ја отстраните. Дознајте повеќе за поддржаните екстензии</translation>
 <translation id="7295052994004373688">Овој јазик се користи за приказ на корисничкиот интерфејс на Google Chrome</translation>
 <translation id="7296210096911315575">Важни информации за користење и безбедност</translation>
 <translation id="7302361266603927550">Некои од вашите податоци од Chrome сѐ уште не се зачувани во вашата сметка на Google. Почекајте неколку минути пред да се одјавите. Ако се одјавите сега, податоциве ќе се избришат.</translation>

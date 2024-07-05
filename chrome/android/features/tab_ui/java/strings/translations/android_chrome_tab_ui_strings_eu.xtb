@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Itxi <ph name="TABS_COUNT_ONE" /> fitxa duen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}other{Itxi <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
 <translation id="5556417849629758491">Ikusi dendari buruzko informazioa, pantailaren goialdean dago erabilgarri</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Leheneratu fitxa}other{Leheneratu fitxak}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-ko <ph name="TABS_COUNT_ONE" /> esteka}other{Chrome-ko <ph name="TABS_COUNT_MANY" /> esteka}}</translation>
 <translation id="575494663145460764">Prezio-jaitsierei buruzko alertak jaso nahi dituzu?</translation>
 <translation id="58326064309361797">Fitxak taldekatzeko, arrasta itzazu</translation>

@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Halaman Tidak Merespons}other{Halaman Tidak Merespons}}</translation>
 <translation id="1011003645819296594">Perangkat yang disimpan</translation>
 <translation id="1011355516189274711">Volume text-to-speech</translation>
+<translation id="1011431628606634753">Mengubah PIN pemulihan Anda untuk Pengelola Sandi Google</translation>
 <translation id="1012794136286421601">File Dokumen, Spreadsheet, Slide, dan Gambar Anda sedang disinkronkan. Buka aplikasi Google Drive untuk mengaksesnya secara offline atau online.</translation>
 <translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1476,7 +1477,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2048254245884707305">Memeriksa malware...</translation>
 <translation id="2048554637254265991">Error saat memulai pengelola penampung. Coba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
-<translation id="2049021651258469175">Anda juga dapat menggunakan dan menyimpan sandi dan lainnya dari Akun Google Anda.</translation>
 <translation id="204914487372604757">Buat pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2051266530792296582">Pengelola Sandi Google membuat sandi kuat untuk situs ini</translation>
@@ -4065,6 +4065,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3923221004758245114">Hapus <ph name="VM_NAME" /> dari <ph name="DEVICE_TYPE" /> Anda? Tindakan ini akan menghapus semua aplikasi dan data di virtual machine tersebut.</translation>
 <translation id="3923494859158167397">Tidak ada jaringan seluler yang disiapkan</translation>
 <translation id="3923676227229836009">Halaman ini diizinkan untuk melihat file</translation>
+<translation id="3923958273791212723">Notifikasi masalah performa</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Ukuran tampilan dan teks <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Mengirimkan URL ke Safe Browsing untuk memeriksanya. Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru. Menautkan sementara waktu data ini ke Akun Google Anda saat Anda login, untuk melindungi Anda ketika menggunakan berbagai aplikasi Google.</translation>
@@ -4081,6 +4082,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3930737994424905957">Mencari perangkat</translation>
 <translation id="3930968231047618417">Warna latar belakang</translation>
 <translation id="3932356525934356570">Sematkan <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Panjang maksimum: <ph name="MAX" /> karakter</translation>
 <translation id="3933121352599513978">Ciutkan permintaan yang tidak diinginkan (direkomendasikan)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> berbagi jaringan Wi-Fi dengan Anda</translation>
 <translation id="3936390757709632190">Buka audi&amp;o di tab baru</translation>
@@ -4731,6 +4733,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4423376891418188461">Pulihkan Setelan</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Mengizinkan perangkat ChromeOS mengirim laporan otomatis akan membantu kami memprioritaskan hal-hal yang harus diperbaiki dan ditingkatkan di ChromeOS. Laporan tersebut dapat mencakup informasi seperti kapan ChromeOS mengalami error, fitur mana yang digunakan, dan berapa banyak memori yang biasanya digunakan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat mulai atau berhenti mengizinkan laporan ini kapan saja di setelan perangkat Chrome. Jika Anda merupakan administrator domain, Anda dapat mengubah setelan ini di konsol admin.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Sandi, kunci sandi, dan data lainnya akan dihapus secara permanen dari <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Hapus <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Untuk memulai, pastikan USB atau tombol Bluetooth terhubung ke Chromebook. Anda juga dapat menggunakan tombol keyboard.</translation>
 <translation id="4426490308207168518">Kirim masukan atau laporkan masalah</translation>
@@ -5220,6 +5223,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4807098396393229769">Nama di kartu</translation>
 <translation id="4807122856660838973">Aktifkan Safe Browsing</translation>
 <translation id="4807514039636325497">Detail DBus</translation>
+<translation id="4808525520374557629">Dapatkan notifikasi yang menyarankan cara mengatasi masalah performa yang terdeteksi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut notifikasi masalah performa<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Pop-up diblokir:</translation>
 <translation id="4809079943450490359">Petunjuk dari administrator perangkat Anda:</translation>
 <translation id="4809447465126035330">Hapus</translation>
@@ -5522,7 +5526,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kode QR</translation>
 <translation id="5033137252639132982">Tidak diizinkan menggunakan sensor gerakan</translation>
 <translation id="5033266061063942743">Bentuk geometris</translation>
-<translation id="503441068567788948">Buat PIN baru untuk Pengelola Sandi Google</translation>
 <translation id="5035846135112863536">Pilih "Detail selengkapnya" di bawah untuk mendapatkan informasi selengkapnya dari <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
 <translation id="5038818366306248416">Anda sebelumnya memilih untuk tidak mengizinkan ekstensi di <ph name="ORIGIN" /></translation>
@@ -6092,6 +6095,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5457113250005438886">Tidak valid</translation>
 <translation id="5457459357461771897">Membaca dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Anda terlalu sering memasukkan PIN yang salah. Untuk mengakses kunci sandi dan sandi Anda, ubah PIN Anda.</translation>
 <translation id="5458998536542739734">Catatan layar kunci</translation>
 <translation id="5459864179070366255">Lanjutkan menginstal</translation>
 <translation id="5460641065520325899">Kelola jenis informasi yang dapat digunakan situs untuk melacak Anda saat Anda menjelajah.</translation>
@@ -7521,6 +7525,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="653920215766444089">Menelusuri perangkat penunjuk</translation>
 <translation id="6539674013849300372">Tingkatkan keamanan saat online dengan sandi kuat. Sandi akan disimpan ke <ph name="GOOGLE_PASSWORD_MANAGER" /> untuk <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Melanjutkan...</translation>
+<translation id="6540174167103635041">Instal aplikasi</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Hanya aktif jika Anda tahu sedang melakukan apa atau jika ditanyai untuk melakukan hal tersebut, karena koleksi data dapat mengurangi kinerja.</translation>
 <translation id="6540488083026747005">Anda mengizinkan cookie pihak ketiga di situs ini</translation>
 <translation id="6541638731489116978">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan.</translation>
@@ -9085,7 +9090,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7708143783728142771">Cookie memungkinkan tingkat penyesuaian preferensi yang sama di web. Saat Anda membuka situs, situs tersebut dapat menyimpan cookie di penyimpanan browser perangkat Anda untuk mengingat preferensi situs, seperti bahasa yang Anda gunakan atau item yang ingin disimpan di keranjang belanja. Kemudian, jika Anda membuka kembali situs tersebut menggunakan browser yang sama, situs tersebut dapat membaca cookie yang ditetapkan dan Anda dapat memulai dari bagian yang terakhir Anda buka. Jenis cookie ini sering disebut sebagai cookie pihak pertama, karena ditetapkan oleh situs yang Anda buka.</translation>
 <translation id="770831926727930011">Data lokal Anda dilindungi oleh sandi lama Anda. Masukkan sandi lama untuk memulihkan data lokal.</translation>
 <translation id="7709152031285164251">Gagal - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Lindungi semua kunci sandi Anda dengan PIN pemulihan</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Gunakan kabel USB untuk menghubungkan ponsel ke komputer. Jika ponsel sudah terhubung, cabut kabel USB, lalu colokkan kembali.</translation>
 <translation id="7711968363685835633">Nonaktifkan konversi dan saran serta kamus pengguna yang dipersonalisasi</translation>

@@ -97,6 +97,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Ontdekken openen</translation>
+<translation id="129469256578833241">Terug naar overzicht</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Druk op elk moment op <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
@@ -109,6 +110,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1341926407152459446"><ph name="DEVICE_NAME" /> gebruiken voor audio-invoer en -uitvoer</translation>
 <translation id="1346748346194534595">Rechts</translation>
+<translation id="1350494136075914725">Actief · Overschakelen naar tabblad</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
 <translation id="1360220746312242196">Naar de vorige overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
 <translation id="1360788414852622716">Profiel uitzetten. Dit kan een paar minuten duren.</translation>
@@ -257,6 +259,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1923539912171292317">Automatische klikken</translation>
 <translation id="1925320505152357008">minder dan 1 min</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
+<translation id="1929331825127010451">Terug naar vraag</translation>
 <translation id="1948405482892809935">Overschakelen naar volgende gebruiker</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954252331066828794">Schermopname voltooid</translation>
@@ -1046,6 +1049,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4876935764454575645">Audioselectie</translation>
 <translation id="4881323000405981760">Effecten worden niet ondersteund in Linux-apps</translation>
 <translation id="4881695831933465202">Openen</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Geef optionele feedback om suggesties te verbeteren:</translation>
 <translation id="4890187583552566966">De Google Assistent is uitgezet door je beheerder.</translation>
 <translation id="4890408602550914571">Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
@@ -1152,6 +1156,7 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="5238719049014159442">Launcher openen/sluiten</translation>
 <translation id="5240725217819182328">Snelle toegang tot specifieke pagina's of acties binnen geïnstalleerde apps</translation>
 <translation id="5245201184978705914">Kan geen transcript genereren</translation>
+<translation id="5251174953851719648">Content vernieuwen</translation>
 <translation id="5253783950165989294">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% batterijlading</translation>
 <translation id="5258528442992323769">Geen opgeslagen bureaus</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
@@ -1416,6 +1421,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6147182561428020853">Je kunt geïnstalleerde apps op deze <ph name="DEVICE_TYPE" /> nu blokkeren</translation>
 <translation id="6154006699632741460">Randapparaat niet ondersteund</translation>
 <translation id="6156960295318603523">Taalinstellingen</translation>
+<translation id="6158923546703693047">Informatie over contentbron</translation>
 <translation id="615957422585914272">Schermtoetsenbord bekijken</translation>
 <translation id="616543563528926612">De sneltoets voor klikken met de rechtermuisknop is geüpdatet van <ph name="LAUNCHER_KEY_NAME" />-toets + klikken naar alt + klikken</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
@@ -1746,6 +1752,7 @@ Nieuwe installatie</translation>
 <translation id="742594950370306541">Camera is in gebruik.</translation>
 <translation id="742608627846767349">Goedemorgen,</translation>
 <translation id="743058460480092004">Camera en microfoon zijn in gebruik.</translation>
+<translation id="7441711280402516925">Afspelen · Overschakelen naar tabblad</translation>
 <translation id="7453330308669753048">Zoekgeschiedenisresultaat verwijderd</translation>
 <translation id="7459485586006128091">De hotspot is uitgezet vanwege een interne fout. Probeer over een paar minuten opnieuw verbinding te maken.</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
@@ -2000,6 +2007,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8315514906653279104">Aanzetten…</translation>
 <translation id="8331351032546853669">Download in behandeling</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Stel een vraag.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Slechte uitvoer</translation>
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>

@@ -38,7 +38,6 @@
 <translation id="1507198376417198979">Personaliza o teu novo perfil de Chrome</translation>
 <translation id="1516530951338665275">Google Chrome precisa acceso mediante Bluetooth para continuar coa vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
-<translation id="1551749261806528781">Inicia sesión en Chrome para poder gardar e usar os contrasinais, entre outras cousas, en todos os teus dispositivos. Despois de iniciar sesión, este contrasinal gardarase na túa Conta de Google.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome utiliza a túa cámara.</translation>
@@ -421,7 +420,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7036251913954633326">Se queres usar esta conta unha soa vez, podes utilizar o <ph name="GUEST_LINK_BEGIN" />modo de convidado<ph name="GUEST_LINK_END" /> no navegador Chrome. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
 
 Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web e ás aplicacións. Podes xestionar as túas Contas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">Inicia sesión en Chrome para poder gardar e usar os teus contrasinais, entre outras cousas, en todos os teus dispositivos</translation>
 <translation id="7048502283602470098">Explorar IA</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
 <translation id="7071827361006050863">Chrome eliminará os datos de navegación en breve</translation>

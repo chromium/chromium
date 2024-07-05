@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Explore খুলুন</translation>
+<translation id="129469256578833241">সারাংশে ফিরে যান</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">যেকোনও সময় <ph name="LAUNCHER_KEY_NAME" /> + g প্রেস করুন</translation>
 <translation id="1306549533752902673">প্রস্তাবিত অ্যাপ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
 <translation id="1925320505152357008">১ মিনিটেরও কম</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
+<translation id="1929331825127010451">প্রশ্নে ফিরে যান</translation>
 <translation id="1948405482892809935">পরের ব্যবহারকারীতে সুইচ করুন</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">স্ক্রিন রেকর্ড করার কাজ সম্পূর্ণ হয়েছে</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">লঞ্চার খুলুন/বন্ধ করুন</translation>
 <translation id="5240725217819182328">ইনস্টল করা অ্যাপের নির্দিষ্ট কোনও পৃষ্ঠা বা অ্যাকশনে দ্রুত অ্যাক্সেস</translation>
 <translation id="5245201184978705914">ট্রান্সক্রিপ্ট তৈরি করা যাচ্ছে না</translation>
+<translation id="5251174953851719648">কন্টেন্ট রিফ্রেশ করুন</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে, ব্যাটারি চার্জ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">সেভ করা কোনও ডেস্ক নেই</translation>
 <translation id="5260676007519551770">ডেস্ক ৪</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">আপনি এখন এই <ph name="DEVICE_TYPE" />-এ ইনস্টল করা অ্যাপ ব্লক করতে পারবেন</translation>
 <translation id="6154006699632741460">পেরিফেরাল কাজ করে না</translation>
 <translation id="6156960295318603523">ভাষা সেটিংস</translation>
+<translation id="6158923546703693047">কন্টেন্টের সোর্সের তথ্য</translation>
 <translation id="615957422585914272">অন-স্ক্রিন কীবোর্ড প্রদর্শন করুন</translation>
 <translation id="616543563528926612">'ডানদিকের বোতামে ক্লিক করুন' শর্টকার্ট <ph name="LAUNCHER_KEY_NAME" /> কী + click থেকে alt + click-এ আপডেট করা হয়েছে</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
@@ -2001,6 +2005,7 @@
 <translation id="8315514906653279104">চালু করা হচ্ছে…</translation>
 <translation id="8331351032546853669">ডাউনলোড করা বাকি আছে</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">কোনও একটি প্রশ্ন করুন।</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">খারাপ আউটপুট</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />টি উইন্ডো বেছে নেওয়া হয়েছে</translation>

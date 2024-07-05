@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="3691184985318546178">Сингальська</translation>
+<translation id="3702842351052426940">Вашу SIM-карту або профіль eSIM може бути деактивовано. Спробуйте змінити SIM-карту або профіль eSIM.</translation>
 <translation id="3722341589402358578">Сталася помилка. Можливо, видалено не всі об’єкти.</translation>
 <translation id="3726463242007121105">Не вдається відкрити пристрій, оскільки його файлова система не підтримується.</translation>
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Ваш адміністратор застосував цей проксі-сервер</translation>
 <translation id="3830674330436234648">Немає даних для відтворення</translation>
 <translation id="383652340667548381">Сербська</translation>
+<translation id="3839045880592694915">Ваш оператор не дозволяє підключатися до модема. Щоб дізнатися більше, зв’яжіться зі своїм оператором.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
 <translation id="6269630227984243955">Малайська</translation>
 <translation id="6271903698064569429">Не вдається завантажити файли, оскільки на спільному диску "<ph name="SHARED_DRIVE_NAME" />" недостатньо пам’яті.</translation>
+<translation id="6279140785485544797">Можливо, строк дії вашого тарифного плану мобільного Інтернету закінчився. Якщо вам потрібна допомога, зв’яжіться зі своїм оператором.</translation>
 <translation id="6287852322318138013">Вибрати програму, щоб відкрити цей файл</translation>
 <translation id="6295542640242147836">Заблокувати SIM-карту</translation>
 <translation id="6296410173147755564">Недійсний PUK-код</translation>

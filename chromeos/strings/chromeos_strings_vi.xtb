@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1049663189809099096">vàng nhạt</translation>
+<translation id="1053371972724535586">Bản ghi âm của tôi</translation>
 <translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
 <translation id="1061864016440983342">Sử dụng mà không cần thông tin vị trí</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">Để biết kết quả gần đúng, hãy lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
+<translation id="1445573806602812670">Nhận bản chép lời cho bản ghi âm</translation>
 <translation id="1446954767133808402">lam ngọc</translation>
 <translation id="1449035143498573192">Mở trong Google Tìm kiếm</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">hồ</translation>
 <translation id="1720424726586960395">khu rừng đom đóm</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
+<translation id="1728792932018505912">Bạn có thể điều chỉnh chế độ này trong phần Cài đặt hoặc trong trình đơn <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Bàn di chuột Bluetooth</translation>
 <translation id="1738949837603788263">Vùng <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Không thể tải hình ảnh. Kiểm tra kết nối mạng của bạn hoặc thử tải lại hình ảnh.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
 <translation id="1908394185991500139">mũi tên trái</translation>
 <translation id="1923388006036088459">Màu nhấn</translation>
+<translation id="1945403655450283000">Máy ghi âm</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1954818433534793392">toà nhà</translation>
@@ -224,8 +228,10 @@
 <translation id="2085089206770112532">Giảm độ sáng màn hình</translation>
 <translation id="2086091080968010660">Các thay đổi dựa trên thời gian có thể không chính xác. Hãy bật quyền truy cập thông tin vị trí của hệ thống trong phần cài đặt.</translation>
 <translation id="2102231663024125441">Chỉnh sửa văn bản</translation>
+<translation id="2102648867808308635">Giúp tôi đọc trang này</translation>
 <translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Hiện chỉ hỗ trợ tiếng Anh (Hoa Kỳ)</translation>
 <translation id="2126937207024182736">Còn <ph name="AVAILABLE_MEMORY" /> GB/<ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2135668738111962377">Chỉnh sửa <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Lơ lửng</translation>
@@ -262,6 +268,7 @@
 <translation id="2267285889943769271">Thêm ảnh chụp màn hình</translation>
 <translation id="2271469253353559191">Lịch áp dụng chế độ tối</translation>
 <translation id="2276999893457278469">Nội dung trợ giúp hàng đầu</translation>
+<translation id="2277631741861284101">Dễ dàng ghi âm và chia sẻ bản ghi</translation>
 <translation id="2279051792571591988">Khôi phục chế độ mặc định</translation>
 <translation id="2286454467119466181">Đơn giản</translation>
 <translation id="2287186687001756809">Không có hình ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
@@ -287,6 +294,7 @@
 <translation id="2414886740292270097">Tối</translation>
 <translation id="2418150275289244458">Mở trong phần cài đặt</translation>
 <translation id="2421798028054665193">Hình ảnh <ph name="CURRENT_PAGE" /> trong tổng số <ph name="TOTAL_PAGES" /></translation>
+<translation id="242825218556404975">Không phát hiện thấy lời nói nào</translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2472215337771558851">Sử dụng tính năng Giúp tôi viết để soạn bản nháp hoặc trau chuốt văn bản hiện có, dựa trên công nghệ AI của Google</translation>
@@ -330,6 +338,7 @@
 <translation id="2656001153562991489">Dành riêng cho Chromebook Plus</translation>
 <translation id="2665671725390405060">Nghe phát âm</translation>
 <translation id="267442004702508783">làm mới</translation>
+<translation id="2675392311492541028">Bản chép lời và bản tóm tắt</translation>
 <translation id="268270014981824665">giảm ánh sáng bàn phím</translation>
 <translation id="2712812801627182647">Khoá xác thực TLS</translation>
 <translation id="2713444072780614174">Trắng</translation>
@@ -430,6 +439,7 @@
 <translation id="33736539805963175">Nền <ph name="LETTERS_COLOR" /> có chữ <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Dành riêng</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
+<translation id="3410165745972100556">Tính năng chép lời đang tắt</translation>
 <translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3428551088151258685">ngoài trời</translation>
 <translation id="3428971106895559033">màu phấn</translation>
@@ -475,6 +485,7 @@
 <translation id="3621072146987826699">con voi</translation>
 <translation id="3632040286124154621">Đề xuất tốt</translation>
 <translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
+<translation id="3639873154908477486">Tên (từ A đến Z)</translation>
 <translation id="3644695927181369554">Đề xuất không tốt</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
 <translation id="3661106764436337772">Viết nhanh hơn và tự tin hơn</translation>
@@ -541,6 +552,7 @@
 <translation id="4044093238444069296">Không thể kết nối với cổng vào</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
 <translation id="404928562651467259">CẢNH BÁO</translation>
+<translation id="4050208988451295487">Một số lựa chọn:</translation>
 <translation id="4054683689023980771">Đang tải hình ảnh xuống</translation>
 <translation id="4063039537646912479">xanh lam nhạt</translation>
 <translation id="4070799384363688067">anime</translation>
@@ -569,8 +581,10 @@
 <translation id="4171077696775491955">giảm độ sáng</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4176659219503619100">Bảng điều khiển</translation>
+<translation id="4193496492959950834">Cài đặt Máy ghi âm</translation>
 <translation id="4198398257084619072">gấu trúc</translation>
 <translation id="420283545744377356">Tắt trình bảo vệ màn hình</translation>
+<translation id="4210636113897977670">Lưu và thoát</translation>
 <translation id="4210659479607886331">sông băng</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
@@ -643,6 +657,7 @@
 <translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Hãy nhấn để hủy lệnh in.</translation>
 <translation id="463791356324567266">Đang hủy quá trình quét...</translation>
+<translation id="4644611440022666152">Bật và tải xuống</translation>
 <translation id="4646949265910132906">Kết nối Wi-Fi an toàn</translation>
 <translation id="4650608062294027130">Nút Shift phải</translation>
 <translation id="4654549501020883054">Thay đổi hằng ngày</translation>
@@ -733,6 +748,7 @@
 <translation id="5099354524039520280">lên</translation>
 <translation id="5107243100836678918">Phím tắt không dùng phím <ph name="META_KEY" /> có thể xung đột với phím tắt của ứng dụng nào đó. Nhấn phím tắt này một lần nữa để tiếp tục sử dụng hoặc nhấn một phím tắt mới dùng phím <ph name="KEY" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Tương tự:</translation>
+<translation id="5109744590306245079">Ứng dụng Máy ghi âm có thể tạo bản chép lời cho các bản ghi âm có lời nói. Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các bản chép lời này.</translation>
 <translation id="5130848777448318809">ngựa pony</translation>
 <translation id="5137451382116112100">Toàn màn hình</translation>
 <translation id="5142961317498132443">Xác thực</translation>
@@ -842,6 +858,7 @@
 <translation id="5760715441271661976">Trạng thái trang xác thực</translation>
 <translation id="5763838252932650682">Đang khởi động lại và cập nhật <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Tăng độ sáng màn hình</translation>
+<translation id="5779818640587041940">Duy trì màn hình ở trạng thái bật khi ghi âm</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
 <translation id="5790391387506209808">ngọc lưu ly</translation>
@@ -916,6 +933,7 @@
 <translation id="6136285399872347291">phím xóa lùi</translation>
 <translation id="6137614725462089991">viễn tưởng công nghệ cao</translation>
 <translation id="6137767437444130246">Chứng chỉ người dùng</translation>
+<translation id="6141004321363227868">Khi bật tính năng này, bạn cũng sẽ thấy bản chép lời trực tiếp hiển thị trong quá trình ghi âm.</translation>
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">nâu sẫm và hồng</translation>
@@ -984,6 +1002,7 @@
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
 <translation id="6488559935020624631">Trình bảo vệ màn hình dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Đã dừng – Kẹt giấy</translation>
+<translation id="6490861263572002431">Tự động cuộn</translation>
 <translation id="6492891353338939218">u buồn</translation>
 <translation id="6494974875566443634">Tùy chỉnh</translation>
 <translation id="6500818810472529210">Xem kết quả trên Google Tìm kiếm</translation>
@@ -997,6 +1016,7 @@
 <translation id="6543412779435705598">bánh taco</translation>
 <translation id="6551839203326557324">quả táo</translation>
 <translation id="65526652485742171">Nút Xác nhận hiện đã bật</translation>
+<translation id="6556016675518580850">Khi bạn rời khỏi trang này, bản ghi âm hiện tại sẽ kết thúc.</translation>
 <translation id="6557784757915238407">APN thuộc loại <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Mặt phẳng</translation>
 <translation id="6560196641871357166">Rực rỡ</translation>
@@ -1007,6 +1027,7 @@
 <translation id="6576005492601044801">trái</translation>
 <translation id="6579509898032828423">Dùng ảnh này</translation>
 <translation id="6587870930887634392">cây mọng nước</translation>
+<translation id="6595046262780525922">Bật tính năng chép lời và tải mô hình chép lời xuống?</translation>
 <translation id="6596816719288285829">Địa chỉ IP</translation>
 <translation id="6599673642868607614">Cảm ơn ý kiến phản hồi của bạn. Ý kiến phản hồi của bạn giúp chúng tôi cải thiện trải nghiệm sử dụng Chromebook và sẽ được đội ngũ của chúng tôi xem xét. Do nhận được số lượng lớn báo cáo nên chúng tôi sẽ không thể gửi thư trả lời cho bạn.</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
@@ -1048,6 +1069,8 @@
 <translation id="6798678288485555829">Điều hướng văn bản</translation>
 <translation id="680983167891198932">Khóa</translation>
 <translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
+<translation id="6818844233294698434">Đang nghe xem có lời nói nào hay không...</translation>
+<translation id="6837645039518471192">Thoát chế độ ghi âm</translation>
 <translation id="6853312040151791195">Tốc độ xả pin</translation>
 <translation id="6866732840889595464">hoa cúc</translation>
 <translation id="6871256179359663621">tím nhạt</translation>
@@ -1087,6 +1110,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7035168792582749309">khoai tây</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
+<translation id="7040729769968826896">Cho phép nhận diện người nói</translation>
 <translation id="7041549558901442110">Thiết bị chưa được kết nối.</translation>
 <translation id="7046522406494308071">Đặt lại tất cả phím tắt về mặc định?</translation>
 <translation id="7058278511608979688">Kết thúc và lưu</translation>
@@ -1242,6 +1266,7 @@
 <translation id="7850847810298646851">Hình nền dựa trên công nghệ AI của Google</translation>
 <translation id="785170686607360576">hoa tulip</translation>
 <translation id="7856267634822906833">Màn hình cảm ứng Bluetooth</translation>
+<translation id="7857744683152972248">Cho phép ứng dụng Máy ghi âm nhận diện người nói?</translation>
 <translation id="7859006200041800233">hoa xương rồng</translation>
 <translation id="7869143217755017858">Tắt chế độ tối</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1274,7 @@
 <translation id="7882501334836096755">Khóa công khai</translation>
 <translation id="78957024357676568">trái</translation>
 <translation id="7897043345768902965">lối đi bộ</translation>
+<translation id="7902285181767404769">Tắt tiếng thông báo trong khi ghi âm</translation>
 <translation id="7903695460270716054">Chọn hình ảnh và hình minh hoạ tuyển chọn</translation>
 <translation id="7915220255123750251">Quản lý chế độ cài đặt APN của mạng. APN thiết lập kết nối giữa mạng di động và Internet.</translation>
 <translation id="7936303884198020182">Không tìm thấy máy chủ định danh</translation>
@@ -1295,6 +1321,8 @@
 <translation id="8156233298086717232">kỳ diệu</translation>
 <translation id="8162776280680283326">con cáo</translation>
 <translation id="8167413449582155132">Nền được tạo dựa trên công nghệ AI của Google</translation>
+<translation id="8171020708598805594">Tự động tạo bản chép lời, tóm tắt bản ghi âm bằng AI của Google và tìm bản ghi âm. Tạo bản ghi âm ngay cả khi bạn không kết nối với Internet.</translation>
+<translation id="8174280683348521982">Xoá bản ghi âm hiện tại?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">bãi biển</translation>
 <translation id="819278132617411009">Dùng AI của Google để tăng năng suất</translation>
@@ -1332,6 +1360,9 @@
 <translation id="8372477600026034341">Máy chủ khác</translation>
 <translation id="8372667721254470022">màu ôliu</translation>
 <translation id="8373046809163484087">Sử dụng tập hợp màu phù hợp với hình nền</translation>
+<translation id="8379123594780452422">Khi bạn cho phép, ứng dụng Máy ghi âm sẽ xử lý các bản ghi âm bằng công cụ phân tích âm thanh nâng cao.
+
+Bạn có thể tắt lựa chọn này bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="8380114448424469341">Gắn cửa sổ vào nửa <ph name="DIRECTION" /> của màn hình</translation>
 <translation id="8391349326751432483">Bạn cần ít nhất 500 MB trống để chạy tính năng Kiểm tra bộ nhớ. Để giải phóng bộ nhớ, hãy đóng các thẻ và ứng dụng.</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
@@ -1372,10 +1403,12 @@
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
 <translation id="8626489604350149811">Thao tác khác cho <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Tím nhạt</translation>
+<translation id="8647595191512746911">Bản chép lời</translation>
 <translation id="8651481478098336970">tắt tiếng</translation>
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8655828773034788261">Chia sẻ URL:</translation>
 <translation id="8660881923941176839">pao</translation>
+<translation id="8670057600920888023">AI tạo sinh đang ở giai đoạn thử nghiệm nên nội dung có thể không chính xác, gây hiểu lầm hoặc phản cảm.</translation>
 <translation id="8670574982334489519">phải</translation>
 <translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
 <translation id="8677859815076891398">Không có album nào. Hãy tạo một album trong <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -1476,6 +1509,7 @@
 <translation id="9122602430962285795">Để kết nối lại, hãy chuyển đến phần Cài đặt</translation>
 <translation id="9122865513525855321">phong cách zen</translation>
 <translation id="9126720536733509015">Lưu nhiều trang thành một tệp PDF</translation>
+<translation id="9129549320890412487">Tính năng chép lời</translation>
 <translation id="9133772297793293778">Nhấn 1 đến 4 phím bổ trợ và 1 phím khác trên bàn phím của bạn. Để thoát khỏi chế độ chỉnh sửa, hãy nhấn tổ hợp phím alt + esc.</translation>
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
 <translation id="9138630967333032450">Nút Shift trái</translation>

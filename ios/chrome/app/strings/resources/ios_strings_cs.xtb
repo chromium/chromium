@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Vyberte Přidat do Kalendáře Google nebo Přidat do Kalendáře Apple.</translation>
 <translation id="1626771852476987600">Opakovaně použitá hesla: <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">Získat trasu k cíli pomocí funkce podrobné navigace</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
 <translation id="1641316430523156212">Sledovat</translation>
 <translation id="1644574205037202324">Historie</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="2062410130322589403">Průvodce možnostmi ochrany soukromí</translation>
 <translation id="20638360198452347">Výběr typu jednotek</translation>
+<translation id="2067852168641682340">Pokaždé uložit do tohoto účtu</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Posunutím doprava si web můžete prohlížet v anonymním režimu.</translation>
@@ -313,6 +315,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="261739049332372104">Pokud chcete dostávat aktuální informace o obsahu, který je pro vás důležitý, zapněte v nastavení systému iOS oznámení.</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
 <translation id="2626236249646841566">Zkontrolujte připojení a zkuste se přihlásit znovu.</translation>
+<translation id="2635918910848538771">Automaticky vyplnit kód CVC</translation>
 <translation id="2637313651144986786">Hledat karty…</translation>
 <translation id="2640733327287333451">Bez uživatelského jména ••••••</translation>
 <translation id="2648721026697078500">Nikdy nepřesouvat</translation>
@@ -496,6 +499,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3533202363250687977">Zavřít všechny anonymní karty</translation>
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3540141921715814660">Přidat do záložek</translation>
+<translation id="3547356470684043247">Zobrazit zákaznická hodnocení produktů, služeb nebo zkušeností, abyste se podle recenzí mohli lépe rozhodnout</translation>
 <translation id="355101282835380364">Uložit do účtu…</translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3565930036634619844">Karta <ph name="TAB_INDEX" /> z <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4659194143325814340">{count,plural, =1{{count} stránka ve vašem seznamu četby}few{{count} stránky ve vašem seznamu četby}many{{count} stránky ve vašem seznamu četby}other{{count} stránek ve vašem seznamu četby}}</translation>
 <translation id="4659667755519643272">Přejít do přepínače karet</translation>
 <translation id="46614316059270592">Uložit heslo</translation>
+<translation id="467189612236587057">Kontaktovat firmu zahájením telefonního hovoru</translation>
 <translation id="4682686630151240767">1. Otevřete nastavení iPhonu.</translation>
 <translation id="4689564913179979534">Spravovat platební metody...</translation>
 <translation id="469300482518076788">Zavřít kartu</translation>

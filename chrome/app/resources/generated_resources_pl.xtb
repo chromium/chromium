@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Strona nie odpowiada}few{Strony nie odpowiadają}many{Strony nie odpowiadają}other{Strony nie odpowiadają}}</translation>
 <translation id="1011003645819296594">Zapisane urządzenia</translation>
 <translation id="1011355516189274711">Głośność zamiany tekstu na mowę</translation>
+<translation id="1011431628606634753">Zmień kod PIN odzyskiwania do Menedżera haseł Google</translation>
 <translation id="1012794136286421601">Twoje pliki z Dokumentów, Arkuszy, Prezentacji i Rysunków są teraz synchronizowane. Otwórz aplikację Dysk Google, aby używać ich online lub offline.</translation>
 <translation id="1012876632442809908">Urządzenie USB-C (przedni port)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1463,7 +1464,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2048254245884707305">Sprawdzam pod kątem złośliwego oprogramowania…</translation>
 <translation id="2048554637254265991">Błąd uruchamiania menedżera kontenerów. Spróbuj ponownie.</translation>
 <translation id="2048653237708779538">Czynność niedostępna</translation>
-<translation id="2049021651258469175">Będziesz też mieć możliwość używania i zapisywania haseł oraz innych danych z konta Google.</translation>
 <translation id="204914487372604757">Utwórz skrót</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2051266530792296582">Menedżer haseł Google utworzył silne hasło do tej strony</translation>
@@ -4032,6 +4032,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3923221004758245114">Usunąć <ph name="VM_NAME" /> z urządzenia <ph name="DEVICE_TYPE" />? Spowoduje to usunięcie wszystkich aplikacji i danych z maszyny wirtualnej.</translation>
 <translation id="3923494859158167397">Brak skonfigurowanych sieci komórkowych</translation>
 <translation id="3923676227229836009">Ta strona ma zezwolenie na przeglądanie plików</translation>
+<translation id="3923958273791212723">Alerty o problemach z wydajnością</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Rozmiar wyświetlanych elementów i tekstu <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
@@ -4048,6 +4049,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3930737994424905957">Szukam urządzeń</translation>
 <translation id="3930968231047618417">Kolor tła</translation>
 <translation id="3932356525934356570">Przypnij: <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Maksymalna liczba znaków to <ph name="MAX" /></translation>
 <translation id="3933121352599513978">Zwiń niechciane żądania (zalecane)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> udostępnia Ci sieć Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Otwórz plik audio w nowej karcie</translation>
@@ -5188,6 +5190,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4807098396393229769">Imię i nazwisko na karcie</translation>
 <translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
 <translation id="4807514039636325497">Szczegóły DBus</translation>
+<translation id="4808525520374557629">Otrzymuj powiadomienia z sugestiami dotyczącymi sposobów poprawy w przypadku wykrytych problemów z wydajnością. <ph name="BEGIN_LINK" />Więcej informacji o alertach dotyczących problemów z wydajnością<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Zablokowane wyskakujące okienka:</translation>
 <translation id="4809079943450490359">Instrukcje od administratora urządzenia:</translation>
 <translation id="4809447465126035330">Usuń</translation>
@@ -5490,7 +5493,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
 <translation id="5033137252639132982">Nie zezwolono na używanie czujników ruchu</translation>
 <translation id="5033266061063942743">Kształty geometryczne</translation>
-<translation id="503441068567788948">Utwórz nowy kod PIN do Menedżera haseł Google</translation>
 <translation id="5035846135112863536">Aby dowiedzieć się więcej od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, kliknij „Więcej szczegółów” poniżej.</translation>
 <translation id="5037676449506322593">Wybierz wszystko</translation>
 <translation id="5038818366306248416">Poprzednio nie zezwoliłeś(-aś) na żadne rozszerzenia na <ph name="ORIGIN" /></translation>
@@ -6058,6 +6060,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5457459357461771897">Odczyt i usuwanie zdjęć, muzyki oraz innych multimediów na komputerze</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Zbyt wiele razy wpisałeś(-aś) nieprawidłowy kod PIN. Aby korzystać ze swoich kluczy dostępu i haseł, zmień kod PIN.</translation>
 <translation id="5458998536542739734">Notatki na ekranie blokady</translation>
 <translation id="5459864179070366255">Zainstaluj mimo to</translation>
 <translation id="5460641065520325899">Określ typ informacji, z których witryny mogą korzystać w celu śledzenia Twoich czynności związanych z przeglądaniem internetu.</translation>
@@ -9054,7 +9057,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7708143783728142771">Pliki cookie umożliwiają taki sam poziom personalizacji w internecie. Gdy odwiedzasz jakąś stronę internetową, może ona zapisać plik cookie w pamięci przeglądarki na urządzeniu, aby zapamiętać Twoje ustawienia, np. język lub produkty dodane do koszyka na zakupy. Jeśli później ponownie wejdziesz na tę stronę w tej samej przeglądarce, będzie ona mogła odczytać plik cookie, dzięki czemu możesz kontynuować od tego samego miejsca. Tego typu pliki cookie są często nazywane własnymi, ponieważ są ustawiane przez odwiedzaną witrynę.</translation>
 <translation id="770831926727930011">Dane lokalne są chronione starym hasłem. Wpisz je, aby odzyskać te dane.</translation>
 <translation id="7709152031285164251">Niepowodzenie – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Zabezpiecz wszystkie klucze dostępu za pomocą kodu PIN odzyskiwania</translation>
 <translation id="7710568461918838723">&amp;Przesyłaj…</translation>
 <translation id="7711900714716399411">Użyj kabla USB, aby połączyć telefon z komputerem. Jeśli telefon jest już podłączony, odłącz go i podłącz z powrotem.</translation>
 <translation id="7711968363685835633">Wyłącz spersonalizowane konwersje i sugestie, a także słownik użytkownika</translation>

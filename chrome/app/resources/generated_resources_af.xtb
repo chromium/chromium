@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Bladsy reageer nie}other{Bladsye reageer nie}}</translation>
 <translation id="1011003645819296594">Gestoorde toestelle</translation>
 <translation id="1011355516189274711">Teks-na-spraak-volume</translation>
+<translation id="1011431628606634753">Verander jou terugstel-PIN vir Google Wagwoordbestuurder</translation>
 <translation id="1012794136286421601">Jou Dokumente-, Blaaie-, Skyfies- en Sketse-lêers word tans gesinkroniseer. Maak die Google Drive-program oop om hulle aanlyn of vanlyn te gebruik.</translation>
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1476,7 +1477,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2048254245884707305">Kontroleer tans vir wanware …</translation>
 <translation id="2048554637254265991">Kon nie die houerbestuurder begin nie. Probeer weer.</translation>
 <translation id="2048653237708779538">Handeling is nie beskikbaar nie</translation>
-<translation id="2049021651258469175">Jy sal ook jou wagwoorde en meer van jou Google-rekening af kan gebruik en stoor.</translation>
 <translation id="204914487372604757">Skep kortpad</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051266530792296582">Google Wagwoordbestuurder het ’n sterk wagwoord vir hierdie webwerf geskep</translation>
@@ -4065,6 +4065,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3923221004758245114">Verwyder <ph name="VM_NAME" /> van jou <ph name="DEVICE_TYPE" />? Dit sal alle apps en data in die virtuele masjien uitvee!</translation>
 <translation id="3923494859158167397">Geen selnetwerke is opgestel nie</translation>
 <translation id="3923676227229836009">Hierdie bladsy word toegelaat om lêers te bekyk</translation>
+<translation id="3923958273791212723">Werkverrigtingkwessiewaarskuwings</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Skerm- en teksgrootte <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Stuur URL'e na Veiligblaai toe om hulle na te gaan. Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek. Skakel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm.</translation>
@@ -4081,6 +4082,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3930737994424905957">Soek tans na toestelle</translation>
 <translation id="3930968231047618417">Agtergrondkleur</translation>
 <translation id="3932356525934356570">Speld <ph name="EXTENSION_NAME" /> vas</translation>
+<translation id="3932477678113677556">Maksimum lengte van <ph name="MAX" /> karakters</translation>
 <translation id="3933121352599513978">Vou ongewenste versoeke in (aanbeveel)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deel tans ’n wi-fi-netwerk met jou</translation>
 <translation id="3936390757709632190">Maak oudio in nuwe oortjie oop</translation>
@@ -5220,6 +5222,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4807098396393229769">Naam op kaart</translation>
 <translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
 <translation id="4807514039636325497">DBus-besonderhede</translation>
+<translation id="4808525520374557629">Kry kennisgewings wat maniere voorstel om bespeurde werkverrigtingkwessies te verbeter. <ph name="BEGIN_LINK" />Kry meer inligting oor werkverrigtingkwessiewaarskuwings<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Opspringers geblokkeer:</translation>
 <translation id="4809079943450490359">Instruksies deur jou toesteladministrateur:</translation>
 <translation id="4809447465126035330">Vee uit</translation>
@@ -5522,7 +5525,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5032430150487044192">Kan nie QR-kode skep nie</translation>
 <translation id="5033137252639132982">Mag nie bewegingsensors gebruik nie</translation>
 <translation id="5033266061063942743">Geometriese vorms</translation>
-<translation id="503441068567788948">Skep ’n nuwe PIN vir Google Wagwoordbestuurder</translation>
 <translation id="5035846135112863536">Kies “Meer besonderhede” hier onder om meer inligting van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> te kry.</translation>
 <translation id="5037676449506322593">Kies alles</translation>
 <translation id="5038818366306248416">Jy het vantevore gekies om nie enige uitbreidings op <ph name="ORIGIN" /> toe te laat nie</translation>
@@ -6092,6 +6094,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5457459357461771897">Lees en vee foto's, musiek en ander media van jou rekenaar af uit</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Jy het te veel kere die verkeerde PIN ingevoer. Verander jou PIN om toegang te kry tot jou toegangsleutels en wagwoorde.</translation>
 <translation id="5458998536542739734">Sluitskermnotas</translation>
 <translation id="5459864179070366255">Hou aan installeer</translation>
 <translation id="5460641065520325899">Bestuur die tipe inligting wat webwerwe kan gebruik om jou na te spoor terwyl jy blaai.</translation>
@@ -9086,7 +9089,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7708143783728142771">Webkoekies maak voorsiening vir dieselfde vlak van voorkeurpasmaking op die web. Wanneer jy ’n werf besoek, kan die werf ’n webkoekie in jou toestel se blaaierberging stoor om jou werfvoorkeure te onthou, soos die taal wat jy praat of items wat jy in ’n inkopiemandjie wil stoor. Wanneer jy later weer die werf met dieselfde blaaier besoek, kan daardie werf die webkoekie lees wat dit gestel het en jy kan begin waar jy opgehou het. Hierdie tipe webkoekies word dikwels eerstepartykoekies genoem, omdat hulle gestel word deur die werf wat jy besoek.</translation>
 <translation id="770831926727930011">Jou plaaslike data word deur jou ou wagwoord beskerm. Voer jou ou wagwoord in om plaaslike data terug te stel.</translation>
 <translation id="7709152031285164251">Het misluk – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Beskerm al jou toegangsleutels met ’n terugstel-PIN</translation>
 <translation id="7710568461918838723">&amp;amp;Saai uit …</translation>
 <translation id="7711900714716399411">Gebruik 'n USB-kabel om jou foon aan jou rekenaar te koppel. As jou foon reeds gekoppel is, moet jy dit uitprop en weer inprop.</translation>
 <translation id="7711968363685835633">Deaktiveer gepersonaliseerde omskakelings en voorstelle, asook gebruikerwoordeboek</translation>

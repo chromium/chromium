@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y acercar el contenido de la pestaña compartida</translation>
+<translation id="1088664500620117635">El precio habitual de <ph name="PRODUCT_NAME" /> es de <ph name="LOW_PRICE" /> a <ph name="HIGH_PRICE" />, pero el precio actual es de <ph name="CURRENT_PRICE" /> en la Web.</translation>
 <translation id="1089439967362294234">Cambiar contraseña</translation>
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
@@ -446,6 +447,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />: hay varias acciones disponibles; presiona Tab para elegir una</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detalles de la tarjeta virtual</translation>
+<translation id="1803254472779303354">Se permite el bloqueo del mouse</translation>
 <translation id="1803351196216024260">Puede solicitar permiso para usar el micrófono</translation>
 <translation id="1806174020048213474">Esta app solicita permiso para instalar credenciales de Wi-Fi. Después de la configuración, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi participantes. Para quitar estas credenciales, desinstala la app.</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -911,6 +913,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2702592986366989640">Opción de precio bajo</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="270415722347413271">Disco óptico (mate)</translation>
+<translation id="2704192696317130398">¿Quieres bloquear el mouse?</translation>
 <translation id="2704283930420550640">El valor no coincide con el formato.</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2705137772291741111">La copia guardada (en caché) de este sitio es ilegible.</translation>
@@ -1216,6 +1219,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3307649904964670439">Botón Personalizar Chrome: actívalo para personalizar el estilo del navegador</translation>
 <translation id="3308006649705061278">Unidad organizativa (OU)</translation>
 <translation id="3318016344440038475">Comedias de TV</translation>
+<translation id="3321152582690622182">No se está haciendo un seguimiento</translation>
 <translation id="3324687287337751929">10.2 × 15.2 cm (4 × 6 in)</translation>
 <translation id="3324983252691184275">Carmesí</translation>
 <translation id="3325027355611702542">Casas rodantes y autocaravanas</translation>
@@ -2170,6 +2174,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5125751979347152379">URL no válido.</translation>
 <translation id="512592033764059484">Fútbol</translation>
 <translation id="512670116361803001">Es posible que el cambio de tamaño de <ph name="APP_NAME" /> no funcione correctamente. Utiliza los tamaños predeterminados de ventana para que no se generen problemas en la app.</translation>
+<translation id="512756860033933700">Se permite el bloqueo del teclado</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5129534298163637277">Diálogo de confirmación</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
@@ -2200,6 +2205,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5177076414499237632">Obtén más información sobre la fuente y el tema de esta página</translation>
 <translation id="5179490652562926740">Se guardó la configuración de la verificación de pagos</translation>
 <translation id="5179510805599951267">¿No está en <ph name="ORIGINAL_LANGUAGE" />? Informa este error</translation>
+<translation id="5180662470511508940">No se permite el bloqueo del teclado</translation>
 <translation id="5187079891181379721">Eventos corporativos</translation>
 <translation id="5190072300954988691">No se permiten la cámara ni el micrófono</translation>
 <translation id="5190835502935405962">Barra de favoritos</translation>
@@ -2773,6 +2779,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6298456705131259420">Afecta a los sitios que se indican aquí. Si insertas "[*.]" antes de un nombre de dominio, se crea una excepción para todo el dominio. Por ejemplo, si agregas "[*.]google.com", significa que las cookies de terceros también pueden estar activas en mail.google.com, ya que son parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{El dispositivo se reiniciará ahora}=1{El dispositivo se reiniciará dentro de 1 segundo}other{El dispositivo se reiniciará dentro de # segundos}}</translation>
 <translation id="6301104306974789820">Recibir notificaciones de seguimiento de precios</translation>
+<translation id="6302546952464230349">Mostrar los detalles del permiso de <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimedia</translation>
 <translation id="6305205051461490394">No se puede acceder a <ph name="URL" />.</translation>
 <translation id="6306713302480826305">Se borrará esta dirección de este y otros dispositivos en los que accediste a tu cuenta</translation>
@@ -2915,6 +2922,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Perforación doble a la izquierda</translation>
 <translation id="6549443526281184652">Disfraces</translation>
+<translation id="6550245281449521513">No se permite el bloqueo del mouse</translation>
 <translation id="6551873053534932690">¿Quieres guardar la dirección en la cuenta?</translation>
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6556866813142980365">Rehacer</translation>
@@ -3833,6 +3841,7 @@ Detalles adicionales:
 <translation id="8278544367771164040">Préstamos comerciales</translation>
 <translation id="8279290844152565425">Conciertos y festivales de música</translation>
 <translation id="8279611986089885641">Las notificaciones de Chrome deben estar activadas. Puedes activarlas en la <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">¿Quieres bloquear tu teclado?</translation>
 <translation id="8280630997017109758">Bandeja 11</translation>
 <translation id="8281730697546299650">Ya hay otras funciones de privacidad en los anuncios disponibles</translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -4306,6 +4315,7 @@ Detalles adicionales:
 <translation id="9191834167571392248">Perforación en la esquina inferior izquierda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Productos de belleza ecológicos</translation>
+<translation id="919455784772793601">Abrir una página que muestra otras tiendas que venden este producto.</translation>
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="920643408853370361">Seguro de viaje</translation>

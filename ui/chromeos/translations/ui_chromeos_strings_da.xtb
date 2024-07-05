@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Annuller <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ikke aktiveret, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, oplysninger</translation>
 <translation id="3691184985318546178">Singalesisk</translation>
+<translation id="3702842351052426940">Dit SIM-kort eller din eSIM-profil deaktiveres muligvis. Prøv at udskifte dit SIM-kort eller skifte eSIM-profil.</translation>
 <translation id="3722341589402358578">Der opstod en fejl. Nogle elementer er muligvis ikke smidt i papirkurven.</translation>
 <translation id="3726463242007121105">Denne enhed kan ikke åbnes, fordi dens filsystem ikke understøttes.</translation>
 <translation id="3727148787322499904">Hvis denne indstilling ændres, påvirker det alle delte netværk</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Denne proxy håndhæves af din administrator</translation>
 <translation id="3830674330436234648">Der er ingen tilgængelig afspilning.</translation>
 <translation id="383652340667548381">Serbisk</translation>
+<translation id="3839045880592694915">Dit mobilselskab har ikke givet dit modem tilladelse til at oprette forbindelse. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3855472144336161447">Tysk (Neo 2)</translation>
 <translation id="3858860766373142691">Navn</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>
 <translation id="6271903698064569429">Der kan ikke uploades filer, fordi "<ph name="SHARED_DRIVE_NAME" />" ikke har nok lagerplads.</translation>
+<translation id="6279140785485544797">Dit abonnement med mobildata er muligvis udløbet. Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="6287852322318138013">Vælg en app, der skal åbne denne fil</translation>
 <translation id="6295542640242147836">Lås SIM-kort</translation>
 <translation id="6296410173147755564">PUK-koden er ugyldig</translation>

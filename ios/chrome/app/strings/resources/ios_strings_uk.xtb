@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Виберіть "Додати до Google Календаря" або "Додати до Календаря Apple".</translation>
 <translation id="1626771852476987600">Повторно використаних паролів: <ph name="COUNT" /></translation>
+<translation id="1636234353664774105">Отримати покрокові інструкції щодо того, як дістатися пункту призначення, за допомогою функції навігації</translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
 <translation id="1641316430523156212">Підписатися</translation>
 <translation id="1644574205037202324">Історія</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Муніципалітет</translation>
 <translation id="2062410130322589403">Посібник щодо конфіденційності</translation>
 <translation id="20638360198452347">Засіб вибору типу одиниць</translation>
+<translation id="2067852168641682340">Щоразу зберігати в цьому обліковому записі</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Щоб переглядати вебсторінки в анонімному режимі, прокрутіть екран управо.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Щоб отримувати сповіщення про важливий для вас контент, увімкніть цю функцію в налаштуваннях iOS.</translation>
 <translation id="2625189173221582860">Пароль скопійовано</translation>
 <translation id="2626236249646841566">Перевірте з’єднання та спробуйте ввійти знову.</translation>
+<translation id="2635918910848538771">Автоматично заповнити код CVC</translation>
 <translation id="2637313651144986786">Шукайте вкладки…</translation>
 <translation id="2640733327287333451">Немає імені користувача ••••••</translation>
 <translation id="2648721026697078500">Ніколи не переміщувати</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Закрити всі анонімні вкладки</translation>
 <translation id="3533436815740441613">Нова вкладка</translation>
 <translation id="3540141921715814660">Додати в закладки</translation>
+<translation id="3547356470684043247">Переглянути відгуки покупців про товари, послуги чи враження, щоб прийняти зваженіше рішення</translation>
 <translation id="355101282835380364">Зберегти в обліковому записі…</translation>
 <translation id="3551320343578183772">Закрити вкладку</translation>
 <translation id="3565930036634619844">Вкладка. <ph name="TAB_INDEX" /> з <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{{count} сторінка у вашому списку читання}one{{count} сторінка у вашому списку читання}few{{count} сторінки у вашому списку читання}many{{count} сторінок у вашому списку читання}other{{count} сторінки у вашому списку читання}}</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
 <translation id="46614316059270592">Зберегти пароль</translation>
+<translation id="467189612236587057">Зв’язатися з компанією, зателефонувавши на її номер</translation>
 <translation id="4682686630151240767">1. Відкрийте Параметри на iPhone</translation>
 <translation id="4689564913179979534">Керувати способами оплати…</translation>
 <translation id="469300482518076788">Закрити вкладку</translation>

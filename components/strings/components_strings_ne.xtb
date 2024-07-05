@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">चौडाइमा फिट गर्नुहोस्</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
 <translation id="1082026381988252344">स्क्रोल गर्नुहोस् र सेयर गरिएको आफ्नो ट्याबका सामग्री जुम गर्नुहोस्</translation>
+<translation id="1088664500620117635">सामान्यतया <ph name="PRODUCT_NAME" /> को <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> पर्छ तर हाल वेबमा भएका विभिन्न स्टोरबाट <ph name="CURRENT_PRICE" /> मा किन्न सकिन्छ।</translation>
 <translation id="1089439967362294234">पासवर्ड परिवर्तन गर्नुहोस्</translation>
+<translation id="1089599132348386324">तपाईं जुनसुकै बेला Chrome का सेटिङमा गई यो सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1090629319939036170">VR मेनु</translation>
 <translation id="1091779689406092804">स्क्रिनसटहरू</translation>
 <translation id="1094777233105318927">तपाईंको ब्राउजर, OS, डिभाइस, इन्स्टल गरिएका सफ्टवेयर र फाइलहरूसम्बन्धी जानकारी</translation>
@@ -446,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">भर्चुअल कार्डसम्बन्धी विवरणहरू</translation>
+<translation id="1803254472779303354">माउस लक गर्ने अनुमति दिइएको छ</translation>
 <translation id="1803351196216024260">तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="1806174020048213474">यो एपले Wi-Fi क्रिडेन्सियलहरू इन्स्टल गर्ने अनुमति माग्दै छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> उपलब्ध Wi-Fi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। यी क्रिडेन्सियलहरू हटाउन यो एप अनइन्स्टल गर्नुहोस्।</translation>
 <translation id="1807246157184219062">हल्का</translation>
@@ -911,6 +914,7 @@
 <translation id="2702592986366989640">सस्तो मूल्यको विकल्प</translation>
 <translation id="2702801445560668637">पाठ्य सूची</translation>
 <translation id="270415722347413271">अप्टिकल डिस्क (म्याट)</translation>
+<translation id="2704192696317130398">आफ्नो माउस लक गर्ने हो?</translation>
 <translation id="2704283930420550640">मान ढाँचासँग मेल खाँदैन।</translation>
 <translation id="2704606927547763573">कपी गरियो</translation>
 <translation id="2705137772291741111">यस साइटको सुरक्षित गरिएको (क्यास गरिएको) प्रतिलिपि पढ्न मिल्दैनथ्यो</translation>
@@ -1212,6 +1216,7 @@
 <translation id="3307649904964670439">Chrome कस्टमाइज गर्ने बटन, आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="3308006649705061278">सङ्गठनात्मक एकाइ (OU)</translation>
 <translation id="3318016344440038475">हास्य टिभी कार्यक्रमहरू</translation>
+<translation id="3321152582690622182">ट्र्याक गरिएको छैन</translation>
 <translation id="3324687287337751929">४ x ६ इन्च</translation>
 <translation id="3324983252691184275">गाढा रातो</translation>
 <translation id="3325027355611702542">क्याम्पर तथा RV हरू</translation>
@@ -2167,6 +2172,7 @@
 <translation id="5125751979347152379">अवैध URL।</translation>
 <translation id="512592033764059484">फुटबल</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> को आकार सही तरिकाले परिवर्तन नहुन सक्छ। एपमा कुनै समस्या नआओस् भन्नाका लागि विन्डोको पूर्वनिर्धारित आकार प्रयोग गर्नुहोस्।</translation>
+<translation id="512756860033933700">किबोर्ड लक गर्ने अनुमति दिइएको छ</translation>
 <translation id="5127934926273826089">फूलहरू</translation>
 <translation id="5129534298163637277">पुष्टि गर्ने डायलग</translation>
 <translation id="5135404736266831032">ठेगानाहरू व्यवस्थित गर्नुहोस्...</translation>
@@ -2197,6 +2203,7 @@
 <translation id="5177076414499237632">यो पेजका स्रोत र विषयका बारेमा जान्नुहोस्</translation>
 <translation id="5179490652562926740">भुक्तानीको प्रमाणीकरणसम्बन्धी सेटिङ सेभ गरिएको छ</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> मा छैन? यो त्रुटि रिपोर्ट गर्नुहोस्</translation>
+<translation id="5180662470511508940">किबोर्ड लक गर्ने अनुमति दिन अस्वीकार गरिएको छ</translation>
 <translation id="5187079891181379721">कर्पोरेट कार्यक्रम</translation>
 <translation id="5190072300954988691">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
@@ -2770,6 +2777,7 @@
 <translation id="6298456705131259420">यसले यहाँ सूचीबद्ध गरिएका साइटहरूमा प्रभाव पार्छ। डोमेन नेमअघि “[*.]” हाल्दा सम्पूर्ण डोमेनमा अपवाद बनाउँछ। उदाहरणका लागि, तपाईंले यो सूचीमा “[*.]google.com” हाल्नुभयो भने mail.google.com मा पनि तेस्रो पक्षीय कुकीहरू चल्न सक्छन्। उक्त सबडोमेन google.com अन्तर्गत नै पर्ने भएकाले यसो भएको हो।</translation>
 <translation id="6300452962057769623">{0,plural, =0{तपाईंको डिभाइस अब रिस्टार्ट हुने छ}=1{तपाईंको डिभाइस १ सेकेन्डमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # सेकेन्डमा रिस्टार्ट हुने छ}}</translation>
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> प्रयोग गर्ने अनुमतिसम्बन्धी विवरण देखाउनुहोस्</translation>
 <translation id="6304398603974202180">मल्टिमिडिया सफ्टवेयर</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>
 <translation id="6306713302480826305">यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यो ठेगाना मेटाइने छ</translation>
@@ -2912,6 +2920,7 @@
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6547208576736763147">बायाँपट्टि दुई प्वाल</translation>
 <translation id="6549443526281184652">पोसाक</translation>
+<translation id="6550245281449521513">माउस लक गर्ने अनुमति दिन अस्वीकार गरिएको छ</translation>
 <translation id="6551873053534932690">यो ठेगाना खातामा सेभ गर्ने हो?</translation>
 <translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
@@ -3830,6 +3839,7 @@
 <translation id="8278544367771164040">व्यापारिक ऋण</translation>
 <translation id="8279290844152565425">कन्सर्ट तथा सङ्गीत महोत्सवहरू</translation>
 <translation id="8279611986089885641">Chrome मार्फत सूचना देखाउने सुविधा अन हुनु पर्छ। तपाईं <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> मा गई यो सुविधा अन गर्न सक्नुहुन्छ।</translation>
+<translation id="8280387559022105172">आफ्नो किबोर्ड लक गर्ने हो?</translation>
 <translation id="8280630997017109758">ट्रे ११</translation>
 <translation id="8281730697546299650">विज्ञापनको गोपनीयतासम्बन्धी अन्य सुविधाहरू उपलब्ध भएका छन्</translation>
 <translation id="8281886186245836920">स्किप गर्नुहोस्</translation>
@@ -4302,6 +4312,7 @@
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
 <translation id="9192361865877479444">मेटल (म्याट)</translation>
 <translation id="9192947025498305328">स्वास्थ्य तथा वातावरणमैत्री सौन्दर्य प्रसाधन</translation>
+<translation id="919455784772793601">यो उत्पादन बेच्ने अन्य स्टोरको सूची भएको पेज खोल्नुहोस्।</translation>
 <translation id="9199905725844810519">प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>
 <translation id="9205078245616868884">तपाईँको डेटालाई तपाईँको सिंक पासफ्रेजमार्फत इन्क्रिप्ट गरिएको छ। सिंक सुरु गर्न त्यो पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="920643408853370361">यात्रा बीमा</translation>

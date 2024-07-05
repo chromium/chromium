@@ -97,6 +97,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1293699935367580298">Échap</translation>
 <translation id="1294046132466831888">Ouvrir Explorer</translation>
+<translation id="129469256578833241">Retour au résumé</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Appuyez sur <ph name="LAUNCHER_KEY_NAME" /> + g en tout temps</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
@@ -257,6 +258,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1925320505152357008">moins d'une minute</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier associé.</translation>
+<translation id="1929331825127010451">Retour à la question</translation>
 <translation id="1948405482892809935">Passer à l'utilisateur suivant</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">L'enregistrement de l'écran est terminé</translation>
@@ -1151,6 +1153,7 @@ Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le te
 <translation id="5238719049014159442">Ouvrir/fermer le lanceur</translation>
 <translation id="5240725217819182328">Accès rapide à des pages ou à des actions précises dans les applications installées</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
+<translation id="5251174953851719648">Actualiser le contenu</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé <ph name="DEVICE_NAME" />, dont le niveau de pile est à<ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
@@ -1358,6 +1361,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
+<translation id="5982119059638483922">Appuyez sur Fn+Recherche ou Majuscule pour annuler.</translation>
 <translation id="5983567367406220847">En raison d'inactivité, le point d'accès sans fil a été désactivé.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier associé.</translation>
@@ -1414,6 +1418,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6147182561428020853">Vous pouvez désormais bloquer les applis installées sur ce <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Ce périphérique n'est pas pris en charge</translation>
 <translation id="6156960295318603523">Paramètres de langue</translation>
+<translation id="6158923546703693047">Renseignements sur la source du contenu</translation>
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
 <translation id="616543563528926612">L'ancien raccourci pour le clic droit (<ph name="LAUNCHER_KEY_NAME" />+clic) a été mis à jour par alt+clic</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
@@ -1998,6 +2003,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8315514906653279104">Activation en cours…</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Posez une question.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Mauvaise sortie</translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>

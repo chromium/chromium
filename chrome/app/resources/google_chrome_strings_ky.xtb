@@ -39,7 +39,6 @@
 <translation id="1516530951338665275">Жупташтырууну улантуу үчүн Google Chrome Bluetooth'ду 
  пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
-<translation id="1551749261806528781">Бардык түзмөктөрүңүздө сырсөздөрдү жана башкаларды сактап, колдонуу үчүн Chrome'го кириңиз. Киргенден кийин бул сырсөз Google аккаунтуңузда сакталат.</translation>
 <translation id="1553358976309200471">Chrome'ду жаңыртуу</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ушул Chrome профилине мурунтан эле кирип турат. Ушуну менен <ph name="USER_EMAIL_ADDRESS" /> үчүн жаңы Chrome профили түзүлөт</translation>
 <translation id="1587223624401073077">Google Chrome камераңызды колдонуп жатат.</translation>
@@ -422,7 +421,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7036251913954633326">Бул аккаунтту бир жолу гана колдонгону жатсаңыз, Chrome серепчисинен <ph name="GUEST_LINK_BEGIN" />Конок режимине<ph name="GUEST_LINK_END" /> өтүңүз. Эгер кимдир бирөөнүн аккаунтун кошкуңуз келсе, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө <ph name="LINK_BEGIN" />жаңы кишини кошуңуз<ph name="LINK_END" />.
 
 Вебсайттарга жана колдонмолорго берилген уруксаттар ушул аккаунтка карата колдонулушу мүмкүн. Google аккаунттарыңызды <ph name="SETTINGS_LINK_BEGIN" />Параметрлерден<ph name="SETTINGS_LINK_END" /> башкара аласыз.</translation>
-<translation id="7037538054043837165">Бардык түзмөктөрүңүздө сырсөздөрүңүздү жана башкаларды сактап, колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="7048502283602470098">ЖИни изилдөө</translation>
 <translation id="7059914902409643750">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="7071827361006050863">Chrome серептөө дайындарын жакында өчүрөт</translation>

@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622717322707146952">Dewis "Ychwanegu at Google Calendar" neu "Ychwanegu at Apple Calendar."</translation>
 <translation id="1626771852476987600">Mae <ph name="COUNT" /> o Gyfrineiriau wedi'u Hailddefnyddio</translation>
+<translation id="1636234353664774105">Defnyddiwch y nodwedd llywio i gael cyfarwyddiadau i'ch cyrchfan gydag arweiniad tro-wrth-dro</translation>
 <translation id="1641113438599504367">Pori'n Ddiogel</translation>
 <translation id="1641316430523156212">Dilyn</translation>
 <translation id="1644574205037202324">Hanes</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2062410130322589403">Canllaw o'ch Dewisiadau Preifatrwydd</translation>
 <translation id="20638360198452347">Dewisydd math o uned</translation>
+<translation id="2067852168641682340">Cadw i'r cyfrif hwn bob tro</translation>
 <translation id="2073572773299281212">Yma <ph name="DAYS" /> o Ddiwrnodau Yn Ôl</translation>
 <translation id="2074131957428911366">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Gallwch sgrolio i'r dde i bori yn y modd Anhysbys.</translation>
@@ -313,6 +315,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="261739049332372104">I gael diweddariadau am gynnwys sy'n bwysig i chi, trowch hysbysiad ymlaen yn eich gosodiadau iOS.</translation>
 <translation id="2625189173221582860">Copïwyd cyfrinair</translation>
 <translation id="2626236249646841566">Gwiriwch eich cysylltiad a rhowch gynnig arall ar fewngofnodi.</translation>
+<translation id="2635918910848538771">Awtolenwi'r CVC</translation>
 <translation id="2637313651144986786">Chwilio Tabiau...</translation>
 <translation id="2640733327287333451">Dim Enw Defnyddiwr ••••••</translation>
 <translation id="2648721026697078500">Peidio Byth â Symud</translation>
@@ -496,6 +499,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3533202363250687977">Cau Pob Tab Anhysbys</translation>
 <translation id="3533436815740441613">Tab Newydd</translation>
 <translation id="3540141921715814660">Ychwanegu at Nodau Tudalen</translation>
+<translation id="3547356470684043247">Darllenwch werthusiadau cwsmeriaid o gynhyrchion, gwasanaethau, neu brofiad i helpu i lywio'ch penderfyniadau gydag adolygiadau</translation>
 <translation id="355101282835380364">Cadw yn y Cyfrif…</translation>
 <translation id="3551320343578183772">Cau'r Tab</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> o <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4659194143325814340">{count,plural, =1{{count} dudalen ar eich Rhestr Ddarllen}zero{{count} tudalen ar eich Rhestr Ddarllen}two{{count} dudalen ar eich Rhestr Ddarllen}few{{count} tudalen ar eich Rhestr Ddarllen}many{{count} thudalen ar eich Rhestr Ddarllen}other{{count} tudalen ar eich Rhestr Ddarllen}}</translation>
 <translation id="4659667755519643272">Rhowch Newidydd Tabiau</translation>
 <translation id="46614316059270592">Cadw'r Cyfrinair</translation>
+<translation id="467189612236587057">Cysylltwch â busnes trwy gychwyn galwad ffôn</translation>
 <translation id="4682686630151240767">1. Agorwch y Gosodiadau iPhone</translation>
 <translation id="4689564913179979534">Rheoli dulliau talu...</translation>
 <translation id="469300482518076788">Cau'r Tab</translation>

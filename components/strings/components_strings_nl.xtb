@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">Aanpassen aan breedte</translation>
 <translation id="1081061862829655580">Lade 19</translation>
 <translation id="1082026381988252344">Scroll en zoom de content van je gedeelde tabblad</translation>
+<translation id="1088664500620117635">De gebruikelijke prijs voor <ph name="PRODUCT_NAME" /> is <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />, maar de huidige prijs op internet is <ph name="CURRENT_PRICE" />.</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
+<translation id="1089599132348386324">Je kunt dit op elk moment wijzigen via de Chrome-instellingen.</translation>
 <translation id="1090629319939036170">VR-menu</translation>
 <translation id="1091779689406092804">screenshots</translation>
 <translation id="1094777233105318927">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden</translation>
@@ -446,6 +448,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, er zijn meerdere acties beschikbaar, druk op 'Tab' om erdoorheen te bladeren</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Gegevens van virtuele kaart</translation>
+<translation id="1803254472779303354">Muisvergrendeling toegestaan</translation>
 <translation id="1803351196216024260">Kan vragen of deze site je microfoon mag gebruiken</translation>
 <translation id="1806174020048213474">Deze app wil rechten om wifi-inloggegevens te installeren. Na het instellen maakt je <ph name="DEVICE_TYPE" /> automatisch verbinding met deelnemende wifi-netwerken. Verwijder de app om deze inloggegevens te verwijderen.</translation>
 <translation id="1807246157184219062">Licht</translation>
@@ -911,6 +914,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2702592986366989640">Goedkope optie</translation>
 <translation id="2702801445560668637">Leeslijst</translation>
 <translation id="270415722347413271">Optische schijf (mat)</translation>
+<translation id="2704192696317130398">Je muis vergrendelen?</translation>
 <translation id="2704283930420550640">Waarde komt niet overeen met notatie.</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2705137772291741111">De gecachete versie van deze site is niet bereikbaar.</translation>
@@ -1212,6 +1216,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3307649904964670439">Knop Chrome aanpassen. Activeer deze om het uiterlijk van je browser aan te passen.</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
 <translation id="3318016344440038475">Tv-comedy's</translation>
+<translation id="3321152582690622182">Niet volgen</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3324983252691184275">Karmozijnrood</translation>
 <translation id="3325027355611702542">Campers en RV's</translation>
@@ -2164,6 +2169,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="512592033764059484">Voetbal</translation>
 <translation id="512670116361803001">Het formaat van <ph name="APP_NAME" /> wordt misschien niet goed aangepast. Gebruik vooraf ingestelde vensterformaten om te zorgen dat de app geen problemen ondervindt.</translation>
+<translation id="512756860033933700">Toetsenbordvergrendeling toegestaan</translation>
 <translation id="5127934926273826089">Bloemen</translation>
 <translation id="5129534298163637277">Bevestigingsdialoogvenster</translation>
 <translation id="5135404736266831032">Adressen beheren...</translation>
@@ -2194,6 +2200,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5177076414499237632">Meer informatie over de bron en het onderwerp van deze pagina</translation>
 <translation id="5179490652562926740">Instellingen voor betalingsverificatie opgeslagen</translation>
 <translation id="5179510805599951267">Niet in het <ph name="ORIGINAL_LANGUAGE" />? Deze fout melden</translation>
+<translation id="5180662470511508940">Toetsenbordvergrendeling niet toegestaan</translation>
 <translation id="5187079891181379721">Bedrijfsevenementen</translation>
 <translation id="5190072300954988691">Camera en microfoon niet toegestaan</translation>
 <translation id="5190835502935405962">Bookmarkbalk</translation>
@@ -2766,6 +2773,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6298456705131259420">Dit heeft gevolgen voor de hier vermelde sites. Als je [*.] invoegt vóór een domeinnaam, wordt er een uitzondering gemaakt voor het hele domein. Als je bijvoorbeeld '[*.]google.com' toevoegt, kunnen cookies van derden ook actief zijn voor mail.google.com, omdat dit onderdeel is van google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Je apparaat wordt nu opnieuw opgestart}=1{Je apparaat wordt over 1 seconde opnieuw opgestart}other{Je apparaat wordt over # seconden opnieuw opgestart}}</translation>
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
+<translation id="6302546952464230349">Informatie over het recht <ph name="PERMISSION_NAME" /> tonen</translation>
 <translation id="6304398603974202180">Multimediasoftware</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is niet bereikbaar.</translation>
 <translation id="6306713302480826305">Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten</translation>
@@ -2908,6 +2916,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6545864417968258051">Bluetooth-scannen</translation>
 <translation id="6547208576736763147">Twee perforaties links</translation>
 <translation id="6549443526281184652">Kostuums</translation>
+<translation id="6550245281449521513">Muisvergrendeling niet toegestaan</translation>
 <translation id="6551873053534932690">Adres opslaan in account?</translation>
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
 <translation id="6556866813142980365">Opnieuw</translation>
@@ -3826,6 +3835,7 @@ Aanvullende informatie:
 <translation id="8278544367771164040">Commerciële leningen</translation>
 <translation id="8279290844152565425">Concerten en muziekfestivals</translation>
 <translation id="8279611986089885641">Chrome-meldingen moeten aanstaan. Je kunt ze aanzetten in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Je toetsenbord vergrendelen?</translation>
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281730697546299650">Er zijn nu andere functies voor advertentieprivacy beschikbaar</translation>
 <translation id="8281886186245836920">Overslaan</translation>
@@ -4297,6 +4307,7 @@ Aanvullende informatie:
 <translation id="9191834167571392248">Perforatie linksonder</translation>
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9192947025498305328">Natuurlijke cosmetica</translation>
+<translation id="919455784772793601">Open een pagina met andere winkels die dit product verkopen.</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>

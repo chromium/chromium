@@ -39,7 +39,6 @@
 <translation id="1516530951338665275">Google Chrome захтева приступ Bluetooth-у ради настављања са 
  упаривањем. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">Да бисте сачували и користили лозинке и друго на свим уређајима, пријавите се у Chrome. Ова лозинка ће бити сачувана на Google налогу када се пријавите.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1583073672411044740">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
@@ -337,6 +336,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Није могуће покренути Chrome. Покушајте поново.</translation>
 <translation id="5809516625706423866">Повезивање са интернетом није успело. Није овлашћен приступ (HTTP 401). Проверите конфигурацију проксија.</translation>
+<translation id="5825922397106002626">Уклони додатак <ph name="EXTENSION_NAME" /> из Chrome-а</translation>
 <translation id="5858486459377137936">Бићете одјављени са већине сајтова када затворите све Chrome прозоре, осим са Google налога ако сте пријављени у Chrome. Да бисте дозволили сајтовима да вас памте, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome вас упозорава<ph name="END_LINK" /> на небезбедне сајтове и преузимања</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -422,7 +422,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7036251913954633326">Ако желите да користите овај налог само једном, можете да користите <ph name="GUEST_LINK_BEGIN" />режим госта<ph name="GUEST_LINK_END" /> у Chrome прегледачу. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
 
 Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Google налозима можете да управљате у <ph name="SETTINGS_LINK_BEGIN" />Подешавањима<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">Да бисте сачували и користили лозинке и друго на свим уређајима, пријавите се у Chrome</translation>
 <translation id="7048502283602470098">Истражи вештачку интелигенцију</translation>
 <translation id="7059914902409643750">Прилагодите Chrome себи</translation>
 <translation id="7071827361006050863">Chrome ће ускоро избрисати податке прегледања</translation>

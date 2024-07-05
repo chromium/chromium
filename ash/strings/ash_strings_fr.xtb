@@ -97,6 +97,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1293699935367580298">Échap</translation>
 <translation id="1294046132466831888">Ouvrir "Explorer"</translation>
+<translation id="129469256578833241">Retour au résumé</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Appuyez sur <ph name="LAUNCHER_KEY_NAME" /> + G à tout moment.</translation>
 <translation id="1306549533752902673">APPLICATIONS RECOMMANDÉES</translation>
@@ -257,6 +258,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1925320505152357008">Moins de 1 min</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
+<translation id="1929331825127010451">Retour à la question</translation>
 <translation id="1948405482892809935">Passer à l'utilisateur suivant</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">Enregistrement d'écran terminé</translation>
@@ -1152,6 +1154,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5238719049014159442">Ouvrir/Fermer le lanceur d'applications</translation>
 <translation id="5240725217819182328">Accès rapide à des pages ou actions spécifiques dans les applis installées</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
+<translation id="5251174953851719648">Actualiser le contenu</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
@@ -1416,6 +1419,7 @@ Aucun appareil connecté.</translation>
 <translation id="6147182561428020853">Vous pouvez désormais bloquer des applis installées sur ce <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Périphérique non compatible</translation>
 <translation id="6156960295318603523">Paramètres linguistiques</translation>
+<translation id="6158923546703693047">Informations sur la source du contenu</translation>
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
 <translation id="616543563528926612">Le raccourci par clic droit est passé de touche <ph name="LAUNCHER_KEY_NAME" />+clic à Alt+clic</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
@@ -2001,6 +2005,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8315514906653279104">Activation…</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Posez une question.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Mauvais résultat</translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>

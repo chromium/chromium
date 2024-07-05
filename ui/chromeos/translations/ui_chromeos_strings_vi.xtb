@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Hủy <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3691184985318546178">Tiếng Sinhala</translation>
+<translation id="3702842351052426940">Thẻ SIM hoặc hồ sơ eSIM của bạn có thể bị huỷ kích hoạt. Hãy thử thay thẻ SIM hoặc chuyển đổi hồ sơ eSIM.</translation>
 <translation id="3722341589402358578">Đã xảy ra lỗi. Một số mục có thể chưa bị xoá.</translation>
 <translation id="3726463242007121105">Thiết bị này không thể mở được vì hệ thống tệp của thiết bị không được hỗ trợ.</translation>
 <translation id="3727148787322499904">Việc thay đổi cài đặt này sẽ ảnh hưởng đến tất cả các mạng chia sẻ</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Proxy này được quản trị viên của bạn thực thi</translation>
 <translation id="3830674330436234648">Không thể phát lại</translation>
 <translation id="383652340667548381">Tiếng Serbia</translation>
+<translation id="3839045880592694915">Nhà mạng không cho phép kết nối modem của bạn. Hãy liên hệ với nhà mạng để biết thêm chi tiết.</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3855472144336161447">Neo 2 tiếng Đức</translation>
 <translation id="3858860766373142691">Tên</translation>
@@ -456,7 +458,7 @@
 <translation id="4646813851450205600">Tiếng Séc bằng bàn phím Qwerty</translation>
 <translation id="4656777537938206294">Dùng tệp khi không có mạng</translation>
 <translation id="4658782175094886150">Người trong tuyết</translation>
-<translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ khi bạn chia sẻ các mục này với họ.</translation>
+<translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ phi bạn chia sẻ các mục này với họ.</translation>
 <translation id="467809019005607715">Google Trang trình bày</translation>
 <translation id="4690246192099372265">Tiếng Thuỵ Điển</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
 <translation id="6271903698064569429">Bạn không thể tải tệp lên vì "<ph name="SHARED_DRIVE_NAME" />" không có đủ bộ nhớ.</translation>
+<translation id="6279140785485544797">Gói dữ liệu di động của bạn có thể đã hết hạn. Hãy liên hệ với nhà mạng để được hỗ trợ.</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
 <translation id="6295542640242147836">Khoá SIM</translation>
 <translation id="6296410173147755564">Mã PUK không hợp lệ</translation>

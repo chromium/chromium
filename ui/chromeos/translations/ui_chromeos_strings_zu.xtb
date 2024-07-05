@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Khansela i-<ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Akusetshenzisiwe <ph name="CONNECTION_STATUS" />, Amandla Wesignali <ph name="SIGNAL_STRENGTH" />%, Imininingwane</translation>
 <translation id="3691184985318546178">Isi-Sinhala</translation>
+<translation id="3702842351052426940">Ikhadi lakho le-SIM noma iphrofayela ye-eSIM ingase ingasebenzi. Zama ukushintsha ikhadi lakho le-SIM noma ukushintsha amaphrofayela e-eSIM.</translation>
 <translation id="3722341589402358578">Kuvele iphutha. Ezinye zezinto kungenzeka zikudoti.</translation>
 <translation id="3726463242007121105">Le divayisi ayikwazi ukuvulwa ngoba isistimu yefayela layo ayisekelwe.</translation>
 <translation id="3727148787322499904">Ukushintsha lesi silungiselelo kuzothinta onke amanethiwekhi abiwe</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Lo mmeleli usetshenziswa umlawuli wakho</translation>
 <translation id="3830674330436234648">Akukho ukudlala okutholakalayo</translation>
 <translation id="383652340667548381">Isi-Serbian</translation>
+<translation id="3839045880592694915">Imodemu yakho ayivunyelwe ukuxhuma inkampani yakho yenethiwekhi. Xhumana nenkampani yakho yenethiwekhi ukuze uthole imininingwane eyengeziwe.</translation>
 <translation id="385051799172605136">Emuva</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Igama</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, Ibhethri lefoni <ph name="BATTERY_STATUS" />%, xhuma</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429">Amafayela awakwazi ukulayishwa ngenxa yokuthi i-"<ph name="SHARED_DRIVE_NAME" />" ayinaso isitoreji esanele.</translation>
+<translation id="6279140785485544797">Uhlelo lwakho lwedatha yeselula kungenzeka luphelelwe yisikhathi. Xhumana nenkampani yenethiwekhi ukuze uthole usizo.</translation>
 <translation id="6287852322318138013">Khetha uhlelo lokusebenza ukuze livule leli fayela</translation>
 <translation id="6295542640242147836">Khiya i-SIM</translation>
 <translation id="6296410173147755564">I-PUK engavumelekile</translation>

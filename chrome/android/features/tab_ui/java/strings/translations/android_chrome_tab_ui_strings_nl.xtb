@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad sluiten, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen sluiten, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{Tabblad herstellen}other{Tabbladen herstellen}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link vanuit Chrome}other{<ph name="TABS_COUNT_MANY" /> links vanuit Chrome}}</translation>
 <translation id="575494663145460764">Meldingen krijgen voor prijsdalingen?</translation>
 <translation id="58326064309361797">Sleep de tabbladen om ze te groeperen</translation>

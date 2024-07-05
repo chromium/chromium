@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">‏Google Chrome باید برای ادامه مرتبط‌سازی به بلوتوث
 دسترسی داشته باشد. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
-<translation id="1551749261806528781">‏برای ذخیره‌سازی و استفاده از گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید. بعداز اینکه به سیستم وارد شدید، این گذرواژه در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
 <translation id="1583073672411044740">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chrome وارد شده است. با این کار، نمایه Chrome جدیدی برای <ph name="USER_EMAIL_ADDRESS" /> ایجاد خواهد شد</translation>
 <translation id="1587223624401073077">‏Google Chrome درحال استفاده از دوربین شما است.</translation>
@@ -414,7 +413,6 @@
 <translation id="7036251913954633326">‏اگر می‌خواهید فقط یک‌بار از این حساب استفاده کنید، می‌توانید از <ph name="GUEST_LINK_BEGIN" />حالت مهمان<ph name="GUEST_LINK_END" /> در مرورگر Chrome استفاده کنید. اگر می‌خواهید برای شخص دیگری حساب اضافه کنید، به <ph name="DEVICE_TYPE" /> خود <ph name="LINK_BEGIN" />شخص جدیدی اضافه کنید<ph name="LINK_END" />.
 
 اجازه‌هایی که قبلاً به وب‌سایت‌ها و برنامه‌ها داده‌اید ممکن است در این حساب اعمال شود. می‌توانید «حساب‌های Google» خود را در بخش <ph name="SETTINGS_LINK_BEGIN" />تنظیمات<ph name="SETTINGS_LINK_END" /> مدیریت کنید.</translation>
-<translation id="7037538054043837165">‏برای ذخیره‌سازی و استفاده از گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="7048502283602470098">کاوش هوش مصنوعی</translation>
 <translation id="7059914902409643750">‏Chrome را برای خودتان اختصاصی کنید</translation>
 <translation id="7071827361006050863">‏Chrome به‌زودی داده‌های مرور را حذف می‌کند</translation>

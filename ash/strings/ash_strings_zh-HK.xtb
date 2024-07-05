@@ -1418,7 +1418,7 @@
 <translation id="6147182561428020853">現可封鎖這部此 <ph name="DEVICE_TYPE" /> 上安裝的應用程式</translation>
 <translation id="6154006699632741460">不支援周邊裝置</translation>
 <translation id="6156960295318603523">語言設定</translation>
-<translation id="6158923546703693047">內容來源資訊</translation>
+<translation id="6158923546703693047">內容來源資料</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
 <translation id="616543563528926612">「按一下右鍵」快速鍵已由「<ph name="LAUNCHER_KEY_NAME" />鍵 + 按一下」更新為「Alt 鍵 + 按一下」</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
@@ -2002,7 +2002,7 @@
 <translation id="8315514906653279104">正在開啟…</translation>
 <translation id="8331351032546853669">等待下載</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8340621004014372743">提出問題。</translation>
+<translation id="8340621004014372743">提問。</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">輸出內容欠佳</translation>
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>

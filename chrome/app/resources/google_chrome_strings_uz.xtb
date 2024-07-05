@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">Google Chrome ulanishi uchun Bluetooth orqali kirish ruxsati 
  kerak. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
-<translation id="1551749261806528781">Barcha qurilmalarda parollarni saqlash va ulardan foydalanish uchun Chrome hisobiga kiring Hisobga kirilgandan keyin bu parol Google hisobida saqlanadi.</translation>
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chrome profili yaratiladi</translation>
 <translation id="1587223624401073077">Google Chrome kameradan foydalanmoqda.</translation>
@@ -419,7 +418,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7036251913954633326">Bu hisobdan bir marta foydalanish uchun Chrome brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
 
 Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
-<translation id="7037538054043837165">Barcha qurilmalarda parollarni saqlash va ulardan foydalanish uchun Chrome hisobiga kiring</translation>
 <translation id="7048502283602470098">AI bilan tanishuv</translation>
 <translation id="7059914902409643750">Chrome brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7071827361006050863">Chrome tez orada brauzer maʼlumotlarini oʻchirib tashlaydi</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Annuler <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, renseignements</translation>
 <translation id="3691184985318546178">Singhalais</translation>
+<translation id="3702842351052426940">Il se peut que votre carte SIM ou votre profil eSIM soient désactivés. Essayez de remplacer votre carte SIM ou de changer de profil eSIM.</translation>
 <translation id="3722341589402358578">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été placés dans la corbeille.</translation>
 <translation id="3726463242007121105">Impossible d'ouvrir cet appareil, car son système de fichiers n'est pas compatible.</translation>
 <translation id="3727148787322499904">La modification de ce paramètre aura des conséquences sur tous les réseaux partagés</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Votre administrateur impose ces paramètres de mandataire</translation>
 <translation id="3830674330436234648">Aucune lecture disponible</translation>
 <translation id="383652340667548381">Serbe</translation>
+<translation id="3839045880592694915">Votre modem n'est pas autorisé à se connecter par votre opérateur. Communiquez avec votre opérateur pour plus de détails.</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3855472144336161447">Allemand (Neo 2)</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -686,6 +688,7 @@
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
 <translation id="6271903698064569429">Impossible de téléverser les fichiers, car « <ph name="SHARED_DRIVE_NAME" /> » n'a pas assez d'espace de stockage.</translation>
+<translation id="6279140785485544797">Votre forfait de données cellulaires a peut-être expiré. Communiquez avec votre opérateur pour obtenir de l'aide.</translation>
 <translation id="6287852322318138013">Sélectionner une application pour ouvrir ce fichier</translation>
 <translation id="6295542640242147836">Verrouiller la carte SIM</translation>
 <translation id="6296410173147755564">Clé personnelle de déblocage incorrecte</translation>

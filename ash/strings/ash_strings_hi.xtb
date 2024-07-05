@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Explore खोलें</translation>
+<translation id="129469256578833241">खास जानकारी वाले पेज पर वापस जाएं</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">किसी भी समय <ph name="LAUNCHER_KEY_NAME" /> + g दबाएं</translation>
 <translation id="1306549533752902673">सुझाए गए ऐप्लिकेशन</translation>
@@ -109,6 +110,7 @@
 <translation id="1341651618736211726">ओवरफ़्लो</translation>
 <translation id="1341926407152459446">ऑडियो इनपुट और आउटपुट के लिए, "<ph name="DEVICE_NAME" />" का इस्तेमाल करें</translation>
 <translation id="1346748346194534595">दाएं</translation>
+<translation id="1350494136075914725">कॉल जारी है · टैब पर स्विच करें</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
 <translation id="1360220746312242196">किसी पेज को खोजते समय, खोज के लिए पिछले मिलान पर जाएं</translation>
 <translation id="1360788414852622716">प्रोफ़ाइल बंद की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
@@ -257,6 +259,7 @@
 <translation id="1923539912171292317">अपने-आप क्‍लिक</translation>
 <translation id="1925320505152357008">एक मिनट से कम</translation>
 <translation id="1928739107511554905">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करने के लिए टचस्क्रीन का इस्तेमाल करें.</translation>
+<translation id="1929331825127010451">सवाल-जवाब वाले पेज पर वापस जाएं</translation>
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">स्क्रीन रिकॉर्डिंग पूरी हुई</translation>
@@ -1047,6 +1050,7 @@
 <translation id="4876935764454575645">ऑडियो चुनें</translation>
 <translation id="4881323000405981760">Linux ऐप्लिकेशन पर इफ़ेक्ट काम नहीं करते</translation>
 <translation id="4881695831933465202">खोलें</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">सुझावों को बेहतर बनाने के लिए, वैकल्पिक तौर पर दी जाने वाली राय भी दें:</translation>
 <translation id="4890187583552566966">आपके एडमिन ने Google Assistant को बंद कर दिया है.</translation>
 <translation id="4890408602550914571">पक्का करें कि आपका फ़ोन आस-पास हो और उस पर ब्लूटूथ चालू हो.</translation>
@@ -1153,6 +1157,7 @@
 <translation id="5238719049014159442">लॉन्चर को खोलें या बंद करें</translation>
 <translation id="5240725217819182328">इंस्टॉल किए गए ऐप्लिकेशन में मौजूद खास पेजों या कार्रवाइयों का क्विक ऐक्सेस</translation>
 <translation id="5245201184978705914">ट्रांसक्रिप्ट को जनरेट नहीं किया जा सका</translation>
+<translation id="5251174953851719648">कॉन्टेंट को रीफ़्रेश करें</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है. इसकी बैटरी <ph name="BATTERY_PERCENTAGE" />% है</translation>
 <translation id="5258528442992323769">कोई डेस्क सेव नहीं किया गया है</translation>
 <translation id="5260676007519551770">डेस्क 4</translation>
@@ -1417,6 +1422,7 @@
 <translation id="6147182561428020853">अब इस <ph name="DEVICE_TYPE" /> पर इंस्टॉल किए गए ऐप्लिकेशन ब्लॉक किए जा सकते हैं</translation>
 <translation id="6154006699632741460">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं कर रहा</translation>
 <translation id="6156960295318603523">भाषा सेटिंग</translation>
+<translation id="6158923546703693047">कॉन्टेंट के सोर्स की जानकारी</translation>
 <translation id="615957422585914272">ऑन-स्क्रीन कीबोर्ड दिखाएं</translation>
 <translation id="616543563528926612">दायां क्लिक करने पर मिलने वाला शॉर्टकट, <ph name="LAUNCHER_KEY_NAME" /> बटन + क्लिक से बदलकर alt + click हो गया है</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
@@ -1747,6 +1753,7 @@
 <translation id="742594950370306541">कैमरे का उपयोग हो रहा है.</translation>
 <translation id="742608627846767349">गुड मॉर्निंग,</translation>
 <translation id="743058460480092004">कैमरे और माइक्रोफ़ोन का उपयोग हो रहा है.</translation>
+<translation id="7441711280402516925">वीडियो चल रहा है · टैब पर स्विच करें</translation>
 <translation id="7453330308669753048">खोज इतिहास का नतीजा हटा दिया गया</translation>
 <translation id="7459485586006128091">किसी अंदरूनी गड़बड़ी की वजह से, हॉटस्पॉट बंद कर दिया गया है. कुछ मिनट बाद, फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="7461924472993315131">पिन करें</translation>
@@ -2001,6 +2008,7 @@
 <translation id="8315514906653279104">चालू किया जा रहा है...</translation>
 <translation id="8331351032546853669">अब डाउनलोड किया जाना बाकी है</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">कोई सवाल पूछें.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">खराब आउटपुट</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो को चुना गया है</translation>

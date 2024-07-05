@@ -110,6 +110,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1341651618736211726">Dodatno</translation>
 <translation id="1341926407152459446">Koristite <ph name="DEVICE_NAME" /> za audioulaz i izlaz</translation>
 <translation id="1346748346194534595">Udesno</translation>
+<translation id="1350494136075914725">U tijeku · Prijeđi na karticu</translation>
 <translation id="1351937230027495976">Sažmi izbornik</translation>
 <translation id="1360220746312242196">Prilikom pretraživanja stranice idite na prethodno podudaranje s pretraživanjem</translation>
 <translation id="1360788414852622716">Profil se onemogućuje. To može potrajati nekoliko minuta.</translation>
@@ -1048,6 +1049,7 @@ Jedan uređaj je povezan.</translation>
 <translation id="4876935764454575645">Odabir audiouređaja</translation>
 <translation id="4881323000405981760">Efekti nisu podržani na Linux aplikacijama</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Ako želite, pružite povratne informacije da bismo poboljšali prijedloge:</translation>
 <translation id="4890187583552566966">Vaš je administrator onemogućio Google asistent.</translation>
 <translation id="4890408602550914571">Provjerite je li telefon u blizini i je li na njemu uključen Bluetooth.</translation>
@@ -1750,6 +1752,7 @@ Novo instaliranje</translation>
 <translation id="742594950370306541">Fotoaparat je aktivan.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Fotoaparat i mikrofon su aktivni.</translation>
+<translation id="7441711280402516925">Reprodukcija · Prijeđi na karticu</translation>
 <translation id="7453330308669753048">Uklonjeni su rezultati povijesti pretraživanja</translation>
 <translation id="7459485586006128091">Zbog interne pogreške isključena je žarišna točka. Pokušajte se povezati ponovno za nekoliko minuta.</translation>
 <translation id="7461924472993315131">Prikvači</translation>

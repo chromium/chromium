@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1049663189809099096">pastelovožltý/-á</translation>
+<translation id="1053371972724535586">Moje nahrávky</translation>
 <translation id="1056898198331236512">Upozornenie</translation>
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
 <translation id="1061864016440983342">Používať bez polohy</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> vydelíte číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Automaticky každý mesiac resetuje spotrebu dát vo vybraný deň</translation>
 <translation id="1442433966118452622">Zdroj obrázka</translation>
+<translation id="1445573806602812670">Získanie prepisu nahrávky</translation>
 <translation id="1446954767133808402">zafír</translation>
 <translation id="1449035143498573192">Otvoriť vo Vyhľadávaní Google</translation>
 <translation id="1451536289672181509">Zariadenie je klávesnica.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">jazera</translation>
 <translation id="1720424726586960395">les so svätojánskymi muškami</translation>
 <translation id="1726100011689679555">Menné servery</translation>
+<translation id="1728792932018505912">Môžete to upraviť v Nastaveniach alebo ponuke <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Touchpad s rozhraním Bluetooth</translation>
 <translation id="1738949837603788263">Zóna <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Obrázky sa nepodarilo načítať. Skontrolujte pripojenie k sieti alebo ich skúste načítať znova.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">Neúspešné žiadosti UDP</translation>
 <translation id="1908394185991500139">šípka doľava</translation>
 <translation id="1923388006036088459">Zvýrazňujúce farby</translation>
+<translation id="1945403655450283000">Diktafón</translation>
 <translation id="1947737735496445907">Vytlačené</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954818433534793392">budova</translation>
@@ -224,8 +228,10 @@
 <translation id="2085089206770112532">Zníženie jasu obrazovky</translation>
 <translation id="2086091080968010660">Zmeny na základe času nemusia byť presné. Zapnite prístup k polohe systému v nastaveniach.</translation>
 <translation id="2102231663024125441">Úprava textu</translation>
+<translation id="2102648867808308635">Pomôcť s čítaním tejto stránky</translation>
 <translation id="2105810540595158374">Zariadenie je herný ovládač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzia <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Momentálne je k dispozícii iba v angličtine (americkej)</translation>
 <translation id="2126937207024182736">K dispozícii je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="2135668738111962377">Upraviť <ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">Plávajte ďalej</translation>
@@ -262,6 +268,7 @@
 <translation id="2267285889943769271">Pridať snímku obrazovky</translation>
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2276999893457278469">Najlepší pomocný obsah</translation>
+<translation id="2277631741861284101">Jednoducho nahrávajte a zdieľajte zvuk</translation>
 <translation id="2279051792571591988">Obnoviť predvolené hodnoty</translation>
 <translation id="2286454467119466181">Jednoduché</translation>
 <translation id="2287186687001756809">K dispozícii nie je žiadny obrázok. Ak chcete pridať fotky, prejdite na <ph name="LINK" />.</translation>
@@ -287,6 +294,7 @@
 <translation id="2414886740292270097">Tmavý režim</translation>
 <translation id="2418150275289244458">Otvoriť v nastaveniach</translation>
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. z <ph name="TOTAL_PAGES" /> obrázkov</translation>
+<translation id="242825218556404975">Nebola zistená žiadna reč</translation>
 <translation id="2446553403094072641">Presnosť pohyblivej rádovej čiarky</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2472215337771558851">Pomocou asistenta pri písaní používajúceho umelú inteligenciu od Googlu môžete vytvoriť koncept alebo spresniť existujúcu prácu</translation>
@@ -330,6 +338,7 @@
 <translation id="2656001153562991489">Exkluzívne pre Chromebook Plus</translation>
 <translation id="2665671725390405060">Vypočuť výslovnosť</translation>
 <translation id="267442004702508783">obnovenie</translation>
+<translation id="2675392311492541028">Prepis a zhrnutie</translation>
 <translation id="268270014981824665">stmavenie klávesnice</translation>
 <translation id="2712812801627182647">Overovací kľúč TLS</translation>
 <translation id="2713444072780614174">Biela</translation>
@@ -430,6 +439,7 @@
 <translation id="33736539805963175">Pozadie farby <ph name="LETTERS_COLOR" /> s písmenom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exkluzívne</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
+<translation id="3410165745972100556">Prepis je vypnutý</translation>
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3428551088151258685">nezastrešená</translation>
 <translation id="3428971106895559033">pastelová</translation>
@@ -475,6 +485,7 @@
 <translation id="3621072146987826699">slony</translation>
 <translation id="3632040286124154621">Nevhodný návrh</translation>
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
+<translation id="3639873154908477486">Názov (od A po Z)</translation>
 <translation id="3644695927181369554">Nevhodný návrh</translation>
 <translation id="3651050199673793219">Výber jednotky teploty</translation>
 <translation id="3661106764436337772">Píšte rýchlejšie a s väčšou istotou</translation>
@@ -541,6 +552,7 @@
 <translation id="4044093238444069296">Brána sa nedá kontaktovať</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="404928562651467259">UPOZORNENIE</translation>
+<translation id="4050208988451295487">Niekoľko možností:</translation>
 <translation id="4054683689023980771">Sťahuje sa obrázok</translation>
 <translation id="4063039537646912479">svetlomodrý/-á</translation>
 <translation id="4070799384363688067">anime</translation>
@@ -569,8 +581,10 @@
 <translation id="4171077696775491955">zníženie jasu</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4176659219503619100">Ovládací panel</translation>
+<translation id="4193496492959950834">Nastavenia Diktafónu</translation>
 <translation id="4198398257084619072">pandy</translation>
 <translation id="420283545744377356">Vypnúť šetrič obrazovky</translation>
+<translation id="4210636113897977670">Uložiť a ukončiť</translation>
 <translation id="4210659479607886331">ľadovcová rieka</translation>
 <translation id="4213104098953699324">Klávesnica USB</translation>
 <translation id="4227825898293920515">Platnosť hesla vyprší o <ph name="TIME" /></translation>
@@ -643,6 +657,7 @@
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
+<translation id="4644611440022666152">Zapnúť a stiahnuť</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>
 <translation id="4650608062294027130">Pravý kláves Shift</translation>
 <translation id="4654549501020883054">Meniť denne</translation>
@@ -733,6 +748,7 @@
 <translation id="5099354524039520280">hore</translation>
 <translation id="5107243100836678918">Skratka bez klávesa <ph name="META_KEY" /> môže byť v konflikte so skratkou niektorej aplikácie. Ak chcete túto skratku naďalej používať, znova ju stlačte, prípadne stlačte novú skratku a použite pritom kláves <ph name="KEY" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Podobné:</translation>
+<translation id="5109744590306245079">Diktafón môže vytvárať prepisy nahrávok obsahujúcich reč. Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 100 MB).</translation>
 <translation id="5130848777448318809">poníky</translation>
 <translation id="5137451382116112100">Na celú obrazovku</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
@@ -842,6 +858,7 @@
 <translation id="5760715441271661976">Stav portálu</translation>
 <translation id="5763838252932650682"><ph name="APP_NAME" /> sa reštartuje a aktualizuje</translation>
 <translation id="576835345334454681">Zvýšenie jasu obrazovky</translation>
+<translation id="5779818640587041940">Ponechať obrazovku pri nahrávaní zapnutú</translation>
 <translation id="57838592816432529">Vypnúť zvuk</translation>
 <translation id="5784136236926853061">Vysoká latencia protokolu HTTPS</translation>
 <translation id="5790391387506209808">lapis lazuli</translation>
@@ -916,6 +933,7 @@
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">kyberpunkovom</translation>
 <translation id="6137767437444130246">Certifikát používateľa</translation>
+<translation id="6141004321363227868">Keď je táto funkcia zapnutá, počas nahrávania sa budú zobrazovať aj okamžité prepisy.</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">gaštanovohnedá a ružová</translation>
@@ -984,6 +1002,7 @@
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Šetrič obrazovky exkluzívny pre službu <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
+<translation id="6490861263572002431">Automatické posúvanie</translation>
 <translation id="6492891353338939218">Ošarpaná</translation>
 <translation id="6494974875566443634">Prispôsobenie</translation>
 <translation id="6500818810472529210">Zobrazte si výsledok vo Vyhľadávaní Google</translation>
@@ -997,6 +1016,7 @@
 <translation id="6543412779435705598">tacos</translation>
 <translation id="6551839203326557324">jablká</translation>
 <translation id="65526652485742171">Tlačidlo Potvrdiť je zapnuté</translation>
+<translation id="6556016675518580850">Ak opustíte túto stránku, aktuálne nahrávanie bude ukončené.</translation>
 <translation id="6557784757915238407">Názov prístupového bodu (APN) je typ <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Reflektívny skener</translation>
 <translation id="6560196641871357166">Jasná</translation>
@@ -1007,6 +1027,7 @@
 <translation id="6576005492601044801">vľavo</translation>
 <translation id="6579509898032828423">Použiť túto fotku</translation>
 <translation id="6587870930887634392">sukulent</translation>
+<translation id="6595046262780525922">Chcete zapnúť prepis a stiahnuť model prepisov?</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
 <translation id="6599673642868607614">Ďakujeme vám za spätnú väzbu. Vaša spätná väzba nám pomáha zlepšiť prostredie Chromebooku a skontroluje ju náš tím. Vzhľadom na veľký počet hlásení vám nebudeme môcť odpovedať.</translation>
 <translation id="6618744767048954150">Beží</translation>
@@ -1048,6 +1069,8 @@
 <translation id="6798678288485555829">Navigácia v texte</translation>
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
+<translation id="6818844233294698434">Počúvam reč…</translation>
+<translation id="6837645039518471192">Ukončenie nahrávania</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
 <translation id="6871256179359663621">svetlofialový/-á</translation>
@@ -1087,6 +1110,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7035168792582749309">zemiaky</translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="7040729769968826896">Povoliť identifikáciu hovoriacich</translation>
 <translation id="7041549558901442110">Zariadenie nie je pripojené.</translation>
 <translation id="7046522406494308071">Chcete resetovať všetky skratky na predvolené hodnoty?</translation>
 <translation id="7058278511608979688">Ukončiť a uložiť</translation>
@@ -1242,6 +1266,7 @@
 <translation id="7850847810298646851">Tapeta používa umelú inteligenciu od Googlu</translation>
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Dotyková obrazovka s rozhraním Bluetooth</translation>
+<translation id="7857744683152972248">Chcete povoliť Diktafónu identifikovať hovoriacich?</translation>
 <translation id="7859006200041800233">kaktusový kvet</translation>
 <translation id="7869143217755017858">Vypnúť tmavý režim</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1274,7 @@
 <translation id="7882501334836096755">Verejný kľúč</translation>
 <translation id="78957024357676568">doľava</translation>
 <translation id="7897043345768902965">chodníkom</translation>
+<translation id="7902285181767404769">Vypnutie zvuku upozornení počas nahrávania</translation>
 <translation id="7903695460270716054">Zvoliť vybraný plagát a obrázky</translation>
 <translation id="7915220255123750251">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom.</translation>
 <translation id="7936303884198020182">Nenašli sa žiadne servery DNS</translation>
@@ -1295,6 +1321,8 @@
 <translation id="8156233298086717232">Magická</translation>
 <translation id="8162776280680283326">líšky</translation>
 <translation id="8167413449582155132">Pozadie používa umelú inteligenciu od Googlu</translation>
+<translation id="8171020708598805594">Automaticky vytvárajte prepisy, dostávajte zhrnutia nahrávok pomocou umelej inteligencie od Googlu a vyhľadávajte zvuk. Vytvárajte nahrávky, aj keď nemáte pripojenie k internetu.</translation>
+<translation id="8174280683348521982">Chcete odstrániť aktuálnu nahrávku?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">pláže</translation>
 <translation id="819278132617411009">Zvýšte si produktivitu pomocou umelej inteligencie od Googlu</translation>
@@ -1332,6 +1360,9 @@
 <translation id="8372477600026034341">Ďalší hostitelia</translation>
 <translation id="8372667721254470022">olivovom</translation>
 <translation id="8373046809163484087">Použite skupiny farieb, ktoré zodpovedajú vašej tapete</translation>
+<translation id="8379123594780452422">Keď túto možnosť povolíte, Diktafón bude spracúvať vaše zvukové nahrávky pomocou pokročilej analýzy zvuku.
+
+V nastaveniach to môžete kedykoľvek vypnúť.</translation>
 <translation id="8380114448424469341">Ukotviť okno na <ph name="DIRECTION" /> polovici obrazovky</translation>
 <translation id="8391349326751432483">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Ak chcete uvoľniť pamäť, zavrite karty a aplikácie.</translation>
 <translation id="8395584934117017006">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
@@ -1372,10 +1403,12 @@
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8626489604350149811">Ďalšie akcie pre aplikáciu <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlopurpurová</translation>
+<translation id="8647595191512746911">Prepis zvuku</translation>
 <translation id="8651481478098336970">stlmenie hlasitosti</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Webová adresa zdieľania:</translation>
 <translation id="8660881923941176839">libry</translation>
+<translation id="8670057600920888023">Generatívna umelá inteligencia je experimentálna a obsah môže byť nepresný, zavádzajúci alebo urážlivý.</translation>
 <translation id="8670574982334489519">vpravo</translation>
 <translation id="8675354002693747642">Predzdieľaný kľúč</translation>
 <translation id="8677859815076891398">Žiadne albumy Vytvorte album vo <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
@@ -1476,6 +1509,7 @@
 <translation id="9122602430962285795">Ak sa chcete znova pripojiť, prejdite do Nastavení</translation>
 <translation id="9122865513525855321">Zenová</translation>
 <translation id="9126720536733509015">Ukladať viacero strán do jedného súboru PDF</translation>
+<translation id="9129549320890412487">Funkcia prepisu</translation>
 <translation id="9133772297793293778">Stlačte prvý až štyrtý modifikátor a jeden ďalší kláves na klávesnici. Režim úprav ukončíte stlačením klávesov alt + esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Ľavý kláves Shift</translation>

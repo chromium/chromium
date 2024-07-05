@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3691184985318546178">सिंहला</translation>
+<translation id="3702842351052426940">ऐसा हो सकता है कि आपका सिम कार्ड या आपकी ई-सिम प्रोफ़ाइल बंद हो गई हो. सिम कार्ड बदलें या ई-सिम प्रोफ़ाइलों पर स्विच करें.</translation>
 <translation id="3722341589402358578">कोई गड़बड़ी हुई. हो सकता है कि कुछ आइटम ट्रैश में न भेजे गए हों.</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">यह प्रॉक्सी आपके व्‍यवस्‍थापक ने लागू किया है</translation>
 <translation id="3830674330436234648">कोई प्लेबैक उपलब्ध नहीं है</translation>
 <translation id="383652340667548381">सर्बियाई</translation>
+<translation id="3839045880592694915">मोबाइल और इंटरनेट सेवा देने वाली कंपनी, आपके मॉडम को कनेक्ट करने की अनुमति नहीं दे रही है. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करें</translation>
 <translation id="6269630227984243955">मलय</translation>
 <translation id="6271903698064569429">फ़ाइलों को अपलोड नहीं किया जा सकता, क्योंकि "<ph name="SHARED_DRIVE_NAME" />" में ज़रूरत के मुताबिक स्टोरेज नहीं है.</translation>
+<translation id="6279140785485544797">ऐसा हो सकता है कि आपका मोबाइल डेटा प्लान खत्म हो गया हो. सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="6287852322318138013">यह फ़ाइल खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="6295542640242147836">सिम लॉक करें</translation>
 <translation id="6296410173147755564">PUK अमान्य है</translation>

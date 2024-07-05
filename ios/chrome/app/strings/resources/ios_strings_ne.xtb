@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1622717322707146952">“Google पात्रोमा हाल्नुहोस्“ वा “Apple पात्रोमा हाल्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> वटा पासवर्ड पहिले नै प्रयोग गरिएका छन्</translation>
+<translation id="1636234353664774105">नेभिगेट गर्ने सुविधा प्रयोग गरेर आफ्नो गन्तव्यसम्म जाने बाटोसम्बन्धी विस्तृत जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
 <translation id="1641316430523156212">फलो गर्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2062410130322589403">गोपनीयतासम्बन्धी सेटिङका बारेमा जानकारी दिने गाइड</translation>
 <translation id="20638360198452347">युनिट टाइप सेलेक्टर</translation>
+<translation id="2067852168641682340">हरेक पटक यो खातामा सेभ गर्नुहोस्</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिनअघि सक्रिय</translation>
 <translation id="2074131957428911366">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="2078437078822043850">तपाईं इन्कोग्निटोमा ब्राउज गर्न दायाँतिर स्क्रोल गर्न सक्नुहुन्छ।</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">आफूलाई महत्त्वपूर्ण लाग्ने सामग्रीका बारेमा अद्यावधिक जानकारी प्राप्त गर्न iOS को सेटिङमा गई सूचना प्राप्त गर्ने सुविधा अन गर्नुहोस्।</translation>
 <translation id="2625189173221582860">पासवर्ड कपी गरियो</translation>
 <translation id="2626236249646841566">आफ्नो इन्टरनेट जाँच्नुहोस् र फेरि साइन इन गरी हेर्नुहोस्।</translation>
+<translation id="2635918910848538771">CVC स्वतः भर्नुहोस्</translation>
 <translation id="2637313651144986786">ट्याबहरू खोज्नुहोस्...</translation>
 <translation id="2640733327287333451">युजरनेम छैन ••••••</translation>
 <translation id="2648721026697078500">कहिल्यै पनि नसारियोस्</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">सबै इन्कोग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="3533436815740441613">नयाँ ट्याब</translation>
 <translation id="3540141921715814660">"बुकमार्कहरू" मा हाल्नुहोस्</translation>
+<translation id="3547356470684043247">तपाईंलाई निर्णय लिन सजिलो होस् भन्नाका लागि उत्पादन, सेवा वा सुविधाहरूका बारेमा ग्राहकले गरेका समीक्षाहरू पढ्नुहोस्</translation>
 <translation id="355101282835380364">खातामा सेभ गर्नुहोस्…</translation>
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="3565930036634619844">ट्याब। <ph name="NUMBER_OF_TABS" /> मध्ये <ph name="TAB_INDEX" /> औँ।</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{तपाईंले पछि पढ्न सेभ गरेका वेबपेजको सूचीमा {count} पेज छ}other{तपाईंले पछि पढ्न सेभ गरेका वेबपेजको सूचीमा {count} वटा पेज छन्}}</translation>
 <translation id="4659667755519643272">ट्याब स्विचर प्रविष्टि गर्नुहोस्</translation>
 <translation id="46614316059270592">पासवर्ड सेभ गर्नुहोस्</translation>
+<translation id="467189612236587057">फोन कल गरेर व्यवसायसँग जोडिनुहोस्</translation>
 <translation id="4682686630151240767">१. iPhone का सेटिङ खोल्नुहोस्</translation>
 <translation id="4689564913179979534">भुक्तानी विधिहरूको व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="469300482518076788">ट्याब बन्द गर्नुहोस्</translation>

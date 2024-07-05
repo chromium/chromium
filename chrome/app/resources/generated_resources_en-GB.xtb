@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page Unresponsive}other{Pages Unresponsive}}</translation>
 <translation id="1011003645819296594">Saved devices</translation>
 <translation id="1011355516189274711">Text-to-speech volume</translation>
+<translation id="1011431628606634753">Change your recovery PIN for Google Password Manager</translation>
 <translation id="1012794136286421601">Your Docs, Sheets, Slides and Drawings files are being synced. Open the Google Drive app to access them online or offline.</translation>
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1476,7 +1477,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2048254245884707305">Checking for malware...</translation>
 <translation id="2048554637254265991">Error starting the container manager. Please try again.</translation>
 <translation id="2048653237708779538">Action not available</translation>
-<translation id="2049021651258469175">You’ll also be able to use and save your passwords and more from your Google Account.</translation>
 <translation id="204914487372604757">Create shortcut</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2051266530792296582">Google Password Manager created a strong password for this website</translation>
@@ -4065,6 +4065,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3923221004758245114">Remove <ph name="VM_NAME" /> from your <ph name="DEVICE_TYPE" />? This will delete all apps and data in the virtual machine!</translation>
 <translation id="3923494859158167397">No mobile networks set up</translation>
 <translation id="3923676227229836009">This page is allowed to view files</translation>
+<translation id="3923958273791212723">Performance issue alerts</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Display and text size <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Sends URLs to Safe Browsing to check them. Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats. Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps.</translation>
@@ -4081,6 +4082,7 @@ This can include information about installed software, files, your browser and t
 <translation id="3930737994424905957">Looking for devices</translation>
 <translation id="3930968231047618417">Background colour</translation>
 <translation id="3932356525934356570">Pin <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Maximum length: <ph name="MAX" /> characters</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> is sharing a Wi-Fi network with you</translation>
 <translation id="3936390757709632190">&amp;Open audio in new tab</translation>
@@ -4731,6 +4733,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4423376891418188461">Restore Settings</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Allowing ChromeOS devices to send automatic reports helps us prioritise what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were enabled and how much memory was typically used.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Passwords, passkeys and other data will be permanently deleted from <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Delete <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">To get started, please make sure that your USB or Bluetooth switch is connected to your Chromebook. You can also use keyboard keys.</translation>
 <translation id="4426490308207168518">Share feedback or report an issue</translation>
@@ -5220,6 +5223,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4807098396393229769">Name on card</translation>
 <translation id="4807122856660838973">Turn on Safe Browsing</translation>
 <translation id="4807514039636325497">DBus Details</translation>
+<translation id="4808525520374557629">Get notifications that suggest ways to improve detected performance issues. <ph name="BEGIN_LINK" />Learn more about performance issue alerts<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Pop-ups blocked:</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="4809447465126035330">Delete</translation>
@@ -5522,7 +5526,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
 <translation id="5033266061063942743">Geometric shapes</translation>
-<translation id="503441068567788948">Create a new PIN for Google Password Manager</translation>
 <translation id="5035846135112863536">Choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Select All</translation>
 <translation id="5038818366306248416">You previously chose not to allow any extensions on <ph name="ORIGIN" /></translation>
@@ -6092,6 +6095,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5457459357461771897">Read and delete photos, music and other media from your computer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">You've entered the wrong PIN too many times. To access your passkeys and passwords, change your PIN.</translation>
 <translation id="5458998536542739734">Lock screen notes</translation>
 <translation id="5459864179070366255">Continue to install</translation>
 <translation id="5460641065520325899">Manage the types of information that sites can use to track you as you browse.</translation>
@@ -7521,6 +7525,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="653920215766444089">Searching for pointing device</translation>
 <translation id="6539674013849300372">Stay safer online with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Resuming…</translation>
+<translation id="6540174167103635041">Install app</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> Only enable if you know what you are doing or if you have been asked to do so, as collection of data may reduce performance.</translation>
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
 <translation id="6541638731489116978">This site has been blocked from accessing your motion sensors.</translation>
@@ -9086,7 +9091,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7708143783728142771">Cookies allow for this same level of preference customisation on the web. When you visit a site, the site can save a cookie in your device's browser storage to remember your site preferences, such as the language that you speak or items that you want saved in a shopping basket. Later, if you visit the site again using the same browser, that site can read the cookie it set and you can start up where you left off. These types of cookies are often referred to as first-party cookies, because they're set by the site that you visit.</translation>
 <translation id="770831926727930011">Your local data is protected by your old password. Enter your old password to recover local data.</translation>
 <translation id="7709152031285164251">Failed - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protect all your passkeys with a recovery PIN</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.</translation>
 <translation id="7711968363685835633">Disable personalised conversions and suggestions as well as user dictionary</translation>

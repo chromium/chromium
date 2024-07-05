@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Pagină inactivă}few{Pagini inactive}other{Pagini inactive}}</translation>
 <translation id="1011003645819296594">Dispozitive salvate</translation>
 <translation id="1011355516189274711">Volumul de redare vocală a textului</translation>
+<translation id="1011431628606634753">Schimbă codul PIN de recuperare pentru Managerul de parole Google</translation>
 <translation id="1012794136286421601">Se sincronizează fișierele din Documente Google, Foi de calcul, Prezentări și Desene. Deschideți aplicația Google Drive pentru a le accesa online sau offline.</translation>
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1467,7 +1468,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2048254245884707305">Se caută programe malware...</translation>
 <translation id="2048554637254265991">Eroare la pornirea managerului de containere. Încearcă din nou.</translation>
 <translation id="2048653237708779538">Acțiunea nu este disponibilă</translation>
-<translation id="2049021651258469175">În plus, vei putea să folosești și să salvezi parolele și alte date din Contul Google.</translation>
 <translation id="204914487372604757">Creează o comandă rapidă</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2051266530792296582">Managerul de parole Google a creat o parolă puternică pentru acest site</translation>
@@ -4052,6 +4052,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3923221004758245114">Elimini <ph name="VM_NAME" /> de pe <ph name="DEVICE_TYPE" />? Astfel se vor șterge toate aplicațiile și datele de pe mașina virtuală!</translation>
 <translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3923676227229836009">Această pagină are permisiunea de a vedea fișiere</translation>
+<translation id="3923958273791212723">Alerte privind problemele de performanță</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Dimensiunea afișării și a textului: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica. În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări. Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google.</translation>
@@ -4068,6 +4069,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="3930737994424905957">Se caută dispozitive</translation>
 <translation id="3930968231047618417">Culoarea fundalului</translation>
 <translation id="3932356525934356570">Fixează <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Lungime maximă de <ph name="MAX" /> caractere</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> îți permite accesul la o rețea Wi-Fi</translation>
 <translation id="3936390757709632190">&amp;Deschide conținutul audio într-o filă nouă</translation>
@@ -4718,6 +4720,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4423376891418188461">Restabilește setările</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum situațiile în care se blochează dispozitivul de operare Chrome, ce funcții au fost folosite, câtă memorie a fost folosită în mod obișnuit.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Parolele, cheile de acces și alte date se vor șterge definitiv din <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Șterge <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Pentru început, asigură-te că USB-ul sau Bluetooth-ul este conectat la Chromebook. Poți folosi și tastele de pe tastatură.</translation>
 <translation id="4426490308207168518">Trimite feedback sau raportează o problemă</translation>
@@ -5207,6 +5210,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4807098396393229769">Numele de pe card</translation>
 <translation id="4807122856660838973">Activează Navigarea sigură</translation>
 <translation id="4807514039636325497">Detalii despre DBus</translation>
+<translation id="4808525520374557629">Primește notificări care sugerează modalități de a îmbunătăți problemele de performanță detectate. <ph name="BEGIN_LINK" />Află mai multe despre alertele privind problemele de performanță<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Ferestre pop-up blocate:</translation>
 <translation id="4809079943450490359">Instrucțiuni de la administratorul dispozitivului:</translation>
 <translation id="4809447465126035330">Șterge</translation>
@@ -5509,7 +5513,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5032430150487044192">Nu s-a putut crea codul QR</translation>
 <translation id="5033137252639132982">Nu au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="5033266061063942743">Forme geometrice</translation>
-<translation id="503441068567788948">Creează un nou cod PIN pentru Managerul de parole Google</translation>
 <translation id="5035846135112863536">Alege Mai multe detalii de mai jos pentru a afla mai multe informații de la <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
 <translation id="5038818366306248416">Anterior, ai ales să nu permiți extensii pe <ph name="ORIGIN" /></translation>
@@ -6078,6 +6081,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5457113250005438886">Nevalide</translation>
 <translation id="5457459357461771897">Citește și șterge fotografii, muzică și alte tipuri de conținut media de pe computer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Ai introdus un cod PIN greșit de prea multe ori. Pentru a accesa cheile de acces și parolele, schimbă codul PIN.</translation>
 <translation id="5458998536542739734">Notele pe ecranul de blocare</translation>
 <translation id="5459864179070366255">Continuă instalarea</translation>
 <translation id="5460641065520325899">Gestionează tipurile de informații pe care site-urile le pot folosi pentru a te urmări în timp ce navighezi.</translation>
@@ -7507,6 +7511,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="653920215766444089">Se caută dispozitivul de indicat</translation>
 <translation id="6539674013849300372">Protejează-te mai bine online cu o parolă puternică. Ea se va salva în <ph name="GOOGLE_PASSWORD_MANAGER" /> pentru <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Se reia...</translation>
+<translation id="6540174167103635041">Instalează aplicația</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> activați culegerea datelor numai dacă înțelegeți consecințele acțiunii sau dacă vi s-a solicitat să o activați, deoarece aceasta ar putea reduce performanța.</translation>
 <translation id="6540488083026747005">Ai permis cookie-urile terță parte pentru acest site</translation>
 <translation id="6541638731489116978">Site-ul nu are permisiunea de a accesa senzorii de mișcare.</translation>
@@ -9074,7 +9079,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7708143783728142771">Cookie-urile permit același nivel de personalizare a preferințelor pe web. Când accesezi un site, acesta poate salva un cookie în spațiul de stocare al browserului de pe dispozitiv pentru a reține preferințele tale privind site-ul, cum ar fi limba pe care o vorbești sau articolele pe care vrei să le salvezi în coșul de cumpărături. Mai târziu, dacă accesezi din nou site-ul folosind același browser, acesta poate citi cookie-ul pe care l-a setat și poți relua de unde ai rămas. Aceste tipuri de cookie-uri sunt numite adesea cookie-uri primare, deoarece sunt setate de site-ul pe care îl accesezi.</translation>
 <translation id="770831926727930011">Datele locale sunt protejate de parola veche. Introdu vechea parolă pentru a recupera datele locale.</translation>
 <translation id="7709152031285164251">Nu a reușit – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protejează-ți toate cheile de acces cu un PIN de recuperare</translation>
 <translation id="7710568461918838723">&amp;Proiectează…</translation>
 <translation id="7711900714716399411">Folosește un cablu USB pentru a conecta telefonul la computer. Dacă telefonul este deja conectat, deconectează-l și reconectează-l.</translation>
 <translation id="7711968363685835633">Dezactivează conversiile și sugestiile personalizate, precum și dicționarul utilizatorului</translation>

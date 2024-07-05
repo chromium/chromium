@@ -39,7 +39,6 @@
 <translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
-<translation id="1551749261806528781">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများကို သိမ်းရန်နှင့် အသုံးပြုရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ လက်မှတ်ထိုးဝင်ပြီးလျှင် ဤစကားဝှက်ကို သင့် Google Account တွင် သိမ်းပါမည်။</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
@@ -422,7 +421,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7036251913954633326">ဤအကောင့်ကို တစ်ကြိမ်သာအသုံးပြုလိုပါက Chrome ဘရောင်ဇာတွင် <ph name="GUEST_LINK_BEGIN" />ဧည့်သည်မုဒ်<ph name="GUEST_LINK_END" /> သုံးနိုင်သည်။ အခြားတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက သင်၏ <ph name="DEVICE_TYPE" /> တွင် <ph name="LINK_BEGIN" />ပုဂ္ဂိုလ်အသစ်ကို ထည့်နိုင်သည်<ph name="LINK_END" />။
 
 ဝဘ်ဆိုက်နှင့် အက်ပ်များကို ပေးထားသော ခွင့်ပြုချက်များက ဤအကောင့်တွင် အကျုံးဝင်နိုင်သည်။ <ph name="SETTINGS_LINK_BEGIN" />ဆက်တင်များ<ph name="SETTINGS_LINK_END" /> တွင် သင်၏ Google Account များကို စီမံနိုင်သည်။</translation>
-<translation id="7037538054043837165">သင်၏ စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများကို သိမ်းရန်နှင့် အသုံးပြုရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7048502283602470098">AI ကို စူးစမ်းလေ့လာပါ</translation>
 <translation id="7059914902409643750">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="7071827361006050863">Chrome သည် ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို မကြာမီဖျက်ပါမည်</translation>

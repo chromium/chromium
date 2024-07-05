@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
 <translation id="1082026381988252344">Lëviz dhe zmadho përmbajtjet e skedës së ndarë</translation>
+<translation id="1088664500620117635">Çmimi i zakonshëm për <ph name="PRODUCT_NAME" /> është <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />, por çmimi aktual është <ph name="CURRENT_PRICE" /> nëpër ueb.</translation>
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
 <translation id="1090629319939036170">Menyja e VR-së</translation>
 <translation id="1091779689406092804">pamjet e ekranit</translation>
@@ -446,6 +447,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detajet e kartës virtuale</translation>
+<translation id="1803254472779303354">Kyçja e miut lejohet</translation>
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1806174020048213474">Ky aplikacion po kërkon leje për të instaluar kredencialet e Wi-Fi. Pas konfigurimit, pajisja jote <ph name="DEVICE_TYPE" /> do të lidhet automatikisht me rrjetet pjesëmarrëse Wi-Fi. Për t'i hequr këto kredenciale, çinstalo aplikacionin.</translation>
 <translation id="1807246157184219062">I lehtë</translation>
@@ -911,6 +913,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2702592986366989640">Opsion me çmim të ulët</translation>
 <translation id="2702801445560668637">Lista e leximit</translation>
 <translation id="270415722347413271">Disk optik (mat)</translation>
+<translation id="2704192696317130398">Të kyçet miu?</translation>
 <translation id="2704283930420550640">Vlera nuk përputhet me formatin.</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2705137772291741111">Kopja e ruajtur (në memorien specifike) të këtij sajti ishte e palexueshme.</translation>
@@ -1215,6 +1218,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3307649904964670439">Butoni "Personalizo Chrome". Aktivizoje për të personalizuar pamjen e shfletuesit tënd</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
 <translation id="3318016344440038475">Komedi televizive</translation>
+<translation id="3321152582690622182">Nuk po monitorohet</translation>
 <translation id="3324687287337751929">4 x 6 inç</translation>
 <translation id="3324983252691184275">E kuqe e fortë</translation>
 <translation id="3325027355611702542">Kamperë dhe rulota</translation>
@@ -2169,6 +2173,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5125751979347152379">URL e pavlefshme.</translation>
 <translation id="512592033764059484">Futbolli</translation>
 <translation id="512670116361803001">Përmasat e <ph name="APP_NAME" /> mund të mos ndryshohen si duhet. Përdor madhësitë e paravendosura të dritares për të parandaluar problemet e aplikacionit.</translation>
+<translation id="512756860033933700">Kyçja e tastierës lejohet</translation>
 <translation id="5127934926273826089">Lulet</translation>
 <translation id="5129534298163637277">Dialogu i konfirmimit</translation>
 <translation id="5135404736266831032">Menaxho adresat...</translation>
@@ -2199,6 +2204,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5177076414499237632">Mëso rreth temës dhe burimit të kësaj faqeje</translation>
 <translation id="5179490652562926740">Cilësimet e verifikimit të pagesave u ruajtën</translation>
 <translation id="5179510805599951267">Jo në <ph name="ORIGINAL_LANGUAGE" />? Raportoje këtë gabim</translation>
+<translation id="5180662470511508940">Kyçja e tastierës nuk lejohet</translation>
 <translation id="5187079891181379721">Ngjarje për kompani</translation>
 <translation id="5190072300954988691">Kamera dhe mikrofoni nuk lejohen</translation>
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
@@ -2771,6 +2777,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6298456705131259420">Kjo prek sajtet e listuara këtu. Futja e “[*.]” para emrit të një domeni krijon një përjashtim për të gjithë domenin. Për shembull, shtimi i “[*.]google.com” do të thotë që kukit e palëve të treta mund të jenë aktive edhe për mail.google.com, pasi ajo është pjesë e google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Pajisja do të riniset tani}=1{Pajisja do të riniset pas 1 sekonde}other{Pajisja do të riniset pas # sekondash}}</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
+<translation id="6302546952464230349">Shfaq detajet e lejes (<ph name="PERMISSION_NAME" />)</translation>
 <translation id="6304398603974202180">Softuerë për multimedia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
 <translation id="6306713302480826305">Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar</translation>
@@ -2913,6 +2920,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
 <translation id="6547208576736763147">Dy shpime majtas</translation>
 <translation id="6549443526281184652">Kostumet</translation>
+<translation id="6550245281449521513">Kyçja e miut nuk lejohet</translation>
 <translation id="6551873053534932690">Të ruhet adresa te llogaria?</translation>
 <translation id="6554732001434021288">Vizituar së fundi <ph name="NUM_DAYS" /> ditë më parë</translation>
 <translation id="6556866813142980365">Ribëje</translation>
@@ -3831,6 +3839,7 @@ Detaje shtesë:
 <translation id="8278544367771164040">Kredi tregtare</translation>
 <translation id="8279290844152565425">Koncerte dhe festivale muzikore</translation>
 <translation id="8279611986089885641">Njoftimet e Chrome duhet të jenë aktive. Mund t'i aktivizosh te <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Të kyçet tastiera?</translation>
 <translation id="8280630997017109758">Tabakaja 11</translation>
 <translation id="8281730697546299650">Tani ofrohen veçori të tjera të privatësisë së reklamave</translation>
 <translation id="8281886186245836920">Kapërce</translation>
@@ -4303,6 +4312,7 @@ Detaje shtesë:
 <translation id="9191834167571392248">Shpim poshtë majtas</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Estetikë e pastër</translation>
+<translation id="919455784772793601">Hap një faqe që shfaq dyqane të tjera që e shesin këtë produkt.</translation>
 <translation id="9199905725844810519">Printimi është bllokuar</translation>
 <translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="920643408853370361">Sigurimi i udhëtimit</translation>

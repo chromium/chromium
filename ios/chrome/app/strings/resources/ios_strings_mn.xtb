@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1622717322707146952">“Google Календарьт нэмэх“ эсвэл “Apple Calendar-т нэмэх“-ийг сонгоно уу.</translation>
 <translation id="1626771852476987600">Дахин ашигласан <ph name="COUNT" /> нууц үг</translation>
+<translation id="1636234353664774105">Навигацын онцлогийг ашиглан эргэлт бүрийг харуулах зам заагчийн заавраар очих газартаа хүрэх чиглэлийг аваарай</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="1641316430523156212">Дагалт</translation>
 <translation id="1644574205037202324">Түүх</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Хотын захиргаа</translation>
 <translation id="2062410130322589403">Таны нууцлалын сонголтуудын чиглүүлэгч</translation>
 <translation id="20638360198452347">Нэгжийн төрөл сонгогч</translation>
+<translation id="2067852168641682340">Энэ бүртгэлд үргэлж хадгалах</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
 <translation id="2078437078822043850">Та Нууцлалтай горимд үзэхийн тулд баруун тийш гүйлгэх боломжтой.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">Танд чухал контентын талаарх шинэчлэлтүүдийг авахын тулд iOS-н тохиргоондоо мэдэгдлийг асаана уу.</translation>
 <translation id="2625189173221582860">Нууц үгийг хуулсан</translation>
 <translation id="2626236249646841566">Холболтоо шалгаад, нэвтрэхээр дахин оролдоно уу.</translation>
+<translation id="2635918910848538771">Карт баталгаажуулалтын кодыг автоматаар бөглөх</translation>
 <translation id="2637313651144986786">Табуудыг хайх...</translation>
 <translation id="2640733327287333451">Ямар ч хэрэглэгчийн нэр байхгүй ••••••</translation>
 <translation id="2648721026697078500">Хэзээ ч бүү зөө</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">Нууцлалын бүх чихтэй хуудсыг хаах</translation>
 <translation id="3533436815740441613">Шинэ таб</translation>
 <translation id="3540141921715814660">Хавчуургaд нэмэх</translation>
+<translation id="3547356470684043247">Шүүмжийн тусламжтайгаар мэдээлэлтэй шийдвэр гаргахдаа нэмэр болгох үүднээс харилцагчийн бүтээгдэхүүн, үйлчилгээ, хэрэглээнд өгсөн үнэлгээг уншаарай</translation>
 <translation id="355101282835380364">Бүртгэлд хадгалах…</translation>
 <translation id="3551320343578183772">Цонхыг хаах</translation>
 <translation id="3565930036634619844">Таб. <ph name="NUMBER_OF_TABS" />-н <ph name="TAB_INDEX" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{Таны Унших жагсаалтын {count}-р хуудас}other{Таны Унших жагсаалтын {count}-р хуудас}}</translation>
 <translation id="4659667755519643272">Цонх хооронд шилжигчийг оруулна уу</translation>
 <translation id="46614316059270592">Нууц үг хадгалах</translation>
+<translation id="467189612236587057">Утасны дуудлага эхлүүлснээр бизнестэй холбогдоорой</translation>
 <translation id="4682686630151240767">1. iPhone-н тохиргоог нээнэ үү</translation>
 <translation id="4689564913179979534">Төлбөрийн хэрэгслийг удирдах...</translation>
 <translation id="469300482518076788">Табыг хаах</translation>

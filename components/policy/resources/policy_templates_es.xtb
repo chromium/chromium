@@ -1907,13 +1907,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se le asigna ningún valor, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> se aplicará en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, visita el sitio https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85 no se admiten en esta política los patrones con los comodines "*" y "[*.]" en el host.</translation>
-<translation id="2421713016375433338">La URL de una imagen que se usará como insignia de la empresa en el perfil. La URL debe dirigir a una imagen.
-
-Esta insignia se mostrará en el menú del perfil (debajo de la imagen de perfil) y el tamaño de la imagen se adaptará al espacio de 16x16 reservado para la insignia.
-
-Si no se define esta política, se mostrará el icono predeterminado de un edificio.
-
-Si se produce un error al intentar obtener y mostrar la imagen, se mostrará el icono predeterminado de un edificio.</translation>
 <translation id="2421779938235645781">El color de la retroiluminación del teclado coincide con el fondo de pantalla actual</translation>
 <translation id="2423255396068675416">Si se habilita la política o no se establece, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre y cuando las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> estén habilitadas. Si se inhabilita la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para el usuario. En caso de inhabilitar la política, esto se aplicará a los nuevos contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se empiecen a usar, pero no a los que ya estén ejecutándose.</translation>
 <translation id="2423654977291507457">Inhabilitar integraciones</translation>
@@ -2246,13 +2239,6 @@ El sistema solo consultará los registros AAAA cuando sea alcanzable para un hos
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
 <translation id="2697717608663878828">Habilitar el experimento Encrypted ClientHello de TLS</translation>
-<translation id="2698555428858508691">Esta política controla una etiqueta personalizada que se utiliza para identificar un perfil con sesión iniciada.
-
-Si no se define esta política y es necesario mostrar una etiqueta, se usará la etiqueta predeterminada "Trabajo" o "Centro educativo".
-
-Esta política anulará la política <ph name="PROFILE_LABEL_POLICY_NAME" />.
-
-La etiqueta personalizada no se traducirá.</translation>
 <translation id="2699836109975228367">Habilitar el audio en mono en la pantalla de inicio de sesión</translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
@@ -10387,7 +10373,6 @@ Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Más adelant
 <translation id="9020630127193895800">Color índigo para la retroiluminación del teclado</translation>
 <translation id="9031831501689819108">Habilitar la compatibilidad con navegadores antiguos</translation>
 <translation id="9032595854515551464">Habilitar la versión 2 del servicio <ph name="PRODUCT_NAME" /> e iniciar el escritorio remoto al iniciar sesión</translation>
-<translation id="903334067190374761">Definir una etiqueta de perfil personalizada</translation>
 <translation id="9034285085962866065">Permitir la personalización de los accesos directos del sistema</translation>
 <translation id="9035086760683255833">Habilita la función de accesibilidad de elementos destacados.
 

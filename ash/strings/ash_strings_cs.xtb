@@ -97,6 +97,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1293699935367580298">Klávesa Esc</translation>
 <translation id="1294046132466831888">Otevřít aplikaci Explore</translation>
+<translation id="129469256578833241">Zpět na přehled</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Kdykoli stiskněte <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">DOPORUČENÉ APLIKACE</translation>
@@ -257,6 +258,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
 <translation id="1925320505152357008">méně než 1 min</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
+<translation id="1929331825127010451">Zpět na otázku</translation>
 <translation id="1948405482892809935">Přepnout na dalšího uživatele</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1954252331066828794">Záznam obrazovky byl dokončen</translation>
@@ -1152,6 +1154,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5238719049014159442">Otevřít/zavřít Spouštěč</translation>
 <translation id="5240725217819182328">Rychlý přístup ke konkrétním stránkám nebo akcím v nainstalovaných aplikacích</translation>
 <translation id="5245201184978705914">Přepis se nepodařilo vygenerovat</translation>
+<translation id="5251174953851719648">Obnovit obsah</translation>
 <translation id="5253783950165989294">Připojeno k zařízení <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="5258528442992323769">Žádné uložené plochy</translation>
 <translation id="5260676007519551770">Plocha 4</translation>
@@ -1416,6 +1419,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6147182561428020853">Teď můžete blokovat aplikace nainstalované v tomto zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferní zařízení není podporováno</translation>
 <translation id="6156960295318603523">Nastavení jazyka</translation>
+<translation id="6158923546703693047">Informace o zdroji obsahu</translation>
 <translation id="615957422585914272">Zobrazit softwarovou klávesnici</translation>
 <translation id="616543563528926612">Zkratka ke kliknutí pravým tlačítkem byla aktualizována z klávesy <ph name="LAUNCHER_KEY_NAME" /> + kliknutí na Alt + kliknutí</translation>
 <translation id="6165508094623778733">Další informace</translation>
@@ -1999,6 +2003,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8315514906653279104">Zapínání…</translation>
 <translation id="8331351032546853669">Nevyřízené stahování</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Položte otázku.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Špatný výstup</translation>
 <translation id="8345019317483336363">Vybrané okno: <ph name="WINDOW_TITLE" /></translation>

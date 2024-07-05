@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द गर्नुहोस्।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, <ph name="CONNECTION_STATUS" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3691184985318546178">सिंहली</translation>
+<translation id="3702842351052426940">तपाईंको SIM कार्ड वा eSIM प्रोफाइल डिएक्टिभेट गरिएको हुन सक्छ। आफ्नो SIM कार्ड वा eSIM प्रोफाइल बदली हेर्नुहोस्।</translation>
 <translation id="3722341589402358578">कुनै त्रुटि भयो। केही वस्तुहरू ट्र्यासमा नपठाइएका हुन सक्छन्।</translation>
 <translation id="3726463242007121105">यो यन्त्रलाई खोल्न सकिँदैन किनभने यसको फाइल सिस्टम समर्थित छैन।</translation>
 <translation id="3727148787322499904">यो सेटिङ परिवर्तन गर्नुले आदान प्रदान गरिएका सबै नेटवर्कहरूमा असर पार्नेछ</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">यो प्रोक्सी तपाईंका प्रशासकद्वारा लागू गरिएको हो</translation>
 <translation id="3830674330436234648">कुनै प्लेब्याक उपलब्ध छैन</translation>
 <translation id="383652340667548381">सर्वियन</translation>
+<translation id="3839045880592694915">तपाईंको टेलिफोन कम्पनीले तपाईंको मोडेम कनेक्ट गर्न अनुमति दिएको छैन। यस सम्बन्धमा थप जानकारी प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
 <translation id="6269630227984243955">मले</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" मा पर्याप्त खाली ठाउँ नभएकाले फाइलहरू अपलोड गर्न मिल्दैन।</translation>
+<translation id="6279140785485544797">तपाईंको मोबाइल डेटा प्याकको म्याद सकिएको हुन सक्छ। यस सम्बन्धमा सहायता प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="6287852322318138013">यो फाइल खोल्न एक एप चयन गर्नुहोस्</translation>
 <translation id="6295542640242147836">SIM लक गर्नुहोस्</translation>
 <translation id="6296410173147755564">तपाईंले हाल्नुभएको PUK अवैध छ</translation>

@@ -93,6 +93,7 @@
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක්, වර්ණය <ph name="COLOR_NAME" /> සමග පටිති සමූහය වසන්න.}}</translation>
 <translation id="5556417849629758491">අලෙවිසැල් තොරතුරු බලන්න, තිරයේ ඉහළින්ම ඇති විකල්පය</translation>
+<translation id="5635915157654811450">{TAB_COUNT,plural, =1{පටිත්ත ප්‍රතිසාධනය කරන්න}one{පටිති ප්‍රතිසාධනය කරන්න}other{පටිති ප්‍රතිසාධනය කරන්න}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome වෙතින් <ph name="TABS_COUNT_ONE" /> සබැඳියක්}one{Chrome වෙතින් සබැඳි <ph name="TABS_COUNT_MANY" />ක්}other{Chrome වෙතින් සබැඳි <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="575494663145460764">මිල පහත වැටීම් සඳහා ඇඟවීම් ලබා ගන්නද?</translation>
 <translation id="58326064309361797">පටිති කණ්ඩායම් කිරීමට ඒවා අදින්න</translation>

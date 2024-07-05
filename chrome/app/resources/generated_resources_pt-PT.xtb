@@ -1467,7 +1467,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2048254245884707305">A verificar a existência de software malicioso…</translation>
 <translation id="2048554637254265991">Erro ao iniciar o gestor de contentores. Tente novamente.</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
-<translation id="2049021651258469175">Também vai poder usar e guardar as suas palavras-passe e muito mais a partir da sua Conta Google.</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">O Gestor de Palavras-passe da Google criou uma palavra-passe forte para este Website</translation>
@@ -4379,6 +4378,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> não pertence a uma entidade válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua entidade ao visitar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
+<translation id="4166847326079525123">A localização está desativada nas Preferências do sistema no Windows</translation>
 <translation id="4167212649627589331">A app <ph name="APP_NAME" /> está a tentar aceder à <ph name="DEVICE_NAME" />. Desative o interruptor de privacidade da <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
 <translation id="4167393659000039775">A Google não é responsável por qualquer perda de dados e o <ph name="DEVICE_OS" /> pode não funcionar em modelos não certificados. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Mais ações para o atalho <ph name="SHORTCUT_TITLE" /></translation>
@@ -5515,7 +5515,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5033137252639132982">Sem autorização para utilizar sensores de movimentos</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
-<translation id="503441068567788948">Crie um novo PIN para o Gestor de Palavras-passe da Google</translation>
 <translation id="5035846135112863536">Escolha "Mais detalhes" abaixo para receber mais informações de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecionar tudo</translation>
 <translation id="5038818366306248416">Optou anteriormente por não permitir nenhuma extensão em <ph name="ORIGIN" /></translation>
@@ -9082,7 +9081,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7708143783728142771">Os cookies permitem este mesmo nível de personalização de preferências na Web. Quando visita um site, este pode guardar um cookie no armazenamento no navegador do dispositivo para memorizar as suas preferências do site, como o idioma em que fala ou os artigos que quer que fiquem guardados num carrinho de compras. Mais tarde, se visitar novamente o site através do mesmo navegador, esse site pode ler o cookie definido e pode retomar a partir do ponto em que ficou. Estes tipos de cookies são frequentemente referidos como cookies originais, uma vez que são definidos pelo site que visita.</translation>
 <translation id="770831926727930011">Os dados locais estão protegidos pela sua palavra-passe antiga. Introduza a palavra-passe antiga para recuperar os dados locais.</translation>
 <translation id="7709152031285164251">Falha - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Proteja todas as suas chaves de acesso com um PIN de recuperação</translation>
 <translation id="7710568461918838723">&amp;Transmitir…</translation>
 <translation id="7711900714716399411">Utilize um cabo USB para ligar o telemóvel ao computador. Se o telemóvel já estiver ligado, desligue-o e volte a ligá-lo.</translation>
 <translation id="7711968363685835633">Desativar as sugestões e as conversões personalizadas, bem como o dicionário do utilizador</translation>

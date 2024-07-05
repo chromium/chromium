@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">Eninə uyğunlaşdırın</translation>
 <translation id="1081061862829655580">Qab 19</translation>
 <translation id="1082026381988252344">Sürüşdürün və paylaşılan tab kontentinin miqyasını dəyişin</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> üçün tipik qiymət <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> təşkil edir, lakin cari qiymət vebdə <ph name="CURRENT_PRICE" /> təşkil edir.</translation>
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
+<translation id="1089599132348386324">Chrome ayarlarında fikrinizi dəyişə bilərsiniz.</translation>
 <translation id="1090629319939036170">VR menyusu</translation>
 <translation id="1091779689406092804">skrinşotlar</translation>
 <translation id="1094777233105318927">Brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat</translation>
@@ -446,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bir neçə əməliyyat əlçatandır, onları nəzərdən keçirmək üçün Tab düyməsinə basın</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtual kart detalları</translation>
+<translation id="1803254472779303354">Mausun kilidlənməsinə icazə verilib</translation>
 <translation id="1803351196216024260">Saytlar mikrofonunuzdan istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="1806174020048213474">Bu tətbiq Wi-Fi giriş məlumatlarını quraşdırmaq icazəsi tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan Wi-Fi şəbəkələrinə avtomatik qoşulacaq. Bu giriş məlumatlarını silmək üçün tətbiqi sistemdən silin.</translation>
 <translation id="1807246157184219062">Yüngül</translation>
@@ -911,6 +914,7 @@
 <translation id="2702592986366989640">Aşağı qiymət seçimi</translation>
 <translation id="2702801445560668637">Siyahı oxunur</translation>
 <translation id="270415722347413271">Optik disk (mat)</translation>
+<translation id="2704192696317130398">Maus kilidlənsin?</translation>
 <translation id="2704283930420550640">Dəyər formata uyğun gəlmir.</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2705137772291741111">Bu saytın yadda saxlanılmış nüsxəsi (keşlənmiş) oxunmadı.</translation>
@@ -1213,6 +1217,7 @@
 <translation id="3307649904964670439">"Chrome-u fərdiləşdirin" düyməsi, aktivləşdirərək brauzer görünüşünü fərdiləşdirin</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
 <translation id="3318016344440038475">TV Komediyaları</translation>
+<translation id="3321152582690622182">İzlənilmir</translation>
 <translation id="3324687287337751929">4 x 6 düym</translation>
 <translation id="3324983252691184275">Tünd-qırmızı</translation>
 <translation id="3325027355611702542">Kemper və karavanlar</translation>
@@ -2165,6 +2170,7 @@
 <translation id="5125751979347152379">Yanlış URL.</translation>
 <translation id="512592033764059484">Futbol</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ölçüsü lazımi şəkildə dəyişdirilməyə bilər. Tətbiqin problemlərlə üzləşməməsi üçün əvvəlcədən ayarlanmış pəncərə ölçülərindən istifadə edin.</translation>
+<translation id="512756860033933700">Klaviaturanın kilidlənməsinə icazə verilib</translation>
 <translation id="5127934926273826089">Güllər</translation>
 <translation id="5129534298163637277">Təsdiq pəncərəsi</translation>
 <translation id="5135404736266831032">Ünvanları idarə edin...</translation>
@@ -2195,6 +2201,7 @@
 <translation id="5177076414499237632">Bu səhifənin mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="5179490652562926740">Ödəniş yoxlaması ayarları yadda saxlandı</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> deyil? Bu xətanı xəbər verin</translation>
+<translation id="5180662470511508940">Klaviatura kilidinə icazə verilmir</translation>
 <translation id="5187079891181379721">Korporativ tədbirlər</translation>
 <translation id="5190072300954988691">Kamera və mikrofona icazə verilmir</translation>
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
@@ -2768,6 +2775,7 @@
 <translation id="6298456705131259420">Burada qeyd edilən saytlara təsir edir. Domen adından əvvəl "[*.]" yerləşdirmək bütün domen üçün istisna yaradır. Məsələn, "[*.]google.com" əlavə edəndə üçüncü tərəf kukiləri mail.google.com üçün də aktiv ola bilər (google.com domeninin hissəsi olduğu üçün).</translation>
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız indi yenidən başladılacaq}=1{Cihazınız 1 saniyə ərzində yenidən başladılacaq}other{Cihazınız # saniyə ərzində yenidən başladılacaq}}</translation>
 <translation id="6301104306974789820">Qiymət izləmə bildirişləri alın</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> icazəsi detallarını göstərin</translation>
 <translation id="6304398603974202180">Multimedia proqram təminatı</translation>
 <translation id="6305205051461490394"><ph name="URL" /> əlçatmazdır.</translation>
 <translation id="6306713302480826305">Bu ünvan bu və digər daxil olduğunuz cihazlardan silinəcək</translation>
@@ -2910,6 +2918,7 @@
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
 <translation id="6549443526281184652">Kostyumlar</translation>
+<translation id="6550245281449521513">Maus kilidinə icazə verilmir</translation>
 <translation id="6551873053534932690">Ünvan Hesabda yadda saxlansın?</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
@@ -3828,6 +3837,7 @@
 <translation id="8278544367771164040">Kommersiya Krediti</translation>
 <translation id="8279290844152565425">Konsertlər və Musiqi Festivalları</translation>
 <translation id="8279611986089885641">Chrome bildirişləri aktiv olmalıdır. Onları <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində aktiv edə bilərsiniz.</translation>
+<translation id="8280387559022105172">Klaviatura kilidlənsin?</translation>
 <translation id="8280630997017109758">Qab 11</translation>
 <translation id="8281730697546299650">Digər reklam məxfiliyi funksiyaları əlçatandır</translation>
 <translation id="8281886186245836920">Keçin</translation>
@@ -4300,6 +4310,7 @@
 <translation id="9191834167571392248">Aşağı soldan deşik açın</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Zərərsiz Gözəllik Məhsulları</translation>
+<translation id="919455784772793601">Bu məhsulu satan digər mağazaları göstərən səhifə açın.</translation>
 <translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
 <translation id="9205078245616868884">Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="920643408853370361">Səyahət Sığortası</translation>

@@ -1467,7 +1467,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2048254245884707305">Comprobando si hay malware…</translation>
 <translation id="2048554637254265991">Se ha producido un problema al iniciar el gestor de contenedores. Inténtalo de nuevo.</translation>
 <translation id="2048653237708779538">Acción no disponible</translation>
-<translation id="2049021651258469175">También podrás usar y guardar tus contraseñas y otros elementos de tu cuenta de Google.</translation>
 <translation id="204914487372604757">Crear acceso directo</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El Gestor de contraseñas de Google ha creado una contraseña segura para este sitio web</translation>
@@ -4720,6 +4719,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4423376891418188461">Restaurar configuración</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos ChromeOS nos envíen informes de forma automática, nos ayudarás a priorizar qué debemos arreglar y mejorar en ChromeOS. Estos informes pueden incluir información como cuándo ha fallado ChromeOS, qué funciones se han utilizado y cuánta memoria se ha usado habitualmente.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar la opción para permitir que se generen estos informes en cualquier momento en los ajustes de tu dispositivo ChromeOS. Si eres el administrador de un dominio, puedes cambiar esta opción en la consola de administración.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Las contraseñas, llaves de acceso y otros datos se eliminarán de forma permanente de <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Eliminar <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Para empezar, comprueba que tu interruptor USB o Bluetooth esté conectado a tu Chromebook. También puedes usar teclas del teclado.</translation>
 <translation id="4426490308207168518">Compartir comentarios o informar de un problema</translation>
@@ -5512,7 +5512,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
-<translation id="503441068567788948">Crea un nuevo PIN para el Gestor de contraseñas de Google</translation>
 <translation id="5035846135112863536">Selecciona el botón Más detalles para consultar más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038818366306248416">Anteriormente elegiste no permitir ninguna extensión en <ph name="ORIGIN" /></translation>
@@ -7511,6 +7510,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="653920215766444089">Buscando dispositivo señalador</translation>
 <translation id="6539674013849300372">Protege tu seguridad online con una contraseña segura. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Reanudando...</translation>
+<translation id="6540174167103635041">Instalar aplicación</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Habilita esta opción solo si tienes conciencia de los efectos de esta acción o si se te ha pedido que lo hagas, ya que la recogida de datos puede reducir el rendimiento.</translation>
 <translation id="6540488083026747005">Has permitido el uso de cookies de terceros en este sitio</translation>
 <translation id="6541638731489116978">Este sitio web no tiene permiso para acceder a los sensores de movimiento.</translation>
@@ -9076,7 +9076,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7708143783728142771">Las cookies permiten ofrecer el mismo nivel de personalización de preferencias en los sitios web. Cuando visitas un sitio, este puede guardar una cookie en el almacenamiento del navegador de tu dispositivo para recordar tus preferencias del sitio, como tu idioma preferido o los artículos que quieras que se guarden en un carrito de la compra. Después, si vuelves a visitar el sitio desde el mismo navegador, ese sitio podrá leer la cookie que ha establecido y podrás retomar tu visita donde la dejaste. Este tipo de cookies se suelen denominar "cookies propias" porque las establece el sitio que visitas.</translation>
 <translation id="770831926727930011">Tus datos locales están protegidos por tu contraseña anterior. Introduce tu antigua contraseña para recuperarlos.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protege todas tus llaves de acceso con un PIN de recuperación</translation>
 <translation id="7710568461918838723">&amp;Enviar...</translation>
 <translation id="7711900714716399411">Usa un cable USB para conectar el teléfono al ordenador. Si el teléfono ya está conectado, desconéctalo y vuelve a conectarlo.</translation>
 <translation id="7711968363685835633">Inhabilitar conversiones y sugerencias personalizadas, así como el diccionario del usuario</translation>

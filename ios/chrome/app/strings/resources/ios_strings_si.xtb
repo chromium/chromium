@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1622717322707146952">"Google දිනදර්ශනයට එක් කරන්න" හෝ "Apple දිනදර්ශනයට එක් කරන්න" තෝරන්න.</translation>
 <translation id="1626771852476987600">යළි භාවිතා කළ මුරපද <ph name="COUNT" />ක්</translation>
+<translation id="1636234353664774105">සංචාලන විශේෂාංගය භාවිතයෙන් හැරීමෙන් හැරීම් මගපෙන්වීම සමග ඔබේ ගමනාන්තයට දිශාවන් ලබා ගන්න</translation>
 <translation id="1641113438599504367">ආරක්ෂිත බ්‍රවුස් කිරීම</translation>
 <translation id="1641316430523156212">අනුගමනය කරන්න</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2062410130322589403">ඔබේ පෞද්ගලිකත්ව තේරීම්වල මාර්ගෝපදේශයක්</translation>
 <translation id="20638360198452347">ඒකක වර්ගය තෝරකය</translation>
+<translation id="2067852168641682340">සෑම අවස්ථාවකම මෙම ගිණුමට සුරකින්න</translation>
 <translation id="2073572773299281212">දින <ph name="DAYS" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="2074131957428911366">ඔබට සැමවිටම <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
 <translation id="2078437078822043850">ඔබට අප්‍රසිද්ධව බ්‍රවුස් කිරීමට දකුණට අනුචලන කළ හැක.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">ඔබට වැදගත් වන අන්තර්ගතය පිළිබඳ යාවත්කාලීන ලබා ගැනීමට, ඔබේ iOS සැකසීම් තුළ දැනුම්දීම ක්‍රියාත්මක කරන්න.</translation>
 <translation id="2625189173221582860">මුරපදය පිටපත් කරන ලදී</translation>
 <translation id="2626236249646841566">ඔබගේ සබැඳුම පරීක්ෂා කර නැවත පිරීමට උත්සාහ කරන්න.</translation>
+<translation id="2635918910848538771">CVC ස්වයංව පුරවන්න</translation>
 <translation id="2637313651144986786">ටැබ සොයන්න...</translation>
 <translation id="2640733327287333451">පරිශීලක නාමයක් නැත ••••••</translation>
 <translation id="2648721026697078500">කිසි විටෙකත් ගෙන නොයන්න</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">සියලු අප්‍රසිද්ධ පටිති වසන්න</translation>
 <translation id="3533436815740441613">නව පටිත්ත</translation>
 <translation id="3540141921715814660">පිටුසන් වෙත එක් කරන්න</translation>
+<translation id="3547356470684043247">සමාලෝචන සමග ඔබේ තීරණ දැනුම් දීම සඳහා නිෂ්පාදන, සේවා, හෝ අත්දැකීම පිළිබඳ පාරිභෝගික ඇගයීම් කියවන්න</translation>
 <translation id="355101282835380364">ගිණුම තුළ සුරකින්න…</translation>
 <translation id="3551320343578183772">ටැබය වසන්න</translation>
 <translation id="3565930036634619844">පටිත්ත. <ph name="NUMBER_OF_TABS" />න් <ph name="TAB_INDEX" />.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{ඔබේ කියවීම් ලැයිස්තුවෙහි {count} පිටුවක්}one{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}other{ඔබේ කියවීම් ලැයිස්තුවෙහි පිටු {count}ක්}}</translation>
 <translation id="4659667755519643272">පටිති මාරුකරවනය වෙත ඇතුළත් වන්න</translation>
 <translation id="46614316059270592">මුරපදය සුරකින්න</translation>
+<translation id="467189612236587057">දුරකථන ඇමතුමක් ආරම්භ කිරීමෙන් ව්‍යාපාරයක් සමග සම්බන්ධ වන්න</translation>
 <translation id="4682686630151240767">1. iPhone සැකසීම් විවෘත කරන්න</translation>
 <translation id="4689564913179979534">ගෙවීමේ ක්‍රම කළමනා කරන්න...</translation>
 <translation id="469300482518076788">පටිත්ත වසන්න</translation>

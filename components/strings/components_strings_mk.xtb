@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
 <translation id="1082026381988252344">Лизгајте и зумирајте ги содржините на вашата споделена картичка</translation>
+<translation id="1088664500620117635">Вообичаената цена за <ph name="PRODUCT_NAME" /> е <ph name="LOW_PRICE" /> – <ph name="HIGH_PRICE" />, а тековната цена е <ph name="CURRENT_PRICE" /> на интернет.</translation>
 <translation id="1089439967362294234">Смени лозинка</translation>
 <translation id="1090629319939036170">Мени за VR</translation>
 <translation id="1091779689406092804">слики од екранот</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Податоци за виртуелна картичка</translation>
+<translation id="1803254472779303354">Заклучувањето на глувчето е дозволено</translation>
 <translation id="1803351196216024260">Може да прашува за да го користи микрофонот</translation>
 <translation id="1806174020048213474">Апликацијава бара дозвола за инсталирање акредитиви за Wi-Fi. По поставувањето, вашиот уред <ph name="DEVICE_TYPE" /> ќе се поврзе автоматски на поставените Wi-Fi мрежи. За да ги отстраните акредитививе, деинсталирајте ја апликацијата.</translation>
 <translation id="1807246157184219062">Светла</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">Опција со ниски цени</translation>
 <translation id="2702801445560668637">Список за читање</translation>
 <translation id="270415722347413271">Оптички диск (мат)</translation>
+<translation id="2704192696317130398">Да се заклучи глувчето?</translation>
 <translation id="2704283930420550640">Вредноста не се совпаѓа со форматот.</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2705137772291741111">Зачуваната (кеширана) копија на сајтот беше нечитлива.</translation>
@@ -1215,6 +1218,7 @@
 <translation id="3307649904964670439">Копче за приспособување на Chrome, активирајте го за да го приспособите изгледот на вашиот прелистувач</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
 <translation id="3318016344440038475">ТВ-комедии</translation>
+<translation id="3321152582690622182">Не се следи</translation>
 <translation id="3324687287337751929">4 x 6 инчи</translation>
 <translation id="3324983252691184275">Темноцрвена</translation>
 <translation id="3325027355611702542">Кампери и рекреативни возила</translation>
@@ -2169,6 +2173,7 @@
 <translation id="5125751979347152379">Неважечка URL-адреса.</translation>
 <translation id="512592033764059484">Фудбал</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> можеби нема добро да ја промени големината. Користете ги зададените големини за прозорците за да спречите проблеми со апликацијата.</translation>
+<translation id="512756860033933700">Заклучувањето на тастатурата е дозволено</translation>
 <translation id="5127934926273826089">Цвеќе</translation>
 <translation id="5129534298163637277">Дијалог за потврда</translation>
 <translation id="5135404736266831032">Управувајте со адресите…</translation>
@@ -2199,6 +2204,7 @@
 <translation id="5177076414499237632">Дознајте за изворот и темата на страницава</translation>
 <translation id="5179490652562926740">Поставките за потврда на плаќањето се зачувани</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Пријави ја грешката.</translation>
+<translation id="5180662470511508940">Заклучувањето на тастатурата не е дозволено</translation>
 <translation id="5187079891181379721">Корпоративни настани</translation>
 <translation id="5190072300954988691">Камерата и микрофонот не се дозволени</translation>
 <translation id="5190835502935405962">Лента со обележувачи</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">Влијае на сајтовите што се наведени тука. Ако вметнете „[*.]“ пред име на домен, ќе се создаде исклучок за целиот домен. На пример, додавањето „[*.]google.com“ значи дека за mail.google.com може да бидат активни и колачиња од трети страни затоа што е дел од google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{Уредот ќе се рестартира сега}=1{Уредот ќе се рестартира за 1 секунда}one{Уредот ќе се рестартира за # секунда}other{Уредот ќе се рестартира за # секунди}}</translation>
 <translation id="6301104306974789820">Добивајте известувања за следењето на цената</translation>
+<translation id="6302546952464230349">Прикажи детали за дозволата за <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Софтвер за мултимедијални содржини</translation>
 <translation id="6305205051461490394"><ph name="URL" /> е недостапна.</translation>
 <translation id="6306713302480826305">Адресава ќе биде избришана од овој и од другите ваши најавени уреди</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">Скенирање за Bluetooth</translation>
 <translation id="6547208576736763147">Две дупки лево</translation>
 <translation id="6549443526281184652">Костими</translation>
+<translation id="6550245281449521513">Заклучувањето на глувчето не е дозволено</translation>
 <translation id="6551873053534932690">Дали да се зачува адресата на сметката?</translation>
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="6556866813142980365">Повтори</translation>
@@ -3832,6 +3840,7 @@
 <translation id="8278544367771164040">Комерцијални заеми</translation>
 <translation id="8279290844152565425">Концерти и музички фестивали</translation>
 <translation id="8279611986089885641">Известувањата на Chrome мора да бидат вклучени. Може да ги вклучите во <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
+<translation id="8280387559022105172">Да се заклучи тастатурата?</translation>
 <translation id="8280630997017109758">Фиока 11</translation>
 <translation id="8281730697546299650">Сега се достапни други функции за приватност за реклами</translation>
 <translation id="8281886186245836920">Прескокни</translation>
@@ -4304,6 +4313,7 @@
 <translation id="9191834167571392248">Дупка долу лево</translation>
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природна убавина</translation>
+<translation id="919455784772793601">Отворете страница на којашто се прикажуваат други продавници што го продаваат овој производ.</translation>
 <translation id="9199905725844810519">Печатењето е блокирано</translation>
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="920643408853370361">Патничко осигурување</translation>

@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{一個網頁無回應}other{多個網頁無回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">文字轉語音的音量</translation>
+<translation id="1011431628606634753">變更 Google 密碼管理工具的復原 PIN 碼</translation>
 <translation id="1012794136286421601">系統正在同步處理你的文件、試算表、簡報和繪圖檔案。開啟 Google 雲端硬碟應用程式即可上網或離線存取你的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1466,7 +1467,6 @@
 <translation id="2048254245884707305">正在檢查惡意軟體...</translation>
 <translation id="2048554637254265991">啟動容器管理工具時發生錯誤，請再試一次。</translation>
 <translation id="2048653237708779538">無法執行操作</translation>
-<translation id="2049021651258469175">你還可以使用 Google 帳戶中的密碼和其他資料，以及將這些資料儲存到帳戶中。</translation>
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2051266530792296582">Google 密碼管理工具已為這個網站建立高強度密碼</translation>
@@ -4049,6 +4049,7 @@
 <translation id="3923221004758245114">要將「<ph name="VM_NAME" />」從 <ph name="DEVICE_TYPE" /> 中移除嗎？這項操作會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="3923494859158167397">尚未設定行動網路</translation>
 <translation id="3923676227229836009">這個頁面具有檔案讀取權限</translation>
+<translation id="3923958273791212723">效能問題警示</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">顯示和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">可將網址傳送至安全瀏覽功能進行檢查。同時也會傳送少量網頁、下載內容、擴充功能活動及系統資訊，以協助找出新的威脅。當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各項 Google 應用程式時提供保護。</translation>
@@ -4065,6 +4066,7 @@
 <translation id="3930737994424905957">正在尋找裝置</translation>
 <translation id="3930968231047618417">背景顏色</translation>
 <translation id="3932356525934356570">將「<ph name="EXTENSION_NAME" />」固定</translation>
+<translation id="3932477678113677556">長度上限為 <ph name="MAX" /> 個半形字元</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> 正在與你共用 Wi-Fi 網路</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效(&amp;O)</translation>
@@ -4714,6 +4716,7 @@
 <translation id="4423376891418188461">還原設定</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />如果你允許 ChromeOS 裝置自動傳送報告，可以協助我們為 ChromeOS 優先規劃要修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可以在 Chrome 裝置的設定中允許或禁止傳送這類報告。如果你是網域管理員，可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">密碼、密碼金鑰等資料將從「<ph name="BRAND" />」中永久刪除</translation>
 <translation id="4426268963847471040">刪除「<ph name="FILE_NAME" />」</translation>
 <translation id="4426464032773610160">首先，請確認 USB 或藍牙開關已連接至 Chromebook。你也可以使用鍵盤按鍵。</translation>
 <translation id="4426490308207168518">提供意見或回報問題</translation>
@@ -5203,6 +5206,7 @@
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4807122856660838973">開啟安全瀏覽功能</translation>
 <translation id="4807514039636325497">DBus 詳細資料</translation>
+<translation id="4808525520374557629">系統偵測到效能問題時顯示改善建議通知。<ph name="BEGIN_LINK" />進一步瞭解效能問題警示<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">已封鎖彈出式視窗：</translation>
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="4809447465126035330">刪除</translation>
@@ -5505,7 +5509,6 @@
 <translation id="5032430150487044192">無法建立 QR 圖碼</translation>
 <translation id="5033137252639132982">不得使用動作感應器</translation>
 <translation id="5033266061063942743">幾何形狀</translation>
-<translation id="503441068567788948">設定 Google 密碼管理工具的新 PIN 碼</translation>
 <translation id="5035846135112863536">請選擇下方的「更多詳細資料」，即可洽詢「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」瞭解詳情。</translation>
 <translation id="5037676449506322593">全選</translation>
 <translation id="5038818366306248416">你先前已選擇不允許 <ph name="ORIGIN" /> 上的任何擴充功能</translation>
@@ -6074,6 +6077,7 @@
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除你電腦中的相片、音樂及其他媒體</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">PIN 碼輸入錯誤的次數過多。如要存取密碼金鑰和密碼，請變更 PIN 碼。</translation>
 <translation id="5458998536542739734">螢幕鎖定時的記事設定</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
 <translation id="5460641065520325899">管理網站可在你瀏覽時用來追蹤的資訊類型。</translation>
@@ -7499,6 +7503,7 @@
 <translation id="653920215766444089">正在搜尋指標裝置</translation>
 <translation id="6539674013849300372">使用高強度密碼強化上網安全。系統會將這組密碼儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="653983593749614101">繼續下載中...</translation>
+<translation id="6540174167103635041">安裝應用程式</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非你瞭解這項功能的用途或是收到相關指示，否則請不要啟用這項功能，因為收集資料可能會導致系統效能降低。</translation>
 <translation id="6540488083026747005">你已允許這個網站使用第三方 Cookie</translation>
 <translation id="6541638731489116978">這個網站無法存取你的動作感應器。</translation>
@@ -9064,7 +9069,6 @@
 <translation id="7708143783728142771">系統可以運用 Cookie，根據使用者偏好在網路上提供量身訂作的同類服務。瀏覽網站時，網站可以在裝置的瀏覽器儲存空間中儲存 Cookie，藉此記住你的網站偏好設定，例如你使用的語言或你要儲存在購物車的商品。日後，如果你使用相同的瀏覽器再次造訪該網站，網站就能讀取先前設定的 Cookie，並接續你上次的進度。這類 Cookie 是由你造訪的網站所設定，因此通常稱為第一方 Cookie。</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。如要復原本機資料，請輸入舊密碼。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">使用原 PIN 碼保護所有密碼金鑰</translation>
 <translation id="7710568461918838723">投放(&amp;C)...</translation>
 <translation id="7711900714716399411">使用 USB 傳輸線將手機連接電腦。如果手機已連接電腦，請拔掉傳輸線再重新連接。</translation>
 <translation id="7711968363685835633">停用個人化轉換、建議和使用者字典</translation>

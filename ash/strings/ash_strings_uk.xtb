@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Відкрити додаток Можливості</translation>
+<translation id="129469256578833241">Назад до підсумку</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Будь-коли натисніть <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">Автоматичні кліки</translation>
 <translation id="1925320505152357008">менше ніж 1 хв</translation>
 <translation id="1928739107511554905">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою, використовуючи сенсорний екран.</translation>
+<translation id="1929331825127010451">Повернутися до запитання</translation>
 <translation id="1948405482892809935">Перейти в наступний профіль користувача</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954252331066828794">Запис екрана завершено</translation>
@@ -1152,6 +1154,7 @@
 <translation id="5238719049014159442">Відкрити або закрити панель запуску</translation>
 <translation id="5240725217819182328">Швидкий доступ до певних сторінок або дій у встановлених додатках</translation>
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
+<translation id="5251174953851719648">Оновити контент</translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6147182561428020853">Тепер ви можете блокувати додатки, установлені на цьому пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Периферійний пристрій не підтримується</translation>
 <translation id="6156960295318603523">Налаштування мови</translation>
+<translation id="6158923546703693047">Інформація про джерело контенту</translation>
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>
 <translation id="616543563528926612">Комбінація клавіш для імітації кліку правою кнопкою миші змінилася з "<ph name="LAUNCHER_KEY_NAME" /> + клік" на "Alt + клік"</translation>
 <translation id="6165508094623778733">Докладніше</translation>
@@ -2000,6 +2004,7 @@
 <translation id="8315514906653279104">Увімкнення…</translation>
 <translation id="8331351032546853669">Очікує на завантаження</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Поставте запитання.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Некорисний результат</translation>
 <translation id="8345019317483336363">Вибрано вікно "<ph name="WINDOW_TITLE" />"</translation>

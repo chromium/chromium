@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Zgjidh “Shto te 'Kalendari i Google'“ ose “Shto tek Apple Calendar“.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> fjalëkalime të ripërdorura</translation>
+<translation id="1636234353664774105">Merr udhëzime për te destinacioni yt me udhëzime kthesë pas kthese duke përdorur veçorinë e navigimit</translation>
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="1641316430523156212">Ndiq</translation>
 <translation id="1644574205037202324">Historiku</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="2062410130322589403">Një udhëzues për zgjedhjet e tua të privatësisë</translation>
 <translation id="20638360198452347">Përzgjedhësi i llojit të njësisë</translation>
+<translation id="2067852168641682340">Ruaj gjithmonë në këtë llogari</translation>
 <translation id="2073572773299281212">Aktiv <ph name="DAYS" /> ditë më parë</translation>
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Mund të lëvizësh djathtas për të shfletuar në modalitetin "I fshehtë".</translation>
@@ -313,6 +315,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="261739049332372104">Për të marrë përditësime për përmbajtje që kanë rëndësi për ty, aktivizo njoftimet te cilësimet e tua të iOS.</translation>
 <translation id="2625189173221582860">Fjalëkalimi u kopjua</translation>
 <translation id="2626236249646841566">Kontrollo lidhjen dhe provo të identifikohesh sërish.</translation>
+<translation id="2635918910848538771">Plotëso automatikisht kodin CVC</translation>
 <translation id="2637313651144986786">Kërko skedat...</translation>
 <translation id="2640733327287333451">Nuk ka emër përdoruesi ••••••</translation>
 <translation id="2648721026697078500">Mos zhvendos asnjëherë</translation>
@@ -496,6 +499,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3533202363250687977">Mbylli të gjitha skedat "e fshehta"</translation>
 <translation id="3533436815740441613">Skedë e re</translation>
 <translation id="3540141921715814660">Shto te faqeshënuesit</translation>
+<translation id="3547356470684043247">Lexo vlerësimet e klientëve për produktet, shërbimet ose përvojat për të marrë informacione për vendimet e tua në lidhje me komentet</translation>
 <translation id="355101282835380364">Ruaj te llogaria…</translation>
 <translation id="3551320343578183772">Mbylle skedën</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4659194143325814340">{count,plural, =1{{count} faqe në "Listën e leximit"}other{{count} faqe në "Listën e leximit"}}</translation>
 <translation id="4659667755519643272">Futu te "Ndërruesi i skedave"</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
+<translation id="467189612236587057">Lidhu me një biznes duke nisur një telefonatë</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4689564913179979534">Menaxho mënyrat e pagesës...</translation>
 <translation id="469300482518076788">Mbylle skedën</translation>

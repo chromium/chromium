@@ -1870,13 +1870,6 @@
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不過，從 M85 版開始，系統針對這項政策已停止支援主機中包含「*」和「[*.]」萬用字元的模式。</translation>
-<translation id="2421713016375433338">設定圖片網址，用於商家檔案的企業徽章。該網址必須指向圖片。
-
-這個徽章會顯示在商家檔案圖片下方的商家檔案選單中，而且系統會根據徽章預留空間 (16x16) 調整圖片大小。
-
-如果未設定這項政策，系統會顯示預設的建築物圖示。
-
-如果擷取及顯示圖片時發生錯誤，系統會顯示預設的建築物圖示。</translation>
 <translation id="2421779938235645781">鍵盤背光顏色符合目前的桌布</translation>
 <translation id="2423255396068675416">如果將這項政策設為啟用或不設定，只要 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 設為啟用，使用者即可執行 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，系統會將使用者的 <ph name="PRODUCT_CROSTINI_NAME" /> 停用。變更為停用後，系統會開始將這項政策套用到新的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，不會套用到已經在執行的這類容器。</translation>
 <translation id="2423654977291507457">停用整合功能</translation>
@@ -2204,11 +2197,6 @@
       這項政策適用於登入畫面。另請查看適用於使用者工作階段的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。建議你為這兩項政策設定相同的值，如果兩者的值不相符，進入使用者工作階段時，系統可能會因為套用使用者政策指定的值而發生延遲。
       </translation>
 <translation id="2697717608663878828">啟用經過 TLS 加密的 ClientHello 實驗</translation>
-<translation id="2698555428858508691">這項政策控管用於辨識登入設定檔的自訂標籤。如果未設定這項政策，但必須顯示標籤，系統將使用預設標籤：「公司」或「學校」。
-
-這項政策會覆寫 <ph name="PROFILE_LABEL_POLICY_NAME" /> 政策。
-
-系統不會翻譯自訂標籤。</translation>
 <translation id="2699836109975228367">在登入畫面上啟用單聲道音訊模式</translation>
 <translation id="2702023190395322609">啟用媒體推薦內容</translation>
 <translation id="2702682139813393777">強制透過 cmd.exe 啟動 Windows 內建訊息傳遞主機</translation>
@@ -10112,7 +10100,6 @@ M127 版預設會為企業版使用者停用這項政策。</translation>
 <translation id="9020630127193895800">靛藍色鍵盤背光顏色</translation>
 <translation id="9031831501689819108">啟用舊版瀏覽器支援</translation>
 <translation id="9032595854515551464">啟用<ph name="PRODUCT_NAME" /> V2 服務，並在登入時啟動遠端桌面</translation>
-<translation id="903334067190374761">設定自訂設定檔標籤</translation>
 <translation id="9034285085962866065">允許自訂系統捷徑</translation>
 <translation id="9035086760683255833">啟用鍵盤焦點醒目顯示無障礙功能。
 

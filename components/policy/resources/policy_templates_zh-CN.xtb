@@ -1897,13 +1897,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不过，从 M85 开始，此政策已不再支持主机名中含有“*”或“[*.]”通配符的格式。</translation>
-<translation id="2421713016375433338">指向特定图片的网址，该图片将用作商家资料的企业徽章。该网址必须指向图片。
-
-此徽章会显示在商家资料图片下方的商家资料菜单中，而且系统会调整图片的大小，以适应为徽章预留的 16x16 空间。
-
-如果未设置此政策，系统会显示默认建筑物图标。
-
-如果尝试获取和显示该图片时出错，系统会显示默认建筑物图标。</translation>
 <translation id="2421779938235645781">键盘背光颜色与当前壁纸一致</translation>
 <translation id="2423255396068675416">如果此政策已启用或未设置，系统会允许用户运行 <ph name="PRODUCT_CROSTINI_NAME" />（前提是 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 均已启用）。如果此政策已停用，系统会关闭 <ph name="PRODUCT_CROSTINI_NAME" />，不允许用户使用。如果将此政策的状态改为已停用，此政策将开始应用于新启动的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，而非应用于已在运行的容器。</translation>
 <translation id="2423654977291507457">停用集成</translation>
@@ -2236,13 +2229,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此政策适用于登录屏幕。另请参阅适用于用户会话的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。最好将这两项政策设为相同的值。如果这两项政策的值不一致，当进入用户会话时，系统便可能会因正在应用由用户政策指定的值而出现延迟。
       </translation>
 <translation id="2697717608663878828">启用经过 TLS 加密的 ClientHello 实验</translation>
-<translation id="2698555428858508691">此政策可控制用于标识已登录个人资料的自定义标签。
-
-如果未设置此政策，且必须显示标签，系统将会使用默认标签“工作”或“学校”。
-
-此政策会覆盖 <ph name="PROFILE_LABEL_POLICY_NAME" /> 政策。
-
-系统不会翻译该自定义标签。</translation>
 <translation id="2699836109975228367">为登录屏幕启用单声道音频</translation>
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
 <translation id="2702682139813393777">强制通过 cmd.exe 启动 Windows 原生消息传递主机</translation>
@@ -10269,7 +10255,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9020630127193895800">键盘背光颜色：靛蓝色</translation>
 <translation id="9031831501689819108">启用旧版浏览器支持</translation>
 <translation id="9032595854515551464">启用<ph name="PRODUCT_NAME" /> V2 服务，但登录时启动远程桌面</translation>
-<translation id="903334067190374761">设置自定义个人资料标签</translation>
 <translation id="9034285085962866065">允许自定义系统快捷方式</translation>
 <translation id="9035086760683255833">启用“键盘焦点突出显示”无障碍功能。
 

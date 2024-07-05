@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">పెయిరింగ్‌ను కొనసాగించడానికి Google Chromeకు 
  బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
-<translation id="1551749261806528781">మీ పరికరాలన్నింటిలో, పాస్‌వర్డ్‌లను సేవ్ చేయడం, ఉపయోగించడంతో పాటు మరెన్నో చేయడానికి, Chromeకు సైన్ ఇన్ చేయండి. ఈ పాస్‌వర్డ్, మీ Google ఖాతాలో మీరు సైన్ ఇన్ చేసిన తర్వాత సేవ్ అవుతుంది.</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chrome ప్రొఫైల్‌కు సైన్ ఇన్ చేసి ఉన్నారు. ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
@@ -329,6 +328,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromeను ప్రారంభించడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5809516625706423866">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. HTTP 401 అనధికార యాక్సెస్. దయచేసి మీ ప్రాక్సీ కాన్ఫిగరేషన్‌ను చెక్ చేయండి.</translation>
+<translation id="5825922397106002626">Chrome నుండి <ph name="EXTENSION_NAME" />‌ను తీసివేయండి</translation>
 <translation id="5858486459377137936">మీరు Chromeకు సైన్ ఇన్ చేసినట్లయితే, Chrome విండోలన్నింటినీ మూసివేసినప్పుడు, మీ Google ఖాతా మినహా, దాదాపుగా అన్ని సైట్‌ల నుండి సైన్ అవుట్ అవుతారు. మిమ్మల్ని సైట్‌లు గుర్తుంచుకోవడానికి, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">సురక్షితం కాని సైట్‌లు, డౌన్‌లోడ్‌ల గురించి <ph name="BEGIN_LINK" />Chrome మిమ్మల్ని హెచ్చరిస్తుంది<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
@@ -414,7 +414,6 @@
 <translation id="7036251913954633326">మీరు ఈ ఖాతాను ఒకసారి మాత్రమే ఉపయోగించాలనుకుంటే, Chrome బ్రౌజర్‌లో <ph name="GUEST_LINK_BEGIN" />గెస్ట్ మోడ్‌ను<ph name="GUEST_LINK_END" /> ఉపయోగించండి. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
 
 మీరు వెబ్‌సైట్‌లు, యాప్‌లకు ఇప్పటికే ఇచ్చిన అనుమతులు ఈ ఖాతాకు వర్తించవచ్చు. మీ Google ఖాతాలను మీరు <ph name="SETTINGS_LINK_BEGIN" />సెట్టింగ్‌లు<ph name="SETTINGS_LINK_END" /> లింక్‌లో మేనేజ్ చేయవచ్చు.</translation>
-<translation id="7037538054043837165">మీ అన్ని పరికరాలలో మీ పాస్‌వర్డ్‌లను, మరిన్నింటిని సేవ్ చేయడానికి, ఉపయోగించడానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="7048502283602470098">AIని అన్వేషించండి</translation>
 <translation id="7059914902409643750">Chromeను మీకు నచ్చిన విధంగా తయారు చేసుకోండి</translation>
 <translation id="7071827361006050863">Chrome త్వరలోనే బ్రౌజింగ్ డేటాను తొలగిస్తుంది</translation>

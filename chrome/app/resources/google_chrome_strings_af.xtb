@@ -39,7 +39,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
-<translation id="1551749261806528781">Meld aan by Chrome om wagwoorde en meer op al jou toestelle te stoor en te gebruik. Hierdie wagwoord sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Dit sal 'n nuwe Chrome-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
 <translation id="1587223624401073077">Google Chrome gebruik tans jou kamera.</translation>
@@ -422,7 +421,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7036251913954633326">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chrome-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
 
 Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekening van toepassing wees. Jy kan jou Google-rekeninge in <ph name="SETTINGS_LINK_BEGIN" />Instellings<ph name="SETTINGS_LINK_END" /> bestuur.</translation>
-<translation id="7037538054043837165">Meld aan by Chrome om jou wagwoorde en meer op al jou toestelle te stoor en te gebruik</translation>
 <translation id="7048502283602470098">Verken AI</translation>
 <translation id="7059914902409643750">Maak Chrome jou eie</translation>
 <translation id="7071827361006050863">Chrome gaan blaaierdata binnekort uitvee</translation>

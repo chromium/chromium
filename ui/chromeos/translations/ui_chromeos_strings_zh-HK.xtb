@@ -337,7 +337,7 @@
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="3691184985318546178">錫蘭文</translation>
-<translation id="3702842351052426940">你的 SIM 卡或 eSIM 卡設定檔可能已停用，建議你更換 SIM 卡或切換 eSIM 卡設定檔。</translation>
+<translation id="3702842351052426940">你的 SIM 卡或 eSIM 設定檔可能已停用。請更換 SIM 卡或切換 eSIM 設定檔。</translation>
 <translation id="3722341589402358578">發生錯誤，部分項目可能未移至垃圾桶。</translation>
 <translation id="3726463242007121105">這部裝置所用的檔案系統不受支援，因此系統無法開啟這部裝置。</translation>
 <translation id="3727148787322499904">變更此設定將會影響所有共用網絡</translation>
@@ -357,7 +357,7 @@
 <translation id="3822559385185038546">管理員已強制執行此 Proxy</translation>
 <translation id="3830674330436234648">無法播放</translation>
 <translation id="383652340667548381">塞爾維亞語</translation>
-<translation id="3839045880592694915">電信業者不接受你的數據機連線，詳情請洽詢電信業者。</translation>
+<translation id="3839045880592694915">流動網絡供應商不允許連接你的數據機，請聯絡流動網絡供應商查詢詳情。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3855472144336161447">德文 Neo 2 鍵盤</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -686,7 +686,7 @@
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，連接</translation>
 <translation id="6269630227984243955">馬來文</translation>
 <translation id="6271903698064569429">由於「<ph name="SHARED_DRIVE_NAME" />」的儲存空間不足，因此無法上載檔案。</translation>
-<translation id="6279140785485544797">行動數據方案可能已過期，請向電信業者尋求支援。</translation>
+<translation id="6279140785485544797">你的流動數據計劃可能已過期，請聯絡流動網絡供應商尋求支援。</translation>
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
 <translation id="6295542640242147836">鎖定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 無效</translation>

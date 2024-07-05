@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Pàgina que no respon}other{Pàgines que no responen}}</translation>
 <translation id="1011003645819296594">Dispositius desats</translation>
 <translation id="1011355516189274711">Volum de text a parla</translation>
+<translation id="1011431628606634753">Canvia el PIN de recuperació per al gestor de contrasenyes de Google</translation>
 <translation id="1012794136286421601">S'estan sincronitzant els documents, els fulls de càlcul, les diapositives i els dibuixos. Obriu l'aplicació Google Drive per accedir-hi en línia o fora de línia.</translation>
 <translation id="1012876632442809908">Dispositiu USB-C (port frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -1466,7 +1467,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2048254245884707305">S'està cercant programari maliciós...</translation>
 <translation id="2048554637254265991">S'ha produït un error en iniciar el gestor de contenidors. Torna-ho a provar.</translation>
 <translation id="2048653237708779538">Acció no disponible</translation>
-<translation id="2049021651258469175">També podràs utilitzar i desar les teves contrasenyes i altres dades del teu Compte de Google.</translation>
 <translation id="204914487372604757">Crea la drecera</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El gestor de contrasenyes de Google ha creat una contrasenya segura per a aquest lloc web</translation>
@@ -4050,6 +4050,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3923221004758245114">Vols suprimir <ph name="VM_NAME" /> del teu <ph name="DEVICE_TYPE" />? Se suprimiran totes les aplicacions i les dades de la màquina virtual.</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3923676227229836009">Aquesta pàgina té permís per veure fitxers</translation>
+<translation id="3923958273791212723">Alertes de problemes de rendiment</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Mida de la pantalla i del text establerta en un <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envia URL a Navegació segura perquè els comprovi. També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves. Enllaça temporalment aquestes dades al teu Compte de Google quan tens la sessió iniciada per protegir-te a les aplicacions de Google.</translation>
@@ -4066,6 +4067,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3930737994424905957">S'estan cercant dispositius</translation>
 <translation id="3930968231047618417">Color de fons</translation>
 <translation id="3932356525934356570">Fixa <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Longitud màxima de <ph name="MAX" /> caràcters</translation>
 <translation id="3933121352599513978">Replega les sol·licituds no desitjades (opció recomanada)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> està compartint una xarxa Wi-Fi amb tu</translation>
 <translation id="3936390757709632190">&amp;Obre l'àudio en una pestanya nova</translation>
@@ -5204,6 +5206,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4807098396393229769">Titular de la targeta</translation>
 <translation id="4807122856660838973">Activa la funció Navegació segura</translation>
 <translation id="4807514039636325497">Detalls de DBus</translation>
+<translation id="4808525520374557629">Rep notificacions que suggereixen maneres de millorar els problemes de rendiment detectats. <ph name="BEGIN_LINK" />Més informació sobre les alertes de problemes de rendiment<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">S'han bloquejat les finestres emergents:</translation>
 <translation id="4809079943450490359">Instruccions de l'administrador del dispositiu:</translation>
 <translation id="4809447465126035330">Suprimeix</translation>
@@ -5506,7 +5509,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5032430150487044192">No es pot crear el codi QR</translation>
 <translation id="5033137252639132982">Sense permís per utilitzar sensors de moviment</translation>
 <translation id="5033266061063942743">Formes geomètriques</translation>
-<translation id="503441068567788948">Crea un PIN nou per al gestor de contrasenyes de Google</translation>
 <translation id="5035846135112863536">Tria Més detalls a continuació per obtenir més informació de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Selecciona-ho tot</translation>
 <translation id="5038818366306248416">Havies triat l'opció de no permetre cap extensió a <ph name="ORIGIN" /></translation>
@@ -6076,6 +6078,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5457113250005438886">No vàlides</translation>
 <translation id="5457459357461771897">Llegeix i suprimeix fotos, música i altres elements multimèdia de l'ordinador</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Has introduït un PIN incorrecte massa vegades. Per accedir a les teves claus d'accés i contrasenyes, canvia el PIN.</translation>
 <translation id="5458998536542739734">Notes a la pantalla de bloqueig</translation>
 <translation id="5459864179070366255">Continua per instal·lar</translation>
 <translation id="5460641065520325899">Gestiona els tipus d'informació que els llocs web poden utilitzar per fer un seguiment de la teva activitat mentre navegues.</translation>
@@ -9068,7 +9071,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7708143783728142771">Les galetes permeten aquest mateix nivell de personalització de les preferències al web. Quan visites un lloc web, aquest pot desar una galeta a l'emmagatzematge del navegador del dispositiu per recordar les teves preferències al lloc web, com ara l'idioma que parles o els articles que deses al carretó electrònic. Si més tard tornes a visitar el lloc web amb el mateix navegador, el lloc web en qüestió podrà llegir la galeta que ha definit i podràs continuar on ho havies deixat. Aquests tipus de galetes sovint es coneixen com a galetes pròpies, perquè les estableix el mateix lloc web que visites.</translation>
 <translation id="770831926727930011">Les dades locals estan protegides per la contrasenya antiga. Introdueix la contrasenya antiga per recuperar les dades locals.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protegeix totes les claus d'accés amb un PIN de recuperació</translation>
 <translation id="7710568461918838723">&amp;Emet…</translation>
 <translation id="7711900714716399411">Utilitza un cable USB per connectar el telèfon a l'ordinador. Si ja està connectat, desendolla'l i torna'l a endollar.</translation>
 <translation id="7711968363685835633">Desactiva les conversions i els suggeriments personalitzats, així com el diccionari de l'usuari</translation>

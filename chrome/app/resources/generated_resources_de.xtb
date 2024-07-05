@@ -1463,7 +1463,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2048254245884707305">Malware wird gesucht…</translation>
 <translation id="2048554637254265991">Fehler beim Starten des Container-Managers. Bitte versuche es noch einmal.</translation>
 <translation id="2048653237708779538">Aktion nicht verfügbar</translation>
-<translation id="2049021651258469175">Du kannst auch deine Passwörter und weitere Daten aus deinem Google-Konto verwenden und speichern.</translation>
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2050339315714019657">Porträt</translation>
 <translation id="2051266530792296582">Der Google Passwortmanager hat ein starkes Passwort für diese Website erstellt</translation>
@@ -4713,6 +4712,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Passwörter, Passkeys und andere Daten werden endgültig aus <ph name="BRAND" /> gelöscht</translation>
 <translation id="4426268963847471040"><ph name="FILE_NAME" /> löschen</translation>
 <translation id="4426464032773610160">Prüfe zuerst, ob dein USB- oder Bluetooth-Schalter mit deinem Chromebook verbunden ist. Du kannst auch die Tastatur verwenden.</translation>
 <translation id="4426490308207168518">Feedback geben oder Problem melden</translation>
@@ -5504,7 +5504,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5032430150487044192">QR-Code konnte nicht erstellt werden</translation>
 <translation id="5033137252639132982">Dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="5033266061063942743">Geometrische Formen</translation>
-<translation id="503441068567788948">Neue PIN für den Google Passwortmanager erstellen</translation>
 <translation id="5035846135112863536">Wähle unten „Weitere Details“ aus, um mehr Informationen von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> zu erhalten.</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
 <translation id="5038818366306248416">Du hast dich zuvor dafür entschieden, keine Erweiterungen auf <ph name="ORIGIN" /> zuzulassen</translation>
@@ -7499,6 +7498,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="653920215766444089">Suche nach Zeigegerät läuft</translation>
 <translation id="6539674013849300372">Mit einem starken Passwort bist du online besser geschützt. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="653983593749614101">Wird fortgesetzt…</translation>
+<translation id="6540174167103635041">App installieren</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Hinweis:<ph name="END_BOLD" /> Aktiviere diese Option nur dann, wenn du dazu aufgefordert wurdest und dir sicher bist, dass es unbedenklich ist. Die Datenerfassung kann die Leistung verringern.</translation>
 <translation id="6540488083026747005">Du hast Drittanbieter-Cookies auf dieser Website zugelassen</translation>
 <translation id="6541638731489116978">Diese Website darf nicht auf deine Bewegungssensoren zugreifen.</translation>
@@ -9064,7 +9064,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7708143783728142771">Im Web können sich Cookies deine Vorlieben merken. Wenn du eine Website besuchst, kann die Website ein Cookie im Browserspeicher deines Geräts setzen, um deine Website-Einstellungen zu speichern, beispielsweise die Sprache, die du sprichst, oder Artikel, die in den Einkaufswagen gelegt werden sollen. Wenn du die Website später mit demselben Browser noch einmal besuchst, kann sie das von ihr gesetzte Cookie lesen und du kannst dort weitermachen, wo du aufgehört hast. Diese Arten von Cookies werden oft als eigene Cookies bezeichnet, weil sie von der von dir besuchten Website gesetzt werden.</translation>
 <translation id="770831926727930011">Deine lokalen Daten sind durch dein altes Passwort geschützt. Gib dein altes Passwort ein, um die lokalen Daten wiederherzustellen.</translation>
 <translation id="7709152031285164251">Fehler – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Alle Passkeys mit einer Wiederherstellungs‑PIN schützen</translation>
 <translation id="7710568461918838723">&amp;Streamen...</translation>
 <translation id="7711900714716399411">Verbinde dein Smartphone über ein USB-Kabel mit deinem Computer. Wenn dein Smartphone schon verbunden ist, trenne die Verbindung und schließe es wieder an.</translation>
 <translation id="7711968363685835633">Personalisierte Konvertierungen und Vorschläge sowie mein Wörterbuch deaktivieren</translation>

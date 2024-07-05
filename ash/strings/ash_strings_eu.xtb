@@ -97,6 +97,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1293699935367580298">Ihes</translation>
 <translation id="1294046132466831888">Ireki Arakatu panela</translation>
+<translation id="129469256578833241">Itzuli laburpenera</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Sakatu <ph name="LAUNCHER_KEY_NAME" /> + g nahi duzunean</translation>
 <translation id="1306549533752902673">GOMENDATUTAKO APLIKAZIOAK</translation>
@@ -257,6 +258,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
 <translation id="1925320505152357008">minutu bat baino gutxiago</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
+<translation id="1929331825127010451">Itzuli galderara</translation>
 <translation id="1948405482892809935">Aldatu hurrengo erabiltzailera</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1954252331066828794">Amaitu da pantaila-grabaketa</translation>
@@ -806,7 +808,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="401993194061514265">Markatzailea ez dago erabilgarri. Ireki berriro Screencast.</translation>
 <translation id="4021716437419160885">Egin behera</translation>
 <translation id="4022497978915111141">Blokeatu gailua</translation>
-<translation id="4024840464866786680">PINa eta pasahitza ahaztu bazaizkizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
+<translation id="4024840464866786680">PINa eta pasahitza ahaztu bazaizkizu edo duela gutxi Google-ko kontuaren pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
 <translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
 <translation id="4028481283645788203">Pasahitza behar da gailua babestuago edukitzeko</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -1015,7 +1017,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4763885921995354846">Kamera erabiltzeko baimena duten aplikazio eta webgune guztiek kamera atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
 <translation id="4774338217796918551">Itzuli bihar ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Oraindik ezin izan da egiaztatu pasahitza. Saiatu berriro.</translation>
-<translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuko pasahitza</translation>
+<translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuaren pasahitza</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google-ren Laguntzailea ez dago erabilgarri demo saioetan.</translation>
 <translation id="4789348252524569426">Ezin dira instalatu hizketa-fitxategiak. Gailua eguneratu behar da. Berrabiarazi gailua eta saiatu berriro.</translation>
@@ -1153,6 +1155,7 @@ Lasterbide hau ere erabil dezakezu: lehenengo, nabarmendu testua, eta, ondoren, 
 <translation id="5238719049014159442">Ireki/Itxi Exekutatzeko tresna</translation>
 <translation id="5240725217819182328">Sarbide bizkorra orri jakinetara edo instalatutako aplikazioen ekintzetara</translation>
 <translation id="5245201184978705914">Ezin da sortu transkripzioa</translation>
+<translation id="5251174953851719648">Freskatu edukia</translation>
 <translation id="5253783950165989294">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera. Bateria: % <ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="5258528442992323769">Ez dago lan-eremurik gordeta</translation>
 <translation id="5260676007519551770">4. lan-eremua</translation>
@@ -1292,7 +1295,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5711984160978177607"><ph name="REMAINING_TIME" /> gelditzen dira</translation>
 <translation id="5712132663381964774">Erabili aplikazioak behar duzun guztia <ph name="PRODUCT_NAME" /> gailuan egiteko. Exekutatzeko tresnan aurkituko dituzu aplikazioak.</translation>
 <translation id="571295407079589142">Desaktibatuta dago datu-konexioa</translation>
-<translation id="5727460725221669831">Pasahitza ahaztu bazaizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
+<translation id="5727460725221669831">Pasahitza ahaztu bazaizu edo duela gutxi Google-ko kontuaren pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
 <translation id="5733630091161562207">Ongietorri-jakinarazpena</translation>
 <translation id="573413375004481890">Ezin dira zure pantaila guztiak konektatu gailu honetara; beraz, haietako bat deskonektatu da</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
@@ -1417,6 +1420,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6147182561428020853">Orain, <ph name="DEVICE_TYPE" /> honetan instalatutako aplikazioak blokea ditzakezu</translation>
 <translation id="6154006699632741460">Ez da onartzen gailu periferikoa</translation>
 <translation id="6156960295318603523">Hizkuntza-ezarpenak</translation>
+<translation id="6158923546703693047">Edukiaren iturburuari buruzko informazioa</translation>
 <translation id="615957422585914272">Erakutsi pantailako teklatua</translation>
 <translation id="616543563528926612">Eskuineko botoiarekin klik egiteko lasterbidea <ph name="LAUNCHER_KEY_NAME" /> tekla + klik izatetik Alt + klik izatera pasatu da</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
@@ -2001,6 +2005,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8315514906653279104">Aktibatzen…</translation>
 <translation id="8331351032546853669">Deskarga zain</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Galdetu zerbait.</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Emaitza txarra</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> leihoa dago hautatuta</translation>

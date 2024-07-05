@@ -447,6 +447,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1317637799698924700">La estación de conectores funcionará en modo compatible con USB Type-C.</translation>
 <translation id="1319983966058170660">Botón para volver de la subpágina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Consulta y administra las contraseñas guardadas en tu <ph name="SAVED_PASSWORDS_STORE" /></translation>
+<translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Tickets de Kerberos</translation>
 <translation id="1327495825214193325">Para habilitar la depuración de adb, es necesario restablecer este dispositivo <ph name="DEVICE_TYPE" />. Si quieres inhabilitarla, deberás restablecer la configuración de fábrica.</translation>
 <translation id="1327527584824210101">Usa tu llave de acceso</translation>
@@ -1462,7 +1463,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2048254245884707305">Buscando software malicioso…</translation>
 <translation id="2048554637254265991">Se produjo un error al iniciar el administrador de contenedores. Vuelve a intentarlo.</translation>
 <translation id="2048653237708779538">La acción no está disponible</translation>
-<translation id="2049021651258469175">También podrás usar y guardar tus contraseñas y otras funciones de tu Cuenta de Google.</translation>
 <translation id="204914487372604757">Crear accesos directos</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El Administrador de contraseñas de Google creó una contraseña segura para este sitio web</translation>
@@ -2504,6 +2504,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2783298271312924866">Descargado</translation>
 <translation id="2783952358106015700">Usar la llave de seguridad con <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Revisión de contraseñas</translation>
+<translation id="2785279781154577715">Visualización de la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="2785873697295365461">Descriptores de archivo</translation>
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
@@ -3985,6 +3986,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3875815154304214043">La app de <ph name="APP_NAME" /> está configurada para abrirse en una nueva pestaña del navegador. Los vínculos compatibles también se abrirán en el navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Se cambió el tamaño de las ventanas sobre la parte superior</translation>
 <translation id="3877075909000773256">Configuración de Compartir con Nearby para el dispositivo de <ph name="USER_NAME" />, quien comparte contenido con la cuenta <ph name="USER_EMAIL" />.</translation>
+<translation id="3877209288227498506">Elegir mostrar el uso de memoria y las imágenes en la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
 <translation id="3878445208930547646">No se puede copiar desde este sitio</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3880513902716032002">Se precargan algunas de las páginas que visitas</translation>
@@ -4086,6 +4088,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" /> para que la descarga de archivos sea más segura</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3950841222883198950">Dictado por voz</translation>
+<translation id="3952107025401070384">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda quitarla. <ph name="BEGIN_LINK" />Obtén más información sobre las extensiones compatibles.<ph name="END_LINK" />}other{Chrome te recomienda quitarlas. <ph name="BEGIN_LINK" />Obtén más información sobre las extensiones compatibles.<ph name="END_LINK" />}}</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
 <translation id="3954354850384043518">En curso</translation>
 <translation id="3954468641195530330">Las apps no pueden usar el micrófono</translation>
@@ -4654,6 +4657,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="438503109373656455">Rocinante</translation>
 <translation id="4385146930797718821">Se copió la captura de pantalla en el portapapeles</translation>
 <translation id="4385905942116811558">Buscando dispositivos Bluetooth y USB</translation>
+<translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Se desactivó esta extensión porque ya no es compatible}other{Se desactivaron estas extensiones porque ya no son compatibles}}</translation>
 <translation id="4386604394450371010">descripción general</translation>
 <translation id="4387890294700445764">Contraseñas hackeadas</translation>
 <translation id="4388650384344483842">Usa al menos 8 caracteres</translation>
@@ -5237,6 +5241,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4830502475412647084">Instalando la actualización del SO</translation>
 <translation id="4831226137013573603">micrófono silenciado</translation>
 <translation id="4833683849865011483">Se encontró 1 impresora en el servidor de impresión</translation>
+<translation id="4835677468087803981">Ocultar PIN</translation>
 <translation id="4836504898754963407">Administrar huellas dactilares</translation>
 <translation id="4837128290434901661">¿Deseas volver a usar la Búsqueda de Google?</translation>
 <translation id="4837926214103741331">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el propietario del dispositivo.</translation>
@@ -5500,7 +5505,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
-<translation id="503441068567788948">Crea un nuevo PIN para el Administrador de contraseñas de Google</translation>
 <translation id="5035846135112863536">Elige "Más detalles" a continuación para obtener más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
 <translation id="5038818366306248416">Anteriormente elegiste no permitir ninguna extensión para <ph name="ORIGIN" /></translation>
@@ -5578,6 +5582,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5088534251099454936">PKCS N. º 1, SHA-512 con encriptación RSA</translation>
 <translation id="5089763948477033443">Controlador de cambio de tamaño del panel lateral</translation>
 <translation id="5090637338841444533">No puede realizar un seguimiento de la posición de la cámara</translation>
+<translation id="5091636240353511739">Mostrar PIN</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaste y no quieres que sugieran anuncios a otros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
@@ -5760,6 +5765,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5225324770654022472">Mostrar acceso directo a las aplicaciones</translation>
 <translation id="52254442782792731">Aún no se estableció la configuración de visibilidad actual</translation>
 <translation id="5225463052809312700">Activar la cámara</translation>
+<translation id="5226514125747186">Aparece un círculo punteado alrededor de los íconos del sitio. <ph name="BEGIN_LINK" />Obtén más información sobre las pestañas inactivas<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Los sitios web no pueden usar tu ubicación</translation>
 <translation id="5227679487546032910">Avatar verde azulado predeterminado</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> dispositivos conectados</translation>
@@ -6344,6 +6350,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5651308944918885595">Detección de Compartir con Nearby</translation>
 <translation id="5653154844073528838">Tienes <ph name="PRINTER_COUNT" /> impresoras guardadas.</translation>
 <translation id="5654669866168491665">Más información sobre los sitios que podrían no funcionar cuando se bloquean las cookies de terceros</translation>
+<translation id="5654751240928365405">Esta extensión se desactivó porque ya no es compatible</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Para proteger tu privacidad, se quitaron los permisos de un sitio}other{Para proteger tu privacidad, se quitaron los permisos de algunos sitios}}</translation>
 <translation id="565515993087783098">Si olvidas esta red, también se quitará la suscripción a Passpoint y sus redes asociadas.</translation>
 <translation id="5655296450510165335">Inscripción del dispositivo</translation>
@@ -6715,6 +6722,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5938002010494270685">Hay una actualización de seguridad disponible</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="5939719276406088041">No se puede crear el acceso directo.</translation>
+<translation id="5939723110967488589">Elige qué botones mostrar en la barra de herramientas</translation>
 <translation id="594048410531370124">No se reconoce el interruptor. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Agregar persona…</translation>
 <translation id="5941343993301164315">Accede a <ph name="TOKEN_NAME" />.</translation>
@@ -7577,6 +7585,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6597324406048772521">No se permiten las extensiones en este sitio</translation>
 <translation id="6597331566371766302">Tu administrador bloqueó las siguientes extensiones:</translation>
 <translation id="659894938503552850">más recientes</translation>
+<translation id="6600016381025017075">Buscar cualquier cosa en esta página</translation>
 <translation id="6601262427770154296">Administrar diccionarios del usuario</translation>
 <translation id="6602173570135186741">Autocompletar y contraseñas</translation>
 <translation id="6602336931411102724">Mostrar los grupos de pestañas en la barra de favoritos</translation>
@@ -8240,6 +8249,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7089253021944603172">Se volvió a activar la pestaña</translation>
 <translation id="7090160970140261931">Puedes agregar una cuenta adicional a tu <ph name="DEVICE_TYPE" /> para usarlas en sitios web y apps para Android. También puedes controlar qué cuentas se usan en las apps para Android.</translation>
 <translation id="7090714929377281710">Desactiva el hotspot automáticamente</translation>
+<translation id="7092504544229909737">No se puede usar con apps para Android</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093866338626856921">Intercambiar datos con los siguientes dispositivos: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB-C (puerto izquierdo en la parte posterior)</translation>
@@ -9058,7 +9068,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7708143783728142771">Las cookies permiten el mismo nivel de personalización de preferencias en la Web. Cuando visitas un sitio, este puede guardar una cookie en el almacenamiento del navegador de tu dispositivo para recordar tus preferencias del sitio, como el idioma que hablas o los elementos que quieres guardar en un carrito de compras. Más adelante, si vuelves a visitar el sitio utilizando el mismo navegador, el sitio podrá leer la cookie que estableció y podrás comenzar desde donde lo dejaste. Estos tipos de cookies suelen denominarse cookies propias porque las establece el sitio que visitas.</translation>
 <translation id="770831926727930011">Los datos locales están protegidos por tu contraseña anterior. Ingresa tu contraseña anterior para recuperar los datos locales.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Protege todas tus llaves de acceso con un PIN de recuperación</translation>
 <translation id="7710568461918838723">&amp;Transmitir…</translation>
 <translation id="7711900714716399411">Conecta el teléfono a tu computadora con un cable USB. Si el teléfono ya está conectado, desconéctalo y vuelve a conectarlo.</translation>
 <translation id="7711968363685835633">Inhabilitar conversiones y sugerencias personalizadas, además del diccionario del usuario</translation>
@@ -9730,6 +9739,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8184288427634747179">Cambiar a <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Más información</translation>
 <translation id="8184472985242519288">Uniforme</translation>
+<translation id="8186013737729037962">Más información sobre los dispositivos con inscripción empresarial</translation>
 <translation id="8186047833733689201">Se abrió el menú de tildes. Presiona las teclas de número, flecha hacia la izquierda o flecha hacia la derecha para navegar; presiona Intro para insertarlas.</translation>
 <translation id="8186609076106987817">El servidor no pudo encontrar el archivo.</translation>
 <translation id="8188389033983459049">Revisa la configuración del dispositivo y activa la conexión Bluetooth para continuar</translation>

@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">ପ୍ରସ୍ଥ ସହିତ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1081061862829655580">ଟ୍ରେ 19</translation>
 <translation id="1082026381988252344">ଆପଣଙ୍କ ସେୟାର କରାଯାଇଥିବା ଟାବର ବିଷୟବସ୍ତୁକୁ ସ୍କ୍ରୋଲ କରି ଜୁମ କରନ୍ତୁ</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> ପାଇଁ ସାଧାରଣ ମୂଲ୍ୟ <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> ଅଟେ, କିନ୍ତୁ ସମଗ୍ର ୱେବରେ ବର୍ତ୍ତମାନ ମୂଲ୍ୟ ହେଉଛି <ph name="CURRENT_PRICE" />।</translation>
 <translation id="1089439967362294234">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="1090629319939036170">VR ମେନୁ</translation>
 <translation id="1091779689406092804">ସ୍କ୍ରିନସଟଗୁଡ଼ିକ</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଏକାଧିକ କାର୍ଯ୍ୟ ଉପଲବ୍ଧ ଅଛି, ସେଗୁଡ଼ିକୁ ଗୋଟିଏ ଗୋଟିଏ କରି ଦେଖିବା ପାଇଁ Tab ଦବାନ୍ତୁ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ଭର୍ଚୁଆଲ କାର୍ଡ ବିବରଣୀ</translation>
+<translation id="1803254472779303354">ମାଉସ ଲକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1803351196216024260">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1806174020048213474">ଏହି ଆପ ୱାଇ-ଫାଇ କ୍ରେଡେନସିଆଲଗୁଡ଼ିକ ଇନଷ୍ଟଲ କରିବାକୁ ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରୁଛି। ସେଟଅପ ପରେ, ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ସ୍ୱତଃ ଅଂଶଗ୍ରହଣକାରୀ ୱାଇ-ଫାଇ ନେଟୱାର୍କଗୁଡ଼ିକ ସହ କନେକ୍ଟ ହେବ। ଏହି କ୍ରେଡେନସିଆଲଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ଆପକୁ ଅନଇନଷ୍ଟଲ କରନ୍ତୁ।</translation>
 <translation id="1807246157184219062">ଫିକା</translation>
@@ -911,6 +913,7 @@
 <translation id="2702592986366989640">କମ ମୂଲ୍ୟ ଥିବା ବିକଳ୍ପ</translation>
 <translation id="2702801445560668637">ପଢ଼ିବା ତାଲିକା</translation>
 <translation id="270415722347413271">ଅପ୍ଟିକାଲ ଡିସ୍କ (ମେଟ)</translation>
+<translation id="2704192696317130398">ଆପଣଙ୍କ ମାଉସକୁ ଲକ କରିବେ?</translation>
 <translation id="2704283930420550640">ମୂଲ୍ୟଟି ଫର୍ମାଟ୍ ସହିତ ମେଳ ହେଉନାହିଁ।</translation>
 <translation id="2704606927547763573">କପି କରାଯାଇଛି</translation>
 <translation id="2705137772291741111">ଏହି ସାଇଟ୍‌ର ସେଭ୍‌ (କେଚ୍‌ ହୋ‍ଇଥିବା) ହୋ‍ଇଥିବା କପି ପଢ଼ିବାଯୋଗ୍ୟ ନଥିଲା।</translation>
@@ -1213,6 +1216,7 @@
 <translation id="3307649904964670439">'Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ ବ୍ରାଉଜରର ଲୁକ କଷ୍ଟମାଇଜ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
 <translation id="3318016344440038475">ଟିଭି କମେଡିଗୁଡ଼ିକ</translation>
+<translation id="3321152582690622182">ଟ୍ରାକ କରାଯାଉନାହିଁ</translation>
 <translation id="3324687287337751929">4 x 6 ଇଞ୍ଚ</translation>
 <translation id="3324983252691184275">ଗାଢ଼ ଲାଲ୍‌ ରଙ୍ଗ</translation>
 <translation id="3325027355611702542">କେମ୍ପର ଏବଂ RV</translation>
@@ -2166,6 +2170,7 @@
 <translation id="5125751979347152379">ଅବୈଧ URL।</translation>
 <translation id="512592033764059484">ସକର</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ଭଲ ଭାବରେ ରିସାଇଜ୍ ହୋଇନପାରେ। ଆପରେ ହୋଇଥିବା ସମସ୍ୟାକୁ ପ୍ରତିରୋଧ କରିବା ପାଇଁ ୱିଣ୍ଡୋର ପ୍ରିସେଟ୍ ଆକାରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
+<translation id="512756860033933700">କୀବୋର୍ଡ ଲକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5127934926273826089">ଫୁଲ</translation>
 <translation id="5129534298163637277">ସୁନିଶ୍ଚିତକରଣ ଡାଏଲଗ</translation>
 <translation id="5135404736266831032">ଠିକଣାଗୁଡ଼ିକ ପରିଚାଳିତ କରନ୍ତୁ...</translation>
@@ -2196,6 +2201,7 @@
 <translation id="5177076414499237632">ଏହି ପୃଷ୍ଠାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
 <translation id="5179490652562926740">ପେମେଣ୍ଟ ଯାଞ୍ଚକରଣ ସେଟିଂସ ସେଭ କରାଯାଇଛି</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />ରେ ନାହିଁ? ଏହି ତ୍ରୁଟିକୁ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="5180662470511508940">କୀବୋର୍ଡ ଲକକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5187079891181379721">କର୍ପୋରେଟ ଇଭେଣ୍ଟ</translation>
 <translation id="5190072300954988691">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5190835502935405962">ବୁକମାର୍କ ବାର୍</translation>
@@ -2768,6 +2774,7 @@
 <translation id="6298456705131259420">ଏଠାରେ ତାଲିକାଭୁକ୍ତ ସାଇଟଗୁଡ଼ିକୁ ପ୍ରଭାବିତ କରେ। ଏକ ଡୋମେନ ନାମ ପୂର୍ବରୁ "[*.]" ଇନସାର୍ଟ କରିବା ଫଳରେ ଏହା ସମ୍ପୂର୍ଣ୍ଣ ଡୋମେନ ପାଇଁ ଏକ ବ୍ୟତିକ୍ରମ ତିଆରି କରେ। ଉଦାହରଣ ସ୍ୱରୂପ, “[*.]google.com” ଯୋଗ କରିବାର ଅର୍ଥ ହେଉଛି ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ google.comର ଅଂଶ ହୋଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକ mail.google.com ପାଇଁ ମଧ୍ୟ ସକ୍ରିୟ ହୋଇପାରିବ।</translation>
 <translation id="6300452962057769623">{0,plural, =0{ଆପଣଙ୍କ ଡିଭାଇସ ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ ହେବ}=1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="6301104306974789820">ମୂଲ୍ୟ ଟ୍ରାକିଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> ଅନୁମତି ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
 <translation id="6304398603974202180">ମଲ୍ଟିମିଡିଆ ସଫ୍ଟୱେର</translation>
 <translation id="6305205051461490394"><ph name="URL" />ରେ ପହଞ୍ଚି ହେଉନାହିଁ।</translation>
 <translation id="6306713302480826305">ଏହି ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ ଅନ୍ୟ ସାଇନ-ଇନ କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକରୁ ଏହି ଠିକଣା ଡିଲିଟ ହୋଇଯିବ</translation>
@@ -2910,6 +2917,7 @@
 <translation id="6545864417968258051">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="6547208576736763147">ବାମ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="6549443526281184652">ବେଶ ପୋଷାକ</translation>
+<translation id="6550245281449521513">ମାଉସ ଲକ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6551873053534932690">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରିବେ?</translation>
 <translation id="6554732001434021288">ଗତ ଥର <ph name="NUM_DAYS" /> ଦିନ ପୂର୍ବେ ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="6556866813142980365">ରି-ଡୁ କରନ୍ତୁ</translation>
@@ -3828,6 +3836,7 @@
 <translation id="8278544367771164040">କମର୍ସିଆଲ ଋଣ ପ୍ରଦାନ</translation>
 <translation id="8279290844152565425">କନସର୍ଟ ଏବଂ ମ୍ୟୁଜିକ ଫେଷ୍ଟିଭାଲଗୁଡ଼ିକ</translation>
 <translation id="8279611986089885641">Chrome ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଚାଲୁ ହେବା ଆବଶ୍ୟକ। ଆପଣ ସେଗୁଡ଼ିକୁ <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />ରେ ଚାଲୁ କରିପାରିବେ।</translation>
+<translation id="8280387559022105172">ଆପଣଙ୍କ କୀବୋର୍ଡକୁ ଲକ କରିବେ?</translation>
 <translation id="8280630997017109758">ଟ୍ରେ 11</translation>
 <translation id="8281730697546299650">ଅନ୍ୟ ବିଜ୍ଞାପନ ଗୋପନୀୟତା ଫିଚରଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="8281886186245836920">ବାଦ ଦିଅନ୍ତୁ</translation>
@@ -4299,6 +4308,7 @@
 <translation id="9191834167571392248">ତଳ ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="9192361865877479444">ମେଟାଲ (ମେଟ)</translation>
 <translation id="9192947025498305328">କ୍ଲିନ ବିୟୁଟି</translation>
+<translation id="919455784772793601">ଏହି ପ୍ରଡକ୍ଟ ବିକ୍ରି କରୁଥିବା ଅନ୍ୟ ଷ୍ଟୋରଗୁଡ଼ିକୁ ଦେଖାଉଥିବା ଏକ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ।</translation>
 <translation id="9199905725844810519">ପ୍ରିଣ୍ଟିଂକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="9205078245616868884">ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ ପାସ୍‌ଫ୍ରେଜ୍ ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଲେଖନ୍ତୁ।</translation>
 <translation id="920643408853370361">ଟ୍ରାଭେଲ ବୀମା</translation>

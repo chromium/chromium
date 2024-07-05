@@ -1477,7 +1477,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2048254245884707305">Menyemak perisian hasad...</translation>
 <translation id="2048554637254265991">Ralat semasa memulakan pengurus bekas. Sila cuba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
-<translation id="2049021651258469175">Anda juga akan dapat menggunakan dan menyimpan kata laluan anda dan pelbagai lagi daripada Google Account anda.</translation>
 <translation id="204914487372604757">Cipta pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2051266530792296582">Google Password Manager menghasilkan kata laluan kukuh untuk laman web ini</translation>
@@ -4391,6 +4390,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4163560723127662357">Papan kekunci yang tidak diketahui.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> bukan milik organisasi yang sah. Hubungi pentadbir anda. Jika anda seorang pentadbir, anda boleh menyediakan organisasi anda dengan melawati: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
+<translation id="4166847326079525123">Lokasi dimatikan dalam Pilihan Sistem Windows</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> sedang cuba untuk mengakses <ph name="DEVICE_NAME" />. Matikan suis privasi <ph name="DEVICE_NAME" /> untuk membenarkan akses.</translation>
 <translation id="4167393659000039775">Google tidak bertanggungjawab atas sebarang kehilangan data dan <ph name="DEVICE_OS" /> mungkin tidak berfungsi pada model yang tidak diperakui. Ketahui lebih lanjut di g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Lagi tindakan untuk pintasan <ph name="SHORTCUT_TITLE" /></translation>
@@ -5527,7 +5527,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
 <translation id="5033137252639132982">Tidak dibenarkan untuk menggunakan penderia gerakan</translation>
 <translation id="5033266061063942743">Bentuk geometri</translation>
-<translation id="503441068567788948">Buat PIN baharu untuk Google Password Manager</translation>
 <translation id="5035846135112863536">Pilih "Lagi butiran" di bawah untuk mendapatkan maklumat lanjut daripada <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
 <translation id="5038818366306248416">Sebelum ini anda memilih untuk tidak membenarkan sebarang sambungan pada <ph name="ORIGIN" /></translation>
@@ -9093,7 +9092,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7708143783728142771">Kuki membenarkan tahap penyesuaian keutamaan yang sama pada web. Apabila anda melawati laman, laman tersebut boleh menyimpan kuki dalam storan penyemak imbas peranti anda untuk mengingati pilihan laman anda, seperti bahasa yang anda tuturkan atau item yang mahu anda simpan dalam troli beli-belah. Kemudian, jika anda melawati laman itu sekali lagi menggunakan penyemak imbas yang sama, laman tersebut boleh membaca kuki yang ditetapkan dan anda boleh bermula dari tempat anda berhenti. Jenis kuki ini sering dirujuk sebagai kuki pihak pertama kerana kuki tersebut ditetapkan oleh laman yang anda lawati.</translation>
 <translation id="770831926727930011">Data setempat dilindungi oleh kata laluan lama anda. Masukkan kata laluan lama anda untuk memulihkan data setempat.</translation>
 <translation id="7709152031285164251">Gagal - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Lindungi semua kunci laluan anda dengan PIN pemulihan</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Gunakan kabel USB untuk menyambungkan telefon kepada komputer anda. Jika telefon anda telah pun disambungkan, cabut dan pasang semula palam telefon itu.</translation>
 <translation id="7711968363685835633">Lumpuhkan penukaran peribadi dan cadangan serta kamus pengguna</translation>

@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="3691184985318546178">ସିଂହଳ</translation>
+<translation id="3702842351052426940">ଆପଣଙ୍କ SIM କାର୍ଡ କିମ୍ୱା eSIM ପ୍ରୋଫାଇଲ ନିଷ୍କ୍ରିୟ ଥାଇପାରେ। ଆପଣଙ୍କ SIM କାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରି କିମ୍ୱା eSIM ପ୍ରୋଫାଇଲ ସୁଇଚ କରି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3722341589402358578">ଏକ ତ୍ରୁଟି ହୋଇଛି। କିଛି ଆଇଟମକୁ ଟ୍ରାସ କରାଯାଇନପାରେ।</translation>
 <translation id="3726463242007121105">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="3727148787322499904">ଏହି ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନ କରିବା ଦ୍ୱାରା ସମସ୍ତ ସେୟାର୍‍ କରାଯାଇଥିବା ନେଟ୍‍ୱର୍କ ପ୍ରଭାବିତ ହେବ</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">ଏହି ପ୍ରୋକ୍ସି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି।</translation>
 <translation id="3830674330436234648">କୌଣସି ପ୍ଲେବ୍ୟାକ୍‍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="383652340667548381">ସର୍ବିଆନ୍</translation>
+<translation id="3839045880592694915">ଆପଣଙ୍କ ମୋଡେମକୁ ଆପଣଙ୍କର କେରିଅର ଦ୍ୱାରା କନେକ୍ଟ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ। ଅଧିକ ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3855472144336161447">ଜର୍ମନ୍ ନିଓ 2</translation>
 <translation id="3858860766373142691">ନାମ</translation>
@@ -679,6 +681,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6269630227984243955">ମଲୟ</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"ରେ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ନଥିବା ଯୋଗୁଁ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="6279140785485544797">ଆପଣଙ୍କ ମୋବାଇଲର ଡାଟା ପ୍ଲାନର ମିଆଦ ଶେଷ ହୋଇଥାଇପାରେ। ସପୋର୍ଟ ପାଇଁ ଆପଣଙ୍କ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="6287852322318138013">ଏହି ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6295542640242147836">SIMକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="6296410173147755564">ଅବୈଧ PUK</translation>

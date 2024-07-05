@@ -47,7 +47,9 @@
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
 <translation id="1082026381988252344">滚动和缩放已分享的标签页中的内容</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" />的一般价格为 <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />，但目前网络上的价格为 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="1089439967362294234">更改密码</translation>
+<translation id="1089599132348386324">如果您改变了想法，可随时在 Chrome 设置中做出更改。</translation>
 <translation id="1090629319939036170">VR 菜单</translation>
 <translation id="1091779689406092804">屏幕截图</translation>
 <translation id="1094777233105318927">您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息</translation>
@@ -446,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可执行多种操作，按 Tab 键可循环浏览这些操作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">虚拟卡详细信息</translation>
+<translation id="1803254472779303354">已允许锁定鼠标</translation>
 <translation id="1803351196216024260">可以询问能否使用您的麦克风</translation>
 <translation id="1806174020048213474">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。</translation>
 <translation id="1807246157184219062">浅色调</translation>
@@ -911,6 +914,7 @@
 <translation id="2702592986366989640">低价选项</translation>
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="270415722347413271">光盘（哑光）</translation>
+<translation id="2704192696317130398">要锁定鼠标吗？</translation>
 <translation id="2704283930420550640">值不符合格式要求。</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2705137772291741111">无法读取此网站的已保存（缓存）副本。</translation>
@@ -1213,6 +1217,7 @@
 <translation id="3307649904964670439">“自定义 Chrome”按钮，激活它即可自定义您的浏览器外观</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
 <translation id="3318016344440038475">电视喜剧</translation>
+<translation id="3321152582690622182">未跟踪</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
 <translation id="3324983252691184275">深红色</translation>
 <translation id="3325027355611702542">野营挂车与休闲车</translation>
@@ -2165,6 +2170,7 @@
 <translation id="5125751979347152379">网址无效。</translation>
 <translation id="512592033764059484">足球</translation>
 <translation id="512670116361803001">“<ph name="APP_NAME" />”可能无法妥当地调整大小。请使用预设窗口大小，以防止该应用出现问题。</translation>
+<translation id="512756860033933700">已允许锁定键盘</translation>
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5129534298163637277">确认对话框</translation>
 <translation id="5135404736266831032">管理地址…</translation>
@@ -2195,6 +2201,7 @@
 <translation id="5177076414499237632">了解此页面的来源和主题</translation>
 <translation id="5179490652562926740">已保存付款验证设置</translation>
 <translation id="5179510805599951267">不是<ph name="ORIGINAL_LANGUAGE" />？报告此错误</translation>
+<translation id="5180662470511508940">不允许锁定键盘</translation>
 <translation id="5187079891181379721">公司活动</translation>
 <translation id="5190072300954988691">已拒绝授予摄像头和麦克风使用权限</translation>
 <translation id="5190835502935405962">书签栏</translation>
@@ -2767,6 +2774,7 @@
 <translation id="6298456705131259420">此设置会影响这里列出的网站。在域名前插入“[*.]”可以为整个域创建例外情况。例如，添加“[*.]google.com”意味着也可为 mail.google.com 启用第三方 Cookie，因为此网域是 google.com 的一部分。</translation>
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
+<translation id="6302546952464230349">显示<ph name="PERMISSION_NAME" />权限详情</translation>
 <translation id="6304398603974202180">多媒体软件</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6306713302480826305">系统将从这部设备以及您已登录的其他设备中删除此地址</translation>
@@ -2909,6 +2917,7 @@
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
 <translation id="6549443526281184652">特殊场合服装</translation>
+<translation id="6550245281449521513">不允许锁定鼠标</translation>
 <translation id="6551873053534932690">将地址保存到账号？</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
@@ -3827,6 +3836,7 @@
 <translation id="8278544367771164040">商业贷款</translation>
 <translation id="8279290844152565425">音乐会与音乐节</translation>
 <translation id="8279611986089885641">Chrome 通知必须处于开启状态。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />中开启此类通知。</translation>
+<translation id="8280387559022105172">要锁定键盘吗？</translation>
 <translation id="8280630997017109758">纸匣 11</translation>
 <translation id="8281730697546299650">现已推出的其他广告隐私权功能</translation>
 <translation id="8281886186245836920">跳过</translation>
@@ -4299,6 +4309,7 @@
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9192947025498305328">洁净美容</translation>
+<translation id="919455784772793601">这会打开一个页面，其中显示了销售此商品的其他商店。</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>

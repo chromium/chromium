@@ -97,6 +97,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1293556467332435079">Skrár</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Opna „Kanna“</translation>
+<translation id="129469256578833241">Til baka í samantekt</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Ýttu á <ph name="LAUNCHER_KEY_NAME" /> + g hvenær sem er</translation>
 <translation id="1306549533752902673">FORRIT SEM MÆLT ER MEÐ</translation>
@@ -257,6 +258,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
 <translation id="1925320505152357008">styttri en 1 mín.</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
+<translation id="1929331825127010451">Til baka í spurningu</translation>
 <translation id="1948405482892809935">Skipta yfir í næsta notanda</translation>
 <translation id="1951012854035635156">Hjálpari</translation>
 <translation id="1954252331066828794">Skjáupptöku lokið</translation>
@@ -1152,6 +1154,7 @@ Eitt tæki er tengt.</translation>
 <translation id="5238719049014159442">Opna/loka ræsiforriti</translation>
 <translation id="5240725217819182328">Skjótur aðgangur að tilteknum síðum eða aðgerðum í uppsettum forritum</translation>
 <translation id="5245201184978705914">Ekki tókst að búa til textauppskrift</translation>
+<translation id="5251174953851719648">Endurnýja efni</translation>
 <translation id="5253783950165989294">Tengdist tækinu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% rafhleðsla</translation>
 <translation id="5258528442992323769">Engin vistuð skrifborð</translation>
 <translation id="5260676007519551770">Skrifborð 4</translation>
@@ -1416,6 +1419,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6147182561428020853">Þú getur núna lokað á forrit sem eru uppsett í þessu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Jaðartæki er ekki stutt</translation>
 <translation id="6156960295318603523">Tungumálastillingar</translation>
+<translation id="6158923546703693047">Upplýsingar um uppruna efnis</translation>
 <translation id="615957422585914272">Sýna skjályklaborðið</translation>
 <translation id="616543563528926612">Hægrismellsflýtileiðin var uppfærð í Alt + smella úr <ph name="LAUNCHER_KEY_NAME" />-lykill + smella</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
@@ -2000,6 +2004,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8315514906653279104">Kveikir...</translation>
 <translation id="8331351032546853669">Niðurhal í bið</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">Spyrðu spurningar</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">Lélegt úttak</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> gluggi valinn</translation>

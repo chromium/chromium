@@ -1902,13 +1902,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
-<translation id="2421713016375433338">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor het profiel. De URL moet naar een afbeelding verwijzen.
-
-Deze badge wordt in het profielmenu onder de profielafbeelding getoond. Het formaat van de afbeelding wordt aangepast aan de ruimte van 16 x 16 die voor de badge is gereserveerd.
-
-Als je dit beleid niet instelt, wordt een standaard gebouwicoon getoond.
-
-Als er een fout optreedt tijdens het ophalen en tonen van de afbeelding, wordt een standaard gebouwicoon getoond.</translation>
 <translation id="2421779938235645781">De achtergrondverlichting van het toetsenbord komt overeen met de huidige achtergrond</translation>
 <translation id="2423255396068675416">Als je het beleid toepast of niet instelt, kunnen gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> uitvoeren, zolang <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aanstaan. Als je het beleid niet toepast, staat <ph name="PRODUCT_CROSTINI_NAME" /> uit voor de gebruiker. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
 <translation id="2423654977291507457">Integraties uitzetten</translation>
@@ -2241,13 +2234,6 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
       Dit beleid is van toepassing op het inlogscherm. Raadpleeg ook het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie. Het wordt aangeraden beide beleidsregels op dezelfde waarde in te stellen. Als de waarden niet overeenkomen, kan er bij het starten van een gebruikerssessie terwijl de door het gebruikersbeleid gespecificeerde waarde wordt toegepast, een vertraging optreden.
       </translation>
 <translation id="2697717608663878828">Het ClientHallo-experiment met TLS-versleuteling aanzetten</translation>
-<translation id="2698555428858508691">Dit beleid beheert een aangepast label waarmee een ingelogd profiel wordt geïdentificeerd.
-
-Als je dit beleid niet instelt en er een label moet worden getoond, wordt het standaardlabel Werk of School gebruikt.
-
-Dit beleid overschrijft het beleid <ph name="PROFILE_LABEL_POLICY_NAME" />.
-
-Het aangepaste label wordt niet vertaald.</translation>
 <translation id="2699836109975228367">Monogeluid op het inlogscherm aanzetten</translation>
 <translation id="2702023190395322609">Media-aanbevelingen aanzetten</translation>
 <translation id="2702682139813393777">Afdwingen dat Windows-hosts voor native berichten worden gestart via cmd.exe</translation>
@@ -10292,7 +10278,6 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
 <translation id="9020630127193895800">Indigo achtergrondverlichting van toetsenbord</translation>
 <translation id="9031831501689819108">Ondersteuning voor oudere browsers aanzetten</translation>
 <translation id="9032595854515551464"><ph name="PRODUCT_NAME" /> V2-service aanzetten en extern bureau starten bij inloggen</translation>
-<translation id="903334067190374761">Een aangepast profiellabel instellen</translation>
 <translation id="9034285085962866065">Aanpassing van systeemsneltoetsen toestaan</translation>
 <translation id="9035086760683255833">Zet de toegankelijkheidsfunctie voor markeren via toetsenbordfocus aan.
 

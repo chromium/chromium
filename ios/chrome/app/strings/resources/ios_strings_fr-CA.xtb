@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1622717322707146952">Sélectionnez « Ajouter à Google Agenda » ou « Ajouter à Calendrier Apple ».</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> mots de passe réutilisés</translation>
+<translation id="1636234353664774105">Obtenez un itinéraire vers votre destination avec un guide d'itinéraire détaillé à l'aide de la fonctionnalité de navigation</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1641316430523156212">Suivre</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2062410130322589403">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="20638360198452347">Sélecteur de type d'unité</translation>
+<translation id="2067852168641682340">Enregistrer sur ce compte à chaque fois</translation>
 <translation id="2073572773299281212">Actif il y a <ph name="DAYS" /> jours</translation>
 <translation id="2074131957428911366">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="2078437078822043850">Vous pouvez faire défiler l'écran vers la droite pour naviguer en mode Navigation privée.</translation>
@@ -313,6 +315,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="261739049332372104">Pour recevoir des mises à jour sur le contenu qui vous intéresse, activez les notifications dans vos réglages iOS.</translation>
 <translation id="2625189173221582860">Mot de passe copié</translation>
 <translation id="2626236249646841566">Vérifiez votre connexion et réessayez de vous connecter.</translation>
+<translation id="2635918910848538771">Remplissage automatique du CVC</translation>
 <translation id="2637313651144986786">Rechercher des onglets…</translation>
 <translation id="2640733327287333451">Aucun nom d'utilisateur ••••••</translation>
 <translation id="2648721026697078500">Ne jamais déplacer</translation>
@@ -496,6 +499,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3533202363250687977">Fermer les onglets de navigation privée</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3540141921715814660">Ajouter aux favoris</translation>
+<translation id="3547356470684043247">Lisez les évaluations des clients sur les produits, les services ou l'expérience pour vous aider à prendre des décisions éclairées à l'aide de leurs avis</translation>
 <translation id="355101282835380364">Enregistrer dans le compte</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4659194143325814340">{count,plural, =1{{count} page de votre liste de lecture}one{{count} page de votre liste de lecture}other{{count} pages de votre liste de lecture}}</translation>
 <translation id="4659667755519643272">Accéder au gestionnaire d’onglets</translation>
 <translation id="46614316059270592">Enregistrer le mot de passe</translation>
+<translation id="467189612236587057">Communiquez avec une entreprise en passant un appel téléphonique</translation>
 <translation id="4682686630151240767">1. Ouvrez Réglages de l'iPhone</translation>
 <translation id="4689564913179979534">Gérer vos modes de paiement…</translation>
 <translation id="469300482518076788">Fermer l'onglet</translation>
@@ -1412,6 +1417,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8023878949384262191">Développe la section.</translation>
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="8032569120109842252">Suivi</translation>
+<translation id="8035412398498507358">Photos</translation>
 <translation id="8040207962129315716">Toujours me demander</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique de recherche<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activités<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>

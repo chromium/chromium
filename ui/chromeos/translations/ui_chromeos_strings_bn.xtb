@@ -337,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল করুন।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3691184985318546178">সিংহলি</translation>
+<translation id="3702842351052426940">আপনার সিম কার্ড বা ই-সিম প্রোফাইল হয়ত বন্ধ রয়েছে। আপনার সিম পরিবর্তন বা ই-সিম প্রোফাইল পাল্টে দেখুন।</translation>
 <translation id="3722341589402358578">কোনও সমস্যা হয়েছে। কিছু আইটেম ট্র্যাশে নাও থাকতে পারে।</translation>
 <translation id="3726463242007121105">এই ডিভাইসটি ফাইল সিস্টেমটি সমর্থিত না হওয়ার কারণে খুলতে পারা যায়না৷</translation>
 <translation id="3727148787322499904">এই সেটিং পরিবর্তন করা হলে শেয়ার করা সব নেটওয়ার্ক প্রভাবিত হবে</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">এই প্রক্সী আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে</translation>
 <translation id="3830674330436234648">কোনো প্লেব্যাক উপলব্ধ নেই</translation>
 <translation id="383652340667548381">সার্বিয়</translation>
+<translation id="3839045880592694915">আপনার পরিষেবা প্রদানকারী মডেম কানেক্ট করার অনুমতি দেয় না। আরও বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
@@ -683,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, কানেক্ট করুন</translation>
 <translation id="6269630227984243955">মালয়</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"-এ পর্যাপ্ত স্টোরেজ না থাকার জন্য ফাইল আপলোড করা যাচ্ছে না।</translation>
+<translation id="6279140785485544797">আপনার মোবাইল ডেটা প্ল্যানের মেয়াদ হয়ত শেষ হতে পারে। সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6287852322318138013">এই ফাইলটি খোলার জন্য একটি অ্যাপ্লিকেশান বেছে নিন</translation>
 <translation id="6295542640242147836">সিম কার্ড লক করা</translation>
 <translation id="6296410173147755564">ভুল PUK দিয়েছেন</translation>

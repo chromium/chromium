@@ -1465,7 +1465,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2048254245884707305">Traži se malver...</translation>
 <translation id="2048554637254265991">Greška pri pokretanju menadžera kontejnera. Probajte ponovo.</translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
-<translation id="2049021651258469175">Moći ćete i da koristite i čuvate lozinke i drugo na Google nalogu.</translation>
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2051266530792296582">Google menadžer lozinki je napravio jaku lozinku za ovaj veb-sajt</translation>
@@ -4376,6 +4375,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ne pripada važećoj organizaciji. Obratite se administratoru. Ako ste vi administrator, možete da podesite organizaciju tako što ćete posetiti g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Podešavanja sajta</translation>
+<translation id="4166847326079525123">Lokacija je isključena u podešavanjima Windows sistema</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> pokušava da pristupi uređaju <ph name="DEVICE_NAME" />. Isključite prekidač za privatnost na uređaju <ph name="DEVICE_NAME" /> da biste dozvolili pristup.</translation>
 <translation id="4167393659000039775">Google nije odgovoran ni za kakav gubitak podataka i <ph name="DEVICE_OS" /> možda neće raditi na modelima bez sertifikata. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Još radnji za <ph name="SHORTCUT_TITLE" /> prečicu</translation>
@@ -4719,6 +4719,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4423376891418188461">Vrati podešavanja</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ti izveštaji mogu da obuhvataju stvari poput trenutaka Chrome OS otkazivanja, funkcija koje se koriste i količine memorije koja se obično troši.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ove izveštaje možete da pokrenete ili zaustavite u svakom trenutku u podešavanjima Chrome uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Lozinke, pristupni ključevi i drugi podaci će se trajno izbrisati iz aplikacije <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Izbrišite <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Da biste započeli, proverite da li je USB ili Bluetooth prekidač povezan na Chromebook. Možete da koristite i tastere na tastaturi.</translation>
 <translation id="4426490308207168518">Delite povratne informacije ili prijavite problem</translation>
@@ -5511,7 +5512,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5032430150487044192">Pravljenje QR koda nije uspelo</translation>
 <translation id="5033137252639132982">Nije im dozvoljeno da koriste senzore pokreta</translation>
 <translation id="5033266061063942743">Geometrijski oblici</translation>
-<translation id="503441068567788948">Napravite novi PIN za Google menadžer lozinki</translation>
 <translation id="5035846135112863536">Izaberite Još detalja ispod da biste pronašli više informacija od: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5037676449506322593">Izaberi sve</translation>
 <translation id="5038818366306248416">Prethodno ste odabrali da ne dozvolite sve dodatke na <ph name="ORIGIN" /></translation>
@@ -7510,6 +7510,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="653920215766444089">Traži se pokazivački uređaj</translation>
 <translation id="6539674013849300372">Povećajte bezbednost onlajn pomoću jake lozinke. Biće sačuvana u alatki <ph name="GOOGLE_PASSWORD_MANAGER" /> za <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Nastavlja se...</translation>
+<translation id="6540174167103635041">Instalirajte aplikaciju</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> Omogućite ovo samo ako znate šta radite ili ako je to neko zatražio od vas jer prikupljanje podataka može da pogorša učinak.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
 <translation id="6541638731489116978">Ovom sajtu je zabranjeno da pristupa senzorima za pokret.</translation>
@@ -9079,7 +9080,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7708143783728142771">Kolačići omogućavaju isti nivo prilagođavanja podešavanja na vebu. Kada posetite neki sajt, taj sajt može da sačuva kolačić u memorijskom prostoru pregledača na uređaju da bi zapamtio podešavanja sajta, poput jezika koji govorite ili stavki koje želite da sačuvate u korpi za kupovinu. Kasnije, ako ponovo posetite sajt pomoću istog pregledača, taj sajt može da pročita kolačić koji je podesio i možete da nastavite tamo gde ste stali. Ove vrste kolačića se često nazivaju direktni kolačići zato što ih postavlja sajt koji posećujete.</translation>
 <translation id="770831926727930011">Lokalni podaci su zaštićeni starom lozinkom. Unesite staru lozinku da biste vratili lokalne podatke.</translation>
 <translation id="7709152031285164251">Nije uspelo – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7710443466210750493">Zaštitite sve pristupne ključeve PIN-om za vraćanje pristupa nalogu</translation>
 <translation id="7710568461918838723">&amp;Prebaci...</translation>
 <translation id="7711900714716399411">Povežite telefon sa računarom pomoću USB kabla. Ako je telefon već povezan, isključite ga, pa ga ponovo priključite.</translation>
 <translation id="7711968363685835633">Onemogući personalizovane konverzije i predloge kao i korisnički rečnik</translation>

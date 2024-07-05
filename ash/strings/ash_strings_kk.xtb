@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Қосымша мәзір</translation>
 <translation id="1341926407152459446">Аудио кірісі және шығысы ретінде "<ph name="DEVICE_NAME" />" құрылғысын пайдаланыңыз.</translation>
 <translation id="1346748346194534595">Оңға</translation>
+<translation id="1350494136075914725">Ашылған · Қойындыға ауысу</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1360220746312242196">Беттегі іздеу сұрауына сай келетін алдыңғы нәтижеге өту</translation>
 <translation id="1360788414852622716">Профиль өшіріліп жатыр. Бұл бірнеше минутқа созылуы мүмкін.</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">Аудио таңдау</translation>
 <translation id="4881323000405981760">Linux қолданбаларында әсерлерге қолдау көрсетілмейді</translation>
 <translation id="4881695831933465202">Ашу</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Ұсыныстарды жақсарту үшін пікір қалдырыңыз:</translation>
 <translation id="4890187583552566966">Google Assistant қолданбасын әкімші өшірген.</translation>
 <translation id="4890408602550914571">Телефоныңыз жаныңызда болуы және Bluetooth қосылып тұруы керек.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">Камера пайдаланылуда.</translation>
 <translation id="742608627846767349">Қайырлы таң!</translation>
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
+<translation id="7441711280402516925">Ойнатылып жатыр · Қойындыға ауысу</translation>
 <translation id="7453330308669753048">Іздеу тарихы нәтижесі өшірілді.</translation>
 <translation id="7459485586006128091">Ішкі қатеге байланысты хотспот өшірілді. Бірнеше минуттан кейін қайта қосылып көріңіз.</translation>
 <translation id="7461924472993315131">Бекіту</translation>

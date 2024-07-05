@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Utzi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, <ph name="CONNECTION_STATUS" />, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
 <translation id="3691184985318546178">Sinhalarra</translation>
+<translation id="3702842351052426940">SIM txartela edo eSIMaren profila agian desaktibatuta dago. Ordeztu SIM txartela edo aldatu eSIMaren profila.</translation>
 <translation id="3722341589402358578">Errore bat gertatu da. Baliteke elementu batzuk zaborrontzira eraman ez izatea.</translation>
 <translation id="3726463242007121105">Ezin da gailua ireki bere fitxategi-sistema onartzen ez delako.</translation>
 <translation id="3727148787322499904">Ezarpen hau aldatzeak partekatutako sare guztietan izango du eragina</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Administratzaileak ezartzen du proxya</translation>
 <translation id="3830674330436234648">Ez dago erreprodukziorik</translation>
 <translation id="383652340667548381">Serbiarra</translation>
+<translation id="3839045880592694915">Operadoreak ez dio eman konektatzeko baimenik modemari. Xehetasun gehiago lortzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3855472144336161447">Neo 2 alemana</translation>
 <translation id="3858860766373142691">Izena</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
 <translation id="6271903698064569429">Ezin dira kargatu fitxategiak, <ph name="SHARED_DRIVE_NAME" /> unitate partekatuko biltegian ez dagoelako behar adina toki.</translation>
+<translation id="6279140785485544797">Agian iraungita dago mugikorrerako datu-tarifa. Laguntza jasotzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
 <translation id="6295542640242147836">Blokeatu SIMa</translation>
 <translation id="6296410173147755564">PUKak ez du balio</translation>

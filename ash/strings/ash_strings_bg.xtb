@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Препълване</translation>
 <translation id="1341926407152459446">Използване на <ph name="DEVICE_NAME" /> за входно/изходно аудиоустройство</translation>
 <translation id="1346748346194534595">Надясно</translation>
+<translation id="1350494136075914725">Текущо · Превключване към раздел</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
 <translation id="1360220746312242196">Преминаване към предишното съответствие за заявката при търсене на страница</translation>
 <translation id="1360788414852622716">Потребителският профил се деактивира. Това може да отнеме няколко минути.</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">Избиране на аудиоизточник</translation>
 <translation id="4881323000405981760">Ефектите не се поддържат за приложения за Linux</translation>
 <translation id="4881695831933465202">Отваряне</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Оставете незадължителни отзиви, за да подобрите предложенията:</translation>
 <translation id="4890187583552566966">Администраторът ви е деактивирал Google Асистент.</translation>
 <translation id="4890408602550914571">Уверете се, че телефонът ви е наблизо и че сте включили Bluetooth.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">Камерата се използва.</translation>
 <translation id="742608627846767349">Добро утро,</translation>
 <translation id="743058460480092004">Камерата и микрофонът се използват.</translation>
+<translation id="7441711280402516925">Възпроизвежда се · Превключване към раздел</translation>
 <translation id="7453330308669753048">Резултатът от историята на търсенията бе премахнат</translation>
 <translation id="7459485586006128091">Точката за достъп бе изключена поради вътрешна грешка. Опитайте да се свържете отново след няколко минути.</translation>
 <translation id="7461924472993315131">Фиксиране</translation>

@@ -36,7 +36,6 @@
 <translation id="1507198376417198979">ನಿಮ್ಮ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="1516530951338665275">ಜೋಡಣೆಯನ್ನು ಮುಂದುವರಿಸಲು Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌ನಿಂದ<ph name="END_LINK_CROS_OSS" /> ChromeOS ನ ರಚನೆ ಸಾಧ್ಯವಾಗಿದೆ.</translation>
-<translation id="1551749261806528781">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ. ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಂತರ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="1553358976309200471">Chrome ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ</translation>
 <translation id="1583073672411044740">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗೆ ಈಗಾಗಲೇ <ph name="EXISTING_USER" /> ಅವರು ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದಾರೆ. ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
 <translation id="1587223624401073077">Google Chrome ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸುತ್ತಿದೆ.</translation>
@@ -415,7 +414,6 @@
 <translation id="7036251913954633326">ಈ ಖಾತೆಯನ್ನು ನೀವು ಒಂದು ಬಾರಿ ಮಾತ್ರ ಬಳಸಲು ಬಯಸಿದರೆ, ನೀವು Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ <ph name="GUEST_LINK_BEGIN" />ಅತಿಥಿ ಮೋಡ್<ph name="GUEST_LINK_END" /> ಅನ್ನು ಬಳಸಬಹುದು. ನೀವು ಬೇರೊಬ್ಬರಿಗಾಗಿ ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ <ph name="LINK_BEGIN" />ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ<ph name="LINK_END" />.
 
 ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಅನುಮತಿಗಳು ಈ ಖಾತೆಗೆ ಅನ್ವಯಿಸಬಹುದು. ನೀವು <ph name="SETTINGS_LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="SETTINGS_LINK_END" /> ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು.</translation>
-<translation id="7037538054043837165">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7048502283602470098">AI ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="7059914902409643750">ನಿಮ್ಮ ಸ್ವಂತ Chrome ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="7071827361006050863">Chrome ಶೀಘ್ರದಲ್ಲೇ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ</translation>

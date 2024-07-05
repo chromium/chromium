@@ -337,6 +337,7 @@
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="3691184985318546178">синхалски</translation>
+<translation id="3702842351052426940">SIM-картичката или профилот на eSIM можеби е деактивиран. Обидете се со заменување на SIM-картичката или сменување на профилот на eSIM.</translation>
 <translation id="3722341589402358578">Се појави грешка. Некои ставки можеби се во корпата.</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
 <translation id="3727148787322499904">Менувањето на оваа поставка ќе влијае на сите споделени мрежи</translation>
@@ -356,6 +357,7 @@
 <translation id="3822559385185038546">Ова прокси го наметнува администраторот</translation>
 <translation id="3830674330436234648">Не е достапна репродукција</translation>
 <translation id="383652340667548381">српска</translation>
+<translation id="3839045880592694915">Вашиот модем не може да се поврзе поради забрана од операторот. За повеќе детали, контактирајте со операторот.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3855472144336161447">Германска Neo 2</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -684,6 +686,7 @@
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6271903698064569429">Датотеките не може да се прикачат бидејќи нема доволно капацитет на „<ph name="SHARED_DRIVE_NAME" />“.</translation>
+<translation id="6279140785485544797">Вашиот пакет за мобилен интернет можеби е истечен. За поддршка, контактирајте со операторот.</translation>
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
 <translation id="6295542640242147836">Заклучи SIM</translation>
 <translation id="6296410173147755564">Погрешен PUK</translation>

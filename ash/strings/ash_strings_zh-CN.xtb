@@ -97,6 +97,7 @@
 <translation id="1293556467332435079">文件</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">打开“探索”</translation>
+<translation id="129469256578833241">返回摘要</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">随时按<ph name="LAUNCHER_KEY_NAME" /> + g 键</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
@@ -257,6 +258,7 @@
 <translation id="1923539912171292317">自动点击</translation>
 <translation id="1925320505152357008">不到 1 分钟</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
+<translation id="1929331825127010451">返回问题</translation>
 <translation id="1948405482892809935">切换到下一个用户</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954252331066828794">已完成屏幕录制</translation>
@@ -1151,6 +1153,7 @@
 <translation id="5238719049014159442">打开/关闭启动器</translation>
 <translation id="5240725217819182328">快速访问已安装的应用内的特定页面，或快速执行此类应用内的特定操作</translation>
 <translation id="5245201184978705914">无法生成转录内容</translation>
+<translation id="5251174953851719648">刷新内容</translation>
 <translation id="5253783950165989294">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备，它的电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
@@ -1414,6 +1417,7 @@
 <translation id="6147182561428020853">您现在可以屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
 <translation id="6156960295318603523">语言设置</translation>
+<translation id="6158923546703693047">内容来源信息</translation>
 <translation id="615957422585914272">显示屏幕键盘</translation>
 <translation id="616543563528926612">“右键点击”对应的快捷键原为<ph name="LAUNCHER_KEY_NAME" />键 + 点击，现已更新为 alt + 点击</translation>
 <translation id="6165508094623778733">了解详情</translation>
@@ -1998,6 +2002,7 @@
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8331351032546853669">待下载</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
+<translation id="8340621004014372743">提个问题。</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">输出质量不佳</translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>

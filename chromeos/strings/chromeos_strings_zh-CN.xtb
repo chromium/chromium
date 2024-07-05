@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1049663189809099096">粉黄色</translation>
+<translation id="1053371972724535586">我的录制内容</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
 <translation id="1061864016440983342">在不开启位置信息服务的情况下使用</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">用<ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /> 求近似值</translation>
 <translation id="1435763214710588005">在每月的指定日期自动重置流量使用情况</translation>
 <translation id="1442433966118452622">图片来源</translation>
+<translation id="1445573806602812670">获取录制内容的转写内容</translation>
 <translation id="1446954767133808402">蓝宝石</translation>
 <translation id="1449035143498573192">在 Google 搜索中打开</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">湖泊</translation>
 <translation id="1720424726586960395">萤火虫森林</translation>
 <translation id="1726100011689679555">域名服务器</translation>
+<translation id="1728792932018505912">您可以在“设置”或 <ph name="THREE_DOTS_MENU_ICON" /> 菜单中调整此设置</translation>
 <translation id="1731082422893354635">蓝牙触控板</translation>
 <translation id="1738949837603788263">区域 <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">无法加载这些图片。请检查您的网络连接状况，或尝试重新加载这些图片。</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">UDP 请求失败</translation>
 <translation id="1908394185991500139">向左箭头</translation>
 <translation id="1923388006036088459">强调色</translation>
+<translation id="1945403655450283000">录音机</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954818433534793392">建筑</translation>
@@ -224,8 +228,10 @@
 <translation id="2085089206770112532">调低显示屏亮度</translation>
 <translation id="2086091080968010660">基于时间的更改可能不准确。请在设置中开启系统位置信息使用权。</translation>
 <translation id="2102231663024125441">文字修改</translation>
+<translation id="2102648867808308635">帮我读出这页的内容</translation>
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">目前仅支持英语（美国）</translation>
 <translation id="2126937207024182736">可用内存为 <ph name="AVAILABLE_MEMORY" /> GB，总共 <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2135668738111962377">修改<ph name="ACTION_NAME" /></translation>
 <translation id="2138109643290557664">一飘而过</translation>
@@ -262,6 +268,7 @@
 <translation id="2267285889943769271">添加屏幕截图</translation>
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2276999893457278469">热门帮助内容</translation>
+<translation id="2277631741861284101">轻松录制和分享音频</translation>
 <translation id="2279051792571591988">恢复默认设置</translation>
 <translation id="2286454467119466181">简单</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
@@ -287,6 +294,7 @@
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
+<translation id="242825218556404975">未检测到语音</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2472215337771558851">使用 Google AI 赋能的“帮我写”功能撰写草稿或润色现有内容</translation>
@@ -330,6 +338,7 @@
 <translation id="2656001153562991489">Chromebook Plus 专享</translation>
 <translation id="2665671725390405060">聆听发音</translation>
 <translation id="267442004702508783">刷新</translation>
+<translation id="2675392311492541028">转写和摘要</translation>
 <translation id="268270014981824665">把键盘调暗</translation>
 <translation id="2712812801627182647">TLS 身份验证密钥</translation>
 <translation id="2713444072780614174">白色</translation>
@@ -430,6 +439,7 @@
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
+<translation id="3410165745972100556">转写功能已关闭</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3428551088151258685">室外</translation>
 <translation id="3428971106895559033">柔和</translation>
@@ -475,6 +485,7 @@
 <translation id="3621072146987826699">大象</translation>
 <translation id="3632040286124154621">建议不错</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
+<translation id="3639873154908477486">名称（从 A 到 Z）</translation>
 <translation id="3644695927181369554">建议不合适</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
 <translation id="3661106764436337772">写作更快更自信</translation>
@@ -541,6 +552,7 @@
 <translation id="4044093238444069296">无法连接网关</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4050208988451295487">以下是一些选项：</translation>
 <translation id="4054683689023980771">正在下载图片</translation>
 <translation id="4063039537646912479">浅蓝色</translation>
 <translation id="4070799384363688067">动漫</translation>
@@ -569,8 +581,10 @@
 <translation id="4171077696775491955">调低亮度</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
+<translation id="4193496492959950834">录音机设置</translation>
 <translation id="4198398257084619072">熊猫</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
+<translation id="4210636113897977670">保存并退出</translation>
 <translation id="4210659479607886331">冰川河</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
@@ -643,6 +657,7 @@
 <translation id="4609350030397390689">调低键盘亮度</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="463791356324567266">正在取消扫描…</translation>
+<translation id="4644611440022666152">开启并下载</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="4650608062294027130">右 Shift</translation>
 <translation id="4654549501020883054">每日更换一次</translation>
@@ -733,6 +748,7 @@
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">近义词：</translation>
+<translation id="5109744590306245079">录音机可以为包含语音的录制内容创建转写内容。下载转写模型（最多 100 MB）即可获取这些转写内容。</translation>
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5142961317498132443">身份验证</translation>
@@ -842,6 +858,7 @@
 <translation id="5760715441271661976">门户状态</translation>
 <translation id="5763838252932650682">正在重启并更新“<ph name="APP_NAME" />”</translation>
 <translation id="576835345334454681">调高显示屏亮度</translation>
+<translation id="5779818640587041940">录制时使屏幕保持开启状态</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延迟时间较长</translation>
 <translation id="5790391387506209808">青金石</translation>
@@ -916,6 +933,7 @@
 <translation id="6136285399872347291">删除</translation>
 <translation id="6137614725462089991">赛博朋克</translation>
 <translation id="6137767437444130246">用户证书</translation>
+<translation id="6141004321363227868">启用此功能后，录制时还会显示实时转写内容。</translation>
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">栗色和粉色</translation>
@@ -984,6 +1002,7 @@
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> 专属屏保</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
+<translation id="6490861263572002431">自动滚动</translation>
 <translation id="6492891353338939218">仿古</translation>
 <translation id="6494974875566443634">自定义</translation>
 <translation id="6500818810472529210">查看“Google 搜索”中的结果</translation>
@@ -997,6 +1016,7 @@
 <translation id="6543412779435705598">墨西哥卷饼</translation>
 <translation id="6551839203326557324">苹果</translation>
 <translation id="65526652485742171">“确认”按钮现已启用</translation>
+<translation id="6556016675518580850">离开此页面会结束当前录制。</translation>
 <translation id="6557784757915238407">APN 类型为<ph name="ATTACH" />。</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6560196641871357166">鲜亮色</translation>
@@ -1007,6 +1027,7 @@
 <translation id="6576005492601044801">左侧</translation>
 <translation id="6579509898032828423">使用此照片</translation>
 <translation id="6587870930887634392">多肉植物</translation>
+<translation id="6595046262780525922">要开启转写功能并下载转写模型吗？</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6599673642868607614">感谢您提供反馈。您的反馈有助于我们改进 Chromebook 使用体验，会被我们的团队审核。由于举报数量众多，我们无法发送回复。</translation>
 <translation id="6618744767048954150">正在运行</translation>
@@ -1048,6 +1069,8 @@
 <translation id="6798678288485555829">文字导航</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
+<translation id="6818844233294698434">正在聆听语音…</translation>
+<translation id="6837645039518471192">退出录制功能</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6866732840889595464">雏菊</translation>
 <translation id="6871256179359663621">浅紫色</translation>
@@ -1087,6 +1110,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7035168792582749309">土豆</translation>
 <translation id="7040230719604914234">运营商</translation>
+<translation id="7040729769968826896">允许识别说话者</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
 <translation id="7046522406494308071">将所有快捷键重置为默认设置？</translation>
 <translation id="7058278511608979688">结束并保存</translation>
@@ -1242,6 +1266,7 @@
 <translation id="7850847810298646851">壁纸由 Google AI 提供支持</translation>
 <translation id="785170686607360576">郁金香</translation>
 <translation id="7856267634822906833">蓝牙触摸屏</translation>
+<translation id="7857744683152972248">要允许录音机识别说话者吗？</translation>
 <translation id="7859006200041800233">仙人掌花</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1249,6 +1274,7 @@
 <translation id="7882501334836096755">公钥</translation>
 <translation id="78957024357676568">向左</translation>
 <translation id="7897043345768902965">人行道</translation>
+<translation id="7902285181767404769">录制时将通知设为静音</translation>
 <translation id="7903695460270716054">选择精选艺术作品和图片</translation>
 <translation id="7915220255123750251">管理网络 APN 设置。APN 会在移动网络和互联网之间建立连接。</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
@@ -1295,6 +1321,8 @@
 <translation id="8156233298086717232">神奇</translation>
 <translation id="8162776280680283326">狐狸</translation>
 <translation id="8167413449582155132">由 Google AI 赋能的背景</translation>
+<translation id="8171020708598805594">使用 Google AI 自动创建转写内容、获取录制内容摘要，以及搜索音频。即使未联网，也能创建录制内容。</translation>
+<translation id="8174280683348521982">要删除当前录制内容吗？</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">海滩</translation>
 <translation id="819278132617411009">使用 Google AI 提高工作效率</translation>
@@ -1332,6 +1360,9 @@
 <translation id="8372477600026034341">多余的主机</translation>
 <translation id="8372667721254470022">橄榄绿</translation>
 <translation id="8373046809163484087">使用与您的壁纸相得益彰的颜色组合</translation>
+<translation id="8379123594780452422">如果您允许使用此功能，录音机会使用高级音频分析技术处理您的录音。
+
+您随时可在“设置”中关闭此功能。</translation>
 <translation id="8380114448424469341">将窗口固定在屏幕<ph name="DIRECTION" />半侧</translation>
 <translation id="8391349326751432483">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放内存，请关闭标签页和应用。</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
@@ -1372,10 +1403,12 @@
 <translation id="8620617069779373398">漫游状态</translation>
 <translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>
+<translation id="8647595191512746911">音频转写</translation>
 <translation id="8651481478098336970">静音</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享网址：</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8670057600920888023">生成式 AI 尚处于实验阶段，生成的内容可能不准确、具有误导性或冒犯性。</translation>
 <translation id="8670574982334489519">右侧</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="8677859815076891398">无任何影集。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个影集。</translation>
@@ -1476,6 +1509,7 @@
 <translation id="9122602430962285795">若要重新连接，请转到“设置”</translation>
 <translation id="9122865513525855321">禅宗</translation>
 <translation id="9126720536733509015">将多个页面扫描成 1 个 PDF 文件</translation>
+<translation id="9129549320890412487">转写功能</translation>
 <translation id="9133772297793293778">按您键盘上的 1-4 个辅助键和 1 个其他键。如要退出修改模式，请按 alt + esc 键。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9138630967333032450">左 Shift</translation>

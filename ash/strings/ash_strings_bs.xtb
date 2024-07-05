@@ -110,6 +110,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1341651618736211726">Preklopni meni</translation>
 <translation id="1341926407152459446">Koristite "<ph name="DEVICE_NAME" />" za ulaz i izlaz zvuka</translation>
 <translation id="1346748346194534595">Desno</translation>
+<translation id="1350494136075914725">U tijeku · Prijeđi na karticu</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
 <translation id="1360220746312242196">Odlazak na prethodno podudaranje prilikom pretraživanja stranice</translation>
 <translation id="1360788414852622716">Onemogućavanje profila. Ovo može potrajati nekoliko minuta.</translation>
@@ -1048,6 +1049,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4876935764454575645">Odabir izvora zvuka</translation>
 <translation id="4881323000405981760">Efekti nisu podržani na Linux aplikacijama</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Pružite neobavezne povratne informacije da poboljšate prijedloge:</translation>
 <translation id="4890187583552566966">Administrator je onemogućio Google Asistenta.</translation>
 <translation id="4890408602550914571">Provjerite nalazi li se telefon u blizini i je li Bluetooth uključen.</translation>
@@ -1750,6 +1752,7 @@ Nova instalacija</translation>
 <translation id="742594950370306541">Kamera se koristi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon su u upotrebi.</translation>
+<translation id="7441711280402516925">Reprodukcija · Prijeđi na karticu</translation>
 <translation id="7453330308669753048">Rezultati historije pretraživanja su uklonjeni</translation>
 <translation id="7459485586006128091">Pristupna tačka je isključena zbog interne greške. Pokušajte se ponovo povezati za nekoliko minuta.</translation>
 <translation id="7461924472993315131">PIN</translation>

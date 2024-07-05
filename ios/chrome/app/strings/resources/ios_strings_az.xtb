@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">"Google Calendar-a əlavə edin" və ya "Apple Calendar-a əlavə edin" seçin.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> təkrar işlənən parol</translation>
+<translation id="1636234353664774105">Naviqasiya funksiyası vasitəsilə təyinat yeri üzrə istiqamətləri növbəli şəkildə əldə edin</translation>
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1641316430523156212">İzləyin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">Bələdiyyə</translation>
 <translation id="2062410130322589403">Məxfilik seçimləri üçün bələdçi</translation>
 <translation id="20638360198452347">Vahid növü seçicisi</translation>
+<translation id="2067852168641682340">Hər dəfə bu hesabda yadda saxlayın</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Əvvəl Aktiv Olub</translation>
 <translation id="2074131957428911366">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz.</translation>
 <translation id="2078437078822043850">Sağa sürüşdürərək Anonim rejimdə baxa bilərsiniz.</translation>
@@ -313,6 +315,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="261739049332372104">Sizə maraqlı kontent haqqında bildiriş almaq üçün iOS ayarlarında bildirişi aktiv edin.</translation>
 <translation id="2625189173221582860">Parol kopyalandı</translation>
 <translation id="2626236249646841566">Bağlantını yoxlayın və yenidən daxil olmağa cəhd edin.</translation>
+<translation id="2635918910848538771">CVC məlumatını avtomatik doldurun</translation>
 <translation id="2637313651144986786">Tabları axtarın...</translation>
 <translation id="2640733327287333451">İstifadəçi adı yoxdur ••••••</translation>
 <translation id="2648721026697078500">Heç vaxt köçürməyin</translation>
@@ -496,6 +499,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3533202363250687977">Bütün Gizli Tabları bağlayın</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3540141921715814660">Əlfəcinlərə əlavə edin</translation>
+<translation id="3547356470684043247">Rəy əsasında qərar vermək üçün məhsul, xidmət və ya təcrübələrlə bağlı müştəri dəyərləndirmələrini oxuyun</translation>
 <translation id="355101282835380364">Hesabda yadda saxlayın…</translation>
 <translation id="3551320343578183772">Paneli qapadın</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
@@ -714,6 +718,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4659194143325814340">{count,plural, =1{Oxu siyahısında {count} səhifə}other{Oxu siyahısında {count} səhifə}}</translation>
 <translation id="4659667755519643272">Panel Dəyişdirici Daxil edin</translation>
 <translation id="46614316059270592">Parolu yadda saxlayın</translation>
+<translation id="467189612236587057">Telefon zəngi edərək müəssisə ilə əlaqə saxlayın</translation>
 <translation id="4682686630151240767">1. iPhone Ayarlarını açın</translation>
 <translation id="4689564913179979534">Ödəniş Metodlarını İdarə Edin...</translation>
 <translation id="469300482518076788">Tabı bağlayın</translation>

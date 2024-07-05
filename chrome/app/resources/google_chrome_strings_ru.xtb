@@ -36,7 +36,6 @@
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1516530951338665275">Чтобы продолжить подключение, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="1551749261806528781">Чтобы сохранять пароли и другую информацию для использования на всех своих устройствах, войдите в Chrome. Затем этот пароль будет сохранен в аккаунте Google.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1583073672411044740">Пользователь <ph name="EXISTING_USER" /> уже вошел в профиль Chrome. Вы можете создать новый профиль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
@@ -413,7 +412,6 @@
 <translation id="7036251913954633326">Если этот аккаунт в браузере Chrome вам больше не понадобится, можно воспользоваться <ph name="GUEST_LINK_BEGIN" />гостевым режимом<ph name="GUEST_LINK_END" />. Если вы хотите добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
 
 Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Для управления аккаунтами Google перейдите в <ph name="SETTINGS_LINK_BEGIN" />настройки<ph name="SETTINGS_LINK_END" />.</translation>
-<translation id="7037538054043837165">Войдите в Chrome, чтобы синхронизировать пароли и другие данные на всех своих устройствах.</translation>
 <translation id="7048502283602470098">Попробовать ИИ</translation>
 <translation id="7059914902409643750">Войдите в Chrome</translation>
 <translation id="7071827361006050863">Данные о работе в Chrome скоро будут удалены</translation>

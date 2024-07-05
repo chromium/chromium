@@ -125,6 +125,7 @@
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1622717322707146952">“Google Calendar-ലേക്ക് ചേർക്കുക“ അല്ലെങ്കിൽ “Apple Calendar-ലേക്ക് ചേർക്കുക“ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1626771852476987600">ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന <ph name="COUNT" /> പാസ്‌വേഡുകൾ</translation>
+<translation id="1636234353664774105">നാവിഗേഷൻ ഫീച്ചർ ഉപയോഗിച്ച്, ടേൺ ബൈ ടേൺ മാർഗ്ഗനിർദ്ദേശത്തോടെ നിങ്ങളുടെ ലക്ഷ്യസ്ഥാനത്തേക്കുള്ള വഴികൾ നേടുക</translation>
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="1641316430523156212">ഫോളോ ചെയ്യുക</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
@@ -208,6 +209,7 @@
 <translation id="2059166748188874810">മുൻസിപ്പാലിറ്റി</translation>
 <translation id="2062410130322589403">നിങ്ങളുടെ സ്വകാര്യതാ ചോയ്‌സുകളെ കുറിച്ചുള്ള ഗൈഡ്</translation>
 <translation id="20638360198452347">യൂണിറ്റ് തരം സെലക്‌ടർ</translation>
+<translation id="2067852168641682340">എല്ലായ്‌പ്പോഴും ഈ അക്കൗണ്ടിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="2074131957428911366">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="2078437078822043850">അദൃശ്യ മോഡിൽ ബ്രൗസ് ചെയ്യാൻ നിങ്ങൾക്ക് വലത്തേക്ക് സ്ക്രോൾ ചെയ്യാം.</translation>
@@ -313,6 +315,7 @@
 <translation id="261739049332372104">നിങ്ങൾ പ്രാധാന്യം നൽകുന്ന ഉള്ളടക്കത്തെ കുറിച്ചുള്ള അപ്ഡേറ്റുകൾ ലഭിക്കാൻ iOS ക്രമീകരണത്തിൽ അറിയിപ്പുകൾ ഓണാക്കുക.</translation>
 <translation id="2625189173221582860">പാസ്‌വേഡ് പകർത്തി</translation>
 <translation id="2626236249646841566">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും സൈൻ ഇൻ ചെയ്ത് നോക്കുക.</translation>
+<translation id="2635918910848538771">CVC സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="2637313651144986786">ടാബുകൾ തിരയുക...</translation>
 <translation id="2640733327287333451">ഉപയോക്തൃനാമമില്ല ••••••</translation>
 <translation id="2648721026697078500">ഒരിക്കലും നീക്കരുത്</translation>
@@ -496,6 +499,7 @@
 <translation id="3533202363250687977">എല്ലാ അദൃശ്യ ടാബുകളും അവസാനിപ്പിക്കുക</translation>
 <translation id="3533436815740441613">പുതിയ ടാബ്</translation>
 <translation id="3540141921715814660">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
+<translation id="3547356470684043247">റിവ്യൂകളുമായി ബന്ധപ്പെട്ട നിങ്ങളുടെ തീരുമാനങ്ങൾ അറിയിക്കാൻ സഹായിക്കുന്നതിന്, ഉൽപ്പന്നങ്ങളോ സേവനങ്ങളോ അനുഭവമോ സംബന്ധിച്ച ഉപഭോക്താക്കളുടെ വിലയിരുത്തലുകൾ വായിക്കുക</translation>
 <translation id="355101282835380364">Account-ൽ സംരക്ഷിക്കുക…</translation>
 <translation id="3551320343578183772">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="3565930036634619844">ടാബ്. <ph name="NUMBER_OF_TABS" />-ൽ <ph name="TAB_INDEX" />-ാമത്തേത്.</translation>
@@ -714,6 +718,7 @@
 <translation id="4659194143325814340">{count,plural, =1{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ {count} പേജ്}other{വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലെ {count} പേജുകൾ}}</translation>
 <translation id="4659667755519643272">ടാബ് സ്വിച്ചർ നൽകുക</translation>
 <translation id="46614316059270592">പാസ്‌വേഡ് സംരക്ഷിക്കുക</translation>
+<translation id="467189612236587057">ഫോൺ കോൾ ചെയ്‌ത് ഒരു ബിസിനസുമായി കണക്‌റ്റ് ചെയ്യൂ</translation>
 <translation id="4682686630151240767">1. iPhone ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4689564913179979534">പേയ്മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="469300482518076788">ടാബ് അടയ്‌ക്കുക</translation>

@@ -1983,13 +1983,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política não tiver definição, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. A partir da versão M85, padrões com caracteres curinga "*" e "[*.]" no host não serão mais compatíveis com esta política.</translation>
-<translation id="2421713016375433338">URL de uma imagem que será usada como selo corporativo do perfil. O URL precisa levar a uma imagem.
-
-O selo vai aparecer no menu de perfil, abaixo da imagem, que será redimensionada para caber no espaço de 16 x 16 reservado para o selo.
-
-Se esta política for deixada sem definição, um ícone de edifício padrão vai aparecer.
-
-Se ocorrer um erro ao tentar mostrar a imagem, um ícone de edifício padrão não vai aparecer.</translation>
 <translation id="2421779938235645781">A cor da luz de fundo do teclado é igual ao plano de fundo atual</translation>
 <translation id="2423255396068675416">Se a política for definida como "Ativada" ou não for definida, os usuários poderão executar o <ph name="PRODUCT_CROSTINI_NAME" />, contanto que <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sejam definidas como "Ativada". Se a política for definida como "Desativada", o <ph name="PRODUCT_CROSTINI_NAME" /> será desativado. Se a definição for mudada para "Desativada", a política será aplicada para iniciar novos contêineres <ph name="PRODUCT_CROSTINI_NAME" />, e não para os já existentes.</translation>
 <translation id="2423654977291507457">Desativar integrações</translation>
@@ -2348,13 +2341,6 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
       Ela se aplica à tela de login. Consulte também a política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica à sessão do usuário. É recomendado definir as duas com o mesmo valor. Se os valores não forem iguais, poderá haver um atraso ao entrar em uma sessão enquanto o valor especificado pela política do usuário estiver sendo aplicado.
       </translation>
 <translation id="2697717608663878828">Ativar o experimento Encrypted ClientHello do TLS</translation>
-<translation id="2698555428858508691">Esta política controla um rótulo personalizado usado para identificar um perfil conectado.
-
-Se esta política não for definida e for necessário mostrar um rótulo, o padrão "Trabalho" ou "Escola" será usado.
-
-Esta política vai substituir a <ph name="PROFILE_LABEL_POLICY_NAME" />.
-
-O rótulo personalizado não será traduzido.</translation>
 <translation id="2699836109975228367">Ativar o áudio mono na tela de login</translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="2702682139813393777">Forçar os hosts de mensagens nativas do Windows a iniciar via cmd.exe</translation>
@@ -10740,7 +10726,6 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
 <translation id="9020630127193895800">Luz de fundo índigo do teclado</translation>
 <translation id="9031831501689819108">Ativar o Suporte a navegadores legados</translation>
 <translation id="9032595854515551464">Ativar o serviço <ph name="PRODUCT_NAME" /> V2 e iniciar o espaço de trabalho remoto após o login</translation>
-<translation id="903334067190374761">Definir um rótulo de perfil personalizado</translation>
 <translation id="9034285085962866065">Permitir a personalização de atalhos do sistema</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.
 

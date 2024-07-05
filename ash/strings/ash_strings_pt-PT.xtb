@@ -110,6 +110,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
 <translation id="1341926407152459446">Use "<ph name="DEVICE_NAME" />" para a entrada e saída de áudio</translation>
 <translation id="1346748346194534595">Direita</translation>
+<translation id="1350494136075914725">Em curso · Mudar para separador</translation>
 <translation id="1351937230027495976">Reduzir menu</translation>
 <translation id="1360220746312242196">Ao pesquisar numa página, ir para a correspondência anterior da pesquisa</translation>
 <translation id="1360788414852622716">A desativar o perfil. Esta ação pode demorar alguns minutos.</translation>
@@ -1048,6 +1049,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4876935764454575645">Seleção de áudio</translation>
 <translation id="4881323000405981760">Os efeitos não são suportados em apps para Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Envie feedback opcional para melhorar as sugestões:</translation>
 <translation id="4890187583552566966">O Assistente Google foi desativado pelo administrador.</translation>
 <translation id="4890408602550914571">Certifique-se de que o telemóvel está próximo e com o Bluetooth ativado.</translation>
@@ -1750,6 +1752,7 @@ Nova instalação</translation>
 <translation id="742594950370306541">A câmara está a ser utilizada.</translation>
 <translation id="742608627846767349">Bom dia,</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
+<translation id="7441711280402516925">Em reprodução · Mudar para separador</translation>
 <translation id="7453330308669753048">Resultado do histórico de pesquisas removido</translation>
 <translation id="7459485586006128091">Devido a um erro interno, a zona Wi-Fi foi desativada. Tente ligar novamente dentro de alguns minutos.</translation>
 <translation id="7461924472993315131">Fixar</translation>

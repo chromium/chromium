@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">පළලට ගැළපෙන</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">ඔබේ බෙදා ගත් පටිත්තෙහි අන්තර්ගතය අනුචලනය කර විශාලනය කරන්න</translation>
+<translation id="1088664500620117635"><ph name="PRODUCT_NAME" /> සඳහා නියමානුකූල මිල <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> වන නමුත් වත්මන් මිල වෙබය පුරා <ph name="CURRENT_PRICE" /> වේ.</translation>
 <translation id="1089439967362294234">මුරපදය වෙනස් කරන්න</translation>
 <translation id="1089599132348386324">ඔබට Chrome සැකසීම් තුළ ඕනෑම වේලාවක ඔබේ සිත වෙනස් කළ හැක.</translation>
 <translation id="1090629319939036170">VR මෙනුව</translation>
@@ -447,6 +448,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, බහුවිධ ක්‍රියාමාර්ග ලබා ගත හැකිය, ඒවා හරහා චක්‍රීය කිරීමට Tab ඔබන්න</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">අතථ්‍ය කාඩ්පත් විස්තර</translation>
+<translation id="1803254472779303354">මූසික අගුලට ඉඩ ඇත</translation>
 <translation id="1803351196216024260">ඔබගේ මයික්‍රෆෝනය භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="1806174020048213474">මෙම යෙදුම Wi-Fi අක්තපත්‍ර ස්ථාපනය කිරීමට අවසර ඉල්ලයි. පිහිටුවීමෙන් පසු, ඔබේ <ph name="DEVICE_TYPE" /> සහභාගී වන Wi-Fi ජාල වෙත ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත. මෙම අක්තපත්‍ර ඉවත් කිරීම සඳහා, යෙදුම අස්ථාපනය කරන්න.</translation>
 <translation id="1807246157184219062">එළිය</translation>
@@ -912,6 +914,7 @@
 <translation id="2702592986366989640">අඩු මිල විකල්පය</translation>
 <translation id="2702801445560668637">කියවීම් ලැයිස්තුව</translation>
 <translation id="270415722347413271">ප්‍රකාශ තැටිය (මැට්)</translation>
+<translation id="2704192696317130398">ඔබේ මූසිකය අගුළු දමන්න ද?</translation>
 <translation id="2704283930420550640">අගය ආකෘතිය හා නොසැසඳේ.</translation>
 <translation id="2704606927547763573">පිටපත් කරන ලදි</translation>
 <translation id="2705137772291741111">මෙම අඩවියෙහි සුරැකි (හැඹිලිගත කළ) පිටපත කියවිය නොහැකි විය.</translation>
@@ -1216,6 +1219,7 @@
 <translation id="3307649904964670439">Chrome අභිරුචිකරණය කරන්න බොත්තම, ඔබේ බ්‍රව්සරයෙහි පෙනුම අභිරුචිකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
 <translation id="3318016344440038475">රූපවාහිනී විකට කතා</translation>
+<translation id="3321152582690622182">ලුහුබැඳීම නොකරයි</translation>
 <translation id="3324687287337751929">අඟ 4 x 6</translation>
 <translation id="3324983252691184275">ක්‍රිම්සන්</translation>
 <translation id="3325027355611702542">කඳවුරුකරුවන් සහ RVs</translation>
@@ -2170,6 +2174,7 @@
 <translation id="5125751979347152379">අවලංගු URL.</translation>
 <translation id="512592033764059484">පාපන්දු</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ප්‍රතිප්‍රමාණ නොවීමටද හැකිය. යෙදුම ගැටලු අත්විඳීම වැළැක්වීමට පෙර සැකසූ කවුළු තරම භාවිත කරන්න.</translation>
+<translation id="512756860033933700">යතුරුපුවරු අගුලට ඉඩ ඇත</translation>
 <translation id="5127934926273826089">මල්</translation>
 <translation id="5129534298163637277">තහවුරු කිරීමේ සංවාදය</translation>
 <translation id="5135404736266831032">ලිපින කළමනාකරණය කරන්න...</translation>
@@ -2200,6 +2205,7 @@
 <translation id="5177076414499237632">මෙම පිටුවේ මූලාශ්‍රය සහ මාතෘකාව ගැන දැන ගන්න</translation>
 <translation id="5179490652562926740">ගෙවීම් සත්‍යාපන සැකසීම් සුරකින ලදි</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> තුළ නැතිද? මෙම දෝෂය වාර්තා කරන්න</translation>
+<translation id="5180662470511508940">යතුරු පුවරු අගුලට ඉඩ නැත</translation>
 <translation id="5187079891181379721">සංස්ථාපන සිදුවීම්</translation>
 <translation id="5190072300954988691">කැමරාවට සහ මයික්‍රෆෝනයට ඉඩ නැත</translation>
 <translation id="5190835502935405962">පොත්සලකුණු තීරුව</translation>
@@ -2773,6 +2779,7 @@
 <translation id="6298456705131259420">මෙහි ලැයිස්තුගත කර ඇති අඩවි වෙත බලපායි. වසම් නාමයකට පෙර “[*.]” ඇතුළත් කිරීම සම්පූර්ණ වසම සඳහා ව්‍යතිරේකයක් තනයි. උදාහරණයක් ලෙස, “[*.]google.com” එක් කිරීම යන්නෙන් අදහස් වන්නේ එය google.com හි කොටසක් වන නිසා, තෙවන පාර්ශ්වීය කුකීස් mail.google.com සඳහා සක්‍රිය විය හැකි බවයි.</translation>
 <translation id="6300452962057769623">{0,plural, =0{ඔබගේ උපාංගය දැන් යළි ආරම්භ වනු ඇත}=1{ඔබගේ උපාංගය තත්පර 1කින් යළි ආරම්භ වනු ඇත}one{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}other{ඔබගේ උපාංගය තත්පර #කින් යළි ආරම්භ වනු ඇත}}</translation>
 <translation id="6301104306974789820">මිල නිරීක්ෂණ දැනුම්දීම් ලබා ගන්න</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> අවසර විස්තර පෙන්වන්න</translation>
 <translation id="6304398603974202180">බහුමාධ්‍ය මෘදුකාංග</translation>
 <translation id="6305205051461490394"><ph name="URL" /> වෙත ළඟා විය නොහැකිය.</translation>
 <translation id="6306713302480826305">මෙම ලිපිනය මෙයින් සහ ඔබේ අනෙකුත් පුරනය වී ඇති උපාංගවලින් මකනු ඇත</translation>
@@ -2915,6 +2922,7 @@
 <translation id="6545864417968258051">බ්ලූටූත් ස්කෑන් කිරීම</translation>
 <translation id="6547208576736763147">වමට ද්වි අනින්න</translation>
 <translation id="6549443526281184652">ඇඳුම් පැළඳුම්</translation>
+<translation id="6550245281449521513">මූසික අගුලට ඉඩ නැත</translation>
 <translation id="6551873053534932690">ගිණුමේ ලිපිනය සුරකින්න ද?</translation>
 <translation id="6554732001434021288">දින <ph name="NUM_DAYS" />කට පෙර අවසන් වරට පිවිසි</translation>
 <translation id="6556866813142980365">නැවත කරන්න</translation>
@@ -3833,6 +3841,7 @@
 <translation id="8278544367771164040">වාණිජමය ණය දීම</translation>
 <translation id="8279290844152565425">ප්‍රසංග සහ සංගීත උත්සව</translation>
 <translation id="8279611986089885641">Chrome දැනුම්දීම් ක්‍රියාත්මක විය යුතුයි. ඔබට ඒවා <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> තුළ සක්‍රීය කළ හැක.</translation>
+<translation id="8280387559022105172">ඔබේ යතුරු පුවරුව අගුළු දමන්න ද?</translation>
 <translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281730697546299650">වෙනත් දැන්වීම් පෞද්ගලිකත්ව විශේෂාංග දැන් තිබේ</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
@@ -4304,6 +4313,7 @@
 <translation id="9191834167571392248">පහළ වමට අනින්න</translation>
 <translation id="9192361865877479444">ලෝහ (මැට්)</translation>
 <translation id="9192947025498305328">පිරිසිදු අලංකාරය</translation>
+<translation id="919455784772793601">මෙම නිෂ්පාදනය විකුණන වෙනත් වෙළඳසැල් පෙන්වන පිටුවක් විවෘත කරන්න.</translation>
 <translation id="9199905725844810519">මුද්‍රණය කිරීම අවහිර කර ඇත</translation>
 <translation id="9205078245616868884">ඔබේ දත්ත ඔබේ සමමුහුර්ත මුරවදන සමඟ සංකේතනය කර ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට ඇතුළු කරන්න.</translation>
 <translation id="920643408853370361">සංචාරක රක්‍ෂණය</translation>

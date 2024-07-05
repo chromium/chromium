@@ -47,6 +47,7 @@
 <translation id="1080116354587839789">প্রস্থের মধ্যে আঁটান</translation>
 <translation id="1081061862829655580">ট্রে ১৯</translation>
 <translation id="1082026381988252344">আপনার শেয়ার করা ট্যাবের কন্টেন্ট স্ক্রল ও জুম করুন</translation>
+<translation id="1088664500620117635">সাধারণত <ph name="PRODUCT_NAME" />-এর দাম <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" />-এর মধ্যে থাকে কিন্তু সমস্ত ওয়েব জুড়ে বর্তমান দাম <ph name="CURRENT_PRICE" />।</translation>
 <translation id="1089439967362294234">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="1090629319939036170">ভিআর (VR) মেনু</translation>
 <translation id="1091779689406092804">স্ক্রিনশট</translation>
@@ -446,6 +447,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাজ করা যাবে, বিকল্পগুলি এক এক করে দেখতে ট্যাব টিপুন</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ভার্চুয়াল কার্ডের বিবরণ</translation>
+<translation id="1803254472779303354">মাউস লক ব্যবহার করার অনুমতি আছে</translation>
 <translation id="1803351196216024260">মাইক্রোফোন ব্যবহার করতে অনুমতি চাইতে পারে</translation>
 <translation id="1806174020048213474">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন।</translation>
 <translation id="1807246157184219062">আলো</translation>
@@ -912,6 +914,7 @@
 <translation id="2702592986366989640">কম দাম সম্পর্কিত বিকল্প</translation>
 <translation id="2702801445560668637">পড়ার তালিকা</translation>
 <translation id="270415722347413271">অপটিকাল ডিস্ক (ম্যাট)</translation>
+<translation id="2704192696317130398">আপনি মাউস লক করতে চান?</translation>
 <translation id="2704283930420550640">বিন্যাসের সাথে মূল্য মেলে না৷</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2705137772291741111">এই সাইটের সেভ করা (ক্যাশে করা) কপি পড়া যাবে না।</translation>
@@ -1216,6 +1219,7 @@
 <translation id="3307649904964670439">'Chrome কাস্টমাইজ করুন' বোতাম, আপনার ব্রাউজারের লুক কাস্টমাইজ করতে এটি চালু করুন</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
 <translation id="3318016344440038475">টিভি কমেডি</translation>
+<translation id="3321152582690622182">প্রোডাক্ট ট্র্যাক করা হচ্ছে না</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">টকটকে লাল</translation>
 <translation id="3325027355611702542">ক্যাম্পার ও RV</translation>
@@ -2170,6 +2174,7 @@
 <translation id="5125751979347152379">ভুল ইউআরএল৷</translation>
 <translation id="512592033764059484">ফুটবল</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> সঠিকভাবে ছোট বড় করা নাও যেতে পারে। অ্যাপটি ব্যবহার করতে সমস্যা এড়াতে প্রিসেট উইন্ডো সাইজ ব্যবহার করুন।</translation>
+<translation id="512756860033933700">কীবোর্ড লক ব্যবহার করার অনুমতি আছে</translation>
 <translation id="5127934926273826089">ফুল</translation>
 <translation id="5129534298163637277">কনফার্মেশন ডায়ালগ</translation>
 <translation id="5135404736266831032">ঠিকানাগুলি পরিচালনা করুন...</translation>
@@ -2200,6 +2205,7 @@
 <translation id="5177076414499237632">পৃষ্ঠার সোর্স ও বিষয় সম্পর্কে আরও জানুন</translation>
 <translation id="5179490652562926740">পেমেন্ট যাচাইকরণ সংক্রান্ত সেটিংস সেভ করা হয়েছে</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />-এ নেই? এই ত্রুটি রিপোর্ট করুন</translation>
+<translation id="5180662470511508940">কীবোর্ড লক ব্যবহার করার অনুমতি নেই</translation>
 <translation id="5187079891181379721">কর্পোরেট ইভেন্ট</translation>
 <translation id="5190072300954988691">ক্যামেরা এবং মাইক্রোফোনের অনুমতি নেই</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
@@ -2772,6 +2778,7 @@
 <translation id="6298456705131259420">এখানে তালিকাভুক্ত করা সাইটের উপর প্রভাব ফেলে। কোনও ডোমেনের নামের আগে “[*.]” যোগ করা হলে, তা সম্পূর্ণ ডোমেনের ক্ষেত্রে এক্সেপশন তৈরি করে। যেমন, [*.]google.com” যোগ করলে, mail.google.com-এর জন্যেও থার্ড-পার্টি কুকি চালু করা হতে পারে, কারণ সেটি google.com-এর অংশ।</translation>
 <translation id="6300452962057769623">{0,plural, =0{আপনার ডিভাইস এখনই রিস্টার্ট হবে}=1{১ সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}one{# সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}other{# সেকেন্ড পরেই আপনার ডিভাইস রিস্টার্ট হবে}}</translation>
 <translation id="6301104306974789820">দাম ট্র্যাক করা সংক্রান্ত বিজ্ঞপ্তি পান</translation>
+<translation id="6302546952464230349"><ph name="PERMISSION_NAME" /> অনুমতি সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6304398603974202180">মাল্টিমিডিয়া সফ্টওয়্যার</translation>
 <translation id="6305205051461490394"><ph name="URL" /> এ পৌঁছানো যাচ্ছে না</translation>
 <translation id="6306713302480826305">এই ঠিকানাটি এটি এবং আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে মুছে ফেলা হবে</translation>
@@ -2914,6 +2921,7 @@
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6547208576736763147">বাঁদিকে ডুয়াল পাঞ্চ</translation>
 <translation id="6549443526281184652">পরিধান</translation>
+<translation id="6550245281449521513">মাউস লক ব্যবহার করা অনুমতি নেই</translation>
 <translation id="6551873053534932690">অ্যাকাউন্টে ঠিকানা সেভ করবেন?</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
 <translation id="6556866813142980365">আবার করুন</translation>
@@ -3832,6 +3840,7 @@
 <translation id="8278544367771164040">বাণিজ্যিক ঋণ</translation>
 <translation id="8279290844152565425">কনসার্ট ও মিউজিক উৎসব</translation>
 <translation id="8279611986089885641">Chrome বিজ্ঞপ্তি চালু রাখতে হবে। আপনি <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> থেকে সেগুলি চালু করতে পারবেন।</translation>
+<translation id="8280387559022105172">আপনার কীবোর্ড লক করতে চান?</translation>
 <translation id="8280630997017109758">ট্রে ১১</translation>
 <translation id="8281730697546299650">এখন অন্যান্য বিজ্ঞাপন সম্পর্কিত গোপনীয়তা ফিচার উপলভ্য</translation>
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
@@ -4304,6 +4313,7 @@
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>
+<translation id="919455784772793601">সেই পৃষ্ঠা খুলুন যাতে প্রোডাক্ট বিক্রি করে এমন অন্যান্য দোকান দেখা যায়।</translation>
 <translation id="9199905725844810519">প্রিন্টিং ব্লক করা আছে</translation>
 <translation id="9205078245616868884">আপনার ডেটা আপনার সিঙ্ক পাসফ্রেজ দিয়ে এনক্রিপ্ট করা হয়েছে। সিঙ্ক শুরু করার জন্য এটি লিখুন।</translation>
 <translation id="920643408853370361">ভ্রমণ বীমা</translation>
