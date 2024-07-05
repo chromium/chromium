@@ -15,6 +15,10 @@ std::string DirectInvalidation::type() const {
   return invalidation::Invalidation::topic();
 }
 
+base::Time DirectInvalidation::issue_timestamp() const {
+  return base::Time::UnixEpoch() + base::Microseconds(version());
+}
+
 // static
 std::unique_ptr<InvalidationListener> InvalidationListener::Create(
     gcm::GCMDriver* gcm_driver,

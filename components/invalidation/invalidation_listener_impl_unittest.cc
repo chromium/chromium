@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -24,11 +25,14 @@ namespace invalidation {
 
 namespace {
 
-const char kFakeSenderId[] = "fake_sender_id";
-const char kTestLogPrefix[] = "test";
-const char kFakeRegistrationToken[] = "fake_registration_token";
-const char kMessagePayload[] = "payload";
-const int kMessageVersion = 1;
+constexpr char kFakeSenderId[] = "fake_sender_id";
+constexpr char kTestLogPrefix[] = "test";
+constexpr char kFakeRegistrationToken[] = "fake_registration_token";
+constexpr char kMessagePayload[] = "payload";
+constexpr base::TimeDelta kMessageIssueTimeDeltaSinceEpoch =
+    base::Milliseconds(123456789);
+constexpr base::Time kMessageIssueTimeDelta =
+    base::Time::UnixEpoch() + kMessageIssueTimeDeltaSinceEpoch;
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
@@ -100,13 +104,18 @@ class FakeObserver : public InvalidationListener::Observer {
   void set_current_expectation(InvalidationsExpected expectation) {
     current_expectation_ = expectation;
   }
-  bool CountSpecificInvalidation(const std::string& payload, int version) {
+
+  auto CountSpecificInvalidation(const std::string& payload,
+                                 int64_t version,
+                                 base::Time issue_timestamp) {
     return std::count_if(
         received_invalidations_.begin(), received_invalidations_.end(),
-        [&payload, &version, this](const DirectInvalidation& invalidation) {
+        [&payload, &version, &issue_timestamp,
+         this](const DirectInvalidation& invalidation) {
           return invalidation.type() == GetType() &&
                  invalidation.payload() == payload &&
-                 invalidation.version() == version;
+                 invalidation.version() == version &&
+                 invalidation.issue_timestamp() == issue_timestamp;
         });
   }
 
@@ -282,23 +291,26 @@ TEST_F(InvalidationListenerImplTest,
   gcm::IncomingMessage message_for_fake_observer;
   message_for_fake_observer.data["type"] = observer.GetType();
   message_for_fake_observer.data["payload"] = kMessagePayload;
-  message_for_fake_observer.data["version"] =
-      base::NumberToString(kMessageVersion);
+  message_for_fake_observer.data["issue_timestamp_ms"] =
+      base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
   listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects cached messages.
   gcm::IncomingMessage message_not_for_fake_observer;
   message_not_for_fake_observer.data["type"] = "another_type";
   message_not_for_fake_observer.data["payload"] = kMessagePayload;
-  message_not_for_fake_observer.data["version"] =
-      base::NumberToString(kMessageVersion);
+  message_not_for_fake_observer.data["issue_timestamp_ms"] =
+      base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
   listener.OnMessage(InvalidationListener::app_id_,
                      message_not_for_fake_observer);
 
   listener.AddObserver(&observer);
 
   EXPECT_EQ(
-      observer.CountSpecificInvalidation(kMessagePayload, kMessageVersion), 1);
+      observer.CountSpecificInvalidation(
+          kMessagePayload, kMessageIssueTimeDeltaSinceEpoch.InMicroseconds(),
+          kMessageIssueTimeDelta),
+      1);
   listener.RemoveObserver(&observer);
 }
 
@@ -313,21 +325,24 @@ TEST_F(InvalidationListenerImplTest,
   gcm::IncomingMessage message_for_fake_observer;
   message_for_fake_observer.data["type"] = observer.GetType();
   message_for_fake_observer.data["payload"] = kMessagePayload;
-  message_for_fake_observer.data["version"] =
-      base::NumberToString(kMessageVersion);
+  message_for_fake_observer.data["issue_timestamp_ms"] =
+      base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
   listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
   // Setting up another message not intended for `observer`, to check that
   // `InvalidationListener` correctly redirects incoming messages.
   gcm::IncomingMessage message_for_another_observer;
   message_for_another_observer.data["type"] = "another_type";
   message_for_another_observer.data["payload"] = kMessagePayload;
-  message_for_another_observer.data["version"] =
-      base::NumberToString(kMessageVersion);
+  message_for_another_observer.data["issue_timestamp_ms"] =
+      base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
   listener.OnMessage(InvalidationListener::app_id_,
                      message_for_another_observer);
 
   EXPECT_EQ(
-      observer.CountSpecificInvalidation(kMessagePayload, kMessageVersion), 1);
+      observer.CountSpecificInvalidation(
+          kMessagePayload, kMessageIssueTimeDeltaSinceEpoch.InMicroseconds(),
+          kMessageIssueTimeDelta),
+      1);
   listener.RemoveObserver(&observer);
 }
 
@@ -339,19 +354,25 @@ TEST_F(InvalidationListenerImplTest, ListenerProperlyCleansUpCachedMessages) {
   gcm::IncomingMessage message_for_fake_observer;
   message_for_fake_observer.data["type"] = observer.GetType();
   message_for_fake_observer.data["payload"] = kMessagePayload;
-  message_for_fake_observer.data["version"] =
-      base::NumberToString(kMessageVersion);
+  message_for_fake_observer.data["issue_timestamp_ms"] =
+      base::NumberToString(kMessageIssueTimeDeltaSinceEpoch.InMilliseconds());
   listener.OnMessage(InvalidationListener::app_id_, message_for_fake_observer);
   listener.AddObserver(&observer);
   EXPECT_EQ(
-      observer.CountSpecificInvalidation(kMessagePayload, kMessageVersion), 1);
+      observer.CountSpecificInvalidation(
+          kMessagePayload, kMessageIssueTimeDeltaSinceEpoch.InMicroseconds(),
+          kMessageIssueTimeDelta),
+      1);
 
   // Resubscribe.
   listener.RemoveObserver(&observer);
   listener.AddObserver(&observer);
 
   EXPECT_EQ(
-      observer.CountSpecificInvalidation(kMessagePayload, kMessageVersion), 1);
+      observer.CountSpecificInvalidation(
+          kMessagePayload, kMessageIssueTimeDeltaSinceEpoch.InMicroseconds(),
+          kMessageIssueTimeDelta),
+      1);
   listener.RemoveObserver(&observer);
 }
 

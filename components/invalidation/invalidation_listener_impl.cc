@@ -19,7 +19,7 @@ namespace invalidation {
 namespace {
 const char kTypeKey[] = "type";
 const char kPayloadKey[] = "payload";
-const char kVersionKey[] = "version";
+const char kIssueTimestampMsKey[] = "issue_timestamp_ms";
 
 // After the first failure, retry after 1 minute, then after 2, 4 etc up to a
 // maximum of 1 day.
@@ -43,11 +43,19 @@ std::string GetValueFromMessage(const gcm::IncomingMessage& message,
 
 DirectInvalidation ParseIncomingMessage(const gcm::IncomingMessage& message) {
   const std::string type = GetValueFromMessage(message, kTypeKey);
-  const std::string version_str = GetValueFromMessage(message, kVersionKey);
-  int64_t version = 0;
-  if (!base::StringToInt64(version_str, &version)) {
-    version = 0;
+  const std::string issue_timestamp_ms_str =
+      GetValueFromMessage(message, kIssueTimestampMsKey);
+  int64_t issue_timestamp_ms = 0;
+  if (!base::StringToInt64(issue_timestamp_ms_str, &issue_timestamp_ms)) {
+    issue_timestamp_ms = 0;
   }
+
+  // The legacy invalidation version is the timestamp in microseconds.
+  // TODO(b/341376574): Replace the version` with issue timestamp once we
+  // fully migrate to direct message invalidations.
+  const int64_t version =
+      base::Milliseconds(issue_timestamp_ms).InMicroseconds();
+
   const std::string payload = GetValueFromMessage(message, kPayloadKey);
   return DirectInvalidation(type, version, payload);
 }

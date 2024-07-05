@@ -34,6 +34,7 @@ class DirectInvalidation : public invalidation::Invalidation {
   using invalidation::Invalidation::Invalidation;
 
   std::string type() const;
+  base::Time issue_timestamp() const;
 };
 
 // Interface to handle obtained registration tokens.
