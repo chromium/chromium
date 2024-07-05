@@ -4881,6 +4881,10 @@ if (is_chromeos_device) {
       # TODO(b/335292921): Move to //chrome/browser/ash/file_manager.
       "file_manager/file_manager_interactive_uitest.cc",
 
+      # TODO(b/335293584): Move to //chrome/browser/ash/login.
+      "login/login_manager_test.cc",
+      "login/login_manager_test.h",
+
       # TODO(b/335294351): Move to //chrome/browser/ash/printing.
       "printing/print_management/print_management_printer_settings_interactive_uitest.cc",
     ]
@@ -4906,6 +4910,8 @@ if (is_chromeos_device) {
       "//url",
 
       # Gather tests from subdirectories.
+      "//chrome/browser/ash/accessibility/live_caption:interactive_ui_tests",
+      "//chrome/browser/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ash/child_accounts:interactive_ui_tests",
       "//chrome/browser/ash/growth:interactive_ui_tests",
       "//chrome/browser/ash/os_feedback:interactive_ui_tests",

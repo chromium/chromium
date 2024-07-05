@@ -11699,26 +11699,18 @@ if (!is_android && !is_chromeos_device) {
     if (is_chromeos_ash) {
       deps += [
         "//ash/constants",
-        "//chrome/browser/ash:test_support",
-        "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
         "//chrome/browser/chromeos:test_support",
-        "//chrome/browser/enterprise/data_controls:test_support",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/login/auth",
         "//chromeos/ui/frame:test_support",
-        "//components/enterprise/data_controls:dlp_policy_event_proto",
         "//components/exo/wayland:test_controller_stub",
         "//components/exo/wayland:ui_controls_protocol_stub",
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
       ]
       sources += [
-        "../browser/ash/accessibility/live_caption/live_caption_ui_remote_driver_browsertest.cc",
-        "../browser/ash/app_list/app_list_client_interactive_uitest.cc",
-        "../browser/ash/login/login_manager_test.cc",
-        "../browser/ash/login/login_manager_test.h",
         "../browser/ui/ash/clipboard_history_interactive_uitest.cc",
         "../browser/ui/ash/privacy_hub/geolocation_switch_interactive_uitest.cc",
       ]
