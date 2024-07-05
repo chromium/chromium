@@ -169,4 +169,9 @@ BASE_FEATURE(kWebAuthnAndroidOpenAccessory,
              "WebAuthenticationAndroidOpenAccessory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Development flag. Must not be enabled by default.
+BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
+             "WebAuthnEnclaveAuthenticatorDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

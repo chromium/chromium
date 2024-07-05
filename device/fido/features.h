@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidOpenAccessory);
 
+// Send enclave requests with 5 seconds delay. For development purposes only.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

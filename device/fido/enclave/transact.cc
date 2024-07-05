@@ -4,9 +4,13 @@
 
 #include "device/fido/enclave/transact.h"
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/timer/timer.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -15,6 +19,7 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
+#include "device/fido/features.h"
 #include "device/fido/network_context_factory.h"
 
 namespace device::enclave {
@@ -36,7 +41,19 @@ struct Transaction : base::RefCounted<Transaction> {
     client_ = std::move(client);
   }
 
-  void Start() { client_->Write(handshake_.BuildInitialMessage()); }
+  void StartInternal() { client_->Write(handshake_.BuildInitialMessage()); }
+
+  void Start() {
+    if (base::FeatureList::IsEnabled(
+            device::kWebAuthnEnclaveAuthenticatorDelay)) {
+      // Unretained is fine because this is a development flag.
+      timer_.Start(
+          FROM_HERE, base::Seconds(5),
+          base::BindOnce(&Transaction::StartInternal, base::Unretained(this)));
+      return;
+    }
+    StartInternal();
+  }
 
   void OnData(device::enclave::EnclaveWebSocketClient::SocketStatus status,
               std::optional<std::vector<uint8_t>> data) {
@@ -152,6 +169,9 @@ struct Transaction : base::RefCounted<Transaction> {
   std::unique_ptr<cablev2::Crypter> crypter_;
   std::optional<std::array<uint8_t, 32>> handshake_hash_;
   bool done_handshake_ = false;
+
+  // Timer for `kWebAuthnEnclaveAuthenticatorDelay` dev flag.
+  base::OneShotTimer timer_;
 };
 
 }  // namespace
