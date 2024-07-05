@@ -951,13 +951,6 @@
       name: "CSSMixins",
     },
     {
-      // Support for typed om numeric factory methods for various units that
-      // were otherwise shipped: rex, rch, ic, ric, lh, rlh, x (cap and rcap
-      // covered by separate runtime flag).
-      name: "CSSNumericFactoryCompleteness",
-      status: "stable",
-    },
-    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },
