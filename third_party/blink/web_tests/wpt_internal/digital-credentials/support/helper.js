@@ -47,38 +47,31 @@ export function requestIdentityWithActivation(test_driver, request) {
 }
 
 /**
- * @type {SendMessage}
- **/
-export function sendMessage(iframe) {
-  return new Promise((resolve, reject) => {
-    window.addEventListener("message", function messageListener(event) {
-      if (event.source === iframe.contentWindow) {
-        window.removeEventListener("message", messageListener);
-        resolve(event.data);
-      }
-    });
-    if (!iframe.contentWindow) {
-      reject(
-        new Error("iframe.contentWindow is undefined, cannot send message.")
-      );
-      return;
-    }
-    iframe.contentWindow.postMessage({}, "*");
-  });
+ * Checks digital credential API availability.
+ *
+ * Different than requestIdentityWithActivation() in that this function:
+ * - does not do full digital credentials request
+ * - does not acquire transient user activation and thus is unaffected by test
+ *   driver bugs related to transient user activation.
+ *   https://github.com/web-platform-tests/wpt/issues/46989
+ *   http://crbug.com/40124744
+ */
+export async function check_digital_credential_api_availability() {
+  try {
+    const abort_controller = new AbortController();
+    abort_controller.abort();
+    const request = buildValidNavigatorIdentityRequest();
+    request.signal = abort_controller.signal;
+    await navigator.identity.get(request);
+    return false;
+  } catch (error) {
+    // If digital credentials API is disabled, an error should be thrown prior
+    // to checking whether the request has been aborted.
+    return (error instanceof DOMException && error.name == "AbortError")
+  }
 }
 
-/**
- * @param {HTMLIFrameElement} iframe
- * @param {string|URL} url
- * @returns {Promise<void>}
- */
-export function loadIframe(iframe, url) {
-  return new Promise((resolve, reject) => {
-    iframe.addEventListener("load", resolve, { once: true });
-    iframe.addEventListener("error", reject, { once: true });
-    if (!iframe.isConnected) {
-      document.body.appendChild(iframe);
-    }
-    iframe.src = url.toString();
-  });
+export function digital_credential_test_feature_availability_in_iframe(test, url, expect_feature_available, allow) {
+  return test_feature_availability(
+      'digital-credentials-get', test, url, expect_feature_available, /*feature_name=*/allow, /*allowfullscreen=*/false, /*is_promise_test=*/true);
 }

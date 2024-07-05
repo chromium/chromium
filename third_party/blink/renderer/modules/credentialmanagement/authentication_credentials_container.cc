@@ -175,6 +175,32 @@ bool AreUniqueOriginsLessOrEqualTo(const Frame* frame, int max_unique_origins) {
   return true;
 }
 
+const SecurityOrigin* GetSecurityOrigin(const Frame* frame) {
+  const SecurityContext* frame_security_context = frame->GetSecurityContext();
+  if (!frame_security_context) {
+    return nullptr;
+  }
+  return frame_security_context->GetSecurityOrigin();
+}
+
+bool IsSameSecurityOriginWithAncestors(const Frame* frame) {
+  const Frame* current = frame;
+  const SecurityOrigin* frame_origin = GetSecurityOrigin(frame);
+  if (!frame_origin) {
+    return false;
+  }
+
+  while (current->Tree().Parent()) {
+    current = current->Tree().Parent();
+    const SecurityOrigin* current_security_origin = GetSecurityOrigin(current);
+    if (!current_security_origin ||
+        !frame_origin->IsSameOriginWith(current_security_origin)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool IsAncestorChainValidForWebOTP(const Frame* frame) {
   return AreUniqueOriginsLessOrEqualTo(
       frame, kMaxUniqueOriginInAncestorChainForWebOTP);

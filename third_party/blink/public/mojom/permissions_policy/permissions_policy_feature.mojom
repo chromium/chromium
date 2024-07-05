@@ -251,6 +251,9 @@ enum PermissionsPolicyFeature {
   // https://github.com/WICG/pending-beacon/blob/main/docs/fetch-later-api.md
   kDeferredFetch = 119,
 
+  // Digital Credentials (https://wicg.github.io/digital-credentials/)
+  kDigitalCredentialsGet = 120,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

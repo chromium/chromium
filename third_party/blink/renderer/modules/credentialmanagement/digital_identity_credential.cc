@@ -11,6 +11,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -147,6 +148,16 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
+  if (!resolver->GetExecutionContext()->IsFeatureEnabled(
+          mojom::blink::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'digital-credentials-get' feature is not enabled in this "
+        "document. Permissions Policy may be used to delegate digital "
+        "credential API capabilities to cross-origin child frames."));
+    return resolver->Promise();
+  }
+
   size_t num_providers = options.digital()->hasProviders()
                              ? options.digital()->providers().size()
                              : 0u;
@@ -163,15 +174,6 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     resolver->RejectWithTypeError(
         "Digital identity API currently does not support multiple "
         "providers.");
-    return resolver->Promise();
-  }
-
-  if (!IsSameSecurityOriginWithAncestors(
-          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "The digital identity credential can only be requested in a "
-        "document which is same-origin with all of its ancestors.");
     return resolver->Promise();
   }
 

@@ -11303,6 +11303,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="117" label="PublicKeyCredentialsCreate"/>
   <int value="118" label="SpeakerSelection"/>
   <int value="119" label="DeferredFetch"/>
+  <int value="120" label="DigitalCredentialsGet"/>
 </enum>
 
 <enum name="FedCmContinueOnPopupResult">

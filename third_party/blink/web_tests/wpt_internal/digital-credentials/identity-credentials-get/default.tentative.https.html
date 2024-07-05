@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/common/get-host-info.sub.js></script>
+<script src=/permissions-policy/resources/permissions-policy.js></script>
+<script type="module">
+import { digital_credential_test_feature_availability_in_iframe } from '/wpt_internal/digital-credentials/support/helper.js';
+
+const host_info = get_host_info();
+const same_origin_src = "/wpt_internal/digital-credentials/support/api_availability_iframe.html"
+const cross_origin_src = `${host_info.HTTPS_REMOTE_ORIGIN}${same_origin_src}`
+
+promise_test(async t => {
+  return digital_credential_test_feature_availability_in_iframe(
+      t, same_origin_src, expect_feature_available_default, /*allow=*/undefined);
+}, "digital credentials API is enabled by default in same-origin iframe");
+
+promise_test(async t => {
+  return digital_credential_test_feature_availability_in_iframe(
+      t, cross_origin_src, expect_feature_unavailable_default, /*allow=*/undefined);
+}, "digital credentials API is disabled by default in cross-origin iframe");
+</script>
+</body>

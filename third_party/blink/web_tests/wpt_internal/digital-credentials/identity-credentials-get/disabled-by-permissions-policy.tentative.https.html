@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/common/get-host-info.sub.js></script>
+<script src=/permissions-policy/resources/permissions-policy.js></script>
+<script type="module">
+import { check_digital_credential_api_availability, digital_credential_test_feature_availability_in_iframe } from '/wpt_internal/digital-credentials/support/helper.js';
+
+const host_info = get_host_info();
+const same_origin_src = '/wpt_internal/digital-credentials/support/api_availability_iframe.html';
+const cross_origin_src = `${host_info.HTTPS_REMOTE_ORIGIN}${same_origin_src}`;
+const header = "Permissions-Policy header \"digital-credentials-get=()\"";
+
+promise_test(async t => {
+  const feature_availability = await check_digital_credential_api_availability();
+  assert_false(feature_availability);
+}, header + " disables digital credentials API in toplevel frame.");
+
+// Set allow="digital-credentials-get" on iframe element to delegate 'digital-credentials-get' to cross-origin
+// subframe.
+promise_test(async t => {
+  return digital_credential_test_feature_availability_in_iframe(
+      t, same_origin_src, expect_feature_unavailable_default, /*allow=*/"digital-credentials-get");
+}, header + " disables digital credentials API in same-origin iframe.");
+
+// Set allow="digital-credentials-get" on iframe element to delegate 'digital-credentials-get' to cross-origin
+// subframe.
+promise_test(async t => {
+  return digital_credential_test_feature_availability_in_iframe(
+      t, cross_origin_src, expect_feature_unavailable_default, /*allow=*/"digital-credentials-get");
+}, header + "disables digital credentials API in cross-origin iframe.");
+</script>
+</body>

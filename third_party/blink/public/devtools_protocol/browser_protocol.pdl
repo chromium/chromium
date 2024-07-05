@@ -7927,6 +7927,7 @@ domain Page
       compute-pressure
       cross-origin-isolated
       deferred-fetch
+      digital-credentials-get
       direct-sockets
       display-capture
       document-domain

@@ -15,9 +15,6 @@ class ScriptPromiseResolverBase;
 bool CheckGenericSecurityRequirementsForCredentialsContainerRequest(
     ScriptPromiseResolverBase*);
 
-// Returns whether the frame has the same security origin as its ancestors.
-bool IsSameSecurityOriginWithAncestors(const Frame* frame);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIAL_UTILS_H_

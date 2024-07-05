@@ -36,6 +36,7 @@ clipboard-write
 compute-pressure
 cross-origin-isolated
 deferred-fetch
+digital-credentials-get
 display-capture
 encrypted-media
 execution-while-not-rendered

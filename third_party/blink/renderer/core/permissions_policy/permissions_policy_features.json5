@@ -232,6 +232,11 @@
       depends_on: ["FetchLaterAPI"],
     },
     {
+      name: "DigitalCredentialsGet",
+      permissions_policy_name: "digital-credentials-get",
+      depends_on: ["WebIdentityDigitalCredentials"],
+    },
+    {
       name: "DirectSockets",
       permissions_policy_name: "direct-sockets",
       depends_on: ["DirectSockets"],
