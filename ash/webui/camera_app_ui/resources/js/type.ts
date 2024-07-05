@@ -373,6 +373,7 @@ export interface ErrorInfo {
  * Types of error used in ERROR metrics.
  */
 export enum ErrorType {
+  BIG_BUFFER_FAILURE = 'big-buffer-failure',
   BROKEN_THUMBNAIL = 'broken-thumbnail',
   CHECK_COVER_FAILURE = 'check-cover-failed',
   DEVICE_INFO_UPDATE_FAILURE = 'device-info-update-failure',

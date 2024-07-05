@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../assert.js';
+import {assert, assertInstanceof, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import * as localDev from '../local_dev.js';
@@ -80,10 +80,12 @@ export async function createBigBufferFromBlob(blob: Blob): Promise<BigBuffer> {
   const size = bytes.byteLength;
 
   const sharedBuffer = Mojo.createSharedBuffer(size);
-  assert(sharedBuffer.result === Mojo.RESULT_OK);
+  assert(
+      sharedBuffer.result === Mojo.RESULT_OK,
+      'Failed to create shared buffer.');
 
   const mapBuffer = sharedBuffer.handle.mapBuffer(0, size);
-  assert(mapBuffer.result === Mojo.RESULT_OK);
+  assert(mapBuffer.result === Mojo.RESULT_OK, 'Failed to map buffer.');
 
   const uint8View = new Uint8Array(mapBuffer.buffer);
   uint8View.set(bytes);
@@ -103,7 +105,23 @@ export async function createBigBufferFromBlob(blob: Blob): Promise<BigBuffer> {
   return bigBuffer;
 }
 
+/**
+ * Creates a number array from `blob` for Mojo's `array<uint8>`.
+ */
+export async function createNumArrayFromBlob(blob: Blob): Promise<number[]> {
+  const buffer = await blob.arrayBuffer();
+  return castToNumberArray(new Uint8Array(buffer));
+}
+
 export abstract class ChromeHelper {
+  /**
+   * TODO(b/349015781): A flag to determine if we should use BigBuffer. It
+   * will be turned off when something went wrong when using BigBuffer. In the
+   * future, we want to monitor the error metrics to see if this flag is still
+   * needed.
+   */
+  static useBigBuffer = true;
+
   /**
    * Starts monitoring tablet mode state of device.
    *
@@ -282,6 +300,15 @@ export abstract class ChromeHelper {
       instance = getInstanceImpl();
     }
     return instance;
+  }
+
+  static handleBigBufferError(e: unknown): void {
+    ChromeHelper.useBigBuffer = false;
+    reportError(
+        ErrorType.BIG_BUFFER_FAILURE,
+        ErrorLevel.WARNING,
+        assertInstanceof(e, Error),
+    );
   }
 }
 
@@ -527,8 +554,17 @@ class ChromeHelperImpl extends ChromeHelper {
   }
 
   override async performOcr(jpeg: Blob): Promise<OcrResult> {
-    const bigBuffer = await createBigBufferFromBlob(jpeg);
-    const {ocrResult} = await this.remote.performOcr(bigBuffer);
+    try {
+      if (ChromeHelper.useBigBuffer) {
+        const bigBuffer = await createBigBufferFromBlob(jpeg);
+        const {ocrResult} = await this.remote.performOcr(bigBuffer);
+        return ocrResult;
+      }
+    } catch (e) {
+      ChromeHelper.handleBigBufferError(e);
+    }
+    const numArray = await createNumArrayFromBlob(jpeg);
+    const {ocrResult} = await this.remote.performOcrInline(numArray);
     return ocrResult;
   }
 

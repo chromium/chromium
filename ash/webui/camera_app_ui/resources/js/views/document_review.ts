@@ -21,7 +21,11 @@ import {
 import {Filenamer} from '../models/file_namer.js';
 import {getI18nMessage} from '../models/load_time_data.js';
 import {ResultSaver} from '../models/result_saver.js';
-import {ChromeHelper, createBigBufferFromBlob} from '../mojo/chrome_helper.js';
+import {
+  ChromeHelper,
+  createBigBufferFromBlob,
+  createNumArrayFromBlob,
+} from '../mojo/chrome_helper.js';
 import {
   BigBuffer,
   PdfBuilderRemote,
@@ -643,8 +647,17 @@ class PdfBuilder {
    */
   async addPage(jpg: Blob, index: number): Promise<void> {
     assert(this.builder !== null);
-    const bigBuffer = await createBigBufferFromBlob(jpg);
-    this.builder.addPage(bigBuffer, index);
+    try {
+      if (ChromeHelper.useBigBuffer) {
+        const bigBuffer = await createBigBufferFromBlob(jpg);
+        this.builder.addPage(bigBuffer, index);
+        return;
+      }
+    } catch (e) {
+      ChromeHelper.handleBigBufferError(e);
+    }
+    const numArray = await createNumArrayFromBlob(jpg);
+    this.builder.addPageInline(numArray, index);
   }
 
   /**
@@ -660,8 +673,16 @@ class PdfBuilder {
    */
   async save(): Promise<Blob> {
     assert(this.builder !== null);
-    const {pdf} = await this.builder.save();
-    return this.createPdfBlob(pdf);
+    try {
+      if (ChromeHelper.useBigBuffer) {
+        const {pdf} = await this.builder.save();
+        return this.createPdfBlob(pdf);
+      }
+    } catch (e) {
+      ChromeHelper.handleBigBufferError(e);
+    }
+    const {pdf} = await this.builder.saveInline();
+    return new Blob([new Uint8Array(pdf)], {type: MimeType.PDF});
   }
 
   /**

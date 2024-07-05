@@ -120,6 +120,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
                        RenderPdfAsJpegCallback callback) override;
   void PerformOcr(mojo_base::BigBuffer jpeg_data,
                   PerformOcrCallback callback) override;
+  void PerformOcrInline(const std::vector<uint8_t>& jpeg_data,
+                        PerformOcrCallback callback) override;
   void CreatePdfBuilder(
       mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) override;
 

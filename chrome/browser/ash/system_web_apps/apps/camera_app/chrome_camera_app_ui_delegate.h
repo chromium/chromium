@@ -146,13 +146,17 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
 
       // ash::camera_app::mojom::PdfBuilder
       void AddPage(mojo_base::BigBuffer jpg, uint32_t index) override;
+      void AddPageInline(const std::vector<uint8_t>& jpg,
+                         uint32_t index) override;
       void DeletePage(uint32_t index) override;
       void Save(SaveCallback callback) override;
+      void SaveInline(SaveInlineCallback callback) override;
 
      private:
+      void AddPageInternal(base::span<const uint8_t> jpg, uint32_t index);
       void ConsumeSaveCallback(const std::vector<uint8_t>& searchified_pdf);
 
-      SaveCallback save_callback_;
+      SaveInlineCallback save_callback_;
       mojo::Remote<pdf::mojom::PdfService> pdf_service_;
       mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier_;
       base::WeakPtrFactory<ProgressivePdf> weak_factory_{this};

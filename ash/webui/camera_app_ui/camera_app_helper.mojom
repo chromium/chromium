@@ -325,6 +325,9 @@ interface CameraAppHelper {
   // Performs OCR on the image and returns the OCR result.
   PerformOcr(mojo_base.mojom.BigBuffer jpeg_data) => (OcrResult ocr_result);
 
+  // Same as `PerformOcr`, but using `array<uint8>`.
+  PerformOcrInline(array<uint8> jpeg_data) => (OcrResult ocr_result);
+
   // Creates a PDF builder.
   CreatePdfBuilder(pending_receiver<PdfBuilder> builder);
 };

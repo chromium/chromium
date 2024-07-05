@@ -623,6 +623,12 @@ void CameraAppHelperImpl::PerformOcr(mojo_base::BigBuffer jpeg_data,
   camera_app_ui_->delegate()->PerformOcr(jpeg_data, std::move(callback));
 }
 
+void CameraAppHelperImpl::PerformOcrInline(
+    const std::vector<uint8_t>& jpeg_data,
+    PerformOcrCallback callback) {
+  camera_app_ui_->delegate()->PerformOcr(jpeg_data, std::move(callback));
+}
+
 void CameraAppHelperImpl::CreatePdfBuilder(
     mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) {
   return camera_app_ui_->delegate()->CreatePdfBuilder(std::move(receiver));
