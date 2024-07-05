@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/net/dns_over_https",
     "//chrome/browser/ash/net/dns_over_https:unit_tests",
+    "//chrome/browser/ash/net/network_diagnostics:unit_tests",
     "//chrome/browser/ash/net/rollback_network_config:unit_tests",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus",
