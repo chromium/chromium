@@ -28,6 +28,7 @@ class ASH_EXPORT PickerAssetFetcherImplDelegate {
 
   virtual ~PickerAssetFetcherImplDelegate() = default;
 
+  // TODO: b/349891147 - Remove this unused method.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSharedURLLoaderFactory() = 0;
 

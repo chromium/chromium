@@ -309,7 +309,6 @@ after discussions on the right group.
       <annotation id="remoting_corp_session_authz_generate_host_token"/>
       <annotation id="remoting_corp_session_authz_verify_session_token"/>
       <annotation id="remoting_corp_session_reauthorize_host"/>
-      <annotation id="chromeos_picker_gif_media_fetcher"/>
       <annotation id="weather_icon"/>
       <annotation id="birch_calendar_provider"/>
       <annotation id="birch_weather_provider"/>

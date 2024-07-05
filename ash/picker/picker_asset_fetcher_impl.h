@@ -9,8 +9,6 @@
 #include "ash/picker/picker_asset_fetcher.h"
 #include "base/memory/raw_ptr.h"
 
-class GURL;
-
 namespace ash {
 
 class PickerAssetFetcherImplDelegate;
@@ -24,12 +22,6 @@ class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
   PickerAssetFetcherImpl& operator=(const PickerAssetFetcherImpl&) = delete;
   ~PickerAssetFetcherImpl() override;
 
-  // PickerAssetFetcher:
-  void FetchGifFromUrl(const GURL& url,
-                       PickerGifFetchedCallback callback) override;
-  void FetchGifPreviewImageFromUrl(
-      const GURL& url,
-      PickerImageFetchedCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;

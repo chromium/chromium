@@ -452,7 +452,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_corp_session_authz_verify_session_token" added_in_milestone="123" content_hash_code="04127f42" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="remoting_corp_session_reauthorize_host" added_in_milestone="123" content_hash_code="0731c945" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_session_authz_service_client.cc" />
  <item id="weather_icon" added_in_milestone="123" content_hash_code="07b4f4c1" os_list="chromeos" file_path="ash/birch/birch_weather_provider.cc" />
- <item id="chromeos_picker_gif_media_fetcher" added_in_milestone="124" content_hash_code="0674a2dd" os_list="chromeos" file_path="ash/picker/picker_asset_fetcher_impl.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="00ad7833" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
  <item id="birch_weather_provider" added_in_milestone="127" content_hash_code="0091655e" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_weather_v2_provider.cc" />
  <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows,chromeos" file_path="chrome/browser/webauthn/enclave_manager.cc" />
