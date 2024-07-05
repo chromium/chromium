@@ -228,6 +228,8 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   MaybeMigrateClearOnExit(*client_, *identity_manager_);
+
+  pref_observer_.Init(client_->GetPrefs());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
@@ -298,6 +300,12 @@ void AccountReconcilor::RegisterWithIdentityManager() {
     return;
 
   identity_manager_->AddObserver(this);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  pref_observer_.Add(
+      prefs::kExplicitBrowserSignin,
+      base::BindRepeating(&MaybeMigrateClearOnExit, std::ref(*client_),
+                          std::ref(*identity_manager_)));
+#endif
   registered_with_identity_manager_ = true;
 }
 
@@ -306,6 +314,9 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   if (!registered_with_identity_manager_)
     return;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  pref_observer_.RemoveAll();
+#endif
   identity_manager_->RemoveObserver(this);
   registered_with_identity_manager_ = false;
 }
@@ -365,6 +376,14 @@ void AccountReconcilor::OnContentSettingChanged(
 
   VLOG(1) << "AccountReconcilor::OnContentSettingChanged";
   StartReconcile(Trigger::kCookieSettingChange);
+}
+
+void AccountReconcilor::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Perform the "clear on exit" migration if applicable.
+  MaybeMigrateClearOnExit(*client_, *identity_manager_);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void AccountReconcilor::OnEndBatchOfRefreshTokenStateChanges() {
