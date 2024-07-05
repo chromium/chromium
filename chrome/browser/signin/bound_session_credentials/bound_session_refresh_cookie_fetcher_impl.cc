@@ -104,12 +104,13 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   if (std::optional<base::TimeDelta> cookie_rotation_delay =
           bound_session_credentials::GetCookieRotationDelayIfSetByCommandLine();
       cookie_rotation_delay.has_value()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
             weak_ptr_factory_.GetWeakPtr(),
-            std::move(sec_session_challenge_response)));
+            std::move(sec_session_challenge_response)),
+        *cookie_rotation_delay);
   } else {
     StartRefreshRequest(std::move(sec_session_challenge_response));
   }
