@@ -483,14 +483,33 @@ void GPMEnclaveController::OnEnclaveLoaded() {
     return;
   }
 
-  // TODO(enclave): even for kGetAssertion, when using a GPM PIN for UV we will
-  // want to probe the security domain service to learn when the PIN changes.
+  // For create() requests, we want to probe the security domain service to
+  // ensure that we never create a credential encrypted to an old security
+  // domain secret. For get() requests, we can generally skip the probe if
+  // already enrolled. However, if this request will require using the GPM PIN
+  // for UV then we want to probe to ensure that we catch any changes to the GPM
+  // PIN. While we cannot fully determine the UV method at this stage, because
+  // we don't know whether the platform has biometrics, we can know whether
+  // we'll use a GPM PIN for UV or not.
   if (request_type_ == device::FidoRequestType::kGetAssertion) {
     if (enclave_manager_->is_ready()) {
-      FIDO_LOG(EVENT) << "Enclave is ready";
-      SetAccountStateReady();
-      SetActive(true);
-      return;
+      switch (PickEnclaveUserVerificationMethod(
+          user_verification_requirement_, /*have_added_device=*/false,
+          enclave_manager_->has_wrapped_pin(),
+          enclave_manager_->uv_key_state(/*platform_has_biometrics=*/false),
+          /*platform_has_biometrics=*/false)) {
+        case EnclaveUserVerificationMethod::kPIN:
+          FIDO_LOG(EVENT)
+              << "Checking security domain service because a GPM PIN will be "
+                 "used for user verification in this request.";
+          break;
+        default:
+          FIDO_LOG(EVENT) << "Enclave is ready and this request will not use a "
+                             "GPM PIN for user verification";
+          SetAccountStateReady();
+          SetActive(true);
+          return;
+      }
     }
 
     if (device::kWebAuthnGpmPin.Get()) {
@@ -549,8 +568,12 @@ void GPMEnclaveController::DownloadAccountState() {
 
   auto* const identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
+  scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader =
+      EnclaveManagerFactory::url_loader_override();
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();
+      testing_url_loader ? testing_url_loader
+                         : SystemNetworkContextManager::GetInstance()
+                               ->GetSharedURLLoaderFactory();
   std::unique_ptr<trusted_vault::TrustedVaultConnection> trusted_vault_conn =
       vault_connection_override_
           ? std::move(vault_connection_override_)

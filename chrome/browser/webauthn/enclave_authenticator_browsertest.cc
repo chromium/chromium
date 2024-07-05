@@ -27,10 +27,12 @@
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -43,6 +45,7 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/fake_magic_arch.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
@@ -69,6 +72,7 @@
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
@@ -2961,7 +2965,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                        MultipleDeclinedBootstrappings) {
   EnableUVKeySupport();
-  security_domain_service_->pretend_there_are_members();
   delegate_observer()->SetUseSyncedDeviceCablePairing(/*use_pairing=*/true);
 
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -3027,6 +3030,98 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_FALSE(base::ranges::any_of(
       dialog_model()->mechanisms,
       [](const auto& m) { return IsMechanismEnclaveCredential(m); }));
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       ChangedPINDetectedWhenDoingUV) {
+  // Set up an account with a GPM PIN and create a credential. Then create a
+  // second `EnclaveManager` to change the PIN. Lastly, assert that credential
+  // with the updated GPM PIN for UV. This tests that the updated PIN is used
+  // for the UV.
+  const std::string pin = "123456";
+  const std::string newpin = "111111";
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(base::UTF8ToUTF16(pin));
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
+  EXPECT_EQ(security_domain_service_->num_pin_members(), 1u);
+
+  const std::optional<std::vector<uint8_t>> security_domain_secret =
+      FakeMagicArch::RecoverWithPIN(pin, *security_domain_service_,
+                                    *recovery_key_store_);
+
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+  dialog_model()->OnGPMCreatePasskey();
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMPinEntered(base::UTF8ToUTF16(pin));
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  {
+    Profile* const profile = browser()->profile();
+    EnclaveManager second_manager(
+        temp_dir_.GetPath(),
+        IdentityManagerFactory::GetForProfile(browser()->profile()),
+        base::BindRepeating(
+            [](base::WeakPtr<Profile> profile)
+                -> network::mojom::NetworkContext* {
+              if (!profile) {
+                return nullptr;
+              }
+              return profile->GetDefaultStoragePartition()->GetNetworkContext();
+            },
+            profile->GetWeakPtr()),
+        url_loader_factory_.GetSafeWeakWrapper());
+
+    second_manager.StoreKeys(kGaiaId, {*security_domain_secret},
+                             /*last_key_version=*/kSecretVersion);
+
+    base::test::TestFuture<bool> add_future;
+    second_manager.AddDeviceToAccount(std::nullopt, add_future.GetCallback());
+    EXPECT_TRUE(add_future.Wait());
+    EXPECT_TRUE(add_future.Get());
+
+    base::test::TestFuture<bool> change_future;
+    second_manager.ChangePIN(newpin, "rapt", change_future.GetCallback());
+    EXPECT_TRUE(change_future.Wait());
+    ASSERT_TRUE(change_future.Get());
+  }
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMPinEntered(base::UTF8ToUTF16(newpin));
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
 
 #if BUILDFLAG(IS_LINUX)
