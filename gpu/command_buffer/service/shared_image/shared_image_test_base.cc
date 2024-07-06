@@ -24,6 +24,10 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
@@ -143,6 +147,18 @@ GrContextType SharedImageTestBase::gr_context_type() {
   return context_state_->gr_context_type();
 }
 
+bool SharedImageTestBase::IsGraphiteDawnSupported() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return true;
+#elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
+  // Any Android Q+ devices where we have compiled Graphite/Dawn should work.
+  return base::android::BuildInfo::GetInstance()->sdk_int() >=
+         base::android::SDK_VERSION_Q;
+#else
+  return false;
+#endif
+}
+
 void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   gpu_preferences_.gr_context_type = context_type;
 #if BUILDFLAG(SKIA_USE_DAWN) || BUILDFLAG(USE_DAWN)
@@ -152,7 +168,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   if (context_type == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     dawn_context_provider_ = DawnContextProvider::CreateWithBackend(
-        GetDawnBackendType(), DawnForceFallbackAdapter());
+        GetDawnBackendType(), DawnForceFallbackAdapter(), gpu_preferences_);
     ASSERT_TRUE(dawn_context_provider_);
 #else
     FAIL() << "Graphite-Dawn not available";

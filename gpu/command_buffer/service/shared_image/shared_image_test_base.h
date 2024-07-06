@@ -55,6 +55,9 @@ class SharedImageTestBase : public testing::Test {
   GrDirectContext* gr_context();
   GrContextType gr_context_type();
 
+  // Returns true if graphite/dawn is supported for running tests.
+  bool IsGraphiteDawnSupported();
+
   // Initializes `context_state_` for `context_type`. Expected to be called as
   // part of test SetUp(). Note this function can fail with an assertion error
   // so caller should wrap call in ASSERT_NO_FATAL_FAILURE() to ensure SetUp()

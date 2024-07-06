@@ -38,6 +38,7 @@ constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
 constexpr SharedImageUsageSet kUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER_READ |
     SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
 class WrappedSkImageBackingFactoryTest
     : public SharedImageTestBase,
       public testing::WithParamInterface<
@@ -51,12 +52,9 @@ class WrappedSkImageBackingFactoryTest
 
   void SetUp() override {
     auto gr_context_type = GetGrContextType();
-    if (gr_context_type == GrContextType::kGraphiteDawn) {
-      // TODO(crbug.com/41484678): Enable these tests for Android once
-      // Android bots switch to using Skia-Graphite.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-      GTEST_SKIP();
-#endif
+    if (gr_context_type == GrContextType::kGraphiteDawn &&
+        !IsGraphiteDawnSupported()) {
+      GTEST_SKIP() << "Graphite/Dawn not supported";
     }
     ASSERT_NO_FATAL_FAILURE(InitializeContext(gr_context_type));
 
