@@ -260,26 +260,43 @@ void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   auto committed_overlay_types = std::move(in_flight_overlay_types_.front());
   in_flight_overlay_types_.pop_front();
 
-  if (swap_result != gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
-    return;
+  // If it's a fullscreen, it is a single instance.
+  const bool is_fullscreen_overlay =
+      committed_overlay_types.size() == 1U &&
+      committed_overlay_types.front() == gfx::kFullScreen;
+
+  const bool allow_skip_fullscreen_overlay_drm_test_prev =
+      allow_skip_fullscreen_overlay_drm_test_;
+  if (swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
+    LOG_IF(FATAL, !handle_overlays_swap_failure_)
+        << "Handling non-simple overlays' swap failure requires the "
+           "kHandleOverlaysSwapFailure feature to be enabled.";
+
+    if (is_fullscreen_overlay) {
+      if (allow_skip_fullscreen_overlay_drm_test_) {
+        allow_skip_fullscreen_overlay_drm_test_ = false;
+        disallow_fullscreen_overlays_end_time_ =
+            base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
+      } else {
+        NOTREACHED_NORETURN()
+            << "It's not expected to receive swap failures for "
+               "fullscreen overlays as they are drm tested.";
+      }
+    } else {
+      NOTREACHED_NORETURN()
+          << "Only fullscreen overlays are treated specially.";
+    }
   }
 
-  LOG_IF(FATAL, !handle_overlays_swap_failure_)
-      << "Handling non-simple overlays' swap failure requires the "
-         "kHandleOverlaysSwapFailure feature to be enabled.";
-
-  if (committed_overlay_types.size() == 1U &&
-      committed_overlay_types.front() == gfx::kFullScreen) {
-    if (allow_skip_fullscreen_overlay_drm_test_) {
-      allow_skip_fullscreen_overlay_drm_test_ = false;
-      disallow_fullscreen_overlays_end_time_ =
-          base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
-    } else {
-      NOTREACHED_NORETURN() << "It's not expected to receive swap failures for "
-                               "fullscreen overlays as they are drm tested.";
-    }
-  } else {
-    NOTREACHED_NORETURN() << "Only fullscreen overlays are treated specially.";
+  if (is_fullscreen_overlay && handle_overlays_swap_failure_ &&
+      allow_skip_fullscreen_overlay_drm_test_prev &&
+      (swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED ||
+       swap_result == gfx::SwapResult::SWAP_ACK)) {
+    // Record how many times fullscreen overlays failed if skipping drm test was
+    // allowed.
+    UMA_HISTOGRAM_BOOLEAN(
+        "Compositing.Display.DrmOverlayManager.FullscreenOverlayFailed",
+        swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED);
   }
 }
 

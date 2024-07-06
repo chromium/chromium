@@ -406,6 +406,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.DrmOverlayManager.FullscreenOverlayFailed"
+    enum="Boolean" expires_after="2024-12-31">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>msisov@igalia.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    If kHandleOverlaysSwapFailure is enabled, this is logged once per frame that
+    has a fullscreen overlay. Helps to measure how many times fullscreen
+    overlays succeeded or failed while DRM test was allowed to be skipped.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2024-11-03">
   <owner>jonross@chromium.org</owner>
