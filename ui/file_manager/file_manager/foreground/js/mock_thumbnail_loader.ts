@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LoaderType, LoadTarget} from './thumbnail_loader.js';
+import type {LoadTarget} from './thumbnail_loader.js';
 
 /**
  * Mock thumbnail loader.
@@ -15,15 +15,14 @@ export class MockThumbnailLoader {
 
   /**
    * @param entry An entry.
-   * @param loaderType Loader type.
    * @param metadata Metadata.
    * @param mediaType Media type.
    * @param loadTargets Load targets.
    * @param priority Priority.
    */
   constructor(
-      private entry_: Entry, _loaderType?: LoaderType, _metadata?: Object,
-      _mediaType?: string, _loadTargets?: LoadTarget[], _priority?: number) {}
+      private entry_: Entry, _metadata?: Object, _mediaType?: string,
+      _loadTargets?: LoadTarget[], _priority?: number) {}
 
   /**
    * Loads thumbnail as data url.

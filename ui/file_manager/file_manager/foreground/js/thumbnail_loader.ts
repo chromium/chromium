@@ -13,17 +13,12 @@ import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {ThumbnailMetadataItem} from './metadata/thumbnail_model.js';
 
 /**
- * Loads a thumbnail using provided url. In CANVAS mode, loaded images
- * are attached as <canvas> element, while in IMAGE mode as <img>.
- * <canvas> renders faster than <img>, however has bigger memory overhead.
+ * Loads a thumbnail as an <img> using provided url.
  */
 export class ThumbnailLoader {
-  private canvasUpToDate_ = false;
   private image_: HTMLImageElement|null = null;
   private taskId_: number|null = null;
-  private canvas_: HTMLCanvasElement|null = null;
   private mediaType_: string;
-  private loaderType_: LoaderType;
   private priority_: number;
   /**
    * The image transform from metadata.
@@ -36,7 +31,6 @@ export class ThumbnailLoader {
 
   /**
    * @param entry_ File entry.
-   * @param loaderType Canvas or Image loader, default: IMAGE.
    * @param metadata_ Metadata object.
    * @param mediaType Media type.
    * @param loadTargets The list of load targets in preferential order. The
@@ -44,7 +38,7 @@ export class ThumbnailLoader {
    * @param priority Priority, the highest is 0. default: 2.
    */
   constructor(
-      private entry_: Entry|FilesAppEntry, loaderType?: LoaderType,
+      private entry_: Entry|FilesAppEntry,
       private metadata_?: ThumbnailMetadataItem, mediaType?: string,
       suppliedLoadTargets?: LoadTarget[], priority?: number) {
     const loadTargets = suppliedLoadTargets || [
@@ -54,8 +48,6 @@ export class ThumbnailLoader {
     ];
 
     this.mediaType_ = mediaType || getMediaType(this.entry_);
-
-    this.loaderType_ = loaderType || LoaderType.IMAGE;
 
     this.priority_ = (priority !== undefined) ? priority : 2;
 
@@ -147,7 +139,6 @@ export class ThumbnailLoader {
     }
 
     this.cancel();
-    this.canvasUpToDate_ = false;
     this.image_ = new Image();
     this.image_.setAttribute('alt', this.entry_.name);
     this.image_.onload = () => {
@@ -291,31 +282,6 @@ export class ThumbnailLoader {
   }
 
   /**
-   * Renders the thumbnail into either canvas or an image element.
-   */
-  private renderMedia_() {
-    if (this.loaderType_ !== LoaderType.CANVAS) {
-      return;
-    }
-
-    if (!this.canvas_) {
-      this.canvas_ = document.createElement('canvas');
-    }
-
-    // Copy the image to a canvas if the canvas is outdated.
-    // At this point, image transformation is not applied because we attach
-    // style attribute to an img element in attachImage() instead.
-    if (!this.canvasUpToDate_) {
-      assert(this.image_);
-      this.canvas_.width = this.image_.width;
-      this.canvas_.height = this.image_.height;
-      const context = this.canvas_.getContext('2d')!;
-      context.drawImage(this.image_, 0, 0);
-      this.canvasUpToDate_ = true;
-    }
-  }
-
-  /**
    * Attach the image to a given element.
    * @param box Container element.
    * @param fillMode Fill mode.
@@ -331,33 +297,18 @@ export class ThumbnailLoader {
       return;
     }
 
-    const attachableMedia = this.getImage();
+    assert(this.image_);
     ThumbnailLoader.centerImage(
-        attachableMedia, fillMode, autoFillThreshold, boxWidth, boxHeight);
+        this.image_, fillMode, autoFillThreshold, boxWidth, boxHeight);
 
-    if (attachableMedia.parentNode !== box) {
+    if (this.image_.parentNode !== box) {
       box.textContent = '';
-      box.appendChild(attachableMedia!);
+      box.appendChild(this.image_!);
     }
 
     if (!this.taskId_) {
-      attachableMedia.classList.add('cached');
+      this.image_.classList.add('cached');
     }
-  }
-
-  /**
-   * Gets the loaded image.
-   *
-   * @return Either image or a canvas object.
-   */
-  getImage(): HTMLImageElement|HTMLCanvasElement {
-    this.renderMedia_();
-    if (this.loaderType_ === LoaderType.IMAGE) {
-      assert(this.image_);
-      return this.image_;
-    }
-    assert(this.canvas_);
-    return this.canvas_;
   }
 
   /**
@@ -375,8 +326,8 @@ export class ThumbnailLoader {
    * @param boxHeight Container box's height.
    */
   static centerImage(
-      img: HTMLImageElement|HTMLCanvasElement, fillMode: FillMode,
-      autoFillThreshold: number, boxWidth: number, boxHeight: number) {
+      img: HTMLImageElement, fillMode: FillMode, autoFillThreshold: number,
+      boxWidth: number, boxHeight: number) {
     const imageWidth = img.width;
     const imageHeight = img.height;
 
@@ -458,14 +409,6 @@ export enum FillMode {
   FIT,        // Keep aspect ratio, do not crop.
   OVER_FILL,  // Fill whole box with possible stretching.
   AUTO,       // Try to fill, but if incompatible aspect ratio, then fit.
-}
-
-/**
- * Type of element to store the image.
- */
-export enum LoaderType {
-  IMAGE = 0,
-  CANVAS = 1,
 }
 
 /**
