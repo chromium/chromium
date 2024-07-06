@@ -262,7 +262,6 @@ void History::pushState(ScriptState* script_state,
     }
   }
 
-  recordreplay::AutoAssertBufferAllocations bufferAssets("TT-492-1286");
   scoped_refptr<SerializedScriptValue> serialized_data =
       SerializedScriptValue::Serialize(isolate, data.V8Value(),
                                        SerializedScriptValue::SerializeOptions(
