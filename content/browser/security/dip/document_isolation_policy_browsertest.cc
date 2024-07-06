@@ -93,7 +93,7 @@ class DocumentIsolationPolicyBrowserTest
     // deferred creation of the speculative RenderDocument.
     feature_list_.InitWithFeatures(
         {network::features::kDocumentIsolationPolicy},
-        {features::kDeferSpeculativeRFHCreation});
+        {features::kDeferSpeculativeRFHCreation, features::kSharedArrayBuffer});
 
     // Enable RenderDocument:
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
@@ -1596,6 +1596,226 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
     EXPECT_EQ(main_si, popup_rfh->GetSiteInstance());
   }
+}
+
+// Checks that the WebExposedIsolationLevel of a RenderFrameHost is properly
+// computed when cross-origin isolation is enabled through
+// DocumentIsolationPolicy.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       WebExposedIsolationLevel) {
+  GURL isolated_page(https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp"));
+  GURL isolated_page_b(https_server()->GetURL(
+      "b.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp"));
+
+  // Not isolated:
+  EXPECT_TRUE(NavigateToURL(shell(), https_server()->GetURL("/empty.html")));
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
+            current_frame_host()->GetWebExposedIsolationLevel());
+
+  // Cross-Origin Isolated:
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            current_frame_host()->GetWebExposedIsolationLevel());
+
+  // Cross-origin isolated iframe without permission delegation. The iframe
+  // should be cross-origin isolated, as the permission only applies to
+  // cross-origin isolation inherited from the parent (and enabled by COOP &
+  // COEP).
+  std::string create_iframe = R"(
+    new Promise(resolve => {
+      const iframe = document.createElement('iframe');
+      iframe.src = $1;
+      iframe.allow = "cross-origin-isolated 'none'";
+      iframe.addEventListener('load', () => resolve(true));
+      document.body.appendChild(iframe);
+    });
+  )";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(create_iframe, isolated_page_b)));
+  RenderFrameHostImpl* iframe_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(WebExposedIsolationLevel::kIsolated,
+            iframe_rfh->GetWebExposedIsolationLevel());
+}
+
+// Checks that a document with document isolation policy has its
+// crossOriginIsolated property set to true and can instantiate
+// SharedArrayBuffers.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, SAB) {
+  GURL url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(true, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+}
+
+// Checks that a document with document isolation policy can transfer a
+// SharedArrayBuffer to a crossOriginIsolated same-origin iframe.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       SAB_TransferToIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = location.href;"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    const sab = new SharedArrayBuffer(1234);
+    g_iframe.contentWindow.postMessage(sab, "*");
+  )"));
+
+  EXPECT_EQ(1234, EvalJs(sub_document, "g_sab_size"));
+}
+
+// Checks that a document with document isolation policy can transfer a
+// SharedArrayBuffer to a crossOriginIsolated same-origin about:blank iframe.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       SAB_TransferToAboutBlankIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "g_iframe = document.createElement('iframe');"
+                     "g_iframe.src = 'about:blank';"
+                     "document.body.appendChild(g_iframe);"));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(true, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
+}
+
+// Checks that an about:blank iframe created by a cross-origin isolated document
+// (through Document-Isolation-Policy) is set as crossOriginIsolated
+// synchronously.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       AboutBlankIsSetCOISynchronously) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Cross-Origin-Opener-Policy: same-origin&"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(true, EvalJs(current_frame_host(),
+                         "const iframe = document.createElement('iframe');"
+                         "document.body.appendChild(iframe);"
+                         "iframe.contentWindow.crossOriginIsolated;"));
+}
+
+// Transfer a SharedArrayBuffer in between two documents with a parent/child
+// relationship. The child has not set Document-Isolation-Policy, and is not
+// cross-origin isolated. It cannot receive the object.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       SAB_TransferToNoCrossOriginIsolatedIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  GURL iframe_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  // The parent and its child frame are in different processes, so it's not
+  // possible to transfer a SharedArrayBuffer between the two of them.
+  EXPECT_NE(main_document->GetSiteInstance()->GetProcess(),
+            sub_document->GetSiteInstance()->GetProcess());
+}
+
+// Transfer a SharedArrayBuffer in between two documents with a
+// parent/child relationship. The child does not have Document-Isolation-Policy.
+// This non-cross-origin-isolated document cannot transfer a SharedArrayBuffer
+// toward the cross-origin-isolated one.
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
+                       SAB_TransferFromNoCrossOriginIsolatedIframe) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url = https_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Document-Isolation-Policy: isolate-and-require-corp");
+  GURL iframe_url = https_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(true, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  EXPECT_EQ(false, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
+
+  // Unlike crossOriginIsolation enabled by COOP and COEP, the SAB cannot be
+  // created in the non-crossOriginIsolated iframe.
+  // See https://crbug.com/1144838 for discussions about this behavior in COOP
+  // and COEP.
+  EXPECT_FALSE(ExecJs(sub_document, R"(
+    // Create a WebAssembly Memory to try to bypass the SAB constructor
+    // restriction.
+    const sab = new (new WebAssembly.Memory(
+        { shared:true, initial:1, maximum:1 }).buffer.constructor)(1234);
+    parent.postMessage(sab, "*");
+  )"));
 }
 
 // TODO(crbug.com/349104385): Add a test checking that the

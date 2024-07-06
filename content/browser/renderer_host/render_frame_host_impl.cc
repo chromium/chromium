@@ -2460,12 +2460,35 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
 WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   DCHECK_EQ(GetSiteInstance()->GetSiteInfo().web_exposed_isolation_info(),
             GetProcess()->GetProcessLock().GetWebExposedIsolationInfo());
+  // First, get the WebExposedIsolationLevel that was computed based on whether
+  // this page is in IsolatedWebApp, or was cross-origin isolated through the
+  // use of COOP and COEP.
+  WebExposedIsolationLevel level = GetProcess()->GetWebExposedIsolationLevel();
+
+  // Cross-origin isolation set through COOP and COEP can be restricted through
+  // a PermissionPolicy. In this case, the document should be considered as not
+  // isolated.
   if (!IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated)) {
-    return WebExposedIsolationLevel::kNotIsolated;
+    level = WebExposedIsolationLevel::kNotIsolated;
   }
 
-  return GetProcess()->GetWebExposedIsolationLevel();
+  // Check if cross-origin isolation was enabled through
+  // DocumentIsolationPolicy. This is stored in the AgentClusterKey, and not the
+  // WebExposedIsolationLevel in the RenderProcessHost. This is not affected by
+  // PermissionPolicy.
+  auto& agent_cluster_key =
+      GetSiteInstance()->GetSiteInfo().agent_cluster_key();
+  if (agent_cluster_key && agent_cluster_key->GetCrossOriginIsolationKey() &&
+      agent_cluster_key->GetCrossOriginIsolationKey()
+              ->cross_origin_isolation_mode ==
+          CrossOriginIsolationMode::kConcrete) {
+    if (level == WebExposedIsolationLevel::kNotIsolated) {
+      level = WebExposedIsolationLevel::kIsolated;
+    }
+  }
+
+  return level;
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() const {
