@@ -54,6 +54,13 @@ int64_t IntersectionObservation::ComputeIntersection(
                                    : kExplicitRootObserversNeedUpdate)) {
     needs_update_ = true;
   }
+
+  REPLAY_ASSERT("[TT-1483-1499] IntersectionObservation::ComputeIntersection A %d %u %d %d",
+    needs_update_,
+    compute_flags,
+    ShouldCompute(compute_flags),
+    monotonic_time.has_value());
+
   if (!ShouldCompute(compute_flags))
     return 0;
   if (!monotonic_time.has_value())
@@ -81,6 +88,12 @@ int64_t IntersectionObservation::ComputeIntersection(
                                    : kExplicitRootObserversNeedUpdate)) {
     needs_update_ = true;
   }
+
+  REPLAY_ASSERT("[TT-1483-1499] IntersectionObservation::ComputeIntersection B %d %u %d %d",
+    needs_update_,
+    compute_flags,
+    ShouldCompute(compute_flags),
+    monotonic_time.has_value());
   if (!ShouldCompute(compute_flags))
     return 0;
   if (!monotonic_time.has_value())
@@ -165,6 +178,8 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
 bool IntersectionObservation::MaybeDelayAndReschedule(
     unsigned flags,
     DOMHighResTimeStamp timestamp) {
+  REPLAY_ASSERT("[TT-1483-1499] IntersectionObservation::MaybeDelayAndReschedule %d",
+    timestamp == -1);
   if (timestamp == -1)
     return true;
   base::TimeDelta delay = base::Milliseconds(observer_->GetEffectiveDelay() -

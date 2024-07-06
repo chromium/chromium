@@ -79,6 +79,10 @@ bool IntersectionObserverController::ComputeIntersections(
   int64_t javascript_observation_count = 0;
   {
     LocalFrameUkmAggregator::IterativeTimer ukm_timer(ukm_aggregator);
+    REPLAY_ASSERT("[TT-1483-1499] IntersectionObserverController::ComputeIntersections %u %u %u",
+      flags,
+      observers_to_process.size(),
+      observations_to_process.size());
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
         ukm_timer.StartInterval(observer->GetUkmMetricId());
