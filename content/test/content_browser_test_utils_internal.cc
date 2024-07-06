@@ -144,10 +144,23 @@ bool NavigateToURLInSameBrowsingInstance(Shell* window, const GURL& url) {
 bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
                                        SiteInstance* end_site_instance) {
   bool site_instances_are_equal = (start_site_instance == end_site_instance);
+
+  // AgentClusterKey mismatch will trigger a SiteInstance switch.
+  if (static_cast<SiteInstanceImpl*>(start_site_instance)
+              ->GetSiteInfo()
+              .agent_cluster_key() !=
+          static_cast<SiteInstanceImpl*>(end_site_instance)
+              ->GetSiteInfo()
+              .agent_cluster_key() &&
+      !site_instances_are_equal) {
+    return true;
+  }
+
   bool is_error_page_site_instance =
       (static_cast<SiteInstanceImpl*>(end_site_instance)
            ->GetSiteInfo()
            .is_error_page());
+
   if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
           /*in_main_frame=*/false)) {
     return site_instances_are_equal && !is_error_page_site_instance;

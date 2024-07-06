@@ -43,6 +43,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/host/host_frame_sink_manager.h"
+#include "content/browser/agent_cluster_key.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -3961,6 +3962,10 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     }
   }
 
+  // Compute the CrossOriginIsolationKey for the navigation.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key = ComputeCrossOriginIsolationKey();
+
   auto isolation_request =
       static_cast<UrlInfo::OriginIsolationRequest>(isolation_flags);
 
@@ -3971,6 +3976,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   url_info_init.WithOriginIsolationRequest(isolation_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
+      .WithCrossOriginIsolationKey(cross_origin_isolation_key)
       .WithIsPdf(is_pdf_);
 
   // Records in the UrlInfo if COOP: same-origin or COOP: restrict-properties
@@ -10058,6 +10064,65 @@ void NavigationRequest::SendDeferredConsoleMessages() {
   console_messages_.clear();
 }
 
+std::optional<AgentClusterKey::CrossOriginIsolationKey>
+NavigationRequest::ComputeCrossOriginIsolationKey() {
+  // If the final security policies have not been computed yet, return an empty
+  // CrossOriginIsolationKey. This is because we cannot compute the proper
+  // CrossOriginIsolationKey for the navigation yet.
+  // TODO(crbug.com/343914483): When navigating between same-origin documents,
+  // consider passing the CrossOriginIsolationKey of the current document to
+  // avoid creating spurious speculative RFH when navigating between two
+  // same-origin documents with crossOriginIsolation.
+  if (!policy_container_builder_->HasComputedPolicies()) {
+    return std::nullopt;
+  }
+
+  // If the navigation does not have a Document-Isolation-Policy, return an
+  // empty CrossOriginIsolationKey.
+  // TODO(crbug.com/342365083): Use a CrossOriginIsolationKey when the
+  // navigation has COOP and COEP, or happens in cross-origin isolated
+  // BrowsingInstance.
+  if (policy_container_builder_->FinalPolicies()
+          .document_isolation_policy.value ==
+      network::mojom::DocumentIsolationPolicyValue::kNone) {
+    return std::nullopt;
+  }
+
+  // If the Document-Isolation-Policy value is "isolate-and-credentialless",
+  // return an empty CrossOriginIsolationKey. Subresource checks have not been
+  // implemented in this mode yet, so it is not safe to make the document
+  // cross-origin isolated in this case.
+  // TODO(crbug.com/349792240): Support credentialless mode.
+  if (policy_container_builder_->FinalPolicies()
+          .document_isolation_policy.value ==
+      network::mojom::DocumentIsolationPolicyValue::kIsolateAndCredentialless) {
+    return std::nullopt;
+  }
+
+  // The document we're navigating to has a DocumentIsolationPolicy of
+  // "isolate-and-require-corp". This means that the document requested
+  // crossOriginIsolation, so return a cross-origin isolation key with the
+  // current origin. Its cross-origin isolation mode depends on the capabilities
+  // of the platform.  Currently, we only support a cross-origin isolation mode
+  // of kConcrete and platforms with full Site Isolation.
+  // TODO(crbug.com/342364564): Support platforms that do not
+  // support OOPIF and return an AgentClusterKey with a CrossOriginIsolationKey
+  // that has a kLogical cross-origin isolation mode.
+  CHECK(policy_container_builder_->FinalPolicies()
+            .document_isolation_policy.value ==
+        network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp);
+
+  // If the navigation doesn't have an origin, we cannot create a
+  // CrossOriginIsolationKey for it, since it must be tied to an origin.
+  if (!GetOriginToCommit().has_value()) {
+    return std::nullopt;
+  }
+
+  url::Origin origin = GetOriginToCommit().value();
+  return AgentClusterKey::CrossOriginIsolationKey(
+      origin, CrossOriginIsolationMode::kConcrete);
+}
+
 std::optional<WebExposedIsolationInfo>
 NavigationRequest::ComputeWebExposedIsolationInfo() {
   // If we are in an iframe, we inherit the isolation state of the top level
@@ -10795,6 +10860,30 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
   // enabled.
   if (!base::FeatureList::IsEnabled(
           network::features::kDocumentIsolationPolicy)) {
+    response_head_->parsed_headers->document_isolation_policy =
+        network::DocumentIsolationPolicy();
+    return;
+  }
+
+  // Currently, we don't support Document-Isolation-Policy
+  // 'isolate-and-credentialless'. Set Document-Isolation-Policy to its default
+  // value if a credentialless header has been sent.
+  if (response_head_->parsed_headers->document_isolation_policy.value ==
+          network::mojom::DocumentIsolationPolicyValue::
+              kIsolateAndCredentialless ||
+      response_head_->parsed_headers->document_isolation_policy
+              .report_only_value ==
+          network::mojom::DocumentIsolationPolicyValue::
+              kIsolateAndCredentialless) {
+    response_head_->parsed_headers->document_isolation_policy =
+        network::DocumentIsolationPolicy();
+    return;
+  }
+
+  // DocumentIsolationPolicy is only supported in strict SiteIsolation mode for
+  // now. Set it to its default value if the platform does not support strict
+  // SiteIsolation.
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     response_head_->parsed_headers->document_isolation_policy =
         network::DocumentIsolationPolicy();
     return;

@@ -463,7 +463,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   const WebExposedIsolationInfo& GetWebExposedIsolationInfo() const;
 
   // Simple helper function that returns the is_isolated property of the
-  // WebExposedIsolationInfo of this BrowsingInstance.
+  // WebExposedIsolationInfo of this BrowsingInstance or the
+  // is_cross_origin_isolated property of the AgentClusterKey::IsolationKey.
   bool IsCrossOriginIsolated() const;
 
   // Returns whether the two SiteInstances belong to the same CoopRelatedGroup.

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SITE_INFO_H_
 #define CONTENT_BROWSER_SITE_INFO_H_
 
+#include "content/browser/agent_cluster_key.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -172,7 +173,9 @@ class CONTENT_EXPORT SiteInfo {
            bool does_site_request_dedicated_process_for_coop,
            bool is_jit_disabled,
            bool is_pdf,
-           bool is_fenced);
+           bool is_fenced,
+           const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+               cross_origin_isolation_key);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -201,6 +204,11 @@ class CONTENT_EXPORT SiteInfo {
   // - When origin isolation is in use, there may be multiple SiteInstance with
   //   the same site_url() but that differ in other properties.
   const GURL& site_url() const { return site_url_; }
+
+  // Returns the AgentClusterKey of the execution contexts within this SiteInfo.
+  const std::optional<AgentClusterKey>& agent_cluster_key() const {
+    return agent_cluster_key_;
+  }
 
   // Returns the URL which should be used in a SetProcessLock call for this
   // SiteInfo's process.  This is the same as |site_url_| except for cases
@@ -390,6 +398,19 @@ class CONTENT_EXPORT SiteInfo {
   auto MakeProcessLockComparisonKey() const;
 
   GURL site_url_;
+
+  // The AgentClusterKey for the execution context. This represents the
+  // isolation requested through the use of Document-Isolation-Policy. The
+  // AgentClusterKey is currently optional and only computed when a navigation
+  // has a Document-Isolation-policy header. It should eventually be made
+  // non-optional once we compute it properly on each navigation. When this
+  // happens, it will replace site_url_ and web_exposed_isolation_info_.
+  // TODO(crbug.com/342365078): Origin-Agent-Cluster should also use the
+  // AgentClusterKey to represent the isolation it requests.
+  // TODO(crbug.com/342365083): Documents crossOriginIsolated through the use of
+  // COOP and COEP should also use the AgentClusterKey instead of
+  // WebExposedIsolationInfo.
+  std::optional<AgentClusterKey> agent_cluster_key_;
 
   // The URL to use when locking a process to this SiteInstance's site via
   // SetProcessLock(). This is the same as |site_url_| except for cases

@@ -2051,7 +2051,12 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                         .WithIsPdf(actual_process_lock.is_pdf())
                         .WithSandbox(actual_process_lock.is_sandboxed())
                         .WithUniqueSandboxId(
-                            actual_process_lock.unique_sandbox_id())));
+                            actual_process_lock.unique_sandbox_id())
+                        .WithCrossOriginIsolationKey(
+                            actual_process_lock.agent_cluster_key()
+                                ? actual_process_lock.agent_cluster_key()
+                                      ->GetCrossOriginIsolationKey()
+                                : std::nullopt)));
 
         if (actual_process_lock.is_locked_to_site()) {
           // Jail-style enforcement - a process with a lock can only access

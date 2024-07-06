@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "content/browser/agent_cluster_key.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -212,6 +213,14 @@ struct CONTENT_EXPORT UrlInfo {
   // COEP, because it then has an isolated WebExposedIsolationInfo.
   std::optional<url::Origin> common_coop_origin;
 
+  // The CrossOriginIsolationKey to use for the navigation. This represents the
+  // isolation requested by the page itself through the use of COOP, COEP and
+  // DIP. Right now, this is only set when DocumentIsolationPolicy is enabled,
+  // but it should eventually for COOP and COEP. It will eventually replace
+  // WebExposedIsolationInfo.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -238,6 +247,9 @@ class CONTENT_EXPORT UrlInfoInit {
       std::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
   UrlInfoInit& WithCommonCoopOrigin(const url::Origin& origin);
+  UrlInfoInit& WithCrossOriginIsolationKey(
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+          cross_origin_isolation_key);
 
   const std::optional<url::Origin>& origin() { return origin_; }
 
@@ -258,6 +270,8 @@ class CONTENT_EXPORT UrlInfoInit {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
   std::optional<url::Origin> common_coop_origin_;
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key_;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit

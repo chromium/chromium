@@ -13,6 +13,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/security/coop/cross_origin_isolation_mode.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/features.h"
@@ -136,7 +137,8 @@ SiteInfo SiteInfo::CreateForErrorPage(
                   storage_partition_config, web_exposed_isolation_info,
                   web_exposed_isolation_level, is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */, false /* is_pdf */, is_fenced);
+                  false /* is_jit_disabled */, false /* is_pdf */, is_fenced,
+                  std::nullopt);
 }
 
 // static
@@ -164,7 +166,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       storage_partition_config, web_exposed_isolation_info,
       web_exposed_isolation_level, isolation_context.is_guest(),
       /*does_site_request_dedicated_process_for_coop=*/false, is_jit_disabled,
-      /*is_pdf=*/false, isolation_context.is_fenced());
+      /*is_pdf=*/false, isolation_context.is_fenced(), std::nullopt);
 }
 
 // static
@@ -187,7 +189,8 @@ SiteInfo SiteInfo::CreateForGuest(
       WebExposedIsolationLevel::kNotIsolated,
       /*is_guest=*/true,
       /*does_site_request_dedicated_process_for_coop=*/false,
-      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false);
+      /*is_jit_disabled=*/false, /*is_pdf=*/false, /*is_fenced=*/false,
+      std::nullopt);
 }
 
 // static
@@ -324,7 +327,8 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
                   storage_partition_config.value(), web_exposed_isolation_info,
                   web_exposed_isolation_level, isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
-                  url_info.is_pdf, isolation_context.is_fenced());
+                  url_info.is_pdf, isolation_context.is_fenced(),
+                  url_info.cross_origin_isolation_key);
 }
 
 // static
@@ -333,20 +337,23 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
   return Create(isolation_context, UrlInfo::CreateForTesting(url));
 }
 
-SiteInfo::SiteInfo(const GURL& site_url,
-                   const GURL& process_lock_url,
-                   bool requires_origin_keyed_process,
-                   bool requires_origin_keyed_process_by_default,
-                   bool is_sandboxed,
-                   int unique_sandbox_id,
-                   const StoragePartitionConfig storage_partition_config,
-                   const WebExposedIsolationInfo& web_exposed_isolation_info,
-                   WebExposedIsolationLevel web_exposed_isolation_level,
-                   bool is_guest,
-                   bool does_site_request_dedicated_process_for_coop,
-                   bool is_jit_disabled,
-                   bool is_pdf,
-                   bool is_fenced)
+SiteInfo::SiteInfo(
+    const GURL& site_url,
+    const GURL& process_lock_url,
+    bool requires_origin_keyed_process,
+    bool requires_origin_keyed_process_by_default,
+    bool is_sandboxed,
+    int unique_sandbox_id,
+    const StoragePartitionConfig storage_partition_config,
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
+    WebExposedIsolationLevel web_exposed_isolation_level,
+    bool is_guest,
+    bool does_site_request_dedicated_process_for_coop,
+    bool is_jit_disabled,
+    bool is_pdf,
+    bool is_fenced,
+    const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+        cross_origin_isolation_key)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
@@ -367,6 +374,30 @@ SiteInfo::SiteInfo(const GURL& site_url,
          unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
   DCHECK(!requires_origin_keyed_process_by_default_ ||
          requires_origin_keyed_process_);
+
+  // Compute the AgentClusterKey matching this SiteInfo. Currently, this is only
+  // computed when DocumentIsolationPolicy is enabled and
+  // CrossOriginIsolationKey is passed.
+  // TODO(crbug.com/342572253): Return a site-keyed AgentClusterKey when the
+  // agent cluster cannot be origin-keyed.
+  // TODO(crbug.com/342365078): Return an origin-keyed AgentClusterKey when the
+  // navigation has Origin-Agent-Cluster: ?1.
+  // TODO(crbug.com/342366372): Return an origin-keyed AgentClusterKey code by
+  // default once SiteInstanceGroup has shipped and different SiteInstances can
+  // share the same process.
+  if (cross_origin_isolation_key.has_value()) {
+    // Note: because we only get a CrossOriginIsolationKey when
+    // DocumentIsolationPolicy is enabled, the origin of CrossOriginIsolationKey
+    // is the same as the origin that should be used for the AgentClusterKey, so
+    // we can use it to create the AgentClusterKey.
+    //
+    // This will not be true when COOP + COEP also passes a
+    // CrossOriginIsolationKey, and the actual origin will need to be passed
+    // along.
+    agent_cluster_key_ = AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        cross_origin_isolation_key->common_coi_origin,
+        cross_origin_isolation_key.value());
+  }
 }
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
@@ -387,7 +418,8 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           /*does_site_request_dedicated_process_for_coop=*/false,
           /*is_jit_disabled=*/false,
           /*is_pdf=*/false,
-          /*is_fenced=*/false) {}
+          /*is_fenced=*/false,
+          /*cross_origin_isolation_key=*/std::nullopt) {}
 
 // static
 auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
@@ -397,22 +429,23 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // site-isolated due to COOP should still share a SiteInstance with other
   // same-site frames in the BrowsingInstance, even if those frames lack the
   // COOP isolation request.
-  return std::tie(
-      site_info.site_url_.possibly_invalid_spec(),
-      site_info.process_lock_url_.possibly_invalid_spec(),
-      // Here we only compare |requires_origin_keyed_process_| since
-      // we currently don't create SiteInfos where
-      // |is_origin_agent_cluster_| differs from
-      // |requires_origin_keyed_process_|. In fact, we don't even
-      // have |is_origin_agent_cluster| in SiteInfo at this time,
-      // but that could change.
-      // TODO(wjmaclean): Update this if we ever start to create
-      // separate SiteInfos for same-process OriginAgentCluster.
-      site_info.requires_origin_keyed_process_, site_info.is_sandboxed_,
-      site_info.unique_sandbox_id_, site_info.storage_partition_config_,
-      site_info.web_exposed_isolation_info_,
-      site_info.web_exposed_isolation_level_, site_info.is_guest_,
-      site_info.is_jit_disabled_, site_info.is_pdf_, site_info.is_fenced_);
+  return std::tie(site_info.site_url_.possibly_invalid_spec(),
+                  site_info.process_lock_url_.possibly_invalid_spec(),
+                  // Here we only compare |requires_origin_keyed_process_| since
+                  // we currently don't create SiteInfos where
+                  // |is_origin_agent_cluster_| differs from
+                  // |requires_origin_keyed_process_|. In fact, we don't even
+                  // have |is_origin_agent_cluster| in SiteInfo at this time,
+                  // but that could change.
+                  // TODO(wjmaclean): Update this if we ever start to create
+                  // separate SiteInfos for same-process OriginAgentCluster.
+                  site_info.requires_origin_keyed_process_,
+                  site_info.is_sandboxed_, site_info.unique_sandbox_id_,
+                  site_info.storage_partition_config_,
+                  site_info.web_exposed_isolation_info_,
+                  site_info.web_exposed_isolation_level_, site_info.is_guest_,
+                  site_info.is_jit_disabled_, site_info.is_pdf_,
+                  site_info.is_fenced_, site_info.agent_cluster_key_);
 }
 
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
@@ -481,7 +514,8 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       does_site_request_dedicated_process_for_coop_ ==
           other.does_site_request_dedicated_process_for_coop_ &&
       is_jit_disabled_ == other.is_jit_disabled_ && is_pdf_ == other.is_pdf_ &&
-      is_fenced_ == other.is_fenced_;
+      is_fenced_ == other.is_fenced_ &&
+      agent_cluster_key_ == other.agent_cluster_key_;
 
   if (is_match) {
     // If all the fields match, then the "same principal" subset must also
@@ -504,7 +538,7 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   return std::tie(process_lock_url_, requires_origin_keyed_process_,
                   is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
                   web_exposed_isolation_info_, web_exposed_isolation_level_,
-                  storage_partition_config_, is_fenced_);
+                  storage_partition_config_, is_fenced_, agent_cluster_key_);
 }
 
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
@@ -583,6 +617,26 @@ std::string SiteInfo::GetDebugString() const {
 
   if (is_fenced_)
     debug_string += ", is_fenced";
+
+  if (agent_cluster_key_ && agent_cluster_key_->IsOriginKeyed()) {
+    debug_string += ", origin-keyed agent cluster";
+  }
+
+  if (agent_cluster_key_ &&
+      agent_cluster_key_->GetCrossOriginIsolationKey().has_value()) {
+    debug_string += ", coi agent cluster origin=" +
+                    agent_cluster_key_->GetCrossOriginIsolationKey()
+                        ->common_coi_origin.GetDebugString();
+    if (agent_cluster_key_->GetCrossOriginIsolationKey()
+            ->cross_origin_isolation_mode ==
+        CrossOriginIsolationMode::kConcrete) {
+      debug_string += ", concrete coi";
+    } else if (agent_cluster_key_->GetCrossOriginIsolationKey()
+                   ->cross_origin_isolation_mode ==
+               CrossOriginIsolationMode::kLogical) {
+      debug_string += ", logical coi";
+    }
+  }
 
   return debug_string;
 }

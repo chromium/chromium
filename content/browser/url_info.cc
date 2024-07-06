@@ -29,7 +29,8 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_),
-      common_coop_origin(init.common_coop_origin_) {
+      common_coop_origin(init.common_coop_origin_),
+      cross_origin_isolation_key(init.cross_origin_isolation_key_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
   // We can check this for the explicit header case here, and it is checked more
   // generally (including implicit cases) in SiteInfo::CreateInternal().
@@ -50,9 +51,17 @@ UrlInfo UrlInfo::CreateForTesting(
 }
 
 bool UrlInfo::IsIsolated() const {
-  if (!web_exposed_isolation_info)
-    return false;
-  return web_exposed_isolation_info->is_isolated();
+  bool is_isolated = false;
+  if (web_exposed_isolation_info) {
+    is_isolated |= web_exposed_isolation_info->is_isolated();
+  }
+
+  if (cross_origin_isolation_key) {
+    is_isolated |= cross_origin_isolation_key->cross_origin_isolation_mode ==
+                   CrossOriginIsolationMode::kConcrete;
+  }
+
+  return is_isolated;
 }
 
 bool UrlInfo::RequestsOriginKeyedProcess(
@@ -80,7 +89,8 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
       unique_sandbox_id_(base.unique_sandbox_id),
       storage_partition_config_(base.storage_partition_config),
       web_exposed_isolation_info_(base.web_exposed_isolation_info),
-      is_pdf_(base.is_pdf) {}
+      is_pdf_(base.is_pdf),
+      cross_origin_isolation_key_(base.cross_origin_isolation_key) {}
 
 UrlInfoInit::~UrlInfoInit() = default;
 
@@ -136,6 +146,13 @@ UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
 UrlInfoInit& UrlInfoInit::WithCommonCoopOrigin(
     const url::Origin& common_coop_origin) {
   common_coop_origin_ = common_coop_origin;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithCrossOriginIsolationKey(
+    const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+        cross_origin_isolation_key) {
+  cross_origin_isolation_key_ = cross_origin_isolation_key;
   return *this;
 }
 

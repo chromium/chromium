@@ -1286,6 +1286,13 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
     return false;
   }
 
+  // Similarly, the CrossOriginIsolationKeys should match.
+  if (GetSiteInfo().agent_cluster_key() &&
+      GetSiteInfo().agent_cluster_key()->GetCrossOriginIsolationKey() !=
+          url_info.cross_origin_isolation_key) {
+    return false;
+  }
+
   // If the passed in UrlInfo has a null WebExposedIsolationInfo, meaning that
   // it is compatible with any isolation state, we reuse the isolation state of
   // this SiteInstance's SiteInfo so the member comparison of SiteInfos will
@@ -1470,7 +1477,13 @@ const WebExposedIsolationInfo& SiteInstanceImpl::GetWebExposedIsolationInfo()
 }
 
 bool SiteInstanceImpl::IsCrossOriginIsolated() const {
-  return GetWebExposedIsolationInfo().is_isolated();
+  return GetWebExposedIsolationInfo().is_isolated() ||
+         (site_info_.agent_cluster_key() &&
+          site_info_.agent_cluster_key()->GetCrossOriginIsolationKey() &&
+          site_info_.agent_cluster_key()
+                  ->GetCrossOriginIsolationKey()
+                  ->cross_origin_isolation_mode ==
+              CrossOriginIsolationMode::kConcrete);
 }
 
 const std::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()

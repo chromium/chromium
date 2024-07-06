@@ -13214,6 +13214,16 @@ bool RenderFrameHostImpl::IsNavigationSameSite(
           dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
+
+  if (GetSiteInstance()->GetSiteInfo().agent_cluster_key() &&
+      GetSiteInstance()
+              ->GetSiteInfo()
+              .agent_cluster_key()
+              ->GetCrossOriginIsolationKey() !=
+          dest_url_info.cross_origin_isolation_key) {
+    return false;
+  }
+
   return GetSiteInstance()->IsNavigationSameSite(
       last_successful_url(), GetLastCommittedOrigin(), IsOutermostMainFrame(),
       dest_url_info);

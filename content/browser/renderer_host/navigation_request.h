@@ -87,6 +87,7 @@ class CompositorLock;
 
 namespace content {
 
+class AgentClusterKey;
 class CrossOriginEmbedderPolicyReporter;
 class FrameTreeNode;
 class NavigationUIData;
@@ -1959,6 +1960,13 @@ class CONTENT_EXPORT NavigationRequest
       network::mojom::WebSandboxFlags sandbox_flags);
   std::pair<std::optional<url::Origin>, std::string>
   GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo();
+
+  // Computes the CrossOriginIsolationKey to use for committing the navigation.
+  // A nullopt result means that either the cross-origin isolation status of the
+  // request cannot be determined because we do not have final headers for the
+  // navigation yet, or that the navigation is not cross-origin isolated.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+  ComputeCrossOriginIsolationKey();
 
   // Computes the web-exposed isolation information based on `coop_status_` and
   // current `frame_tree_node_` info.

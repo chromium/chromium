@@ -2804,6 +2804,11 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
   DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
       new_instance.get(), dest_url_info.web_exposed_isolation_info));
+  CHECK(!new_instance->GetSiteInfo().agent_cluster_key() ||
+        new_instance->GetSiteInfo()
+                .agent_cluster_key()
+                ->GetCrossOriginIsolationKey() ==
+            dest_url_info.cross_origin_isolation_key);
 
   // If `should_swap_result.ShouldSwap()` is true, we must use a different
   // SiteInstance in a different BrowsingInstance as the current one.
@@ -3397,6 +3402,14 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
     return false;
   }
 
+  if (dest_instance->GetSiteInfo().agent_cluster_key() &&
+      dest_instance->GetSiteInfo()
+              .agent_cluster_key()
+              ->GetCrossOriginIsolationKey() !=
+          dest_url_info.cross_origin_isolation_key) {
+    return false;
+  }
+
   if (!IsSiteInstanceCompatibleWithWebExposedIsolation(
           dest_instance, dest_url_info.web_exposed_isolation_info)) {
     return false;
@@ -3654,6 +3667,17 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     return false;
   }
 
+  if (source_instance->GetSiteInfo().agent_cluster_key() &&
+      source_instance->GetSiteInfo()
+              .agent_cluster_key()
+              ->GetCrossOriginIsolationKey() !=
+          dest_url_info.cross_origin_isolation_key) {
+    AppendReason(reason,
+                 "CanUseSourceSiteInstance => false "
+                 "(cross-origin-isolation-key)");
+    return false;
+  }
+
   // PDF content should never share a SiteInstance with non-PDF content. In
   // practice, this prevents the PDF viewer extension from incorrectly sharing
   // a process with PDF content that was loaded from a data URL.
@@ -3677,6 +3701,15 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
   if (!WebExposedIsolationInfo::AreCompatible(
           candidate->GetSiteInstance()->GetWebExposedIsolationInfo(),
           dest_url_info.web_exposed_isolation_info)) {
+    return false;
+  }
+
+  if (candidate->GetSiteInstance()->GetSiteInfo().agent_cluster_key() &&
+      candidate->GetSiteInstance()
+              ->GetSiteInfo()
+              .agent_cluster_key()
+              ->GetCrossOriginIsolationKey() !=
+          dest_url_info.cross_origin_isolation_key) {
     return false;
   }
 
