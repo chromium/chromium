@@ -4,6 +4,7 @@
 
 #include "ui/message_center/notification_list.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -19,9 +20,27 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <vector>
+
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace message_center {
 
 namespace {
+
+// Constants -------------------------------------------------------------------
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// A notification created within this time period is exempted from over-limit
+// removal. NOTE: Used only if the notification limit feature is enabled.
+constexpr base::TimeDelta kRemovalExemptionPeriod = base::Seconds(1);
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Helpers ---------------------------------------------------------------------
 
 bool ShouldShowNotificationAsPopup(const Notification& notification,
                                    const NotificationBlockers& blockers,
@@ -76,21 +95,32 @@ NotificationList::NotificationList(MessageCenter* message_center)
 NotificationList::~NotificationList() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::string NotificationList::GetOldestNonGroupedNotificationId() {
-  auto oldest_lowest_priority_notification_iter = --notifications_.end();
+std::vector<std::string> NotificationList::GetTopKRemovableNotificationIds(
+    size_t count) const {
+  CHECK(ash::features::IsNotificationLimitEnabled());
 
-  // Do not return a parent notification with grouped children because this kind
-  // of notification is a container of child notifications, and do not return a
-  // pinned notification.
-  while (oldest_lowest_priority_notification_iter->first->pinned() ||
-         oldest_lowest_priority_notification_iter->first->group_parent()) {
-    // If all of the notifications are pinned or grouped, return nothing.
-    if (oldest_lowest_priority_notification_iter == notifications_.begin()) {
-      return std::string();
+  std::vector<std::string> found_ids;
+  const base::Time current_time = base::Time::NowFromSystemTime();
+  for (const auto& state_by_notification : base::Reversed(notifications_)) {
+    const Notification& notification = *state_by_notification.first;
+
+    // Skip the following notifications:
+    // 1. Parent notifications with grouped children because this kind
+    //    of notification is a container of child notifications.
+    // 2. Pinned notifications.
+    // 3. Notifications created within a defined time threshold.
+    if (notification.pinned() || notification.group_parent() ||
+        current_time - notification.timestamp() <= kRemovalExemptionPeriod) {
+      continue;
     }
-    --oldest_lowest_priority_notification_iter;
+
+    found_ids.push_back(notification.id());
+    if (found_ids.size() == count) {
+      break;
+    }
   }
-  return oldest_lowest_priority_notification_iter->first->id();
+
+  return found_ids;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

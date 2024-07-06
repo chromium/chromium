@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -87,9 +88,14 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   int size() const { return notifications_.size(); }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns the oldest child (not group parent, and not pinned) notification.
-  // Returns an empty string if there is no valid notification to return.
-  std::string GetOldestNonGroupedNotificationId();
+  // Returns the notification IDs prioritized for removal as follows:
+  // 1. Lower priority notifications are removed before higher priority ones.
+  // 2. For notifications with equal priority, older ones are removed first.
+  // 3. The most recent notifications are kept.
+  // NOTE:
+  // 1. This function is used only if the notification limit feature is enabled.
+  // 2. The returned array's size could be less than `count`.
+  std::vector<std::string> GetTopKRemovableNotificationIds(size_t count) const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Makes a message "read". Collects the set of ids whose state have changed

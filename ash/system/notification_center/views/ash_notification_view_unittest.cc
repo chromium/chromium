@@ -5,7 +5,9 @@
 #include "ash/system/notification_center/views/ash_notification_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -36,6 +38,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
@@ -48,9 +51,11 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
@@ -64,17 +69,42 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 
-using message_center::Notification;
-using message_center::NotificationHeaderView;
-using message_center::NotificationView;
-
 namespace ash {
 
 namespace {
 
+// Aliases ---------------------------------------------------------------------
+
+using message_center::Notification;
+using message_center::NotificationHeaderView;
+using message_center::NotificationView;
 using ::testing::_;
+using ::testing::Bool;
+using ::testing::UnorderedElementsAre;
+
+// Constants -------------------------------------------------------------------
+
+// The time duration that ensures notifications become aging enough for removal.
+constexpr base::TimeDelta kNotificationAgingWaitTime = base::Seconds(2);
+
+// The notification count limit in tests.
+constexpr size_t kOverridingCountLimit = 5;
+
+// Target notification count after cleaning in tests.
+constexpr size_t kOverridingTargetCountAfterRemoval = 3;
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+
+// A radomly selected time duration for waiting.
+constexpr base::TimeDelta kWaitTime = base::Milliseconds(500);
+
+// Matchers --------------------------------------------------------------------
+
+MATCHER_P(NotificationIdMatches, target_id, "") {
+  return arg->id() == target_id;
+}
+
+// Helper classes --------------------------------------------------------------
 
 class NotificationTestDelegate : public message_center::NotificationDelegate {
  public:
@@ -208,7 +238,10 @@ class AshNotificationViewTestBase : public AshTestBase,
       bool has_message = true,
       message_center::NotificationType notification_type =
           message_center::NOTIFICATION_TYPE_SIMPLE,
-      const std::optional<base::FilePath>& image_path = std::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt,
+      bool pinned = false,
+      message_center::NotificationPriority priority =
+          message_center::NotificationPriority::DEFAULT_PRIORITY) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
@@ -216,6 +249,8 @@ class AshNotificationViewTestBase : public AshTestBase,
     if (image_path) {
       data.image_path = *image_path;
     }
+    data.pinned = pinned;
+    data.priority = priority;
 
     std::u16string message = has_message ? u"message" : u"";
 
@@ -242,7 +277,9 @@ class AshNotificationViewTestBase : public AshTestBase,
   // will belong to the same group.
   std::unique_ptr<Notification> CreateTestNotificationInAGroup(
       bool has_image = false,
-      const std::optional<base::FilePath>& image_path = std::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt,
+      message_center::NotificationPriority priority =
+          message_center::DEFAULT_PRIORITY) {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
@@ -251,6 +288,7 @@ class AshNotificationViewTestBase : public AshTestBase,
     if (image_path) {
       rich_notification_data.image_path = *image_path;
     }
+    rich_notification_data.priority = priority;
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -1302,7 +1340,7 @@ TEST_F(AshNotificationViewTest, ButtonStateUpdated) {
 
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
-  ash::AshNotificationInputContainer* inline_reply =
+  AshNotificationInputContainer* inline_reply =
       static_cast<AshNotificationInputContainer*>(
           GetInlineReply(notification_view));
 
@@ -1337,6 +1375,289 @@ TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
   EXPECT_EQ(GetLeftContent(notification_view())->height(),
             GetTitleRow(notification_view())->height());
 }
+
+// AshNotificationLimitTest ----------------------------------------------------
+
+class AshNotificationLimitTest : public AshNotificationViewTestBase,
+                                 public testing::WithParamInterface<
+                                     /*is_notification_limit_enabled=*/bool> {
+ public:
+  AshNotificationLimitTest()
+      : AshNotificationViewTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitWithFeatureState(features::kNotificationLimit,
+                                              GetParam());
+  }
+
+  std::unique_ptr<Notification> CreateTestNotificationOfPriority(
+      message_center::NotificationPriority priority) {
+    return CreateTestNotification(
+        /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/true,
+        message_center::NOTIFICATION_TYPE_SIMPLE, /*image_path=*/std::nullopt,
+        /*pinned=*/false, priority);
+  }
+
+  std::unique_ptr<Notification> CreateTestPinnedNotification() {
+    return CreateTestNotification(
+        /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/true,
+        message_center::NOTIFICATION_TYPE_SIMPLE,
+        /*image_path=*/std::nullopt, /*pinned=*/true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  message_center::ScopedNotificationLimitOverrider limit_overrider_{
+      kOverridingCountLimit, kOverridingTargetCountAfterRemoval};
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AshNotificationLimitTest,
+                         /*is_notification_limit_enabled=*/Bool());
+
+// Verifies the feature when all notifications are pinned.
+TEST_P(AshNotificationLimitTest, AllNotificationsPinned) {
+  std::vector<std::unique_ptr<Notification>> notifications;
+  while (notifications.size() < kOverridingCountLimit) {
+    notifications.push_back(CreateTestPinnedNotification());
+  }
+
+  auto over_limit_notification = CreateTestPinnedNotification();
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  // Pinned notifications should be kept regardless of the notification limit
+  // feature's enabling state.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetNotifications(),
+              UnorderedElementsAre(
+                  NotificationIdMatches(notifications[0]->id()),
+                  NotificationIdMatches(notifications[1]->id()),
+                  NotificationIdMatches(notifications[2]->id()),
+                  NotificationIdMatches(notifications[3]->id()),
+                  NotificationIdMatches(notifications[4]->id()),
+                  NotificationIdMatches(over_limit_notification->id())));
+}
+
+// If the notification limit feature is enabled, the pinned notifications should
+// not be removed when the notification count is over limit; otherwise, all
+// added notifications should exist.
+TEST_P(AshNotificationLimitTest, KeepPinnedNotification) {
+  // Add a pinned notification.
+  std::vector<std::unique_ptr<Notification>> notifications;
+  notifications.push_back(CreateTestPinnedNotification());
+
+  // Add a group child notification of a high priority.
+  notifications.push_back(
+      CreateTestNotificationInAGroup(message_center::HIGH_PRIORITY));
+
+  // Add a pinned notification.
+  notifications.push_back(CreateTestPinnedNotification());
+
+  // Keep adding the notifications of high priority until reaching the limit.
+  while (notifications.size() < kOverridingCountLimit) {
+    notifications.push_back(
+        CreateTestNotificationOfPriority(message_center::HIGH_PRIORITY));
+  }
+
+  task_environment()->FastForwardBy(kNotificationAgingWaitTime);
+  auto over_limit_notification = CreateTestNotification();
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (features::IsNotificationLimitEnabled()) {
+    // Among the elements of `notifications`, the two pinned ones are kept.
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  } else {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(notifications[3]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  }
+}
+
+// If the notification limit feature is enabled, the notifications with lower
+// priorities should be removed when the notification count is over limit;
+// otherwise, all added notifications should exist.
+TEST_P(AshNotificationLimitTest, LimitByPriorityOrder) {
+  // Add two notifications with a high priority.
+  std::vector<std::unique_ptr<Notification>> notifications;
+  ASSERT_GT(kOverridingCountLimit, 2u);
+  while (notifications.size() < 2) {
+    notifications.push_back(
+        CreateTestNotificationOfPriority(message_center::HIGH_PRIORITY));
+  }
+
+  // Keep adding notifications of a default priority until reaching the limit.
+  while (notifications.size() < kOverridingCountLimit) {
+    notifications.push_back(CreateTestNotification());
+  }
+
+  task_environment()->FastForwardBy(kNotificationAgingWaitTime);
+  auto over_limit_notification = CreateTestNotification();
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (features::IsNotificationLimitEnabled()) {
+    // Among the elements of `notifications`, those of high priority are kept.
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  } else {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(notifications[3]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  }
+}
+
+// If the notification limit feature is enabled and the notification count is
+// over limit, when deciding the notifications to remove among those of the
+// same priority, the oldest ones should be removed.
+TEST_P(AshNotificationLimitTest, LimitByPriorityTimestampOrder) {
+  std::vector<std::unique_ptr<Notification>> notifications;
+  notifications.push_back(CreateTestNotification());
+  notifications.push_back(
+      CreateTestNotificationOfPriority(message_center::HIGH_PRIORITY));
+
+  while (notifications.size() < kOverridingCountLimit) {
+    // Fast forward to ensure a larger timestamp.
+    task_environment()->FastForwardBy(kWaitTime);
+
+    notifications.push_back(CreateTestNotification());
+  }
+
+  task_environment()->FastForwardBy(kNotificationAgingWaitTime);
+  auto over_limit_notification =
+      CreateTestNotificationOfPriority(message_center::HIGH_PRIORITY);
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (features::IsNotificationLimitEnabled()) {
+    // Among the elements in `notifications` of the default priority, the last
+    // one is kept because it has the largest timestamp.
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  } else {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(notifications[3]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification->id())));
+  }
+}
+
+// If the notification limit feature is enabled, among the notifications of the
+// same priority, the oldest ones should be removed; otherwise, all added
+// notifications should exist.
+TEST_P(AshNotificationLimitTest, LimitByTimestampOrder) {
+  std::vector<std::unique_ptr<Notification>> notifications;
+  while (notifications.size() < kOverridingCountLimit) {
+    notifications.push_back(CreateTestNotification());
+    // Ensure the members of `notifications` have increasing timestamps.
+    task_environment()->FastForwardBy(kWaitTime);
+  }
+
+  task_environment()->FastForwardBy(kNotificationAgingWaitTime);
+  auto over_limit_notification1 = CreateTestNotification();
+  auto over_limit_notification2 = CreateTestNotification();
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (features::IsNotificationLimitEnabled()) {
+    // Among the elements of `notifications`, the last one is kept because it
+    // has the largest timestamp.
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification1->id()),
+                    NotificationIdMatches(over_limit_notification2->id())));
+  } else {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(notifications[3]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification1->id()),
+                    NotificationIdMatches(over_limit_notification2->id())));
+  }
+}
+
+// If the notification limit feature is enabled, the most recent notifications
+// should be kept regardless of their priorities.
+TEST_P(AshNotificationLimitTest, MostRecentNotifications) {
+  std::vector<std::unique_ptr<Notification>> notifications;
+  while (notifications.size() < kOverridingCountLimit) {
+    notifications.push_back(
+        CreateTestNotificationOfPriority(message_center::MAX_PRIORITY));
+  }
+
+  task_environment()->FastForwardBy(kNotificationAgingWaitTime);
+  auto over_limit_notification1 = CreateTestNotification();
+  auto over_limit_notification2 =
+      CreateTestNotificationOfPriority(message_center::LOW_PRIORITY);
+  auto over_limit_notification3 =
+      CreateTestNotificationOfPriority(message_center::MIN_PRIORITY);
+
+  // Fast forward to handle the over-limit notification.
+  task_environment()->FastForwardBy(kWaitTime);
+
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  if (features::IsNotificationLimitEnabled()) {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(over_limit_notification1->id()),
+                    NotificationIdMatches(over_limit_notification2->id()),
+                    NotificationIdMatches(over_limit_notification3->id())));
+  } else {
+    EXPECT_THAT(message_center->GetNotifications(),
+                UnorderedElementsAre(
+                    NotificationIdMatches(notifications[0]->id()),
+                    NotificationIdMatches(notifications[1]->id()),
+                    NotificationIdMatches(notifications[2]->id()),
+                    NotificationIdMatches(notifications[3]->id()),
+                    NotificationIdMatches(notifications[4]->id()),
+                    NotificationIdMatches(over_limit_notification1->id()),
+                    NotificationIdMatches(over_limit_notification2->id()),
+                    NotificationIdMatches(over_limit_notification3->id())));
+  }
+}
+
+// AshNotificationViewDragTestBase ---------------------------------------------
 
 class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
@@ -1870,7 +2191,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // capture notification's image is always file-backed.
 TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
   // Take a full screenshot then wait for the file path to the saved image.
-  ash::CaptureModeController* controller = StartCaptureSession(
+  CaptureModeController* controller = StartCaptureSession(
       CaptureModeSource::kFullscreen, CaptureModeType::kImage);
   controller->PerformCapture();
   const base::FilePath image_file_path = WaitForCaptureFileToBeSaved();
@@ -1898,7 +2219,7 @@ TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
 
   // Check the notification catalog name.
   tester.ExpectBucketCount("Ash.NotificationView.ImageDrag.Start",
-                           ash::NotificationCatalogName::kScreenCapture, 1);
+                           NotificationCatalogName::kScreenCapture, 1);
 }
 
 class DragAfterNotificationRemovalTest
