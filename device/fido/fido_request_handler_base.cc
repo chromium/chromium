@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
 #endif
 
@@ -291,12 +292,26 @@ void FidoRequestHandlerBase::InitDiscoveries(
 #if BUILDFLAG(IS_MAC)
   transport_availability_info_.platform_has_biometrics =
       device::fido::mac::DeviceHasBiometricsAvailable();
-#elif BUILDFLAG(IS_WIN)
-  // TODO(enclave): this should check whether biometrics are actually available.
-  transport_availability_info_.platform_has_biometrics = true;
-#endif
-
   MaybeSignalTransportsEnumerated();
+#elif BUILDFLAG(IS_WIN)
+  transport_availability_callback_readiness_
+      ->platform_biometrics_check_pending = true;
+  device::fido::win::DeviceHasBiometricsAvailable(base::BindOnce(
+      [](base::WeakPtr<FidoRequestHandlerBase> handler,
+         bool biometrics_available) {
+        if (!handler) {
+          return;
+        }
+        handler->transport_availability_info_.platform_has_biometrics =
+            biometrics_available;
+        handler->transport_availability_callback_readiness_
+            ->platform_biometrics_check_pending = false;
+        handler->MaybeSignalTransportsEnumerated();
+      },
+      GetWeakPtr()));
+#else
+  MaybeSignalTransportsEnumerated();
+#endif
 }
 
 FidoRequestHandlerBase::~FidoRequestHandlerBase() {

@@ -96,6 +96,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
 #endif
 
@@ -369,7 +370,6 @@ static constexpr char kGetAssertionUvRequired[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
-#if BUILDFLAG(IS_MAC)
 static constexpr char kGetAssertionUvPreferred[] = R"((() => {
   return navigator.credentials.get({ publicKey: {
     challenge: new Uint8Array([0]),
@@ -382,7 +382,6 @@ static constexpr char kGetAssertionUvPreferred[] = R"((() => {
               ((new Uint8Array(c.response.authenticatorData)[32]&4) != 0)),
            e => window.domAutomationController.send('error ' + e));
 })())";
-#endif
 
 static constexpr char kGetAssertionConditionalUI[] = R"((() => {
   return navigator.credentials.get({
@@ -601,6 +600,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     // Windows. Otherwise the version of webauthn.dll can differ between
     // builders causing differences / failures.
     fake_webauthn_dll_.set_available(false);
+    biometrics_override_ =
+        std::make_unique<device::fido::win::ScopedBiometricsOverride>(false);
 #elif BUILDFLAG(IS_MAC)
     // By default, Touch ID is disabled in these tests. Specific tests can
     // replace this if they need.
@@ -856,6 +857,18 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     NOTREACHED_NORETURN() << "unexpected IsUVPAA result: " << script_result;
   }
 
+  void SetBiometricsEnabled(bool enabled) {
+#if BUILDFLAG(IS_MAC)
+    biometrics_override_.reset();
+    biometrics_override_ =
+        std::make_unique<device::fido::mac::ScopedBiometricsOverride>(enabled);
+#elif BUILDFLAG(IS_WIN)
+    biometrics_override_.reset();
+    biometrics_override_ =
+        std::make_unique<device::fido::win::ScopedBiometricsOverride>(enabled);
+#endif
+  }
+
  protected:
   base::SimpleTestClock clock_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -870,6 +883,8 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_webauthn_dll_;
   device::WinWebAuthnApi::ScopedOverride webauthn_dll_override_;
+  std::unique_ptr<device::fido::win::ScopedBiometricsOverride>
+      biometrics_override_;
 #elif BUILDFLAG(IS_MAC)
   std::unique_ptr<device::fido::mac::ScopedBiometricsOverride>
       biometrics_override_;
@@ -2519,9 +2534,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   AddTestPasskeyToModel();
   EnableUVKeySupport();
 
-  biometrics_override_.reset();
-  biometrics_override_ =
-      std::make_unique<device::fido::mac::ScopedBiometricsOverride>(true);
+  SetBiometricsEnabled(true);
 
   // The first get() request is satisfied implicitly because recovery was done.
   content::WebContents* web_contents =
@@ -2548,9 +2561,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMTouchID);
-  biometrics_override_.reset();
-  biometrics_override_ =
-      std::make_unique<device::fido::mac::ScopedBiometricsOverride>(false);
+  SetBiometricsEnabled(false);
   // Disable Touch ID. The request should still resolve with uv=true.
   request_delegate()->dialog_model()->OnTouchIDComplete(false);
 
@@ -3161,6 +3172,78 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }
 
 #endif  // IS_LINUX
+
+// Verify that GPM will do UV on a uv=preferred request if and only if
+// biometrics are available.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       UserVerificationPolicy) {
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+  AddTestPasskeyToModel();
+  EnableUVKeySupport();
+
+  // The first get() request is satisfied implicitly because recovery was done.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+
+  EnclaveManagerFactory::GetAsEnclaveManagerForProfile(browser()->profile())
+      ->StoreKeys(kGaiaId,
+                  {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
+                                        std::end(kSecurityDomainSecret))},
+                  kSecretVersion);
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  SetBiometricsEnabled(false);
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=false\"");
+
+  // On Linux biometrics is not available so the test is done.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+  if (!MacBiometricApisAvailable()) {
+    return;
+  }
+#endif
+  SetBiometricsEnabled(true);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvPreferred);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+#endif
+}
 
 }  // namespace
 

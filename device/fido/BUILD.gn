@@ -315,6 +315,8 @@ component("fido") {
         "win/logging.h",
         "win/type_conversions.cc",
         "win/type_conversions.h",
+        "win/util.cc",
+        "win/util.h",
         "win/webauthn_api.cc",
         "win/webauthn_api.h",
       ]
