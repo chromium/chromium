@@ -8,8 +8,7 @@
   "manifest_version": 2,
   "permissions": [
     "imageLoaderPrivate",
-    "nativeMessaging",
-    "storage"
+    "nativeMessaging"
   ],
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem:; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
   "background": {
