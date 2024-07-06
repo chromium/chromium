@@ -64,7 +64,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                        base::TimeTicks end_time,
                        LocalFrame* frame);
 
-  // TaskTimeObsrver
+  // TaskTimeObserver
   void WillProcessTask(base::TimeTicks start_time) override;
 
   void DidProcessTask(base::TimeTicks start_time,
