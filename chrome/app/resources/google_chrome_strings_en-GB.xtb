@@ -335,6 +335,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
 <translation id="5809516625706423866">Unable to connect to the Internet. HTTP 401 Unauthorised. Please check your proxy configuration.</translation>
+<translation id="5825922397106002626">Remove <ph name="EXTENSION_NAME" /> from Chrome</translation>
 <translation id="5858486459377137936">You'll be signed out of most sites when you close all Chrome windows, except your Google Account if you're signed in to Chrome. To let sites remember you, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome warns you<ph name="END_LINK" /> about unsafe sites and downloads</translation>
 <translation id="5895138241574237353">Restart</translation>

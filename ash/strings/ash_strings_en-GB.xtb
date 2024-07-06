@@ -110,6 +110,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Use '<ph name="DEVICE_NAME" />' for audio input and output</translation>
 <translation id="1346748346194534595">Right</translation>
+<translation id="1350494136075914725">Ongoing · Switch to tab</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1360220746312242196">When searching a page, go to previous match for search</translation>
 <translation id="1360788414852622716">Disabling profile. This may take a few minutes.</translation>
@@ -1048,6 +1049,7 @@ One device connected.</translation>
 <translation id="4876935764454575645">Audio selection</translation>
 <translation id="4881323000405981760">Effects are not supported on Linux apps</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Provide optional feedback to improve suggestions:</translation>
 <translation id="4890187583552566966">The Google Assistant is disabled by your administrator.</translation>
 <translation id="4890408602550914571">Make sure that your phone is nearby and has Bluetooth turned on.</translation>
@@ -1750,6 +1752,7 @@ New install</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
 <translation id="742608627846767349">Good morning,</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
+<translation id="7441711280402516925">Playing · Switch to tab</translation>
 <translation id="7453330308669753048">Search history result removed</translation>
 <translation id="7459485586006128091">Due to an internal error, hotspot has been turned off. Try reconnecting in a few minutes.</translation>
 <translation id="7461924472993315131">Pin</translation>

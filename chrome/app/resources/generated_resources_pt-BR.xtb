@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Página sem resposta}one{Páginas sem resposta}other{Páginas sem resposta}}</translation>
 <translation id="1011003645819296594">Dispositivos salvos</translation>
 <translation id="1011355516189274711">Volume da conversão de texto em voz</translation>
+<translation id="1011431628606634753">Mude o PIN de recuperação do Gerenciador de senhas do Google</translation>
 <translation id="1012794136286421601">Seus arquivos do Google Docs, Planilhas, Apresentações e Desenhos estão sendo sincronizados. Abra o aplicativo Google Drive para acessá-los on-line ou off-line.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -4065,6 +4066,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3923221004758245114">Remover <ph name="VM_NAME" /> do seu <ph name="DEVICE_TYPE" />? Isso excluirá todos os apps e dados da máquina virtual.</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3923676227229836009">Esta página tem permissão para ver arquivos</translation>
+<translation id="3923958273791212723">Alertas de problemas de desempenho</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho de exibição e de texto: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
@@ -4081,6 +4083,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3930737994424905957">Procurando dispositivos</translation>
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
 <translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Tamanho máximo de <ph name="MAX" /> caracteres</translation>
 <translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você</translation>
 <translation id="3936390757709632190">&amp;Abrir áudio em uma nova guia</translation>
@@ -5221,6 +5224,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4807098396393229769">Nome no cartão de crédito</translation>
 <translation id="4807122856660838973">Ativar a Navegação segura</translation>
 <translation id="4807514039636325497">Detalhes do DBus</translation>
+<translation id="4808525520374557629">Receba notificações com sugestões sobre como melhorar os problemas de desempenho detectados. <ph name="BEGIN_LINK" />Saiba mais sobre os alertas de problemas de desempenho<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Pop-ups bloqueados:</translation>
 <translation id="4809079943450490359">Instruções do administrador do dispositivo:</translation>
 <translation id="4809447465126035330">Excluir</translation>
@@ -6092,6 +6096,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Você inseriu um PIN incorreto muitas vezes. Para acessar suas chaves de acesso e senhas, mude o PIN.</translation>
 <translation id="5458998536542739734">Anotações na tela de bloqueio</translation>
 <translation id="5459864179070366255">Continuar instalação</translation>
 <translation id="5460641065520325899">Gerencie os tipos de informação que os sites podem usar para rastrear você durante a navegação.</translation>

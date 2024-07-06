@@ -4390,6 +4390,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4163560723127662357">Unknown keyboard</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Site settings</translation>
+<translation id="4166847326079525123">Location is turned off in Windows System Preferences</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> is trying to access <ph name="DEVICE_NAME" />. Turn off <ph name="DEVICE_NAME" /> privacy switch to allow access.</translation>
 <translation id="4167393659000039775">Google isn’t responsible for any data loss, and <ph name="DEVICE_OS" /> may not work on uncertified models. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">More actions for <ph name="SHORTCUT_TITLE" /> shortcut</translation>

@@ -335,6 +335,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не ўдалося запусціць Chrome. Паўтарыце спробу.</translation>
 <translation id="5809516625706423866">Не ўдалося падключыцца да інтэрнэту. Памылка HTTP 401: патрабуецца аўтарызацыя. Праверце налады проксі-сервера.</translation>
+<translation id="5825922397106002626">Выдаліць <ph name="EXTENSION_NAME" /> з Chrome</translation>
 <translation id="5858486459377137936">Калі вы закрыеце ўсе вокны Chrome, то выйдзеце з большасці сайтаў, але застаняцеся ва Уліковым запісе Google, калі раней выканалі ўваход у Chrome. Каб дазволіць сайтам запамінаць вас, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome папярэджвае<ph name="END_LINK" /> пра небяспечныя сайты і спампоўкі</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>

@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{La pagina non risponde}other{Le pagine non rispondono}}</translation>
 <translation id="1011003645819296594">Dispositivi salvati</translation>
 <translation id="1011355516189274711">Volume sintesi vocale</translation>
+<translation id="1011431628606634753">Cambia il PIN di recupero per il Gestore delle password di Google</translation>
 <translation id="1012794136286421601">I tuoi file di Documenti, Fogli di lavoro, Presentazioni e Disegni sono in fase di sincronizzazione. Apri l'app Google Drive per accedervi online oppure offline.</translation>
 <translation id="1012876632442809908">Dispositivo USB-C (porta anteriore)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -4050,6 +4051,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3923221004758245114">Vuoi rimuovere <ph name="VM_NAME" /> da <ph name="DEVICE_TYPE" />? Verranno eliminati tutti i dati e le app nella macchina virtuale.</translation>
 <translation id="3923494859158167397">Nessuna rete mobile configurata</translation>
 <translation id="3923676227229836009">Questa pagina è autorizzata a visualizzare i file</translation>
+<translation id="3923958273791212723">Avvisi relativi ai problemi di prestazioni</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Dimensioni di visualizzazione e testo: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
@@ -4066,6 +4068,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3930737994424905957">Ricerca di dispositivi in corso</translation>
 <translation id="3930968231047618417">Colore sfondo</translation>
 <translation id="3932356525934356570">Blocca <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Lunghezza massima <ph name="MAX" /> caratteri</translation>
 <translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> sta condividendo una rete Wi-Fi con te</translation>
 <translation id="3936390757709632190">&amp;Apri audio in nuova scheda</translation>
@@ -4716,6 +4719,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4423376891418188461">Ripristina impostazioni</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che sono state utilizzate o sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="442528696198546304">Le password, le passkey e altri dati verranno eliminati definitivamente da <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Elimina il file <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">Per iniziare, assicurati che il tuo sensore USB o Bluetooth sia collegato al dispositivo Chromebook. Puoi anche usare i tasti della tastiera.</translation>
 <translation id="4426490308207168518">Condividi feedback o segnala un problema</translation>
@@ -5205,6 +5209,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
 <translation id="4807122856660838973">Attiva Navigazione sicura</translation>
 <translation id="4807514039636325497">Dettagli D-Bus</translation>
+<translation id="4808525520374557629">Ricevi notifiche che suggeriscono modi per migliorare i problemi di prestazioni rilevati. <ph name="BEGIN_LINK" />Scopri di più sugli avvisi relativi ai problemi di prestazioni<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Popup bloccati</translation>
 <translation id="4809079943450490359">Istruzioni dell'amministratore del tuo dispositivo:</translation>
 <translation id="4809447465126035330">Elimina</translation>
@@ -6076,6 +6081,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5457113250005438886">Non validi</translation>
 <translation id="5457459357461771897">Lettura ed eliminazione di foto, musica e altri contenuti multimediali del computer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Hai inserito un PIN errato troppe volte. Per accedere alle passkey e alle password, modifica il PIN.</translation>
 <translation id="5458998536542739734">Note sulla schermata di blocco</translation>
 <translation id="5459864179070366255">Installa comunque</translation>
 <translation id="5460641065520325899">Gestisci i tipi di informazioni che i siti possono usare per monitorare la tua navigazione.</translation>
@@ -7502,6 +7508,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="653920215766444089">Ricerca del dispositivo di puntamento in corso…</translation>
 <translation id="6539674013849300372">Aumenta la sicurezza online con una password efficace. Verrà salvata in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
 <translation id="653983593749614101">Ripresa dell'operazione in corso…</translation>
+<translation id="6540174167103635041">Installa app</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Nota.<ph name="END_BOLD" /> Attiva questa opzione soltanto se sei sicuro di ciò che fai o se ti è stato chiesto di farlo perché la raccolta di dati potrebbe peggiorare il rendimento.</translation>
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>

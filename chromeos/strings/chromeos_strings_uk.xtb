@@ -11,6 +11,7 @@
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1049663189809099096">пастельно-жовтий</translation>
+<translation id="1053371972724535586">Мої записи</translation>
 <translation id="1056898198331236512">Застереження</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
 <translation id="1061864016440983342">Використовувати без геоданих</translation>
@@ -88,6 +89,7 @@
 <translation id="1432110487435300883">Щоб отримати приблизний результат, поділіть значення "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Щомісяця дані про використання трафіку скидатимуться у вибраний день</translation>
 <translation id="1442433966118452622">Джерело зображення</translation>
+<translation id="1445573806602812670">Отримайте транскрипцію свого запису</translation>
 <translation id="1446954767133808402">сапфіру</translation>
 <translation id="1449035143498573192">Відкрити в Пошуку Google</translation>
 <translation id="1451536289672181509">Це клавіатура.</translation>
@@ -149,6 +151,7 @@
 <translation id="1718553040985966377">озеро</translation>
 <translation id="1720424726586960395">ліс зі світлячками</translation>
 <translation id="1726100011689679555">Сервери імен</translation>
+<translation id="1728792932018505912">Ви можете керувати цією функцією в налаштуваннях або меню зі значком <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="1731082422893354635">Сенсорна панель із Bluetooth</translation>
 <translation id="1738949837603788263">Зона <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Не вдалося завантажити зображення. Перевірте з’єднання з мережею або повторіть спробу.</translation>
@@ -198,6 +201,7 @@
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
 <translation id="1908394185991500139">стрілка вліво</translation>
 <translation id="1923388006036088459">Акцентні кольори</translation>
+<translation id="1945403655450283000">Диктофон</translation>
 <translation id="1947737735496445907">Надруковано</translation>
 <translation id="1951012854035635156">Асистент</translation>
 <translation id="1954818433534793392">Будинок</translation>
@@ -227,6 +231,7 @@
 <translation id="2102648867808308635">Отримати допомогу із читанням цієї сторінки</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
+<translation id="2124643134650336457">Зараз ця функція доступна лише англійською мовою (США)</translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
 <translation id="2135668738111962377">Редагувати (<ph name="ACTION_NAME" />)</translation>
 <translation id="2138109643290557664">Потік</translation>
@@ -263,6 +268,7 @@
 <translation id="2267285889943769271">Додати знімок екрана</translation>
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
 <translation id="2276999893457278469">Найпопулярніший довідковий контент</translation>
+<translation id="2277631741861284101">Легко створюйте аудіозаписи й діліться ними</translation>
 <translation id="2279051792571591988">Відновити налаштування за умовчанням</translation>
 <translation id="2286454467119466181">Простий</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
@@ -288,6 +294,7 @@
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2418150275289244458">Відкрити в налаштуваннях</translation>
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
+<translation id="242825218556404975">Мовлення не виявлено</translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2472215337771558851">Скористайтеся функцією "Допомога з текстом", щоб створити чернетку або покращити наявний текст завдяки ШІ від Google</translation>
@@ -331,6 +338,7 @@
 <translation id="2656001153562991489">Виключно для Chromebook Plus</translation>
 <translation id="2665671725390405060">Слухати вимову</translation>
 <translation id="267442004702508783">оновити</translation>
+<translation id="2675392311492541028">Транскрипція і короткий переказ</translation>
 <translation id="268270014981824665">зменшити яскравість клавіатури</translation>
 <translation id="2712812801627182647">Ключ автентифікації TLS</translation>
 <translation id="2713444072780614174">Білий</translation>
@@ -431,6 +439,7 @@
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> фон із літерою "<ph name="LETTERS_LETTER" />"</translation>
 <translation id="3383623117265110236">Ексклюзивно</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
+<translation id="3410165745972100556">Транскрипцію вимкнено</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
 <translation id="3428551088151258685">просто неба</translation>
 <translation id="3428971106895559033">пастельний</translation>
@@ -476,6 +485,7 @@
 <translation id="3621072146987826699">слони</translation>
 <translation id="3632040286124154621">Корисна підказка</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
+<translation id="3639873154908477486">Назва (від А до Я)</translation>
 <translation id="3644695927181369554">Невдала підказка</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3661106764436337772">Пишіть швидше й упевненіше</translation>
@@ -542,6 +552,7 @@
 <translation id="4044093238444069296">Не вдається зв’язатися зі шлюзом</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
+<translation id="4050208988451295487">Варіанти:</translation>
 <translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4063039537646912479">світло-синій</translation>
 <translation id="4070799384363688067">аніме</translation>
@@ -570,8 +581,10 @@
 <translation id="4171077696775491955">зменшити яскравість</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4176659219503619100">Панель керування</translation>
+<translation id="4193496492959950834">Налаштування Диктофона</translation>
 <translation id="4198398257084619072">панди</translation>
 <translation id="420283545744377356">Вимкнути заставку</translation>
+<translation id="4210636113897977670">Зберегти й вийти</translation>
 <translation id="4210659479607886331">льодовикова річка</translation>
 <translation id="4213104098953699324">Клавіатура USB</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
@@ -644,6 +657,7 @@
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="463791356324567266">Сканування скасовується…</translation>
+<translation id="4644611440022666152">Увімкнути й завантажити</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>
 <translation id="4650608062294027130">Права клавіша Shift</translation>
 <translation id="4654549501020883054">Змінювати щодня</translation>
@@ -734,6 +748,7 @@
 <translation id="5099354524039520280">угору</translation>
 <translation id="5107243100836678918">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб і далі використовувати її, або створіть новий варіант із клавішею <ph name="KEY" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Синоніми:</translation>
+<translation id="5109744590306245079">Диктофон може створювати текстові версії записів із мовленням. Для цього потрібно завантажити модель транскрипції (до 100 МБ).</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">На весь екран</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
@@ -843,6 +858,7 @@
 <translation id="5760715441271661976">Стан порталу</translation>
 <translation id="5763838252932650682">Перезапуск і оновлення додатка <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Збільшити яскравість екрана</translation>
+<translation id="5779818640587041940">Не вимикати екран під час запису</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
 <translation id="5790391387506209808">лазуриту</translation>
@@ -917,6 +933,7 @@
 <translation id="6136285399872347291">видалити перед курсором</translation>
 <translation id="6137614725462089991">кіберпанк</translation>
 <translation id="6137767437444130246">Сертифікат користувача</translation>
+<translation id="6141004321363227868">Якщо ввімкнути цю функцію, під час запису також відображатиметься транскрипція.</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6156030503438652198">темно-бордового й рожевого</translation>
@@ -985,6 +1002,7 @@
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Ексклюзивна заставка для <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
+<translation id="6490861263572002431">Автопрокручування</translation>
 <translation id="6492891353338939218">Похмуре</translation>
 <translation id="6494974875566443634">Налаштування</translation>
 <translation id="6500818810472529210">Переглянути результати в Пошуку Google</translation>
@@ -998,6 +1016,7 @@
 <translation id="6543412779435705598">тако</translation>
 <translation id="6551839203326557324">яблука</translation>
 <translation id="65526652485742171">Кнопку підтвердження ввімкнено</translation>
+<translation id="6556016675518580850">Якщо залишити цю сторінку, поточний запис завершиться.</translation>
 <translation id="6557784757915238407">Тип точки доступу: APN <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Планшетний сканер</translation>
 <translation id="6560196641871357166">Насичена</translation>
@@ -1008,6 +1027,7 @@
 <translation id="6576005492601044801">ліворуч</translation>
 <translation id="6579509898032828423">Використати цю фотографію</translation>
 <translation id="6587870930887634392">сукулента</translation>
+<translation id="6595046262780525922">Завантажити модель транскрипції і ввімкнути цю функцію?</translation>
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6599673642868607614">Дякуємо за відгук. Наша команда перегляне його. Ваш відгук допоможе нам покращити роботу Chromebook. Зверніть увагу: через велику кількість повідомлень ми не відповідаємо на них.</translation>
 <translation id="6618744767048954150">Виконується</translation>
@@ -1049,6 +1069,8 @@
 <translation id="6798678288485555829">Навігація текстом</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
+<translation id="6818844233294698434">Прослуховування мовлення…</translation>
+<translation id="6837645039518471192">Вийти з меню записування</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">світло-фіолетовий</translation>
@@ -1088,6 +1110,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7035168792582749309">картопля</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7040729769968826896">Дозволити розпізнавання мовців</translation>
 <translation id="7041549558901442110">Пристрій не підключено.</translation>
 <translation id="7046522406494308071">Відновити всі комбінації клавіш за умовчанням?</translation>
 <translation id="7058278511608979688">Завершити та зберегти</translation>
@@ -1243,6 +1266,7 @@
 <translation id="7850847810298646851">Фоновий малюнок, створений за допомогою ШІ від Google</translation>
 <translation id="785170686607360576">тюльпан</translation>
 <translation id="7856267634822906833">Сенсорний екран із Bluetooth</translation>
+<translation id="7857744683152972248">Дозволити Диктофону визначати мовців?</translation>
 <translation id="7859006200041800233">кактуса</translation>
 <translation id="7869143217755017858">Вимкнути темний режим</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1250,6 +1274,7 @@
 <translation id="7882501334836096755">Відкритий ключ</translation>
 <translation id="78957024357676568">ліворуч</translation>
 <translation id="7897043345768902965">доріжка</translation>
+<translation id="7902285181767404769">Вимикати звук сповіщень під час запису</translation>
 <translation id="7903695460270716054">Вибрати рекомендовані твори мистецтва й зображення</translation>
 <translation id="7915220255123750251">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом.</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
@@ -1296,6 +1321,8 @@
 <translation id="8156233298086717232">Магічна</translation>
 <translation id="8162776280680283326">лисиці</translation>
 <translation id="8167413449582155132">Фонове зображення, створене за допомогою ШІ від Google</translation>
+<translation id="8171020708598805594">Автоматично створюйте транскрипції, підсумовуйте аудіозаписи за допомогою ШІ від Google і виконуйте пошук у них. Записи можна створювати навіть офлайн.</translation>
+<translation id="8174280683348521982">Видалити поточний запис?</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">пляж</translation>
 <translation id="819278132617411009">Використовуйте ШІ від Google, щоб бути продуктивнішими</translation>
@@ -1333,6 +1360,9 @@
 <translation id="8372477600026034341">Додаткові хости</translation>
 <translation id="8372667721254470022">оливковому</translation>
 <translation id="8373046809163484087">Використовувати набори кольорів, які відповідають фоновому малюнку</translation>
+<translation id="8379123594780452422">Якщо ви надасте дозвіл, Диктофон оброблятиме ваші аудіозаписи за допомогою розширеного аналізу.
+
+Цю функцію можна будь-коли вимкнути в налаштуваннях.</translation>
 <translation id="8380114448424469341">Закріпити вікно <ph name="DIRECTION" /> на половину екрана</translation>
 <translation id="8391349326751432483">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Закрийте вкладки й додатки, щоб звільнити пам’ять.</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
@@ -1373,10 +1403,12 @@
 <translation id="8620617069779373398">Статус роумінгу</translation>
 <translation id="8626489604350149811">Інші дії для точки доступу <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Світло-фіолетовий</translation>
+<translation id="8647595191512746911">Транскрипція аудіо</translation>
 <translation id="8651481478098336970">вимкнути звук</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Надіслати URL-адресу:</translation>
 <translation id="8660881923941176839">фунт.</translation>
+<translation id="8670057600920888023">Генеративний ШІ є експериментальною функцією, тому контент може бути неточним, оманливим або образливим.</translation>
 <translation id="8670574982334489519">праворуч</translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
@@ -1477,6 +1509,7 @@
 <translation id="9122602430962285795">Щоб знову підключитися, перейдіть у налаштування</translation>
 <translation id="9122865513525855321">Спокійна</translation>
 <translation id="9126720536733509015">Зберігати кілька сторінок в один файл PDF</translation>
+<translation id="9129549320890412487">Транскрипція</translation>
 <translation id="9133772297793293778">Натисніть від 1 до 4 модифікаторів і одну іншу клавішу на клавіатурі. Щоб вийти з режиму редагування, натисніть комбінацію клавіш Alt + Esc.</translation>
 <translation id="9137526406337347448">Сервіси Google</translation>
 <translation id="9138630967333032450">Ліва клавіша Shift</translation>

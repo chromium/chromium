@@ -24,6 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Page ne répondant pas}one{Page ne répondant pas}other{Pages ne répondant pas}}</translation>
 <translation id="1011003645819296594">Appareils enregistrés</translation>
 <translation id="1011355516189274711">Volume de la synthèse vocale</translation>
+<translation id="1011431628606634753">Modifier votre code de récupération pour le Gestionnaire de mots de passe de Google</translation>
 <translation id="1012794136286421601">Vos fichiers Docs, Sheets, Slides et Drawings sont en cours de synchronisation. Ouvrez l'application Google Drive pour y accéder en ligne ou hors connexion.</translation>
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -4050,6 +4051,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3923221004758245114">Supprimer <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" /> ? Cela supprimera toutes les applis et données de la machine virtuelle.</translation>
 <translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3923676227229836009">Cette page est autorisée à afficher les fichiers</translation>
+<translation id="3923958273791212723">Alertes concernant les problèmes de performances</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Taille de police et d'affichage : <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
@@ -4066,6 +4068,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3930737994424905957">Recherche d'appareils…</translation>
 <translation id="3930968231047618417">Couleur de l'arrière-plan</translation>
 <translation id="3932356525934356570">Épingler <ph name="EXTENSION_NAME" /></translation>
+<translation id="3932477678113677556">Longueur maximale : <ph name="MAX" /> caractères</translation>
 <translation id="3933121352599513978">Réduire les demandes indésirables (recommandé)</translation>
 <translation id="3936260554100916852"><ph name="DEVICE_NAME" /> partage un réseau Wi-Fi avec vous</translation>
 <translation id="3936390757709632190">&amp;Ouvrir le fichier audio dans un nouvel onglet</translation>
@@ -5206,6 +5209,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4807098396393229769">Titulaire de la carte</translation>
 <translation id="4807122856660838973">Activer la navigation sécurisée</translation>
 <translation id="4807514039636325497">Détails DBus</translation>
+<translation id="4808525520374557629">Recevoir des notifications suggérant des solutions pour améliorer les problèmes de performances détectés. <ph name="BEGIN_LINK" />En savoir plus sur les alertes concernant les problèmes de performances<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Pop-up bloqués :</translation>
 <translation id="4809079943450490359">Instructions de l'administrateur de votre appareil :</translation>
 <translation id="4809447465126035330">Supprimer</translation>
@@ -6076,6 +6080,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5457113250005438886">Non valide</translation>
 <translation id="5457459357461771897">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur et les supprimer</translation>
 <translation id="5458214261780477893">Dvorak</translation>
+<translation id="5458716506062529991">Vous avez saisi trop de codes incorrects. Pour accéder à vos clés d'accès et à vos mots de passe, modifiez votre code.</translation>
 <translation id="5458998536542739734">Prise de notes sur l'écran de verrouillage</translation>
 <translation id="5459864179070366255">Poursuivre l'installation</translation>
 <translation id="5460641065520325899">Gérez les types d'informations que les sites peuvent utiliser pour vous suivre lorsque vous naviguez.</translation>

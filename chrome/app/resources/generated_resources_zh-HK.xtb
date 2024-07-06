@@ -24,7 +24,7 @@
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{網頁沒有回應}other{網頁沒有回應}}</translation>
 <translation id="1011003645819296594">已儲存的裝置</translation>
 <translation id="1011355516189274711">「文字轉語音」音量</translation>
-<translation id="1011431628606634753">變更 Google 密碼管理工具的復原 PIN 碼</translation>
+<translation id="1011431628606634753">變更「Google 密碼管理工具」的復原 PIN</translation>
 <translation id="1012794136286421601">系統正在同步處理您的文件、試算表、簡報和繪圖檔案。開啟「Google 雲端硬碟」應用程式即可上網或離線存取您的檔案。</translation>
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
@@ -4077,7 +4077,7 @@
 <translation id="3930737994424905957">正在尋找裝置</translation>
 <translation id="3930968231047618417">背景顏色</translation>
 <translation id="3932356525934356570">固定「<ph name="EXTENSION_NAME" />」</translation>
-<translation id="3932477678113677556">長度上限為 <ph name="MAX" /> 個半形字元</translation>
+<translation id="3932477678113677556">最多 <ph name="MAX" /> 個字元</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3936260554100916852">「<ph name="DEVICE_NAME" />」正在與您共用 Wi-Fi 網絡</translation>
 <translation id="3936390757709632190">在新分頁中開啟音效檔案(&amp;O)</translation>
@@ -4723,7 +4723,7 @@
 <translation id="4423376891418188461">還原設定</translation>
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="442528696198546304">密碼、密碼金鑰等資料將從「<ph name="BRAND" />」中永久刪除</translation>
+<translation id="442528696198546304">密碼、密鑰和其他資料會從「<ph name="BRAND" />」永久刪除</translation>
 <translation id="4426268963847471040">刪除 <ph name="FILE_NAME" /></translation>
 <translation id="4426464032773610160">如要開始使用，請先確保 USB 或藍牙開關已連接 Chromebook。您亦可以使用鍵盤按鍵。</translation>
 <translation id="4426490308207168518">分享意見或報告問題</translation>
@@ -6084,7 +6084,7 @@
 <translation id="5457113250005438886">無效</translation>
 <translation id="5457459357461771897">讀取及刪除您電腦中的相片、音樂及其他媒體</translation>
 <translation id="5458214261780477893">Dvorak</translation>
-<translation id="5458716506062529991">PIN 碼輸入錯誤的次數過多。如要存取密碼金鑰和密碼，請變更 PIN 碼。</translation>
+<translation id="5458716506062529991">PIN 輸入錯誤的次數過多。如要存取密鑰和密碼，請變更 PIN。</translation>
 <translation id="5458998536542739734">上鎖畫面筆記</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
 <translation id="5460641065520325899">管理網站可利用哪些類型的資訊來追蹤你瀏覽時的活動。</translation>
