@@ -115,7 +115,6 @@ crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] Expe
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # ExpectedColor_MediaRecorderFromVideoElement fails on several FYI bots
-crbug.com/1382332 [ chromeos chromeos-board-amd64-generic cros-chrome target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 
@@ -127,7 +126,6 @@ crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecord
 
 # Gardener 2024-04-29 - page reported failure
 crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/40877266 [ angle-d3d11 graphite-enabled intel-0x4680 passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 
 #######################################################################
