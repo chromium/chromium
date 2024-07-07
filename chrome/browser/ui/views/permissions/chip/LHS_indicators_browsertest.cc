@@ -75,7 +75,7 @@ class ChipAnimationObserver : PermissionChipView::Observer {
 
 class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
  public:
-  enum class TargetViewToVerify { kLhsIndicator, kPageInfo };
+  enum class TargetViewToVerify { kLocationBar, kPageInfo };
 
   LHSIndicatorsUiBrowserTest() {
     scoped_features_.InitAndEnableFeature(
@@ -128,8 +128,8 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
 
   bool VerifyUi() override {
     views::View* view_to_verify = nullptr;
-    if (target_ == TargetViewToVerify::kLhsIndicator) {
-      view_to_verify = GetIndicatorChip();
+    if (target_ == TargetViewToVerify::kLocationBar) {
+      view_to_verify = GetLocationBarView(browser());
     } else if (target_ == TargetViewToVerify::kPageInfo) {
       view_to_verify = GetDashboardController()->page_info_for_testing();
     }
@@ -240,7 +240,7 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  TargetViewToVerify target_ = TargetViewToVerify::kLhsIndicator;
+  TargetViewToVerify target_ = TargetViewToVerify::kLocationBar;
 
  private:
   // Disable the permission chip animation. This happens automatically in pixel
@@ -267,7 +267,6 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
                 ContentSetting::CONTENT_SETTING_ALLOW);
-
   GetDashboardController()->DoNotCollapseForTesting();
 
   ExpandIndicator("requestMicrophone()");
@@ -275,14 +274,8 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/344706072): re-enable this flaky test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_cameraandmicrophone DISABLED_InvokeUi_cameraandmicrophone
-#else
-#define MAYBE_InvokeUi_cameraandmicrophone InvokeUi_cameraandmicrophone
-#endif
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
-                       MAYBE_InvokeUi_cameraandmicrophone) {
+                       InvokeUi_cameraandmicrophone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
@@ -295,14 +288,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/344706072): re-enable this flaky test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_camera_blocked DISABLED_InvokeUi_camera_blocked
-#else
-#define MAYBE_InvokeUi_camera_blocked InvokeUi_camera_blocked
-#endif
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
-                       MAYBE_InvokeUi_camera_blocked) {
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
@@ -438,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_Camera_twice) {
   // Second camera request does not trigger verbose indicator.
   EXPECT_FALSE(GetDashboardController()->is_verbose());
 
-  target_ = TargetViewToVerify::kLhsIndicator;
+  target_ = TargetViewToVerify::kLocationBar;
 
   ShowAndVerifyUi();
 }
