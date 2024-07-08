@@ -237,54 +237,67 @@ enum FormEvent {
 
   // Suggestions containing cards with a benefit available were shown.
   FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN = 89,
+  // DEPRECATED in M128, DO NOT USE.
   // Suggestions were shown, and no card had a benefit available.
-  FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN = 90,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN =
+      90,
   // Suggestions containing cards with a benefit available were shown. Logged
   // once per page load.
   FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE = 91,
+  // DEPRECATED in M128, DO NOT USE.
   // Suggestions were shown, and no card had a benefit available. Logged once
   // per page load.
-  FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE = 92,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE =
+      92,
   // A suggestion of a masked server card with a benefit available was
   // selected.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED = 93,
+  // DEPRECATED in M128, DO NOT USE.
   // A suggestion of a masked server card with no benefit available was
   // selected.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED = 94,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED =
+      94,
   // A suggestion of a masked server card with a benefit available was
   // selected. Logged once per page load.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE =
       95,
+  // DEPRECATED in M128, DO NOT USE.
   // A suggestion of a masked server card with no benefit available was
   // selected. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE =
       96,
   // A suggestion of a masked server card with a benefit available was filled.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED = 97,
+  // DEPRECATED in M128, DO NOT USE.
   // A suggestion of a masked server card with no benefit available was filled.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED = 98,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED =
+      98,
   // A suggestion of a masked server card with a benefit available was filled.
   // Logged once per page load.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE = 99,
+  // DEPRECATED in M128, DO NOT USE.
   // A suggestion of a masked server card with no benefit available was filled.
   // Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE =
       100,
+  // DEPRECATED in M128, DO NOT USE. Duplicated with 103.
   // A form was about to be submitted after a suggestion of a masked server
   // card with a benefit available was filled. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
       101,
+  // DEPRECATED in M128, DO NOT USE.
   // A form was about to be submitted after a suggestion of a masked server
   // card with no benefit available was filled. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
       102,
   // A form was submitted after a suggestion of a masked server card with
   // benefit available was filled. Logged once per page load.
   FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
       103,
+  // DEPRECATED in M128, DO NOT USE.
   // A form was submitted after a suggestion of a masked server card with no
   // benefit available was filled. Logged once per page load.
-  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
       104,
   // A masked server card suggestion is selected after suggestions containing
   // cards with a benefit available were shown. The selected card can be any

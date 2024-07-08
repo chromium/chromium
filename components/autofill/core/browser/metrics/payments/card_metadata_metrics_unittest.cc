@@ -745,14 +745,9 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
       BucketsInclude(
           Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN,
                  1),
-          Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN,
-                 0),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              1),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              0)));
+              1)));
 
   // Show the popup again.
   ShowCardSuggestions();
@@ -791,10 +786,7 @@ TEST_P(
 }
 
 // Tests that when the card suggestion shown did not have any benefit available,
-// `FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN` is logged
-// as many times as the suggestions are shown, and
-// `FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE` is
-// logged only once.
+// shown metrics for card benefit won't be logged.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogShownMetrics_NoSuggestionsWithBenefits) {
   base::HistogramTester histogram_tester;
@@ -809,37 +801,19 @@ TEST_P(CardBenefitFormEventMetricsTest,
       BucketsInclude(
           Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN,
                  0),
-          Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN,
-                 1),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              0),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              1)));
-
-  // Show the popup again.
-  ShowCardSuggestions();
-  ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-              BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN,
-                 2),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE,
-              1)));
+              0)));
 }
 
 // Tests that when a masked server card with a benefit is selected after card
 // suggestions containing a benefit were shown,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED` is
-// logged as many times as the suggestions are selected,
+// logged as many times as the suggestions are selected, and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE`
-// is logged only once, and
+// and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE`
-// is logged only once.
+// are logged only once.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogSelectedMetrics_SuggestionHasBenefits) {
   base::HistogramTester histogram_tester;
@@ -858,14 +832,8 @@ TEST_P(CardBenefitFormEventMetricsTest,
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED,
               1),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED,
-              0),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
               1),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
-              0),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               1)));
@@ -936,7 +904,7 @@ TEST_P(
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE`
 // is not logged and
 // 'FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE'
-// is logged for the issuer with benefit.
+// is logged for the issuer with benefits available.
 TEST_P(
     CardBenefitFormEventMetricsTest,
     LogSelectedMetrics_IssuerHistogram_SelectedNoBenefits_OtherSuggestionHasBenefits) {
@@ -961,11 +929,8 @@ TEST_P(
 }
 
 // Tests that when the shown masked server card suggestions do not have any
-// entries with benefits, that when a suggestion is selected,
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED`
-// is logged as many times as the suggestions are selected, and
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE`
-// is logged only once.
+// entries with benefits, that when a suggestion is selected, selected metrics
+// for card benefit won't be logged.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogSelectedMetrics_NoSuggestionsWithBenefits) {
   base::HistogramTester histogram_tester;
@@ -983,33 +948,11 @@ TEST_P(CardBenefitFormEventMetricsTest,
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED,
               0),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED,
-              1),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
               0),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
-              1),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               0)));
-
-  // Select the suggestion again.
-  ShowSuggestionsAndSelectCard(GetCreditCard());
-
-  ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-              BucketsInclude(Bucket(
-                  FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED, 2)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED,
-              2),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE,
-              1)));
 }
 
 // Tests that when a masked server card with no benefit is selected from a
@@ -1055,11 +998,11 @@ TEST_P(CardBenefitFormEventMetricsTest,
 // Tests that when a masked server card with a benefit is filled after card
 // suggestions containing a benefit were shown,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED` is
-// logged as many times as the suggestions are filled,
+// logged as many times as the suggestions are filled, and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE`
-// is logged only once, and
+// and
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE`
-// is logged only once.
+// are logged only once.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogFilledMetrics_SuggestionHasBenefits) {
   base::HistogramTester histogram_tester;
@@ -1078,14 +1021,8 @@ TEST_P(CardBenefitFormEventMetricsTest,
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
               1),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
-              0),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
               1),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE,
-              0),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               1)));
@@ -1180,11 +1117,8 @@ TEST_P(
 }
 
 // Tests that when the shown masked server card suggestions do not have any
-// entries with benefits when a suggestion is filled,
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED` is
-// logged as many times as the suggestions are filled, and
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE`
-// is logged only once.
+// entries with benefits when a suggestion is filled, filled metrics for card
+// benefit won't be logged.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogFilledMetrics_NoSuggestionsWithBenefits) {
   base::HistogramTester histogram_tester;
@@ -1202,33 +1136,11 @@ TEST_P(CardBenefitFormEventMetricsTest,
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
               0),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
-              1),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
               0),
           Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE,
-              1),
-          Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               0)));
-
-  // Fill the card suggestion again.
-  ShowSuggestionsThenSelectAndFillCard(GetCreditCard());
-
-  ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-              BucketsInclude(
-                  Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 2)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
-              2),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE,
-              1)));
 }
 
 // Tests that when a masked server card with no benefit is filled from a list of
@@ -1274,12 +1186,13 @@ TEST_P(CardBenefitFormEventMetricsTest,
           1)));
 }
 
-// Test that when a local card is filled after a masked server card with no
+// Test that when a local card is filled after a masked server card with a
 // benefit is filled,
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED`
+// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED`
 // is only logged for the masked server card filling.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogFilledMetrics_FilledMaskedServerCardAndThenLocalCard) {
+  AddBenefitToCard(card());
   AddLocalCard();
 
   base::HistogramTester histogram_tester;
@@ -1293,13 +1206,9 @@ TEST_P(CardBenefitFormEventMetricsTest,
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 0)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-      BucketsInclude(
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
-              0),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
-              1)));
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
+          1)));
 
   // Simulate filling with a local card.
   ShowSuggestionsThenSelectAndFillCard(
@@ -1315,9 +1224,6 @@ TEST_P(CardBenefitFormEventMetricsTest,
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED,
-              0),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED,
               1)));
 }
 
@@ -1346,9 +1252,6 @@ TEST_P(CardBenefitFormEventMetricsTest,
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
               1),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
-              0),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               1)));
@@ -1415,9 +1318,7 @@ TEST_P(
 
 // Tests that when the shown masked server card suggestions do not have any
 // entries with benefits, when the form is submitted after a masked server
-// card is filled,
-// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE`
-// is logged.
+// card is filled, submitted metrics for card benefit won't be logged.
 TEST_P(CardBenefitFormEventMetricsTest,
        LogSubmittedMetrics_NoSuggestionsWithBenefits) {
   base::HistogramTester histogram_tester;
@@ -1435,9 +1336,6 @@ TEST_P(CardBenefitFormEventMetricsTest,
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
               0),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
-              1),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               0)));
@@ -1498,9 +1396,6 @@ TEST_P(CardBenefitFormEventMetricsTest,
       BucketsInclude(
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
-              0),
-          Bucket(
-              FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
               0),
           Bucket(
               FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,

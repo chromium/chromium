@@ -1923,49 +1923,52 @@ Called by update_autofill_enums.py.-->
   <int value="89"
       label="Suggestions containing cards with a benefit available were shown"/>
   <int value="90"
-      label="Suggestions were shown, and no card had a benefit available"/>
+      label="(DEPRECATED) Suggestions were shown, and no card had a benefit
+             available"/>
   <int value="91"
       label="Suggestions containing cards with a benefit available were shown
              (once)"/>
   <int value="92"
-      label="Suggestions were shown, and no card had a benefit available
-             (once)"/>
+      label="(DEPRECATED) Suggestions were shown, and no card had a benefit
+             available (once)"/>
   <int value="93"
       label="Suggestion for a masked server card with a benefit available was
              selected"/>
   <int value="94"
-      label="Suggestion for a masked server card with no benefit available
-             was selected"/>
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was selected"/>
   <int value="95"
       label="Suggestion for a masked server card with a benefit available was
              selected (once)"/>
   <int value="96"
-      label="Suggestion for a masked server card with no benefit available
-             was selected (once)"/>
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was selected (once)"/>
   <int value="97"
       label="Suggestion for a masked server card with a benefit available was
              filled"/>
   <int value="98"
-      label="Suggestion for a masked server card with no benefit available
-             was filled"/>
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was filled"/>
   <int value="99"
       label="Suggestion for a masked server card with a benefit available was
              filled (once)"/>
   <int value="100"
-      label="Suggestion for a masked server card with no benefit available
-             was filled (once)"/>
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was filled (once)"/>
   <int value="101"
-      label="Form was about to be submitted after a suggestion for a masked
-             server card with a benefit available was filled (once)"/>
+      label="(DEPRECATED) Form was about to be submitted after a suggestion
+             for a masked server card with a benefit available was filled
+             (once)"/>
   <int value="102"
-      label="Form was about to be submitted after a suggestion for masked
-             server card with no benefit available was filled (once)"/>
+      label="(DEPRECATED) Form was about to be submitted after a suggestion
+             for masked server card with no benefit available was filled
+             (once)"/>
   <int value="103"
       label="Form was submitted after a suggestion for a masked server card
              with a benefit available was filled (once)"/>
   <int value="104"
-      label="Form was submitted after a suggestion for a masked server card
-             with no benefit available was filled (once)"/>
+      label="(DEPRECATED) Form was submitted after a suggestion for a masked
+             server card with no benefit available was filled (once)"/>
   <int value="105"
       label="Suggestion for a masked server card was selected after
              suggestions containing cards with a benefit available were shown
