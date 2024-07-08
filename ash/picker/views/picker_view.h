@@ -135,7 +135,12 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
  private:
   // Starts a search with `query`, with search results being returned to
   // `PublishSearchResults` and `PublishEmojiResults`.
+  // If `query` is empty, this calls `StopSearch` instead.
   void StartSearch(const std::u16string& query);
+
+  // Stops any previous searches, and sets the active page to the zero state /
+  // category results view.
+  void StopSearch();
 
   // Displays `results` in the emoji bar.
   void PublishEmojiResults(std::vector<PickerSearchResult> results);
