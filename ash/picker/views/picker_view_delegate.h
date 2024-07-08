@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -59,7 +60,7 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void StopSearch() = 0;
 
   // Starts a emoji search for `query`. Results will be returned via `callback`.
-  virtual void StartEmojiSearch(const std::u16string& query,
+  virtual void StartEmojiSearch(std::u16string_view query,
                                 EmojiSearchResultsCallback callback) = 0;
 
   // Inserts `result` into the next focused input field.

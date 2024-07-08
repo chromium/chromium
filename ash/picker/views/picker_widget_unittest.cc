@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_widget.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
@@ -41,7 +42,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override {}
   void StopSearch() override {}
-  void StartEmojiSearch(const std::u16string& query,
+  void StartEmojiSearch(std::u16string_view query,
                         EmojiSearchResultsCallback callback) override {}
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {}
   void OpenResult(const PickerSearchResult& result) override {}

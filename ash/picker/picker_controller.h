@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -92,7 +93,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override;
   void StopSearch() override;
-  void StartEmojiSearch(const std::u16string& query,
+  void StartEmojiSearch(std::u16string_view,
                         EmojiSearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   void OpenResult(const PickerSearchResult& result) override;

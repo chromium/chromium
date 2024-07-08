@@ -410,7 +410,7 @@ void PickerController::StopSearch() {
   search_controller_->StopSearch();
 }
 
-void PickerController::StartEmojiSearch(const std::u16string& query,
+void PickerController::StartEmojiSearch(std::u16string_view query,
                                         EmojiSearchResultsCallback callback) {
   search_controller_->StartEmojiSearch(query, std::move(callback));
 }

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -81,7 +82,7 @@ void PickerSearchController::StopSearch() {
 }
 
 void PickerSearchController::StartEmojiSearch(
-    const std::u16string& query,
+    std::u16string_view query,
     PickerViewDelegate::EmojiSearchResultsCallback callback) {
   const base::TimeTicks search_start = base::TimeTicks::Now();
 

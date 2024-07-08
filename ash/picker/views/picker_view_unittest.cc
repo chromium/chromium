@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -168,7 +169,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     }
   }
 
-  void StartEmojiSearch(const std::u16string& query,
+  void StartEmojiSearch(std::u16string_view query,
                         EmojiSearchResultsCallback callback) override {
     std::move(callback).Run(options_.emoji_results);
   }
