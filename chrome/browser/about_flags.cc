@@ -11887,6 +11887,14 @@ const FeatureEntry kFeatureEntries[] = {
                             kAuthenticateUsingUserConsentVerifierInteropApi)},
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"sync-enable-bookmarks-in-transport-mode",
+     flag_descriptions::kSyncEnableBookmarksInTransportModeName,
+     flag_descriptions::kSyncEnableBookmarksInTransportModeDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(syncer::kSyncEnableBookmarksInTransportMode)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

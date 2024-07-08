@@ -4718,8 +4718,6 @@ extern const char kUseOutOfProcessVideoDecodingName[];
 extern const char kUseOutOfProcessVideoDecodingDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-// Feature flags --------------------------------------------------------------
-
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 extern const char kChromeWideEchoCancellationName[];
 extern const char kChromeWideEchoCancellationDescription[];
@@ -4875,6 +4873,9 @@ extern const char kDesktopPWAsUserLinkCapturingDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
+
+extern const char kSyncEnableBookmarksInTransportModeName[];
+extern const char kSyncEnableBookmarksInTransportModeDescription[];
 
 extern const char kSyncEnableContactInfoDataTypeInTransportModeName[];
 extern const char kSyncEnableContactInfoDataTypeInTransportModeDescription[];

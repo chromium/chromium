@@ -8276,6 +8276,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "sync-enable-bookmarks-in-transport-mode",
+    "owners": [ "msalama@chromium.org", "victorvianna@google.com", "uno-desktop@google.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "sync-enable-contact-info-data-type-in-transport-mode",
     "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
     "expiry_milestone": 130

@@ -8113,8 +8113,6 @@ const char kScreenlockReauthPromoCardDescription[] =
     "reauth before filling passwords.";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
-// Feature flags --------------------------------------------------------------
-
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const char kChromeWideEchoCancellationName[] = "Chrome-wide echo cancellation";
 const char kChromeWideEchoCancellationDescription[] =
@@ -8334,6 +8332,11 @@ const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
     "Allows the 'Desktop PWA Scope Extensions' feature to be used with the "
     "'Desktop PWA Link Capturing' feature. Both of those features are required "
     "to be turned on for this flag to have an effect.";
+
+const char kSyncEnableBookmarksInTransportModeName[] =
+    "Enable bookmarks in transport mode";
+const char kSyncEnableBookmarksInTransportModeDescription[] =
+    "Enables account bookmarks for signed-in non-syncing users";
 
 const char kSyncEnableContactInfoDataTypeInTransportModeName[] =
     "Sync Enable Contact Info Data Type in Transport Mode";

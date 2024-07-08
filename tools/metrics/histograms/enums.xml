@@ -17918,6 +17918,7 @@ from previous Chrome versions.
   <int value="-1182087678"
       label="CrossOriginOpenerPolicyAccessReporting:disabled"/>
   <int value="-1181840496" label="UnrestrictedUsb:enabled"/>
+  <int value="-1181465102" label="SyncEnableBookmarksInTransportMode:disabled"/>
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
   <int value="-1178536416" label="PasswordManagerRedesign:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
@@ -22761,6 +22762,7 @@ from previous Chrome versions.
   <int value="893884621" label="WaylandPerSurfaceScale:disabled"/>
   <int value="894183200" label="BookmarkIndexPaths:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
+  <int value="894869117" label="SyncEnableBookmarksInTransportMode:enabled"/>
   <int value="895337957"
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
   <int value="896506516"
