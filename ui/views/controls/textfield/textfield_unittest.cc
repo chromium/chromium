@@ -3281,6 +3281,20 @@ TEST_F(TextfieldTest, OverflowInRTLTest) {
   base::i18n::SetICUDefaultLocale(locale);
 }
 
+TEST_F(TextfieldTest, PasswordProtected) {
+  InitTextfield();
+  ui::AXNodeData data;
+
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kProtected));
+
+  data = ui::AXNodeData();
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NONE);
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kProtected));
+}
+
 TEST_F(TextfieldTest, CommitComposingTextTest) {
   InitTextfield();
   ui::CompositionText composition;

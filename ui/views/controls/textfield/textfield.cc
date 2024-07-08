@@ -314,6 +314,7 @@ void Textfield::SetTextInputType(ui::TextInputType type) {
 
   GetRenderText()->SetObscured(type == ui::TEXT_INPUT_TYPE_PASSWORD);
   text_input_type_ = type;
+  GetViewAccessibility().SetIsProtected(type == ui::TEXT_INPUT_TYPE_PASSWORD);
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
   OnCaretBoundsChanged();
@@ -1047,7 +1048,6 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                ? ax::mojom::WritingDirection::kRtl
                                : ax::mojom::WritingDirection::kLtr));
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
-    node_data->AddState(ax::mojom::State::kProtected);
     node_data->SetValue(std::u16string(
         GetText().size(), gfx::RenderText::kPasswordReplacementChar));
   } else {
