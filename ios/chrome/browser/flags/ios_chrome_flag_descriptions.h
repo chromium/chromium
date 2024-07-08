@@ -433,6 +433,10 @@ extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
+// Title and description for the flag to personalize the Home surface.
+extern const char kHomeCustomizationName[];
+extern const char kHomeCustomizationDescription[];
+
 // Title and description for the flag to enable HTTPS upgrades for
 // eligible.
 extern const char kHttpsUpgradesName[];

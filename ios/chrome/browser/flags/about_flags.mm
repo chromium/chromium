@@ -1929,6 +1929,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillShowManualFillForVirtualCards)},
+    {"home-customization", flag_descriptions::kHomeCustomizationName,
+     flag_descriptions::kHomeCustomizationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kHomeCustomization)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

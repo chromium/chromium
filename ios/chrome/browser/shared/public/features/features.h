@@ -694,4 +694,10 @@ bool IsSaveToPhotosTitleImprovementEnabled();
 // Returns true if the Save to Photos account picker improvement is enabled.
 bool IsSaveToPhotosAccountPickerImprovementEnabled();
 
+// Feature that enables personalization of the Home surface.
+BASE_DECLARE_FEATURE(kHomeCustomization);
+
+// Returns true if Home Customization is enabled.
+bool IsHomeCustomizationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

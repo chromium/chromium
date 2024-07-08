@@ -5041,6 +5041,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "home-customization",
+    "owners": [ "adamta@google.com", "rkgibson@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha@chromium.org" ],
     "expiry_milestone": 95

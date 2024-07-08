@@ -876,3 +876,11 @@ bool IsSaveToPhotosAccountPickerImprovementEnabled() {
              kIOSSaveToPhotosImprovements,
              kSaveToPhotosAccountDefaultChoiceImprovementParam, true);
 }
+
+BASE_FEATURE(kHomeCustomization,
+             "HomeCustomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsHomeCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kHomeCustomization);
+}

@@ -510,6 +510,10 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
+const char kHomeCustomizationName[] = "Home Customization";
+const char kHomeCustomizationDescription[] =
+    "When enabled, adds a menu to personalize the Home surface.";
+
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
