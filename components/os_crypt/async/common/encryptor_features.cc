@@ -12,7 +12,7 @@ namespace os_crypt_async::features {
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kProtectEncryptionKey,
              "ProtectEncryptionKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace os_crypt_async::features
