@@ -4,6 +4,9 @@
 
 #include "ash/picker/picker_clipboard_provider.h"
 
+#include <string>
+#include <string_view>
+
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/i18n/case_conversion.h"
@@ -30,7 +33,7 @@ GetDisplayFormat(crosapi::mojom::ClipboardHistoryDisplayFormat format) {
   }
 }
 
-bool MatchQuery(const ClipboardHistoryItem& item, const std::u16string& query) {
+bool MatchQuery(const ClipboardHistoryItem& item, std::u16string_view query) {
   if (query.empty()) {
     return true;
   }
@@ -51,19 +54,20 @@ PickerClipboardProvider::PickerClipboardProvider(base::Clock* clock)
 PickerClipboardProvider::~PickerClipboardProvider() = default;
 
 void PickerClipboardProvider::FetchResults(OnFetchResultsCallback callback,
-                                           const std::u16string& query) {
+                                           std::u16string_view query) {
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
   if (clipboard_history_controller) {
-    clipboard_history_controller->GetHistoryValues(base::BindOnce(
-        &PickerClipboardProvider::OnFetchHistory,
-        weak_ptr_factory_.GetWeakPtr(), std::move(callback), query));
+    clipboard_history_controller->GetHistoryValues(
+        base::BindOnce(&PickerClipboardProvider::OnFetchHistory,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::u16string(query)));
   }
 }
 
 void PickerClipboardProvider::OnFetchHistory(
     OnFetchResultsCallback callback,
-    const std::u16string& query,
+    std::u16string query,
     std::vector<ClipboardHistoryItem> items) {
   std::vector<PickerSearchResult> results;
   for (const auto& item : items) {

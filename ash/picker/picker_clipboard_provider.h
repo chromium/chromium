@@ -6,6 +6,8 @@
 #define ASH_PICKER_PICKER_CLIPBOARD_PROVIDER_H_
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -33,11 +35,11 @@ class ASH_EXPORT PickerClipboardProvider {
 
   // Fetches clipboard items which were copied within `recency` time duration.
   void FetchResults(OnFetchResultsCallback callback,
-                    const std::u16string& query = u"");
+                    std::u16string_view query = u"");
 
  private:
   void OnFetchHistory(OnFetchResultsCallback callback,
-                      const std::u16string& query,
+                      std::u16string query,
                       std::vector<ClipboardHistoryItem> items);
 
   raw_ptr<base::Clock> clock_;
