@@ -2336,13 +2336,6 @@ the generic promo launch. -->
   </token>
 </histogram>
 
-<histogram name="IOS.Omnibox.SearchSuggestionNumberOfLines" units="count"
-    expires_after="2024-06-30">
-  <owner>christianxu@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>Histogram of the number of lines of search suggestions.</summary>
-</histogram>
-
 <histogram name="IOS.Omnibox.SteadyStatePositionAtStartup"
     enum="OmniboxPositionType" expires_after="2024-12-08">
   <owner>christianxu@chromium.org</owner>
