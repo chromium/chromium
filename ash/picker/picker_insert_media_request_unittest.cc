@@ -30,7 +30,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/fake_text_input_client.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
@@ -181,6 +183,18 @@ INSTANTIATE_TEST_SUITE_P(
                                    std::vector<uint8_t>* output) {
               return gfx::PNGCodec::EncodeBGRASkBitmap(
                   bitmap, /*discard_transparency=*/false, output);
+            })),
+        MakeLocalImageTestCaseCallback(
+            "jpeg",
+            base::BindRepeating([](const SkBitmap& bitmap,
+                                   std::vector<uint8_t>* output) {
+              return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80, output);
+            })),
+        MakeLocalImageTestCaseCallback(
+            "webp",
+            base::BindRepeating([](const SkBitmap& bitmap,
+                                   std::vector<uint8_t>* output) {
+              return gfx::WebpCodec::Encode(bitmap, /*quality=*/80, output);
             }))));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
