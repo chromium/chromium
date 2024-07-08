@@ -499,6 +499,12 @@ void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
     case NoticeType::kModeBSilentOnboarding:
       SilentOnboardingNoticeShown();
       return;
+    case NoticeType::kFull3PCDOnboarding:
+    case NoticeType::kFull3PCDSilentOnboarding:
+    case NoticeType::kFull3PCDOnboardingWithIPP:
+    case NoticeType::kFull3PCDSilentOnboardingWithIPP:
+      // TODO(341975190) Add support for full 3PCD.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -548,6 +554,12 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
       return;
     case NoticeType::kModeBSilentOnboarding:
       return;
+    case NoticeType::kFull3PCDOnboarding:
+    case NoticeType::kFull3PCDSilentOnboarding:
+    case NoticeType::kFull3PCDOnboardingWithIPP:
+    case NoticeType::kFull3PCDSilentOnboardingWithIPP:
+      // TODO(341975190) Add support for full 3PCD.
+      NOTREACHED_NORETURN();
   }
 }
 
