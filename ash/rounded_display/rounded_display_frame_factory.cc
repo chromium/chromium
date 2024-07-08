@@ -134,7 +134,7 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
   gpu::SharedImageInterface* sii =
       resource->context_provider->SharedImageInterface();
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   if (is_overlay) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;

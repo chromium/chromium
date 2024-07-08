@@ -128,9 +128,10 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   // This SharedImage will be used by the display compositor, will be updated
   // in parallel with being read, and will potentially be used in overlays.
-  constexpr uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-                             gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+      gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   CHECK(!client_shared_image_);
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(

@@ -12,6 +12,7 @@
 #include "ash/frame_sink/ui_resource.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace viz {
@@ -54,7 +55,7 @@ ASH_EXPORT gfx::Rect BufferRectFromWindowRect(
 // failed.
 ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
-    uint32_t shared_image_usage,
+    gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage);
 
 // Creates a UiResource of a given `size` and `format` using the SharedImage

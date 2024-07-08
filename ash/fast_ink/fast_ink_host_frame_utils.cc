@@ -107,7 +107,7 @@ gfx::Rect BufferRectFromWindowRect(
 
 scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     const gfx::Size& size,
-    uint32_t shared_image_usage,
+    gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage) {
   return GetContextProvider()->SharedImageInterface()->CreateSharedImage(
       {kFastInkSharedImageFormat, size, gfx::ColorSpace(), shared_image_usage,
