@@ -60,6 +60,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/pdf/PdfContentProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfPageUnitTest.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfUtilsUnitTest.java",
   ]
 
   deps = [

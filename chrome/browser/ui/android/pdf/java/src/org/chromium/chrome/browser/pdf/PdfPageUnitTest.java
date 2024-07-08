@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.view.View;
@@ -28,10 +27,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -49,9 +45,6 @@ public class PdfPageUnitTest {
     @Mock private NativePageHost mMockNativePageHost;
     @Mock private Profile mMockProfile;
     @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
-    @Mock private Context mContext;
-    @Mock private LoadUrlParams mLoadUrlParams;
-    @Mock private NativePage mNativePage;
     private Activity mActivity;
     private AutoCloseable mCloseableMocks;
     private PdfInfo mPdfInfo;
@@ -64,7 +57,6 @@ public class PdfPageUnitTest {
     private static final String EXAMPLE_URL = "https://www.example.com/";
     private static final String FILE_PATH = "/media/external/downloads/sample.pdf";
     private static final String FILE_NAME = "sample.pdf";
-    private static final String IMAGE_FILE_URL = "file:///media/external/downloads/sample.jpg";
 
     @Before
     public void setUp() {
@@ -77,7 +69,6 @@ public class PdfPageUnitTest {
                             doReturn(activity).when(mMockNativePageHost).getContext();
                         });
         doReturn(mMarginSupplier).when(mMockNativePageHost).createDefaultMarginSupplier();
-        PdfUtils.setShouldOpenPdfInlineForTesting(true);
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
         PdfUtils.skipLoadPdfForTesting(true);
@@ -86,7 +77,6 @@ public class PdfPageUnitTest {
 
     @After
     public void tearDown() throws Exception {
-        PdfUtils.setShouldOpenPdfInlineForTesting(false);
         mCloseableMocks.close();
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PdfUtils.skipLoadPdfForTesting(false);
@@ -196,138 +186,5 @@ public class PdfPageUnitTest {
         Assert.assertNull(
                 "PdfEventsListener should be reset to null.",
                 pdfPage.mPdfCoordinator.getPdfEventsListenerForTesting());
-    }
-
-    @Test
-    public void testGetPdfDocumentRequest_WithPdfLink() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_PATH);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNotNull("Uri should not be null.", request.getUri());
-        Assert.assertNull("File should be null.", request.getFile());
-    }
-
-    @Test
-    public void testGetPdfDocumentRequest_WithContentUri() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(CONTENT_URL);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNotNull("Uri should not be null.", request.getUri());
-        Assert.assertNull("File should be null.", request.getFile());
-    }
-
-    @Test
-    public void testGetPdfDocumentRequest_WithFileUri() {
-        PdfDocumentRequest request = PdfUtils.getPdfDocumentRequest(FILE_URL);
-        Assert.assertNotNull("PdfDocumentRequest should not be null.", request);
-        Assert.assertNull("Uri should be null.", request.getUri());
-        Assert.assertNotNull("File should not be null.", request.getFile());
-    }
-
-    @Test
-    public void testGetFileNameFromUrl() {
-        String filename = PdfUtils.getFileNameFromUrl(FILE_URL, DEFAULT_TAB_TITLE);
-        Assert.assertEquals("Filename does not match for file url.", FILE_NAME, filename);
-
-        filename = PdfUtils.getFileNameFromUrl(mPdfPageUrl, DEFAULT_TAB_TITLE);
-        Assert.assertEquals("Filename does not match for pdf link.", DEFAULT_TAB_TITLE, filename);
-    }
-
-    @Test
-    public void testIsPdfNavigation_FileScheme() {
-        boolean result = PdfUtils.isPdfNavigation(FILE_URL, null);
-        Assert.assertTrue("It is pdf navigation when file extension is pdf.", result);
-
-        result = PdfUtils.isPdfNavigation(IMAGE_FILE_URL, null);
-        Assert.assertFalse("It is not pdf navigation when file extension is not pdf.", result);
-    }
-
-    @Test
-    public void testIsPdfNavigation_PdfLink() {
-        doReturn(true).when(mLoadUrlParams).getIsPdf();
-        boolean result = PdfUtils.isPdfNavigation(mPdfPageUrl, mLoadUrlParams);
-        Assert.assertTrue("It is pdf navigation when IsPdf is set in LoadUrlParams.", result);
-
-        doReturn(false).when(mLoadUrlParams).getIsPdf();
-        result = PdfUtils.isPdfNavigation(mPdfPageUrl, mLoadUrlParams);
-        Assert.assertFalse(
-                "It is not pdf navigation when IsPdf is not set in LoadUrlParams.", result);
-
-        result = PdfUtils.isPdfNavigation(mPdfPageUrl, null);
-        Assert.assertFalse("It is not pdf navigation when LoadUrlParams is null.", result);
-    }
-
-    @Test
-    public void testIsPdfNavigation_SchemeNotMatch() {
-        boolean result = PdfUtils.isPdfNavigation(UrlConstants.HISTORY_URL, null);
-        Assert.assertFalse(
-                "It is not pdf navigation when the scheme is not one of content/file/http/https.",
-                result);
-    }
-
-    @Test
-    public void testRecordIsPdfFrozen_NativePageNull() {
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
-                        .build();
-        PdfUtils.recordIsPdfFrozen(null);
-        histogramExpectation.assertExpected(
-                "The histogram should not be recorded when the native page is null.");
-    }
-
-    @Test
-    public void testRecordIsPdfFrozen_NativePageIsNotPdf() {
-        doReturn(false).when(mNativePage).isPdf();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Android.Pdf.IsFrozenWhenDisplayed")
-                        .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
-        histogramExpectation.assertExpected(
-                "The histogram should not be recorded when the native page is not pdf page.");
-    }
-
-    @Test
-    public void testRecordIsPdfFrozen_PdfIsFrozen() {
-        doReturn(true).when(mNativePage).isPdf();
-        doReturn(true).when(mNativePage).isFrozen();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", true)
-                        .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
-        histogramExpectation.assertExpected(
-                "The recorded value should be true when the pdf page is frozen.");
-    }
-
-    @Test
-    public void testRecordIsPdfFrozen_PdfIsNotFrozen() {
-        doReturn(true).when(mNativePage).isPdf();
-        doReturn(false).when(mNativePage).isFrozen();
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Android.Pdf.IsFrozenWhenDisplayed", false)
-                        .build();
-        PdfUtils.recordIsPdfFrozen(mNativePage);
-        histogramExpectation.assertExpected(
-                "The recorded value should be false when the pdf page is not frozen.");
-    }
-
-    @Test
-    public void testRecordIsPdfDownloadUrlEncoded() {
-        HistogramWatcher histogramExpectation =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord("Android.Pdf.DownloadUrlEncoded", true)
-                        .build();
-        mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
-        Assert.assertNotNull("The encoded url should not be null", mPdfPageUrl);
-        histogramExpectation.assertExpected(
-                "The recorded value should be true when the encoded url is not null.");
-    }
-
-    @Test
-    public void testPdfPageUrlEncodeDecode() {
-        String encodedUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
-        String decodedUrl = PdfUtils.decodePdfPageUrl(encodedUrl);
-        Assert.assertEquals("The decoded url should match the original url", PDF_LINK, decodedUrl);
     }
 }

@@ -243,10 +243,12 @@ public class PdfUtils {
         }
         Uri uri = Uri.parse(originalUrl);
         String encodedUrl = uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
-        // TODO(b/350771232): add metric to capture how often the decode fails.
         try {
-            return URLDecoder.decode(encodedUrl, "UTF-8");
+            String decodedUrl = URLDecoder.decode(encodedUrl, "UTF-8");
+            recordIsPdfDownloadUrlDecoded(true);
+            return decodedUrl;
         } catch (java.io.UnsupportedEncodingException e) {
+            recordIsPdfDownloadUrlDecoded(false);
             Log.e(TAG, "Unsupported encoding: " + e.getMessage());
             return null;
         }
@@ -254,6 +256,10 @@ public class PdfUtils {
 
     private static void recordIsPdfDownloadUrlEncoded(boolean encodeResult) {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlEncoded", encodeResult);
+    }
+
+    private static void recordIsPdfDownloadUrlDecoded(boolean decodeResult) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.DownloadUrlDecoded", decodeResult);
     }
 
     static void skipLoadPdfForTesting(boolean skipLoadPdfForTesting) {
