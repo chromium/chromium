@@ -2469,7 +2469,8 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
       MockWrite(ASYNC, 0,
                 "CONNECT www.example.org:443 HTTP/1.1\r\n"
                 "Host: www.example.org:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       CreateMockWrite(req1, 2),
   };
 
@@ -2510,7 +2511,8 @@ TEST_P(SpdyNetworkTransactionTest, NoConnectionPoolingOverTunnel) {
       MockWrite(ASYNC, 0,
                 "CONNECT example.test:443 HTTP/1.1\r\n"
                 "Host: example.test:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       CreateMockWrite(req2, 2),
   };
 
@@ -4556,7 +4558,8 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredProxyRetry) {
       MockWrite(ASYNC, 0,
                 "CONNECT www.example.org:443 HTTP/1.1\r\n"
                 "Host: www.example.org:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 2,
                 "GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
@@ -4672,7 +4675,8 @@ TEST_P(SpdyNetworkTransactionTest,
         MockWrite(ASYNC, 0,
                   "CONNECT www.example.org:443 HTTP/1.1\r\n"
                   "Host: www.example.org:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
         MockWrite(ASYNC, 2,
                   "GET / HTTP/1.1\r\n"
                   "Host: www.example.org\r\n"
@@ -4797,11 +4801,13 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
       MockWrite(ASYNC, 0,
                 "CONNECT proxy2.test:71 HTTP/1.1\r\n"
                 "Host: proxy2.test:71\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 2,
                 "CONNECT www.example.org:443 HTTP/1.1\r\n"
                 "Host: www.example.org:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 4,
                 "GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
@@ -4952,11 +4958,13 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
       MockWrite(ASYNC, 0,
                 "CONNECT proxy2.test:71 HTTP/1.1\r\n"
                 "Host: proxy2.test:71\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 2,
                 "CONNECT www.example.org:443 HTTP/1.1\r\n"
                 "Host: www.example.org:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 4,
                 "GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
@@ -5041,7 +5049,8 @@ TEST_P(SpdyNetworkTransactionTest, ProxyConnect) {
   const char kConnect443[] = {
       "CONNECT www.example.org:443 HTTP/1.1\r\n"
       "Host: www.example.org:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n"};
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n\r\n"};
   const char kHTTP200[] = {"HTTP/1.1 200 OK\r\n\r\n"};
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
@@ -5158,7 +5167,8 @@ TEST_P(SpdyNetworkTransactionTest, DirectConnectProxyReconnect) {
   const char kConnect443[] = {
       "CONNECT www.example.org:443 HTTP/1.1\r\n"
       "Host: www.example.org:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n"};
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n\r\n"};
   const char kHTTP200[] = {"HTTP/1.1 200 OK\r\n\r\n"};
   spdy::SpdySerializedFrame req2(
       spdy_util_2.ConstructSpdyGet(kPushedUrl, 1, LOWEST));
@@ -7255,7 +7265,8 @@ TEST_P(SpdyNetworkTransactionTest,
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0,
                                   "CONNECT www.example.org:443 HTTP/1.1\r\n"
                                   "Host: www.example.org:443\r\n"
-                                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                                  "Proxy-Connection: keep-alive\r\n"
+                                  "User-Agent: test-ua\r\n\r\n"),
                         CreateMockWrite(req, 2)};
 
   spdy::SpdySerializedFrame resp1(
@@ -7280,7 +7291,8 @@ TEST_P(SpdyNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 0,
                 "CONNECT www.example.org:443 HTTP/1.1\r\n"
                 "Host: www.example.org:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(SYNCHRONOUS, 2,
                 "GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"

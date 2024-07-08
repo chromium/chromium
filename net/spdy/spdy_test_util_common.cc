@@ -308,6 +308,8 @@ SpdySessionDependencies::SpdySessionDependencies(
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
       proxy_resolution_service(std::move(proxy_resolution_service)),
+      http_user_agent_settings(
+          std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua")),
       ssl_config_service(std::make_unique<SSLConfigServiceDefaults>()),
       socket_factory(std::make_unique<MockClientSocketFactory>()),
       http_auth_handler_factory(HttpAuthHandlerFactory::CreateDefault()),
@@ -783,7 +785,11 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyConnect(
   spdy::Http2HeaderBlock block;
   block[spdy::kHttp2MethodHeader] = "CONNECT";
   block[spdy::kHttp2AuthorityHeader] = host_port_pair.ToString();
-  AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  if (extra_headers) {
+    AppendToHeaderBlock(extra_headers, extra_header_count, &block);
+  } else {
+    block["user-agent"] = "test-ua";
+  }
   return ConstructSpdyHeaders(stream_id, std::move(block), priority, false);
 }
 

@@ -55,6 +55,7 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -125,6 +126,8 @@ class HttpProxyConnectJobTestBase : public WithTaskEnvironment {
     session_deps_.host_resolver = std::make_unique<MockHostResolver>(
         /*default_result=*/MockHostResolverBase::RuleResolver::
             GetLocalhostResult());
+    session_deps_.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
 
     network_quality_estimator_ =
         std::make_unique<TestNetworkQualityEstimator>();
@@ -556,7 +559,8 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
       MockWrite(ASYNC, 0,
                 "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                 "Host: www.endpoint.test:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
   };
   MockRead http1_reads[] = {
       // Pause at first read.
@@ -661,6 +665,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
       "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
       "Host: www.endpoint.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
       "%s: %s\r\n\r\n",
       kTestHeaderName, proxy_server_uri.c_str());
   MockWrite writes[] = {
@@ -680,6 +685,8 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
   const char* const kExtraRequestHeaders[] = {
       kTestSpdyHeaderName,
       proxy_server_uri.c_str(),
+      "user-agent",
+      "test-ua",
   };
   const char* const kExtraResponseHeaders[] = {
       kResponseHeaderName,
@@ -732,12 +739,14 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
       "CONNECT last-hop-https-proxy.example.test:443 HTTP/1.1\r\n"
       "Host: last-hop-https-proxy.example.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
       "%s: %s\r\n\r\n",
       kTestHeaderName, first_hop_proxy_server_uri.c_str());
   std::string second_hop_http1_request = base::StringPrintf(
       "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
       "Host: www.endpoint.test:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
       "%s: %s\r\n\r\n",
       kTestHeaderName, second_hop_proxy_server_uri.c_str());
 
@@ -765,10 +774,14 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
   const char* const kFirstHopExtraRequestHeaders[] = {
       kTestSpdyHeaderName,
       first_hop_proxy_server_uri.c_str(),
+      "user-agent",
+      "test-ua",
   };
   const char* const kSecondHopExtraRequestHeaders[] = {
       kTestSpdyHeaderName,
       second_hop_proxy_server_uri.c_str(),
+      "user-agent",
+      "test-ua",
   };
   const char* const kFirstHopExtraResponseHeaders[] = {
       kResponseHeaderName,
@@ -868,11 +881,13 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
         MockWrite(io_mode, 5,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
                   "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n"
                   "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
     };
     MockRead reads[] = {
@@ -896,6 +911,8 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
     // After calling trans.RestartWithAuth(), this is the request we should
     // be issuing -- the final header line contains the credentials.
     const char* const kSpdyAuthCredentials[] = {
+        "user-agent",
+        "test-ua",
         "proxy-authorization",
         "Basic Zm9vOmJhcg==",
     };
@@ -978,16 +995,19 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
         MockWrite(io_mode, 2,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
                   "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n"
                   "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
         MockWrite(io_mode, 4,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
                   "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n"
                   "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
     };
     MockRead reads[] = {
@@ -1014,6 +1034,8 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     // After calling trans.RestartWithAuth(), this is the request we should
     // be issuing -- the final header line contains the credentials.
     const char* const kSpdyAuthCredentials[] = {
+        "user-agent",
+        "test-ua",
         "proxy-authorization",
         "Basic Zm9vOmJhcg==",
     };
@@ -1132,6 +1154,7 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
                   "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n"
                   "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
     };
     MockRead reads[] = {
@@ -1139,6 +1162,8 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
     };
 
     const char* const kSpdyAuthCredentials[] = {
+        "user-agent",
+        "test-ua",
         "proxy-authorization",
         "Basic Zm9vOmJhcg==",
     };
@@ -1565,7 +1590,8 @@ TEST_P(HttpProxyConnectJobTest, TunnelUnexpectedClose) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
     };
     MockRead reads[] = {
         MockRead(io_mode, 1, "HTTP/1.1 200 Conn"),
@@ -1618,7 +1644,8 @@ TEST_P(HttpProxyConnectJobTest, Tunnel1xxResponse) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
     };
     MockRead reads[] = {
         MockRead(io_mode, 1, "HTTP/1.1 100 Continue\r\n\r\n"),
@@ -1646,7 +1673,8 @@ TEST_P(HttpProxyConnectJobTest, TunnelSetupError) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
     };
     MockRead reads[] = {
         MockRead(io_mode, 1, "HTTP/1.1 304 Not Modified\r\n\r\n"),
@@ -1736,7 +1764,8 @@ TEST_P(HttpProxyConnectJobTest, TunnelSetupRedirect) {
         MockWrite(io_mode, 0,
                   "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                   "Host: www.endpoint.test:443\r\n"
-                  "Proxy-Connection: keep-alive\r\n\r\n"),
+                  "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n\r\n"),
     };
     MockRead reads[] = {
         MockRead(io_mode, 1, kResponseText.c_str()),
@@ -1814,11 +1843,13 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
       MockWrite(ASYNC, 0,
                 "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                 "Host: www.endpoint.test:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 3,
                 "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                 "Host: www.endpoint.test:443\r\n"
                 "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
   };
   MockRead reads[] = {
@@ -1845,6 +1876,8 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
   // After calling trans.RestartWithAuth(), this is the request we should
   // be issuing -- the final header line contains the credentials.
   const char* const kSpdyAuthCredentials[] = {
+      "user-agent",
+      "test-ua",
       "proxy-authorization",
       "Basic Zm9vOmJhcg==",
   };
@@ -1999,7 +2032,8 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallengeNewConnection) {
       MockWrite(ASYNC, 0,
                 "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                 "Host: www.endpoint.test:443\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
   };
   MockRead reads[] = {
       // Pause at read.
@@ -2016,6 +2050,7 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallengeNewConnection) {
                 "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
                 "Host: www.endpoint.test:443\r\n"
                 "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
   };
   MockRead reads2[] = {

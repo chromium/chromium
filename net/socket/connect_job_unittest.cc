@@ -18,6 +18,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -102,7 +103,7 @@ class ConnectJobTest : public testing::Test {
             /*quic_supported_versions=*/nullptr,
             /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
-            /*http_user_agent_settings=*/nullptr,
+            &http_user_agent_settings_,
             /*ssl_client_context=*/nullptr,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
@@ -118,6 +119,8 @@ class ConnectJobTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   RecordingNetLogObserver net_log_observer_;
+  const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
+                                                                 "test-ua"};
   const CommonConnectJobParams common_connect_job_params_;
   TestConnectJobDelegate delegate_;
 };

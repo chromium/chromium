@@ -518,6 +518,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
+    session_deps.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
     HttpNetworkSessionPeer peer(session.get());
@@ -544,6 +546,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixedForTest(
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
+    session_deps.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
     HttpNetworkSessionPeer peer(session.get());
@@ -570,6 +574,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixedForTest(
             "socks4://socks_proxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS));
+    session_deps.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
     HttpNetworkSessionPeer peer(session.get());
@@ -594,6 +600,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
+    session_deps.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
     HttpNetworkSessionPeer peer(session.get());
@@ -907,6 +915,8 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     TransportSecurityState transport_security_state;
     session_context.transport_security_state = &transport_security_state;
     QuicContext quic_context;
+    StaticHttpUserAgentSettings http_user_agent_settings("*", "test-ua");
+    session_context.http_user_agent_settings = &http_user_agent_settings;
     session_context.proxy_resolution_service = proxy_resolution_service.get();
     session_context.ssl_config_service = &ssl_config_service;
     session_context.http_server_properties = &http_server_properties;
@@ -3852,6 +3862,7 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
     session_context_.transport_security_state = &transport_security_state_;
     session_context_.client_socket_factory = &socket_factory_;
     session_context_.ssl_config_service = &ssl_config_service_;
+    session_context_.http_user_agent_settings = &http_user_agent_settings_;
     session_context_.http_server_properties = &http_server_properties_;
     session_context_.quic_context = &quic_context_;
   }
@@ -3862,6 +3873,7 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateDirect();
   SSLConfigServiceDefaults ssl_config_service_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
   MockClientSocketFactory socket_factory_;
   MockHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;

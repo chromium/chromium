@@ -49,6 +49,7 @@
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -104,7 +105,7 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
             /*quic_supported_versions=*/nullptr,
             /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
-            /*http_user_agent_settings=*/nullptr,
+            &http_user_agent_settings_,
             /*ssl_client_context=*/nullptr,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
@@ -169,6 +170,8 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
   std::unique_ptr<MockHostResolver> host_resolver_;
   MockTransportClientSocketFactory client_socket_factory_;
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
+  const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
+                                                                 "test-ua"};
   const CommonConnectJobParams common_connect_job_params_;
   WebSocketTransportClientSocketPool pool_;
   ClientSocketPoolTest test_base_;

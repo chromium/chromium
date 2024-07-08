@@ -23,6 +23,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -58,6 +59,7 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
+    session_context.http_user_agent_settings = &http_user_agent_settings_;
     network_session_ = std::make_unique<HttpNetworkSession>(
         HttpNetworkSessionParams(), session_context);
     factory_ = std::make_unique<HttpNetworkLayer>(network_session_.get());
@@ -70,6 +72,7 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<CertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   QuicContext quic_context_;
   std::unique_ptr<HttpNetworkSession> network_session_;

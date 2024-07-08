@@ -363,7 +363,9 @@ class SpdyTestUtil {
       bool priority_incremental = kDefaultPriorityIncremental,
       std::optional<RequestPriority> header_request_priority = std::nullopt);
 
-  // Constructs a SPDY HEADERS frame for a CONNECT request.
+  // Constructs a SPDY HEADERS frame for a CONNECT request. If `extra_headers`
+  // is nullptr, it includes just "user-agent" "test-ua" as that is commonly
+  // required.
   spdy::SpdySerializedFrame ConstructSpdyConnect(
       const char* const extra_headers[],
       int extra_header_count,

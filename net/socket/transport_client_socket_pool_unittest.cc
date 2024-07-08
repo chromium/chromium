@@ -1775,7 +1775,8 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
           MockWrite(ASYNC, 0,
                     "CONNECT host.test:443 HTTP/1.1\r\n"
                     "Host: host.test:443\r\n"
-                    "Proxy-Connection: keep-alive\r\n\r\n"),
+                    "Proxy-Connection: keep-alive\r\n"
+                    "User-Agent: test-ua\r\n\r\n"),
       };
       MockRead reads[] = {
           MockRead(ASYNC, 1, kResponseText.c_str()),
@@ -2741,7 +2742,8 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
   std::string request =
       "CONNECT www.google.com:443 HTTP/1.1\r\n"
       "Host: www.google.com:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n";
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n\r\n";
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, 0, request.c_str()),
   };

@@ -70,6 +70,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -260,6 +261,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
         ConfiguredProxyResolutionService::CreateDirect());
     session_deps_.enable_quic = true;
     session_deps_.host_resolver->set_synchronous_mode(true);
+    session_deps_.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
   }
 
   void SetPreconnect() {
@@ -315,6 +318,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
 
     session_context.quic_crypto_client_stream_factory =
         &crypto_client_stream_factory_;
+    session_context.http_user_agent_settings = &http_user_agent_settings_;
     session_context.quic_context = &quic_context_;
     session_ = std::make_unique<HttpNetworkSession>(params, session_context);
     factory_ = static_cast<HttpStreamFactory*>(session_->http_stream_factory());
@@ -446,6 +450,7 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
   TestJobFactory job_factory_;
   MockHttpStreamRequestDelegate request_delegate_;
   MockQuicContext quic_context_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> session_;
   raw_ptr<HttpStreamFactory> factory_ = nullptr;
@@ -610,6 +615,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         std::move(proxy_resolution_service);
     session_deps_.proxy_resolution_service->SetProxyDelegate(
         session_deps_.proxy_delegate.get());
+    session_deps_.http_user_agent_settings =
+        std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
     HttpNetworkSessionParams params =
         SpdySessionDependencies::CreateSessionParams(&session_deps_);
     HttpNetworkSessionContext session_context =
@@ -709,11 +716,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: badproxy:99\r\n\r\n";
       constexpr char kBadFallbackProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: badfallbackproxy:98\r\n\r\n";
       const MockWrite kBadProxyTunnelWrites[] = {
           {ASYNC, kBadProxyTunnelRequest}};
@@ -915,11 +924,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://badproxy:99\r\n\r\n";
       constexpr char kBadFallbackProxyTunnelRequest[] =
           "CONNECT www.example.com:443 HTTP/1.1\r\n"
           "Host: www.example.com:443\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://badfallbackproxy:98\r\n\r\n";
       const MockWrite kBadProxyTunnelWrites[] = {
           {ASYNC, kBadProxyTunnelRequest}};
@@ -1172,11 +1183,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
           "Host: goodproxyserver:100\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://badproxyserver:99\r\n\r\n";
       constexpr char kBadProxyServer2TunnelRequest[] =
           "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
           "Host: goodproxyserver:100\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://badfallbackproxyserver:98\r\n\r\n";
       const MockWrite kBadProxyServer1TunnelWrites[] = {
           MockWrite(ASYNC, 0, kBadProxyServer1TunnelRequest)};
@@ -1408,17 +1421,20 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           "CONNECT badproxyserver:99 HTTP/1.1\r\n"
           "Host: badproxyserver:99\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://goodproxyserver:100\r\n\r\n";
       constexpr char kBadProxyServer2TunnelRequest[] =
           "CONNECT badfallbackproxyserver:98 HTTP/1.1\r\n"
           "Host: badfallbackproxyserver:98\r\n"
           "Proxy-Connection: keep-alive\r\n"
+          "User-Agent: test-ua\r\n"
           "Foo: https://goodproxyserver:100\r\n\r\n";
       const std::string kBadProxyServer1EndpointTunnelRequest =
           base::StringPrintf(
               "CONNECT %s HTTP/1.1\r\n"
               "Host: %s\r\n"
               "Proxy-Connection: keep-alive\r\n"
+              "User-Agent: test-ua\r\n"
               "Foo: https://badproxyserver:99\r\n\r\n",
               HostPortPair::FromURL(dest_url).ToString().c_str(),
               HostPortPair::FromURL(dest_url).ToString().c_str());
@@ -1427,6 +1443,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
               "CONNECT %s HTTP/1.1\r\n"
               "Host: %s\r\n"
               "Proxy-Connection: keep-alive\r\n"
+              "User-Agent: test-ua\r\n"
               "Foo: https://badfallbackproxyserver:98\r\n\r\n",
               HostPortPair::FromURL(dest_url).ToString().c_str(),
               HostPortPair::FromURL(dest_url).ToString().c_str());
@@ -1592,6 +1609,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       "CONNECT www.example.com:443 HTTP/1.1\r\n"
       "Host: www.example.com:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n"
       "Authorization: https://ip-pro:443\r\n\r\n";
   const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
   std::vector<MockRead> reads;
@@ -2010,7 +2028,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   static constexpr char kHttpConnect[] =
       "CONNECT www.example.com:443 HTTP/1.1\r\n"
       "Host: www.example.com:443\r\n"
-      "Proxy-Connection: keep-alive\r\n\r\n";
+      "Proxy-Connection: keep-alive\r\n"
+      "User-Agent: test-ua\r\n\r\n";
   const MockWrite kWrites[] = {{ASYNC, kHttpConnect}};
   const MockRead kReads[] = {{ASYNC, ERR_MSG_TOO_BIG}};
   SSLSocketDataProvider ssl_data(ASYNC, OK);

@@ -36,6 +36,7 @@
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -66,7 +67,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*quic_supported_versions=*/nullptr,
             /*quic_session_pool=*/nullptr,
             /*proxy_delegate=*/nullptr,
-            /*http_user_agent_settings=*/nullptr,
+            &http_user_agent_settings_,
             &ssl_client_context_,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
@@ -103,6 +104,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
+  const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
+                                                                 "test-ua"};
   SSLClientContext ssl_client_context_{&ssl_config_service_, &cert_verifier_,
                                        &transport_security_state_,
                                        /*ssl_client_session_cache=*/nullptr,

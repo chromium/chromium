@@ -8537,7 +8537,7 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptLanguage) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->set_http_user_agent_settings(
-      std::make_unique<StaticHttpUserAgentSettings>("en", std::string()));
+      std::make_unique<StaticHttpUserAgentSettings>("en", "test-ua"));
   auto context = context_builder->Build();
 
   TestDelegate d;
@@ -8555,8 +8555,7 @@ TEST_F(URLRequestTestHTTP, EmptyAcceptLanguage) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->set_http_user_agent_settings(
-      std::make_unique<StaticHttpUserAgentSettings>(std::string(),
-                                                    std::string()));
+      std::make_unique<StaticHttpUserAgentSettings>(std::string(), "test-ua"));
   auto context = context_builder->Build();
 
   TestDelegate d;

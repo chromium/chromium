@@ -56,6 +56,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
@@ -202,6 +203,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     session_context.http_auth_handler_factory =
         http_auth_handler_factory_.get();
     session_context.http_server_properties = &http_server_properties_;
+    session_context.http_user_agent_settings = &http_user_agent_settings_;
     session_context.quic_context = &quic_context_;
     return std::make_unique<HttpNetworkSession>(HttpNetworkSessionParams(),
                                                 session_context);
@@ -216,6 +218,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   const std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   const std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   const std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  const StaticHttpUserAgentSettings http_user_agent_settings_ = {"*",
+                                                                 "test-ua"};
   HttpServerProperties http_server_properties_;
   QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;
@@ -786,11 +790,13 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthChallenge) {
       MockWrite(ASYNC, 0,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 5,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
                 "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
   };
   MockRead reads[] = {
@@ -842,6 +848,7 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthWithCachedCredentials) {
                   "CONNECT host:80 HTTP/1.1\r\n"
                   "Host: host:80\r\n"
                   "Proxy-Connection: keep-alive\r\n"
+                  "User-Agent: test-ua\r\n"
                   "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
     };
     MockRead reads[] = {
@@ -901,11 +908,13 @@ TEST_F(SSLConnectJobTest, HttpProxyAuthHasEstablishedConnection) {
       MockWrite(ASYNC, 0,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
       MockWrite(ASYNC, 3,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
                 "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
   };
   MockRead reads[] = {
@@ -985,7 +994,8 @@ TEST_F(SSLConnectJobTest,
       MockWrite(ASYNC, 0,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
-                "Proxy-Connection: keep-alive\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
   };
   MockRead reads1[] = {
       // Pause reading.
@@ -1004,6 +1014,7 @@ TEST_F(SSLConnectJobTest,
                 "CONNECT host:80 HTTP/1.1\r\n"
                 "Host: host:80\r\n"
                 "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n"
                 "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
   };
   MockRead reads2[] = {

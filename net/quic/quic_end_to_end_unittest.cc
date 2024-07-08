@@ -43,6 +43,7 @@
 #include "net/third_party/quiche/src/quiche/quic/tools/quic_memory_cache_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -109,6 +110,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     session_context_.transport_security_state = &transport_security_state_;
     session_context_.proxy_resolution_service = proxy_resolution_service_.get();
     session_context_.ssl_config_service = ssl_config_service_.get();
+    session_context_.http_user_agent_settings = &http_user_agent_settings_;
     session_context_.http_auth_handler_factory = auth_handler_factory_.get();
     session_context_.http_server_properties = &http_server_properties_;
 
@@ -218,6 +220,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<HttpAuthHandlerFactory> auth_handler_factory_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"*", "test-ua"};
   HttpServerProperties http_server_properties_;
   HttpNetworkSessionParams session_params_;
   HttpNetworkSessionContext session_context_;
