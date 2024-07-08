@@ -14,6 +14,16 @@ static_library("oobe_quick_start_pref_names") {
 }
 
 static_library("oobe_quick_start") {
+  sources = [
+    "second_device_auth_broker.cc",
+    "second_device_auth_broker.h",
+    "target_device_bootstrap_controller.cc",
+    "target_device_bootstrap_controller.h",
+  ]
+
+  public_deps =
+      [ "//chromeos/ash/components/nearby/common/connections_manager" ]
+
   deps = [
     ":oobe_quick_start_pref_names",
     "connectivity",
@@ -21,32 +31,33 @@ static_library("oobe_quick_start") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chrome/common:channel_info",
-    "//chromeos/ash/components/attestation:attestation",
+    "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
-    "//chromeos/ash/components/dbus/constants:constants",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
-    "//chromeos/ash/components/quick_start:quick_start",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/mojom",
-    "//components/account_id:account_id",
-    "//components/endpoint_fetcher:endpoint_fetcher",
-    "//components/prefs:prefs",
+    "//components/account_id",
+    "//components/endpoint_fetcher",
+    "//components/prefs",
     "//components/version_info:channel",
-    "//google_apis:google_apis",
-    "//google_apis/common:common",
+    "//google_apis",
+    "//google_apis/common",
     "//services/data_decoder/public/cpp",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//ui/chromeos",
-  ]
-  sources = [
-    "second_device_auth_broker.cc",
-    "second_device_auth_broker.h",
-    "target_device_bootstrap_controller.cc",
-    "target_device_bootstrap_controller.h",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
+
+  sources = [
+    "mock_second_device_auth_broker.cc",
+    "mock_second_device_auth_broker.h",
+    "second_device_auth_broker_unittest.cc",
+    "target_device_bootstrap_controller_unittest.cc",
+  ]
+
   deps = [
     ":oobe_quick_start",
     "connectivity:test_support",
@@ -58,23 +69,17 @@ source_set("unit_tests") {
     "//chrome/browser/ash/nearby:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/attestation:test_support",
-    "//chromeos/ash/components/dbus/constants:constants",
-    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/quick_start:test_support",
-    "//components/account_id:account_id",
-    "//google_apis:google_apis",
-    "//google_apis/common:common",
+    "//components/account_id",
+    "//google_apis",
+    "//google_apis/common",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/chromeos:chromeos",
-  ]
-  sources = [
-    "mock_second_device_auth_broker.cc",
-    "mock_second_device_auth_broker.h",
-    "second_device_auth_broker_unittest.cc",
-    "target_device_bootstrap_controller_unittest.cc",
   ]
 }

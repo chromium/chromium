@@ -44,6 +44,7 @@ static_library("system_web_apps") {
     "//ash/webui/system_apps/public:system_web_app_config",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
@@ -68,8 +69,10 @@ static_library("system_web_apps") {
     "//ui/native_theme",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/system_web_apps/apps/camera_app" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/system_web_apps/apps/camera_app",
+  ]
 }
 
 source_set("browser_tests") {

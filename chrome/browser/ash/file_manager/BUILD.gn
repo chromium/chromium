@@ -144,6 +144,7 @@ static_library("file_manager") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/profiles",
@@ -190,6 +191,7 @@ static_library("file_manager") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/smb_client",
   ]

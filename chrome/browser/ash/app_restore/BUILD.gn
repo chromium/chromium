@@ -86,6 +86,7 @@ static_library("app_restore") {
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/window_predictor",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -116,6 +117,7 @@ static_library("app_restore") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/ash/login/demo_mode",
   ]
 }
 

@@ -40,6 +40,7 @@ source_set("system_web_apps") {
   deps += [
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
@@ -50,6 +51,7 @@ source_set("system_web_apps") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",

@@ -84,6 +84,7 @@ source_set("api") {
 
     deps += [
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/remote_apps",
       "//ui/events:event_constants",
     ]

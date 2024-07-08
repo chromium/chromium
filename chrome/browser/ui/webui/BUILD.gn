@@ -79,6 +79,7 @@ source_set("configs") {
       "//chrome/browser/ash/annotator",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/eche_app",
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/multidevice_debug",
       "//chrome/browser/ash/net",

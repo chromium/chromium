@@ -58,6 +58,7 @@ source_set("app_service") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",

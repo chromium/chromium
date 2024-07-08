@@ -79,13 +79,18 @@ source_set("platform_apps") {
     "//ui/gfx",
   ]
 
+  allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+
   if (is_mac) {
     deps += [ "//chrome/browser/apps/app_shim" ]
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/remote_apps" ]
-  }
+    deps += [
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ash/remote_apps",
+    ]
 
-  allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+    allow_circular_includes_from += [ "//chrome/browser/ash/login/demo_mode" ]
+  }
 }

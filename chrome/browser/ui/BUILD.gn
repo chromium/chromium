@@ -3866,6 +3866,7 @@ static_library("ui") {
       "//chrome/browser/ash/kerberos",
       "//chrome/browser/ash/lock_screen_apps",
       "//chrome/browser/ash/login/app_mode",
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/mahi",
@@ -4129,6 +4130,7 @@ static_library("ui") {
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/color_change_listener:mojom",
     ]
+
     public_deps += [
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/service",
@@ -4142,6 +4144,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
       "//chromeos/ash/services/multidevice_setup/public/mojom",
     ]
+
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_list/search/local_image_search",
       "//chrome/browser/ash",
@@ -4205,6 +4208,7 @@ static_library("ui") {
       "//chrome/browser/ash/kerberos",
       "//chrome/browser/ash/lock_screen_apps",
       "//chrome/browser/ash/login/app_mode",
+      "//chrome/browser/ash/login/demo_mode",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mahi/media_app",
       "//chrome/browser/ash/nearby",

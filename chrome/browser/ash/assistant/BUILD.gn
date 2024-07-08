@@ -30,6 +30,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/demo_mode",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/language/core/browser",
   ]

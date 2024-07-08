@@ -60,6 +60,7 @@ static_library("arc") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
@@ -98,7 +99,6 @@ static_library("arc") {
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/arc/app_shortcuts",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/extensions",
@@ -115,7 +115,9 @@ static_library("arc") {
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/platform_keys/key_permissions",
   ]
 }
@@ -143,6 +145,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
     "//components/arc:arc_test_support",

@@ -29,6 +29,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/plugin_vm:test_support",
     "//chrome/browser/extensions",

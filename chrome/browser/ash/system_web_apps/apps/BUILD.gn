@@ -131,6 +131,7 @@ static_library("apps") {
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common:channel_info",

@@ -86,6 +86,7 @@ static_library("personalization_app") {
     "//ash/webui/personalization_app/resources",
     "//base:i18n",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/wallpaper",
