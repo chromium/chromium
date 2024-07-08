@@ -4587,8 +4587,6 @@ if (!is_android) {
         "../browser/ash/login/enterprise_enrollment_browsertest.cc",
         "../browser/ash/login/error_screen_browsertest.cc",
         "../browser/ash/login/existing_user_controller_browsertest.cc",
-        "../browser/ash/login/extensions/login_screen_extensions_content_script_manager_browsertest.cc",
-        "../browser/ash/login/extensions/login_screen_extensions_lifetime_manager_browsertest.cc",
         "../browser/ash/login/guest_login_browsertest.cc",
         "../browser/ash/login/lock/fingerprint_unlock_browsertest.cc",
         "../browser/ash/login/lock/lock_screen_browsertest.cc",
