@@ -780,6 +780,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->disable_reasons.published_in_store_required =
       (disable_reasons &
        disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY) != 0;
+  info->disable_reasons.unsupported_manifest_version =
+      (disable_reasons &
+       disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION) != 0;
 
   // Error collection.
   bool error_console_enabled =

@@ -153,6 +153,7 @@ namespace developerPrivate {
     boolean reloading;
     boolean custodianApprovalRequired;
     boolean parentDisabledPermissions;
+    boolean unsupportedManifestVersion;
   };
 
   dictionary OptionsPage {

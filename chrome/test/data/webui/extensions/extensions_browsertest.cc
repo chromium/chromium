@@ -307,8 +307,13 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       Mv2DeprecationMessage_DisableWithReEnable_Visbility) {
+  RunTestCase("Mv2DeprecationMessage_DisableWithReEnable_Visbility");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
                        Mv2DeprecationMessage_DisableWithReEnable) {
-  RunTestCase("Mv2DeprecationMessage_DisableWithReEnable");
+  RunTestCase("Mv2DeprecationMessage_DisableWithReEnable_Content");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {

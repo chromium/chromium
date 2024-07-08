@@ -207,6 +207,7 @@ export function createExtensionInfo(
           custodianApprovalRequired: false,
           parentDisabledPermissions: false,
           reloading: false,
+          unsupportedManifestVersion: false,
         },
         fileAccess: {
           isEnabled: false,

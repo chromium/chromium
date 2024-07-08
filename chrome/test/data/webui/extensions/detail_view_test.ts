@@ -751,7 +751,7 @@ suite('ExtensionDetailViewTest', function() {
         findAlternativeButton, 'openUrl', [recommendationsUrl]);
   });
 
-  test('Mv2DeprecationMessage_DisableWithReEnable', async function() {
+  test('Mv2DeprecationMessage_DisableWithReEnable_Visbility', async function() {
     // Message is hidden for experiment on stage 2 (disable with re-enable)
     // when extension is not affected by the MV2 deprecation.
     loadTimeData.overrideValues({MV2ExperimentStage: 2});
@@ -759,9 +759,31 @@ suite('ExtensionDetailViewTest', function() {
     flush();
     testVisible(item, '#mv2DeprecationMessage', false);
 
-    // Message is visible for experiment on stage 2 (disable with re-enable)
-    // when extension is affected by the MV2 deprecation.
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation but it's not disabled
+    // due to unsupported manifest version.
+    // Note: This can happen when the user chose to re-enable a MV2 disabled
+    // extension.
     item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is visible for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation and extension is
+    // disabled due to unsupported manifest version.
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+  });
+
+  test('Mv2DeprecationMessage_DisableWithReEnable_Content', async function() {
+    // Show the message for experiment on stage 2 (disable with re-enable) by
+    // setting the corresponding properties.
+    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    setupElement();
+    item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
     flush();
     testVisible(item, '#mv2DeprecationMessage', true);
 

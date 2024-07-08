@@ -118,7 +118,8 @@ export class ExtensionsDetailViewElement extends
       showMv2DeprecationMessage_: {
         type: Boolean,
         computed: 'computeShowMv2DeprecationMessage_(' +
-            'mv2ExperimentStage_, data.isAffectedByMV2Deprecation)',
+            'mv2ExperimentStage_, data.isAffectedByMV2Deprecation, ' +
+            'data.disableReasons.unsupportedManifestVersion)',
       },
 
       /**
@@ -531,8 +532,10 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.NONE:
         return false;
       case Mv2ExperimentStage.WARNING:
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         return this.data.isAffectedByMV2Deprecation;
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return this.data.isAffectedByMV2Deprecation &&
+            this.data.disableReasons.unsupportedManifestVersion;
       default:
         return false;
     }

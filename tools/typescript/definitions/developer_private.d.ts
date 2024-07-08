@@ -152,6 +152,7 @@ declare global {
         reloading: boolean;
         custodianApprovalRequired: boolean;
         parentDisabledPermissions: boolean;
+        unsupportedManifestVersion: boolean;
       }
 
       export interface OptionsPage {
