@@ -417,6 +417,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="AndroidXWebkitApiCall">
+<!-- LINT.IfChange(AndroidXWebkitApiCall) -->
+
   <int value="0" label="WebViewCompat.addWebMessageListener"/>
   <int value="1" label="ProxyController.clearProxyOverride"/>
   <int value="2" label="ProxyController.getInstance"/>
@@ -545,6 +547,8 @@ chromium-metrics-reviews@google.com.
   <int value="105" label="WebSettingsCompat.getSpeculativeLoadingStatus"/>
   <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
+<!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
+
 </enum>
 
 <enum name="ArmCpuPart">

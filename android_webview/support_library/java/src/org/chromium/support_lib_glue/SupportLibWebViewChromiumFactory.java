@@ -103,6 +103,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
+    // LINT.IfChange(ApiCall)
     @IntDef({
         ApiCall.ADD_WEB_MESSAGE_LISTENER,
         ApiCall.CLEAR_PROXY_OVERRIDE,
@@ -328,6 +329,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
         int COUNT = 108;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
 
     public static void recordApiCall(@ApiCall int apiCall) {
         RecordHistogram.recordEnumeratedHistogram(
