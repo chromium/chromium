@@ -159,6 +159,9 @@ class PickerInsertMediaRequestTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
+class PickerInsertMediaRequestImageTest : public PickerInsertMediaRequestTest {
+};
+
 const TestCaseCallback kTextTestCases[] = {
     BasicTestCase(
         /*media_to_insert=*/PickerTextMedia(u"hello"),
@@ -202,6 +205,10 @@ INSTANTIATE_TEST_SUITE_P(Text,
 
 INSTANTIATE_TEST_SUITE_P(Image,
                          PickerInsertMediaRequestTest,
+                         testing::ValuesIn(kImageTestCases));
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PickerInsertMediaRequestImageTest,
                          testing::ValuesIn(kImageTestCases));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
@@ -528,10 +535,8 @@ TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   EXPECT_EQ(insert_duration, base::Seconds(1));
 }
 
-TEST(PickerInsertMediaRequestUnsupportedTest,
-     InsertingImageIgnoresUnsupportedClients) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+TEST_P(PickerInsertMediaRequestImageTest,
+       InsertingImageIgnoresUnsupportedClients) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient unsupported_client(
       &input_method,
@@ -541,38 +546,39 @@ TEST(PickerInsertMediaRequestUnsupportedTest,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
-  base::TimeTicks before_insert = task_environment.NowTicks();
+  base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
-      &input_method, PickerImageMedia(GURL("http://foo.com")),
-      kInsertionTimeout, complete_future.GetCallback());
+      &input_method, test_case()->media_to_insert(), kInsertionTimeout,
+      complete_future.GetCallback());
   unsupported_client.Focus();
   supported_client.Focus();
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kSuccess);
-  base::TimeDelta insert_duration = task_environment.NowTicks() - before_insert;
+  base::TimeDelta insert_duration =
+      task_environment().NowTicks() - before_insert;
   EXPECT_EQ(insert_duration, base::Seconds(0));
   EXPECT_EQ(unsupported_client.last_inserted_image_url(), std::nullopt);
-  EXPECT_EQ(supported_client.last_inserted_image_url(), GURL("http://foo.com"));
+  EXPECT_EQ(supported_client.last_inserted_image_url(),
+            test_case()->expected_image_url());
 }
 
-TEST(PickerInsertMediaRequestUnsupportedTest,
-     InsertingUnsupportedImageFailsAfterTimeout) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+TEST_P(PickerInsertMediaRequestImageTest,
+       InsertingUnsupportedImageFailsAfterTimeout) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient client(
       &input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
   base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
-  base::TimeTicks before_insert = task_environment.NowTicks();
+  base::TimeTicks before_insert = task_environment().NowTicks();
   PickerInsertMediaRequest request(
-      &input_method, PickerImageMedia(GURL("http://foo.com")),
+      &input_method, test_case()->media_to_insert(),
       /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
   client.Focus();
 
   EXPECT_EQ(complete_future.Take(), PickerInsertMediaRequest::Result::kTimeout);
-  base::TimeDelta insert_duration = task_environment.NowTicks() - before_insert;
+  base::TimeDelta insert_duration =
+      task_environment().NowTicks() - before_insert;
   EXPECT_EQ(insert_duration, base::Seconds(1));
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
