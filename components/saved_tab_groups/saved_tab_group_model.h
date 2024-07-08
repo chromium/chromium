@@ -82,8 +82,6 @@ class SavedTabGroupModel {
   void Remove(const base::Uuid& id);
   void UpdateVisualData(const LocalTabGroupID local_group_id,
                         const tab_groups::TabGroupVisualData* visual_data);
-  void UpdateVisualData(const base::Uuid& id,
-                        const tab_groups::TabGroupVisualData* visual_data);
 
   // Pin SavedTabGroup if it's unpinned. Unpin SavedTabGroup if it's pinned.
   void TogglePinState(base::Uuid id);

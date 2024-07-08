@@ -733,7 +733,7 @@ TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedFromLocalSource) {
   EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
                                             Eq(TriggerSource::LOCAL)))
       .Times(1);
-  model_->UpdateVisualData(group_1_.saved_guid(), &visual_data);
+  model_->UpdateVisualData(group_1_.local_group_id().value(), &visual_data);
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupUpdatedOnTabGroupIdMappingChange) {

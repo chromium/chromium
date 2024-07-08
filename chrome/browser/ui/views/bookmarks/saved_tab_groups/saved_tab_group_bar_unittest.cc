@@ -17,6 +17,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
@@ -33,6 +35,7 @@ const SavedTabGroup kSavedTabGroup2(std::u16string(u"test_title_2"),
                                     tab_groups::TabGroupColorId::kGrey,
                                     {},
                                     std::nullopt);
+
 const SavedTabGroup kSavedTabGroup3(std::u16string(u"test_title_3"),
                                     tab_groups::TabGroupColorId::kGrey,
                                     {},
@@ -413,6 +416,9 @@ TEST_P(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
 
 TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
+  const LocalTabGroupID local_group_id_1 = test::GenerateRandomTabGroupID();
+  saved_tab_group_model()->OnGroupOpenedInTabStrip(kSavedTabGroup1.saved_guid(),
+                                                   local_group_id_1);
 
   SavedTabGroup group_2_with_position = kSavedTabGroup2;
   group_2_with_position.SetPosition(1);
@@ -423,7 +429,7 @@ TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
 
   // Update the visual_data and expect the first button to be updated and the
   // second button to stay the same.
-  saved_tab_group_model()->UpdateVisualData(kSavedTabGroup1.saved_guid(),
+  saved_tab_group_model()->UpdateVisualData(local_group_id_1,
                                             &saved_tab_group_visual_data);
   saved_tab_group_model()->UpdatedVisualDataFromSync(
       kSavedTabGroup2.saved_guid(), &saved_tab_group_visual_data);

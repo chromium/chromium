@@ -200,19 +200,6 @@ void SavedTabGroupModel::UpdateVisualData(
   }
 }
 
-void SavedTabGroupModel::UpdateVisualData(
-    const base::Uuid& id,
-    const tab_groups::TabGroupVisualData* visual_data) {
-  if (!Contains(id))
-    return;
-
-  const std::optional<int> index = GetIndexOf(id);
-  UpdateVisualDataImpl(index.value(), visual_data);
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
-  }
-}
-
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   if (Contains(group_guid))

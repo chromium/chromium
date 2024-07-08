@@ -918,7 +918,9 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
-                      /*position=*/std::nullopt);
+                      /*position=*/std::nullopt,
+                      /*saved_guid=*/base::Uuid::GenerateRandomV4(),
+                      /*local_group_id=*/test::GenerateRandomTabGroupID());
   SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
@@ -936,7 +938,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateGroupLocally) {
 
   tab_groups::TabGroupVisualData visual_data(
       u"New Title", tab_groups::TabGroupColorId::kYellow);
-  saved_tab_group_model_.UpdateVisualData(group_guid, &visual_data);
+  saved_tab_group_model_.UpdateVisualData(group.local_group_id().value(),
+                                          &visual_data);
 }
 
 // Verify duplicate tab added from sync is merged with the correct tab and not

@@ -302,6 +302,8 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   const std::u16string original_title = group->title();
   const tab_groups::TabGroupColorId& original_color = group->color();
+  saved_tab_group_model_->OnGroupOpenedInTabStrip(
+      id_1_, test::GenerateRandomTabGroupID());
 
   // Should only update the element if title or color are different
   const std::u16string same_title = u"Group One";
@@ -309,7 +311,8 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
       tab_groups::TabGroupColorId::kGrey;
   const tab_groups::TabGroupVisualData same_visual_data(same_title, same_color,
                                                         /*is_collapsed*/ false);
-  saved_tab_group_model_->UpdateVisualData(id_1_, &same_visual_data);
+  saved_tab_group_model_->UpdateVisualData(group->local_group_id().value(),
+                                           &same_visual_data);
   EXPECT_EQ(group->title(), original_title);
   EXPECT_EQ(group->color(), original_color);
 
@@ -319,7 +322,8 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
       tab_groups::TabGroupColorId::kCyan;
   const tab_groups::TabGroupVisualData new_visual_data(new_title, new_color,
                                                        /*is_collapsed*/ false);
-  saved_tab_group_model_->UpdateVisualData(id_1_, &new_visual_data);
+  saved_tab_group_model_->UpdateVisualData(group->local_group_id().value(),
+                                           &new_visual_data);
   EXPECT_EQ(group->title(), new_title);
   EXPECT_EQ(group->color(), new_color);
 
@@ -327,7 +331,8 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
   const std::u16string random_title = u"Random Title";
   const tab_groups::TabGroupVisualData change_title_visual_data(
       random_title, original_color, /*is_collapsed*/ false);
-  saved_tab_group_model_->UpdateVisualData(id_1_, &change_title_visual_data);
+  saved_tab_group_model_->UpdateVisualData(group->local_group_id().value(),
+                                           &change_title_visual_data);
   EXPECT_EQ(group->title(), random_title);
   EXPECT_EQ(group->color(), original_color);
 
@@ -336,7 +341,8 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
       tab_groups::TabGroupColorId::kGrey;
   const tab_groups::TabGroupVisualData change_color_visual_data(
       original_title, random_color, /*is_collapsed*/ false);
-  saved_tab_group_model_->UpdateVisualData(id_1_, &change_color_visual_data);
+  saved_tab_group_model_->UpdateVisualData(group->local_group_id().value(),
+                                           &change_color_visual_data);
   EXPECT_EQ(group->title(), original_title);
   EXPECT_EQ(group->color(), random_color);
 }
@@ -1026,6 +1032,7 @@ TEST_P(SavedTabGroupModelObserverTest, RemovedElement) {
 // element from the model.
 TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
   SavedTabGroup group_4(test::CreateTestSavedTabGroup());
+  group_4.SetLocalGroupId(test::GenerateRandomTabGroupID());
   saved_tab_group_model_->Add(group_4);
 
   const std::u16string new_title = u"New Title";
@@ -1034,7 +1041,7 @@ TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
 
   const tab_groups::TabGroupVisualData new_visual_data(new_title, new_color,
                                                        /*is_collapsed*/ false);
-  saved_tab_group_model_->UpdateVisualData(group_4.saved_guid(),
+  saved_tab_group_model_->UpdateVisualData(group_4.local_group_id().value(),
                                            &new_visual_data);
 
   const int index = retrieved_group_.size() - 1;

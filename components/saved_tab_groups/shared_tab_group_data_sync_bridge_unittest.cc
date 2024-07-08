@@ -655,7 +655,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
   InitializeBridge();
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
-                      /*urls=*/{}, /*position=*/std::nullopt);
+                      /*urls=*/{}, /*position=*/std::nullopt,
+                      /*saved_guid=*/base::Uuid::GenerateRandomV4(),
+                      test::GenerateRandomTabGroupID());
   group.SetCollaborationId("collaboration");
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
@@ -677,7 +679,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
           })));
   tab_groups::TabGroupVisualData visual_data(
       u"new title", tab_groups::TabGroupColorId::kYellow);
-  model()->UpdateVisualData(group.saved_guid(), &visual_data);
+  model()->UpdateVisualData(group.local_group_id().value(), &visual_data);
 
   EXPECT_THAT(
       captured_entity_data,

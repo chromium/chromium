@@ -2375,7 +2375,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   std::u16string new_title = u"This is a new title";
   tab_groups::TabGroupColorId new_color = tab_groups::TabGroupColorId::kCyan;
   tab_groups::TabGroupVisualData new_visual_data(new_title, new_color);
-  service->model()->UpdateVisualData(saved_group_id, &new_visual_data);
+  service->model()->UpdatedVisualDataFromSync(saved_group_id, &new_visual_data);
 
   // Restore it.
   chrome::RestoreTab(browser());
