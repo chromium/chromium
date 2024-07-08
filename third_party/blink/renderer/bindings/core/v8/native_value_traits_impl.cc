@@ -94,22 +94,18 @@ EventListener* NativeValueTraits<IDLOnErrorEventHandler>::NativeValue(
       value, JSEventHandler::HandlerType::kOnErrorEventHandler);
 }
 
-namespace internal {
+namespace bindings::internal {
 
-// static
-ByteSpanWithInlineStorage ByteSpanWithInlineStorage::GetViewData(
-    v8::Local<v8::ArrayBufferView> view) {
+base::span<const uint8_t> GetViewData(
+    v8::Local<v8::ArrayBufferView> view,
+    base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
+        inline_storage) {
   const size_t length = view->ByteLength();
-  if (!view->HasBuffer() && length <= sizeof inline_storage_) {
-    ByteSpanWithInlineStorage res(length);
-    view->CopyContents(res.inline_storage_, sizeof inline_storage_);
-    return res;
+  if (!view->HasBuffer() && length < inline_storage.size_bytes()) {
+    view->CopyContents(inline_storage.data(), inline_storage.size_bytes());
+    return base::make_span(inline_storage.data(), length);
   }
-  v8::Local<v8::ArrayBuffer> buffer = view->Buffer();
-  auto buffer_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(buffer->Data()), buffer->ByteLength());
-  return ByteSpanWithInlineStorage(
-      buffer_span.subspan(view->ByteOffset(), length));
+  return GetArrayData(view->Buffer()).subspan(view->ByteOffset(), length);
 }
 
 ByteSpanWithInlineStorage& ByteSpanWithInlineStorage::operator=(
@@ -123,6 +119,6 @@ ByteSpanWithInlineStorage& ByteSpanWithInlineStorage::operator=(
   return *this;
 }
 
-}  // namespace internal
+}  // namespace bindings::internal
 
 }  // namespace blink

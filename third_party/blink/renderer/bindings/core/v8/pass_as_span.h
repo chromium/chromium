@@ -11,25 +11,20 @@
 
 namespace blink {
 
-namespace internal {
+namespace bindings::internal {
 
 class CORE_EXPORT ByteSpanWithInlineStorage {
   STACK_ALLOCATED();
 
  public:
+  static constexpr size_t kInlineStorageSize = 64;
+
   ByteSpanWithInlineStorage() = default;
   ByteSpanWithInlineStorage(const ByteSpanWithInlineStorage& r) { *this = r; }
 
   ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r);
 
-  template <typename T>
-  static ByteSpanWithInlineStorage GetArrayData(v8::Local<T> array) {
-    return ByteSpanWithInlineStorage(base::make_span(
-        reinterpret_cast<const uint8_t*>(array->Data()), array->ByteLength()));
-  }
-
-  static ByteSpanWithInlineStorage GetViewData(
-      v8::Local<v8::ArrayBufferView> view);
+  void Assign(base::span<const uint8_t> span) { span_ = span; }
 
   // This class allows implicit conversion to span, because it's an internal
   // class tightly coupled to the bindings generator that knows how to use it.
@@ -39,17 +34,25 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   operator base::span<const uint8_t>() const&& = delete;
   const base::span<const uint8_t> as_span() const { return span_; }
 
- private:
-  explicit ByteSpanWithInlineStorage(base::span<const uint8_t> span)
-      : span_(span) {}
-  explicit ByteSpanWithInlineStorage(size_t size)
-      : ByteSpanWithInlineStorage(base::make_span(inline_storage_, size)) {
-    DCHECK_LE(size, sizeof inline_storage_);
+  base::span<uint8_t, kInlineStorageSize> GetInlineStorage() {
+    return inline_storage_;
   }
 
+ private:
   base::span<const uint8_t> span_;
-  uint8_t inline_storage_[64];
+  uint8_t inline_storage_[kInlineStorageSize];
 };
+
+template <typename T>
+base::span<const uint8_t> GetArrayData(v8::Local<T> array) {
+  return base::make_span(reinterpret_cast<const uint8_t*>(array->Data()),
+                         array->ByteLength());
+}
+
+CORE_EXPORT base::span<const uint8_t> GetViewData(
+    v8::Local<v8::ArrayBufferView> view,
+    base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
+        inline_storage);
 
 template <typename T>
 class SpanWithInlineStorage {
@@ -57,11 +60,6 @@ class SpanWithInlineStorage {
 
  public:
   SpanWithInlineStorage() = default;
-
-  static SpanWithInlineStorage GetViewData(
-      v8::Local<v8::ArrayBufferView> view) {
-    return SpanWithInlineStorage(view);
-  }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator base::span<const T>() const& { return as_span(); }
@@ -72,9 +70,13 @@ class SpanWithInlineStorage {
                            bytes.size() / sizeof(T));
   }
 
+  void Assign(base::span<const uint8_t> span) { bytes_.Assign(span); }
+  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
+  GetInlineStorage() {
+    return bytes_.GetInlineStorage();
+  }
+
  private:
-  explicit SpanWithInlineStorage(v8::Local<v8::ArrayBufferView> view)
-      : bytes_(ByteSpanWithInlineStorage::GetViewData(view)) {}
   ByteSpanWithInlineStorage bytes_;
 };
 
@@ -108,7 +110,7 @@ struct TypedArrayElementTraits<uint8_t> {
   }
 };
 
-}  // namespace internal
+}  // namespace bindings::internal
 
 // This is a marker class for differentiating [PassAsSpan] argument conversions.
 // The actual type returned is `SpanWithInlineStorage`, however, unlike the
@@ -123,17 +125,12 @@ template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared, typename T = void>
 struct PassAsSpan : public PassAsSpanMarkerBase {
   static constexpr bool allow_shared =
       AllowShared == AllowSharedFlag::kAllowShared;
-  static constexpr bool is_typed = true;
+  static constexpr bool is_typed = !std::is_same_v<T, void>;
   using ElementType = T;
-  using ReturnType = internal::SpanWithInlineStorage<T>;
-};
-
-template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared>
-struct PassAsSpan<AllowShared, void> : public PassAsSpanMarkerBase {
-  static constexpr bool allow_shared =
-      AllowShared == AllowSharedFlag::kAllowShared;
-  static constexpr bool is_typed = false;
-  using ReturnType = internal::ByteSpanWithInlineStorage;
+  using ReturnType =
+      std::conditional_t<is_typed,
+                         bindings::internal::SpanWithInlineStorage<T>,
+                         bindings::internal::ByteSpanWithInlineStorage>;
 };
 
 }  // namespace blink
