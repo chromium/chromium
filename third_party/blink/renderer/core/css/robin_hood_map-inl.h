@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Inline definitions for robin_hood_map.h.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROBIN_HOOD_MAP_INL_H_
