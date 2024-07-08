@@ -29,6 +29,7 @@ static_library("osauth") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/login/quick_unlock",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",

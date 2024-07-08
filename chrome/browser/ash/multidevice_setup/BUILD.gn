@@ -26,6 +26,7 @@ static_library("multidevice_setup") {
     "//chrome/browser/ash/android_sms",
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/multidevice/logging",
     "//chromeos/ash/components/osauth/public",

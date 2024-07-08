@@ -348,6 +348,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
