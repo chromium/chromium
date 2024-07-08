@@ -4,6 +4,8 @@
 
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 
+#include <vector>
+
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -26,6 +29,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,17 +41,26 @@ namespace {
 constexpr uint32_t kMaxInitializationRetry = 3;
 constexpr base::TimeDelta kRetryDelay = base::Minutes(5);
 
-constexpr char kHtmlMimeType[] = "text/html";
-
-// For a PDF tab, there are two associated processes (and two WebContentses):
-// (i) PDF Viewer Mimehandler (mime type = text/html) and (ii) PDF renderer
-// process (mime type = application/pdf). This helper function returns all PDF-
-// related WebContentses associated with the Mimehandlers for a given Profile.
-// Note that it does trigger PdfAccessibilityTree::AccessibilityModeChanged()
-// if the AXMode with ui::AXMode::kPDFOcr is set on PDF WebContents with the
-// text/html mime type; but it does not on PDF WebContents with the
-// application/pdf mime type.
-std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
+// Returns all WebContents with PDF content associated with a given Profile.
+// When a PDF is opened in GuestView PDF Viewer, the following structure is
+// expected:
+// -----------------------------------------
+// WebContents A:
+//  Primary main frame
+//   WebContents B (inner PDF WebContents):
+//    PDF extension frame
+//     PDF content frame (renderer)
+// -----------------------------------------
+// On the other hand, OOPIF PDF Viewer doesn't create an inner WebContents.
+// When a PDF is opened in OOPIF PDF Viewer, the following structure is
+// expected:
+// -----------------------------------------
+// WebContents A:
+//  Primary main frame
+//   PDF extension frame
+//    PDF content frame (renderer)
+// -----------------------------------------
+std::vector<content::WebContents*> GetAllPdfWebContents(Profile* profile) {
   // Code borrowed from `content::WebContentsImpl::GetAllWebContents()`.
   std::vector<content::WebContents*> result;
 
@@ -70,13 +83,21 @@ std::vector<content::WebContents*> GetPdfHtmlWebContentses(Profile* profile) {
         Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
       continue;
     }
-    // Check if WebContents is PDF's.
-    if (!IsPdfExtensionOrigin(
-            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-      continue;
+
+    if (chrome_pdf::features::IsOopifPdfEnabled()) {
+      // If `web_contents` has a `pdf::PdfViewerStreamManager`, then there must
+      // be a PDF in the WebContents in OOPIF PDF Viewer.
+      if (pdf::PdfViewerStreamManager::FromWebContents(web_contents)) {
+        result.push_back(web_contents);
+      }
+    } else if (IsPdfExtensionOrigin(web_contents->GetPrimaryMainFrame()
+                                        ->GetLastCommittedOrigin())) {
+      // GuestView PDF Viewer case. If the WebContents has a PDF, GuestView PDF
+      // Viewer has one inner PDF WebContents, and its primary main frame has
+      // the PDF extension origin. It will iterate on this innter PDF
+      // WebContents, so check its primary main frame.
+      result.push_back(web_contents);
     }
-    DCHECK_EQ(web_contents->GetContentsMimeType(), kHtmlMimeType);
-    result.push_back(web_contents);
   }
   return result;
 }
@@ -98,10 +119,11 @@ bool IsAccessibilityEnabled(Profile* profile) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // Check all web contentses. If any of them have screen reader mode enabled,
+  // Check all web contentses. `ReadAnythingUntrustedPageHandler` sets the
+  // screen reader mode when starting to observe a PDF WebContents via
+  // `SetUpPdfObserver()`. So if any of them have screen reader mode enabled,
   // return true.
-  auto contentses = GetPdfHtmlWebContentses(profile);
-  for (auto contents : contentses) {
+  for (auto* contents : GetAllPdfWebContents(profile)) {
     if (contents->GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader)) {
       return true;
     }
@@ -167,8 +189,8 @@ PdfOcrController::~PdfOcrController() = default;
 
 // static
 std::vector<content::WebContents*>
-PdfOcrController::GetAllPdfWebContentsesForTesting(Profile* profile) {
-  return GetPdfHtmlWebContentses(profile);
+PdfOcrController::GetAllPdfWebContentsForTesting(Profile* profile) {
+  return GetAllPdfWebContents(profile);
 }
 
 bool PdfOcrController::IsEnabled() const {

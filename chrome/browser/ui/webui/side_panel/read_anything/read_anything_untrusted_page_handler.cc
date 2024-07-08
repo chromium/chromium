@@ -693,6 +693,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
 void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   pdf_observer_.reset();
   content::WebContents* main_contents = main_observer_->web_contents();
+  // TODO(crbug.com/339864546): Make it compatible with OOPIF PDF Viewer.
   std::vector<content::WebContents*> inner_contents =
       main_contents ? main_contents->GetInnerWebContents()
                     : std::vector<content::WebContents*>();

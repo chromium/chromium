@@ -26,33 +26,17 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
+#else
 #include <optional>
 
 #include "chrome/browser/browser_process.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#else
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
-
-class WebContentsLoadWaiter : public content::WebContentsObserver {
- public:
-  // Observe `DidFinishLoad` for the specified |web_contents|.
-  explicit WebContentsLoadWaiter(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
-
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override {
-    run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
-};
 
 class DownloadObserver : public screen_ai::ScreenAIInstallState::Observer {
  public:
@@ -119,11 +103,18 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Enable Chromevox.
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(enabled);
+    if (enabled) {
+      // Block until Chromevox is fully loaded.
+      speech_monitor_.ExpectSpeechPattern("*");
+      speech_monitor_.Call([this]() { DisableEarcons(); });
+      speech_monitor_.Replay();
+    }
 #else
     if (!enabled) {
       scoped_accessibility_override_.reset();
     } else if (!scoped_accessibility_override_) {
-      scoped_accessibility_override_.emplace(ui::AXMode::kScreenReader);
+      scoped_accessibility_override_.emplace(ui::AXMode::kWebContents |
+                                             ui::AXMode::kScreenReader);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
@@ -146,11 +137,44 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
   }
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void DisableEarcons() {
+    // Playing earcons from within a test is not only annoying if you're
+    // running the test locally, but seems to cause crashes
+    // (http://crbug.com/396507). Work around this by just telling
+    // ChromeVox to not ever play earcons (prerecorded sound effects).
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId,
+        "ChromeVox.earcons.playEarcon = function() {};");
+  }
+
+  ash::test::SpeechMonitor speech_monitor_;
+#else
   std::optional<content::ScopedAccessibilityModeOverride>
       scoped_accessibility_override_;
 #endif
 };
+
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, TestGetAllPdfWebContents) {
+  // Load a HTML webpage.
+  constexpr char kTestHtml[] =
+      "<html><head><title>TEST</title></head><body></body></html>";
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string("data:text/html,") + kTestHtml)));
+
+  std::vector<content::WebContents*> pdf_web_contents_vector =
+      screen_ai::PdfOcrController::GetAllPdfWebContentsForTesting(
+          browser()->profile());
+  ASSERT_EQ(0u, pdf_web_contents_vector.size());
+
+  // Load test PDF.
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  pdf_web_contents_vector =
+      screen_ai::PdfOcrController::GetAllPdfWebContentsForTesting(
+          browser()->profile());
+  ASSERT_EQ(1u, pdf_web_contents_vector.size());
+}
 
 // Enabling screen reader should affect the accessibility mode of a new
 // WebContents of PDF Viewer Mimehandler.
@@ -162,27 +186,22 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
     GTEST_SKIP();
   }
 
-  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
-      ->set_ocr_ready_for_testing();
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
   EnableScreenReader(true);
-  // Load test PDF.
-  content::WebContents* active_web_contents = GetActiveWebContents();
-  WebContentsLoadWaiter load_waiter(active_web_contents);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  load_waiter.Wait();
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->set_ocr_ready_for_testing();
+  screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
+      ->Activate();
 
-  std::vector<content::WebContents*> html_web_contents_vector =
-      screen_ai::PdfOcrController::GetAllPdfWebContentsesForTesting(
-          browser()->profile());
-  for (auto* web_contents : html_web_contents_vector) {
-    ax_mode = web_contents->GetAccessibilityMode();
-    EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
-  }
+  // Load test PDF.
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  content::WebContents* pdf_contents = GetActiveWebContents();
+  ax_mode = pdf_contents->GetAccessibilityMode();
+  EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
 
 // Enabling screen reader should affect the accessibility mode of an exiting
@@ -199,31 +218,18 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
   // Load test PDF.
-  content::WebContents* active_web_contents = GetActiveWebContents();
-  WebContentsLoadWaiter load_waiter(active_web_contents);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  load_waiter.Wait();
-
-  std::vector<content::WebContents*> html_web_contents_vector =
-      screen_ai::PdfOcrController::GetAllPdfWebContentsesForTesting(
-          browser()->profile());
-  for (auto* web_contents : html_web_contents_vector) {
-    ax_mode = web_contents->GetAccessibilityMode();
-    EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
-  }
+  ASSERT_TRUE(LoadPdf((embedded_test_server()->GetURL("/pdf/test.pdf"))));
+  content::WebContents* pdf_contents = GetActiveWebContents();
+  ax_mode = pdf_contents->GetAccessibilityMode();
+  EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
       ->set_ocr_ready_for_testing();
   EnableScreenReader(true);
 
-  html_web_contents_vector =
-      screen_ai::PdfOcrController::GetAllPdfWebContentsesForTesting(
-          browser()->profile());
-  for (auto* web_contents : html_web_contents_vector) {
-    ax_mode = web_contents->GetAccessibilityMode();
-    EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
-  }
+  pdf_contents = GetActiveWebContents();
+  ax_mode = pdf_contents->GetAccessibilityMode();
+  EXPECT_TRUE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutScreenReader) {
