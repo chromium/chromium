@@ -51,8 +51,6 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr bool kIsAndroid = !!BUILDFLAG(IS_ANDROID);
-
 // The TemplateURLRef has any number of terms that need to be replaced. Each of
 // the terms is enclosed in braces. If the character preceeding the final
 // brace is a ?, it indicates the term is optional and can be replaced with
@@ -848,46 +846,31 @@ bool TemplateURLRef::ParseParameter(size_t start,
   } else if (!prepopulated_) {
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ false);
-    // User-added templates (which are currently only supported on desktop) are
-    // expected to sometimes fail because they may contain user-added
-    // expansions. On Android, however, non-prepopulated templates may be
-    // provided from an external source which should only be providing valid
-    // expansions.
-    // Despite significance of this finding, this should never be a CHECK since
-    // it's external data but this will collect dumps to help us diagnose any
-    // issues.
-    if constexpr (kIsAndroid) {
-      // Capture a snippet of Template URL and the Parameter causing the
-      // problem.
-      SCOPED_CRASH_KEY_STRING256("TemplateURL", "URL", *url);
-      SCOPED_CRASH_KEY_STRING32("TemplateURL", "Parameter", parameter);
-      SCOPED_CRASH_KEY_STRING32("TemplateURL", "Source", "User");
-      base::debug::DumpWithoutCrashing();
+    if (!base::FeatureList::IsEnabled(
+            omnibox::kDropUnrecognizedTemplateUrlParameters)) {
+      url->insert(start, full_parameter.data(), full_parameter.size());
+      return false;
     }
-
-    // If it's a prepopulated URL, we know that it's safe to remove unknown
-    // parameters, so just ignore this and return true below. Otherwise it could
-    // be some garbage but can also be a javascript block. Put it back.
+    // The unrecognized parameters can originate from Chrome's DMA upstream
+    // definitions, or Chrome Extensions. In each case, data has shown that the
+    // parameters don't carry any JSON or Javascript content and should be safe
+    // to be removed.
+    // This still allows JSON payload to be included in the Template URL, but
+    // requires the braces to be escaped ahead of time.
     //
-    // TODO(b/344681320): revisit the logic below based on UnrecognizedParameter
-    // findings:
-    // - If the histogram shows very little or no records overall, consider
-    //   dropping the parameter and return values.
-    // - If the histogram shows no records on mobile platforms, drop the
-    //   parameter only on mobile and update return values accordingly.
-    url->insert(start, full_parameter.data(), full_parameter.size());
-    return false;
+    // Fallthrough.
   } else {
+    // Despite Chrome normally relying on prepopulated_engines.json file, there
+    // are other mechanisms that can supply overrides - see:
+    // http://cs/search?q=google:acceptedSuggestion
+    // The use of these parameters - and Template URLs - was further confirmed
+    // by collecting additional data with the help of the crash/ service.
+    //
+    // Since we can't mark this NOTREACHED(), remove all parameters seen here.
+    //
+    // Fallthrough.
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
                               /* is externally supplied template? */ true);
-    // Prepopulated templates should always be valid on all platforms. Enforce
-    // this invariant with a DCHECK to ensure violations are fixed immediately.
-    SCOPED_CRASH_KEY_STRING256("TemplateURL", "URL", *url);
-    SCOPED_CRASH_KEY_STRING32("TemplateURL", "Parameter", parameter);
-    SCOPED_CRASH_KEY_STRING32("TemplateURL", "Source", "Chrome");
-    base::debug::DumpWithoutCrashing();
-
-    return true;
   }
   return true;
 }
