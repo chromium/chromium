@@ -94,7 +94,7 @@ FirstRunDialog::FirstRunDialog(base::RepeatingClosure learn_more_callback,
   report_crashes_ = AddChildView(std::make_unique<views::Checkbox>(
       l10n_util::GetStringUTF16(IDS_FR_ENABLE_LOGGING)));
   // Having this box checked means the user has to opt-out of metrics recording.
-  report_crashes_->SetChecked(!first_run::IsMetricsReportingOptIn());
+  report_crashes_->SetChecked(true);
 }
 
 FirstRunDialog::~FirstRunDialog() {

@@ -346,13 +346,6 @@ bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
 }
 #endif
 
-bool IsMetricsReportingOptIn() {
-  // Metrics reporting is opt-out by default for all platforms and channels.
-  // However, user will have chance to modify metrics reporting state during
-  // first run.
-  return false;
-}
-
 void CreateSentinelIfNeeded() {
   if (IsChromeFirstRun()) {
     auto sentinel_creation_result = CreateSentinel();
