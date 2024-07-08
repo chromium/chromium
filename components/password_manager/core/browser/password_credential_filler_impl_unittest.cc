@@ -247,6 +247,14 @@ TEST_P(PasswordCredentialFillerTest,
   filler.FillUsernameAndPassword(kUsername, kPassword);
 }
 
+TEST_P(PasswordCredentialFillerTest, FillWithNullDriver) {
+  PasswordCredentialFillerImpl filler(
+      nullptr, PasswordFillingParams(FormData(), 0, 0,
+                                     autofill::FieldRendererId(), GetParam()));
+  // Should not crash.
+  filler.FillUsernameAndPassword(kUsername, kPassword);
+}
+
 TEST_P(PasswordCredentialFillerTest, Dismiss) {
   PasswordCredentialFillerImpl filler = PrepareFiller();
   EXPECT_CALL(driver(),
