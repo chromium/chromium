@@ -41,7 +41,6 @@ public interface BackPressHandler {
         Type.LOCATION_BAR,
         Type.BOTTOM_CONTROLS,
         Type.TAB_HISTORY,
-        Type.TAB_RETURN_TO_CHROME_START_SURFACE,
         Type.BOTTOM_SHEET,
         Type.PAGE_INSIGHTS_BOTTOM_SHEET,
         Type.SHOW_READING_LIST,
@@ -72,9 +71,8 @@ public interface BackPressHandler {
         int FIND_TOOLBAR = 15;
         int BOTTOM_CONTROLS = 16;
         int TAB_HISTORY = 17;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 18;
-        int SHOW_READING_LIST = 19;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 20;
+        int SHOW_READING_LIST = 18;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 19;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 

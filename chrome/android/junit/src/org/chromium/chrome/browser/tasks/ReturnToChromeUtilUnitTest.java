@@ -58,8 +58,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -334,20 +332,20 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mTabModelSelector, mInactivityTracker));
+                        false, intent, null, mInactivityTracker));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, null, mTabModelSelector, mInactivityTracker));
+                        true, intent, null, mInactivityTracker));
 
         // Tests the case when the total tab count > 0. Verifies that Start is only shown on
         // tablets.
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mTabModelSelector, mInactivityTracker));
+                        false, intent, null, mInactivityTracker));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, null, mTabModelSelector, mInactivityTracker));
+                        true, intent, null, mInactivityTracker));
     }
 
     @Test
@@ -608,21 +606,21 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+                        true, intent, mSaveInstanceState, mInactivityTracker));
 
         doReturn(true)
                 .when(mSaveInstanceState)
                 .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
         assertFalse(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+                        true, intent, mSaveInstanceState, mInactivityTracker));
 
         doReturn(false)
                 .when(mSaveInstanceState)
                 .getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+                        true, intent, mSaveInstanceState, mInactivityTracker));
     }
 
     @Test
@@ -652,25 +650,6 @@ public class ReturnToChromeUtilUnitTest {
                         .build();
         ReturnToChromeUtil.showHomeSurfaceUiOnNtp(mNtpTab, mTab1, mHomeSurfaceTracker);
         histogram.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldHandleTabSwitcherShown() {
-        LayoutStateProvider layoutStateProvider = Mockito.mock(LayoutStateProvider.class);
-
-        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns false in all invalid
-        // cases.
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldHandleTabSwitcherShown(false, layoutStateProvider));
-        Assert.assertFalse(ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, null));
-        doReturn(false).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
-
-        // Verifies ReturnToChromeUtil.shouldHandleTabSwitcherShown() returns true.
-        doReturn(true).when(layoutStateProvider).isLayoutVisible(eq(LayoutType.TAB_SWITCHER));
-        assertTrue(ReturnToChromeUtil.shouldHandleTabSwitcherShown(true, layoutStateProvider));
     }
 
     private void setupAndVerifyTablets() {

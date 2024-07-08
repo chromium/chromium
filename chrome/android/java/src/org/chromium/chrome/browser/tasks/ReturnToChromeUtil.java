@@ -19,28 +19,16 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -63,7 +51,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.segmentation_platform.ClassificationResult;
@@ -135,146 +122,6 @@ public final class ReturnToChromeUtil {
     }
 
     private ReturnToChromeUtil() {}
-
-    /**
-     * A helper class to handle the back press related to ReturnToChrome feature. If a tab is opened
-     * from start surface and this tab is unable to be navigated back further, then we trigger
-     * the callback to show overview mode.
-     */
-    public static class ReturnToChromeBackPressHandler implements BackPressHandler, Destroyable {
-        private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-                new ObservableSupplierImpl<>();
-        private final Callback<Boolean> mOnBackPressedCallback;
-        private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
-        private final ActivityTabProvider mActivityTabProvider;
-        private final Supplier<Tab> mTabSupplier; // for debugging only
-        private LayoutStateProvider mLayoutStateProvider;
-        private LayoutStateObserver mLayoutStateObserver;
-        private boolean mIsHandleTabSwitcherShownEnabled;
-
-        public ReturnToChromeBackPressHandler(
-                ActivityTabProvider activityTabProvider,
-                Callback<Boolean> onBackPressedCallback,
-                Supplier<Tab> tabSupplier,
-                OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-                boolean isHandleTabSwitcherShownEnabled) {
-            mActivityTabProvider = activityTabProvider;
-            mActivityTabObserver =
-                    new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
-                        @Override
-                        protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                            onBackPressStateChanged();
-                        }
-                    };
-            mOnBackPressedCallback = onBackPressedCallback;
-            mTabSupplier = tabSupplier;
-            mIsHandleTabSwitcherShownEnabled = isHandleTabSwitcherShownEnabled;
-            if (mIsHandleTabSwitcherShownEnabled) {
-                layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
-            }
-            onBackPressStateChanged();
-        }
-
-        private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
-            mLayoutStateProvider = layoutStateProvider;
-            if (mLayoutStateObserver == null) {
-                mLayoutStateObserver =
-                        new LayoutStateObserver() {
-                            @Override
-                            public void onFinishedShowing(int layoutType) {
-                                onBackPressStateChanged();
-                            }
-                        };
-            }
-            mLayoutStateProvider.addObserver(mLayoutStateObserver);
-        }
-
-        private void onBackPressStateChanged() {
-            Tab tab = mActivityTabProvider.get();
-            mBackPressChangedSupplier.set(
-                    tab != null && isTabFromStartSurface(tab)
-                            || shouldHandleTabSwitcherShown(
-                                    mIsHandleTabSwitcherShownEnabled, mLayoutStateProvider));
-        }
-
-        @Override
-        public @BackPressResult int handleBackPress() {
-            Tab tab = mActivityTabProvider.get();
-            boolean handleTabSwitcherShown =
-                    shouldHandleTabSwitcherShown(
-                            mIsHandleTabSwitcherShownEnabled, mLayoutStateProvider);
-            boolean res =
-                    tab != null && !tab.canGoBack() && isTabFromStartSurface(tab)
-                            || handleTabSwitcherShown;
-            if (!res) {
-                var controlTab = mTabSupplier.get();
-                int layoutType =
-                        mLayoutStateProvider != null
-                                ? mLayoutStateProvider.getActiveLayoutType()
-                                : LayoutType.NONE;
-                String msg =
-                        "tab %s; control tab %s; back press state %s; layout %s; isFromSS: %s;";
-                boolean isFromSS = tab != null && isTabFromStartSurface(tab);
-                assert false
-                        : String.format(
-                                msg,
-                                tab,
-                                controlTab,
-                                tab != null && tab.canGoBack(),
-                                layoutType,
-                                isFromSS);
-                if (BackPressManager.correctTabNavigationOnFallback()) {
-                    return BackPressResult.FAILURE;
-                }
-            }
-            mOnBackPressedCallback.onResult(handleTabSwitcherShown);
-            return res ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
-        }
-
-        @Override
-        public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-            return mBackPressChangedSupplier;
-        }
-
-        @Override
-        public void destroy() {
-            mActivityTabObserver.destroy();
-            if (mLayoutStateProvider != null) {
-                mLayoutStateProvider.removeObserver(mLayoutStateObserver);
-                mLayoutStateProvider = null;
-            }
-        }
-    }
-
-    /**
-     * Returns whether to handle the back operation if the Tab switcher is showing.
-     * @param shouldHandleTabSwitcherShown Whether the back operation should be handled when the
-     *     Tab switcher is showing. It is only true when both Start surface and Start surface
-     * refactor feature flags are enabled.
-     * @param layoutStateProvider The provider of the current layout state.
-     */
-    public static boolean shouldHandleTabSwitcherShown(
-            boolean shouldHandleTabSwitcherShown, LayoutStateProvider layoutStateProvider) {
-        return shouldHandleTabSwitcherShown
-                && layoutStateProvider != null
-                && layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
-    }
-
-    /**
-     * Shows the Start surface if the given {@link handleTabSwitcherShown} is true.
-     * @param handleTabSwitcherShown Whether to handle the back operation from the current showing
-     *                               Tab switcher.
-     * @param layoutManager The {@link LayoutManager} object.
-     */
-    public static boolean mayReturnToStartSurface(
-            boolean handleTabSwitcherShown, LayoutManager layoutManager) {
-        if (!handleTabSwitcherShown) return false;
-
-        recordStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
-        recordBackNavigationToStart("FromTabSwitcher");
-        layoutManager.showLayout(LayoutType.START_SURFACE, false);
-        return true;
-    }
 
     /**
      * Determine if we should show the tab switcher on returning to Chrome. Returns true if enough
@@ -518,7 +365,6 @@ public final class ReturnToChromeUtil {
             boolean isTablet,
             Intent intent,
             Bundle bundle,
-            TabModelSelector tabModelSelector,
             ChromeInactivityTracker inactivityTracker) {
         // If "Start surface on tablet" isn't enabled, or
         // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID isn't enabled, return false.
@@ -545,27 +391,17 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * @param currentTab The current {@link Tab}.
-     * @return Whether the Tab is launched with launchType TabLaunchType.FROM_START_SURFACE or it
-     *     has "OpenedFromStart" property.
-     */
-    public static boolean isTabFromStartSurface(Tab currentTab) {
-        final @TabLaunchType int type = currentTab.getLaunchType();
-        return type == TabLaunchType.FROM_START_SURFACE
-                || StartSurfaceUserData.isOpenedFromStart(currentTab);
-    }
-
-    /**
      * Creates a new Tab and show Home surface UI. This is called when the last active Tab isn't a
      * NTP, and we need to create one and show Home surface UI (a module showing the last active
      * Tab).
+     *
      * @param tabCreator The {@link TabCreator} object.
      * @param tabModelSelector The {@link TabModelSelector} object.
      * @param homeSurfaceTracker The {@link HomeSurfaceTracker} object.
      * @param lastActiveTabUrl The URL of the last active Tab. It is non-null in cold startup before
-     *                         the Tab is restored.
+     *     the Tab is restored.
      * @param lastActiveTab The object of the last active Tab. It is non-null after TabModel is
-     *                      initialized, e.g., in warm startup.
+     *     initialized, e.g., in warm startup.
      */
     public static Tab createNewTabAndShowHomeSurfaceUi(
             @NonNull TabCreator tabCreator,

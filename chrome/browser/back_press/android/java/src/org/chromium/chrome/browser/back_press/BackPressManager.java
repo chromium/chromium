@@ -60,7 +60,7 @@ public class BackPressManager implements Destroyable {
         map.put(Type.TAB_SWITCHER, 10);
         map.put(Type.CLOSE_WATCHER, 11);
         map.put(Type.TAB_HISTORY, 12);
-        map.put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
+        // map.put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
         map.put(Type.SHOW_READING_LIST, 14);
         map.put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15);
         map.put(Type.FIND_TOOLBAR, 16);

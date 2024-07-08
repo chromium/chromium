@@ -204,7 +204,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
 import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -421,9 +420,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
 
-    private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
-
-    private Boolean mIsHandleTabSwitcherShownEnabled;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
 
@@ -2875,19 +2871,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        // crbug.com/1416719: back press on start surface should close the app.
-        final boolean isStartSurfaceHomepageShowing =
-                mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
         final Tab activityTab =
                 BackPressManager.shouldUseActivityTabProvider()
                         ? getActivityTabProvider().get()
                         : getActivityTab();
-        final Tab currentTab = isStartSurfaceHomepageShowing ? null : activityTab;
-        // Handles the case of Start surface homepage is showing.
-        if (currentTab == null) {
-            minimizeAppAndCloseTabOnBackPress(null);
-            return true;
-        }
+        final Tab currentTab = activityTab;
 
         final WebContents webContents = currentTab.getWebContents();
         if (webContents != null) {
@@ -2900,26 +2888,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (getToolbarManager().back()) {
             BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
-            return true;
-        }
-
-        // Handles the case of showing Tab switcher and will return to the Start surface.
-        if (ReturnToChromeUtil.shouldHandleTabSwitcherShown(
-                isHandleTabSwitcherShownEnabled(), mLayoutStateProviderSupplier.get())) {
-            // Passes true since Tab switcher is showing and we should handle this case to return to
-            // the Start surface.
-            returnToOverviewModeOnBackPressed(true);
-            BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
-            return true;
-        }
-
-        // If we aren't in the overview mode, we handle the Tab that is opened from Start Surface.
-        if (!isInOverviewMode()
-                && !isTablet()
-                && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
-            // Passes false since Tab switcher isn't showing.
-            returnToOverviewModeOnBackPressed(false);
-            BackPressManager.record(BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
             return true;
         }
 
@@ -3012,18 +2980,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         mBackPressManager.setHasSystemBackArm(true);
-        if (mReturnToChromeBackPressHandler == null && !isTablet()) {
-            mReturnToChromeBackPressHandler =
-                    new ReturnToChromeBackPressHandler(
-                            getActivityTabProvider(),
-                            this::returnToOverviewModeOnBackPressed,
-                            this::getActivityTab,
-                            mLayoutStateProviderSupplier,
-                            isHandleTabSwitcherShownEnabled());
-            mBackPressManager.addHandler(
-                    mReturnToChromeBackPressHandler,
-                    BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
-        }
         if (!isTablet()) {
             mBackPressManager.addHandler(
                     mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
@@ -3306,11 +3262,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onDestroyInternal() {
-        if (mReturnToChromeBackPressHandler != null) {
-            mReturnToChromeBackPressHandler.destroy();
-            mReturnToChromeBackPressHandler = null;
-        }
-
         if (mReadingListBackPressHandler != null) {
             mReadingListBackPressHandler.destroy();
             mReadingListBackPressHandler = null;
@@ -3583,43 +3534,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void returnToOverviewModeOnBackPressed(boolean handleTabSwitcherShown) {
-        // When TabSwitcherLayout is shown while TabSwitcherMediator doesn't handle the back
-        // operation, it means it should return to the Start surface and is handled here.
-        if (ReturnToChromeUtil.mayReturnToStartSurface(handleTabSwitcherShown, mLayoutManager)) {
-            return;
-        }
-
-        Tab currentTab = getActivityTab();
-        assert currentTab != null && !currentTab.canGoBack();
-
-        // If current tab is an incognito one, we need to change tab model to non-incognito for
-        // showing non-incognito start surface homepage.
-        if (currentTab.isIncognito()) mTabModelSelector.selectModel(/* incognito= */ false);
-
-        if (StartSurfaceUserData.getKeepTab(currentTab)
-                || StartSurfaceUserData.isOpenedFromStart(currentTab)) {
-            // If the current tab is created from the start surface with the keepTab property,
-            // shows the Start surface non-incognito homepage to prevent a loop between the
-            // current tab and previous overview mode. Once in the Start surface, it will close
-            // Chrome if back button is tapped again.
-            showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
-            ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
-        } else {
-            // Otherwise, clicking the back button should go back to the previous overview mode.
-            showOverview(StartSurfaceState.SHOWING_PREVIOUS);
-        }
-
-        if (currentTab.isClosing()) return;
-        // If current tab is incognito, or it shouldn't be kept and it's not from restore, close
-        // the tab.
-        if (currentTab.isIncognito()
-                || (!StartSurfaceUserData.getKeepTab(currentTab)
-                        && currentTab.getLaunchType() != TabLaunchType.FROM_RESTORE)) {
-            closeTabAfterStartSurfaceLayoutIsShown(currentTab);
-        }
-    }
-
     @Override
     public void onSceneChange(Layout layout) {
         super.onSceneChange(layout);
@@ -3760,27 +3674,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         });
     }
 
-    /** Returns whether handling tab switcher shown is enabled. */
-    private boolean isHandleTabSwitcherShownEnabled() {
-        if (mIsHandleTabSwitcherShownEnabled == null) {
-            mIsHandleTabSwitcherShownEnabled =
-                    !isTablet()
-                            && ReturnToChromeUtil.isStartSurfaceEnabled(this);
-        }
-        return mIsHandleTabSwitcherShownEnabled;
-    }
-
     /** Returns whether to show a NTP as the home surface at startup on tablet in regular mode. */
     private boolean shouldShowNtpHomeSurfaceOnStartup() {
         if (mTabModelSelector.isIncognitoSelected()) return false;
 
         assert mInactivityTracker != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                isTablet(),
-                getIntent(),
-                getSavedInstanceState(),
-                mTabModelSelector,
-                mInactivityTracker);
+                isTablet(), getIntent(), getSavedInstanceState(), mInactivityTracker);
     }
 
     /**
@@ -3808,10 +3708,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     .getToolbarAlphaInOverviewObserver()
                     .onOverviewAlphaChanged((float) alpha);
         };
-    }
-
-    public void showStartSurfaceForTesting() {
-        showOverview(StartSurfaceState.SHOWING_START);
     }
 
     private void maybeShowTabSwitcher(Intent intent) {
