@@ -112,7 +112,7 @@ views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
 }
 
 gfx::Insets OmniboxRowView::GetInsets() const {
-  if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+  if (OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
       result_view_->GetThemeState() == OmniboxPartState::IPH) {
     return gfx::Insets::TLBR(8, 8, 8, 16);
   }

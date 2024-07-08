@@ -420,7 +420,7 @@ void AutocompleteResult::SortAndCull(
               matches, [](auto match) { return match.IsIPHSuggestion(); });
         };
         bool add_iph_section =
-            OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+            OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
             page_classification != OmniboxEventProto::NTP_REALBOX &&
             has_iph_match(matches_);
         sections.push_back(std::make_unique<DesktopNTPZpsSection>(

@@ -779,6 +779,10 @@ bool IsStarterPackIPHEnabled();
 // directing users to featured Enterprise search created by policy.
 bool IsFeaturedEnterpriseSearchIPHEnabled();
 
+// Returns true if the IPH for either Starter Pack or Featured Enterprise Site
+// Search is enabled.
+bool IsFeaturedSearchIPHEnabled();
+
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
 

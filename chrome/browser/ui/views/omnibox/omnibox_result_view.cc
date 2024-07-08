@@ -253,7 +253,7 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
     return nullptr;
   }
 
-  if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+  if (OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
       part_state == OmniboxPartState::IPH) {
     return views::CreateThemedRoundedRectBackground(
         GetOmniboxBackgroundColorId(part_state), /*radius=*/8,
@@ -442,7 +442,7 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
   // way to differentiate IPH from the "No Results Found" suggestion. Maybe a
   // different autocomplete match type.
   if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    bool is_iph = OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+    bool is_iph = OmniboxFieldTrial::IsFeaturedSearchIPHEnabled() &&
                   match_.provider->type() ==
                       AutocompleteProvider::Type::TYPE_FEATURED_SEARCH;
     return is_iph ? OmniboxPartState::IPH : OmniboxPartState::NORMAL;

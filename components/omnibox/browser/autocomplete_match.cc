@@ -1469,8 +1469,7 @@ bool AutocompleteMatch::IsTrendSuggestion() const {
 }
 
 bool AutocompleteMatch::IsIPHSuggestion() const {
-  if (!OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
-      !OmniboxFieldTrial::IsFeaturedEnterpriseSearchIPHEnabled()) {
+  if (!OmniboxFieldTrial::IsFeaturedSearchIPHEnabled()) {
     return false;
   }
 

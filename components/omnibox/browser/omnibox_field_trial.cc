@@ -1168,6 +1168,12 @@ bool IsFeaturedEnterpriseSearchIPHEnabled() {
 }
 // <- Featured Enterprise Site Search
 // ---------------------------------------------------------
+// Featured Search ->
+bool IsFeaturedSearchIPHEnabled() {
+  return IsStarterPackIPHEnabled() || IsFeaturedEnterpriseSearchIPHEnabled();
+}
+// <- Featured Search
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 
