@@ -72,6 +72,35 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
 }  // namespace
 
+// Container view for the containing the snapshot. This is here to hide itself
+// if it becomes too small or in compact height. The ViewController
+// callbacks aren't triggered when the keyboard is shown, so it is
+// necessary to subclass UIView.
+@interface CreateTabGroupSnapshotContainerView : UIView
+@end
+
+@implementation CreateTabGroupSnapshotContainerView
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  BOOL tooSmall = self.frame.size.height < 100;
+  BOOL isVerticallyCompacted =
+      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+
+  // The snapshots container should not be displayed in the following
+  // scenarios:
+  // - When the container lacks sufficient space.
+  // - On devices with a vertically compact form factor.
+  CGFloat updatedAlpha = (tooSmall || isVerticallyCompacted) ? 0 : 1;
+  if (self.alpha == updatedAlpha) {
+    return;
+  }
+
+  self.alpha = updatedAlpha;
+}
+
+@end
+
 @implementation CreateTabGroupViewController {
   // Text input to name the group.
   UITextField* _tabGroupTextField;
@@ -594,7 +623,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
           view.alpha = 1;
         }
         [weakSelf.view layoutIfNeeded];
-        [weakSelf hideSnapshotsIfNeeded];
       }
       completion:^(BOOL finished) {
         for (UIView* view in toHide) {
@@ -604,24 +632,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   // To force display the keyboard.
   [_tabGroupTextField becomeFirstResponder];
-}
-
-// Hides the snapshots container depending on some conditions.
-- (void)hideSnapshotsIfNeeded {
-  BOOL tooSmall = _snapshotsContainer.frame.size.height < 100;
-  BOOL isVerticallyCompacted =
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-
-  // The snapshots container should not be displayed in the following
-  // scenarios:
-  // - When the container lacks sufficient space.
-  // - On devices with a vertically compact form factor.
-  CGFloat updatedAlpha = (tooSmall || isVerticallyCompacted) ? 0 : 1;
-  if (_snapshotsContainer.alpha == updatedAlpha) {
-    return;
-  }
-
-  [_snapshotsContainer setAlpha:updatedAlpha];
 }
 
 // Configures the view and all subviews when there is enough space.
@@ -785,7 +795,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 // Returns the view which contains all the selected tabs' snapshot which will be
 // included in the tab group.
 - (UIView*)configuredSnapshotsContainer {
-  UIView* snapshotsBackground = [[UIView alloc] init];
+  UIView* snapshotsBackground =
+      [[CreateTabGroupSnapshotContainerView alloc] init];
   snapshotsBackground.translatesAutoresizingMaskIntoConstraints = NO;
   snapshotsBackground.backgroundColor = [[UIColor colorNamed:kSolidWhiteColor]
       colorWithAlphaComponent:kBackgroundAlpha];
