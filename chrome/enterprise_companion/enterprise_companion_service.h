@@ -23,8 +23,7 @@ class EnterpriseCompanionService {
 
   virtual void Shutdown(base::OnceClosure callback) = 0;
 
-  virtual void FetchPolicies(
-      base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback) = 0;
+  virtual void FetchPolicies(StatusCallback callback) = 0;
 };
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(

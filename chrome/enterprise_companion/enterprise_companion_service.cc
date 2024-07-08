@@ -43,8 +43,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
     }
   }
 
-  void FetchPolicies(base::OnceCallback<void(const EnterpriseCompanionStatus&)>
-                         callback) override {
+  void FetchPolicies(StatusCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
 
@@ -65,8 +64,7 @@ class EnterpriseCompanionServiceImpl : public EnterpriseCompanionService {
   std::unique_ptr<EventLoggerManager> event_logger_manager_;
 
   void OnRegistrationCompleted(
-      base::OnceCallback<void(const EnterpriseCompanionStatus&)>
-          policy_fetch_callback,
+      StatusCallback policy_fetch_callback,
       scoped_refptr<EventLogger> event_logger,
       const EnterpriseCompanionStatus& device_registration_status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
