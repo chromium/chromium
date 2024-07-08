@@ -217,6 +217,7 @@ android_resources("web_contents_delegate_java_resources") {
     "java/res/layout/color_picker_suggestion_view.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
   ]
   deps = [ ":web_contents_delegate_strings_grd" ]
 }
