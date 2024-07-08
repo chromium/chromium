@@ -6,9 +6,14 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
+#include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -20,6 +25,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +33,7 @@
 namespace policy::local_user_files {
 
 namespace {
+constexpr char kReadOnly[] = "read_only";
 
 class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
  public:
@@ -34,6 +41,56 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
   ~MockMigrationObserver() = default;
 
   MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
+};
+
+// Mock implementation of MigrationUploadHandler.
+class MockMigrationCoordinator : public MigrationCoordinator {
+ public:
+  explicit MockMigrationCoordinator(Profile* profile)
+      : MigrationCoordinator(profile) {
+    ON_CALL(*this, Run)
+        .WillByDefault([this](CloudProvider cloud_provider,
+                              std::vector<base::FilePath> file_paths,
+                              const std::string& destination_dir,
+                              MigrationDoneCallback callback) {
+          is_running_ = true;
+          // Simulate upload lasting a while.
+          base::SequencedTaskRunner::GetCurrentDefault()
+              ->GetCurrentDefault()
+              ->PostDelayedTask(
+                  FROM_HERE,
+                  base::BindOnce(&MockMigrationCoordinator::OnMigrationDone,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(callback), true),
+                  base::Minutes(5));  // Delay 5 minutes
+        });
+
+    ON_CALL(*this, Stop).WillByDefault([this]() { is_running_ = false; });
+  }
+  ~MockMigrationCoordinator() override = default;
+
+  bool IsRunning() const override { return is_running_; }
+
+  void OnMigrationDone(MigrationDoneCallback callback, bool success) override {
+    if (is_running_) {
+      std::move(callback).Run(success);
+      is_running_ = false;
+    }
+  }
+
+  MOCK_METHOD(void,
+              Run,
+              (CloudProvider cloud_provider,
+               std::vector<base::FilePath> file_paths,
+               const std::string& destination_dir,
+               MigrationDoneCallback callback),
+              (override));
+  MOCK_METHOD(void, Stop, (), (override));
+
+ private:
+  bool is_running_ = false;
+
+  base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -123,7 +180,118 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   manager.AddObserver(&observer);
 
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
-                       /*destination=*/"read-only");
+                       /*destination=*/kReadOnly);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
+                       EnableLocalFilesStopsMigration) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
+
+  std::unique_ptr<MockMigrationCoordinator> upload_handler =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*upload_handler.get(), Run(CloudProvider::kGoogleDrive,
+                                           testing::_, testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(*upload_handler.get(), Stop).Times(1);
+  }
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(),
+          std::make_unique<MigrationNotificationManager>(browser()->profile()),
+          std::move(upload_handler));
+  manager.AddObserver(&observer);
+
+  // Enable migration to Google Drive.
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/download_dir_util::kLocationGoogleDrive);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  // Allow local storage: stops the migration.
+  SetMigrationPolicies(/*local_user_files_allowed=*/true,
+                       /*destination=*/download_dir_util::kLocationOneDrive);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  manager.Shutdown();
+}
+
+IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
+                       ChangeDestinationStopsMigration) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
+
+  std::unique_ptr<MockMigrationCoordinator> upload_handler =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*upload_handler.get(), Run(CloudProvider::kOneDrive, testing::_,
+                                           testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(*upload_handler.get(), Stop).Times(1);
+    EXPECT_CALL(*upload_handler.get(), Run(CloudProvider::kGoogleDrive,
+                                           testing::_, testing::_, testing::_))
+        .WillOnce([](CloudProvider cloud_provider,
+                     std::vector<base::FilePath> file_paths,
+                     const std::string& destination_dir,
+                     MigrationDoneCallback callback) {
+          // Finish without delay.
+          std::move(callback).Run(true);
+        });
+  }
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(),
+          std::make_unique<MigrationNotificationManager>(browser()->profile()),
+          std::move(upload_handler));
+  manager.AddObserver(&observer);
+
+  // Enable migration to OneDrive.
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/download_dir_util::kLocationOneDrive);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  // Enable migration to Google Drive: first upload stops, a new one starts.
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/download_dir_util::kLocationGoogleDrive);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  manager.Shutdown();
+}
+
+IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
+                       NoDestinationStopsMigration) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
+
+  std::unique_ptr<MockMigrationCoordinator> upload_handler =
+      std::make_unique<MockMigrationCoordinator>(browser()->profile());
+  {
+    testing::InSequence s;
+    EXPECT_CALL(*upload_handler.get(), Run(CloudProvider::kOneDrive, testing::_,
+                                           testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(*upload_handler.get(), Stop).Times(1);
+  }
+
+  LocalFilesMigrationManager manager =
+      LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+          browser()->profile(),
+          std::make_unique<MigrationNotificationManager>(browser()->profile()),
+          std::move(upload_handler));
+  manager.AddObserver(&observer);
+
+  // Enable migration to OneDrive.
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/download_dir_util::kLocationOneDrive);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  // Set migration to "read_only": stops the migration.
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*destination=*/kReadOnly);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
+  manager.Shutdown();
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
+#include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -42,6 +43,13 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     virtual void OnMigrationSucceeded() = 0;
   };
 
+  // Returns an instance of LocalFilesMigrationManager with injected
+  // dependencies. Should only be used in tests.
+  static LocalFilesMigrationManager CreateLocalFilesMigrationManagerForTesting(
+      content::BrowserContext* context,
+      std::unique_ptr<MigrationNotificationManager> notification_manager,
+      std::unique_ptr<MigrationCoordinator> coordinator);
+
   explicit LocalFilesMigrationManager(content::BrowserContext* context);
   LocalFilesMigrationManager(const LocalFilesMigrationManager&) = delete;
   LocalFilesMigrationManager& operator=(const LocalFilesMigrationManager&) =
@@ -58,6 +66,12 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void RemoveObserver(Observer* observer);
 
  private:
+  // Test constructor.
+  LocalFilesMigrationManager(
+      content::BrowserContext* context,
+      std::unique_ptr<MigrationNotificationManager> notification_manager,
+      std::unique_ptr<MigrationCoordinator> coordinator);
+
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
@@ -65,7 +79,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // hours. The migration starts automatically after the delay elapses. If the
   // user chooses to skip the delay (via the info dialog), the migration starts
   // immediately.
-  void InitiateMigration();
+  void ScheduleMigrationAndInformUser();
 
   // Bypasses the migration delay and initiates the upload process immediately.
   // Called when the user clicks the "Upload now" button in the info dialog.
@@ -75,7 +89,7 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void StartMigration();
 
   // Handles the completion of the migration process (success or failure).
-  void OnMigrationDone();
+  void OnMigrationDone(bool success);
 
   // Stops the migration if currently ongoing.
   void MaybeStopMigration();
@@ -101,6 +115,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Shows and manages migration notifications and dialogs.
   std::unique_ptr<MigrationNotificationManager> notification_manager_;
+
+  // Manages the upload of local files to the cloud.
+  std::unique_ptr<MigrationCoordinator> coordinator_;
 
   // Timer for delaying the start of migration.
   std::unique_ptr<base::WallClockTimer> start_delay_timer_;

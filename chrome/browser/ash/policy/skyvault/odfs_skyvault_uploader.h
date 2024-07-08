@@ -25,11 +25,13 @@ class OdfsSkyvaultUploader
   enum class FileType {
     kDownload = 0,
     kScreenCapture = 1,
-    kMaxValue = kScreenCapture,
+    kMigration = 2,
+    kMaxValue = kMigration,
   };
 
-  // Starts uploading the file specified at `path` which is in /tmp.
-  static void Upload(
+  // Starts uploading the file specified at `file_system_url`.
+  // TODO(b/349097896): Pass the destination path.
+  static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
       FileType file_type,
@@ -38,6 +40,9 @@ class OdfsSkyvaultUploader
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
+
+  // Returns a weak pointer to this instance.
+  base::WeakPtr<OdfsSkyvaultUploader> GetWeakPtr();
 
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
@@ -63,7 +68,7 @@ class OdfsSkyvaultUploader
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
-      const file_manager::io_task::ProgressStatus& status) override;
+      const ::file_manager::io_task::ProgressStatus& status) override;
 
   raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;

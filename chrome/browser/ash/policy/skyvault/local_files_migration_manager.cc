@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -33,6 +35,10 @@ namespace {
 
 // Delay the migration for 24 hours.
 const base::TimeDelta kMigrationTimeout = base::Hours(24);
+
+// The prefix of the directory the files should be uploaded to. Used with the
+// unique identifier of the device to form the directory's full name.
+constexpr char kDestinationDirName[] = "ChromeOS device";
 
 // Returns true if `cloud_provider` is set to Google Drive or OneDrive.
 bool IsMigrationEnabled(CloudProvider cloud_provider) {
@@ -56,23 +62,33 @@ CloudProvider StringToCloudProvider(const std::string destination) {
   return CloudProvider::kNotSpecified;
 }
 
+// Returns a list of files under MyFiles.
+std::vector<base::FilePath> GetUrlsInMyFiles(Profile* profile) {
+  std::vector<base::FilePath> file_paths;
+  // TODO(b/350286841): List everything under MyFiles.
+  return file_paths;
+}
+
 }  // namespace
+
+// static
+LocalFilesMigrationManager
+LocalFilesMigrationManager::CreateLocalFilesMigrationManagerForTesting(
+    content::BrowserContext* context,
+    std::unique_ptr<MigrationNotificationManager> notification_manager,
+    std::unique_ptr<MigrationCoordinator> coordinator) {
+  CHECK_IS_TEST();
+  return LocalFilesMigrationManager(context, std::move(notification_manager),
+                                    std::move(coordinator));
+}
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
     content::BrowserContext* context)
-    : context_(context),
-      notification_manager_(std::make_unique<MigrationNotificationManager>(
-          Profile::FromBrowserContext(context))),
-      start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
-  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
-
-  pref_change_registrar_.Init(g_browser_process->local_state());
-  pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationDestination,
-      base::BindRepeating(
-          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
-          base::Unretained(this)));
-}
+    : LocalFilesMigrationManager(context,
+                                 std::make_unique<MigrationNotificationManager>(
+                                     Profile::FromBrowserContext(context)),
+                                 std::make_unique<MigrationCoordinator>(
+                                     Profile::FromBrowserContext(context))) {}
 
 LocalFilesMigrationManager::~LocalFilesMigrationManager() {
   pref_change_registrar_.RemoveAll();
@@ -94,6 +110,24 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+LocalFilesMigrationManager::LocalFilesMigrationManager(
+    content::BrowserContext* context,
+    std::unique_ptr<MigrationNotificationManager> notification_manager,
+    std::unique_ptr<MigrationCoordinator> coordinator)
+    : context_(context),
+      notification_manager_(std::move(notification_manager)),
+      coordinator_(std::move(coordinator)),
+      start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
+  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kLocalUserFilesMigrationDestination,
+      base::BindRepeating(
+          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
+          base::Unretained(this)));
+}
+
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
@@ -109,23 +143,24 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   }
 
   // If local files are allowed or migration is turned off, just stop ongoing
-  // migration if any.
+  // migration or timers if any.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     MaybeStopMigration();
     return;
   }
 
-  // If the destination changed, stop ongoing migration if any.
-  if (cloud_provider_ != cloud_provider_old) {
+  // If the destination changed, stop ongoing migration or timers if any.
+  if (IsMigrationEnabled(cloud_provider_) &&
+      cloud_provider_ != cloud_provider_old) {
     MaybeStopMigration();
   }
 
   // Local files are disabled and migration destination is set - initiate
   // migration.
-  InitiateMigration();
+  ScheduleMigrationAndInformUser();
 }
 
-void LocalFilesMigrationManager::InitiateMigration() {
+void LocalFilesMigrationManager::ScheduleMigrationAndInformUser() {
   CHECK(!local_user_files_allowed_);
   CHECK(IsMigrationEnabled(cloud_provider_));
 
@@ -140,20 +175,30 @@ void LocalFilesMigrationManager::InitiateMigration() {
 }
 
 void LocalFilesMigrationManager::SkipMigrationDelay() {
-  if (start_delay_timer_->IsRunning()) {
-    start_delay_timer_->Stop();
-  }
+  start_delay_timer_->Stop();
   StartMigration();
 }
 
 void LocalFilesMigrationManager::StartMigration() {
+  CHECK(!coordinator_->IsRunning());
+  // Check policies again.
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context_);
+  CHECK(profile);
+  // TODO(aidazolic): Add unique ID of the device.
+  coordinator_->Run(cloud_provider_, GetUrlsInMyFiles(profile),
+                    kDestinationDirName,
+                    base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
+                                   weak_factory_.GetWeakPtr()));
+
   in_progress_ = true;
   notification_manager_->ShowMigrationProgressNotification(cloud_provider_);
-  // TODO(aidazolic): Upload everything under My files.
-  OnMigrationDone();
 }
 
-void LocalFilesMigrationManager::OnMigrationDone() {
+void LocalFilesMigrationManager::OnMigrationDone(bool success) {
   in_progress_ = false;
   if (error_.has_value()) {
     // TODO(aidazolic): Use error message; add on-click action.
@@ -165,7 +210,6 @@ void LocalFilesMigrationManager::OnMigrationDone() {
     for (auto& observer : observers_) {
       observer.OnMigrationSucceeded();
     }
-    // TODO(aidazolic): Pass the path of the folder that files are uploaded to.
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
                                                               base::FilePath());
     VLOG(1) << "Local files migration done";
@@ -173,7 +217,13 @@ void LocalFilesMigrationManager::OnMigrationDone() {
 }
 
 void LocalFilesMigrationManager::MaybeStopMigration() {
-  // TODO(aidazolic): Implementation.
+  // Stop the timer. No-op if not running.
+  start_delay_timer_->Stop();
+
+  if (coordinator_->IsRunning()) {
+    coordinator_->Stop();
+  }
+
   if (in_progress_) {
     in_progress_ = false;
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -26,7 +27,7 @@ void OnUploadDone(
 }  // namespace
 
 // static.
-void OdfsSkyvaultUploader::Upload(
+base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
     Profile* profile,
     const base::FilePath& path,
     FileType file_type,
@@ -46,6 +47,11 @@ void OdfsSkyvaultUploader::Upload(
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
   odfs_skyvault_uploader->Run(base::BindOnce(
       &OnUploadDone, odfs_skyvault_uploader, std::move(upload_callback)));
+  return odfs_skyvault_uploader->GetWeakPtr();
+}
+
+base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 OdfsSkyvaultUploader::OdfsSkyvaultUploader(
