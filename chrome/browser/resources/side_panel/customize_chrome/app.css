@@ -36,6 +36,7 @@ sp-heading {
 
 #toolbarButton {
   border: none;
+  color: var(--cr-primary-text-color);
   display: flex;
   height: 48px;
   justify-content: space-between;

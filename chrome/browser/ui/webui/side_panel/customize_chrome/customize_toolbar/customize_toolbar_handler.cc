@@ -176,27 +176,24 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
 
   add_action(kActionShowPasswordManager,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowBookmarks,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowReadingList,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionShowPaymentMethods,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionShowAddresses,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionSidePanelShowHistoryCluster,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionShowDownloads,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionClearBrowsingData,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
 
-  add_action(kActionSidePanelShowBookmarks,
-             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-  add_action(kActionSidePanelShowHistoryCluster,
-             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-  add_action(kActionSidePanelShowReadAnything,
-             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-  add_action(kActionSidePanelShowReadingList,
-             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-  add_action(kActionSidePanelShowSideSearch,
-             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-
   add_action(kActionPrint,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionSidePanelShowSideSearch,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionShowTranslate,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
@@ -205,6 +202,8 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   add_action(kActionQrCodeGenerator,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionRouteMedia,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionSidePanelShowReadAnything,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionTaskManager,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
@@ -226,10 +225,6 @@ void CustomizeToolbarHandler::ListCategories(ListCategoriesCallback callback) {
       side_panel::customize_chrome::mojom::CategoryId::kYourChrome,
       l10n_util::GetStringUTF8(
           IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_YOUR_CHROME)));
-  categories.push_back(side_panel::customize_chrome::mojom::Category::New(
-      side_panel::customize_chrome::mojom::CategoryId::kSidePanels,
-      l10n_util::GetStringUTF8(
-          IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_SIDE_PANELS)));
   categories.push_back(side_panel::customize_chrome::mojom::Category::New(
       side_panel::customize_chrome::mojom::CategoryId::kTools,
       l10n_util::GetStringUTF8(

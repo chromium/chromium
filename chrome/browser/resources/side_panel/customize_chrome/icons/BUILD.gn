@@ -18,6 +18,7 @@ generate_grd("build_grdp") {
     "expand_carets.svg",
     "generated_image.svg",
     "image.svg",
+    "lightbulb_outline.svg",
     "mini_new_tab_page.svg",
     "productivity.svg",
     "reset.svg",

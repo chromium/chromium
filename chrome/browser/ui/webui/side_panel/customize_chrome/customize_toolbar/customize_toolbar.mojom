@@ -35,7 +35,6 @@ enum ActionId {
 enum CategoryId {
   kNavigation,
   kYourChrome,
-  kSidePanels,
   kTools,
 };
 

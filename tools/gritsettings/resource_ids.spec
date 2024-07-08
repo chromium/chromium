@@ -402,7 +402,7 @@
     "includes": [3820],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
-    "META": {"sizes": {"includes": [70],}},
+    "META": {"sizes": {"includes": [80],}},
     "includes": [3840],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/history_clusters/resources.grd": {

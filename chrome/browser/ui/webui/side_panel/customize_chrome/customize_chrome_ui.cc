@@ -229,6 +229,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"chooseToolbarIconsLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL},
       {"resetToDefaultButtonLabel",
        IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL},
+      {"reorderTipLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_REORDER_TIP_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
