@@ -37,6 +37,10 @@
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/policy/policy_path_parser.h"  // nogncheck
+#endif
+
 namespace {
 
 using ::password_manager::PasswordStoreBackend;
@@ -164,6 +168,12 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
 #endif
   login_db_ptr->SetIsEmptyCb(std::move(is_profile_db_empty_cb));
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::FilePath user_data_dir;
+  policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
+  // If `user_data_dir` is empty it means that policy did not set it.
+  login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
+#endif
   return backend;
 }
 
@@ -218,6 +228,13 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
                   kAutofillableCredentialsAccountStoreLoginDatabase)));
   login_db_ptr->SetIsEmptyCb(std::move(is_account_db_empty_cb));
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::FilePath user_data_dir;
+  policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
+  // If `user_data_dir` is empty it means that policy did not set it.
+  login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
+#endif
 
   return backend;
 }

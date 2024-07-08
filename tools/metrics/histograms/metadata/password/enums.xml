@@ -418,6 +418,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Should not delete, encryption selection is specified via switch"/>
   <int value="5" label="Should not delete, encryption is not availiable"/>
+  <int value="6"
+      label="Should not delete, user data directory is specified using the
+             enterprise policy"/>
 </enum>
 
 <enum name="LoginsChangedTrigger">

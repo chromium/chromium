@@ -206,6 +206,12 @@ class LoginDatabase : public EncryptDecryptInterface {
   void SetClearingUndecryptablePasswordsCb(
       ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  void SetIsUserDataDirPolicySet(bool is_set) {
+    is_user_data_dir_policy_set_ = is_set;
+  }
+#endif
+
   StatisticsTable& stats_table() { return stats_table_; }
   InsecureCredentialsTable& insecure_credentials_table() {
     return insecure_credentials_table_;
@@ -386,6 +392,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   std::optional<bool> were_undecryptable_logins_deleted_;
+  bool is_user_data_dir_policy_set_ = false;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

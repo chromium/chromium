@@ -27,4 +27,7 @@ source_set("backend_factory") {
       "//components/webauthn/android",
     ]
   }
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/policy:path_parser" ]
+  }
 }

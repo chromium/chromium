@@ -227,7 +227,8 @@ enum class ShouldDeleteUndecryptablePasswordsResult {
   kUserPasswordStoreSwitchIsPresent = 3,
   kUserEncryptionSelectionSwitchrIsPresent = 4,
   kEncryptionNotAvailiable = 5,
-  kMaxValue = kEncryptionNotAvailiable,
+  kUserDataDirPolicySet = 6,
+  kMaxValue = kUserDataDirPolicySet,
 };
 
 // Struct to hold table builder for different tables in the LoginDatabase.
@@ -1023,7 +1024,8 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
 
 bool ShouldDeleteUndecryptablePasswords(
     LoginDatabase::ClearingUndecryptablePasswordsCallback
-        clearing_undecryptable_passwords) {
+        clearing_undecryptable_passwords,
+    bool is_user_data_dir_policy_set) {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -1057,6 +1059,14 @@ bool ShouldDeleteUndecryptablePasswords(
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (is_user_data_dir_policy_set) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirPolicySet);
+    return false;
+  }
+#endif
 
   if (!OSCrypt::IsEncryptionAvailable()) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
@@ -2363,7 +2373,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     return FormRetrievalResult::kDbError;
   }
   if (failed) {
-    if (ShouldDeleteUndecryptablePasswords(clearing_undecryptable_passwords_)) {
+    if (ShouldDeleteUndecryptablePasswords(clearing_undecryptable_passwords_,
+                                           is_user_data_dir_policy_set_)) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;
