@@ -193,12 +193,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
 
-  if (gr_context()) {
-    VerifyPixelsWithReadbackGanesh(mailbox, bitmaps);
-  } else {
-    ASSERT_TRUE(context_state_->graphite_context());
-    VerifyPixelsWithReadbackGraphite(mailbox, bitmaps);
-  }
+  VerifyPixelsWithReadback(mailbox, bitmaps);
 }
 
 std::string TestParamToString(

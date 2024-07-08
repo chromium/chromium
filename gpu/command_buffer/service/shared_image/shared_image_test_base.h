@@ -64,6 +64,11 @@ class SharedImageTestBase : public testing::Test {
   // exits on error.
   void InitializeContext(GrContextType context_type);
 
+  // Reads back pixels for each plane and verifies that pixels match
+  // corresponding bitmap from `expected_bitmaps`.
+  void VerifyPixelsWithReadback(const Mailbox& mailbox,
+                                const std::vector<SkBitmap>& expect_bitmaps);
+
   // Reads back pixels for each plane using skia ganesh and verifies that pixels
   // match corresponding bitmap from `expected_bitmaps`.
   void VerifyPixelsWithReadbackGanesh(

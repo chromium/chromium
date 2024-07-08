@@ -232,6 +232,17 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   ASSERT_TRUE(initialize_skia);
 }
 
+void SharedImageTestBase::VerifyPixelsWithReadback(
+    const Mailbox& mailbox,
+    const std::vector<SkBitmap>& expected_bitmaps) {
+  if (gr_context()) {
+    VerifyPixelsWithReadbackGanesh(mailbox, expected_bitmaps);
+  } else {
+    CHECK(context_state_->graphite_context());
+    VerifyPixelsWithReadbackGraphite(mailbox, expected_bitmaps);
+  }
+}
+
 void SharedImageTestBase::VerifyPixelsWithReadbackGanesh(
     const Mailbox& mailbox,
     const std::vector<SkBitmap>& expected_bitmaps) {
@@ -259,9 +270,9 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGanesh(
     SkColorType plane_color_type =
         viz::ToClosestSkColorType(true, format, plane);
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
-    SkImageInfo dst_info =
-        SkImageInfo::Make(plane_size.width(), plane_size.height(),
-                          plane_color_type, kOpaque_SkAlphaType);
+    SkImageInfo dst_info = SkImageInfo::Make(
+        plane_size.width(), plane_size.height(), plane_color_type,
+        expected_bitmaps[plane].alphaType());
     SkBitmap dst_bitmap;
     dst_bitmap.allocPixels(dst_info);
 
@@ -306,9 +317,9 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
     SkColorType plane_color_type =
         viz::ToClosestSkColorType(true, format, plane);
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
-    SkImageInfo dst_info =
-        SkImageInfo::Make(plane_size.width(), plane_size.height(),
-                          plane_color_type, kOpaque_SkAlphaType);
+    SkImageInfo dst_info = SkImageInfo::Make(
+        plane_size.width(), plane_size.height(), plane_color_type,
+        expected_bitmaps[plane].alphaType());
     SkBitmap dst_bitmap;
     dst_bitmap.allocPixels(dst_info);
 
