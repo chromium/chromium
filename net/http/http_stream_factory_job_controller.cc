@@ -172,6 +172,12 @@ HttpStreamFactory::JobController::JobController(
     dict.Set("is_preconnect", is_preconnect_);
     dict.Set("privacy_mode",
              PrivacyModeToDebugString(request_info_.privacy_mode));
+    base::Value::List allowed_bad_certs_list;
+    for (const auto& cert_and_status : allowed_bad_certs_) {
+      allowed_bad_certs_list.Append(
+          cert_and_status.cert->subject().GetDisplayName());
+    }
+    dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
     return dict;
   });
 }
