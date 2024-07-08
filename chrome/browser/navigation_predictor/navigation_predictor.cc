@@ -580,6 +580,7 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
     user_interaction.max_time_in_viewport = std::max(
         user_interaction.max_time_in_viewport.value_or(base::TimeDelta()),
         element->time_in_viewport);
+    user_interaction.percent_vertical_position.reset();
     user_interaction.percent_distance_from_pointer_down.reset();
   }
 }
@@ -597,9 +598,13 @@ void NavigationPredictor::ReportAnchorElementsPositionUpdate(
       continue;
     }
     auto& user_interaction = user_interactions[index_it->second];
-    user_interaction.percent_distance_from_pointer_down =
-        base::saturated_cast<int>(element->distance_from_pointer_down_ratio *
-                                  100);
+    user_interaction.percent_vertical_position =
+        base::saturated_cast<int>(element->vertical_position_ratio * 100);
+    if (element->distance_from_pointer_down_ratio.has_value()) {
+      user_interaction.percent_distance_from_pointer_down =
+          base::saturated_cast<int>(
+              element->distance_from_pointer_down_ratio.value() * 100);
+    }
   }
 }
 

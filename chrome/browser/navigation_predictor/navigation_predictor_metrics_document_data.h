@@ -98,6 +98,9 @@ class NavigationPredictorMetricsDocumentData
     std::optional<double> mouse_velocity;
     // Mouse acceleration when the on-hover event was triggered.
     std::optional<double> mouse_acceleration;
+    // Vertical position of the anchor element's center in the viewport
+    // (recorded as a percentage of the viewport's height).
+    std::optional<int> percent_vertical_position;
     // Vertical distance of the anchor element from the most recently recorded
     // pointerdown that initiated a scroll. This is recorded as a _signed_
     // percentage of the screen height, so that the cases of the link being

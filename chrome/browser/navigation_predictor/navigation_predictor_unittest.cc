@@ -677,10 +677,12 @@ class NavigationPredictorUserInteractionsTest : public NavigationPredictorTest {
   void ReportAnchorElementPositionUpdate(
       blink::mojom::AnchorElementMetricsHost* predictor_service,
       MockNavigationPredictorForTesting::AnchorId anchor_id,
-      float distance_from_pointer_down_ratio) {
+      float vertical_position_ratio,
+      std::optional<float> distance_from_pointer_down_ratio) {
     std::vector<blink::mojom::AnchorElementPositionUpdatePtr> metrics;
     metrics.push_back(blink::mojom::AnchorElementPositionUpdate::New(
-        static_cast<uint32_t>(anchor_id), distance_from_pointer_down_ratio));
+        static_cast<uint32_t>(anchor_id), vertical_position_ratio,
+        distance_from_pointer_down_ratio));
     predictor_service->ReportAnchorElementsPositionUpdate(std::move(metrics));
     base::RunLoop().RunUntilIdle();
   }
@@ -1431,8 +1433,7 @@ class NavigationPredictorNewViewportFeaturesTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(NavigationPredictorNewViewportFeaturesTest,
-       RecordDistanceFromPointerDown) {
+TEST_F(NavigationPredictorNewViewportFeaturesTest, RecordPositionMetrics) {
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
@@ -1457,10 +1458,12 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest,
       user_interactions_2.percent_distance_from_pointer_down.has_value());
 
   ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id_1,
-                                    0.123f);
+                                    0.456f, 0.123f);
+  EXPECT_EQ(45, user_interactions_1.percent_vertical_position.value());
   EXPECT_EQ(12, user_interactions_1.percent_distance_from_pointer_down.value());
   ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id_2,
-                                    -0.256f);
+                                    -0.123f, -0.256f);
+  EXPECT_EQ(-12, user_interactions_2.percent_vertical_position.value());
   EXPECT_EQ(-25,
             user_interactions_2.percent_distance_from_pointer_down.value());
 
@@ -1470,26 +1473,28 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest,
   using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(2u, entries.size());
-  std::vector<std::pair<int, int>> recorded_metrics(entries.size());
+  std::vector<std::tuple<int, int, int>> recorded_metrics(entries.size());
   base::ranges::transform(
       entries, recorded_metrics.begin(), [&ukm_recorder](const auto& entry) {
         auto anchor_id = static_cast<int>(
             *ukm_recorder.GetEntryMetric(entry, UkmEntry::kAnchorIndexName));
+        auto position = static_cast<int>(*ukm_recorder.GetEntryMetric(
+            entry, UkmEntry::kVerticalPositionInViewportName));
         auto distance = static_cast<int>(*ukm_recorder.GetEntryMetric(
             entry, UkmEntry::kDistanceFromLastPointerDownName));
-        return std::make_pair(anchor_id, distance);
+        return std::make_tuple(anchor_id, position, distance);
       });
   EXPECT_THAT(
       recorded_metrics,
       ::testing::UnorderedElementsAre(
-          ::testing::Pair(predictor_service_host->GetAnchorIndex(anchor_id_1),
-                          10),
-          ::testing::Pair(predictor_service_host->GetAnchorIndex(anchor_id_2),
-                          -30)));
+          ::testing::FieldsAre(
+              predictor_service_host->GetAnchorIndex(anchor_id_1), 40, 10),
+          ::testing::FieldsAre(
+              predictor_service_host->GetAnchorIndex(anchor_id_2), 0, -30)));
 }
 
 TEST_F(NavigationPredictorNewViewportFeaturesTest,
-       RecordDistanceFromPointerDown_NotInViewport) {
+       RecordPositionMetrics_NotInViewport) {
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
@@ -1498,7 +1503,8 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest,
   auto anchor_id = ReportNewAnchorElement(predictor_service.get());
   ReportAnchorElementEnteredViewport(predictor_service.get(), anchor_id,
                                      base::Milliseconds(200));
-  ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id, 0.256f);
+  ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id, 0.123f,
+                                    0.256f);
   ReportAnchorElementLeftViewport(predictor_service.get(), anchor_id,
                                   base::Milliseconds(500));
 
@@ -1518,6 +1524,43 @@ TEST_F(NavigationPredictorNewViewportFeaturesTest,
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ(
       0, *ukm_recorder.GetEntryMetric(entries[0], UkmEntry::kIsInViewportName));
+  EXPECT_EQ(nullptr,
+            ukm_recorder.GetEntryMetric(
+                entries[0], UkmEntry::kVerticalPositionInViewportName));
+  EXPECT_EQ(nullptr,
+            ukm_recorder.GetEntryMetric(
+                entries[0], UkmEntry::kDistanceFromLastPointerDownName));
+}
+
+TEST_F(NavigationPredictorNewViewportFeaturesTest,
+       RecordPositionMetrics_NoDistanceFromPointerDown) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto anchor_id = ReportNewAnchorElement(predictor_service.get());
+  ReportAnchorElementEnteredViewport(predictor_service.get(), anchor_id,
+                                     base::Milliseconds(200));
+  ReportAnchorElementPositionUpdate(predictor_service.get(), anchor_id, 0.123f,
+                                    std::nullopt);
+
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  const auto& user_interactions =
+      predictor_service_host->user_interaction(anchor_id);
+  EXPECT_TRUE(user_interactions.is_in_viewport);
+  EXPECT_EQ(12, user_interactions.percent_vertical_position);
+  EXPECT_FALSE(
+      user_interactions.percent_distance_from_pointer_down.has_value());
+
+  predictor_service_host->RecordUserInteractionMetrics();
+  base::RunLoop().RunUntilIdle();
+
+  using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(10, *ukm_recorder.GetEntryMetric(
+                    entries[0], UkmEntry::kVerticalPositionInViewportName));
   EXPECT_EQ(nullptr,
             ukm_recorder.GetEntryMetric(
                 entries[0], UkmEntry::kDistanceFromLastPointerDownName));

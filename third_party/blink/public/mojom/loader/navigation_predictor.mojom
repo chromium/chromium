@@ -159,9 +159,13 @@ struct AnchorElementPositionUpdate {
   // The ID of the anchor.
   uint32 anchor_id;
 
+  // The vertical position of the anchor's center in the viewport (expressed as
+  // a ratio of the viewport height).
+  float vertical_position_ratio;
+
   // The vertical distance between the anchor's center and the last recorded
   // pointer down (expressed as a ratio of the screen height).
-  float distance_from_pointer_down_ratio;
+  float? distance_from_pointer_down_ratio;
 };
 
 // TODO(isaboori): It's better to move the methods that are called for all

@@ -17592,6 +17592,14 @@ be describing additional metrics about the same event.
       Exponentially bucketed using GetExponentialBucketMin a value of 1.3.
     </summary>
   </metric>
+  <metric name="VerticalPositionInViewport">
+    <summary>
+      Vertical position of the center of the anchor element (y-coordinate of the
+      center), as a percentage of the viewport's height. This value is between 0
+      and 100 (inclusive). This will only be set for anchor elements that are in
+      the viewport. Linearly bucketed with a bucket size of 10.
+    </summary>
+  </metric>
 </event>
 
 <event name="NavigationRequestBreakDown" singular="True">

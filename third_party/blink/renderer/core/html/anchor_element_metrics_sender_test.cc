@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -1176,10 +1177,16 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
   uint32_t anchor_3_id =
       AnchorElementId(To<HTMLAnchorElement>(*anchors->item(2)));
 
-  auto get_ratio = [&positions](uint32_t anchor_id) {
+  auto get_distance_ratio = [&positions](uint32_t anchor_id) {
     auto it = positions.find(anchor_id);
     CHECK(it != positions.end());
-    return it->second->distance_from_pointer_down_ratio;
+    return it->second->distance_from_pointer_down_ratio.value();
+  };
+
+  auto get_position_ratio = [&positions](uint32_t anchor_id) {
+    auto it = positions.find(anchor_id);
+    CHECK(it != positions.end());
+    return it->second->vertical_position_ratio;
   };
 
   // Simulate a pointer down and a scroll.
@@ -1207,8 +1214,14 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
 
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
   EXPECT_EQ(2u, positions.size());
-  EXPECT_FLOAT_EQ(-2.5f * unit / kViewportHeight, get_ratio(anchor_1_id));
-  EXPECT_FLOAT_EQ(2.5f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(-2.5f * unit / kViewportHeight,
+                  get_distance_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(2.5f * unit / kViewportHeight,
+                  get_position_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(2.5f * unit / kViewportHeight,
+                  get_distance_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(7.5f * unit / kViewportHeight,
+                  get_position_ratio((anchor_2_id)));
   // anchor_3 is not in the viewport, so a ratio isn't reported.
   EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
   positions.clear();
@@ -1239,11 +1252,17 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
   ProcessPositionUpdates();
 
   EXPECT_EQ(2u, positions.size());
-  EXPECT_FLOAT_EQ(-2.0f * unit / kViewportHeight, get_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(-2.0f * unit / kViewportHeight,
+                  get_distance_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(3.0f * unit / kViewportHeight,
+                  get_position_ratio(anchor_1_id));
   // Note: anchor_2 is not in the visual viewport after the zoom, but is still
   // in the layout viewport (and will be considered as intersecting by
   // IntersectionObserver, so we still report a distance ratio).
-  EXPECT_FLOAT_EQ(8.0f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(8.0f * unit / kViewportHeight,
+                  get_distance_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(13.0f * unit / kViewportHeight,
+                  get_position_ratio(anchor_2_id));
   EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
 }
 
@@ -1329,15 +1348,16 @@ TEST_F(AnchorElementMetricsSenderTest,
   // The distance should be calculated using press_1's coordinates and not
   // press_2 (even though press_2 was dispatched after) as press_2 was inside
   // a subframe whose local root is not the main frame.
-  EXPECT_FLOAT_EQ(-5.5f * unit / kViewportHeight,
-                  positions.begin()->second->distance_from_pointer_down_ratio);
+  EXPECT_FLOAT_EQ(
+      -5.5f * unit / kViewportHeight,
+      positions.begin()->second->distance_from_pointer_down_ratio.value());
 }
 
 // TODO(crbug.com/347719430): This test can be removed if
 // LocalFrameView::FrameToViewport supports local root subframes with local
 // main frames.
 TEST_F(AnchorElementMetricsSenderTest,
-       PositionUpdateNotComputedForAnchorInsideLocalRootSubframe) {
+       PositionUpdate_NotComputedForAnchorInsideLocalRootSubframe) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kNavigationPredictorNewViewportFeatures);
@@ -1422,6 +1442,7 @@ TEST_F(AnchorElementMetricsSenderTest,
 
   ASSERT_EQ(0, kViewportHeight % 8);
   int unit = kViewportHeight / 8;
+  const int top_controls_height = unit;
 
   // Set up the viewport as follows:
   //
@@ -1434,20 +1455,21 @@ TEST_F(AnchorElementMetricsSenderTest,
   //    ..    |  div_2
   //    ..    |  div_2
   // -------------------
-  int div_1_height = 3 * unit;
-  int anchor_height = unit;
-  int div_2_height = 8 * unit;
-  int top_controls_height = unit;
+  const int div_1_height = 3 * unit;
+  const int anchor_height = unit;
+  const int div_2_height = 8 * unit;
 
   WebView().ResizeWithBrowserControls(
-      gfx::Size(kViewportWidth, kViewportHeight), top_controls_height, 0,
-      /*browser_controls_shrink_layout=*/false);
+      gfx::Size(kViewportWidth, kViewportHeight - top_controls_height),
+      top_controls_height, /*bottom_controls_height=*/0,
+      /*browser_controls_shrink_layout=*/true);
   BrowserControls& browser_controls = WebView().GetBrowserControls();
-  browser_controls.SetShownRatio(1.f, 1.f);
-  cc::BrowserControlsParams params;
-  params.top_controls_height = top_controls_height;
-  params.browser_controls_shrink_blink_size = true;
-  browser_controls.SetParams(params);
+  EXPECT_TRUE(browser_controls.ShrinkViewport());
+  browser_controls.SetShownRatio(1.f, 0.f);
+  EXPECT_EQ(top_controls_height, browser_controls.ContentOffset());
+  const VisualViewport& visual_viewport = GetPage().GetVisualViewport();
+  EXPECT_EQ(kViewportHeight - top_controls_height,
+            visual_viewport.Size().height());
 
   // Navigate the main frame.
   String source("https://foo.com");
@@ -1470,8 +1492,6 @@ TEST_F(AnchorElementMetricsSenderTest,
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
-  EXPECT_TRUE(browser_controls.ShrinkViewport());
-  EXPECT_EQ(unit, browser_controls.ContentOffset());
 
   // Pointer down and scroll down by 3 units. The browser controls should be
   // hidden.
@@ -1492,12 +1512,22 @@ TEST_F(AnchorElementMetricsSenderTest,
                     WebInputEvent::kLeftButtonDown,
                     WebInputEvent::GetStaticTimeStampForTests()));
   VerticalScroll(-3.f * unit);
+  EXPECT_FLOAT_EQ(0.f, browser_controls.TopShownRatio());
+  // Simulates the viewport size being updated after the top controls are hidden
+  // (this happens through WidgetBase::UpdateVisualProperties in practice).
+  WebView().ResizeWithBrowserControls(
+      gfx::Size(kViewportWidth, kViewportHeight), top_controls_height,
+      /*bottom_controls_height=*/0, /*browser_controls_shrink_layout=*/true);
+  EXPECT_EQ(0, browser_controls.ContentOffset());
+  EXPECT_EQ(kViewportHeight, visual_viewport.Size().height());
   ProcessPositionUpdates();
 
   const auto& positions = mock_host->positions_;
-  EXPECT_EQ(0, browser_controls.ContentOffset());
-  EXPECT_EQ(-4.5f * unit / kViewportHeight,
-            positions.begin()->second->distance_from_pointer_down_ratio);
+  EXPECT_FLOAT_EQ(
+      -4.5f * unit / kViewportHeight,
+      positions.begin()->second->distance_from_pointer_down_ratio.value());
+  EXPECT_FLOAT_EQ(1.5f * unit / kViewportHeight,
+                  positions.begin()->second->vertical_position_ratio);
 
   // Pointer down and scroll up by 2 units. The browser controls should be
   // back.
@@ -1518,10 +1548,20 @@ TEST_F(AnchorElementMetricsSenderTest,
                     WebInputEvent::kLeftButtonDown,
                     WebInputEvent::GetStaticTimeStampForTests()));
   VerticalScroll(2.f * unit);
+  EXPECT_FLOAT_EQ(1.f, browser_controls.TopShownRatio());
+  WebView().ResizeWithBrowserControls(
+      gfx::Size(kViewportWidth, kViewportHeight - top_controls_height),
+      top_controls_height, /*bottom_controls_height=*/0,
+      /*browser_controls_shrink_layout=*/true);
+  EXPECT_EQ(top_controls_height, browser_controls.ContentOffset());
+  EXPECT_EQ(kViewportHeight - top_controls_height,
+            visual_viewport.Size().height());
   ProcessPositionUpdates();
 
-  EXPECT_EQ(unit, browser_controls.ContentOffset());
-  EXPECT_EQ(-2.5f * unit / kViewportHeight,
-            positions.begin()->second->distance_from_pointer_down_ratio);
+  EXPECT_FLOAT_EQ(
+      -2.5f * unit / kViewportHeight,
+      positions.begin()->second->distance_from_pointer_down_ratio.value());
+  EXPECT_FLOAT_EQ(3.5f * unit / kViewportHeight,
+                  positions.begin()->second->vertical_position_ratio);
 }
 }  // namespace blink

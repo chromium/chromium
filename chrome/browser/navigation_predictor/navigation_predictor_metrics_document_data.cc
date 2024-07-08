@@ -257,6 +257,12 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
         user_interaction.mouse_velocity.value_or(0.0), 1.3));
     builder.SetMouseAcceleration(get_exponential_bucket_for_signed_values(
         user_interaction.mouse_acceleration.value_or(0.0), 1.3));
+    if (user_interaction.percent_vertical_position.has_value()) {
+      int64_t value = user_interaction.percent_vertical_position.value();
+      int64_t bucketed_value = ukm::GetLinearBucketMin(value, 10);
+      builder.SetVerticalPositionInViewport(
+          std::clamp<int64_t>(bucketed_value, 0, 100));
+    }
     if (user_interaction.percent_distance_from_pointer_down.has_value()) {
       // |value| is typically between -100 and 100, but there may be outliers.
       int64_t value =

@@ -328,7 +328,6 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
 
   if (position_update_timer_.IsActive()) {
     CHECK(ShouldReportViewportPositions());
-    CHECK(last_pointer_down_.has_value());
     position_update_timer_.Stop();
     should_compute_positions_after_next_lifecycle_update_ = true;
   }
@@ -426,10 +425,6 @@ void AnchorElementMetricsSender::
     return;
   }
 
-  if (!last_pointer_down_.has_value()) {
-    return;
-  }
-
   // At this point, we're unsure of whether we have the latest
   // IntersectionObserver data or not (|intersection_observer_| is configured
   // with a delay), and the post-scroll intersection computations may or may not
@@ -520,7 +515,6 @@ void AnchorElementMetricsSender::RegisterForLifecycleNotifications() {
 
 void AnchorElementMetricsSender::PositionUpdateTimerFired(TimerBase*) {
   CHECK(ShouldReportViewportPositions());
-  CHECK(last_pointer_down_.has_value());
   should_compute_positions_after_next_lifecycle_update_ = true;
   if (LocalFrameView* view = GetSupplementable()->View()) {
     view->ScheduleAnimation();
@@ -530,24 +524,24 @@ void AnchorElementMetricsSender::PositionUpdateTimerFired(TimerBase*) {
 
 void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
   CHECK(ShouldReportViewportPositions());
-  CHECK(last_pointer_down_.has_value());
 
   Screen* screen = GetSupplementable()->domWindow()->screen();
   FrameWidget* widget =
       GetSupplementable()->GetFrame()->GetWidgetForLocalRoot();
-  if (!screen || !widget) {
+  Page* page = GetSupplementable()->GetPage();
+  if (!screen || !widget || !page) {
     return;
   }
 
   const int screen_height_dips = screen->height();
-  if (!screen_height_dips) {
+  const int viewport_height = page->GetVisualViewport().Size().height();
+  if (!screen_height_dips || !viewport_height) {
     return;
   }
 
   const float screen_height = widget->DIPsToBlinkSpace(screen_height_dips);
   const float browser_controls_height =
       GetBrowserControlsHeight(*GetSupplementable());
-  float pointer_y = last_pointer_down_.value();
 
   for (const HTMLAnchorElement* anchor : anchors_in_viewport_) {
     LocalFrame* frame = anchor->GetDocument().GetFrame();
@@ -564,16 +558,28 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
     }
     rect = local_root.View()->FrameToViewport(rect);
     rect.Offset(0, browser_controls_height);
+    float center_point_y = gfx::RectF(rect).CenterPoint().y();
 
-    float distance_from_pointer_down =
-        gfx::RectF(rect).CenterPoint().y() - pointer_y;
-    // Note: Distances in viewport space should be the same as distances in
-    // screen space, so dividing by |screen_height| instead of viewport height
-    // is fine (and likely a more useful metric).
-    float distance_from_pointer_down_ratio =
-        distance_from_pointer_down / screen_height;
+    // TODO(crbug.com/347638530): Ideally we would do this entire calculation
+    // in screen coordinates and use screen_height (that would be a more useful
+    // metric for us), but we don't have an accurate way to do so right now.
+    float vertical_position =
+        center_point_y / (viewport_height + browser_controls_height);
+
+    std::optional<float> distance_from_pointer_down_ratio;
+    if (last_pointer_down_.has_value()) {
+      // Note: Distances in viewport space should be the same as distances in
+      // screen space, so dividing by |screen_height| instead of viewport height
+      // is fine (and likely a more useful metric).
+      float distance_from_pointer_down =
+          center_point_y - last_pointer_down_.value();
+      distance_from_pointer_down_ratio =
+          distance_from_pointer_down / screen_height;
+    }
+
     auto position_update = mojom::blink::AnchorElementPositionUpdate::New(
-        AnchorElementId(*anchor), distance_from_pointer_down_ratio);
+        AnchorElementId(*anchor), vertical_position,
+        distance_from_pointer_down_ratio);
     position_update_messages_.push_back(std::move(position_update));
   }
 }
