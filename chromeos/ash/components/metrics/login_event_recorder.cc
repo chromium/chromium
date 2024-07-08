@@ -64,24 +64,6 @@ constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 // elapsed after login.
 constexpr int64_t kLoginTimeWriteDelayMs = 20000;
 
-// Appends the given buffer into the file. Returns the number of bytes
-// written, or -1 on error.<
-// TODO(satorux): Move this to file_util.
-int AppendFile(const base::FilePath& file_path, const char* data, int size) {
-  // Appending boot times to (probably) a symlink in /tmp is a security risk for
-  // developers with chromeos=1 builds.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    return -1;
-
-  FILE* file = base::OpenFile(file_path, "a");
-  if (!file)
-    return -1;
-
-  const int num_bytes_written = fwrite(data, 1, size, file);
-  base::CloseFile(file);
-  return num_bytes_written;
-}
-
 void WriteTimes(const std::string base_name,
                 const std::string uma_name,
                 const std::string uma_prefix,
@@ -324,12 +306,12 @@ void LoginEventRecorder::Stats::RecordStatsAsync(
       log_path.Append(base::FilePath(kDiskPrefix + name));
 
   // Append numbers to the files.
-  AppendFile(uptime_output, uptime_.data(), uptime_.size());
-  AppendFile(disk_output, disk_.data(), disk_.size());
+  base::AppendToFile(uptime_output, uptime_.data());
+  base::AppendToFile(disk_output, disk_.data());
   if (write_flag_file) {
     const base::FilePath flag_path =
         log_path.Append(base::FilePath(kStatsPrefix + name + kWrittenSuffix));
-    AppendFile(flag_path, "", 0);
+    base::AppendToFile(flag_path, "");
   }
 }
 
