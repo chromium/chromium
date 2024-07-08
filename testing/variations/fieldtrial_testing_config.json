@@ -10067,6 +10067,23 @@
             ]
         }
     ],
+    "GlobalMediaControlsUpdatedUI": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlobalMediaControlsUpdatedUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlobalVaapiLock": [
         {
             "platforms": [
@@ -13355,26 +13372,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MediaRecorderUseMediaVideoEncoder"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MediaSessionEnterPictureInPicture": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaSessionEnterPictureInPicture"
                     ]
                 }
             ]
