@@ -59,6 +59,18 @@ class TestDiceWebSigninInterceptorDelegate
     return nullptr;
   }
 
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  ShowOidcInterceptionDialog(
+      content::WebContents* web_contents,
+      const BubbleParameters& bubble_parameters,
+      signin::SigninChoiceWithConfirmationCallback callback,
+      base::OnceClosure done_callback) override {
+    std::move(callback)
+        .Then(std::move(done_callback))
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+    return nullptr;
+  }
+
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,

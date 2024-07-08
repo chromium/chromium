@@ -39,12 +39,12 @@ class ManagedUserProfileNoticeHandler
       public BrowserListObserver,
       public signin::IdentityManager::Observer {
  public:
-  enum class State {
-    Disclosure = 0,
-    Processing = 1,
-    Success = 2,
-    Timeout = 3,
-    Error = 4,
+  enum State {
+    kDisclosure = 0,
+    kProcessing = 1,
+    kSuccess = 2,
+    kTimeout = 3,
+    kError = 4,
   };
   ManagedUserProfileNoticeHandler(
       Browser* browser,
@@ -145,7 +145,6 @@ class ManagedUserProfileNoticeHandler
   signin::SigninChoiceWithConfirmationCallback
       process_user_choice_with_confirmation_callback_;
   base::OnceClosure done_callback_;
-
   base::WeakPtrFactory<ManagedUserProfileNoticeHandler> weak_ptr_factory_{this};
 };
 

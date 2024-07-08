@@ -97,7 +97,6 @@ class FakeUserPolicyOidcSigninService
  public:
   static std::unique_ptr<KeyedService> CreateFakeUserPolicyOidcSigninService(
       bool will_policy_fetch_succeed,
-      int number_of_windows,
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
     auto fake_service =
@@ -108,10 +107,6 @@ class FakeUserPolicyOidcSigninService
             : std::make_unique<FakeUserPolicyOidcSigninService>(
                   profile, profile->GetProfileCloudPolicyManager(),
                   will_policy_fetch_succeed);
-
-    EXPECT_CALL(*fake_service, CreateBrowser())
-        .Times(number_of_windows)
-        .WillRepeatedly(testing::Return());
 
     return std::move(fake_service);
   }
@@ -169,6 +164,20 @@ std::unique_ptr<KeyedService> CreateMalfunctionProfileIdService(
   return std::make_unique<enterprise::ProfileIdService>(fake_profile_id);
 }
 
+std::unique_ptr<KeyedService> BuildMockInterceptor(
+    int number_of_windows,
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto mock_interceptor =
+      std::make_unique<MockOidcAuthenticationSigninInterceptor>(
+          profile, std::make_unique<DiceWebSigninInterceptorDelegate>());
+  EXPECT_CALL(*mock_interceptor, CreateBrowserAfterSigninInterception())
+      .Times(number_of_windows)
+      .WillRepeatedly(testing::Return());
+
+  return std::move(mock_interceptor);
+}
+
 // Customized profile manager that ensures the created profiles are properly set
 // up for testing.
 class UnittestProfileManager : public FakeProfileManager {
@@ -203,7 +212,10 @@ class UnittestProfileManager : public FakeProfileManager {
         policy::UserPolicyOidcSigninServiceFactory::GetInstance(),
         base::BindRepeating(&FakeUserPolicyOidcSigninService::
                                 CreateFakeUserPolicyOidcSigninService,
-                            will_policy_fetch_succeed_on_new_profile_,
+                            will_policy_fetch_succeed_on_new_profile_));
+    builder.AddTestingFactory(
+        OidcAuthenticationSigninInterceptorFactory::GetInstance(),
+        base::BindRepeating(&BuildMockInterceptor,
                             std::move(number_of_windows_)));
     builder.AddTestingFactory(
         policy::UserPolicySigninServiceFactory::GetInstance(),
@@ -253,6 +265,13 @@ class MockDelegate : public OidcAuthenticationSigninInterceptor::Delegate {
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
                base::OnceCallback<void(SigninInterceptionResult)>),
+              (override));
+  MOCK_METHOD(std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>,
+              ShowOidcInterceptionDialog,
+              (content::WebContents*,
+               const WebSigninInterceptor::Delegate::BubbleParameters&,
+               signin::SigninChoiceWithConfirmationCallback,
+               base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               ShowFirstRunExperienceInNewProfile,
@@ -377,8 +396,8 @@ class OidcAuthenticationSigninInterceptorTest
               OidcProfileCreationResult::kEnrollmentSucceeded,
       RegistrationResult expect_registration_attempt =
           RegistrationResult::kSuccess,
-      SigninInterceptionResult interception_result =
-          SigninInterceptionResult::kAccepted,
+      signin::SigninChoice choice =
+          signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE,
       bool expect_dialog_to_show = true) {
     auto mock_client = std::make_unique<MockCloudPolicyClient>();
     base::RunLoop register_run_loop;
@@ -436,31 +455,52 @@ class OidcAuthenticationSigninInterceptorTest
       CHECK_EQ(expected_number_of_windows, 0);
     }
 
-    if (expect_dialog_to_show) {
+    if (std::holds_alternative<OidcProfileCreationResult>(
+            expected_enrollment_result) &&
+        std::get<OidcProfileCreationResult>(expected_enrollment_result) ==
+            OidcProfileCreationResult::kSwitchedToExistingProfile) {
       EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _))
           .Times(1)
           .WillOnce(Invoke(
-              [&interception_result](
-                  content::WebContents*,
-                  const WebSigninInterceptor::Delegate::BubbleParameters&,
-                  base::OnceCallback<void(SigninInterceptionResult)> callback) {
-                std::move(callback).Run(interception_result);
+              [](content::WebContents*,
+                 const WebSigninInterceptor::Delegate::BubbleParameters&,
+                 base::OnceCallback<void(SigninInterceptionResult)> callback) {
+                std::move(callback).Run(SigninInterceptionResult::kAccepted);
+                return nullptr;
+              }));
+
+    } else if (expect_dialog_to_show) {
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _))
+          .Times(1)
+          .WillOnce(Invoke(
+              [&choice](content::WebContents*,
+                        const WebSigninInterceptor::Delegate::BubbleParameters&,
+                        signin::SigninChoiceWithConfirmationCallback callback,
+                        base::OnceClosure done_callback) {
+                std::move(callback).Run(
+                    choice, base::BindOnce(
+                                [](base::OnceClosure done,
+                                   signin::SigninChoiceOperationResult) {
+                                  std::move(done).Run();
+                                },
+                                std::move(done_callback)));
                 return nullptr;
               }));
     } else {
-      EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _)).Times(0);
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _)).Times(0);
     }
 
-    interceptor_->MaybeInterceptOidcAuthentication(
-        web_contents(), oidc_tokens, issuer_id, subject_id,
-        task_environment()->QuitClosure());
+    base::RunLoop run_loop;
+    interceptor_->MaybeInterceptOidcAuthentication(web_contents(), oidc_tokens,
+                                                   issuer_id, subject_id,
+                                                   run_loop.QuitClosure());
 
     if (expect_registration_attempt !=
         RegistrationResult::kNoRegistrationExpected) {
       register_run_loop.Run();
     }
 
-    task_environment()->RunUntilQuit();
+    run_loop.Run();
 
     int num_profiles_after = TestingBrowserProcess::GetGlobal()
                                  ->profile_manager()
@@ -644,33 +684,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
                               OidcInterceptionFunnelStep::kConsetDialogShown,
                               OidcInterceptionResult::kConsetDialogRejected,
                               RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kDeclined);
-
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
-                              kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/false,
-                              /*expected_number_of_windows=*/0,
-                              OidcInterceptionFunnelStep::kConsetDialogShown,
-                              OidcInterceptionResult::kConsetDialogRejected,
-                              RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kIgnored);
-
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
-                              kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/false,
-                              /*expected_number_of_windows=*/0,
-                              OidcInterceptionFunnelStep::kConsetDialogShown,
-                              OidcInterceptionResult::kConsetDialogRejected,
-                              RegistrationResult::kNoRegistrationExpected,
-                              SigninInterceptionResult::kDismissed);
-
-  TestProfileCreationOrSwitch(
-      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
-      /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
-      OidcInterceptionFunnelStep::kConsetDialogShown,
-      OidcInterceptionResult::kConsetDialogRejected,
-      RegistrationResult::kNoRegistrationExpected,
-      SigninInterceptionResult::kAcceptedWithExistingProfile);
+                              signin::SigninChoice::SIGNIN_CHOICE_CANCEL);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
@@ -696,7 +710,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
       OidcInterceptionFunnelStep::kEnrollmentStarted,
       OidcInterceptionResult::kNoInterceptForCurrentProfile,
       RegistrationResult::kNoRegistrationExpected,
-      SigninInterceptionResult::kAccepted,
+      signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE,
       /*expect_dialog_to_show=*/false);
 }
 
@@ -706,7 +720,8 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
       OidcInterceptionFunnelStep::kProfileRegistrationStarted,
       OidcInterceptionResult::kFailedToRegisterProfile,
-      RegistrationResult::kFailure, SigninInterceptionResult::kAccepted,
+      RegistrationResult::kFailure,
+      signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE,
       /*expect_dialog_to_show=*/true);
 }
 
@@ -766,7 +781,8 @@ TEST_P(OidcAuthenticationSigninInterceptorFetchFailureTest,
       /*expect_profile_created=*/true, /*expected_number_of_windows=*/1,
       OidcProfileCreationFunnelStep::kPolicyFetchStarted,
       OidcProfileCreationResult::kFailedToFetchPolicy,
-      RegistrationResult::kSuccess, SigninInterceptionResult::kAccepted,
+      RegistrationResult::kSuccess,
+      signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE,
       /*expect_dialog_to_show=*/true);
 }
 

@@ -15,9 +15,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -346,14 +348,24 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
   content::TestNavigationObserver content_observer(
       (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
   content_observer.StartWatchingNewWebContents();
+  base::RunLoop user_choice_run_loop;
   signin::SigninChoice result;
-  browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*is_oidc_account=*/true, /*force_new_profile=*/true,
-      /*show_link_data_option=*/true,
-      /*process_user_choice_callback=*/
-      base::BindOnce([](signin::SigninChoice* result,
-                        signin::SigninChoice choice) { *result = choice; },
-                     &result),
+  DiceWebSigninInterceptorDelegate delegate;
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
+      AccountInfo(), AccountInfo());
+
+  auto handle = delegate.ShowOidcInterceptionDialog(
+      browser()->tab_strip_model()->GetActiveWebContents(), bubble_parameters,
+      base::BindLambdaForTesting(
+          [&user_choice_run_loop, &result](
+              signin::SigninChoice choice,
+              signin::SigninChoiceOperationDoneCallback callback) {
+            result = choice;
+            std::move(callback).Run(
+                signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+            user_choice_run_loop.Quit();
+          }),
       /*done_callback=*/
       base::BindOnce(&SigninViewController::CloseModalSignin,
                      browser()->signin_view_controller()->AsWeakPtr()));
@@ -368,10 +380,9 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
                                               /*control=*/false,
                                               /*shift=*/false, /*alt=*/false,
                                               /*command=*/false));
-
-  dialog_destroyed_watcher.Wait();
+  user_choice_run_loop.Run();
   EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+  dialog_destroyed_watcher.Wait();
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }
-
 #endif  //  !BUILDFLAG(IS_CHROMEOS)

@@ -12,6 +12,7 @@ import './signin_shared.css.js';
 import './signin_vars.css.js';
 import './tangible_sync_style_shared.css.js';
 import './managed_user_profile_notice_disclosure.js';
+import './managed_user_profile_notice_state.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -20,7 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
-import {ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
+import {ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const managedUserProfileNoticeBrowserProxyImpl =
@@ -81,7 +82,10 @@ export class ManagedUserProfileNoticeAppElement extends
       },
 
       /** The label for the button to proceed with the flow */
-      proceedLabel_: String,
+      proceedLabel_: {
+        type: String,
+        computed: 'computeProceedLabel_(currentState_)',
+      },
 
       /** Whether to show the cancel button on the screen */
       showCancelButton_: {
@@ -90,6 +94,36 @@ export class ManagedUserProfileNoticeAppElement extends
       },
 
       disableProceedButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      currentState_: {
+        type: Number,
+        value: State.DISCLOSURE,
+      },
+
+      showDisclosure_: {
+        type: Boolean,
+        value: true,
+      },
+
+      showProcessing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showSuccess_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showTimeout_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showError_: {
         type: Boolean,
         value: false,
       },
@@ -113,12 +147,21 @@ export class ManagedUserProfileNoticeAppElement extends
   private proceedLabel_: string;
   private disableProceedButton_: boolean;
   private showCancelButton_: boolean;
+  private currentState_: State;
+  private showDisclosure_: boolean;
+  private showProcessing_: boolean;
+  private showSuccess_: boolean;
+  private showTimeout_: boolean;
+  private showError_: boolean;
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
+
+    this.addWebUiListener(
+        'on-state-changed', (state: State) => this.updateCurrentState_(state));
 
     this.addWebUiListener(
         'on-profile-info-changed',
@@ -130,7 +173,8 @@ export class ManagedUserProfileNoticeAppElement extends
   /** Called when the proceed button is clicked. */
   private onProceed_() {
     this.disableProceedButton_ = true;
-    this.managedUserProfileNoticeBrowserProxy_.proceed(/*linkData=*/false);
+    this.managedUserProfileNoticeBrowserProxy_.proceed(
+        /*currentState=*/ this.currentState_, /*linkData=*/ false);
   }
 
   /** Called when the cancel button is clicked. */
@@ -144,8 +188,38 @@ export class ManagedUserProfileNoticeAppElement extends
     this.title_ = info.title;
     this.subtitle_ = info.subtitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
-    this.proceedLabel_ = info.proceedLabel;
     this.showCancelButton_ = info.showCancelButton;
+  }
+
+  private updateCurrentState_(state: State) {
+    this.currentState_ = state;
+    this.showDisclosure_ = state === State.DISCLOSURE;
+    this.showProcessing_ = state === State.PROCESSING;
+    this.showSuccess_ = state === State.SUCCESS;
+    this.showTimeout_ = state === State.TIMEOUT;
+    this.showError_ = state === State.ERROR;
+
+    this.disableProceedButton_ = false;
+    if (this.showError_ || this.showSuccess_ || this.showTimeout_) {
+      this.shadowRoot!.querySelector<HTMLButtonElement>(
+                          '#proceed-button')!.focus();
+    }
+  }
+
+  private allowCancel_() {
+    return this.showCancelButton_ && this.showDisclosure_;
+  }
+
+  private computeProceedLabel_(state: State) {
+    switch (state) {
+      case State.DISCLOSURE:
+      case State.PROCESSING:
+        return this.i18n('continueLabel');
+      case State.TIMEOUT:
+      case State.SUCCESS:
+      case State.ERROR:
+        return this.i18n('confirmLabel');
+    }
   }
 }
 

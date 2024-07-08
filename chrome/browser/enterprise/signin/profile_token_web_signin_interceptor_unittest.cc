@@ -42,6 +42,13 @@ class MockDelegate : public ProfileTokenWebSigninInterceptor::Delegate {
                const WebSigninInterceptor::Delegate::BubbleParameters&,
                base::OnceCallback<void(SigninInterceptionResult)>),
               (override));
+  MOCK_METHOD(std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>,
+              ShowOidcInterceptionDialog,
+              (content::WebContents*,
+               const WebSigninInterceptor::Delegate::BubbleParameters&,
+               signin::SigninChoiceWithConfirmationCallback,
+               base::OnceClosure),
+              (override));
   MOCK_METHOD(void,
               ShowFirstRunExperienceInNewProfile,
               (Browser*,

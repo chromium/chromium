@@ -30,6 +30,12 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback) override;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  ShowOidcInterceptionDialog(
+      content::WebContents* web_contents,
+      const BubbleParameters& bubble_parameters,
+      signin::SigninChoiceWithConfirmationCallback callback,
+      base::OnceClosure dialog_closed_closure) override;
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,

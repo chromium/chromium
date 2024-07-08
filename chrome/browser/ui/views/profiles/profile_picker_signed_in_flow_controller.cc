@@ -186,7 +186,7 @@ void ProfilePickerSignedInFlowController::
           ->FindExtendedAccountInfoByEmailAddress(email_),
       /*profile_creation_required_by_policy=*/false,
       /*show_link_data_option=*/false, std::move(process_user_choice_callback),
-      /*done_callback=*/base::DoNothing());
+      /*done_callback=*/base::OnceClosure());
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {

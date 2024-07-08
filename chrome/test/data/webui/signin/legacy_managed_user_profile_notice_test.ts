@@ -9,7 +9,7 @@ import 'chrome://managed-user-profile-notice/managed_user_profile_notice_disclos
 import type {LegacyManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/legacy_managed_user_profile_notice_app.js';
 import type {ManagedUserProfileNoticeAppElement} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_app.js';
 import type {ManagedUserProfileInfo} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
-import {ManagedUserProfileNoticeBrowserProxyImpl} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
+import {ManagedUserProfileNoticeBrowserProxyImpl, State} from 'chrome://managed-user-profile-notice/managed_user_profile_notice_browser_proxy.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -120,7 +120,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
-          app.i18n('proceedAlternateLabel'), proceedButton.textContent!.trim());
+          app.i18n('continueLabel'), proceedButton.textContent!.trim());
     });
 
     test('linkDataCheckedByDefault', async function() {
@@ -166,7 +166,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
-          app.i18n('proceedAlternateLabel'), proceedButton.textContent!.trim());
+          app.i18n('continueLabel'), proceedButton.textContent!.trim());
 
       // We should be able to uncheck it.
       linkDataCheckbox.click();
@@ -174,6 +174,114 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertEquals(
           app.i18n('linkDataText'), linkDataCheckbox.textContent!.trim());
       assertFalse(linkDataCheckbox.checked);
+    });
+
+    test('stateChanges', async function() {
+      if (!useUpdatedUi) {
+        return;
+      }
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      app = document.createElement('managed-user-profile-notice-app');
+      document.body.appendChild(app);
+      await waitAfterNextRender(app);
+      await browserProxy.whenCalled('initialized');
+
+      const proceedButton =
+          app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+
+      assertTrue(
+          isChildVisible(app, '#disclosure'), 'Disclosure State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#processing'), 'Disclosure State: #processing');
+      assertFalse(isChildVisible(app, '#error'), 'Disclosure State: #error');
+      assertFalse(
+          isChildVisible(app, '#timeout'), 'Disclosure State: #timeout');
+      assertFalse(
+          isChildVisible(app, '#success'), 'Disclosure State: #success');
+      assertTrue(
+          isChildVisible(app, '#proceed-button'),
+          'Disclosure State: #proceed-button');
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Disclosure State: #cancel-button');
+      assertEquals(
+          app.i18n('continueLabel'), proceedButton.textContent!.trim(),
+          'Disclosure State: Proceed label');
+
+      webUIListenerCallback('on-state-changed', State.PROCESSING);
+      await waitAfterNextRender(app);
+      assertFalse(
+          isChildVisible(app, '#disclosure'), 'Processing State: #disclosure');
+      assertTrue(
+          isChildVisible(app, '#processing'), 'Processing State: #processing');
+      assertFalse(isChildVisible(app, '#error'), 'Processing State: #error');
+      assertFalse(
+          isChildVisible(app, '#timeout'), 'Processing State: #timeout');
+      assertFalse(
+          isChildVisible(app, '#success'), 'Processing State: #success');
+      assertFalse(
+          isChildVisible(app, '#proceed-button'),
+          'Processing State: #proceed-button');
+      assertFalse(
+          isChildVisible(app, '#cancel-button'),
+          'Processing State: #cancel-button');
+
+      webUIListenerCallback('on-state-changed', State.ERROR);
+      await waitAfterNextRender(app);
+      assertFalse(
+          isChildVisible(app, '#disclosure'), 'Error State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#processing'), 'Error State: #processing');
+      assertTrue(isChildVisible(app, '#error'), 'Error State: #error');
+      assertFalse(isChildVisible(app, '#timeout'), 'Error State: #timeout');
+      assertFalse(isChildVisible(app, '#success'), 'Error State: #success');
+      assertTrue(
+          isChildVisible(app, '#proceed-button'),
+          'Error State: #proceed-button');
+      assertFalse(
+          isChildVisible(app, '#cancel-button'), 'Error State: #cancel-button');
+      assertEquals(
+          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          'Error State: Proceed label');
+
+      webUIListenerCallback('on-state-changed', State.TIMEOUT);
+      await waitAfterNextRender(app);
+      assertFalse(
+          isChildVisible(app, '#disclosure'), 'Timeout State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#processing'), 'Timeout State: #processing');
+      assertFalse(isChildVisible(app, '#error'), 'Timeout State: #error');
+      assertTrue(isChildVisible(app, '#timeout'), 'Timeout State: #timeout');
+      assertFalse(isChildVisible(app, '#success'), 'Timeout State: #success');
+      assertTrue(
+          isChildVisible(app, '#proceed-button'),
+          'Timeout State: #proceed-button');
+      assertFalse(
+          isChildVisible(app, '#cancel-button'),
+          'Timeout State: #cancel-button');
+      assertEquals(
+          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          'Timeout State: Proceed label');
+
+      webUIListenerCallback('on-state-changed', State.SUCCESS);
+      await waitAfterNextRender(app);
+      assertFalse(
+          isChildVisible(app, '#disclosure'), 'Success State: #disclosure');
+      assertFalse(
+          isChildVisible(app, '#processing'), 'Success State: #processing');
+      assertFalse(isChildVisible(app, '#error'), 'Success State: #error');
+      assertFalse(isChildVisible(app, '#timeout'), 'Success State: #timeout');
+      assertTrue(isChildVisible(app, '#success'), 'Success State: #success');
+      assertTrue(
+          isChildVisible(app, '#proceed-button'),
+          'Success State: #proceed-button');
+      assertFalse(
+          isChildVisible(app, '#cancel-button'),
+          'Success State: #cancel-button');
+      assertEquals(
+          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          'Success State: Proceed label');
     });
 
     test('onProfileInfoChanged', function() {
@@ -209,7 +317,9 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       }
 
       // Initial values.
-      checkTextValues('title', 'subtitle', 'enterprise_info', 'proceed_label');
+      checkTextValues(
+          'title', 'subtitle', 'enterprise_info',
+          useUpdatedUi ? app.i18n('continueLabel') : 'proceed_label');
       checkImageUrl(AVATAR_URL_1);
       assertFalse(isChildVisible(targetElement, '.work-badge'));
 
@@ -227,7 +337,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
       checkTextValues(
           'new_title', 'new_subtitle', 'new_enterprise_info',
-          'new_proceed_label');
+          useUpdatedUi ? app.i18n('continueLabel') : 'new_proceed_label');
       checkImageUrl(AVATAR_URL_2);
       assertTrue(isChildVisible(targetElement, '.work-badge'));
       assertFalse(isChildVisible(app, '#cancel-button'));

@@ -31,8 +31,6 @@ class MockUserPolicyOidcSigninService : public UserPolicyOidcSigninService {
       delete;
   MockUserPolicyOidcSigninService& operator=(
       const MockUserPolicyOidcSigninService&) = delete;
-
-  MOCK_METHOD(void, CreateBrowser, (), (override));
 };
 
 }  // namespace policy

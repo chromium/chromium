@@ -35,6 +35,22 @@ using policy::CloudPolicyClient;
 // Called after a valid OIDC authentication redirection is captured. The
 // interceptor is responsible for starting registration process, collecting user
 // consent, and creating/switching to a new managed profile if agreed.
+
+// The main steps of the interception are:
+// - Check if the user is elligible to interception in
+// MaybeInterceptOidcAuthentication()
+// - Show the dialog and wait for the user choice in
+// ShowOIDCInterceptionDialog()
+// - User choice is received in OnProfileCreationChoice()
+// - Go through registration process with StartOidcRegistration() and
+// OnClientRegistered()
+// - Create a new profile with ManagedProfileCreator and then
+// OnNewSignedInProfileCreated()
+// - Fetch policies, received in OnPolicyFetchCompleteInNewProfile()
+// - Notify the dialog that the profile creation is complete with
+// user_choice_handling_done_callback_
+// - Wait for the dialog to be closed by the user and open a browser registered
+// for policies via oidc
 class OidcAuthenticationSigninInterceptor
     : public WebSigninInterceptor,
 
@@ -61,9 +77,9 @@ class OidcAuthenticationSigninInterceptor
   // are valid.
   virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
-      ProfileManagementOicdTokens oidc_tokens,
-      std::string issuer_id,
-      std::string subject_id,
+      const ProfileManagementOicdTokens& oidc_tokens,
+      const std::string& issuer_id,
+      const std::string& subject_id,
       OidcInterceptionCallback oidc_callback);
 
   // KeyedService:
@@ -73,6 +89,11 @@ class OidcAuthenticationSigninInterceptor
       std::unique_ptr<CloudPolicyClient> client) {
     client_for_testing_ = std::move(client);
   }
+
+ protected:
+  virtual void OnPolicyFetchCompleteInNewProfile();
+  virtual void FinalizeSigninInterception();
+  virtual void CreateBrowserAfterSigninInterception();
 
  private:
   friend class MockOidcAuthenticationSigninInterceptor;
@@ -91,12 +112,16 @@ class OidcAuthenticationSigninInterceptor
                           base::TimeTicks registration_start_time);
 
   // Called when user makes a decision on the profile creation dialog.
-  void OnProfileCreationChoice(SigninInterceptionResult create);
+  void OnProfileCreationChoice(
+      signin::SigninChoice choice,
+      signin::SigninChoiceOperationDoneCallback callback);
+  void OnProfileSwitchChoice(SigninInterceptionResult result);
   // Called when the new profile has been created.
   void OnNewSignedInProfileCreated(base::WeakPtr<Profile> new_profile);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-  std::unique_ptr<Delegate> delegate_;
+  base::WeakPtr<Profile> new_profile_;
+  std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
   std::unique_ptr<ManagedProfileCreator> profile_creator_;
 
   // Members below are related to the interception in progress.
@@ -127,6 +152,8 @@ class OidcAuthenticationSigninInterceptor
   std::unique_ptr<CloudPolicyClient> client_for_testing_ = nullptr;
 
   OidcInterceptionCallback oidc_callback_;
+
+  signin::SigninChoiceOperationDoneCallback user_choice_handling_done_callback_;
 
   base::WeakPtrFactory<OidcAuthenticationSigninInterceptor> weak_factory_{this};
 

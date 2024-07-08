@@ -143,9 +143,8 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     const std::vector<std::string>& user_affiliation_ids,
     base::TimeTicks policy_fetch_start_time,
     bool switch_to_entry,
-    bool create_new_window,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
-    base::OnceCallback<void()> callback) {
+    base::OnceClosure callback) {
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),
@@ -153,7 +152,7 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
                          OnPolicyFetchCompleteInNewProfile,
                      weak_factory_.GetWeakPtr(), user_email,
                      policy_fetch_start_time, switch_to_entry,
-                     create_new_window, std::move(callback)));
+                     std::move(callback)));
 }
 
 void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
@@ -209,20 +208,9 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
                              enterprise_signin::prefs::kProfileUserEmail),
                          /*user_affiliation_ids=*/std::vector<std::string>(),
                          base::TimeTicks::Now(), /*switch_to_entry=*/false,
-                         /*create_new_window=*/false,
                          profile_->GetDefaultStoragePartition()
                              ->GetURLLoaderFactoryForBrowserProcess(),
                          base::BindOnce([]() {}));
-}
-
-void UserPolicyOidcSigninService::CreateBrowser() {
-  GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
-
-  // Open a new browser.
-  NavigateParams params(profile_, url_to_open,
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  Navigate(&params);
-  VLOG_POLICY(2, OIDC_ENROLLMENT) << "New browser created";
 }
 
 void UserPolicyOidcSigninService::OnStoreLoaded(CloudPolicyStore* store) {
@@ -238,8 +226,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
     std::string user_email,
     base::TimeTicks policy_fetch_start_time,
     bool switch_to_entry,
-    bool create_new_window,
-    base::OnceCallback<void()> callback,
+    base::OnceClosure callback,
     bool success) {
   bool dasher_based = !IsDasherlessProfile(profile_);
   RecordOidcEnrollmentPolicyFetchLatency(
@@ -303,10 +290,6 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
                          : OidcProfileCreationResult::kEnrollmentSucceeded)
                   : OidcProfileCreationResult::kFailedToFetchPolicy,
         dasher_based);
-  }
-
-  if (create_new_window) {
-    CreateBrowser();
   }
 
   std::move(callback).Run();

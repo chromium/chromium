@@ -109,12 +109,34 @@ struct HandleProceedTestParam {
   bool profile_creation_required_by_policy = false;
   bool should_link_data = false;
   signin::SigninChoice expected_choice = signin::SIGNIN_CHOICE_CANCEL;
+  signin::SigninChoiceOperationResult choice_operation_result =
+      signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS;
 };
 const HandleProceedTestParam kHandleProceedParams[] = {
-    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE},
-    {false, true, signin::SIGNIN_CHOICE_CONTINUE},
-    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE},
-    {true, true, signin::SIGNIN_CHOICE_CONTINUE},
+    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_ERROR},
+    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_ERROR},
+    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_ERROR},
+    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_ERROR},
+    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_CONFIRM_SUCCESS},
+    {false, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
+    {false, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
+    {true, false, signin::SIGNIN_CHOICE_NEW_PROFILE,
+     signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
+    {true, true, signin::SIGNIN_CHOICE_CONTINUE,
+     signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT},
 };
 
 class ManagedUserProfileNoticeHandleProceedTest
@@ -135,6 +157,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
 
   base::Value::List args;
   args.Append(GetParam().should_link_data);
+  args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(GetParam().expected_choice));
   EXPECT_CALL(mock_done_callback, Run());
@@ -160,6 +183,7 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
 
   base::Value::List args;
   args.Append(GetParam().should_link_data);
+  args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(GetParam().expected_choice, ::testing::_))
@@ -174,6 +198,39 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   web_ui()->HandleReceivedMessage("proceed", args);
   run_loop.Run();
 }
+
+TEST_P(ManagedUserProfileNoticeHandleProceedTest,
+       HandleProceedWithSuccessConfirmationCallback) {
+  base::test::ScopedFeatureList feature_list(
+      profile_management::features::kOidcAuthProfileManagement);
+  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+      mock_process_user_choice_callback;
+  base::MockCallback<base::OnceClosure> mock_done_callback;
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      GetParam().profile_creation_required_by_policy,
+      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
+      mock_done_callback.Get());
+
+  base::Value::List args;
+  args.Append(GetParam().should_link_data);
+  args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_process_user_choice_callback,
+              Run(GetParam().expected_choice, ::testing::_))
+      .WillOnce(
+          [&run_loop](signin::SigninChoice choice,
+                      signin::SigninChoiceOperationDoneCallback done_callback) {
+            std::move(done_callback).Run(GetParam().choice_operation_result);
+            run_loop.Quit();
+          });
+  web_ui()->HandleReceivedMessage("proceed", args);
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock_process_user_choice_callback);
+  EXPECT_CALL(mock_done_callback, Run());
+  web_ui()->HandleReceivedMessage("proceed", args);
+}
+
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(All,

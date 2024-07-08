@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './legacy_managed_user_profile_notice_app.html.js';
 import type {ManagedUserProfileInfo, ManagedUserProfileNoticeBrowserProxy} from './managed_user_profile_notice_browser_proxy.js';
-import {ManagedUserProfileNoticeBrowserProxyImpl} from './managed_user_profile_notice_browser_proxy.js';
+import {ManagedUserProfileNoticeBrowserProxyImpl, State} from './managed_user_profile_notice_browser_proxy.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const managedUserProfileNoticeBrowserProxyImpl =
@@ -145,14 +145,15 @@ export class LegacyManagedUserProfileNoticeAppElement extends
   }
 
   private linkDataChanged_(linkData: boolean) {
-    this.proceedLabel_ = linkData ? this.i18n('proceedAlternateLabel') :
-                                    this.defaultProceedLabel_;
+    this.proceedLabel_ =
+        linkData ? this.i18n('continueLabel') : this.defaultProceedLabel_;
   }
 
   /** Called when the proceed button is clicked. */
   private onProceed_() {
     this.disableProceedButton_ = true;
-    this.managedUserProfileNoticeBrowserProxy_.proceed(this.linkData_);
+    this.managedUserProfileNoticeBrowserProxy_.proceed(
+        State.SUCCESS, this.linkData_);
   }
 
   /** Called when the cancel button is clicked. */

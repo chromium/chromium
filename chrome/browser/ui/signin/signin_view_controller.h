@@ -223,6 +223,8 @@ class SigninViewController {
                            EnterpriseConfirmationDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
                            EnterpriseConfirmationDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
+                           EnterpriseConfirmationCancel);
   FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
                            CloseImmediately);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,

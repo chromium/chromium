@@ -45,6 +45,26 @@
     content: url(images/right-banner.svg);
   }
 
+  .processing-icon {
+    height: 80px;
+    width: 80px;
+  }
+
+  .success-icon {
+    height: 130px;
+    width: 180px;
+  }
+
+  .timeout-icon {
+    height: 130px;
+    width: 180px;
+  }
+
+  .error-icon {
+    height: 130px;
+    width: 180px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .tangible-sync-style-right-banner {
       content: url(images/right-banner-dark.svg);
@@ -61,19 +81,48 @@
     <img class="tangible-sync-style-left-banner" alt="">
     <img class="tangible-sync-style-right-banner" alt="">
     <div id="content-container">
-      <managed-user-profile-notice-disclosure id="disclosure" title="[[title_]]"
-          subtitle="[[subtitle_]]" picture-url="[[pictureUrl_]]"
-          show-enterprise-badge="[[showEnterpriseBadge_]]">
-      </managed-user-profile-notice-disclosure>
+      <template is="dom-if" if="[[showDisclosure_]]">
+        <managed-user-profile-notice-disclosure id="disclosure"
+            title="[[title_]]" subtitle="[[subtitle_]]"
+            picture-url="[[pictureUrl_]]"
+            show-enterprise-badge="[[showEnterpriseBadge_]]">
+        </managed-user-profile-notice-disclosure>
+      </template>
+      <template is="dom-if" if="[[showProcessing_]]">
+        <managed-user-profile-notice-state id="processing"
+            subtitle="$i18n{processingSubtitle}" icon="cr:domain">
+          <img class="processing-icon"
+              src="images/enrollment_in_progress.svg" alt="">
+        </managed-user-profile-notice-state>
+      </template>
+      <template is="dom-if" if="[[showSuccess_]]">
+        <managed-user-profile-notice-state id="success" icon="cr:domain"
+            title="$i18n{successTitle}" subtitle="$i18n{successSubtitle}">
+          <img class="success-icon" src="images/enrollment_success.svg" alt="">
+        </managed-user-profile-notice-state>
+      </template>
+      <template is="dom-if" if="[[showTimeout_]]">
+        <managed-user-profile-notice-state id="timeout" icon="cr:domain"
+            title="$i18n{timeoutTitle}" subtitle="$i18n{timeoutSubtitle}">
+          <img class="timeout-icon" src="images/enrollment_timeout.svg" alt="">
+        </managed-user-profile-notice-state>
+      </template>
+      <template is="dom-if" if="[[showError_]]">
+        <managed-user-profile-notice-state id="error" icon="cr:domain"
+            title="$i18n{errorTitle}" subtitle="$i18n{errorSubtitle}">
+          <img class="error-icon" src="images/enrollment_failure.svg" alt="">
+        </managed-user-profile-notice-state>
+      </template>
     </div>
   </div>
   <div class="action-container tangible-sync-style">
     <cr-button id="proceed-button" class="action-button" on-click="onProceed_"
-        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]"
+        hidden="[[showProcessing_]]">
       [[proceedLabel_]]
     </cr-button>
     <cr-button id="cancel-button" on-click="onCancel_"
-        hidden="[[!showCancelButton_]]">
+        hidden="[[!allowCancel_(showCancelButton_, showDisclosure_)]]">
       $i18n{cancelLabel}
     </cr-button>
   </div>

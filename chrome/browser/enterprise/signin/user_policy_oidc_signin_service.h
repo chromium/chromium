@@ -82,16 +82,12 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       const std::vector<std::string>& user_affiliation_ids,
       base::TimeTicks policy_fetch_start_time,
       bool switch_to_entry,
-      bool create_new_window,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
-      base::OnceCallback<void()> callback);
+      base::OnceClosure callback);
 
   // Attempt to restore the policies for the current profile using backup DM
   // token.
   void AttemptToRestorePolicy();
-
-  virtual void CreateBrowser();
-
  private:
   // policy::CloudPolicyStore::Observer interface:
   void OnStoreLoaded(CloudPolicyStore* store) override;
@@ -101,8 +97,7 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       std::string user_email,
       base::TimeTicks policy_fetch_start_time,
       bool switch_to_entry,
-      bool create_new_window,
-      base::OnceCallback<void()> callback,
+      base::OnceClosure callback,
       bool success);
 
   // UserPolicySigninServiceBase implementation:
