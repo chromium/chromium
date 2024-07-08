@@ -16,6 +16,7 @@ static_library("auth") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/login/osauth",
     "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
