@@ -4,15 +4,22 @@
 
 #include "ash/picker/picker_insert_media_request.h"
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "ash/picker/picker_rich_media.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/fake_text_input_client.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -20,24 +27,69 @@ namespace {
 // Any arbitrary insertion timeout.
 constexpr base::TimeDelta kInsertionTimeout = base::Seconds(1);
 
-struct TestCase {
+class TestCase {
+ public:
+  virtual ~TestCase() = default;
+
   // The media to insert.
-  PickerRichMedia media_to_insert;
+  virtual const PickerRichMedia& media_to_insert() = 0;
 
   // The expected text in the input field if the insertion was successful.
-  std::u16string expected_text;
+  virtual std::u16string_view expected_text() = 0;
 
   // The expected image in the input field if the insertion was successful.
-  std::optional<GURL> expected_image_url;
+  // Can be nullptr.
+  virtual std::optional<GURL>& expected_image_url() = 0;
 };
 
-class PickerInsertMediaRequestTest : public testing::TestWithParam<TestCase> {
+// Both `testing::Values` and `testing::ValuesIn` do not support move-only
+// types. Work around this by passing `RepeatingCallbacks`, which are copyable.
+using TestCaseCallback = base::RepeatingCallback<std::unique_ptr<TestCase>()>;
+
+class BasicTestCase : public TestCase {
+ public:
+  BasicTestCase(PickerRichMedia media_to_insert, std::u16string expected_text)
+      : media_to_insert_(std::move(media_to_insert)),
+        expected_text_(std::move(expected_text)) {}
+
+  BasicTestCase(PickerRichMedia media_to_insert, GURL expected_image_url)
+      : media_to_insert_(std::move(media_to_insert)),
+        expected_image_url_(std::move(expected_image_url)) {}
+
+  TestCaseCallback ToCallback() && {
+    return base::BindRepeating(
+        [](const BasicTestCase& test_case) -> std::unique_ptr<TestCase> {
+          return std::make_unique<BasicTestCase>(test_case);
+        },
+        std::move(*this));
+  }
+
+  const PickerRichMedia& media_to_insert() override { return media_to_insert_; }
+
+  std::u16string_view expected_text() override { return expected_text_; }
+
+  std::optional<GURL>& expected_image_url() override {
+    return expected_image_url_;
+  }
+
+ private:
+  PickerRichMedia media_to_insert_;
+  std::u16string expected_text_;
+  std::optional<GURL> expected_image_url_;
+};
+
+class PickerInsertMediaRequestTest
+    : public testing::TestWithParam<TestCaseCallback> {
  protected:
+  PickerInsertMediaRequestTest() : test_case_(GetParam().Run()) {}
+
+  std::unique_ptr<TestCase>& test_case() { return test_case_; }
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
   }
 
  private:
+  std::unique_ptr<TestCase> test_case_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
@@ -46,26 +98,28 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     PickerInsertMediaRequestTest,
     testing::Values(
-        TestCase{
-            .media_to_insert = PickerTextMedia(u"hello"),
-            .expected_text = u"hello",
-        },
-        TestCase{
-            .media_to_insert = PickerImageMedia(GURL("http://foo.com/fake.jpg"),
-                                                gfx::Size(10, 10)),
-            .expected_image_url = GURL("http://foo.com/fake.jpg"),
-        },
-        TestCase{
-            .media_to_insert = PickerLinkMedia(GURL("http://foo.com")),
-            .expected_text = u"http://foo.com/",
-        }));
+        BasicTestCase(
+            /*media_to_insert=*/PickerTextMedia(u"hello"),
+            /*expected_text=*/u"hello")
+            .ToCallback(),
+        BasicTestCase(
+            /*media_to_insert=*/PickerImageMedia(
+                GURL("http://foo.com/fake.jpg"),
+                gfx::Size(10, 10)),
+            /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
+            .ToCallback(),
+        BasicTestCase(
+            /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
+            /*expected_text=*/u"http://foo.com/")
+            .ToCallback()));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   task_environment().FastForwardBy(base::Seconds(1));
 
@@ -77,12 +131,13 @@ TEST_P(PickerInsertMediaRequestTest, InsertsWhileBlurred) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   kInsertionTimeout);
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(), kInsertionTimeout);
   input_method.SetFocusedTextInputClient(&client);
 
-  EXPECT_EQ(client.text(), GetParam().expected_text);
-  EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
+  EXPECT_EQ(client.text(), test_case()->expected_text());
+  EXPECT_EQ(client.last_inserted_image_url(),
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest,
@@ -91,13 +146,15 @@ TEST_P(PickerInsertMediaRequestTest,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   task_environment().FastForwardBy(base::Milliseconds(999));
   input_method.SetFocusedTextInputClient(&client);
 
-  EXPECT_EQ(client.text(), GetParam().expected_text);
-  EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
+  EXPECT_EQ(client.text(), test_case()->expected_text());
+  EXPECT_EQ(client.last_inserted_image_url(),
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertAfterTimeoutWhileBlurred) {
@@ -105,7 +162,8 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertAfterTimeoutWhileBlurred) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   task_environment().FastForwardBy(base::Seconds(1));
   input_method.SetFocusedTextInputClient(&client);
@@ -121,14 +179,14 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnNextFocusWhileFocused) {
   InputMethodAsh input_method(nullptr);
   input_method.SetFocusedTextInputClient(&prev_client);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   kInsertionTimeout);
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(), kInsertionTimeout);
   input_method.SetFocusedTextInputClient(&next_client);
 
   EXPECT_EQ(prev_client.text(), u"");
-  EXPECT_EQ(next_client.text(), GetParam().expected_text);
+  EXPECT_EQ(next_client.text(), test_case()->expected_text());
   EXPECT_EQ(next_client.last_inserted_image_url(),
-            GetParam().expected_image_url);
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest,
@@ -140,15 +198,16 @@ TEST_P(PickerInsertMediaRequestTest,
   InputMethodAsh input_method(nullptr);
   input_method.SetFocusedTextInputClient(&prev_client);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   task_environment().FastForwardBy(base::Milliseconds(999));
   input_method.SetFocusedTextInputClient(&next_client);
 
   EXPECT_EQ(prev_client.text(), u"");
-  EXPECT_EQ(next_client.text(), GetParam().expected_text);
+  EXPECT_EQ(next_client.text(), test_case()->expected_text());
   EXPECT_EQ(next_client.last_inserted_image_url(),
-            GetParam().expected_image_url);
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest,
@@ -160,7 +219,8 @@ TEST_P(PickerInsertMediaRequestTest,
   InputMethodAsh input_method(nullptr);
   input_method.SetFocusedTextInputClient(&prev_client);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   task_environment().FastForwardBy(base::Seconds(1));
   input_method.SetFocusedTextInputClient(&next_client);
@@ -175,8 +235,8 @@ TEST_P(PickerInsertMediaRequestTest, InsertIsCancelledUponDestruction) {
   InputMethodAsh input_method(nullptr);
 
   {
-    PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                     kInsertionTimeout);
+    PickerInsertMediaRequest request(
+        &input_method, test_case()->media_to_insert(), kInsertionTimeout);
   }
   input_method.SetFocusedTextInputClient(&client);
 
@@ -189,13 +249,13 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertInInputTypeNone) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   kInsertionTimeout);
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(), kInsertionTimeout);
   input_method.SetFocusedTextInputClient(&client_none);
   input_method.SetFocusedTextInputClient(&client_text);
 
   EXPECT_EQ(client_none.text(), u"");
-  EXPECT_EQ(client_text.text(), GetParam().expected_text);
+  EXPECT_EQ(client_text.text(), test_case()->expected_text());
 }
 
 TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
@@ -205,12 +265,12 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithMultipleFocus) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   kInsertionTimeout);
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(), kInsertionTimeout);
   input_method.SetFocusedTextInputClient(&client1);
   input_method.SetFocusedTextInputClient(&client2);
 
-  EXPECT_EQ(client1.text(), GetParam().expected_text);
+  EXPECT_EQ(client1.text(), test_case()->expected_text());
   EXPECT_EQ(client2.text(), u"");
 }
 
@@ -219,13 +279,15 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithTimeout) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   InputMethodAsh input_method(nullptr);
 
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
+  PickerInsertMediaRequest request(&input_method,
+                                   test_case()->media_to_insert(),
                                    /*insert_timeout=*/base::Seconds(1));
   input_method.SetFocusedTextInputClient(&client);
   task_environment().FastForwardBy(base::Seconds(1));
 
-  EXPECT_EQ(client.text(), GetParam().expected_text);
-  EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
+  EXPECT_EQ(client.text(), test_case()->expected_text());
+  EXPECT_EQ(client.last_inserted_image_url(),
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
@@ -234,13 +296,14 @@ TEST_P(PickerInsertMediaRequestTest, InsertsOnlyOnceWithDestruction) {
   InputMethodAsh input_method(nullptr);
 
   {
-    PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                     kInsertionTimeout);
+    PickerInsertMediaRequest request(
+        &input_method, test_case()->media_to_insert(), kInsertionTimeout);
     input_method.SetFocusedTextInputClient(&client);
   }
 
-  EXPECT_EQ(client.text(), GetParam().expected_text);
-  EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
+  EXPECT_EQ(client.text(), test_case()->expected_text());
+  EXPECT_EQ(client.last_inserted_image_url(),
+            test_case()->expected_image_url());
 }
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
@@ -248,8 +311,9 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
   auto old_input_method = std::make_unique<InputMethodAsh>(nullptr);
 
-  PickerInsertMediaRequest request(
-      old_input_method.get(), GetParam().media_to_insert, kInsertionTimeout);
+  PickerInsertMediaRequest request(old_input_method.get(),
+                                   test_case()->media_to_insert(),
+                                   kInsertionTimeout);
   old_input_method.reset();
   InputMethodAsh new_input_method(nullptr);
   new_input_method.SetFocusedTextInputClient(&client);
@@ -264,9 +328,9 @@ TEST_P(PickerInsertMediaRequestTest, CallsCallbackOnSuccess) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   /*insert_timeout=*/base::Seconds(1),
-                                   complete_future.GetCallback());
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(),
+      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
   client.Focus();
   task_environment().FastForwardBy(base::Seconds(1));
 
@@ -278,9 +342,9 @@ TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
-  PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
-                                   /*insert_timeout=*/base::Seconds(1),
-                                   complete_future.GetCallback());
+  PickerInsertMediaRequest request(
+      &input_method, test_case()->media_to_insert(),
+      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(1));
 
   EXPECT_TRUE(complete_future.IsReady());
