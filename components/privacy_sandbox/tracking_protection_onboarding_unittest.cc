@@ -1088,7 +1088,7 @@ TEST_F(TrackingProtectionSilentOnboardingTest,
 
   // Verification
   EXPECT_EQ(tracking_protection_onboarding()->GetRequiredNotice(),
-            NoticeType::kSilentOnboarding);
+            NoticeType::kModeBSilentOnboarding);
 }
 
 TEST_F(TrackingProtectionSilentOnboardingTest,

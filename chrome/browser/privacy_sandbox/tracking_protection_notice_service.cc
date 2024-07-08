@@ -280,11 +280,11 @@ void TrackingProtectionNoticeService::BaseIPHNotice::MaybeInitNoticeBehavior() {
     return;
   }
   if (GetNoticeType() ==
-      TrackingProtectionOnboarding::NoticeType::kSilentOnboarding) {
+      TrackingProtectionOnboarding::NoticeType::kModeBSilentOnboarding) {
     notice_behavior_ = std::make_unique<SilentNotice>(this);
     return;
   } else if (GetNoticeType() ==
-             TrackingProtectionOnboarding::NoticeType::kOnboarding) {
+             TrackingProtectionOnboarding::NoticeType::kModeBOnboarding) {
     notice_behavior_ = std::make_unique<VisibleNotice>(this);
     return;
   }

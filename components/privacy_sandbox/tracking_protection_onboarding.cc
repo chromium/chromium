@@ -254,7 +254,7 @@ TrackingProtectionOnboarding::NoticeType GetRequiredSilentOnboardingNotice(
     case TrackingProtectionOnboardingStatus::kOnboarded:
       return TrackingProtectionOnboarding::NoticeType::kNone;
     case TrackingProtectionOnboardingStatus::kEligible:
-      return TrackingProtectionOnboarding::NoticeType::kSilentOnboarding;
+      return TrackingProtectionOnboarding::NoticeType::kModeBSilentOnboarding;
     case TrackingProtectionOnboardingStatus::kRequested:
       NOTREACHED_NORETURN();
   }
@@ -493,10 +493,10 @@ void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
   switch (notice_type) {
     case NoticeType::kNone:
       return;
-    case NoticeType::kOnboarding:
+    case NoticeType::kModeBOnboarding:
       OnboardingNoticeShown();
       return;
-    case NoticeType::kSilentOnboarding:
+    case NoticeType::kModeBSilentOnboarding:
       SilentOnboardingNoticeShown();
       return;
   }
@@ -543,16 +543,16 @@ void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
   switch (notice_type) {
     case NoticeType::kNone:
       return;
-    case NoticeType::kOnboarding:
+    case NoticeType::kModeBOnboarding:
       OnboardingNoticeActionTaken(action);
       return;
-    case NoticeType::kSilentOnboarding:
+    case NoticeType::kModeBSilentOnboarding:
       return;
   }
 }
 
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
-  return GetRequiredNotice() == NoticeType::kOnboarding;
+  return GetRequiredNotice() == NoticeType::kModeBOnboarding;
 }
 
 bool TrackingProtectionOnboarding::ShouldRunUILogic() {
@@ -568,7 +568,7 @@ NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
       return GetRequiredSilentOnboardingNotice(pref_service_);
     case TrackingProtectionOnboardingStatus::kEligible:
     case TrackingProtectionOnboardingStatus::kRequested: {
-      return NoticeType::kOnboarding;
+      return NoticeType::kModeBOnboarding;
     }
     case TrackingProtectionOnboardingStatus::kOnboarded: {
       // We've already showed the user the onboarding notice. We keep showing
@@ -576,7 +576,7 @@ NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
       return pref_service_->GetBoolean(
                  prefs::kTrackingProtectionOnboardingAcked)
                  ? NoticeType::kNone
-                 : NoticeType::kOnboarding;
+                 : NoticeType::kModeBOnboarding;
     }
   }
 }

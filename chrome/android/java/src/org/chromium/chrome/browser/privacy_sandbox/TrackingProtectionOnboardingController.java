@@ -137,7 +137,7 @@ public class TrackingProtectionOnboardingController {
                 return;
             }
 
-            if (getNoticeType() == NoticeType.SILENT_ONBOARDING) {
+            if (getNoticeType() == NoticeType.MODE_B_SILENT_ONBOARDING) {
                 mTrackingProtectionBridge.noticeShown(getNoticeType());
                 return;
             }

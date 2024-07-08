@@ -161,7 +161,7 @@ public class TrackingProtectionNoticeController {
             logNoticeControllerEvent(NoticeControllerEvent.NOTICE_ALREADY_SHOWING);
         }
 
-        if (getNoticeType() == NoticeType.SILENT_ONBOARDING) {
+        if (getNoticeType() == NoticeType.MODE_B_SILENT_ONBOARDING) {
             mTrackingProtectionBridge.noticeShown(getNoticeType());
             destroy();
             return;
@@ -194,7 +194,7 @@ public class TrackingProtectionNoticeController {
                                 R.drawable.ic_settings_gear_24dp)
                         .with(
                                 MessageBannerProperties.DISMISSAL_DURATION,
-                                getNoticeType() == NoticeType.ONBOARDING
+                                getNoticeType() == NoticeType.MODE_B_ONBOARDING
                                         ? AUTODISMISS_DURATION_ONE_DAY
                                         : AUTODISMISS_DURATION_8_SECONDS)
                         .with(
@@ -323,7 +323,7 @@ public class TrackingProtectionNoticeController {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
-                    if (getNoticeType() == NoticeType.ONBOARDING) {
+                    if (getNoticeType() == NoticeType.MODE_B_ONBOARDING) {
                         mSettingsLauncher.launchSettingsActivity(
                                 mContext, TrackingProtectionSettings.class);
                     } else {

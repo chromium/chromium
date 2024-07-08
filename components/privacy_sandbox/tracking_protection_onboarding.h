@@ -64,10 +64,10 @@ class TrackingProtectionOnboarding : public KeyedService {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   enum class NoticeType {
     kNone,
-    // The notice in question is an Onboarding Notice.
-    kOnboarding,
-    // The notice in question is a silent onboarding notice.
-    kSilentOnboarding,
+    // The notice in question is a Mode B Onboarding Notice.
+    kModeBOnboarding,
+    // The notice in question is a silent Mode B Onboarding Notice.
+    kModeBSilentOnboarding,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

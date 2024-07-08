@@ -106,7 +106,7 @@ class TrackingProtectionModeBOnboardingView {
                                 R.drawable.ic_settings_gear_24dp)
                         .with(
                                 MessageBannerProperties.DISMISSAL_DURATION,
-                                noticeType == NoticeType.ONBOARDING
+                                noticeType == NoticeType.MODE_B_ONBOARDING
                                         ? AUTODISMISS_DURATION_ONE_DAY
                                         : AUTODISMISS_DURATION_8_SECONDS)
                         .with(
@@ -180,7 +180,7 @@ class TrackingProtectionModeBOnboardingView {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
-                    if (noticeType == NoticeType.ONBOARDING) {
+                    if (noticeType == NoticeType.MODE_B_ONBOARDING) {
                         mSettingsLauncher.launchSettingsActivity(
                                 mContext, TrackingProtectionSettings.class);
                     } else {

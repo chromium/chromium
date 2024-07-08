@@ -86,7 +86,9 @@ public final class TrackingProtectionNoticeTest {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(
-                    new ParameterSet().value(NoticeType.ONBOARDING).name("OnboardingNotice"));
+                    new ParameterSet()
+                            .value(NoticeType.MODE_B_ONBOARDING)
+                            .name("OnboardingNotice"));
         }
     }
 
@@ -104,7 +106,7 @@ public final class TrackingProtectionNoticeTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderOnboardingNotice() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_ONBOARDING);
 
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
         sActivityTestRule.startMainActivityWithURL(UrlConstants.GOOGLE_URL);
@@ -127,7 +129,7 @@ public final class TrackingProtectionNoticeTest {
                         .build();
         */
 
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_ONBOARDING);
 
         sActivityTestRule.startMainActivityOnBlankPage();
         onView(withId(R.id.message_banner)).check(doesNotExist());
@@ -165,7 +167,7 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testNoticeNotShownWhenIncognito() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_ONBOARDING);
 
         sActivityTestRule.startMainActivityOnBlankPage();
 
@@ -178,7 +180,7 @@ public final class TrackingProtectionNoticeTest {
     @SmallTest
     // TODO(crbug.com/40287090): Fix flakiness on histogramWatcher assertion.
     public void testNoticeNotShownMoreThanOnceWhenNewTabWithSecurePageIsOpened() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_ONBOARDING);
         sActivityTestRule.startMainActivityOnBlankPage();
 
         var histogramWatcher =
@@ -268,7 +270,7 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testSilentOnboardingNoticeShown() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.SILENT_ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_SILENT_ONBOARDING);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
         // Show the notice.
@@ -280,7 +282,7 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testSilentOnboardingNoticeShownOnlyOnSecurePage() {
-        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.SILENT_ONBOARDING);
+        mFakeTrackingProtectionBridge.setRequiredNotice(NoticeType.MODE_B_SILENT_ONBOARDING);
         sActivityTestRule.startMainActivityOnBlankPage();
 
         var histogramWatcher =
