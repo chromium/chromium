@@ -33,6 +33,9 @@ constexpr CGFloat kCellBottomMargin = 18;
 // Line spacing for the cell's header title.
 constexpr CGFloat kHeaderAttributedStringLineSpacing = 2;
 
+// Font size for the cell's header title.
+constexpr CGFloat kHeaderAttributedStringTitleFontSize = 15;
+
 // Minimum height for the header view.
 constexpr CGFloat kHeaderViewMinHeight = 44;
 
@@ -117,6 +120,17 @@ CGFloat GetLayoutGuideWidth(UILayoutGuide* layout_guide) {
 // Returns the width of the given `view`.
 CGFloat GetViewWidth(UIView* view) {
   return view.intrinsicContentSize.width;
+}
+
+// Returns the font for the cell's header title.
+UIFont* TitleFont() {
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    UIFont* font = [UIFont systemFontOfSize:kHeaderAttributedStringTitleFontSize
+                                     weight:UIFontWeightMedium];
+    return [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
+  } else {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  }
 }
 
 // Creates and adds constraints to `constraints`, so as to horizontally lay out
@@ -385,8 +399,7 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
               attributes:@{
                 NSForegroundColorAttributeName :
                     [UIColor colorNamed:kTextPrimaryColor],
-                NSFontAttributeName :
-                    [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline],
+                NSFontAttributeName : TitleFont(),
               }];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
