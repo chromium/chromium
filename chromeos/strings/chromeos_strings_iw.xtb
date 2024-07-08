@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
 <translation id="2367335866686097760">מקש למיפוי מקשים</translation>
+<translation id="2370739752330685659">אולי יותר מאוחר</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2407209115954268704">‏סטטוס נעילת ה-SIM</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">מטמון</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">בריכות</translation>
+<translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3124039320086536031">המכשיר מחובר.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}one{להסיר את דף {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">שלג</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">השבתה של שומר המסך</translation>
 <translation id="4210636113897977670">שמירה ויציאה</translation>
 <translation id="4210659479607886331">נהר בקרחון</translation>
+<translation id="42126664696688958">ייצוא</translation>
 <translation id="4213104098953699324">‏מקלדת USB</translation>
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6723847290197874913">התאורה האחורית של המקלדת</translation>
 <translation id="672609503628871915">מה חדש</translation>
+<translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="6740695858234317715">קרם וכתום</translation>
 <translation id="6741823073189174383">סירה</translation>
 <translation id="6744441848304920043">ג'ונגל</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
 <translation id="7507061649493508884">‫<ph name="FLOWER_TYPE" /> בצבע <ph name="FLOWER_COLOR" /> זוהר</translation>
 <translation id="7513770521371759388">חלק תחתון</translation>
+<translation id="7514365320538308">הורדה</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">יצירה</translation>
 <translation id="7528507600602050979">תוכן העזרה לא זמין</translation>

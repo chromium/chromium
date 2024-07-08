@@ -74,6 +74,7 @@
 <translation id="2174917724755363426">ການຕິດຕັ້ງບໍ່ສຳເລັດ. ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຍົກເລີກ?</translation>
 <translation id="2185166961232948079">Chromium - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">ກວດສອບການອັບເດດຜິດພາດ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199210295479376551">ລຶບບັນຊີອອກຈາກ Chromium</translation>
 <translation id="2210682093923538346">ເວັບໄຊທີ່ເປັນອັນຕະລາຍ. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງການແຈ້ງເຕືອນອອກແລ້ວ.</translation>
 <translation id="2240214816234246077">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ອອກແລ້ວ</translation>
 <translation id="2241627712206172106">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານ ສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chromium ໄດ້ຕາມ​ແບບທີ່ພວກເຂົາຕ້ອງການ.</translation>
@@ -396,6 +397,7 @@
 <translation id="705851970750939768">ອັບເດດ Chromium</translation>
 <translation id="7067091210845072982">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chromium ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google.</translation>
 <translation id="7141270731789036260">ປັບແຕ່ງ Chrome for Testing</translation>
+<translation id="7163519456498498587">ລຶບ <ph name="EXTENSION_NAME" /> ອອກຈາກ Chromium</translation>
 <translation id="7173822816570314652">ອົງກອນຂອງທ່ານລຶບຂໍ້ມູນຂອງ Chromium ອອກເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />. ເຊິ່ງຮວມເຖິງປະຫວັດ, ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ ແລະ ການດາວໂຫຼດ.</translation>
 <translation id="718435575166326686">Chromium ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບສຳລັບເວັບໄຊນີ້</translation>
 <translation id="7196312274710523067">ບໍ່ສາມາດເປີດໃຊ້ Chromium ໄດ້. ກະລຸນາລອງອີກຄັ້ງ.</translation>

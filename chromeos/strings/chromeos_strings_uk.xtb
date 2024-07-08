@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2364498172489649528">Виконано</translation>
 <translation id="2367335866686097760">Клавіша для опції "Прив’язка клавіш"</translation>
+<translation id="2370739752330685659">Можливо, пізніше</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
 <translation id="2407209115954268704">Статус блокування SIM-карти</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3122614491980756867">ставки</translation>
+<translation id="3122883569442693641">Докладніше</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">сніг</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Вимкнути заставку</translation>
 <translation id="4210636113897977670">Зберегти й вийти</translation>
 <translation id="4210659479607886331">льодовикова річка</translation>
+<translation id="42126664696688958">Експортувати</translation>
 <translation id="4213104098953699324">Клавіатура USB</translation>
 <translation id="4227825898293920515">Термін дії пароля закінчиться через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6723847290197874913">Підсвічування клавіатури</translation>
 <translation id="672609503628871915">Докладніше про нові функції</translation>
+<translation id="6738867403308150051">Завантаження…</translation>
 <translation id="6740695858234317715">кремового й помаранчевого</translation>
 <translation id="6741823073189174383">Човен</translation>
 <translation id="6744441848304920043">хащі</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">Адреса IPv6</translation>
 <translation id="7507061649493508884">Сяюча <ph name="FLOWER_COLOR" /> квітка <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">низ</translation>
+<translation id="7514365320538308">Завантажити</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Створити</translation>
 <translation id="7528507600602050979">Довідковий контент недоступний</translation>

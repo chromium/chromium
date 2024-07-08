@@ -110,6 +110,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1341651618736211726">Presežek</translation>
 <translation id="1341926407152459446">Uporabi »<ph name="DEVICE_NAME" />« za zvočni vhod in izhod</translation>
 <translation id="1346748346194534595">V desno</translation>
+<translation id="1350494136075914725">Poteka · Preklop na zavihek</translation>
 <translation id="1351937230027495976">Strni meni</translation>
 <translation id="1360220746312242196">Preklop na prejšnje ujemanje za iskanje pri iskanju na strani</translation>
 <translation id="1360788414852622716">Onemogočanje profila. To lahko traja nekaj minut.</translation>
@@ -1048,6 +1049,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4876935764454575645">Izbira zvoka</translation>
 <translation id="4881323000405981760">Učinki niso podprti v aplikacijah za Linux</translation>
 <translation id="4881695831933465202">Odpri</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Navedite izbirne povratne informacije za izboljšanje predlogov:</translation>
 <translation id="4890187583552566966">Skrbnik je onemogočil Pomočnika Google.</translation>
 <translation id="4890408602550914571">Preverite, ali imate telefon v bližini in ima vklopljeno povezavo Bluetooth.</translation>
@@ -1750,6 +1752,7 @@ Nova namestitev</translation>
 <translation id="742594950370306541">Kamera je v uporabi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera in mikrofon sta v uporabi.</translation>
+<translation id="7441711280402516925">Predvajanje · Preklop na zavihek</translation>
 <translation id="7453330308669753048">Rezultat iz zgodovine iskanja je odstranjen.</translation>
 <translation id="7459485586006128091">Zaradi notranje napake je bila dostopna točka izklopljena. Poskusite se znova povezati čez nekaj minut.</translation>
 <translation id="7461924472993315131">Pripni</translation>

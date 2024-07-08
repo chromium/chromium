@@ -110,6 +110,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1341651618736211726">Überlauf</translation>
 <translation id="1341926407152459446">„<ph name="DEVICE_NAME" />“ für Audioeingabe und -ausgabe verwenden</translation>
 <translation id="1346748346194534595">Rechts</translation>
+<translation id="1350494136075914725">Läuft · Zum Tab wechseln</translation>
 <translation id="1351937230027495976">Menü minimieren</translation>
 <translation id="1360220746312242196">Bei der Suche auf einer Seite zur vorherigen Übereinstimmung für die Suche gehen</translation>
 <translation id="1360788414852622716">Das Profil wird deaktiviert. Das kann einige Minuten dauern.</translation>
@@ -1048,6 +1049,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4876935764454575645">Auswahl der Audioausgabe</translation>
 <translation id="4881323000405981760">Effekte werden in Linux-Apps nicht unterstützt</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Du kannst Feedback geben, damit wir Vorschläge verbessern können:</translation>
 <translation id="4890187583552566966">Google Assistant wurde von deinem Administrator deaktiviert.</translation>
 <translation id="4890408602550914571">Achte darauf, dass sich dein Smartphone in der Nähe befindet und Bluetooth aktiviert ist.</translation>
@@ -1750,6 +1752,7 @@ Neuinstallation</translation>
 <translation id="742594950370306541">Kamera wird verwendet.</translation>
 <translation id="742608627846767349">Guten Morgen,</translation>
 <translation id="743058460480092004">Kamera und Mikrofon werden verwendet.</translation>
+<translation id="7441711280402516925">Wird abgespielt · Zum Tab wechseln</translation>
 <translation id="7453330308669753048">Ergebnis aus dem Suchverlauf entfernt</translation>
 <translation id="7459485586006128091">Aufgrund eines internen Fehlers wurde der Hotspot deaktiviert. Versuche in ein paar Minuten noch einmal, eine Verbindung herzustellen.</translation>
 <translation id="7461924472993315131">Anpinnen</translation>

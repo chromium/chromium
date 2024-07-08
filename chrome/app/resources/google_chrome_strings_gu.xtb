@@ -336,6 +336,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome લૉન્ચ કરી શકાયું નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="5809516625706423866">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. HTTP 401 અનધિકૃત. કૃપા કરીને તમારું પ્રૉક્સી કન્ફિગ્યુરેશન ચેક કરો.</translation>
+<translation id="5825922397106002626">Chromeમાંથી <ph name="EXTENSION_NAME" /> કાઢી નાખો</translation>
 <translation id="5858486459377137936">જ્યારે તમે બધી Chrome વિન્ડો બંધ કરશો, ત્યારે તમને મોટાભાગની સાઇટમાંથી સાઇન આઉટ કરવામાં આવશે, સિવાય કે જો તમે Chromeમાં સાઇન ઇન કરેલું હોય, તો તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. સાઇટને તમને યાદ રાખવાની મંજૂરી આપવા માટે, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">અસુરક્ષિત સાઇટ અને ડાઉનલોડ વિશે <ph name="BEGIN_LINK" />Chrome તમને ચેતવણી આપે છે<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -465,6 +466,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7651907282515937834">Chrome એન્ટરપ્રાઇઝ લૉગો</translation>
 <translation id="76531479118467370">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે તમે Safe Browsingની સુવિધા બંધ કરેલી છે અને ફાઇલની ચકાસણી કરી શકાતી નથી</translation>
 <translation id="7655455401911432608">તમારો બ્રાઉઝિંગ ઇતિહાસ કે જેમાં આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ હોય છે.</translation>
+<translation id="7655472416356262023">Chromeમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="7661924425853052955">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chrome દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="COUNT" />ની પરવાનગીઓ કાઢી નાખવામાં આવી</translation>
 <translation id="7668816516367091728">સીધા ઍડ્રેસ બારમાંથી અનુવાદ અને ગણતરી જેવા બીજા ઘણા કામ કરો</translation>
 <translation id="7670287553302121848">Chrome એકાઉન્ટને પુન:પ્રમાણીકરણની જરૂર છે</translation>

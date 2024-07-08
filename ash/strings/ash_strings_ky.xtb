@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Кошумча</translation>
 <translation id="1341926407152459446">Аудиону киргизүү жана чыгаруу үчүн "<ph name="DEVICE_NAME" />" түзмөгүн колдонуңуз</translation>
 <translation id="1346748346194534595">Оң</translation>
+<translation id="1350494136075914725">Маек жүрүп жатат · Өтмөккө которулуу</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
 <translation id="1360220746312242196">Баракты издеп жатканда мурунку дал келген нерсеге өтүү</translation>
 <translation id="1360788414852622716">Профиль өчүрүлүүдө. Бир нече мүнөткө созулушу мүмкүн.</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">Аудиону тандоо</translation>
 <translation id="4881323000405981760">Linux колдонмолорунда эффекттер колдоого алынбайт</translation>
 <translation id="4881695831933465202">Ачуу</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Сунуштарды жакшыртуу үчүн пикириңизди билдириңиз:</translation>
 <translation id="4890187583552566966">Администраторуңуз Google Жардамчыны өчүрдү.</translation>
 <translation id="4890408602550914571">Телефонуңуз жакын жерде турганын жана анда Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">Камера колдонулууда.</translation>
 <translation id="742608627846767349">Кутмандуу таңыңыз менен,</translation>
 <translation id="743058460480092004">Камера менен микрофон колдонулууда.</translation>
+<translation id="7441711280402516925">Ойнотулууда · Өтмөккө которулуу</translation>
 <translation id="7453330308669753048">Издөө таржымалындагы натыйжалар өчүрүлдү</translation>
 <translation id="7459485586006128091">Ички катадан улам байланыш түйүнү өчүрүлдү. Бир нече мүнөттөн кийин кайра туташтырып көрүңүз.</translation>
 <translation id="7461924472993315131">Кадап коюу</translation>

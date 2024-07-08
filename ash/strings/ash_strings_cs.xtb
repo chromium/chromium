@@ -110,6 +110,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1341651618736211726">Přetečení</translation>
 <translation id="1341926407152459446">Pro vstup a výstup zvuku používat zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1346748346194534595">Doprava</translation>
+<translation id="1350494136075914725">Probíhá · Přepnout na kartu</translation>
 <translation id="1351937230027495976">Sbalit nabídku</translation>
 <translation id="1360220746312242196">Při vyhledávání na stránce přejít na předchozí nalezenou shodu</translation>
 <translation id="1360788414852622716">Probíhá deaktivace profilu. Může to trvat několik minut.</translation>
@@ -1048,6 +1049,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4876935764454575645">Výběr zvuku</translation>
 <translation id="4881323000405981760">V linuxových aplikacích nejsou efekty podporovány</translation>
 <translation id="4881695831933465202">Otevřít</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Poskytněte dobrovolnou zpětnou vazbu za účelem vylepšení návrhů:</translation>
 <translation id="4890187583552566966">Váš administrátor Asistenta Google zakázal.</translation>
 <translation id="4890408602550914571">Zkontrolujte, zda je telefon poblíž a je na něm zapnuté rozhraní Bluetooth.</translation>
@@ -1749,6 +1751,7 @@ Nová instalace</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
 <translation id="742608627846767349">Dobré ráno,</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
+<translation id="7441711280402516925">Přehrává se · Přepnout na kartu</translation>
 <translation id="7453330308669753048">Výsledek historie vyhledávání byl odstraněn</translation>
 <translation id="7459485586006128091">Hotspot byl kvůli interní chybě vypnut. Zkuste se znovu připojit za několik minut.</translation>
 <translation id="7461924472993315131">Připnout</translation>

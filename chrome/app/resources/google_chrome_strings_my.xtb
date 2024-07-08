@@ -336,6 +336,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ကို ဖွင့်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5809516625706423866">အင်တာနက် ချိတ်ဆက်၍ မရပါ။ ခွင့်ပြုမထားသည့်အမှား HTTP 401။ သင့်ပရောက်စီ စီစဉ်သတ်မှတ်ချက်ကို စစ်ဆေးပါ။</translation>
+<translation id="5825922397106002626"><ph name="EXTENSION_NAME" /> ကို Chrome မှ ဖယ်ရှားရန်</translation>
 <translation id="5858486459377137936">Chrome ဝင်းဒိုးအားလုံးကို ပိတ်သောအခါ ဝဘ်ဆိုက်အများစုမှ သင်ထွက်သွားမည်။ Chrome သို့ လက်မှတ်ထိုးဝင်ထားပါက သင့် Google Account မှ ထွက်မည်မဟုတ်ပါ။ ဝဘ်ဆိုက်များက သင့်အား မှတ်မိစေရန် <ph name="SETTINGS_LINK" />။</translation>
 <translation id="586971344380992563">မလုံခြုံသော ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်များအကြောင်း <ph name="BEGIN_LINK" />Chrome က သင့်ကို သတိပေးသည်<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -465,6 +466,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7651907282515937834">Chrome လုပ်ငန်းသုံး သင်္ကေတ</translation>
 <translation id="76531479118467370">‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ပိတ်ထားသဖြင့် ဖိုင်ကို စိစစ်၍မရနိုင်သောကြောင့် Chrome က ဤဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
 <translation id="7655455401911432608">ဤစက်တွင် Chrome သုံးပြီး သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များ၏ မှတ်တမ်းဖြစ်သော သင့်ကြည့်ရှုခြင်းမှတ်တမ်း။</translation>
+<translation id="7655472416356262023">Chrome မှ အကောင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="7661924425853052955">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="COUNT" /> ခုတို့ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="7668816516367091728">ဘာသာပြန်ခြင်း၊ တွက်ချက်ခြင်းစသည့် လုပ်ဆောင်စရာများကို လိပ်စာဘားတွင် တိုက်ရိုက်ဆောင်ရွက်ပါ</translation>
 <translation id="7670287553302121848">Chrome အကောင့်ကို အထောက်အထားပြန်လည်စိစစ်ရန် လိုအပ်သည်</translation>

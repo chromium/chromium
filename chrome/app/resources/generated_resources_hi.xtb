@@ -1034,6 +1034,7 @@
 <translation id="1730989807608739928">स्क्रोल करके आखिरी टैब की ओर जाएं</translation>
 <translation id="1731520826054843792">Microsoft सर्टिफ़िकेट का टेंप्लेट</translation>
 <translation id="1731911755844941020">अनुरोध भेजा जा रहा है...</translation>
+<translation id="1732380773380808394">अपने Google खाते से भी पासवर्ड वगैरह ऐक्सेस किए जा सकेंगे.</translation>
 <translation id="1734212868489994726">हल्का नीला</translation>
 <translation id="1734230530703461088">समयसीमा के अंदर एक्सटेंशन लोड नहीं किए जा सके. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="1734824808160898225">हो सकता है कि <ph name="PRODUCT_NAME" /> खुद को अपडेट नहीं रख पाए</translation>
@@ -5823,6 +5824,7 @@
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चुनें</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा होने से पहले ही ब्राउज़र क्रैश हो गया था.</translation>
 <translation id="5250372599208556903">आपको स्थानीय सामग्री देने के लिए, <ph name="SEARCH_ENGINE_NAME" /> आपके स्थान की जानकारी का इस्तेमाल करता है. आप इसे <ph name="SETTINGS_LINK" /> में बदल सकते हैं.</translation>
+<translation id="5251885976619018662">Google Password Manager के लिए एक रिकवरी पिन सेट करें</translation>
 <translation id="5252496130205799136">क्या आपको पासवर्ड सेव करने और इन्हें अपने-आप भरने के लिए, Google खाते का इस्तेमाल करना है?</translation>
 <translation id="5252653240322147470">पिन <ph name="MAXIMUM" /> से कम अंकों का होना चाहिए</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> का इस्तेमाल करें</translation>

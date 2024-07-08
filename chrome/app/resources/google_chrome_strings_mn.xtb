@@ -336,6 +336,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Канари</translation>
 <translation id="5804318322022881572">Chrome-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="5809516625706423866">Интернэтэд холбогдох боломжгүй байна. HTTP 401 зөвшөөрөлгүй. Прокси тохируулгаа шалгана уу.</translation>
+<translation id="5825922397106002626"><ph name="EXTENSION_NAME" />-г Chrome-с хасах</translation>
 <translation id="5858486459377137936">Хэрэв та Chrome-д нэвтэрсэн бол таныг Chrome-н бүх цонхыг хаах үед Google Бүртгэлээс тань бусад ихэнх сайтаас гаргана. Сайтад таныг санахыг зөвшөөрөхийн тулд <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">Аюултай сайт болон татаж авсан файлын талаар <ph name="BEGIN_LINK" />Chrome танд сануулна<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">Дахин асаах</translation>

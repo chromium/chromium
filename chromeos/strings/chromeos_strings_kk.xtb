@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2367335866686097760">Кілтті түрлендіру пернесі</translation>
+<translation id="2370739752330685659">Кейінірек</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
 <translation id="2407209115954268704">SIM картасын құлыптау күйі</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">Орталық процессор</translation>
 <translation id="3122614491980756867">бассейндер</translation>
+<translation id="3122883569442693641">Қосымша мәліметтер</translation>
 <translation id="3124039320086536031">Құрылғы жалғанды.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Бетті өшіру керек пе?}=1{{PAGE_NUMBER}-бетті өшіру керек пе?}other{{PAGE_NUMBER}-бетті өшіру керек пе?}}</translation>
 <translation id="3140130301071865159">қар</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Скринсейверді өшіру</translation>
 <translation id="4210636113897977670">Сақтау және шығу</translation>
 <translation id="4210659479607886331">мұздық өзен</translation>
+<translation id="42126664696688958">Экспорттау</translation>
 <translation id="4213104098953699324">USB пернетақтасы</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
+<translation id="6738867403308150051">Жүктелуде…</translation>
 <translation id="6740695858234317715">ақшыл сары және қызғылт сары</translation>
 <translation id="6741823073189174383">қайық</translation>
 <translation id="6744441848304920043">джунгли</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7507061649493508884">Жарқыраған <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">төменгі жақ</translation>
+<translation id="7514365320538308">Жүктеу</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Жасау</translation>
 <translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>

@@ -110,6 +110,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Gamitin ang "<ph name="DEVICE_NAME" />" para sa audio input at audio output</translation>
 <translation id="1346748346194534595">Kanan</translation>
+<translation id="1350494136075914725">Isinasagawa · Lumipat sa tab</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
 <translation id="1360220746312242196">Kapag naghahanap sa isang page, pumunta sa nakaraang tugma para sa paghahanap</translation>
 <translation id="1360788414852622716">Dini-disable ang profile. Puwede itong tumagal nang ilang minuto.</translation>
@@ -1048,6 +1049,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4876935764454575645">Pagpili ng audio</translation>
 <translation id="4881323000405981760">Hindi sinusuportahan ang mga effect sa mga linux app</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Magbigay ng opsyonal na feedback para mapahusay ang mga suhestyon:</translation>
 <translation id="4890187583552566966">Na-disable ng iyong administrator ang Google Assistant.</translation>
 <translation id="4890408602550914571">Tiyaking nasa malapit ang iyong telepono at naka-on ang Bluetooth nito.</translation>
@@ -1749,6 +1751,7 @@ Kaka-install lang</translation>
 <translation id="742594950370306541">Ginagamit ang camera.</translation>
 <translation id="742608627846767349">Magandang umaga,</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
+<translation id="7441711280402516925">Nagpe-play · Lumipat sa tab</translation>
 <translation id="7453330308669753048">Naalis ang resulta ng history ng paghahanap</translation>
 <translation id="7459485586006128091">Dahil sa internal na error, na-off ang hotspot. Subukang kumonekta ulit sa loob ng ilang minuto.</translation>
 <translation id="7461924472993315131">I-pin</translation>

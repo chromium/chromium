@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">ઓવરફ્લો</translation>
 <translation id="1341926407152459446">ઑડિયો ઇનપુટ અને આઉટપુટ માટે "<ph name="DEVICE_NAME" />"નો ઉપયોગ કરો</translation>
 <translation id="1346748346194534595">જમણે</translation>
+<translation id="1350494136075914725">ચાલુ છે · ટૅબ પર સ્વિચ કરો</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1360220746312242196">પેજમાં શોધતી વખતે, શોધ માટે પાછલા મેળ પર જાઓ</translation>
 <translation id="1360788414852622716">પ્રોફાઇલ બંધ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">ઑડિયોની પસંદગી</translation>
 <translation id="4881323000405981760">Linux ઍપ પર ઇફેક્ટને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4881695831933465202">ખોલો</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">સૂચનો બહેતર બનાવવા માટે, વૈકલ્પિક પ્રતિસાદ આપો:</translation>
 <translation id="4890187583552566966">તમારા વ્યવસ્થાપકે Google Assistant બંધ કરેલું છે.</translation>
 <translation id="4890408602550914571">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને બ્લૂટૂથ ચાલુ કરેલું હોય.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">કૅમેરા ઉપયોગમાં છે.</translation>
 <translation id="742608627846767349">ગુડ મોર્નિંગ,</translation>
 <translation id="743058460480092004">કૅમેરા અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
+<translation id="7441711280402516925">ચલાવી રહ્યાં છીએ · ટૅબ પર સ્વિચ કરો</translation>
 <translation id="7453330308669753048">શોધ ઇતિહાસનું પરિણામ કાઢી નાખ્યું</translation>
 <translation id="7459485586006128091">આંતરિક ભૂલને કારણે હૉટસ્પૉટની સુવિધા બંધ કરવામાં આવી છે. થોડા સમયમાં ફરીથી કનેક્ટ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7461924472993315131">પિન કરો</translation>

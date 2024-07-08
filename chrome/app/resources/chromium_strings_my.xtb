@@ -75,6 +75,7 @@
 <translation id="2174917724755363426">ထည့်သွင်းမှု မပြီးဆုံးပါ။ ပယ်ဖျက်လိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="2185166961232948079">Chromium - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">အပ်ဒိတ်စစ်ဆေးရန် အမှား- <ph name="UPDATE_CHECK_ERROR" />။</translation>
+<translation id="2199210295479376551">Chromium မှ အကောင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="2210682093923538346">အန္တရာယ်ရှိသည့် ဝဘ်ဆိုက်။ Chromium သည် အကြောင်းကြားချက်များကို ဖယ်ရှားလိုက်သည်။</translation>
 <translation id="2240214816234246077">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chromium သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> တို့ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="2241627712206172106">သင်သည် ကွန်ပျူတာကို မျှသုံးနေသည် ဆိုလျှင်၊ မိတ်ဆွေများ နှင့် မိသားစုသည် သီးခြားစီ ဝင်ကြည့်နိုင်ကြကာ သူတို့ စိတ်ကြိုက် ပုံစံဖြင့် Chromium ကို သတ်မှတ်ပေးနိုင်ကြသည်။</translation>
@@ -398,6 +399,7 @@
 <translation id="705851970750939768">Chromium အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="7067091210845072982">ပုံတွင် အသုံးဝင်သော အကြောင်းအရာ မပါလျှင် Chromium က သင့်အတွက် ဖော်ပြပေးပါမည်။ အကြောင်းအရာများ ဖော်ပြပေးရန် ပုံများကို Google သို့ပို့လိုက်ပါသည်။</translation>
 <translation id="7141270731789036260">Chrome for Testing ကို စိတ်ကြိုက်လုပ်ရန်</translation>
+<translation id="7163519456498498587"><ph name="EXTENSION_NAME" /> ကို Chromium မှ ဖယ်ရှားရန်</translation>
 <translation id="7173822816570314652">Chromium ဒေတာကို <ph name="TIMEOUT_DURATION" /> ကြာ အသုံးမပြုဘဲထားပါက သင့်အဖွဲ့အစည်းသည် ၎င်းကို ဖျက်ပါသည်။ ၎င်းတွင် မှတ်တမ်း၊ အော်တိုဖြည့်နှင့် ဒေါင်းလုဒ်များ ပါဝင်နိုင်သည်။</translation>
 <translation id="718435575166326686">Chromium သည် ဤဝဘ်ဆိုက်အတွက် ကင်မရာခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="7196312274710523067">Chromium ကို ဖွင့်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>

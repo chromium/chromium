@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprovado</translation>
 <translation id="2367335866686097760">Tecla do mapeamento de teclas</translation>
+<translation id="2370739752330685659">Talvez mais tarde</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscinas</translation>
+<translation id="3122883569442693641">Mais detalhes</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Quer remover a página?}=1{Quer remover a página {PAGE_NUMBER}?}other{Quer remover a página {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">neve</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Desativar a proteção de ecrã</translation>
 <translation id="4210636113897977670">Guardar e sair</translation>
 <translation id="4210659479607886331">rio glaciar</translation>
+<translation id="42126664696688958">Exportar</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
+<translation id="6738867403308150051">A transferir...</translation>
 <translation id="6740695858234317715">creme e laranja</translation>
 <translation id="6741823073189174383">barco</translation>
 <translation id="6744441848304920043">selva</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">Endereço IPv6</translation>
 <translation id="7507061649493508884">Um(a) <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> radiante</translation>
 <translation id="7513770521371759388">inferior</translation>
+<translation id="7514365320538308">Transferir</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7528507600602050979">O conteúdo de ajuda não está disponível</translation>

@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2364498172489649528">വിജയിച്ചു</translation>
 <translation id="2367335866686097760">കീമാപ്പിംഗ് കീ</translation>
+<translation id="2370739752330685659">പിന്നീടാകാം</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
 <translation id="2407209115954268704">സിം ലോക്ക് നില</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">കാഷെ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">പൂളുകൾ</translation>
+<translation id="3122883569442693641">കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="3124039320086536031">ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{പേജ് നീക്കം ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}}</translation>
 <translation id="3140130301071865159">മഞ്ഞ്</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">സ്ക്രീൻ സേവർ ഓഫാക്കുക</translation>
 <translation id="4210636113897977670">സംരക്ഷിച്ച് പുറത്തുകടക്കുക</translation>
 <translation id="4210659479607886331">ഹിമനദി</translation>
+<translation id="42126664696688958">എക്‌സ്‌പോർട്ടുചെയ്യുക</translation>
 <translation id="4213104098953699324">USB കീബോർഡ്</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
 <translation id="4238516577297848345">പ്രിന്റ് ജോലികളൊന്നും പുരോഗമിക്കുന്നില്ല</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6723847290197874913">കീബോർഡ് ബാക്ക്‌ലൈറ്റ്</translation>
 <translation id="672609503628871915">പുതിയതെന്താണെന്ന് കാണുക</translation>
+<translation id="6738867403308150051">ഡൗൺലോഡുചെയ്യുന്നു...</translation>
 <translation id="6740695858234317715">ക്രീമും ഓറഞ്ചും</translation>
 <translation id="6741823073189174383">ബോട്ട്</translation>
 <translation id="6744441848304920043">കാട്</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">IPv6 വിലാസം</translation>
 <translation id="7507061649493508884">മനോഹരമായ <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">താഴേക്ക്</translation>
+<translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">സൃഷ്‌ടിക്കുക</translation>
 <translation id="7528507600602050979">സഹായ ഉള്ളടക്കം ലഭ്യമല്ല</translation>

@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">အပိုခလုတ်</translation>
 <translation id="1341926407152459446">အသံအဝင်အထွက်အတွက် “<ph name="DEVICE_NAME" />” သုံးနိုင်သည်</translation>
 <translation id="1346748346194534595">ညာ</translation>
+<translation id="1350494136075914725">လုပ်ဆောင်နေသည် · တဘ်သို့ပြောင်းရန်</translation>
 <translation id="1351937230027495976">မီနူးကို လျှော့ပြရန်</translation>
 <translation id="1360220746312242196">စာမျက်နှာရှာသောအခါ ရှာဖွေမှုအတွက် ယခင်ကိုက်ညီမှုသို့ သွားရန်</translation>
 <translation id="1360788414852622716">ပရိုဖိုင်ကို ပိတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">အသံရွေးချယ်မှု</translation>
 <translation id="4881323000405981760">linux အက်ပ်များတွင် အထူးပြုလုပ်ချက်များကို ပံ့ပိုးမထားပါ</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">အကြံပြုချက်များ ပိုကောင်းမွန်စေရန် ဆန္ဒရှိပါက တုံ့ပြန်ချက်ပေးပါ-</translation>
 <translation id="4890187583552566966">Google Assistant ကို သင်၏ စီမံခန့်ခွဲသူက ပိတ်ထားပါသည်။</translation>
 <translation id="4890408602550914571">သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">ကင်မရာကို အသုံးပြုနေသည်။</translation>
 <translation id="742608627846767349">မင်္ဂလာ နံနက်ခင်းပါ၊</translation>
 <translation id="743058460480092004">ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်။</translation>
+<translation id="7441711280402516925">ဖွင့်ထားသည် · တဘ်သို့ပြောင်းရန်</translation>
 <translation id="7453330308669753048">ရှာဖွေမှတ်တမ်းရလဒ်ကို ဖယ်ရှားပြီးပြီ</translation>
 <translation id="7459485586006128091">အတွင်းပိုင်း အမှားကြောင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။ ခဏအကြာတွင် ပြန်ချိတ်ဆက်ကြည့်ပါ။</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>

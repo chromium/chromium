@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
 <translation id="2367335866686097760">Ánh xạ phím</translation>
+<translation id="2370739752330685659">Để sau</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2407209115954268704">Trạng thái khóa SIM</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Bộ nhớ đệm</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">hồ nước</translation>
+<translation id="3122883569442693641">Thông tin chi tiết khác</translation>
 <translation id="3124039320086536031">Thiết bị đã được kết nối.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">tuyết</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Tắt trình bảo vệ màn hình</translation>
 <translation id="4210636113897977670">Lưu và thoát</translation>
 <translation id="4210659479607886331">sông băng</translation>
+<translation id="42126664696688958">Xuất</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="6723847290197874913">Đèn nền bàn phím</translation>
 <translation id="672609503628871915">Xem tính năng mới</translation>
+<translation id="6738867403308150051">Đang tải xuống...</translation>
 <translation id="6740695858234317715">kem và cam</translation>
 <translation id="6741823073189174383">chiếc thuyền</translation>
 <translation id="6744441848304920043">rừng nhiệt đới</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> <ph name="FLOWER_COLOR" /> rực rỡ</translation>
 <translation id="7513770521371759388">dưới cùng</translation>
+<translation id="7514365320538308">Tải xuống</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Tạo</translation>
 <translation id="7528507600602050979">Không có nội dung trợ giúp</translation>

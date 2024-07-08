@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2367335866686097760">Klávesa mapování kláves</translation>
+<translation id="2370739752330685659">Možná později</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
 <translation id="2407209115954268704">Stav uzamčení SIM karty</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Mezipaměť</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">bazény</translation>
+<translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3124039320086536031">Zařízení je připojeno.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}many{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">sníh</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Vypnout spořič obrazovky</translation>
 <translation id="4210636113897977670">Uložit a odejít</translation>
 <translation id="4210659479607886331">ledovcová řeka</translation>
+<translation id="42126664696688958">Exportovat</translation>
 <translation id="4213104098953699324">Klávesnice USB</translation>
 <translation id="4227825898293920515">Platnost hesla vyprší za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6723847290197874913">Podsvícení klávesnice</translation>
 <translation id="672609503628871915">Co je nového</translation>
+<translation id="6738867403308150051">Stahování…</translation>
 <translation id="6740695858234317715">smetanová a pomerančová</translation>
 <translation id="6741823073189174383">člun</translation>
 <translation id="6744441848304920043">džungle</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7507061649493508884">Zářivý <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">dole</translation>
+<translation id="7514365320538308">Stáhnout</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Vytvořit</translation>
 <translation id="7528507600602050979">Obsah nápovědy není k dispozici</translation>

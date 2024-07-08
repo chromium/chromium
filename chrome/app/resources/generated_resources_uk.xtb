@@ -4393,6 +4393,7 @@
 <translation id="4163560723127662357">Невідома клавіатура</translation>
 <translation id="4165942112764990069">Електронна адреса <ph name="USER_EMAIL" /> не належить дійсній організації. Зв’яжіться з адміністратором. Якщо ви адміністратор, можете налаштувати організацію на сторінці g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
+<translation id="4166847326079525123">Доступ до геоданих вимкнено в налаштуваннях системи Windows</translation>
 <translation id="4167212649627589331">Додатку <ph name="APP_NAME" /> потрібен доступ до пристрою "<ph name="DEVICE_NAME" />". Щоб пристрій "<ph name="DEVICE_NAME" />" став доступним, вимкніть для нього налаштування конфіденційності.</translation>
 <translation id="4167393659000039775">Компанія Google не несе відповідальності за втрату даних і не гарантує, що ОС <ph name="DEVICE_OS" /> працюватиме на несертифікованих моделях. Докладніше: g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Інші дії для ярлика "<ph name="SHORTCUT_TITLE" />"</translation>

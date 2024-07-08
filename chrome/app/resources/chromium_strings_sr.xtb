@@ -74,6 +74,7 @@
 <translation id="2174917724755363426">Инсталација није довршена. Желите стварно да је откажете?</translation>
 <translation id="2185166961232948079">Chromium – пријављивање на мрежу – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Грешка са провером ажурирања: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199210295479376551">Уклони налог из Chromium-а</translation>
 <translation id="2210682093923538346">Опасан сајт. Chromium је уклонио обавештења.</translation>
 <translation id="2240214816234246077">Нисте скоро посећивали сајт. Chromium је уклонио дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Ако делите рачунар, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе.</translation>
@@ -95,6 +96,7 @@
 <translation id="2554739539410784893">Chromium покушава да замени постојеће лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="2560420686485554789">Chromium тражи приступ меморијском простору да би преузимао датотеке</translation>
 <translation id="2572494885440352020">Chromium помагач</translation>
+<translation id="2576118232315942160">Да би вам лозинке и други садржај били доступни на свим уређајима, пријавите се у Chromium</translation>
 <translation id="2583187216237139145">Администратор пословног профила може да уклони све податке Chromium-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -469,6 +471,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8357820681460164151">Да бисте приступали Chromium прегледачу на свим уређајима, пријавите се, па укључите синхронизацију</translation>
 <translation id="8360718212975266891">Да бисте добијали будућа Chromium ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
+<translation id="8372327902843331129">Да би вам лозинке и други садржај били доступни на свим уређајима, пријавите се у Chromium. Ова лозинка ће бити сачувана на Google налогу када се пријавите.</translation>
 <translation id="837460953767177950">Затим треба да рестартујете Chromium.</translation>
 <translation id="8401454788024434101">Програмер је објавио овај додатак и он можда није безбедан. Уклоните га из Chromium-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Поново покрените Chromium за један дан}one{Поново покрените Chromium за # дан}few{Поново покрените Chromium за # дана}other{Поново покрените Chromium за # дана}}</translation>

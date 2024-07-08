@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2364498172489649528">Bestået</translation>
 <translation id="2367335866686097760">Tastaturtilknytning for tast</translation>
+<translation id="2370739752330685659">Måske senere</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2407209115954268704">Status for SIM-lås</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">pools</translation>
+<translation id="3122883569442693641">Flere oplysninger</translation>
 <translation id="3124039320086536031">Enheden har forbindelse.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vil du fjerne siden?}=1{Vil du fjerne side {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Vil du fjerne side {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">sne</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Deaktiver Pauseskærm</translation>
 <translation id="4210636113897977670">Gem og luk</translation>
 <translation id="4210659479607886331">gletsjerflod</translation>
+<translation id="42126664696688958">Eksportér</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Tastaturlys</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
+<translation id="6738867403308150051">Downloader…</translation>
 <translation id="6740695858234317715">cremefarvet og orange</translation>
 <translation id="6741823073189174383">en båd</translation>
 <translation id="6744441848304920043">en jungle</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">IPv6-adresse</translation>
 <translation id="7507061649493508884">Farvestrålende <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">nederst</translation>
+<translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7528507600602050979">Indholdet i Hjælp er ikke tilgængeligt</translation>

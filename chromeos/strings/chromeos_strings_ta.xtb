@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2367335866686097760">கீ பட்டன் ஒதுக்கீடு</translation>
+<translation id="2370739752330685659">இப்போது வேண்டாம்</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2407209115954268704">சிம் நிலை</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">நீச்சல் குளங்கள்</translation>
+<translation id="3122883569442693641">கூடுதல் விவரங்கள்</translation>
 <translation id="3124039320086536031">சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{பக்கத்தை அகற்றவா?}=1{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}other{{PAGE_NUMBER}வது பக்கத்தை அகற்றவா?}}</translation>
 <translation id="3140130301071865159">பனி</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">ஸ்கிரீன் சேவரை முடக்குதல்</translation>
 <translation id="4210636113897977670">சேமித்து வெளியேறு</translation>
 <translation id="4210659479607886331">பனியாறு</translation>
+<translation id="42126664696688958">ஏற்றுமதி செய்</translation>
 <translation id="4213104098953699324">USB கீபோர்டு</translation>
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">ஆற்றல்</translation>
 <translation id="6723847290197874913">கீபோர்டு பேக்லைட்</translation>
 <translation id="672609503628871915">புதியதைப் பார்க்கவும்</translation>
+<translation id="6738867403308150051">பதிவிறக்குகிறது…</translation>
 <translation id="6740695858234317715">கிரீம் மற்றும் ஆரஞ்சு</translation>
 <translation id="6741823073189174383">படகு</translation>
 <translation id="6744441848304920043">அடர் வனம்</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
 <translation id="7507061649493508884">பிரகாசமான <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">கீழ்ப்புறம்</translation>
+<translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">உருவாக்கு</translation>
 <translation id="7528507600602050979">உதவி உள்ளடக்கம் இல்லை</translation>

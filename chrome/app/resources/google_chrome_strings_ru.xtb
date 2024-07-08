@@ -327,6 +327,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не удалось запустить Chrome. Повторите попытку.</translation>
 <translation id="5809516625706423866">Не удалось подключиться к интернету. Ошибка HTTP 401: нет авторизации. Проверьте настройки прокси-сервера.</translation>
+<translation id="5825922397106002626">Удалить расширение "<ph name="EXTENSION_NAME" />" из Chrome</translation>
 <translation id="5858486459377137936">Если вы закроете все окна Chrome, то выйдете из системы на большинстве сайтов. Вы останетесь в аккаунте Google, если ранее вошли в Chrome. Разрешить сайтам сохранять ваши данные можно <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome предупреждает<ph name="END_LINK" /> о небезопасных сайтах и файлах в интернете</translation>
 <translation id="5895138241574237353">Перезапустить</translation>

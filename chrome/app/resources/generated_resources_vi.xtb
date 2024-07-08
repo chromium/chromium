@@ -1033,6 +1033,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1730989807608739928">Di chuyển đến thẻ cuối cùng</translation>
 <translation id="1731520826054843792">Mẫu Chứng chỉ của Microsoft</translation>
 <translation id="1731911755844941020">Đang gửi yêu cầu…</translation>
+<translation id="1732380773380808394">Bạn cũng có thể sử dụng mật khẩu cùng nhiều dữ liệu khác từ Tài khoản Google của mình.</translation>
 <translation id="1734212868489994726">Xanh lam nhạt</translation>
 <translation id="1734230530703461088">Không tải được các tiện ích trong giới hạn thời gian. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> có thể không tự cập nhật được</translation>
@@ -5821,6 +5822,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5247243947166567755">Chọn <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Trình duyệt đã gặp lỗi trước khi quá trình tải xuống hoàn tất.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> sử dụng vị trí của bạn để cung cấp cho bạn nội dung địa phương. Bạn có thể thay đổi cài đặt này trong <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Tạo mã PIN khôi phục cho Trình quản lý mật khẩu của Google</translation>
 <translation id="5252496130205799136">Dùng Tài khoản Google của bạn để lưu và điền mật khẩu?</translation>
 <translation id="5252653240322147470">Mã PIN phải có ít hơn <ph name="MAXIMUM" /> chữ số</translation>
 <translation id="5253554634804500860">Sử dụng <ph name="DEVICE_NAME" /></translation>

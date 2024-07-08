@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Բացել լրացուցիչ ընտրացանկը</translation>
 <translation id="1341926407152459446">Օգտագործեք «<ph name="DEVICE_NAME" />» սարքը աուդիոյի ներածման և արտածման համար</translation>
 <translation id="1346748346194534595">Աջ</translation>
+<translation id="1350494136075914725">Ընթանում է · Անցնել ներդիրին</translation>
 <translation id="1351937230027495976">Ծալել ընտրացանկը</translation>
 <translation id="1360220746312242196">Անցնել էջի որոնման նախորդ արդյունքին</translation>
 <translation id="1360788414852622716">Պրոֆիլն անջատվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">Աուդիոյի ընտրություն</translation>
 <translation id="4881323000405981760">Էֆեկտները չեն աջակցվում Լինուքսի հավելվածներում</translation>
 <translation id="4881695831933465202">Բացել</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Կարծիք հայտնեք, որպեսզի մենք կարողանանք բարելավել առաջարկները։</translation>
 <translation id="4890187583552566966">Google Օգնականն անջատված է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="4890408602550914571">Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված է, և որ Bluetooth-ը միացված է։</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>
 <translation id="742608627846767349">Բարի լույս,</translation>
 <translation id="743058460480092004">Տեսախցիկն ու խոսափողը օգտագործվում են:</translation>
+<translation id="7441711280402516925">Նվագարկվում է · Անցնել ներդիրին</translation>
 <translation id="7453330308669753048">Արդյունքը հեռացվեց որոնումների պատմությունից</translation>
 <translation id="7459485586006128091">Ներքին սխալի պատճառով թեժ կետն անջատվել է։ Փորձեք նորից միանալ մի քանի րոպեից։</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>

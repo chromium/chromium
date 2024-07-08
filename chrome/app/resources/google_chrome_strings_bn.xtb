@@ -332,6 +332,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome লঞ্চ করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="5809516625706423866">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। HTTP 401 অননুমোদিত। আপনার প্রক্সি কনফিগারেশন চেক করুন।</translation>
+<translation id="5825922397106002626">Chrome থেকে <ph name="EXTENSION_NAME" /> সরান</translation>
 <translation id="5858486459377137936">আপনি সব Chrome উইন্ডো বন্ধ করে দিলে আপনাকে বেশিরভাগ সাইট থেকে সাইন-আউট করে দেওয়া হবে, তবে আপনি Chrome-এ সাইন-ইন করে থাকলে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। সাইট যাতে আপনাকে চিনতে পারে তার জন্য <ph name="SETTINGS_LINK" />।</translation>
 <translation id="586971344380992563">নিরাপদ নয় এমন সাইট ও ডাউনলোড সম্পর্কে <ph name="BEGIN_LINK" />Chrome আপনাকে সতর্ক করে দেয়<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>

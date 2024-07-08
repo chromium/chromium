@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1341926407152459446">Используйте устройство "<ph name="DEVICE_NAME" />" для ввода и вывода аудио.</translation>
 <translation id="1346748346194534595">Справа</translation>
+<translation id="1350494136075914725">Идет видеовстреча · Перейти</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1360220746312242196">Перейти к предыдущему результату поиска по странице</translation>
 <translation id="1360788414852622716">Отключение профиля… Это может занять несколько минут.</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">Выбор аудио</translation>
 <translation id="4881323000405981760">Эффекты не поддерживаются приложениями для Linux</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Оставьте отзыв и помогите нам улучшить подсказки:</translation>
 <translation id="4890187583552566966">Администратор отключил Google Ассистента</translation>
 <translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">Камера используется.</translation>
 <translation id="742608627846767349">Доброе утро!</translation>
 <translation id="743058460480092004">Камера и микрофон используются.</translation>
+<translation id="7441711280402516925">Воспроизводится контент · Перейти</translation>
 <translation id="7453330308669753048">Результат удален из истории поиска</translation>
 <translation id="7459485586006128091">Точка доступа отключена из-за внутренней ошибки. Попробуйте подключиться через несколько минут.</translation>
 <translation id="7461924472993315131">Закрепить</translation>

@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2364498172489649528">Пройдзена</translation>
 <translation id="2367335866686097760">Кнопка для вызначэння клавіш</translation>
+<translation id="2370739752330685659">Пазней</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
 <translation id="2407209115954268704">Стан блакіроўкі SIM-карты</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122614491980756867">вадаёмы</translation>
+<translation id="3122883569442693641">Дадатковая інфармацыя</translation>
 <translation id="3124039320086536031">Прылада падключана.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Выдаліць старонку?}=1{Выдаліць старонку {PAGE_NUMBER}?}one{Выдаліць старонку {PAGE_NUMBER}?}few{Выдаліць старонку {PAGE_NUMBER}?}many{Выдаліць старонку {PAGE_NUMBER}?}other{Выдаліць старонку {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">снег</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Выключыць застаўку</translation>
 <translation id="4210636113897977670">Захаваць і выйсці</translation>
 <translation id="4210659479607886331">ледніковая рака</translation>
+<translation id="42126664696688958">Экспартаваць</translation>
 <translation id="4213104098953699324">Клавіятура з USB</translation>
 <translation id="4227825898293920515">Тэрмін дзеяння пароля заканчваецца праз <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма дзеючых заданняў друку</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723847290197874913">Падсветка клавіятуры</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
+<translation id="6738867403308150051">Ідзе спампоўка…</translation>
 <translation id="6740695858234317715">крэмавы і аранжавы</translation>
 <translation id="6741823073189174383">лодка</translation>
 <translation id="6744441848304920043">джунглі</translation>
@@ -1203,6 +1207,7 @@
 <translation id="7502658306369382406">Адрас IPv6</translation>
 <translation id="7507061649493508884">Прамяністая <ph name="FLOWER_COLOR" /> кветка тыпу <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">знізу</translation>
+<translation id="7514365320538308">Спампаваць</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Стварыць</translation>
 <translation id="7528507600602050979">Даведачнае змесціва недаступнае</translation>

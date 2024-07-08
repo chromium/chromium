@@ -328,6 +328,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Не вдалося запустити Chrome. Повторіть спробу.</translation>
 <translation id="5809516625706423866">Не вдалося підключитися до Інтернету. Помилка "HTTP 401 не авторизовано". Перевірте конфігурацію свого проксі-сервера.</translation>
+<translation id="5825922397106002626">Вилучити розширення <ph name="EXTENSION_NAME" /> з Chrome</translation>
 <translation id="5858486459377137936">Якщо ви закриєте всі вікна Chrome, то вийдете з облікових записів на більшості сайтів, але не з облікового запису Google (за умови, що ви ввійшли в Chrome). Щоб дозволити сайтам запам’ятовувати вас, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome попереджає<ph name="END_LINK" /> про небезпечні сайти й завантаження</translation>
 <translation id="5895138241574237353">Перезапустити</translation>

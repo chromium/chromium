@@ -1023,6 +1023,7 @@
 <translation id="1730989807608739928">Скролујте ка последњој картици</translation>
 <translation id="1731520826054843792">Шаблон Microsoft сертификата</translation>
 <translation id="1731911755844941020">Шаље се захтев...</translation>
+<translation id="1732380773380808394">Моћи ћете да приступате и својим лозинкама и другим подацима са Google налога.</translation>
 <translation id="1734212868489994726">Светлоплава</translation>
 <translation id="1734230530703461088">Није успело учитавање додатака у оквиру временског ограничења. Обратите се администратору.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> можда неће моћи да се ажурира</translation>
@@ -3364,6 +3365,7 @@
 <translation id="3441663102605358937">Поново се пријавите на <ph name="ACCOUNT" /> да бисте верификовали овај налог</translation>
 <translation id="3441824746233675597">Отежајте онима који имају приступ вашем интернет саобраћају да виде које сајтове посећујете. <ph name="PRODUCT_NAME" /> користи безбедну везу да би тражио IP адресу сајта у DNS-у (систему имена домена).</translation>
 <translation id="3442674350323953953">Дозволите Google-у да користи податке о хардверу како би побољшао <ph name="DEVICE_OS" />. Ако одбијете, ти подаци се ипак шаљу Google-у да би се утврдила одговарајућа ажурирања, али се не чувају нити користе на неки други начин.</translation>
+<translation id="3443545121847471732">Унесите шестоцифрени PIN</translation>
 <translation id="3443744348829035122">Време за <ph name="BRAND" /> је истекло</translation>
 <translation id="3443754338602062261">Већ имате лозинке за ове налоге у услузи <ph name="BRAND" />. Ако одлучите да увезете неку од лозинки у наставку, она ће заменити постојећу.</translation>
 <translation id="344449859752187052">Колачићи треће стране су блокирани</translation>
@@ -5807,6 +5809,7 @@
 <translation id="5247243947166567755">Изаберите <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="5249624017678798539">Прегледач је отказао пре него што је преузимање довршено.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> користи локацију да би вам пружао локални садржај. То можете да промените у: <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5251885976619018662">Направите PIN за враћање приступа налогу за Google менаџер лозинки</translation>
 <translation id="5252496130205799136">Желите да користите Google налог да бисте чували и попуњавали лозинке?</translation>
 <translation id="5252653240322147470">PIN мора да има мање од <ph name="MAXIMUM" /> цифре(ара)</translation>
 <translation id="5253554634804500860">Користи телефон <ph name="DEVICE_NAME" /></translation>
@@ -7845,6 +7848,7 @@
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6790497603648687708">Додатак <ph name="EXTENSION_NAME" /> је додат даљински</translation>
 <translation id="6790820461102226165">Додај особу...</translation>
+<translation id="6793610798874309813">PIN може да садржи 4 или више знакова</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
 <translation id="6794511157503068">Ако је приступни кључ за апликацију <ph name="APP_NAME" /> на USB безбедносном кључу, уметните га и додирните одмах</translation>
 <translation id="679486139907144816">Да бисте се пријавили на овај сајт помоћу приступног кључа, треба да укључите Windows Hello у подешавањима. Затим се вратите на овај сајт и пробајте поново.</translation>

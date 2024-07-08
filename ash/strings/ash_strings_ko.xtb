@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">더보기</translation>
 <translation id="1341926407152459446">오디오 입력 및 출력에 "<ph name="DEVICE_NAME" />" 기기입니다.</translation>
 <translation id="1346748346194534595">오른쪽</translation>
+<translation id="1350494136075914725">진행 중 · 탭으로 전환</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1360220746312242196">페이지를 검색할 때 이전 일치 항목으로 이동</translation>
 <translation id="1360788414852622716">프로필을 사용 중지하는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">오디오 선택</translation>
 <translation id="4881323000405981760">Linux 앱에서는 효과가 지원되지 않습니다</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">의견을 보내주시면 제안 기능이 개선됩니다.</translation>
 <translation id="4890187583552566966">관리자가 Google 어시스턴트를 사용 중지했습니다.</translation>
 <translation id="4890408602550914571">휴대전화가 근처에 있고 블루투스가 켜져 있는지 확인하세요.</translation>
@@ -1750,6 +1752,7 @@
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
 <translation id="742608627846767349">좋은 아침이에요</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
+<translation id="7441711280402516925">재생 중 · 탭으로 전환</translation>
 <translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
 <translation id="7459485586006128091">내부 오류로 인해 핫스팟이 사용 중지되었습니다. 몇 분 후에 다시 연결해 보세요.</translation>
 <translation id="7461924472993315131">고정</translation>

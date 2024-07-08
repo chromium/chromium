@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2364498172489649528">Прошло</translation>
 <translation id="2367335866686097760">Тастер за мапирање тастера</translation>
+<translation id="2370739752330685659">Можда касније</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пошаљи извештај са повратним информацијама</translation>
 <translation id="2407209115954268704">Статус закључавања SIM картице</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">базенима</translation>
+<translation id="3122883569442693641">Још детаља</translation>
 <translation id="3124039320086536031">Уређај је повезан.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Желите да уклоните страницу?}=1{Желите да уклоните {PAGE_NUMBER}. страницу?}one{Желите да уклоните {PAGE_NUMBER}. страницу?}few{Желите да уклоните {PAGE_NUMBER}. страницу?}other{Желите да уклоните {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="3140130301071865159">снегом</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Искључите чувар екрана</translation>
 <translation id="4210636113897977670">Сачувај и затвори</translation>
 <translation id="4210659479607886331">глечерска река</translation>
+<translation id="42126664696688958">Извези</translation>
 <translation id="4213104098953699324">USB тастатура</translation>
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
 <translation id="672609503628871915">Прикажи шта је ново</translation>
+<translation id="6738867403308150051">Преузима се...</translation>
 <translation id="6740695858234317715">крем и наранџасте боје</translation>
 <translation id="6741823073189174383">Чамац</translation>
 <translation id="6744441848304920043">џунгла</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">IPv6 адреса</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> са светлом нијансом боје <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">дно</translation>
+<translation id="7514365320538308">Преузми</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Направи</translation>
 <translation id="7528507600602050979">Садржај помоћи није доступан</translation>

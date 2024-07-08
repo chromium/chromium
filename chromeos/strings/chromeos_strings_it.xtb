@@ -286,6 +286,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364498172489649528">Superato</translation>
 <translation id="2367335866686097760">Mappatura tasti per il tasto</translation>
+<translation id="2370739752330685659">Magari più tardi</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2407209115954268704">Stato di blocco della SIM</translation>
@@ -392,6 +393,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscine</translation>
+<translation id="3122883569442693641">Altri dettagli</translation>
 <translation id="3124039320086536031">Il dispositivo è collegato.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
 <translation id="3140130301071865159">neve</translation>
@@ -586,6 +588,7 @@
 <translation id="420283545744377356">Disattiva salvaschermo</translation>
 <translation id="4210636113897977670">Salva ed esci</translation>
 <translation id="4210659479607886331">fiume glaciale</translation>
+<translation id="42126664696688958">Esporta</translation>
 <translation id="4213104098953699324">Tastiera USB</translation>
 <translation id="4227825898293920515">La password scade tra <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nessun processo di stampa in corso</translation>
@@ -1052,6 +1055,7 @@
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="6723847290197874913">Retroilluminazione della tastiera</translation>
 <translation id="672609503628871915">Scopri le novità</translation>
+<translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6740695858234317715">panna e arancione</translation>
 <translation id="6741823073189174383">barca</translation>
 <translation id="6744441848304920043">una giungla</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> dai colori vivaci</translation>
 <translation id="7513770521371759388">in basso</translation>
+<translation id="7514365320538308">Scarica</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7528507600602050979">Contenuti della guida non disponibili</translation>

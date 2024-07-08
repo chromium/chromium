@@ -110,6 +110,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1341926407152459446">Använd <ph name="DEVICE_NAME" /> som ljudingång och ljudutgång</translation>
 <translation id="1346748346194534595">Höger</translation>
+<translation id="1350494136075914725">Pågående · Byt till flik</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1360220746312242196">Gå till föregående matchning för sökningen när du söker på en sida</translation>
 <translation id="1360788414852622716">Profilen inaktiveras. Det kan ta några minuter.</translation>
@@ -1048,6 +1049,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4876935764454575645">Ljudval</translation>
 <translation id="4881323000405981760">Effekter stöds inte i Linux-appar</translation>
 <translation id="4881695831933465202">Öppna</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">Ange feedback för att förbättra förslagen (valfritt):</translation>
 <translation id="4890187583552566966">Administratören har inaktiverat Google Assistent.</translation>
 <translation id="4890408602550914571">Kontrollera att telefonen finns i närheten och att Bluetooth är aktiverat på den.</translation>
@@ -1750,6 +1752,7 @@ Nyligen installerad</translation>
 <translation id="742594950370306541">Kameran används.</translation>
 <translation id="742608627846767349">Hej!</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
+<translation id="7441711280402516925">Spelar upp · Byt till flik</translation>
 <translation id="7453330308669753048">Sökresultat från sökhistoriken borttaget</translation>
 <translation id="7459485586006128091">Surfzonen har inaktiverats på grund av ett internt fel. Testa att återansluta om några minuter.</translation>
 <translation id="7461924472993315131">Fäst</translation>
