@@ -2565,7 +2565,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskButton.DeskBar.Exit.PresentationTime" units="ms"
-    expires_after="2024-08-21">
+    expires_after="2024-11-17">
   <owner>yongshun@google.com</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wms@google.com</owner>
