@@ -40,6 +40,7 @@ specific_include_rules = {
     "+base/allocator/partition_alloc_support.h",
     "+base/cpu.h",
     "+base/debug/asan_service.h",
+    "+base/metrics/histogram_base.h",
     "+base/test/bind.h",
     "+base/test/gtest_util.h",
     "+base/test/memory/dangling_ptr_instrumentation.h",
