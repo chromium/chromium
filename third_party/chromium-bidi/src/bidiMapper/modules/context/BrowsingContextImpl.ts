@@ -712,8 +712,12 @@ export class BrowsingContextImpl {
       case BrowsingContext.UserPromptType.Beforeunload:
         return (
           this.#unhandledPromptBehavior?.beforeUnload ??
-          this.#unhandledPromptBehavior?.default ??
-          defaultPromptHandler
+          // In WebDriver Classic spec, `beforeUnload` prompt should be accepted by
+          // default. Step 4 of "Get the prompt handler" algorithm
+          // (https://w3c.github.io/webdriver/#dfn-get-the-prompt-handler):
+          // > If type is "beforeUnload", return a prompt handler configuration with
+          //   handler "accept" and notify false.
+          Session.UserPromptHandlerType.Accept
         );
       case BrowsingContext.UserPromptType.Confirm:
         return (
