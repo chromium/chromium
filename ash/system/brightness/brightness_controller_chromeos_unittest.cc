@@ -1281,4 +1281,30 @@ TEST_F(BrightnessControllerChromeosTest,
       "from a new device.");
 }
 
+TEST_F(BrightnessControllerChromeosTest,
+       RecordStartupAmbientLightSensorStatus) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableBrightnessControlInSettings);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.Startup.AmbientLightSensorEnabled", 0);
+
+  // Set ALS and sensor status.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  power_manager_client()->set_has_ambient_light_sensor(true);
+  run_loop_.RunUntilIdle();
+
+  // Log in.
+  ClearLogin();
+  AccountId first_account = AccountId::FromUserEmail(kUserEmail);
+  LoginScreenFocusAccount(first_account);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Display.Startup.AmbientLightSensorEnabled", true, 1);
+
+  // Log in again, expect no extra metric is emitted.
+  ClearLogin();
+  LoginScreenFocusAccount(first_account);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Display.Startup.AmbientLightSensorEnabled", 1);
+}
+
 }  // namespace ash

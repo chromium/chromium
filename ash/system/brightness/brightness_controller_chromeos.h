@@ -83,6 +83,7 @@ class ASH_EXPORT BrightnessControllerChromeos
  private:
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
   void OnGetBrightnessAfterLogin(std::optional<double> brightness_percent);
+  void OnGetHasAmbientLightSensor(std::optional<bool> has_sensor);
   void RestoreBrightnessSettings(const AccountId& account_id);
   void RestoreBrightnessSettingsOnFirstLogin();
 
@@ -105,6 +106,13 @@ class ASH_EXPORT BrightnessControllerChromeos
   // True if the ambient light sensor value has already been restored for a
   // user's first login.
   bool has_ambient_light_sensor_been_restored_for_new_user_ = false;
+
+  // True if the ambient light sensor status has already been recorded at login
+  // screen, it is used to ensures the status is recorded only once per boot.
+  bool has_ambient_light_sensor_status_been_recorded_ = false;
+
+  // True if device has an ambient light sensor.
+  bool has_sensor_ = false;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the ambient light sensor value has finished syncing.

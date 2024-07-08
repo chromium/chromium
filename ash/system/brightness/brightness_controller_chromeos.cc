@@ -75,7 +75,13 @@ BrightnessControllerChromeos::BrightnessControllerChromeos(
     PrefService* local_state,
     SessionControllerImpl* session_controller)
     : local_state_(local_state), session_controller_(session_controller) {
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
+  DCHECK(power_manager_client);
+  power_manager_client->AddObserver(this);
+  power_manager_client->HasAmbientLightSensor(
+      base::BindOnce(&BrightnessControllerChromeos::OnGetHasAmbientLightSensor,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   DCHECK(session_controller_);
   session_controller_->AddObserver(this);
@@ -213,6 +219,14 @@ void BrightnessControllerChromeos::RestoreBrightnessSettings(
   }
 
   SetAmbientLightSensorEnabled(ambient_light_sensor_enabled_for_account);
+
+  // Record the display ambient light sensor status at login.
+  if (has_sensor_ && !has_ambient_light_sensor_status_been_recorded_) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Display.Startup.AmbientLightSensorEnabled",
+        ambient_light_sensor_enabled_for_account);
+    has_ambient_light_sensor_status_been_recorded_ = true;
+  }
 }
 
 void BrightnessControllerChromeos::RestoreBrightnessSettingsOnFirstLogin() {
@@ -298,6 +312,17 @@ void BrightnessControllerChromeos::OnGetBrightnessAfterLogin(
 
   SaveBrightnessPercentToLocalState(local_state_, active_account_id_.value(),
                                     brightness_percent.value());
+}
+
+void BrightnessControllerChromeos::OnGetHasAmbientLightSensor(
+    std::optional<bool> has_sensor) {
+  if (!has_sensor.has_value()) {
+    LOG(ERROR)
+        << "BrightnessControllerChromeos: Failed to get the ambient light "
+           "sensor status";
+    return;
+  }
+  has_sensor_ = has_sensor.value();
 }
 
 void BrightnessControllerChromeos::ScreenBrightnessChanged(

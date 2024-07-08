@@ -1267,6 +1267,17 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Display.Startup.AmbientLightSensorEnabled"
+    enum="BooleanEnabled" expires_after="2025-03-01">
+  <owner>longbowei@google.com</owner>
+  <owner>cambickel@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the status of the display ambient light sensor at startup. Fires when
+    the device boots up and the login screen is displayed.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Display.TimeUntilFirstBrightnessChange.{Time}.{BrightnessAction}Brightness.{PowerSource}Power"
     units="ms" expires_after="2025-03-01">
