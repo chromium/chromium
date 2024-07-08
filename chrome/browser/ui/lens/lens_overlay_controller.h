@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
@@ -82,7 +84,9 @@ class LensOverlayController : public LensSearchboxClient,
                               public content::WebContentsDelegate,
                               public FullscreenObserver,
                               public SidePanelViewStateObserver,
-                              public views::ViewObserver {
+                              public views::ViewObserver,
+                              public views::WidgetObserver,
+                              public OmniboxTabHelper::Observer {
  public:
   // Observer of LensOverlayController events.
   class Observer : public base::CheckedObserver {
@@ -355,6 +359,14 @@ class LensOverlayController : public LensSearchboxClient,
     observers_.RemoveObserver(observer);
   }
 
+  // Show preselection toast bubble. Creates a preselection bubble if it does
+  // not exist.
+  void ShowPreselectionBubble();
+
+  // Hides preselection toast bubble. Used when backgrounding the overlay. This
+  // hides the widget associated with the bubble.
+  void HidePreselectionBubble();
+
   // Testing function to issue a Lens (region selection) request.
   void IssueLensRequestForTesting(lens::mojom::CenterRotatedBoxPtr region);
 
@@ -428,6 +440,10 @@ class LensOverlayController : public LensSearchboxClient,
   lens::LensPermissionBubbleController*
   get_lens_permission_bubble_controller_for_testing() {
     return permission_bubble_controller_.get();
+  }
+
+  views::Widget* get_preselection_widget_for_testing() {
+    return preselection_widget_.get();
   }
 
   lens::LensSearchBubbleController*
@@ -613,6 +629,14 @@ class LensOverlayController : public LensSearchboxClient,
   // ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // OmniboxTabHelper::Observer:
+  void OnOmniboxInputStateChanged() override {}
+  void OnOmniboxFocusChanged(OmniboxFocusState state,
+                             OmniboxFocusChangeReason reason) override;
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
@@ -677,15 +701,14 @@ class LensOverlayController : public LensSearchboxClient,
                                       int selection_start_index,
                                       int selection_end_index) override;
   void CopyText(const std::string& text) override;
+  void CloseSearchBubble() override;
+  void ClosePreselectionBubble() override;
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().
   void IssueTextSelectionRequestInner(const std::string& text_query,
                                       int selection_start_index,
                                       int selection_end_index);
-
-  // Closes search bubble.
-  void CloseSearchBubble() override;
 
   // Handles a request (either region or multimodal) trigger by sending
   // the request to the query controller.
@@ -847,6 +870,13 @@ class LensOverlayController : public LensSearchboxClient,
   base::ScopedObservation<views::View, views::ViewObserver>
       tab_contents_view_observer_{this};
 
+  // Observer to check when the preselection widget is deleted.
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      preselection_widget_observer_{this};
+
+  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
+      omnibox_tab_helper_observer_{this};
+
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,
   // like in the case of side panel opening. In addition, the handler may be
@@ -881,6 +911,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Owns the search bubble that shows over the overlay, before the side panel
   // is showing.
   std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
+
+  // Preselection toast bubble. Weak; owns itself. NULL when closed.
+  raw_ptr<views::Widget> preselection_widget_ = nullptr;
 
   // --------------------Browser window scoped state: END---------------------
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './cursor_tooltip.js';
-import './initial_toast.js';
+import './initial_gradient.js';
 import './selection_overlay.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
@@ -22,7 +22,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
-import type {InitialToastElement} from './initial_toast.js';
+import type {InitialGradientElement} from './initial_gradient.js';
 import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
@@ -35,7 +35,7 @@ export interface LensOverlayAppElement {
     closeButton: CrIconButtonElement,
     copyToast: CrToastElement,
     moreOptionsButton: CrIconButtonElement,
-    initialToast: InitialToastElement,
+    initialGradient: InitialGradientElement,
     cursorTooltip: CursorTooltipElement,
   };
 }
@@ -230,12 +230,11 @@ export class LensOverlayAppElement extends PolymerElement {
   }
 
   private handleSelectionOverlayClicked() {
-    this.$.initialToast.triggerHideMessageAnimation();
     this.$.cursorTooltip.setPauseTooltipChanges(true);
   }
 
   private handlePointerReleased() {
-    this.$.initialToast.triggerHideScrimAnimation();
+    this.$.initialGradient.triggerHideScrimAnimation();
     this.$.cursorTooltip.setPauseTooltipChanges(false);
   }
 
@@ -245,7 +244,7 @@ export class LensOverlayAppElement extends PolymerElement {
 
   private onInitialFlashAnimationEnd() {
     this.initialFlashAnimationHasEnded = true;
-    this.$.initialToast.setMessageAndScrimVisible();
+    this.$.initialGradient.setScrimVisible();
   }
 
   private async showTextCopiedToast() {

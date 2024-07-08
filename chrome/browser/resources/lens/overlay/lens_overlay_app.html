@@ -132,7 +132,7 @@
     z-index: 6;  /* Keep aligned with cursor and context menu. */
   }
 
-  initial-toast {
+  initial-gradient {
     pointer-events: none;
   }
 </style>
@@ -167,7 +167,7 @@
   <lens-selection-overlay theme="[[theme]]" screenshot-data-uri="[[screenshotDataUri]]"
       class$="[[getSelectionOverlayClass(screenshotDataUri)]]">
   </lens-selection-overlay>
-  <initial-toast id="initialToast"></initial-toast>
+  <initial-gradient id="initialGradient"></initial-gradient>
   <div id="buttonContainer">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"

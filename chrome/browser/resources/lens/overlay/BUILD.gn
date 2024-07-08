@@ -44,7 +44,7 @@ build_webui("build_overlay") {
 
   web_component_files = [
     "cursor_tooltip.ts",
-    "initial_toast.ts",
+    "initial_gradient.ts",
     "lens_overlay_app.ts",
     "object_layer.ts",
     "overlay_shimmer.ts",

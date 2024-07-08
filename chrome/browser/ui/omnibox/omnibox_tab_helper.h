@@ -14,7 +14,7 @@ namespace content {
 class WebContents;
 }
 
-// Serves as a bridge between omnibox and NTP UIs. Allows registration of
+// Serves as a bridge between omnibox and other UIs. Allows registration of
 // observers to listen for omnibox updates.
 class OmniboxTabHelper : public content::WebContentsUserData<OmniboxTabHelper> {
  public:

@@ -120,4 +120,14 @@ suite('ObjectSelection', function() {
             await testBrowserProxy.handler.whenCalled('issueLensRequest');
         assertBoxesWithinThreshold(objects[4]!.geometry.boundingBox, rect);
       });
+
+  test(
+      'verify that tapping an object calls closePreselectionBubble',
+      async () => {
+        await simulateClick(selectionOverlayElement, {x: 320, y: 50});
+        await testBrowserProxy.handler.whenCalled('closePreselectionBubble');
+        assertEquals(
+            1,
+            testBrowserProxy.handler.getCallCount('closePreselectionBubble'));
+      });
 });

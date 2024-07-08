@@ -120,12 +120,15 @@ source_set("lens_internal") {
     "lens_overlay_url_builder.h",
     "lens_permission_bubble_controller.cc",
     "lens_permission_bubble_controller.h",
+    "lens_preselection_bubble.cc",
+    "lens_preselection_bubble.h",
     "search_bubble_page_handler.cc",
     "search_bubble_page_handler.h",
   ]
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/browser:browser_process",

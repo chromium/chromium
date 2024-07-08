@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -633,6 +634,127 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       PreselectionToastShows) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Preselection toast should be visible when the overlay is showing and is in
+  // the kOverlay state.
+  auto* preselection_widget = controller->get_preselection_widget_for_testing();
+  ASSERT_TRUE(preselection_widget->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       PreselectionToastDisappearsOnSelection) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Preselection toast should be visible when the overlay is showing and is in
+  // the kOverlay state.
+  auto* preselection_widget = controller->get_preselection_widget_for_testing();
+  ASSERT_TRUE(preselection_widget->IsVisible());
+
+  // Simulate mouse events on the overlay for drawing a manual region.
+  gfx::Point center =
+      GetOverlayWebContents()->GetContainerBounds().CenterPoint();
+  gfx::Point off_center = gfx::Point(center);
+  off_center.Offset(100, 100);
+  SimulateLeftClickDrag(center, off_center);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  // Must explicitly get preselection bubble from controller.
+  ASSERT_EQ(controller->get_preselection_widget_for_testing(), nullptr);
+}
+
+// TODO(crbug.com/40938945): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PreselectionToastOmniboxFocusState \
+  DISABLED_PreselectionToastOmniboxFocusState
+#else
+#define MAYBE_PreselectionToastOmniboxFocusState \
+  PreselectionToastOmniboxFocusState
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_PreselectionToastOmniboxFocusState) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Preselection toast should be visible when the overlay is showing and is in
+  // the kOverlay state.
+  auto* preselection_widget = controller->get_preselection_widget_for_testing();
+  ASSERT_TRUE(preselection_widget->IsVisible());
+
+  // Focus the location bar.
+  browser()->window()->GetLocationBar()->FocusLocation(false);
+
+  // Must explicitly get preselection bubble from controller. Widget should be
+  // hidden when omnibox has focus.
+  ASSERT_FALSE(controller->get_preselection_widget_for_testing()->IsVisible());
+
+  // Move focus back to contents view.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->GetContentsView()->RequestFocus();
+
+  // Widget should be visible when contents view receives focus and overlay is
+  // open.
+  ASSERT_TRUE(controller->get_preselection_widget_for_testing()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        PermissionBubble_Accept) {
   WaitForPaint();
   // State should start in off.
@@ -1093,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
 }
 
-// TODO(b/335028577): Test flaky on Mac.
+// TODO(b/350991033): Test flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ShowSidePanelAfterTextSelectionRequest \
   DISABLED_ShowSidePanelAfterTextSelectionRequest
@@ -1352,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Returning back to the previous tab should show the overlay UI again.
   browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
   EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
   // Side panel should come back when returning to previous tab.
   EXPECT_TRUE(base::test::RunUntil(

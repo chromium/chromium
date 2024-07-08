@@ -105,6 +105,9 @@ interface LensPageHandler {
   // user opens side panel, we cannot guarantee the overlay webcontents will
   // still have explicit user activation. Therefore, we use this method instead.
   CopyText(string text);
+
+  // When called, the C++ coordinator closes the preselection toast bubble.
+  ClosePreselectionBubble();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
