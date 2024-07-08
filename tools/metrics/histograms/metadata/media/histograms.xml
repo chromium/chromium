@@ -7729,14 +7729,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Ui.Dialog.LoadedWithData" units="ms"
-    expires_after="2024-05-03">
+<histogram name="MediaRouter.Ui.{DialogType}Dialog.LoadedWithData" units="ms"
+    expires_after="2025-01-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
-    Duration in milliseconds taken from the user click to open the Media Router
-    dialog to initializing the dialog with data.
+    Duration in milliseconds taken from the user click to open the {DialogType}
+    dialog to show available devices. Recorded only when there are discovered
+    devices shown in the dialog.
   </summary>
+  <token key="DialogType">
+    <variant name="Cast" summary="Cast"/>
+    <variant name="GMC" summary="Global Media Controls"/>
+  </token>
 </histogram>
 
 <histogram name="MediaRouter.WiredDisplay.AvailableDevicesCount" units="units"

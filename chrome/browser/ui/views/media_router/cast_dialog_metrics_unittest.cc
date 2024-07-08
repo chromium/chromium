@@ -48,7 +48,7 @@ class CastDialogMetricsTest : public ChromeViewsTestBase {
 TEST_F(CastDialogMetricsTest, OnSinksLoaded) {
   metrics_.OnSinksLoaded(sink_load_time);
   tester_.ExpectUniqueSample(
-      MediaRouterMetrics::kHistogramUiDialogLoadedWithData,
+      MediaRouterMetrics::kHistogramUiCastDialogLoadedWithData,
       (sink_load_time - init_time).InMilliseconds(), 1);
 }
 

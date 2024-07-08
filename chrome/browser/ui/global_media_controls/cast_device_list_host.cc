@@ -91,6 +91,7 @@ CastDeviceListHost::CastDeviceListHost(
       media_remoting_callback_(std::move(media_remoting_callback)),
       hide_dialog_callback_(std::move(hide_dialog_callback)),
       on_sinks_discovered_callback_(std::move(on_sinks_discovered_callback)),
+      initialization_time_(base::Time::Now()),
       id_(next_id_++) {
   cast_controller_->AddObserver(this);
   cast_controller_->RegisterDestructor(
@@ -160,6 +161,7 @@ void CastDeviceListHost::OnModelUpdated(
 
   if (!devices.empty()) {
     on_sinks_discovered_callback_.Run();
+    RecordSinkLoadTime();
   }
   client_->OnDevicesUpdated(std::move(devices));
 }
@@ -186,6 +188,15 @@ void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
 
 void CastDeviceListHost::DestroyCastController() {
   cast_controller_.reset();
+}
+
+void CastDeviceListHost::RecordSinkLoadTime() {
+  if (!sinks_load_time_.is_null()) {
+    return;
+  }
+  sinks_load_time_ = base::Time::Now();
+  media_router::MediaRouterMetrics::RecordGmcDialogLoaded(sinks_load_time_ -
+                                                          initialization_time_);
 }
 
 int CastDeviceListHost::next_id_ = 0;

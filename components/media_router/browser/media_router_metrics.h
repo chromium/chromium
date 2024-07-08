@@ -143,7 +143,8 @@ class MediaRouterMetrics {
   static const char kHistogramUiDeviceCount[];
   static const char kHistogramUiDialogActivationLocationAndCastMode[];
   static const char kHistogramUiDialogIconStateAtOpen[];
-  static const char kHistogramUiDialogLoadedWithData[];
+  static const char kHistogramUiCastDialogLoadedWithData[];
+  static const char kHistogramUiGmcDialogLoadedWithData[];
   static const char kHistogramUiFirstAction[];
   static const char kHistogramUiIconStateAtInit[];
   static const char kHistogramUiAndroidDialogType[];
@@ -159,9 +160,10 @@ class MediaRouterMetrics {
   static void RecordMediaRouterDialogActivationLocation(
       MediaRouterDialogActivationLocation activation_location);
 
-  // Records the duration it takes for the Media Router dialog to load its
+  // Records the duration it takes for the Cast or GMC dialog to load its
   // initial data after a user clicks to open the dialog.
-  static void RecordMediaRouterDialogLoaded(const base::TimeDelta& delta);
+  static void RecordCastDialogLoaded(const base::TimeDelta& delta);
+  static void RecordGmcDialogLoaded(const base::TimeDelta& delta);
 
   // Records the format of a cast file.
   static void RecordMediaRouterFileFormat(
