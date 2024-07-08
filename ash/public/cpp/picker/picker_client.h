@@ -52,6 +52,7 @@ class ASH_PUBLIC_EXPORT PickerClient {
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
   // fetch assets.
+  // TODO: b/349891147 - Remove this unused method.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSharedURLLoaderFactory() = 0;
 

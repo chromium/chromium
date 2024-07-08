@@ -7,17 +7,13 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/functional/callback_forward.h"
 
 class SkBitmap;
 
 namespace gfx {
 class Size;
 }
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
 
 namespace ash {
 
@@ -27,10 +23,6 @@ class ASH_EXPORT PickerAssetFetcherImplDelegate {
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
   virtual ~PickerAssetFetcherImplDelegate() = default;
-
-  // TODO: b/349891147 - Remove this unused method.
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetSharedURLLoaderFactory() = 0;
 
   // Fetches the thumbnail for a file and calls `callback` with the result.
   virtual void FetchFileThumbnail(const base::FilePath& path,

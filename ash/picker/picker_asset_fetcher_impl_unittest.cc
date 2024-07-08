@@ -10,10 +10,8 @@
 #include "ash/picker/picker_asset_fetcher_impl_delegate.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -27,10 +25,6 @@ using ::testing::FieldsAre;
 
 class MockPickerAssetFetcherDelegate : public PickerAssetFetcherImplDelegate {
  public:
-  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
-              GetSharedURLLoaderFactory,
-              (),
-              (override));
   MOCK_METHOD(void,
               FetchFileThumbnail,
               (const base::FilePath& path,
