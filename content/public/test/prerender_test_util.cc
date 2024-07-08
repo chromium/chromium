@@ -133,34 +133,36 @@ class PrerenderHostRegistryObserverImpl
   }
 
   void WaitForTrigger(const GURL& url) {
+    ASSERT_FALSE(waiting_.contains(url));
     if (triggered_.contains(url)) {
       return;
     }
-    EXPECT_FALSE(waiting_.contains(url));
     base::RunLoop loop;
     waiting_[url] = loop.QuitClosure();
     loop.Run();
   }
 
   void NotifyOnTrigger(const GURL& url, base::OnceClosure callback) {
+    ASSERT_FALSE(waiting_.contains(url));
     if (triggered_.contains(url)) {
       std::move(callback).Run();
       return;
     }
-    EXPECT_FALSE(waiting_.contains(url));
     waiting_[url] = std::move(callback);
   }
 
   void OnTrigger(const GURL& url) override {
+    if (triggered_.contains(url)) {
+      ASSERT_FALSE(waiting_.contains(url));
+      return;
+    }
+    triggered_.insert(url);
+
     auto iter = waiting_.find(url);
     if (iter != waiting_.end()) {
       auto callback = std::move(iter->second);
       waiting_.erase(iter);
       std::move(callback).Run();
-    } else {
-      EXPECT_FALSE(triggered_.contains(url))
-          << "this observer doesn't yet support multiple triggers";
-      triggered_.insert(url);
     }
   }
 
@@ -174,6 +176,10 @@ class PrerenderHostRegistryObserverImpl
       observation_{this};
 
   base::flat_map<GURL, base::OnceClosure> waiting_;
+
+  // Set when prerendering is triggered. Doesn't yet support the case where
+  // prerendering is triggered, canceled, and then re-triggered for the same
+  // URL.
   base::flat_set<GURL> triggered_;
 };
 
