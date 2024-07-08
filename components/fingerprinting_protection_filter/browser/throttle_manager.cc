@@ -474,7 +474,15 @@ void ThrottleManager::RecordUmaHistogramsForRootNavigation(
     content::NavigationHandle* navigation_handle,
     const subresource_filter::mojom::ActivationLevel& activation_level,
     bool did_inherit_opener_activation) {
-  // TODO(https://crbug.com/40280666): Add PageLoad metrics.
+  UMA_HISTOGRAM_ENUMERATION(
+      "FingerprintingProtection.PageLoad.RootNavigation.ActivationState",
+      activation_level);
+  if (did_inherit_opener_activation) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "FingerprintingProtection.PageLoad.RootNavigation.ActivationState."
+        "DidInherit",
+        activation_level);
+  }
 }
 
 }  // namespace fingerprinting_protection_filter

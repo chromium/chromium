@@ -107,6 +107,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame, records whether
+    fingerprinting protection filtering should be activated for that load. Also
+    records the same for the initial document load, even if it was not
+    committed.
+  </summary>
+</histogram>
+
+<histogram
+    name="FingerprintingProtection.PageLoad.RootNavigation.ActivationState.DidInherit"
+    enum="SubresourceFilterActivationState" expires_after="2025-07-01">
+  <owner>rizvis@google.com</owner>
+  <owner>trishalfonso@google.com</owner>
+  <owner>thesalsa@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame that inherits from its
+    same-origin opener, records whether fingerprinting protection filtering
+    should be activated for that load. Also records the same for the initial
+    document load (if it inherits its activation) even if it was not committed.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.WriteRuleset.Result"
     enum="SubresourceFilterWriteRulesetResult" expires_after="2025-04-30">
   <owner>rizvis@google.com</owner>
