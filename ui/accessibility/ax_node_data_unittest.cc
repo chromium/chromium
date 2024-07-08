@@ -187,7 +187,6 @@ TEST(AXNodeDataTest, IsClickable) {
       ax::mojom::Role::kMenuListOption,
       ax::mojom::Role::kPdfActionableHighlight,
       ax::mojom::Role::kPopUpButton,
-      ax::mojom::Role::kPortal,
       ax::mojom::Role::kRadioButton,
       ax::mojom::Role::kSearchBox,
       ax::mojom::Role::kSpinButton,

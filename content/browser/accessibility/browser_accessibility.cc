@@ -1698,8 +1698,6 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return content_client->GetLocalizedString(IDS_AX_ROLE_EMBEDDED_OBJECT);
     case ax::mojom::Role::kPopUpButton:
       return content_client->GetLocalizedString(IDS_AX_ROLE_POP_UP_BUTTON);
-    case ax::mojom::Role::kPortal:
-      return {};
     case ax::mojom::Role::kProgressIndicator:
       return content_client->GetLocalizedString(IDS_AX_ROLE_PROGRESS_INDICATOR);
     case ax::mojom::Role::kRadioButton:
@@ -1790,6 +1788,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
       return {};
     case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kPortalDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
       NOTREACHED_NORETURN();

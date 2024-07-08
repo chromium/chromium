@@ -462,7 +462,7 @@ const char* ToString(ax::mojom::Role role) {
       return "pluginObject";
     case ax::mojom::Role::kPopUpButton:
       return "popUpButton";
-    case ax::mojom::Role::kPortal:
+    case ax::mojom::Role::kPortalDeprecated:
       return "portal";
     case ax::mojom::Role::kPreDeprecated:
       return "preDeprecated";
@@ -895,7 +895,7 @@ ax::mojom::Role StringToRole(const std::string& role) {
   } else if (role == "kPopUpButton") {
     return ax::mojom::Role::kPopUpButton;
   } else if (role == "kPortal") {
-    return ax::mojom::Role::kPortal;
+    return ax::mojom::Role::kPortalDeprecated;
   } else if (role == "kPreDeprecated") {
     return ax::mojom::Role::kPreDeprecated;
   } else if (role == "kProgressIndicator") {

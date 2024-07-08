@@ -304,7 +304,7 @@ enum Role {
   // kPopUpButton is used for a button role that has a popup. It is not a
   // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
-  kPortal = 138,
+  kPortalDeprecated = 138,
   kPreDeprecated = 139,
   kProgressIndicator = 140,
   kRadioButton = 141,

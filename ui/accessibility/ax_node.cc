@@ -1009,16 +1009,7 @@ void AXNode::ClearComputedNodeData() {
 
 const std::string& AXNode::GetNameUTF8() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  const AXNode* node = this;
-  if (GetRole() == ax::mojom::Role::kPortal &&
-      GetNameFrom() == ax::mojom::NameFrom::kNone) {
-    const AXTreeManager* child_tree_manager =
-        AXTreeManager::ForChildTree(*this);
-    if (child_tree_manager)
-      node = child_tree_manager->GetRoot();
-  }
-
-  return node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+  return this->GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
 std::u16string AXNode::GetNameUTF16() const {

@@ -1400,8 +1400,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "parentChanged";
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:
       return "placeholderChanged";
-    case AXEventGenerator::Event::PORTAL_ACTIVATED:
-      return "portalActivated";
     case AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
       return "positionInSetChanged";
     case AXEventGenerator::Event::RANGE_VALUE_CHANGED:

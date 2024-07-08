@@ -403,7 +403,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
     case ui::AXEventGenerator::Event::PARENT_CHANGED:
     case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
-    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
     case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
     case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
     case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:

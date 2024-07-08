@@ -561,7 +561,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::ORIENTATION_CHANGED:
     case ui::AXEventGenerator::Event::PARENT_CHANGED:
-    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:

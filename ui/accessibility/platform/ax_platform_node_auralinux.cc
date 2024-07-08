@@ -2923,8 +2923,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_EMBEDDED;
     case ax::mojom::Role::kPopUpButton:
       return ATK_ROLE_PUSH_BUTTON;
-    case ax::mojom::Role::kPortal:
-      return ATK_ROLE_PUSH_BUTTON;
     case ax::mojom::Role::kProgressIndicator:
       return ATK_ROLE_PROGRESS_BAR;
     case ax::mojom::Role::kRadioButton:
@@ -3039,6 +3037,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
       return ATK_ROLE_REDUNDANT_OBJECT;
     case ax::mojom::Role::kDescriptionListTermDeprecated:
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kPortalDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
       NOTREACHED_NORETURN();

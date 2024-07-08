@@ -39,7 +39,6 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kPortal:
     case ax::mojom::Role::kRootWebArea:
     case ax::mojom::Role::kSvgRoot:
     case ax::mojom::Role::kUnknown:

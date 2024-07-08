@@ -268,13 +268,11 @@ bool BrowserAccessibilityAndroid::IsExpanded() const {
 }
 
 bool BrowserAccessibilityAndroid::IsFocusable() const {
-  // If it's an iframe element, or the root element of a child frame that isn't
-  // inside a portal, only mark it as focusable if the element has an explicit
-  // name. Otherwise mark it as not focusable to avoid the user landing on empty
-  // container elements in the tree.
+  // If it's an iframe element, only mark it as focusable if the element has an
+  // explicit name. Otherwise mark it as not focusable to avoid the user landing
+  // on empty container elements in the tree.
   if (ui::IsIframe(GetRole()) ||
-      (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
-       PlatformGetParent()->GetRole() != ax::mojom::Role::kPortal)) {
+      (ui::IsPlatformDocument(GetRole()) && PlatformGetParent())) {
     return HasStringAttribute(ax::mojom::StringAttribute::kName);
   }
 
@@ -364,12 +362,6 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   if (ui::IsPlatformDocument(GetRole()) &&
       GetSubstringTextContentUTF16(NonEmptyPredicate()).empty())
     return false;
-
-  // The root inside a portal is not interesting.
-  if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
-      PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal) {
-    return false;
-  }
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
   if (IsInvisibleOrIgnored())
@@ -1239,9 +1231,6 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kMenuItemRadio:
       // Default is no special role description.
       return content_client->GetLocalizedString(IDS_AX_ROLE_RADIO);
-    case ax::mojom::Role::kPortal:
-      // Default is no special role description.
-      return content_client->GetLocalizedString(IDS_AX_ROLE_BUTTON);
     case ax::mojom::Role::kVideo:
       // Default is no special role description.
       return content_client->GetLocalizedString(IDS_AX_MEDIA_VIDEO_ELEMENT);

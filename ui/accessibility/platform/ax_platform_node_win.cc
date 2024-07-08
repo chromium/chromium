@@ -44,6 +44,7 @@
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enum_localization_util.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -1237,10 +1238,6 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_ButtonControlTypeId, L"button"};
 
-    case ax::mojom::Role::kPortal:
-      return {UIALocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
-              L"button"};
-
     case ax::mojom::Role::kProgressIndicator:
       return {UIALocalizationStrategy::kSupply, UIA_ProgressBarControlTypeId,
               L"progressbar"};
@@ -1448,6 +1445,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kPortalDeprecated:
       NOTREACHED_NORETURN();
   }
 }
@@ -6718,9 +6716,6 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kPopUpButton:
       return ROLE_SYSTEM_BUTTONMENU;
 
-    case ax::mojom::Role::kPortal:
-      return ROLE_SYSTEM_PUSHBUTTON;
-
     case ax::mojom::Role::kProgressIndicator:
       return ROLE_SYSTEM_PROGRESSBAR;
 
@@ -6880,6 +6875,7 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kPortalDeprecated:
       NOTREACHED_NORETURN();
   }
 }

@@ -134,7 +134,6 @@ bool IsClickable(const ax::mojom::Role role) {
     case ax::mojom::Role::kMenuListOption:
     case ax::mojom::Role::kPdfActionableHighlight:
     case ax::mojom::Role::kPopUpButton:
-    case ax::mojom::Role::kPortal:
     case ax::mojom::Role::kRadioButton:
     case ax::mojom::Role::kSearchBox:
     case ax::mojom::Role::kSpinButton:
@@ -300,7 +299,6 @@ bool IsEmbeddingElement(const ax::mojom::Role role) {
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kPluginObject:
-    case ax::mojom::Role::kPortal:
       return true;
     default:
       return false;

@@ -620,8 +620,6 @@ void CollectAncestorRoles(
       return NSAccessibilityButtonRole;
     case ax::mojom::Role::kPopUpButton:
       return NSAccessibilityPopUpButtonRole;
-    case ax::mojom::Role::kPortal:
-      return NSAccessibilityButtonRole;
     case ax::mojom::Role::kProgressIndicator:
       return NSAccessibilityProgressIndicatorRole;
     case ax::mojom::Role::kRadioButton:
@@ -686,6 +684,7 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
+    case ax::mojom::Role::kPortalDeprecated:
       NOTREACHED_NORETURN();
   }
 }

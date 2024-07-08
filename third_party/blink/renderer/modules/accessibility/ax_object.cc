@@ -7431,7 +7431,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:
     case ax::mojom::blink::Role::kPopUpButton:
-    case ax::mojom::blink::Role::kPortal:
     case ax::mojom::blink::Role::kRadioButton:
     case ax::mojom::blink::Role::kRowHeader:
     case ax::mojom::blink::Role::kStaticText:
@@ -7714,6 +7713,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kPdfActionableHighlight:
     case ax::mojom::blink::Role::kPdfRoot:
     case ax::mojom::blink::Role::kPreDeprecated:
+    case ax::mojom::blink::Role::kPortalDeprecated:
     case ax::mojom::blink::Role::kTableHeaderContainer:
     case ax::mojom::blink::Role::kTitleBar:
     case ax::mojom::blink::Role::kUnknown:

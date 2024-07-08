@@ -875,55 +875,6 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
   }
 }
 
-// Tests that the browser manager retrieves the name from the root node of the
-// child subtree for portals.
-TEST_F(BrowserAccessibilityTest, PortalName) {
-  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-
-  ui::AXTreeUpdate parent_tree_update;
-  parent_tree_update.tree_data.tree_id = parent_tree_id;
-  parent_tree_update.has_tree_data = true;
-  parent_tree_update.root_id = 1;
-  parent_tree_update.nodes.resize(1);
-
-  parent_tree_update.nodes[0].id = 1;
-  parent_tree_update.nodes[0].role = ax::mojom::Role::kPortal;
-  parent_tree_update.nodes[0].AddChildTreeId(child_tree_id);
-
-  ui::AXTreeUpdate child_tree_update;
-  child_tree_update.tree_data.tree_id = child_tree_id;
-  child_tree_update.tree_data.parent_tree_id = parent_tree_id;
-  child_tree_update.has_tree_data = true;
-  child_tree_update.root_id = 1;
-  child_tree_update.nodes.resize(1);
-
-  child_tree_update.nodes[0].id = 1;
-  child_tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
-  child_tree_update.nodes[0].AddStringAttribute(
-      ax::mojom::StringAttribute::kName, "name");
-
-  std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      CreateBrowserAccessibilityManager(parent_tree_update, nullptr));
-
-  std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      CreateBrowserAccessibilityManager(child_tree_update, nullptr));
-
-  // Portal node should use name from root of child tree.
-  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
-  EXPECT_EQ("name", parent_manager->GetBrowserAccessibilityRoot()->GetName());
-
-  // Explicitly add name to portal node.
-  parent_tree_update.nodes[0].AddStringAttribute(
-      ax::mojom::StringAttribute::kName, "name2");
-  parent_tree_update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kAttribute);
-  parent_manager->Initialize(parent_tree_update);
-
-  // Portal node should now use name from attribute.
-  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
-  EXPECT_EQ("name2", parent_manager->GetBrowserAccessibilityRoot()->GetName());
-}
-
 TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
   ui::AXNodeData root;
   root.id = 1;

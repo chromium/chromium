@@ -371,12 +371,7 @@ bool AutomationTreeManagerOwner::GetFocusInternal(
 
   while (true) {
     // If the focused node is the owner of a child tree, that indicates
-    // a node within the child tree is the one that actually has focus. This
-    // doesn't apply to portals: portals have a child tree, but nothing in the
-    // tree can have focus.
-    if (focus->GetRole() == ax::mojom::Role::kPortal)
-      break;
-
+    // a node within the child tree is the one that actually has focus.
     const std::string& child_tree_id_str =
         focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
     const std::string& child_tree_node_app_id_str = focus->GetStringAttribute(
@@ -772,17 +767,6 @@ bool AutomationTreeManagerOwner::GetBoundsForRange(
 }
 
 const char* AutomationTreeManagerOwner::GetName(AXNode* node) const {
-  if (node->GetRole() == ax::mojom::Role::kPortal &&
-      node->data().GetNameFrom() == ax::mojom::NameFrom::kNone) {
-    // Portals are not expected to have multiple child roots.
-    if (const auto& child_roots = GetRootsOfChildTree(node);
-        !child_roots.empty()) {
-      return child_roots[0]
-          ->GetStringAttribute(ax::mojom::StringAttribute::kName)
-          .c_str();
-    }
-  }
-
   if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     return node->GetStringAttribute(ax::mojom::StringAttribute::kName).c_str();
   }
