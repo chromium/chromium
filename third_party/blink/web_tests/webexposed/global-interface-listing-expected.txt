@@ -5,19 +5,14 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 [INTERFACES]
 interface AI
     attribute @@toStringTag
-    method canCreateGenericSession
     method canCreateTextSession
     method constructor
-    method createGenericSession
     method createTextSession
-    method defaultGenericSessionOptions
     method defaultTextSessionOptions
 interface AITextSession
     attribute @@toStringTag
     method constructor
     method destroy
-    method execute
-    method executeStreaming
     method prompt
     method promptStreaming
 interface AbortController
@@ -12960,7 +12955,6 @@ namespace console
     getter location
     getter locationbar
     getter menubar
-    getter model
     getter name
     getter navigation
     getter navigator
@@ -13196,7 +13190,6 @@ namespace console
     setter location
     setter locationbar
     setter menubar
-    setter model
     setter name
     setter navigation
     setter offscreenBuffering

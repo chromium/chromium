@@ -20,15 +20,6 @@ interface AI {
     RaisesException
   ]
   Promise<AIModelAvailability> canCreateTextSession();
-  // TODO(crbug.com/341851444): Remove after confirming there is no usage.
-  [
-    Measure,
-    ImplementedAs=canCreateTextSession,
-    CallWith=ScriptState,
-    RaisesException,
-    DeprecateAs=DeprecatedAICanCreateGenericSession
-  ]
-  Promise<AIModelAvailability> canCreateGenericSession();
   [
     Measure,
     CallWith=ScriptState,
@@ -37,30 +28,10 @@ interface AI {
   Promise<AITextSession> createTextSession(
     optional AITextSessionOptions options = {}
   );
-  // TODO(crbug.com/341851444): Remove after confirming there is no usage.
-  [
-    Measure,
-    ImplementedAs=createTextSession,
-    CallWith=ScriptState,
-    RaisesException,
-    DeprecateAs=DeprecatedAICreateGenericSession
-  ]
-  Promise<AITextSession> createGenericSession(
-    optional AITextSessionOptions options = {}
-  );
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
   Promise<AITextSessionOptions> defaultTextSessionOptions();
-  // TODO(crbug.com/341851444): Remove after confirming there is no usage.
-  [
-    Measure,
-    ImplementedAs=defaultTextSessionOptions,
-    CallWith=ScriptState,
-    RaisesException,
-    DeprecateAs=DeprecatedAIDefaultGenericSessionOptions
-  ]
-  Promise<AITextSessionOptions> defaultGenericSessionOptions();
 };

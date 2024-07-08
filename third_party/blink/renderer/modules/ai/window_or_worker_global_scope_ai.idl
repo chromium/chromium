@@ -12,11 +12,4 @@
       Replaceable
     ]
     readonly attribute AI ai;
-    // TODO(crbug.com/341851444): Remove after confirming there is no usage.
-    [
-      Replaceable,
-      ImplementedAs=ai,
-      DeprecateAs=DeprecatedAIModel
-    ]
-    readonly attribute AI model;
 };

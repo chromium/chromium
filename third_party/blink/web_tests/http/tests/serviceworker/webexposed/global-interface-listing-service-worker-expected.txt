@@ -3422,7 +3422,6 @@ interface WorkerGlobalScope : EventTarget
     getter indexedDB
     getter isSecureContext
     getter location
-    getter model
     getter navigator
     getter onerror
     getter onlanguagechange
@@ -3449,7 +3448,6 @@ interface WorkerGlobalScope : EventTarget
     method setTimeout
     method structuredClone
     setter ai
-    setter model
     setter onerror
     setter onlanguagechange
     setter onrejectionhandled
