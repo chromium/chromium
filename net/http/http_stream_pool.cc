@@ -13,8 +13,11 @@
 
 namespace net {
 
-HttpStreamPool::HttpStreamPool(bool cleanup_on_ip_address_change)
-    : cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
+HttpStreamPool::HttpStreamPool(HttpNetworkSession* http_network_session,
+                               bool cleanup_on_ip_address_change)
+    : http_network_session_(http_network_session),
+      cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
+  CHECK(http_network_session_);
   if (cleanup_on_ip_address_change) {
     NetworkChangeNotifier::AddIPAddressObserver(this);
   }

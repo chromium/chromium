@@ -12,11 +12,13 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_pool.h"
 #include "net/log/net_log.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
+#include "net/spdy/spdy_test_util_common.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 
@@ -77,17 +79,23 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
   HttpStreamPoolGroupTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    http_network_session_ =
+        SpdySessionDependencies::SpdyCreateSession(&session_deps_);
     InitializePool();
   }
 
  protected:
   void InitializePool(bool cleanup_on_ip_address_change = true) {
-    pool_ = std::make_unique<HttpStreamPool>(cleanup_on_ip_address_change);
+    pool_ = std::make_unique<HttpStreamPool>(http_network_session_.get(),
+                                             cleanup_on_ip_address_change);
   }
 
   HttpStreamPool& pool() { return *pool_; }
 
  private:
+  // For creating HttpNetworkSession.
+  SpdySessionDependencies session_deps_;
+  std::unique_ptr<HttpNetworkSession> http_network_session_;
   std::unique_ptr<HttpStreamPool> pool_;
 };
 

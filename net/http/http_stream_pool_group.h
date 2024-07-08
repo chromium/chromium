@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_request.h"
 
 namespace net {
 
@@ -42,6 +43,20 @@ class HttpStreamPool::Group {
   Group& operator=(const Group&) = delete;
 
   ~Group();
+
+  const HttpStreamKey& stream_key() const { return stream_key_; }
+
+  HttpNetworkSession* http_network_session() const {
+    return pool_->http_network_session();
+  }
+
+  // Creates an HttpStreamRequest. Will call delegate's methods. See the
+  // comments of HttpStreamRequest::Delegate methods for details.
+  // TODO(crbug.com/346835898): Support TLS, HTTP/2 and QUIC.
+  std::unique_ptr<HttpStreamRequest> RequestStream(
+      HttpStreamRequest::Delegate* delegate,
+      RequestPriority priority,
+      const NetLogWithSource& net_log);
 
   // Creates a text-based HttpStream from `socket`. Call sites must ensure that
   // the number of active streams do not exceed the global/per-group limits.
@@ -104,6 +119,8 @@ class HttpStreamPool::Group {
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;
   std::list<IdleStreamSocket> idle_stream_sockets_;
+
+  std::unique_ptr<Job> in_flight_job_;
 };
 
 }  // namespace net

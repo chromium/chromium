@@ -8,12 +8,14 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
 namespace net {
 
 class HttpStreamKey;
+class HttpNetworkSession;
 
 // Manages in-flight HTTP stream requests and maintains idle stream sockets.
 // Restricts the number of streams open at a time. HttpStreams are grouped by
@@ -28,8 +30,10 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr size_t kMaxStreamSocketsPerPool = 256;
 
   class NET_EXPORT_PRIVATE Group;
+  class NET_EXPORT_PRIVATE Job;
 
-  explicit HttpStreamPool(bool cleanup_on_ip_address_change = true);
+  explicit HttpStreamPool(HttpNetworkSession* http_network_session,
+                          bool cleanup_on_ip_address_change = true);
 
   HttpStreamPool(const HttpStreamPool&) = delete;
   HttpStreamPool& operator=(const HttpStreamPool&) = delete;
@@ -54,8 +58,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
+  HttpNetworkSession* http_network_session() const {
+    return http_network_session_;
+  }
+
  private:
   Group& GetOrCreateGroup(const HttpStreamKey& stream_key);
+
+  const raw_ptr<HttpNetworkSession> http_network_session_;
 
   const bool cleanup_on_ip_address_change_;
 

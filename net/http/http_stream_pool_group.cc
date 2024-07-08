@@ -7,6 +7,7 @@
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/http/http_text_based_stream_handle.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
@@ -56,6 +57,17 @@ HttpStreamPool::Group::Group(HttpStreamPool* pool, HttpStreamKey stream_key)
 HttpStreamPool::Group::~Group() {
   // TODO(crbug.com/346835898): Ensure `pool_`'s total active stream counts
   // are consistent.
+}
+
+std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
+    HttpStreamRequest::Delegate* delegate,
+    RequestPriority priority,
+    const NetLogWithSource& net_log) {
+  if (!in_flight_job_) {
+    in_flight_job_ = std::make_unique<Job>(this, net_log.net_log());
+  }
+
+  return in_flight_job_->RequestStream(delegate, priority, net_log);
 }
 
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
