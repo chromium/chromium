@@ -620,6 +620,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     public void destroy() {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
         mIsDestroyed = true;
+        mDisplayAndroid.removeObserver(this);
         if (mNativeWindowAndroid != 0) {
             // Native code clears |mNativeWindowAndroid|.
             WindowAndroidJni.get().destroy(mNativeWindowAndroid, WindowAndroid.this);
