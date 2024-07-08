@@ -138,7 +138,8 @@ TestGpuServiceHolder* TestGpuServiceHolder::GetInstance() {
   }
 
   if (!g_holder) {
-    g_holder = new TestGpuServiceHolder();
+    g_holder = new TestGpuServiceHolder(gpu::gles2::ParseGpuPreferences(
+        base::CommandLine::ForCurrentProcess()));
   }
   return g_holder;
 }
@@ -178,10 +179,6 @@ TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides::
   DCHECK(!g_disallow_feature_list_overrides);
   g_disallow_feature_list_overrides = true;
 }
-
-TestGpuServiceHolder::TestGpuServiceHolder()
-    : TestGpuServiceHolder(gpu::gles2::ParseGpuPreferences(
-          base::CommandLine::ForCurrentProcess())) {}
 
 TestGpuServiceHolder::TestGpuServiceHolder(
     const gpu::GpuPreferences& gpu_preferences)
