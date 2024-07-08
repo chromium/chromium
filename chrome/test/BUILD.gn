@@ -4601,8 +4601,6 @@ if (!is_android) {
         "../browser/ash/login/oobe_metrics_browsertest.cc",
         "../browser/ash/login/password_change_browsertest.cc",
         "../browser/ash/login/proxy_auth_dialog_browsertest.cc",
-        "../browser/ash/login/reporting/lock_unlock_reporter_browsertest.cc",
-        "../browser/ash/login/reporting/login_logout_reporter_browsertest.cc",
         "../browser/ash/login/reset_browsertest.cc",
         "../browser/ash/login/saml/fake_saml_idp_mixin.cc",
         "../browser/ash/login/saml/password_change_extension_browsertest.cc",
