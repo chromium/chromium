@@ -91,16 +91,22 @@ class BasicTestCase : public TestCase {
   std::optional<GURL> expected_image_url_;
 };
 
-class LocalPngTestCase : public TestCase {
+class LocalImageTestCase : public TestCase {
  public:
-  LocalPngTestCase() : media_(PickerLocalFileMedia(base::FilePath())) {
+  using EncodeCallback =
+      base::RepeatingCallback<bool(const SkBitmap& bitmap,
+                                   std::vector<uint8_t>* output)>;
+
+  LocalImageTestCase(std::string format, EncodeCallback encode)
+      : format_(std::move(format)),
+        media_(PickerLocalFileMedia(base::FilePath())) {
     CHECK(temp_dir_.CreateUniqueTempDir()) << "Could not create temp dir";
 
     SkBitmap bitmap = gfx::test::CreateBitmap(1);
-    CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &image_bytes_))
-        << "Encoding bitmap failed";
+    CHECK(encode.Run(bitmap, &image_bytes_)) << "Encoding bitmap failed";
 
-    base::FilePath path = temp_dir_.GetPath().Append("test_image.png");
+    base::FilePath path = temp_dir_.GetPath().Append(
+        base::FilePath("test_image").AddExtensionASCII(format_));
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     CHECK(file.WriteAndCheck(0, image_bytes_))
         << "Writing to " << path << " failed";
@@ -113,16 +119,29 @@ class LocalPngTestCase : public TestCase {
   std::u16string_view expected_text() override { return u""; }
 
   std::optional<GURL> expected_image_url() override {
-    return GURL(base::StrCat(
-        {"data:image/png;base64,", base::Base64Encode(image_bytes_)}));
+    return GURL(base::StrCat({"data:image/", format_, ";base64,",
+                              base::Base64Encode(image_bytes_)}));
   }
 
  private:
+  std::string format_;
+
   base::ScopedTempDir temp_dir_;
   std::vector<uint8_t> image_bytes_;
 
   PickerRichMedia media_;
 };
+
+TestCaseCallback MakeLocalImageTestCaseCallback(
+    std::string format,
+    LocalImageTestCase::EncodeCallback encode) {
+  return base::BindRepeating(
+      [](const std::string& format, LocalImageTestCase::EncodeCallback encode)
+          -> std::unique_ptr<TestCase> {
+        return std::make_unique<LocalImageTestCase>(format, encode);
+      },
+      std::move(format), std::move(encode));
+}
 
 class PickerInsertMediaRequestTest
     : public testing::TestWithParam<TestCaseCallback> {
@@ -156,9 +175,13 @@ INSTANTIATE_TEST_SUITE_P(
             /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
             /*expected_text=*/u"http://foo.com/")
             .ToCallback(),
-        base::BindRepeating([]() -> std::unique_ptr<TestCase> {
-          return std::make_unique<LocalPngTestCase>();
-        })));
+        MakeLocalImageTestCaseCallback(
+            "png",
+            base::BindRepeating([](const SkBitmap& bitmap,
+                                   std::vector<uint8_t>* output) {
+              return gfx::PNGCodec::EncodeBGRASkBitmap(
+                  bitmap, /*discard_transparency=*/false, output);
+            }))));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(
