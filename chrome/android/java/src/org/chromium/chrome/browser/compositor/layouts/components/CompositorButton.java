@@ -311,7 +311,7 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean onDown(float x, float y, boolean fromMouse, int buttons) {
         if (checkClickedOrHovered(x, y)
-                && MotionEventUtils.isTouchOrMousePrimaryButton(fromMouse, buttons)) {
+                && MotionEventUtils.isTouchOrPrimaryButton(fromMouse, buttons)) {
             setPressed(true, fromMouse);
             return true;
         }
@@ -327,7 +327,7 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean click(float x, float y, boolean fromMouse, int buttons) {
         if (checkClickedOrHovered(x, y)
-                && MotionEventUtils.isTouchOrMousePrimaryButton(fromMouse, buttons)) {
+                && MotionEventUtils.isTouchOrPrimaryButton(fromMouse, buttons)) {
             setPressed(false, false);
             return true;
         }

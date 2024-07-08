@@ -1869,28 +1869,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // strip layout view.
         mActiveClickedTab = null;
         mLastOffsetX = 0.f;
-        onDownInternal(time, x, y, fromMouse, buttons);
-    }
-
-    /**
-     * Called when the Android Drag and Drop framework is initiated and takes over receiving the
-     * pointer motion events. The tab being moved is already selected. A simulated down event is
-     * sent to the @{link StripLayoutHelper#onInternalDown} when the user reenters the tabs layout
-     * area so that it can continue with the local reordering of the tabs of the previously selected
-     * tab. When a user leaves the tab strip area a simulated up event is sent using @{link
-     * StripLayoutHelper#onUpOrCancel}.
-     *
-     * The @{link DragEvent} are also forwarded using @{link StripLayoutHelper#drag} to handle the
-     * local reordering of the tabs when the user hovers over the StripLayout area of the toolbar
-     * container.
-     *
-     * @param time      The time stamp in millisecond of the event.
-     * @param x         The x position of the event.
-     * @param y         The y position of the event.
-     * @param fromMouse Whether the event originates from a mouse.
-     * @param buttons   State of all buttons that are pressed.
-     */
-    protected void onDownInternal(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
 
         if (mNewTabButton.onDown(x, y, fromMouse, buttons)) {
@@ -1921,10 +1899,8 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mInteractingTab = null;
         }
 
-        // If event is from mouse, allow tab drag.
-        if (MotionEventUtils.isMousePrimaryButton(fromMouse, buttons)
-                && !clickedClose
-                && clickedTab != null) {
+        // If event is from primary button click, allow tab drag.
+        if (MotionEventUtils.isPrimaryButton(buttons) && !clickedClose && clickedTab != null) {
             startDragOrReorderTab(time, x, x, clickedTab);
         }
     }
