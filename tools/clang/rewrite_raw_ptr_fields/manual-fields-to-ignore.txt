@@ -11,40 +11,40 @@
 # Populated manually, because of in-out-arg usage.
 ui::AXPlatformNodeAuraLinux::atk_object_
 
-# Populated manually - problems related to passing to a templated && parameter,
-# which is later forwarded to something that doesn't vibe with raw_ptr<T>. The
-# rewriter has no visibility into where the parameter is forwarded to.
+# Problems related to passing to a templated && parameter, which is later
+# forwarded to something that doesn't vibe with raw_ptr<T>. The rewriter has
+# no visibility into where the parameter is forwarded to.
 ProfileDestroyer::profile_
 (anonymous namespace)::BluetoothLowEnergyApiTest::mock_adapter_
 content::RenderProcessHostImpl::browser_context_
 device::BluetoothDevice::adapter_
 
-# Populated manually - incompatibilities with tracing (TRACE_EVENT*),
+# Incompatibilities with tracing (TRACE_EVENT*),
 # perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
 cc::GpuImageDecodeCache::dark_mode_filter_
 performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker_
 content::NavigationRequest::frame_tree_node_
 content::TestNavigationManager::request_
 
-# Populated manually - pointer to address in another process could be confused
-# as a pointer to PA memory
+# Pointer to address in another process could be confused as a pointer to PA
+# memory.
 sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
 
-# Populated manually - pointers that other code (e.g. kernel code) sees a
-# different version of the struct/class, which uses a raw pointer.
+# Pointers that other code (e.g. kernel code) sees a different version of the
+# struct/class, which uses a raw pointer.
 base::(anonymous namespace)::kernel_sigaction::k_sa_handler   # https://crbug.com/1395075
 base::(anonymous namespace)::kernel_sigaction::k_sa_restorer  # as above
 SECItem::data
 
-# Populated manually - uninitialized memory reinterpret_cast to raw_ptr<T>
-# causing AddRef/Deref mismatch.
+# Uninitialized memory reinterpret_cast to raw_ptr<T> causing AddRef/Deref
+# mismatch.
 sandbox::(anonymous namespace)::_HEAP_32::Heap
 sandbox::(anonymous namespace)::_HEAP_64::Heap
 sql::SandboxedVfsFileSqliteBridge::sandboxed_vfs_file
 sandbox::SharedMemIPCServer::client_control_
 sandbox::SharedMemIPCServer::call_dispatcher_
 
-# Populated manually - other compile-time reasons
+# Other compile-time reasons.
 iovec::iov_base  # requires adding .get() in another repository, used e.g. in
                  # reinterpret_cast in quic_stream_sequencer_buffer.cc
 net::SockaddrStorage::addr  # .get() not added in reinterpret_cast, reason unknown
@@ -99,7 +99,7 @@ device::(anonymous namespace)::CBORExtract_MissingRequired_Test::TestBody()::Dum
 device::(anonymous namespace)::CBORExtract_WrongType_Test::TestBody()::Dummy::value
 device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody()::Dummy::value
 
-# Populated manually - pointer to Objective-C object
+# Pointers to Objective-C objects.
 gfx::ScopedNSGraphicsContextSaveGState::context_
 base::apple::ScopedNSAutoreleasePool::autorelease_pool_
 content::ThemeHelperMac::theme_observer_
@@ -112,15 +112,16 @@ image_editor::EventCaptureMac::window_
 content::ScopedNotifyNativeEventProcessorObserver::event_
 device::fido::mac::TouchIdCredentialStore::authentication_context_
 
-# Populated manually - struct is part of separate binary and must be a POD
+# The struct is part of separate binary and must be a POD
 # https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64
 app_mode::ChromeAppModeInfo::argv
 
-# Populated manually - requires @property rewrite
+# Requires @property rewrite.
 # In Objective-C the instance variable type and property type must be the same.
 # Currently, the rewriter can only rewrite the instance variable declaration.
 # So the types do not match, and causes a compiler error.
-# These fields can be rewritten once the rewriter can rewrite @property declarations.
+# These fields can be rewritten once the rewriter can rewrite @property
+# declarations.
 ObjCPropertyTestBase::_basePointer
 ObjCPropertyTestDerived::_derivedPointer
 ObjCPropertyTestDerived::_protoPointer
@@ -132,12 +133,12 @@ AXPlatformNodeCocoa::_node
 ShellNativeAppWindowController::_appWindow
 WatchedLifetimeMenuController::_deallocCalled
 
-# Populated manually - pointee already protected by another raw_ptr in the same
-# class.
+# Pointee already protected by another raw_ptr in the same class (perf
+# optimization).
 blink::SegmentedSubstring::data_last_char_
 net::FixedSetIncrementalLookup::bytes_
 
-# Populated manually - causes unrelated test failures.
+# Causes unrelated test failures.
 # TODO(crbug.com/349424269): Fix tests, rewrite, and remove.
 media::Vp9FrameHeader::data
 
@@ -145,18 +146,18 @@ media::Vp9FrameHeader::data
 # BackupRefPtr-specific sections
 #######
 
-# Populated manually - std::is_trivially_destructible static_assert failure
+# std::is_trivially_destructible static_assert failure.
 blink::HTMLElementEquivalent::tag_name_
 blink::PrerendererClient::client_
 blink::weakness_marking_test::EphemeronCallbacksCounter::count_holder_
 sql::recover::InnerPageDecoder::db_reader_
 sql::recover::LeafPageDecoder::db_reader_
 
-# Populated manually - flexible array with non-trivial destruction
+# Flexible array with non-trivial destruction.
 blink::ShapeResultView::(anonymous struct)::alignment
 
-# Populated manually - these pointers crash, because a base class ctor accesses
-# child class ptr fields before they're initialized (see crbug.com/349213429).
+# These pointers crash, because a base class ctor accesses child class ptr
+# fields before they're initialized (see crbug.com/349213429).
 blink::CacheEntry::next_
 blink::CacheEntry::prev_
 
@@ -168,43 +169,42 @@ blink::CacheEntry::prev_
 # Performance-related exclusions
 #######
 
-# Populated manually - to avoid out-of-line destructor
+# To avoid out-of-line destructor.
 base::LockFreeAddressHashSet::Node::next
 gpu::gles2::TextureManager::DoTexSubImageArguments::pixels
 gpu::gles2::TextureManager::DoTexImageArguments::pixels
 
-# Populated manually - on-stack pointer + a large number of non-PA pointees
+# On-stack pointer + a large number of non-PA pointees.
 base::AutoReset::scoped_variable_
 mojo::core::ports::PortLocker::port_refs_
 
-# Populated manually - static pointee
+# Static pointee.
 mojo::core::RequestContext::tls_context_
 base::sequence_manager::LazyNow::tick_clock_
 
-# Populated manually - on-stack pointee
+# On-stack pointee.
 base::StackAllocator::source_
 mojo::internal::ContainerValidateParams::key_validate_params
 mojo::internal::ContainerValidateParams::element_validate_params
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
 
-# Populated manually - usually on-stack pointer, pointing back to the collection
-# being iterated, owned by object that iterates over it.
+# Usually on-stack pointer, pointing back to the collection being iterated,
+# owned by object that iterates over it.
 base::internal::circular_deque_const_iterator::parent_deque_
 
-# Populated manually - on-stack pointer + a large number of non-PA pointees through WeakLinkNode
+# On-stack pointer + a large number of non-PA pointees through WeakLinkNode.
 base::internal::LinkNodeBase::next_
 base::internal::LinkNodeBase::previous_
 
-# Populated manually - on-stack pointer
+# On-stack pointer.
 base::internal::WeakLinkNode::list_
 
-# Populated manually - stack-scoped pointer, but embedding class/struct can't be
-# marked STACK_ALLOCATED (e.g. held in unique_ptr on stack)
+# Stack-scoped pointer, but embedding class/struct can't be marked
+# STACK_ALLOCATED (e.g. held in unique_ptr on stack).
 base::internal::BasicMovableAutoLock::lock_
 
-# Populated manually - pointer to memory not allocated by PartitionAlloc (e.g.
-# allocated using mmap/MapViewOfFile/OilPan,partition_alloc::AllocPages, or
-# a global, ...)
+# Pointer to memory not allocated by PartitionAlloc (e.g. allocated using
+# mmap/MapViewOfFile/OilPan,partition_alloc::AllocPages, or a global, ...)
 base::MemoryMappedFile::bytes_
 base::PersistentMemoryAllocator::mem_base_
 blink::GCInfoTable::table_
@@ -221,12 +221,12 @@ net::HttpCache::Transaction::SetRequest(const NetLogWithSource &)::(anonymous st
 blink::(anonymous namespace)::MockClient::delegate_
 blink::(anonymous namespace)::PaymentResponseFunction::value_
 
-# Populated manually - Field initialized with non-nullptr value in constexpr.
+# Field initialized with non-nullptr value in constexpr.
 enterprise_connectors::ServiceProvider::analysis
 enterprise_connectors::ServiceProvider::reporting
 enterprise_connectors::ServiceProvider::file_system
 
-# Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
+# Based on sampling profiler data and tab_search:top100:2020 profiler data.
 (anonymous namespace)::TlsVectorEntry::data
 LinkNodeBase::next_
 LinkNodeBase::previous_
@@ -313,12 +313,12 @@ url::CanonOutputT::buffer_
 prefs::ScopedDictionaryPrefUpdate::service_
 prefs::DictionaryValueUpdate::value_
 
-# Populated manually - type is unsupported by raw_ptr to avoid being used in
-# performance sensitive base::Unretained
+# Type is unsupported by raw_ptr to avoid being used in performance sensitive
+# base::Unretained.
 content::responsiveness::Watcher::calculator_io_
 
-# Populated manually - hammering down visible nails in stack samples.
-# Thought to unacceptable hurt renderer performance.
+# Hammering down visible nails in stack samples. Thought to hurt renderer
+# performance unacceptably.
 # See https://crrev.com/c/5271003
 cc::EffectTreeLayerListIterator::Position::current_layer
 cc::EffectTreeLayerListIterator::Position::current_render_surface
@@ -349,7 +349,7 @@ viz::(anonymous namespace)::BspTreePerfTest::base_list_
 #######
 
 #######
-# Recent manual exclusions
+# Recent manual exclusions.
 #
 # This section contains fields that were unrewritten manually, even if they're
 # decoreated with RAW_PTR_EXCLUSION in code (e.g. perf exclusions, things that
