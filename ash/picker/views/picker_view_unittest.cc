@@ -930,6 +930,9 @@ TEST_F(PickerViewTest, StopsSearchWhenQueryClearedWithCategory) {
   category_item_view->ScrollViewToVisible();
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
+  // Starting a category search - even if there is no query - stops the previous
+  // search.
+  ASSERT_TRUE(stop_search_future.WaitAndClear());
 
   ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
   ASSERT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());

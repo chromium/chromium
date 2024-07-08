@@ -543,6 +543,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
+  // This does not call `StartSearch`.
   search_field_view_->SetQueryText(std::u16string(query));
   search_field_view_->SetBackButtonVisible(true);
   search_field_view_->RequestFocus();
@@ -551,7 +552,9 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     // Getting suggested results for a category can be slow, so show a loading
     // animation.
     category_results_view_->ShowLoadingAnimation();
-    SetActivePage(category_results_view_);
+    StopSearch();
+    CHECK_EQ(main_container_view_->active_page(), category_results_view_)
+        << "StopSearch did not set active page to category results";
     delegate_->GetResultsForCategory(
         category,
         base::BindRepeating(&PickerView::PublishCategoryResults,
