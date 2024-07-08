@@ -45,4 +45,9 @@ void FloatingSsoService::Shutdown() {
   prefs_ = nullptr;
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+FloatingSsoService::GetControllerDelegate() {
+  return bridge_.change_processor()->GetControllerDelegate();
+}
+
 }  // namespace ash::floating_sso

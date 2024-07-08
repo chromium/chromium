@@ -71,6 +71,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 using signin::ConsentLevel;
@@ -168,6 +172,8 @@ void CheckConfigDataTypeArguments(const base::Value::Dict& dictionary,
                    types.Has(syncer::UserSelectableType::kAutofill));
   ExpectHasBoolKey(dictionary, "bookmarksSynced",
                    types.Has(syncer::UserSelectableType::kBookmarks));
+  ExpectHasBoolKey(dictionary, "cookiesSynced",
+                   types.Has(syncer::UserSelectableType::kCookies));
   ExpectHasBoolKey(dictionary, "extensionsSynced",
                    types.Has(syncer::UserSelectableType::kExtensions));
   ExpectHasBoolKey(dictionary, "passwordsSynced",
@@ -369,6 +375,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
   TestWebUIProvider test_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<TestingPeopleHandler> handler_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -754,6 +761,7 @@ TEST_F(PeopleHandlerTest, ShowSetupSyncEverything) {
   ExpectHasBoolKey(dictionary, "appsRegistered", true);
   ExpectHasBoolKey(dictionary, "autofillRegistered", true);
   ExpectHasBoolKey(dictionary, "bookmarksRegistered", true);
+  ExpectHasBoolKey(dictionary, "cookiesRegistered", true);
   ExpectHasBoolKey(dictionary, "extensionsRegistered", true);
   ExpectHasBoolKey(dictionary, "passwordsRegistered", true);
   ExpectHasBoolKey(dictionary, "paymentsRegistered", true);
@@ -1267,6 +1275,23 @@ TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   base::Value::List accounts = handler_->GetStoredAccountsList();
   ASSERT_EQ(1u, accounts.size());
   EXPECT_EQ("user@gmail.com", *accounts[0].GetDict().FindString("email"));
+}
+
+TEST_F(PeopleHandlerTest, SyncCookiesDisabled) {
+  base::test::ScopedFeatureList features;
+  // Disable Floating SSO feature flag.
+  features.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFloatingSso});
+
+  SigninUserAndTurnSyncFeatureOn();
+  CreatePeopleHandler();
+
+  const base::Value::Dict& sync_status_values =
+      handler_->GetSyncStatusDictionary();
+  std::optional<bool> sync_cookies_supported =
+      sync_status_values.FindBool("syncCookiesSupported");
+  EXPECT_FALSE(sync_cookies_supported.has_value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -2064,4 +2089,51 @@ TEST_F(ExplicitBrowserSigninPeopleHandlerSignoutTest, Signout) {
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class PeopleHandlerWithCookiesSyncTest : public PeopleHandlerTest {
+ private:
+  // Enable Floating SSO feature flag.
+  base::test::ScopedFeatureList features_{ash::features::kFloatingSso};
+};
+
+TEST_F(PeopleHandlerWithCookiesSyncTest, SyncCookiesSupported) {
+  SigninUserAndTurnSyncFeatureOn();
+  CreatePeopleHandler();
+
+  // Feature flag enabled, policy unset.
+  {
+    const base::Value::Dict& sync_status_values =
+        handler_->GetSyncStatusDictionary();
+    std::optional<bool> sync_cookies_supported =
+        sync_status_values.FindBool("syncCookiesSupported");
+    ASSERT_TRUE(sync_cookies_supported.has_value());
+    EXPECT_FALSE(sync_cookies_supported.value());
+  }
+
+  // Feature flag enabled, policy set to false.
+  {
+    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, false);
+
+    const base::Value::Dict& sync_status_values =
+        handler_->GetSyncStatusDictionary();
+    std::optional<bool> sync_cookies_supported =
+        sync_status_values.FindBool("syncCookiesSupported");
+    ASSERT_TRUE(sync_cookies_supported.has_value());
+    EXPECT_FALSE(sync_cookies_supported.value());
+  }
+
+  // Feature flag enabled, policy set to true.
+  {
+    profile()->GetPrefs()->SetBoolean(prefs::kFloatingSsoEnabled, true);
+
+    const base::Value::Dict& sync_status_values =
+        handler_->GetSyncStatusDictionary();
+    std::optional<bool> sync_cookies_supported =
+        sync_status_values.FindBool("syncCookiesSupported");
+    ASSERT_TRUE(sync_cookies_supported.has_value());
+    EXPECT_TRUE(sync_cookies_supported.value());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace settings

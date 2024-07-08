@@ -208,6 +208,13 @@ export class SettingsSyncControlsElement extends
     return syncAllDataTypes || dataTypeManaged;
   }
 
+  // <if expr="chromeos_ash">
+  private hideCookieItem_(
+      syncCookiesSupported: boolean, cookiesRegistered: boolean): boolean {
+    return !syncCookiesSupported || !cookiesRegistered;
+  }
+  // </if>
+
   private syncStatusChanged_() {
     const router = Router.getInstance();
     const routes = router.getRoutes() as {SYNC: Route, SYNC_ADVANCED: Route};

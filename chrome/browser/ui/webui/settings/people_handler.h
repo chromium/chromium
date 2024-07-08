@@ -121,6 +121,7 @@ class PeopleHandler : public SettingsPageUIHandler,
                            DashboardClearWhileSettingsOpen_ConfirmLater);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerDiceTest, StoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerGuestModeTest, GetStoredAccountsList);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, SyncCookiesDisabled);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TurnOffSync);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, GetStoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, Signout);
@@ -130,6 +131,8 @@ class PeopleHandler : public SettingsPageUIHandler,
                            GetStoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWebOnlySigninTest,
                            ChromeSigninUserAvailableOnWebSignin);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerWithCookiesSyncTest,
+                           SyncCookiesSupported);
 #if DCHECK_IS_ON()
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, DeleteProfileCrashes);
 #endif

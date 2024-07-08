@@ -138,6 +138,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
@@ -669,6 +671,19 @@ ChromeSyncClient::CreateModelTypeControllers(
         syncer::PRINTERS_AUTHORIZATION_SERVERS,
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
             printers_authorization_servers_delegate),
+        /*delegate_for_transport_mode=*/nullptr));
+  }
+
+  if (ash::features::IsFloatingSsoAllowed()) {
+    syncer::ModelTypeControllerDelegate* cookies_delegate =
+        ash::floating_sso::FloatingSsoServiceFactory::GetForProfile(profile_)
+            ->GetControllerDelegate()
+            .get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::COOKIES,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            cookies_delegate),
         /*delegate_for_transport_mode=*/nullptr));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

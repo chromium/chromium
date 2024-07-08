@@ -255,6 +255,23 @@
       </div>
 
 <if expr="chromeos_ash">
+      <div class="list-item" id="cookiesSyncItem" hidden="[[hideCookieItem_(
+        syncStatus.syncCookiesSupported, syncPrefs.cookiesRegistered)]]">
+        <div>
+          $i18n{cookiesCheckboxLabel}
+        </div>
+        <cr-policy-indicator indicator-type="userPolicy"
+            hidden="[[!syncPrefs.cookiesManaged]]">
+        </cr-policy-indicator>
+        <cr-toggle id="cookiesCheckbox"
+            checked="{{syncPrefs.cookiesSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[disableTypeCheckBox_(
+                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged)]]"
+            aria-label="$i18n{cookiesCheckboxLabel}">
+        </cr-toggle>
+      </div>
+
       <div class="list-item"
            hidden="[[!syncPrefs.wifiConfigurationsRegistered]]">
         <div id="wifiConfigurationsCheckboxLabel">

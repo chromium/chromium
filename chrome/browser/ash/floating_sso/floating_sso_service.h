@@ -14,6 +14,7 @@
 
 namespace syncer {
 class ModelTypeChangeProcessor;
+class ModelTypeControllerDelegate;
 }  // namespace syncer
 
 class PrefService;
@@ -32,6 +33,8 @@ class FloatingSsoService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
 
   // TODO: b/346354327 - temporary flag used for testing. Remove after
   // actual behavior is implemented.

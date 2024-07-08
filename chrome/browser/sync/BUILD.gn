@@ -165,6 +165,7 @@ source_set("sync") {
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/floating_sso",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/printing/oauth2",
       "//chromeos/ash/components/network",

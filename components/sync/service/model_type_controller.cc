@@ -114,7 +114,8 @@ void ModelTypeController::InitModelTypeController(
     // full-sync mode, never transport-mode. So for data types that only exist
     // on this platform, it doesn't matter if they support transport mode or not
     // (this includes PRINTERS, WIFI_CONFIGURATIONS, OS_PREFERENCES,
-    // OS_PRIORITY_PREFERENCES, WORKSPACE_DESK, PRINTERS_AUTHORIZATION_SERVERS).
+    // OS_PRIORITY_PREFERENCES, WORKSPACE_DESK, PRINTERS_AUTHORIZATION_SERVERS,
+    // COOKIES).
     //
     // All other data types listed here will likely have to be migrated.
     static constexpr ModelTypeSet kLegacyTypes = {
@@ -146,7 +147,8 @@ void ModelTypeController::InitModelTypeController(
         HISTORY,
         PRINTERS_AUTHORIZATION_SERVERS,
         POWER_BOOKMARK,
-        NIGORI};
+        NIGORI,
+        COOKIES};
     CHECK(kLegacyTypes.Has(type()))
         << ModelTypeToDebugString(type())
         << " must support running in transport mode!";

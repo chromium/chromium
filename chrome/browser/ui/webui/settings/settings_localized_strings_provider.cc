@@ -1549,6 +1549,9 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS)
       {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      {"cookiesCheckboxLabel", IDS_SETTINGS_COOKIES_CHECKBOX_LABEL},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

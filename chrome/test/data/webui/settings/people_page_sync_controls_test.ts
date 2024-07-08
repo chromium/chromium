@@ -181,6 +181,52 @@ suite('SyncControlsTest', async function() {
     // Controls are available when there is a passphrase error.
     assertFalse(syncControls.hidden);
   });
+
+  // <if expr="chromeos_ash">
+  test('SyncCookiesSupported', async function() {
+    // Sync everything enabled.
+    assertTrue(syncEverything.checked);
+    assertFalse(customizeSync.checked);
+
+    // The cookies element is not visible when syncCookiesSupported is disabled
+    // (default).
+    let cookieListItem = syncControls.shadowRoot!.querySelector(
+        '#cookiesSyncItem:not([hidden])');
+    assertFalse(!!cookieListItem);
+
+    // Enable syncCookiesSupported.
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+      syncCookiesSupported: true,
+    };
+    // The cookies element is now visible.
+    cookieListItem = syncControls.shadowRoot!.querySelector(
+        '#cookiesSyncItem:not([hidden])');
+    assertTrue(!!cookieListItem);
+    // Cookies checkbox is disabled.
+    let cookiesCheckbox: CrToggleElement =
+        syncControls.shadowRoot!.querySelector('#cookiesCheckbox')!;
+    assertTrue(!!cookiesCheckbox);
+    assertTrue(cookiesCheckbox.disabled);
+    assertTrue(cookiesCheckbox.checked);
+
+    // Customize sync enabled.
+    customizeSync.click();
+    await eventToPromise('selected-changed', radioGroup);
+    assertFalse(syncEverything.checked);
+    assertTrue(customizeSync.checked);
+
+    // Cookies checkbox is enabled.
+    cookiesCheckbox =
+        syncControls.shadowRoot!.querySelector('#cookiesCheckbox')!;
+    assertTrue(!!cookiesCheckbox);
+    assertFalse(cookiesCheckbox.disabled);
+    assertTrue(cookiesCheckbox.checked);
+  });
+  // </if>
 });
 
 suite('SyncControlsSubpageTest', function() {
@@ -247,7 +293,7 @@ suite('SyncControlsSubpageTest', function() {
 // Test to check that toggles are disabled when sync types are managed by
 // policy.
 suite('SyncControlsManagedTest', async function() {
-  let syncControls: HTMLElement;
+  let syncControls: SettingsSyncControlsElement;
   let browserProxy: TestSyncBrowserProxy;
   let syncEverything: CrRadioButtonElement;
   let customizeSync: CrRadioButtonElement;
@@ -263,6 +309,14 @@ suite('SyncControlsManagedTest', async function() {
 
     // Start with all prefs managed.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefsManaged());
+    // Enable Cookie sync.
+    syncControls.syncStatus = {
+      disabled: false,
+      hasError: false,
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+      syncCookiesSupported: true,
+    };
     flush();
 
     await waitBeforeNextRender(syncControls);

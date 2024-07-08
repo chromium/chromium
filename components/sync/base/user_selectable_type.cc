@@ -190,6 +190,9 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
   if (type == kProductComparisonTypeName) {
     return UserSelectableType::kProductComparison;
   }
+  if (type == kCookiesTypeName) {
+    return UserSelectableType::kCookies;
+  }
   return std::nullopt;
 }
 
