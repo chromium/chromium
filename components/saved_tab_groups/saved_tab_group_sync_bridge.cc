@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
+#include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_proto_conversions.h"
@@ -490,6 +491,21 @@ void SavedTabGroupSyncBridge::SavedTabGroupLocalIdChanged(
   auto data = SavedTabGroupToData(*group);
   write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
+}
+
+void SavedTabGroupSyncBridge::SavedTabGroupLastUserInteractionTimeUpdated(
+    const base::Uuid& group_guid) {
+  const SavedTabGroup* const group = model_->Get(group_guid);
+  CHECK(group);
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  proto::SavedTabGroupData data = SavedTabGroupToData(*group);
+  write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {

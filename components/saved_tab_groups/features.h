@@ -35,6 +35,8 @@ BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
 
 BASE_DECLARE_FEATURE(kDeferMediaLoadInBackgroundTab);
 
+BASE_DECLARE_FEATURE(kSavedTabGroupNotifyOnInteractionTimeChanged);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
