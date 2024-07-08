@@ -121,6 +121,9 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
 
   base::WeakPtr<HidChooserContext> AsWeakPtr();
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;

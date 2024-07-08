@@ -48,11 +48,3 @@ SerialChooserContext* SerialChooserContextFactory::GetForProfileIfExists(
   return static_cast<SerialChooserContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
-
-void SerialChooserContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* serial_chooser_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (serial_chooser_context)
-    serial_chooser_context->FlushScheduledSaveSettingsCalls();
-}

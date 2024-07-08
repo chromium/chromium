@@ -110,6 +110,11 @@ bool PrivateNetworkDevicePermissionContext::HasDevicePermission(
   return false;
 }
 
+void PrivateNetworkDevicePermissionContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
+}
+
 base::WeakPtr<PrivateNetworkDevicePermissionContext>
 PrivateNetworkDevicePermissionContext::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

@@ -50,12 +50,3 @@ PrivateNetworkDevicePermissionContextFactory::GetForProfileIfExists(
   return static_cast<PrivateNetworkDevicePermissionContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
-
-void PrivateNetworkDevicePermissionContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* pna_chooser_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (pna_chooser_context) {
-    pna_chooser_context->FlushScheduledSaveSettingsCalls();
-  }
-}

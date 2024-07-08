@@ -108,6 +108,9 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
     return *usb_policy_allowed_devices_;
   }
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   // device::mojom::UsbDeviceManagerClient implementation.
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;

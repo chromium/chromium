@@ -601,6 +601,11 @@ base::WeakPtr<HidChooserContext> HidChooserContext::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void HidChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
+}
+
 void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(device);
 

@@ -43,14 +43,3 @@ UsbConnectionTrackerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<UsbConnectionTracker>(
       Profile::FromBrowserContext(context));
 }
-
-void UsbConnectionTrackerFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  DCHECK(context);
-  auto* device_connection_tracker =
-      GetForProfile(Profile::FromBrowserContext(context), /*create=*/false);
-  if (device_connection_tracker) {
-    device_connection_tracker->CleanUp();
-  }
-  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
-}

@@ -27,3 +27,8 @@ DeviceSystemTrayIcon* HidConnectionTracker::GetSystemTrayIcon() {
   return static_cast<DeviceSystemTrayIcon*>(
       g_browser_process->hid_system_tray_icon());
 }
+
+void HidConnectionTracker::Shutdown() {
+  CleanUp();
+  DeviceConnectionTracker::Shutdown();
+}

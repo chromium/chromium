@@ -48,11 +48,3 @@ BluetoothChooserContextFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<permissions::BluetoothChooserContext>(context);
 }
-
-void BluetoothChooserContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* bluetooth_chooser_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (bluetooth_chooser_context)
-    bluetooth_chooser_context->FlushScheduledSaveSettingsCalls();
-}

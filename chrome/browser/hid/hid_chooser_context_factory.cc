@@ -48,11 +48,3 @@ HidChooserContextFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<HidChooserContext>(
       Profile::FromBrowserContext(context));
 }
-
-void HidChooserContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* hid_chooser_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (hid_chooser_context)
-    hid_chooser_context->FlushScheduledSaveSettingsCalls();
-}

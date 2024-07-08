@@ -2666,6 +2666,11 @@ ChromeFileSystemAccessPermissionContext::
   return grant;
 }
 
+void ChromeFileSystemAccessPermissionContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
+}
+
 bool ChromeFileSystemAccessPermissionContext::
     CanAutoGrantViaPersistentPermission(const url::Origin& origin,
                                         const base::FilePath& path,

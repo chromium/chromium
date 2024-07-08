@@ -237,6 +237,11 @@ void UsbChooserContext::InitDeviceList(
   }
 }
 
+void UsbChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
+}
+
 void UsbChooserContext::EnsureConnectionWithDeviceManager() {
   if (device_manager_)
     return;

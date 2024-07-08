@@ -334,6 +334,9 @@ class ChromeFileSystemAccessPermissionContext
   // chrome://settings/content/filesystem UI.
   static constexpr char kPermissionPathKey[] = "path";
 
+  // KeyedService:
+  void Shutdown() override;
+
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 

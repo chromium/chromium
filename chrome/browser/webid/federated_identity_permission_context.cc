@@ -39,6 +39,8 @@ FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
 
 void FederatedIdentityPermissionContext::Shutdown() {
   obs_.Reset();
+  FlushScheduledSaveSettingsCalls();
+  KeyedService::Shutdown();
 }
 
 void FederatedIdentityPermissionContext::AddIdpSigninStatusObserver(

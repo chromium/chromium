@@ -65,11 +65,3 @@ FileSystemAccessPermissionContextFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
   return std::make_unique<ChromeFileSystemAccessPermissionContext>(profile);
 }
-
-void FileSystemAccessPermissionContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* permission_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (permission_context)
-    permission_context->FlushScheduledSaveSettingsCalls();
-}

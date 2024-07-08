@@ -46,11 +46,3 @@ UsbChooserContext* UsbChooserContextFactory::GetForProfileIfExists(
   return static_cast<UsbChooserContext*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
-
-void UsbChooserContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* usb_chooser_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (usb_chooser_context)
-    usb_chooser_context->FlushScheduledSaveSettingsCalls();
-}

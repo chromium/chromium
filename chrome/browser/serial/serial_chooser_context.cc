@@ -639,6 +639,11 @@ void SerialChooserContext::OnPortConnectedStateChanged(
   }
 }
 
+void SerialChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
+}
+
 void SerialChooserContext::EnsurePortManagerConnection() {
   if (port_manager_)
     return;

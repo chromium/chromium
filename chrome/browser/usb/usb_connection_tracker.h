@@ -17,6 +17,9 @@ class UsbConnectionTracker : public DeviceConnectionTracker {
 
   void ShowContentSettingsExceptions() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
  private:
   DeviceSystemTrayIcon* GetSystemTrayIcon() override;
 };

@@ -44,13 +44,3 @@ HidConnectionTrackerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<HidConnectionTracker>(
       Profile::FromBrowserContext(context));
 }
-
-void HidConnectionTrackerFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  DCHECK(context);
-  auto* hid_connection_tracker =
-      GetForProfile(Profile::FromBrowserContext(context), /*create=*/false);
-  if (hid_connection_tracker)
-    hid_connection_tracker->CleanUp();
-  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
-}

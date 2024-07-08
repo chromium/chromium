@@ -56,15 +56,6 @@ std::unique_ptr<KeyedService> FederatedIdentityPermissionContextFactory::
   return std::make_unique<FederatedIdentityPermissionContext>(profile);
 }
 
-void FederatedIdentityPermissionContextFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* federated_identity_permission_context =
-      GetForProfileIfExists(Profile::FromBrowserContext(context));
-  if (federated_identity_permission_context)
-    federated_identity_permission_context->FlushScheduledSaveSettingsCalls();
-  ProfileKeyedServiceFactory::BrowserContextShutdown(context);
-}
-
 bool FederatedIdentityPermissionContextFactory::
     ServiceIsCreatedWithBrowserContext() const {
   // So that we can observe the identity manager.
