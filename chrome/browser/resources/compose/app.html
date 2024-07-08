@@ -634,6 +634,7 @@
                   value="[[selectedModifier_]]"
                   aria-label="$i18n{modifierMenuLabel}"
                   on-change="onModifierChanged_"
+                  on-keydown="openModifierMenuOnKeyDown_"
                   hidden="[[!enableUiRefinements]]">
                 <template is="dom-repeat" items="[[modifierOptions_]]">
                   <option value="[[item.value]]" disabled$="[[item.isDefault]]"

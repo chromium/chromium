@@ -24,6 +24,7 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {isMac} from '//resources/js/platform.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
@@ -625,6 +626,23 @@ export class ComposeAppElement extends ComposeAppElementBase {
     // index of 0 corresponds to the default value, which is disabled and cannot
     // be selected in the dialog.
     this.$.modifierMenu.selectedIndex = 0;
+  }
+
+  private openModifierMenuOnKeyDown_(e: KeyboardEvent) {
+    // On Windows and Linux, ArrowDown and ArrowUp key events directly change
+    // the menu selection, which fires the `select` on-change event without
+    // showing what selection was made.
+    // MacOS keyboard controls opens the dropdown menu on ArrowUp/Down and thus
+    // does not need to override behaviour.
+    if (isMac) {
+      return;
+    }
+
+    // Override keyboard controls for ArrowUp/Down to open the `select` menu.
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      this.$.modifierMenu.showPicker();
+    }
   }
 
   private onFooterClick_(e: Event) {
