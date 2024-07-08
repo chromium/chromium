@@ -12624,53 +12624,6 @@ if (is_win) {
   }
 }
 
-# Test binary for the ChromeOS usage time limit processor tests.
-if (is_chromeos_ash) {
-  test("usage_time_limit_unittests") {
-    testonly = true
-    sources = [
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.h",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter_unittest.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.h",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader_unittest.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.cc",
-      "../browser/ash/child_accounts/time_limit_consistency_test/consistency_test_utils.h",
-      "../browser/ash/child_accounts/time_limit_consistency_test/proto_matcher.h",
-      "../browser/ash/child_accounts/time_limit_consistency_test/run_all_unittests.cc",
-    ]
-    deps = [
-      ":consistency_golden_proto",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
-      "//chrome/browser/ash/child_accounts",
-      "//chrome/browser/ash/child_accounts:test_support",
-      "//chromeos/ash/components/settings",
-      "//components/exo/wayland:test_controller_stub",
-      "//components/exo/wayland:ui_controls_protocol_stub",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/icu",
-      "//third_party/protobuf:protobuf_full",
-    ]
-    data = [
-      "../browser/ash/child_accounts/time_limit_consistency_test/goldens/",
-      "../browser/ash/child_accounts/time_limit_consistency_test/test_goldens/",
-    ]
-  }
-
-  proto_library("consistency_golden_proto") {
-    visibility = [ ":usage_time_limit_unittests" ]
-    sources = [ "../browser/ash/child_accounts/time_limit_consistency_test/goldens/consistency_golden.proto" ]
-    generate_python = false
-  }
-}
-
 if (is_win) {
   action("generate_allowed_imports") {
     testonly = true

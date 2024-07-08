@@ -1935,7 +1935,7 @@ targets.binaries.console_test_launcher(
 
 targets.binaries.console_test_launcher(
     name = "usage_time_limit_unittests",
-    label = "//chrome/test:usage_time_limit_unittests",
+    label = "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
 )
 
 targets.binaries.console_test_launcher(

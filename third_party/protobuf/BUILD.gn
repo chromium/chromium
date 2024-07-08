@@ -146,7 +146,7 @@ static_library("protobuf_full") {
 
       # Some tests inside ChromeOS need reflection to parse golden files.
       # Not included in production code.
-      "//chrome/test:usage_time_limit_unittests",
+      "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
 
       # The protobuf-based SQLite and GPU fuzzers need protobuf_full and are not
       # included in Chrome.

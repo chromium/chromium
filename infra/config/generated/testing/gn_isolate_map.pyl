@@ -1782,7 +1782,7 @@
     "type": "console_test_launcher",
   },
   "usage_time_limit_unittests": {
-    "label": "//chrome/test:usage_time_limit_unittests",
+    "label": "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
     "type": "console_test_launcher",
   },
   "v4l2_stateless_decoder": {
