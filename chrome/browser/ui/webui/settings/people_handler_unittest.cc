@@ -507,6 +507,11 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
 
+  // Mimic a dashboard clear, which should reset the sync engine and restart it
+  // in transport mode. Defer the second initialization of the engine, to test
+  // that prefs are not sent yet.
+  sync_service_->SetMaxTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
   sync_service_->MimicDashboardClear();
 
   ASSERT_EQ(sync_service_->GetTransportState(),
@@ -526,7 +531,7 @@ TEST_F(PeopleHandlerTest, RestartSyncAfterDashboardClear) {
   // Since the engine is not initialized yet, no prefs should be sent.
   EXPECT_EQ(0U, GetFiredSyncPrefsChanged().size());
 
-  // Now, act as if the SyncService has started up.
+  // Now, allow the sync engine to fully start.
   sync_service_->SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   sync_service_->FireStateChanged();
@@ -970,8 +975,6 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-  ASSERT_EQ(sync_service_->GetTransportState(),
-            syncer::SyncService::TransportState::INITIALIZING);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -998,19 +1001,15 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   sync_service_->MimicDashboardClear();
   sync_service_->FireStateChanged();
 
-  ASSERT_EQ(sync_service_->GetTransportState(),
-            syncer::SyncService::TransportState::INITIALIZING);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(sync_user_settings()->IsSyncFeatureDisabledViaDashboard());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(sync_user_settings()->IsInitialSyncFeatureSetupComplete());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // The user waits a while before doing anything, so sync starts up in
-  // transport mode.
-  sync_service_->SetMaxTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service_->FireStateChanged();
+  // Sync starts up in transport mode.
+  ASSERT_EQ(sync_service_->GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
 
   // Now the user confirms sync again. This should set the sync-requested bit
   // and also the first-setup-complete bit (except on ChromeOS Ash where it is

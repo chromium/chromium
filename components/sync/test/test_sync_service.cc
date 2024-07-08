@@ -310,8 +310,6 @@ void TestSyncService::StopAndClear() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   SetSignedInWithoutSyncFeature();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  SetMaxTransportState(TransportState::INITIALIZING);
 }
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
