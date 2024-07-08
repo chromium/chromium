@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -676,10 +677,13 @@ void PickerView::SetPseudoFocusedView(views::View* view) {
 
 void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
+  // This does not call `StartSearch`.
   search_field_view_->SetQueryText(u"");
   search_field_view_->SetBackButtonVisible(false);
   selected_category_ = std::nullopt;
-  SetActivePage(zero_state_view_);
+  StopSearch();
+  CHECK_EQ(main_container_view_->active_page(), zero_state_view_)
+      << "StopSearch did not set active page to zero state view";
 }
 
 void PickerView::ResetEmojiBarToZeroState() {

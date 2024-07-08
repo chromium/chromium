@@ -948,6 +948,45 @@ TEST_F(PickerViewTest, StopsSearchWhenQueryClearedWithCategory) {
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
 
+TEST_F(PickerViewTest, StopsSearchWhenBackButtonPressed) {
+  base::test::TestFuture<void> search_future;
+  base::test::TestFuture<void> stop_search_future;
+  FakePickerViewDelegate delegate(
+      {.available_categories = {PickerCategory::kLinks},
+       .search_function = base::BindLambdaForTesting(
+           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+             search_future.SetValue();
+           }),
+       .stop_search_function = stop_search_future.GetRepeatingCallback()});
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+  // Starting a category search - even if there is no query - stops the previous
+  // search.
+  ASSERT_TRUE(stop_search_future.WaitAndClear());
+
+  ASSERT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  ASSERT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_future.Wait());
+  ASSERT_FALSE(stop_search_future.IsReady());
+
+  PickerSearchFieldView& search_field_view =
+      picker_view->search_field_view_for_testing();
+  ViewDrawnWaiter().Wait(&search_field_view.back_button_for_testing());
+  LeftClickOn(&search_field_view.back_button_for_testing());
+
+  EXPECT_TRUE(stop_search_future.Wait());
+}
+
 TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kExpressions},
