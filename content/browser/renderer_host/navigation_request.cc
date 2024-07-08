@@ -8550,11 +8550,14 @@ bool NavigationRequest::IsInPrimaryMainFrame() const {
 }
 
 bool NavigationRequest::IsInOutermostMainFrame() {
-  // TODO(1267506, 1254770): Ideally we'd just base this on
-  // `GetNavigatingFrameType()`, however the kPrimaryMainFrame case is ambiguous
-  // due to inner WebContents based portals. Once portals are based on MPArch,
-  // we could switch to using the FrameType.
-  return !GetParentFrameOrOuterDocument();
+  switch (GetNavigatingFrameType()) {
+    case FrameType::kPrimaryMainFrame:
+    case FrameType::kPrerenderMainFrame:
+      return true;
+    case FrameType::kSubframe:
+    case FrameType::kFencedFrameRoot:
+      return false;
+  }
 }
 
 bool NavigationRequest::IsInPrerenderedMainFrame() const {

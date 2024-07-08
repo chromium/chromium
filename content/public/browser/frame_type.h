@@ -33,14 +33,7 @@ enum class FrameType {
   kPrerenderMainFrame,
   // A root of an isolated frame tree created on behalf of a <fencedframe>
   // element.
-  // Note: Only MPArch-based FencedFrame implementation creates a separate frame
-  // tree, while ShadowDOM-based FencedFrame emulate isolation based on a
-  // iframe and it has a kSubframe type.
-  // This differs from RenderFrameHost::IsFencedFrameRoot(), which covers
-  // both MPArch and ShadowDOM-based FencedFrames.
-  kFencedFrameRoot,
-  // TODO(crbug.com/40204472): Consider if we need to have the types for portals
-  // or guestviews.
+  kFencedFrameRoot
 };
 
 }  // namespace content
