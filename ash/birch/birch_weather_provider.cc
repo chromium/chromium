@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_names.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -104,6 +105,14 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
     birch_model_->SetWeatherItems({});
     return;
   }
+  const UserSession* session =
+      Shell::Get()->session_controller()->GetUserSession(0);
+  if (session->user_info.account_id == user_manager::StubAccountId()) {
+    // Weather is not allowed for stub users, which don't have valid Gaia IDs.
+    birch_model_->SetWeatherItems({});
+    return;
+  }
+
   // Only allow one fetch at a time.
   if (is_fetching_) {
     return;

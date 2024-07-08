@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_names.h"
 
 namespace ash {
 
@@ -187,6 +188,31 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
   run_loop.Run();
 
   // Weather was not fetched.
+  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+}
+
+TEST_F(BirchWeatherProviderTest, WeatherNotFetchedForStubUser) {
+  auto* birch_model = Shell::Get()->birch_model();
+
+  // Set up fake backend weather.
+  WeatherInfo info;
+  info.condition_description = "Sunny";
+  info.condition_icon_url = "https://fake-icon-url";
+  info.temp_f = 72.0f;
+  ambient_backend_controller_->SetWeatherInfo(info);
+
+  // Simulate a stub user login.
+  ClearLogin();
+  SimulateUserLogin(user_manager::StubAccountId());
+
+  // Fetch birch data.
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
+  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+  run_loop.Run();
+
+  // The weather was not fetched.
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
 
