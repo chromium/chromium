@@ -121,6 +121,11 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
     }
 
+    /** Returns true if Read Aloud is allowed to play in the background. */
+    public static boolean isBackgroundPlaybackEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK);
+    }
+
     /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
     public static boolean isEnabledForOverflowMenuInCCT() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);

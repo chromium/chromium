@@ -259,6 +259,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloud,
     &kReadAloudInOverflowMenuInCCT,
     &kReadAloudInMultiWindow,
+    &kReadAloudBackgroundPlayback,
     &kReadAloudPlayback,
     &kReadAloudTapToSeek,
     &kReadAloudIPHMenuButtonHighlightCCT,
@@ -809,6 +810,10 @@ BASE_FEATURE(kReadAloudInOverflowMenuInCCT,
 BASE_FEATURE(kReadAloudInMultiWindow,
              "ReadAloudInMultiWindow",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloudBackgroundPlayback,
+             "ReadAloudBackgroundPlayback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudPlayback,
              "ReadAloudPlayback",
