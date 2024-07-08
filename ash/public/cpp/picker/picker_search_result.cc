@@ -39,12 +39,6 @@ bool PickerSearchResult::SearchRequestData::operator==(
 bool PickerSearchResult::EmojiData::operator==(
     const PickerSearchResult::EmojiData&) const = default;
 
-bool PickerSearchResult::SymbolData::operator==(
-    const PickerSearchResult::SymbolData&) const = default;
-
-bool PickerSearchResult::EmoticonData::operator==(
-    const PickerSearchResult::EmoticonData&) const = default;
-
 PickerSearchResult::ClipboardData::ClipboardData(
     base::UnguessableToken item_id,
     DisplayFormat display_format,
@@ -183,20 +177,23 @@ PickerSearchResult PickerSearchResult::SearchRequest(std::u16string_view text,
 
 PickerSearchResult PickerSearchResult::Emoji(std::u16string_view emoji,
                                              std::u16string name) {
-  return PickerSearchResult(
-      EmojiData{.emoji = std::u16string(emoji), .name = std::move(name)});
+  return PickerSearchResult(EmojiData{.type = EmojiData::Type::kEmoji,
+                                      .text = std::u16string(emoji),
+                                      .name = std::move(name)});
 }
 
 PickerSearchResult PickerSearchResult::Symbol(std::u16string_view symbol,
                                               std::u16string name) {
-  return PickerSearchResult(
-      SymbolData{.symbol = std::u16string(symbol), .name = std::move(name)});
+  return PickerSearchResult(EmojiData{.type = EmojiData::Type::kSymbol,
+                                      .text = std::u16string(symbol),
+                                      .name = std::move(name)});
 }
 
 PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon,
                                                 std::u16string name) {
-  return PickerSearchResult(EmoticonData{.emoticon = std::u16string(emoticon),
-                                         .name = std::move(name)});
+  return PickerSearchResult(EmojiData{.type = EmojiData::Type::kEmoticon,
+                                      .text = std::u16string(emoticon),
+                                      .name = std::move(name)});
 }
 
 PickerSearchResult PickerSearchResult::Clipboard(

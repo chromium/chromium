@@ -158,13 +158,7 @@ InsertionContent GetInsertionContentForResult(
             return PickerTextMedia(data.primary_text);
           },
           [](const PickerSearchResult::EmojiData& data) -> ReturnType {
-            return PickerTextMedia(data.emoji);
-          },
-          [](const PickerSearchResult::SymbolData& data) -> ReturnType {
-            return PickerTextMedia(data.symbol);
-          },
-          [](const PickerSearchResult::EmoticonData& data) -> ReturnType {
-            return PickerTextMedia(data.emoticon);
+            return PickerTextMedia(data.text);
           },
           [](const PickerSearchResult::ClipboardData& data) -> ReturnType {
             return data;
@@ -292,6 +286,18 @@ gfx::NativeView GetParentView() {
                              kShellWindowId_MenuContainer);
 }
 
+ui::EmojiPickerCategory EmojiResultTypeToCategory(
+    PickerSearchResult::EmojiData::Type type) {
+  switch (type) {
+    case PickerSearchResult::EmojiData::Type::kEmoji:
+      return ui::EmojiPickerCategory::kEmojis;
+    case PickerSearchResult::EmojiData::Type::kSymbol:
+      return ui::EmojiPickerCategory::kEmojis;
+    case PickerSearchResult::EmojiData::Type::kEmoticon:
+      return ui::EmojiPickerCategory::kEmoticons;
+  }
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -416,24 +422,13 @@ void PickerController::InsertResultOnNextFocus(
   }
 
   // Update emoji history in prefs the result is an emoji/symbol/emoticon.
-  std::visit(
-      base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
-                         emoji_history_model_->UpdateRecentEmoji(
-                             ui::EmojiPickerCategory::kEmojis,
-                             base::UTF16ToUTF8(data.emoji));
-                       },
-                       [&](const PickerSearchResult::SymbolData& data) {
-                         emoji_history_model_->UpdateRecentEmoji(
-                             ui::EmojiPickerCategory::kSymbols,
-                             base::UTF16ToUTF8(data.symbol));
-                       },
-                       [&](const PickerSearchResult::EmoticonData& data) {
-                         emoji_history_model_->UpdateRecentEmoji(
-                             ui::EmojiPickerCategory::kEmoticons,
-                             base::UTF16ToUTF8(data.emoticon));
-                       },
-                       [](const auto& data) {}},
-      result.data());
+  std::visit(base::Overloaded{[&](const PickerSearchResult::EmojiData& data) {
+                                emoji_history_model_->UpdateRecentEmoji(
+                                    EmojiResultTypeToCategory(data.type),
+                                    base::UTF16ToUTF8(data.text));
+                              },
+                              [](const auto& data) {}},
+             result.data());
 
   std::visit(
       base::Overloaded{
@@ -479,12 +474,6 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
             NOTREACHED_NORETURN();
           },
           [](const PickerSearchResult::EmojiData& data) {
-            NOTREACHED_NORETURN();
-          },
-          [](const PickerSearchResult::SymbolData& data) {
-            NOTREACHED_NORETURN();
-          },
-          [](const PickerSearchResult::EmoticonData& data) {
             NOTREACHED_NORETURN();
           },
           [](const PickerSearchResult::ClipboardData& data) {
@@ -565,16 +554,6 @@ PickerActionType PickerController::GetActionForResult(
             return PickerActionType::kInsert;
           },
           [mode](const PickerSearchResult::EmojiData& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerSearchResult::SymbolData& data) {
-            CHECK(mode == PickerModeType::kNoSelection ||
-                  mode == PickerModeType::kHasSelection);
-            return PickerActionType::kInsert;
-          },
-          [mode](const PickerSearchResult::EmoticonData& data) {
             CHECK(mode == PickerModeType::kNoSelection ||
                   mode == PickerModeType::kHasSelection);
             return PickerActionType::kInsert;

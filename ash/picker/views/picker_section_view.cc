@@ -174,12 +174,6 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
           [&](const PickerSearchResult::EmojiData& data) -> ReturnType {
             NOTREACHED_NORETURN();
           },
-          [&](const PickerSearchResult::SymbolData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
-          },
-          [&](const PickerSearchResult::EmoticonData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
-          },
           [&](const PickerSearchResult::ClipboardData& data) -> ReturnType {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));

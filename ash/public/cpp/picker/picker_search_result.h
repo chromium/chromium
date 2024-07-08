@@ -61,24 +61,13 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct EmojiData {
-    std::u16string emoji;
+    enum class Type { kEmoji, kSymbol, kEmoticon };
+
+    Type type;
+    std::u16string text;
     std::u16string name;
 
     bool operator==(const EmojiData&) const;
-  };
-
-  struct SymbolData {
-    std::u16string symbol;
-    std::u16string name;
-
-    bool operator==(const SymbolData&) const;
-  };
-
-  struct EmoticonData {
-    std::u16string emoticon;
-    std::u16string name;
-
-    bool operator==(const EmoticonData&) const;
   };
 
   struct ClipboardData {
@@ -213,8 +202,6 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   using Data = std::variant<TextData,
                             SearchRequestData,
                             EmojiData,
-                            SymbolData,
-                            EmoticonData,
                             ClipboardData,
                             BrowsingHistoryData,
                             LocalFileData,

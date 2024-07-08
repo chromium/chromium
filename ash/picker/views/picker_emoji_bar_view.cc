@@ -81,45 +81,37 @@ std::unique_ptr<views::View> CreateEmptyCell() {
 std::unique_ptr<PickerItemView> CreateItemView(
     const PickerSearchResult& result,
     base::RepeatingClosure select_result_callback) {
-  using ReturnType = std::unique_ptr<PickerItemView>;
-  return std::visit(
-      base::Overloaded{
-          [&](const PickerSearchResult::EmojiData& data) -> ReturnType {
-            auto emoji_item = std::make_unique<PickerEmojiItemView>(
-                std::move(select_result_callback), data.emoji);
-            emoji_item->SetPreferredSize(kEmojiBarItemPreferredSize);
-            if (!data.name.empty()) {
-              emoji_item->SetTooltipText(data.name);
-              emoji_item->SetAccessibleName(data.name);
-            }
-            return emoji_item;
-          },
-          [&](const PickerSearchResult::SymbolData& data) -> ReturnType {
-            auto symbol_item = std::make_unique<PickerSymbolItemView>(
-                std::move(select_result_callback), data.symbol);
-            symbol_item->SetPreferredSize(kEmojiBarItemPreferredSize);
-            if (!data.name.empty()) {
-              symbol_item->SetTooltipText(data.name);
-              symbol_item->SetAccessibleName(data.name);
-            }
-            return symbol_item;
-          },
-          [&](const PickerSearchResult::EmoticonData& data) -> ReturnType {
-            auto emoticon_item = std::make_unique<PickerEmoticonItemView>(
-                std::move(select_result_callback), data.emoticon);
-            emoticon_item->SetPreferredSize(
-                gfx::Size(std::max(emoticon_item->GetPreferredSize().width(),
-                                   kEmojiBarItemPreferredSize.width()),
-                          kEmojiBarItemPreferredSize.height()));
-            if (!data.name.empty()) {
-              emoticon_item->SetTooltipText(data.name);
-              emoticon_item->SetAccessibleName(data.name);
-            }
-            return emoticon_item;
-          },
-          [&](const auto& data) -> ReturnType { NOTREACHED_NORETURN(); },
-      },
-      result.data());
+  const auto* data = std::get_if<PickerSearchResult::EmojiData>(&result.data());
+  CHECK(data);
+
+  std::unique_ptr<PickerItemView> item_view;
+  switch (data->type) {
+    case PickerSearchResult::EmojiData::Type::kEmoji:
+      item_view = std::make_unique<PickerEmojiItemView>(
+          std::move(select_result_callback), data->text);
+      item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
+      break;
+    case PickerSearchResult::EmojiData::Type::kSymbol:
+      item_view = std::make_unique<PickerSymbolItemView>(
+          std::move(select_result_callback), data->text);
+      item_view->SetPreferredSize(kEmojiBarItemPreferredSize);
+      break;
+    case PickerSearchResult::EmojiData::Type::kEmoticon:
+      item_view = std::make_unique<PickerEmoticonItemView>(
+          std::move(select_result_callback), data->text);
+      item_view->SetPreferredSize(
+          gfx::Size(std::max(item_view->GetPreferredSize().width(),
+                             kEmojiBarItemPreferredSize.width()),
+                    kEmojiBarItemPreferredSize.height()));
+      break;
+  }
+
+  if (!data->name.empty()) {
+    item_view->SetTooltipText(data->name);
+    item_view->SetAccessibleName(data->name);
+  }
+
+  return item_view;
 }
 
 std::unique_ptr<views::View> CreateItemRow() {

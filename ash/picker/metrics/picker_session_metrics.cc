@@ -140,12 +140,6 @@ cros_events::PickerResultSource GetResultSource(
           [](const PickerSearchResult::EmojiData& data) {
             return cros_events::PickerResultSource::EMOJI;
           },
-          [](const PickerSearchResult::SymbolData& data) {
-            return cros_events::PickerResultSource::EMOJI;
-          },
-          [](const PickerSearchResult::EmoticonData& data) {
-            return cros_events::PickerResultSource::EMOJI;
-          },
           [](const PickerSearchResult::ClipboardData& data) {
             return cros_events::PickerResultSource::CLIPBOARD;
           },
@@ -192,13 +186,14 @@ cros_events::PickerResultType GetResultType(
             return cros_events::PickerResultType::TEXT;
           },
           [](const PickerSearchResult::EmojiData& data) {
-            return cros_events::PickerResultType::EMOJI;
-          },
-          [](const PickerSearchResult::SymbolData& data) {
-            return cros_events::PickerResultType::SYMBOL;
-          },
-          [](const PickerSearchResult::EmoticonData& data) {
-            return cros_events::PickerResultType::EMOTICON;
+            switch (data.type) {
+              case PickerSearchResult::EmojiData::Type::kEmoji:
+                return cros_events::PickerResultType::EMOJI;
+              case PickerSearchResult::EmojiData::Type::kSymbol:
+                return cros_events::PickerResultType::SYMBOL;
+              case PickerSearchResult::EmojiData::Type::kEmoticon:
+                return cros_events::PickerResultType::EMOTICON;
+            }
           },
           [](const PickerSearchResult::ClipboardData& data) {
             switch (data.display_format) {
