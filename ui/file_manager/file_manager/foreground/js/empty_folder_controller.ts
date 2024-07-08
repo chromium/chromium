@@ -15,7 +15,7 @@ import type {FileKey, State, Volume, VolumeId} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 import type {Store} from '../../state/store.js';
 
-import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from './constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL, ODFS_EXTENSION_ID} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {ProvidersModel} from './providers_model.js';
 
@@ -43,6 +43,12 @@ const TRASH_EMPTY_FOLDER =
  */
 const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
     'odfs_reauthentication_required.svg#odfs_reauthentication_required';
+
+
+interface OdfsMetadata {
+  userEmail?: string;
+  reauthenticationRequired?: boolean;
+}
 
 export type ScanFailedEvent = CustomEvent<{error: DOMError}>;
 
@@ -121,35 +127,38 @@ export class EmptyFolderController {
   }
 
   /**
-   * Return true if reauthentication to OneDrive is required. Request the ODFS
-   * volume metadata through the special root actions request to determine if re
-   * authentication is required.
+   * Queries ODFS for the ODFS metadata using the special root actions request.
    */
-  private async checkIfReauthenticationRequired_(odfsVolumeInfo: VolumeInfo):
-      Promise<boolean> {
+  private async getOdfsMetadata_(odfsVolumeInfo: VolumeInfo):
+      Promise<OdfsMetadata> {
     // Request ODFS root actions to get ODFS metadata.
     return new Promise((fulfill) => {
       chrome.fileManagerPrivate.getCustomActions(
           [getODFSMetadataQueryEntry(odfsVolumeInfo) as DirectoryEntry],
           (customActions:
                chrome.fileManagerPrivate.FileSystemProviderAction[]) => {
+            const metadata = {} as OdfsMetadata;
             if (chrome.runtime.lastError) {
               console.error(
                   'Unexpectedly failed to fetch custom actions for ODFS ' +
                   'root because of: ' + chrome.runtime.lastError.message);
-              fulfill(false);
+              fulfill(metadata);
               return;
             }
             // Find the reauthentication required action.
             for (const action of customActions) {
-              if (action.id ===
-                      FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED &&
-                  action.title === 'true') {
-                fulfill(true);
-                return;
+              switch (action.id) {
+                case FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL:
+                  metadata.userEmail = action.title;
+                  continue;
+                case FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED:
+                  metadata.reauthenticationRequired = action.title === 'true';
+                  continue;
+                default:
+                  continue;
               }
             }
-            fulfill(false);
+            fulfill(metadata);
           });
     });
   }
@@ -157,7 +166,7 @@ export class EmptyFolderController {
   /**
    * Handles scan fail. If the scan failed for the ODFS volume due to
    * reauthenticaton being required, set the state of the volume as not
-   * interactive.
+   * interactive and set the correct svg to display.
    */
   protected onScanFailed_(event: ScanFailedEvent) {
     this.isScanning_ = false;
@@ -178,24 +187,22 @@ export class EmptyFolderController {
       this.updateUi_();
       return;
     }
-    // If ODFS is already non-interactive, return.
-    if (!isInteractiveVolume(currentVolumeInfo)) {
-      this.updateUi_();
-      return;
-    }
-    // Only set ODFS to non-interactive if the ACCESS_DENIED was due to
-    // reauthentication being required rather than some other access error.
-    this.checkIfReauthenticationRequired_(currentVolumeInfo).then(required => {
-      if (required) {
-        // Set |isInteractive| to false for ODFS when reauthentication is
-        // required.
-        getStore().dispatch(updateIsInteractiveVolume({
-          volumeId: currentVolumeInfo.volumeId,
-          isInteractive: false,
-        }));
-      }
-      this.updateUi_();
-    });
+    // Set the svg and set ODFS to non-interactive if the ACCESS_DENIED was due
+    // to reauthentication being required rather than some other access error.
+    this.getOdfsMetadata_(currentVolumeInfo)
+        .then((odfsMetadata: OdfsMetadata) => {
+          let svgRef = null;
+          if (odfsMetadata.reauthenticationRequired) {
+            svgRef = ODFS_REAUTHENTICATION_REQUIRED;
+          }
+          if (svgRef !== null && isInteractiveVolume(currentVolumeInfo)) {
+            getStore().dispatch(updateIsInteractiveVolume({
+              volumeId: currentVolumeInfo.volumeId,
+              isInteractive: false,
+            }));
+          }
+          this.updateUi_(svgRef);
+        });
   }
 
   /**
@@ -237,8 +244,8 @@ export class EmptyFolderController {
   }
 
   /**
-   * Shows the ODFS reauthentication required message. Include the "Sign in"
-   * and "Settings" links and set the handlers.
+   * Shows the ODFS reauthentication required message. Includes the "Sign in"
+   * link and sets the handler.
    */
   private showOdfsReauthenticationMessage_() {
     const titleSpan = document.createElement('span');
@@ -320,24 +327,16 @@ export class EmptyFolderController {
   /**
    * Updates visibility of empty folder UI.
    */
-  protected updateUi_() {
+  protected updateUi_(svgRef: string|null = null) {
     if (this.hasFilesystemError_) {
       return;
     }
     const currentRootType = this.directoryModel_.getCurrentRootType();
-    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
 
-    let svgRef = null;
     if (isRecentRootType(currentRootType)) {
       svgRef = RECENTS_EMPTY_FOLDER;
     } else if (currentRootType === RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
-    } else if (
-        currentVolumeInfo && isOneDrive(currentVolumeInfo) &&
-        !isInteractiveVolume(currentVolumeInfo)) {
-      // Show ODFS reauthentication required empty state if is it
-      // non-interactive.
-      svgRef = ODFS_REAUTHENTICATION_REQUIRED;
     } else if (isOneDrivePlaceholderKey(
                    this.directoryModel_.getCurrentFileKey())) {
       svgRef = ODFS_REAUTHENTICATION_REQUIRED;
