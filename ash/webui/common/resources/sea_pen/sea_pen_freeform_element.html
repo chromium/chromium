@@ -1,0 +1,14 @@
+<style>
+</style>
+<sea-pen-freeform-tabs selected-tab="{{freeformTab_}}">
+</sea-pen-freeform-tabs>
+<template is="dom-if" if="[[isSamplePromptsTabSelected_(freeformTab_)]]" restamp>
+    <sea-pen-samples></sea-pen-samples>
+    <sea-pen-recent-wallpapers
+        on-sea-pen-recent-image-delete="onRecentFreeformImageDelete_">
+    </sea-pen-recent-wallpapers>
+</template>
+<sea-pen-images
+    hidden="[[isSamplePromptsTabSelected_(freeformTab_)]]"
+    template-id="Query">
+</sea-pen-images>

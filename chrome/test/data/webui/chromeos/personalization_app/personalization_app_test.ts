@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenFeedbackElement, SeaPenImagesElement, SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenFeedbackElement, SeaPenFreeformElement, SeaPenImagesElement, SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -1038,8 +1038,13 @@ suite('sea pen', () => {
         window.location.href.endsWith(SeaPenPaths.FREEFORM),
         'routed to Freeform page');
 
+    const seaPenFreeform = await waitUntil(
+        () => seaPenRouter.shadowRoot?.querySelector<SeaPenFreeformElement>(
+            'sea-pen-freeform'),
+        'waiting for sea-pen-freeform');
+
     const seaPenImages = await waitUntil(
-        () => seaPenRouter.shadowRoot?.querySelector<SeaPenImagesElement>(
+        () => seaPenFreeform.shadowRoot?.querySelector<SeaPenImagesElement>(
             'sea-pen-images'),
         'waiting for sea-pen-images');
     assertTrue(!!seaPenImages, 'Sea Pen images element exists');

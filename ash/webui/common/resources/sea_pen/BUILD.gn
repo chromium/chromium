@@ -47,6 +47,8 @@ build_webui("build_ts") {
     "sea_pen_samples_element.ts",
     "sea_pen_toast_element.ts",
     "sea_pen_chip_text_element.ts",
+    "sea_pen_freeform_element.ts",
+    "sea_pen_freeform_tabs_element.ts",
     "sea_pen_suggestions_element.ts",
     "sea_pen_template_query_element.ts",
     "sea_pen_templates_element.ts",

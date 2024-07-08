@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenInputQueryElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenInputQueryElement, SeaPenRouterElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -119,7 +119,9 @@ suite('SeaPenInputQueryElementTest', function() {
   });
 
   test('hide suggestions after clicking create', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    initElement(SeaPenRouterElement, {basePath: '/base'});
     await waitAfterNextRender(seaPenInputQueryElement);
     const inputElement =
         seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(

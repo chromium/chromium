@@ -127,6 +127,8 @@ export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen
 export {SeaPenInputQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
 export {SeaPenOptionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
 export {SeaPenSamplesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_samples_element.js';
+export {SeaPenFreeformElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_freeform_element.js';
+export {SeaPenFreeformTabsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_freeform_tabs_element.js';
 export {SeaPenSuggestionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
 export {SeaPenRecentWallpapersElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
 export {SeaPenRouterElement, SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';

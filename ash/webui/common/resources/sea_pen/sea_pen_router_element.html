@@ -121,11 +121,7 @@
       </sea-pen-images>
     </template>
     <template is="dom-if" if="[[shouldShowSeaPenFreeform_(relativePath_)]]" restamp>
-      <sea-pen-samples></sea-pen-samples>
-      <sea-pen-recent-wallpapers
-          on-sea-pen-recent-image-delete="onRecentFreeformImageDelete_">
-      </sea-pen-recent-wallpapers>
-      <sea-pen-images template-id="Query"></sea-pen-images>
+      <sea-pen-freeform></sea-pen-freeform>
     </template>
   </div>
   <template is="dom-if" if="[[showSeaPenIntroductionDialog_]]" restamp>

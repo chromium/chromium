@@ -14,6 +14,13 @@ export const QUERY: Query = 'Query';
 // thumbnail, this is `SeaPenThumbnail.id`.
 export type SeaPenImageId = number;
 
+
+/** Enumeration of supported tabs. */
+export enum FreeformTab {
+  SAMPLE_PROMPTS = 'sample_prompts',
+  RESULTS = 'results',
+}
+
 export interface SeaPenSamplePrompt {
   prompt: string;
   preview: Url;

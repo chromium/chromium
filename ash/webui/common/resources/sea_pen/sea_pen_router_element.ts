@@ -5,13 +5,15 @@
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
+import './sea_pen_freeform_element.js';
+import './sea_pen_freeform_tabs_element.js';
 import './sea_pen_images_element.js';
 import './sea_pen_input_query_element.js';
+import './sea_pen_introduction_dialog_element.js';
 import './sea_pen_recent_wallpapers_element.js';
 import './sea_pen_samples_element.js';
 import './sea_pen_template_query_element.js';
 import './sea_pen_templates_element.js';
-import './sea_pen_introduction_dialog_element.js';
 import './sea_pen_toast_element.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -222,10 +224,6 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     // focus on the first template if the deleted recent image is the only image
     // or the last image of recent images list.
     this.focusOnFirstTemplate_();
-  }
-
-  private onRecentFreeformImageDelete_() {
-    // TODO(b/347328001): add the function implementation.
   }
 
   private focusOnFirstTemplate_() {
