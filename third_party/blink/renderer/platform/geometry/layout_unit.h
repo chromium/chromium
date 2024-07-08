@@ -101,38 +101,32 @@ class PLATFORM_EXPORT LayoutUnit {
   // is clamped by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatCeil(float value) {
-    LayoutUnit v;
-    v.value_ = base::saturated_cast<int>(ceilf(value * kFixedPointDenominator));
-    return v;
+    return FromRawValue(
+        base::saturated_cast<int>(ceilf(value * kFixedPointDenominator)));
   }
 
   // The specified `value` is truncated to a multiple of 1/64, and is clamped
   // by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatFloor(float value) {
-    LayoutUnit v;
-    v.value_ =
-        base::saturated_cast<int>(floorf(value * kFixedPointDenominator));
-    return v;
+    return FromRawValue(
+        base::saturated_cast<int>(floorf(value * kFixedPointDenominator)));
   }
 
   // The specified `value` is rounded to a multiple of 1/64, and
   // is clamped by Min() and Max().
   // A NaN `value` produces LayoutUnit(0).
   static LayoutUnit FromFloatRound(float value) {
-    LayoutUnit v;
-    v.value_ =
-        base::saturated_cast<int>(roundf(value * kFixedPointDenominator));
-    return v;
+    return FromRawValue(
+        base::saturated_cast<int>(roundf(value * kFixedPointDenominator)));
   }
 
   static LayoutUnit FromDoubleRound(double value) {
-    LayoutUnit v;
-    v.value_ = base::saturated_cast<int>(round(value * kFixedPointDenominator));
-    return v;
+    return FromRawValue(
+        base::saturated_cast<int>(round(value * kFixedPointDenominator)));
   }
 
-  static LayoutUnit FromRawValue(int raw_value) {
+  static constexpr LayoutUnit FromRawValue(int raw_value) {
     LayoutUnit v;
     v.value_ = raw_value;
     return v;
@@ -243,27 +237,21 @@ class PLATFORM_EXPORT LayoutUnit {
   }
 
   static constexpr LayoutUnit Max() {
-    LayoutUnit m;
-    m.value_ = std::numeric_limits<int>::max();
-    return m;
+    return FromRawValue(std::numeric_limits<int>::max());
   }
   static constexpr LayoutUnit Min() {
-    LayoutUnit m;
-    m.value_ = std::numeric_limits<int>::min();
-    return m;
+    return FromRawValue(std::numeric_limits<int>::min());
   }
 
   // Versions of max/min that are slightly smaller/larger than max/min() to
   // allow for rounding without overflowing.
   static constexpr LayoutUnit NearlyMax() {
-    LayoutUnit m;
-    m.value_ = std::numeric_limits<int>::max() - kFixedPointDenominator / 2;
-    return m;
+    return FromRawValue(std::numeric_limits<int>::max() -
+                        kFixedPointDenominator / 2);
   }
   static constexpr LayoutUnit NearlyMin() {
-    LayoutUnit m;
-    m.value_ = std::numeric_limits<int>::min() + kFixedPointDenominator / 2;
-    return m;
+    return FromRawValue(std::numeric_limits<int>::min() +
+                        kFixedPointDenominator / 2);
   }
 
   static LayoutUnit Clamp(double value) { return FromFloatFloor(value); }
