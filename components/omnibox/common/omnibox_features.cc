@@ -519,9 +519,14 @@ BASE_FEATURE(kShowFeaturedEnterpriseSiteSearchIPH,
 // If enabled, site search engines defined by policy are saved into prefs and
 // committed to the keyword database, so that they can be accessed from the
 // Omnibox and the Settings page.
+// This feature only has any effect if the policy is set by the administrator,
+// so it's safe to keep it enabled by default - in case of errors, disabling
+// the policy should be enough.
+// Keeping the feature as a kill switch in case we identify any major regression
+// in the implementation.
 BASE_FEATURE(kSiteSearchSettingsPolicy,
              "SiteSearchSettingsPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables additional site search providers for the Site search Starter Pack.
 BASE_FEATURE(kStarterPackExpansion,

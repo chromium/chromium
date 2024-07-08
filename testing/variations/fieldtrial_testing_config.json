@@ -14439,11 +14439,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_IPH",
                     "enable_features": [
                         "ShowFeaturedEnterpriseSiteSearch",
-                        "ShowFeaturedEnterpriseSiteSearchIPH",
-                        "SiteSearchSettingsPolicy"
+                        "ShowFeaturedEnterpriseSiteSearchIPH"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowFeaturedEnterpriseSiteSearch"
                     ]
                 }
             ]

@@ -76,12 +76,10 @@ void EnterpriseSiteSearchManager::OnSiteSearchPrefChanged() {
     return;
   }
 
+  // Only accept site search engine created by policy.
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kSiteSearchSettingsPrefName);
-  CHECK(pref);
-
-  // Only accept site search engine created by policy.
-  if (!pref->IsManaged()) {
+  if (!pref || !pref->IsManaged()) {
     return;
   }
 
