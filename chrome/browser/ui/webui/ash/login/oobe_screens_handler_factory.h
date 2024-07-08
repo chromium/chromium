@@ -79,6 +79,12 @@ class OobeScreensHandlerFactory
           screens_login::mojom::EncryptionMigrationPageHandler> receiver,
       EstablishEncryptionMigrationScreenPipeCallback callback) override;
 
+  void EstablishLacrosDataBackwardMigrationScreenPipe(
+      mojo::PendingReceiver<
+          screens_login::mojom::LacrosDataBackwardMigrationPageHandler>
+          receiver,
+      EstablishLacrosDataBackwardMigrationScreenPipeCallback callback) override;
+
   void EstablishLacrosDataMigrationScreenPipe(
       mojo::PendingReceiver<
           screens_login::mojom::LacrosDataMigrationPageHandler> receiver,

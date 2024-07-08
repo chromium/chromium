@@ -15,13 +15,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_login.mojom.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace ash {
-
-namespace {
-constexpr char kUserActionCancel[] = "cancel";
-}
 
 BrowserDataBackMigratorBase*
     LacrosDataBackwardMigrationScreen::migrator_for_testing_ = nullptr;
@@ -30,6 +27,7 @@ LacrosDataBackwardMigrationScreen::LacrosDataBackwardMigrationScreen(
     base::WeakPtr<LacrosDataBackwardMigrationScreenView> view)
     : BaseScreen(LacrosDataBackwardMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
+      OobeMojoBinder(this),
       view_(std::move(view)) {
   DCHECK(view_);
 }
@@ -85,22 +83,19 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
 }
 
 void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
-  view_->SetProgressValue(percent);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetProgressValue(percent);
+  }
 }
 
-void LacrosDataBackwardMigrationScreen::OnUserAction(
-    const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-
-  if (action_id == kUserActionCancel) {
-    LOG(WARNING) << "User cancelled backward migration.";
-    migrator_->CancelMigration(
-        base::BindOnce(&LacrosDataBackwardMigrationScreen::OnCanceled,
-                       weak_factory_.GetWeakPtr()));
-
-  } else {
-    BaseScreen::OnUserAction(args);
+void LacrosDataBackwardMigrationScreen::OnCancelButtonClicked() {
+  if (is_hidden()) {
+    return;
   }
+  LOG(WARNING) << "User cancelled backward migration.";
+  migrator_->CancelMigration(
+      base::BindOnce(&LacrosDataBackwardMigrationScreen::OnCanceled,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LacrosDataBackwardMigrationScreen::OnMigrated(
@@ -110,7 +105,9 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
       chrome::AttemptRestart();
       break;
     case BrowserDataBackMigratorBase::Result::kFailed:
-      view_->SetFailureStatus();
+      if (GetRemote()->is_bound()) {
+        (*GetRemote())->SetFailureStatus();
+      }
       break;
   }
 }

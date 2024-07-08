@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
+#include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/screens/tuna_screen.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
@@ -159,6 +161,19 @@ void OobeScreensHandlerFactory::EstablishEncryptionMigrationScreenPipe(
           ->GetScreen<EncryptionMigrationScreen>();
   encryption_migration->BindPageHandlerReceiver(std::move(receiver));
   encryption_migration->PassPagePendingReceiverWithCallback(
+      std::move(callback));
+}
+
+void OobeScreensHandlerFactory::EstablishLacrosDataBackwardMigrationScreenPipe(
+    mojo::PendingReceiver<
+        screens_login::mojom::LacrosDataBackwardMigrationPageHandler> receiver,
+    EstablishLacrosDataBackwardMigrationScreenPipeCallback callback) {
+  CHECK(WizardController::default_controller());
+  LacrosDataBackwardMigrationScreen* lacros_data_backward =
+      WizardController::default_controller()
+          ->GetScreen<LacrosDataBackwardMigrationScreen>();
+  lacros_data_backward->BindPageHandlerReceiver(std::move(receiver));
+  lacros_data_backward->PassPagePendingReceiverWithCallback(
       std::move(callback));
 }
 
