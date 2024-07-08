@@ -89,6 +89,15 @@ MouseKeysController::~MouseKeysController() {
   shell->RemoveAccessibilityEventHandler(this);
 }
 
+void MouseKeysController::Toggle() {
+  paused_ = !paused_;
+  if (paused_) {
+    // Reset everything when pausing.
+    ResetMovement();
+    dragging_ = false;
+  }
+}
+
 bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   if (!enabled_ || !event.IsKeyEvent()) {
     return false;
@@ -99,22 +108,6 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
                       ui::EF_IS_EXTENDED_KEY;
   event_flags_ = event.flags() & modifier_mask;
 
-  // TODO(259372916): Use an accelerator instead of hard coding this.
-  const ui::KeyEvent* key_event = event.AsKeyEvent();
-  if (key_event->type() == ui::ET_KEY_PRESSED &&
-      key_event->code() == ui::DomCode::US_M &&
-      key_event->flags() & ui::EF_CONTROL_DOWN &&
-      key_event->flags() & ui::EF_SHIFT_DOWN &&
-      !(key_event->flags() & ui::EF_IS_REPEAT)) {
-    paused_ = !paused_;
-    if (paused_) {
-      // Reset everything when pausing.
-      ResetMovement();
-      dragging_ = false;
-    }
-    return true;
-  }
-
   if (paused_) {
     return false;
   }
@@ -122,6 +115,7 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   CenterMouseIfUninitialized();
 
   // Check primary keyboard keys.
+  const ui::KeyEvent* key_event = event.AsKeyEvent();
   if (use_primary_keys_) {
     auto mappings = left_handed_ ? kLeftHandedKeys : kRightHandedKeys;
     for (auto mapping : mappings) {

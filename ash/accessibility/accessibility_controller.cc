@@ -3087,6 +3087,12 @@ void AccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {
   }
 }
 
+void AccessibilityController::ToggleMouseKeys() {
+  if (::features::IsAccessibilityMouseKeysEnabled() && mouse_keys().enabled()) {
+    Shell::Get()->mouse_keys_controller()->Toggle();
+  }
+}
+
 void AccessibilityController::PerformAccessibilityAction() {
   // TODO(b/335456364): Add UMA.
   aura::Window* target_root = Shell::GetRootWindowForNewWindows();

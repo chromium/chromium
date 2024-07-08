@@ -262,6 +262,9 @@ const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
      AcceleratorAction::kToggleFullscreenMagnifier},
 
+    {true, ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     AcceleratorAction::kToggleMouseKeys},
+
     // Media Player shortcuts.
     {true, ui::VKEY_MEDIA_NEXT_TRACK, ui::EF_NONE,
      AcceleratorAction::kMediaNextTrack},

@@ -516,6 +516,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Shows or hides the virtual keyboard.
   void SetVirtualKeyboardVisible(bool is_visible);
 
+  // Toggle Mouse Keys.
+  void ToggleMouseKeys();
+
   // Perform the action assigned to the accessibility key.
   void PerformAccessibilityAction();
 

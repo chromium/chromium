@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/constants/ash_pref_names.h"
@@ -1081,6 +1082,38 @@ TEST_F(MouseKeysTest, DragWithMixed) {
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
   EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
   EXPECT_EQ(mouse_events[0].location(), position);
+}
+
+TEST_F(MouseKeysTest, Accelerator) {
+  SetEnabled(true);
+  auto* accelerator_controller = Shell::Get()->accelerator_controller();
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // Enable Mouse Keys, and we should be able to click by pressing i.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Toggle Mouse Keys off, and we should see no mouse events.
+  accelerator_controller->PerformActionIfEnabled(
+      AcceleratorAction::kToggleMouseKeys, {});
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+
+  // Toggle Mouse Keys on, and we should see the original behaviour.
+  accelerator_controller->PerformActionIfEnabled(
+      AcceleratorAction::kToggleMouseKeys, {});
+
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 }
 
 }  // namespace ash

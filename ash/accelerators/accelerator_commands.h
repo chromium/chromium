@@ -372,6 +372,9 @@ ASH_EXPORT void ToggleMessageCenterBubble();
 // restored.
 ASH_EXPORT bool ToggleMinimized();
 
+// Turns on or off Mouse Keys.
+ASH_EXPORT void ToggleMouseKeys();
+
 // Minimizes the topmost unminimized snap groups. If there is no such snap
 // group, restores the most recently used minimized snap group.
 // TODO(b/333772909): Remove this API when the mojom conversion is disabled for

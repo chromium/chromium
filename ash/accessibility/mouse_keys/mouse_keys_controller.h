@@ -42,6 +42,9 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
 
   ~MouseKeysController() override;
 
+  // Pause or unpause mouse keys.
+  void Toggle();
+
   // Returns true if the event should be cancelled.
   bool RewriteEvent(const ui::Event& event);
 

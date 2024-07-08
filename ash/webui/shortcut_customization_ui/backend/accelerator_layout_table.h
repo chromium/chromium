@@ -268,6 +268,8 @@ constexpr auto kAshAcceleratorsWithoutLayout =
         AcceleratorAction::kToggleWifi,
         AcceleratorAction::kTouchHudClear,
         AcceleratorAction::kTouchHudModeChange,
+        // TODO(b/335456364): Allow modification of Toggle Mouse Keys
+        AcceleratorAction::kToggleMouseKeys,
         AcceleratorAction::kVolumeMuteToggle,
         AcceleratorAction::kUnpin,
     });

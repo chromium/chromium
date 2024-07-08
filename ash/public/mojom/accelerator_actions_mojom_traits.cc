@@ -242,6 +242,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kToggleMessageCenterBubble;
     case ash::AcceleratorAction::kToggleMirrorMode:
       return mojom_accelerator_action::kToggleMirrorMode;
+    case ash::AcceleratorAction::kToggleMouseKeys:
+      return mojom_accelerator_action::kToggleMouseKeys;
     case ash::AcceleratorAction::kToggleMultitaskMenu:
       return mojom_accelerator_action::kToggleMultitaskMenu;
     case ash::AcceleratorAction::kToggleOverview:
@@ -693,6 +695,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kToggleMirrorMode:
       *out = ash::AcceleratorAction::kToggleMirrorMode;
+      return true;
+    case mojom_accelerator_action::kToggleMouseKeys:
+      *out = ash::AcceleratorAction::kToggleMouseKeys;
       return true;
     case mojom_accelerator_action::kToggleMultitaskMenu:
       *out = ash::AcceleratorAction::kToggleMultitaskMenu;

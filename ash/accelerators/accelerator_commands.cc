@@ -1696,6 +1696,10 @@ bool ToggleMinimized() {
   return true;
 }
 
+void ToggleMouseKeys() {
+  Shell::Get()->accessibility_controller()->ToggleMouseKeys();
+}
+
 void ToggleSnapGroupsMinimize() {
   // TODO(b/333772909): Remove this workaroound to disable shortcut when the
   // mojom conversion is disabled for deprecated shortcuts.
