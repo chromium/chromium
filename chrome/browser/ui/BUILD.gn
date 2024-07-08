@@ -2171,6 +2171,10 @@ static_library("ui") {
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
       "//ui/base/dragdrop/mojom:mojom_headers",
+
+      # TODO: Use //chrome/browser after fixing cyclic dependency.
+      "//components/commerce/core:coupon_db_content_proto",
+      "//components/feed/core/proto:proto_v2",
     ]
 
     allow_circular_includes_from += [
