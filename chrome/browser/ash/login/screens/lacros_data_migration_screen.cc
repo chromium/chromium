@@ -25,12 +25,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 namespace {
-constexpr char kUserActionSkip[] = "skip";
-constexpr char kUserActionCancel[] = "cancel";
-constexpr char kUserActionGotoFiles[] = "gotoFiles";
 constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(10);
 
 // If the battery percent is lower than this ratio, and the charger is not
@@ -42,6 +40,7 @@ LacrosDataMigrationScreen::LacrosDataMigrationScreen(
     base::WeakPtr<LacrosDataMigrationScreenView> view)
     : BaseScreen(LacrosDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       attempt_restart_(base::BindRepeating(&chrome::AttemptRestart)) {
   DCHECK(view_);
@@ -147,44 +146,44 @@ void LacrosDataMigrationScreen::ShowImpl() {
 }
 
 void LacrosDataMigrationScreen::OnProgressUpdate(int progress) {
-  if (view_) {
-    view_->SetProgressValue(progress);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetProgressValue(progress);
   }
 }
 
 void LacrosDataMigrationScreen::ShowSkipButton() {
-  if (view_) {
-    view_->ShowSkipButton();
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->ShowSkipButton();
   }
 }
-void LacrosDataMigrationScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionSkip) {
-    LOG(WARNING) << "User has skipped the migration.";
-    if (migrator_) {
-      // Here migrator should be running. Trigger to cancel, then the migrator
-      // will report completion (actual completion or cancel) some time soon,
-      // which triggers Chrome to restart.
-      migrator_->Cancel();
-    }
-  } else if (action_id == kUserActionCancel) {
-    attempt_restart_.Run();
-  } else if (action_id == kUserActionGotoFiles) {
-    // Persistent that "Go to files" button is clicked.
-    // BrowserManager will take a look at the value on the next session
-    // starting (i.e. after Chrome's restart), and if necessary launches
-    // Files.app.
-    const std::string user_id_hash =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kBrowserDataMigrationForUser);
-    auto* local_state = g_browser_process->local_state();
-    crosapi::browser_util::SetGotoFilesClicked(local_state, user_id_hash);
-    local_state->CommitPendingWrite(
-        base::BindOnce(&LacrosDataMigrationScreen::OnLocalStateCommited,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    BaseScreen::OnUserAction(args);
+
+void LacrosDataMigrationScreen::OnSkipButtonClicked() {
+  LOG(WARNING) << "User has skipped the migration.";
+  if (migrator_) {
+    // Here migrator should be running. Trigger to cancel, then the migrator
+    // will report completion (actual completion or cancel) some time soon,
+    // which triggers Chrome to restart.
+    migrator_->Cancel();
   }
+}
+
+void LacrosDataMigrationScreen::OnCancelButtonClicked() {
+  attempt_restart_.Run();
+}
+
+void LacrosDataMigrationScreen::OnGotoFilesButtonClicked() {
+  // Persistent that "Go to files" button is clicked.
+  // BrowserManager will take a look at the value on the next session
+  // starting (i.e. after Chrome's restart), and if necessary launches
+  // Files.app.
+  const std::string user_id_hash =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kBrowserDataMigrationForUser);
+  auto* local_state = g_browser_process->local_state();
+  crosapi::browser_util::SetGotoFilesClicked(local_state, user_id_hash);
+  local_state->CommitPendingWrite(
+      base::BindOnce(&LacrosDataMigrationScreen::OnLocalStateCommited,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LacrosDataMigrationScreen::OnCurrentScreenChanged(
@@ -207,11 +206,16 @@ void LacrosDataMigrationScreen::OnMigrated(BrowserDataMigrator::Result result) {
       attempt_restart_.Run();
       return;
     case BrowserDataMigrator::ResultKind::kFailed:
-      if (view_) {
+      if (GetRemote()->is_bound()) {
         // Goto Files button should be displayed on migration failure caused by
         // out of disk space.
         const bool show_goto_files = result.required_size.has_value();
-        view_->SetFailureStatus(result.required_size, show_goto_files);
+        std::u16string required_size_string =
+            result.required_size.has_value()
+                ? ui::FormatBytes(
+                      static_cast<int64_t>(result.required_size.value()))
+                : std::u16string();
+        (*GetRemote())->SetFailureStatus(required_size_string, show_goto_files);
       }
       break;
   }
@@ -236,11 +240,12 @@ void LacrosDataMigrationScreen::UpdateLowBatteryStatus() {
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto.has_value())
     return;
-  if (view_) {
-    view_->SetLowBatteryStatus(
-        proto->battery_state() ==
-            power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
-        proto->battery_percent() < kInsufficientBatteryPercent);
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())
+        ->SetLowBatteryStatus(
+            proto->battery_state() ==
+                power_manager::PowerSupplyProperties_BatteryState_DISCHARGING &&
+            proto->battery_percent() < kInsufficientBatteryPercent);
   }
 }
 

@@ -26,21 +26,6 @@ class LacrosDataMigrationScreenView {
   // Shows the contents of the screen.
   virtual void Show() = 0;
 
-  // Updates the progress bar.
-  virtual void SetProgressValue(int progress) = 0;
-
-  // Displays the skip button.
-  virtual void ShowSkipButton() = 0;
-
-  // Notifies the UI about low battery.
-  virtual void SetLowBatteryStatus(bool low_battery) = 0;
-
-  // Displays the error page. If |required_size| is non nullopt, the error
-  // message is to navigate users to make some space on their disk to run
-  // migration.
-  // |show_goto_files| can control
-  virtual void SetFailureStatus(const std::optional<uint64_t>& required_size,
-                                bool show_goto_files) = 0;
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<LacrosDataMigrationScreenView> AsWeakPtr() = 0;
 };
@@ -64,11 +49,6 @@ class LacrosDataMigrationScreenHandler final
 
   // LacrosDataMigrationScreenView:
   void Show() override;
-  void SetProgressValue(int progress) override;
-  void ShowSkipButton() override;
-  void SetLowBatteryStatus(bool low_battery) override;
-  void SetFailureStatus(const std::optional<uint64_t>& required_size,
-                        bool show_goto_files) override;
   base::WeakPtr<LacrosDataMigrationScreenView> AsWeakPtr() override;
 
  private:

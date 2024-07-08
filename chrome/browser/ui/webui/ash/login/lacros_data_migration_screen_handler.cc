@@ -8,7 +8,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
 
@@ -43,29 +42,6 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
 
 void LacrosDataMigrationScreenHandler::Show() {
   ShowInWebUI();
-}
-
-void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {
-  CallExternalAPI("setProgressValue", progress);
-}
-
-void LacrosDataMigrationScreenHandler::ShowSkipButton() {
-  CallExternalAPI("showSkipButton");
-}
-
-void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
-  CallExternalAPI("setLowBatteryStatus", low_battery);
-}
-
-void LacrosDataMigrationScreenHandler::SetFailureStatus(
-    const std::optional<uint64_t>& required_size,
-    bool show_goto_files) {
-  CallExternalAPI(
-      "setFailureStatus",
-      required_size.has_value()
-          ? ui::FormatBytes(static_cast<int64_t>(required_size.value()))
-          : std::u16string(),
-      show_goto_files);
 }
 
 base::WeakPtr<LacrosDataMigrationScreenView>

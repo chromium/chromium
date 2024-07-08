@@ -14,6 +14,7 @@ import '../../components/oobe_icons.html.js';
 import '../../components/oobe_slide.js';
 
 import {assert} from '//resources/js/assert.js';
+import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,6 +22,8 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {LacrosDataMigrationPageCallbackRouter, LacrosDataMigrationPageHandlerRemote} from '../../mojom-webui/screens_login.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './lacros_data_migration.html.js';
 
@@ -50,10 +53,6 @@ export class LacrosDataMigrationScreen
 
   static get template(): HTMLTemplateElement {
     return getTemplate();
-  }
-
-  constructor() {
-    super();
   }
 
   static get properties(): PolymerElementProperties {
@@ -90,6 +89,29 @@ export class LacrosDataMigrationScreen
   private lowBatteryStatus: boolean;
   private requiredSizeStr: string;
   private showGotoFiles: boolean;
+  private callbackRouter: LacrosDataMigrationPageCallbackRouter;
+  private handler: LacrosDataMigrationPageHandlerRemote;
+
+  constructor() {
+    super();
+    this.callbackRouter = new LacrosDataMigrationPageCallbackRouter();
+    this.handler = new LacrosDataMigrationPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory
+        .establishLacrosDataMigrationScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
+    this.callbackRouter.setProgressValue.addListener(
+        this.setProgressValue.bind(this));
+    this.callbackRouter.showSkipButton.addListener(
+        this.showSkipButton.bind(this));
+    this.callbackRouter.setLowBatteryStatus.addListener(
+        this.setLowBatteryStatus.bind(this));
+    this.callbackRouter.setFailureStatus.addListener(
+        this.setFailureStatus.bind(this));
+  }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): string {
@@ -100,15 +122,6 @@ export class LacrosDataMigrationScreen
     return LacrosDataMigrationStep;
   }
 
-  override get EXTERNAL_API(): string[] {
-    return [
-      'setProgressValue',
-      'showSkipButton',
-      'setLowBatteryStatus',
-      'setFailureStatus',
-    ];
-  }
-
   /**
    * Called when the migration failed.
    * @param requiredSizeStr The extra space that users need to free up
@@ -116,8 +129,8 @@ export class LacrosDataMigrationScreen
    *     failure is not caused by low disk space.
    * @param showGotoFiles If true, displays the "goto files" button.
    */
-  setFailureStatus(requiredSizeStr: string, showGotoFiles: boolean): void {
-    this.requiredSizeStr = requiredSizeStr;
+  setFailureStatus(requiredSizeStr: String16, showGotoFiles: boolean): void {
+    this.requiredSizeStr = String.fromCharCode(...requiredSizeStr.data);
     this.showGotoFiles = showGotoFiles;
     this.setUIStep(LacrosDataMigrationStep.ERROR);
   }
@@ -153,15 +166,15 @@ export class LacrosDataMigrationScreen
 
   private onSkipButtonClicked(): void {
     assert(this.canSkip);
-    this.userActed('skip');
+    this.handler.onSkipButtonClicked();
   }
 
   private onCancelButtonClicked(): void {
-    this.userActed('cancel');
+    this.handler.onCancelButtonClicked();
   }
 
   private onGotoFilesButtonClicked(): void {
-    this.userActed('gotoFiles');
+    this.handler.onGotoFilesButtonClicked();
   }
 }
 
