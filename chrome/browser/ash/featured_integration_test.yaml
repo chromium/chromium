@@ -10,7 +10,6 @@ category: "integration"
 owners:
   - email: "jamescook@chromium.org"
   - email: "shraash@google.com"
-  - email: "iby@google.com"
   - email: "chromeos-data-eng@google.com"
   - email: "chromeos-sw-engprod@google.com"
 hw_agnostic: True
