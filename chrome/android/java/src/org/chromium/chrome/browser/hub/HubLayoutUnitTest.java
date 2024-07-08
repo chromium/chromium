@@ -538,9 +538,7 @@ public class HubLayoutUnitTest {
         setupHubLayoutAnimatorAndProvider(HubLayoutAnimationType.EXPAND_TAB);
         mPaneSupplier.set(mTabSwitcherPane);
         when(mHubLayoutAnimatorProviderMock.getThumbnailCallback()).thenReturn(mThumbnailCallback);
-        doReturn(mHubLayoutAnimatorProviderMock)
-                .when(mHubLayout)
-                .createHideAnimatorProvider(any(), anyInt());
+        doReturn(mHubLayoutAnimatorProviderMock).when(mHubLayout).createHideAnimatorProvider(any());
         when(mTab.isNativePage()).thenReturn(true);
 
         // Succeed on the thumbnail attempt

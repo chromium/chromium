@@ -18,7 +18,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -28,8 +27,6 @@ import org.chromium.components.feature_engagement.Tracker;
 
 /** Root coordinator of the Hub. */
 public class HubCoordinator implements PaneHubController, BackPressHandler {
-    private static final Integer START_SURFACE_LAYOUT_TYPE =
-            Integer.valueOf(LayoutType.START_SURFACE);
     private final @NonNull FrameLayout mContainerView;
     private final @NonNull View mMainHubParent;
     private final @NonNull PaneManager mPaneManager;
@@ -146,13 +143,6 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             return BackPressResult.SUCCESS;
         }
 
-        // TODO(crbug.com/40287515): Discuss with Start Surface owners and investigate removing.
-        if (startSurfaceHandlesBackPress()) {
-            // This is based on the logic in TabSwitcherMediator where the logic is delegated to
-            // ReturnToChromeBackPressHandler.
-            return BackPressResult.FAILURE;
-        }
-
         Tab tab = mCurrentTabSupplier.get();
         if (tab != null) {
             mHubLayoutController.selectTabAndHideHubLayout(tab.getId());
@@ -186,19 +176,11 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         return mPaneManager.getFocusedPaneSupplier().get();
     }
 
-    private boolean startSurfaceHandlesBackPress() {
-        Tab currentTab = mCurrentTabSupplier.get();
-        boolean isIncognito = currentTab != null ? currentTab.isIncognito() : false;
-        return !isIncognito
-                && START_SURFACE_LAYOUT_TYPE.equals(
-                        mHubLayoutController.getPreviousLayoutTypeSupplier().get());
-    }
-
     private void updateHandleBackPressSupplier() {
         boolean shouldHandleBackPress =
                 Boolean.TRUE.equals(mFocusedPaneHandleBackPressSupplier.get())
                         || mPaneBackStackHandler.getHandleBackPressChangedSupplier().get()
-                        || (!startSurfaceHandlesBackPress() && mCurrentTabSupplier.get() != null);
+                        || (mCurrentTabSupplier.get() != null);
         mHandleBackPressSupplier.set(shouldHandleBackPress);
     }
 
