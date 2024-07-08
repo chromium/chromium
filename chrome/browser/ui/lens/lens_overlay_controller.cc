@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
@@ -519,6 +520,13 @@ void LensOverlayController::BindOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
   state_ = State::kOverlay;
+
+  // Add the toolbar entrypoint if it is not already pinned.
+  auto* entrypoint_controller = tab_->GetBrowserWindowInterface()
+                                    ->GetFeatures()
+                                    .lens_overlay_entry_point_controller();
+  CHECK(entrypoint_controller);
+  entrypoint_controller->SetToolbarEntrypointActionState(/*is_active=*/true);
 
   // Only start the query flow again if we don't already have a full image
   // response.
@@ -1249,6 +1257,13 @@ void LensOverlayController::CloseUIPart2(
 
   // Closes preselection toast if it exists.
   ClosePreselectionBubble();
+
+  // Remove the toolbar entrypoint if it is not pinned.
+  auto* entrypoint_controller = tab_->GetBrowserWindowInterface()
+                                    ->GetFeatures()
+                                    .lens_overlay_entry_point_controller();
+  CHECK(entrypoint_controller);
+  entrypoint_controller->SetToolbarEntrypointActionState(/*is_active=*/false);
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
