@@ -65,7 +65,7 @@ public class ArchivedTabCreator extends TabCreator {
                 TabBuilder.createForLazyLoad(mTabModel.getProfile(), loadUrlParams, title)
                         .setWindow(mWindow)
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
-                        .setTabResolver((tabId) -> TabModelUtils.getTabById(mTabModel, tabId))
+                        .setTabResolver((tabId) -> mTabModel.getTabById(tabId))
                         .setInitiallyHidden(true)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
                         .build();
@@ -82,7 +82,7 @@ public class ArchivedTabCreator extends TabCreator {
                         .setWindow(mWindow)
                         .setId(id)
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
-                        .setTabResolver((tabId) -> TabModelUtils.getTabById(mTabModel, tabId))
+                        .setTabResolver((tabId) -> mTabModel.getTabById(tabId))
                         .setInitiallyHidden(true)
                         .setTabState(state)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -124,7 +125,7 @@ public class UndoTabModelTest {
         Assert.assertFalse(tab.isClosing());
         Assert.assertTrue(tab.isInitialized());
         Assert.assertFalse(model.isClosurePending(tab.getId()));
-        Assert.assertNotNull(TabModelUtils.getTabById(model, tab.getId()));
+        Assert.assertNotNull(model.getTabById(tab.getId()));
 
         final CallbackHelper didReceivePendingClosureHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -148,7 +149,7 @@ public class UndoTabModelTest {
 
         // Check post conditions
         Assert.assertEquals(didMakePending, model.isClosurePending(tab.getId()));
-        Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
+        Assert.assertNull(model.getTabById(tab.getId()));
         Assert.assertTrue(tab.isClosing());
         Assert.assertEquals(didMakePending, tab.isInitialized());
     }

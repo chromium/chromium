@@ -95,12 +95,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
      * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
      * contains the {@link Tab} with the given id. Note that the meaning of related can vary
      * depending on the filter being applied.
+     *
      * @param tabId Id of the {@link Tab} try to relate with.
      * @return An unmodifiable list of {@link Tab} that relate with the given tab id.
      */
     @NonNull
     public List<Tab> getRelatedTabList(int tabId) {
-        Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
+        Tab tab = getTabModel().getTabById(tabId);
         if (tab == null) return sEmptyRelatedTabList;
         List<Tab> relatedTab = new ArrayList<>();
         relatedTab.add(tab);
@@ -110,14 +111,15 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     /**
      * Any of the concrete class can override and define a relationship that links a {@link Tab} to
      * a list of related {@link Tab}s. By default, this returns an unmodifiable list that only
-     * contains the given id. Note that the meaning of related can vary
-     * depending on the filter being applied.
+     * contains the given id. Note that the meaning of related can vary depending on the filter
+     * being applied.
+     *
      * @param tabId Id of the {@link Tab} try to relate with.
      * @return An unmodifiable list of id that relate with the given tab id.
      */
     @NonNull
     public List<Integer> getRelatedTabIds(int tabId) {
-        Tab tab = TabModelUtils.getTabById(getTabModel(), tabId);
+        Tab tab = getTabModel().getTabById(tabId);
         if (tab == null) return sEmptyRelatedTabIds;
         List<Integer> relatedTabIds = new ArrayList<>();
         relatedTabIds.add(tabId);

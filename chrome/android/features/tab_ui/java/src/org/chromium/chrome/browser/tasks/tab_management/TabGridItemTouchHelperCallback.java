@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -216,8 +215,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         TabModel tabModel = filter.getTabModel();
         if (!mActionsOnAllRelatedTabs) {
-            int destinationIndex =
-                    tabModel.indexOf(TabModelUtils.getTabById(tabModel, destinationTabId));
+            int destinationIndex = tabModel.indexOf(tabModel.getTabById(destinationTabId));
             tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
         } else {
             List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);

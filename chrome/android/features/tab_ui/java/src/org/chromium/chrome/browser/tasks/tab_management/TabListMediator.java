@@ -394,7 +394,7 @@ class TabListMediator {
                     TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
                     if (!mActionsOnAllRelatedTabs) {
                         Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
-                        Tab newlySelectedTab = TabModelUtils.getTabById(tabModel, tabId);
+                        Tab newlySelectedTab = tabModel.getTabById(tabId);
 
                         // We filtered the tab switching related metric for components that takes
                         // actions on all related tabs (e.g. GTS) because that component can
@@ -470,7 +470,7 @@ class TabListMediator {
                     mModel.get(index).model.set(TabProperties.IS_SELECTED, !selected);
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
                     TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-                    Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
+                    Tab tab = filter.getTabModel().getTabById(tabId);
                     if (tab != null && filter.isTabInTabGroup(tab)) {
                         mModel.get(index)
                                 .model
@@ -519,9 +519,10 @@ class TabListMediator {
                     // TODO(crbug.com/40136874) The null check for tab here should be redundant once
                     // we have resolved the bug.
                     if (index == TabModel.INVALID_TAB_INDEX
-                            || TabModelUtils.getTabById(
-                                            mCurrentTabModelFilterSupplier.get().getTabModel(),
-                                            updatedTab.getId())
+                            || mCurrentTabModelFilterSupplier
+                                            .get()
+                                            .getTabModel()
+                                            .getTabById(updatedTab.getId())
                                     == null) {
                         return;
                     }
@@ -775,8 +776,7 @@ class TabListMediator {
                                 isSelected |= tab == TabModelUtils.getCurrentTab(tabModel);
                             }
                             Tab tab =
-                                    TabModelUtils.getTabById(
-                                            tabModel,
+                                    tabModel.getTabById(
                                             mModel.get(desIndex).model.get(TabProperties.TAB_ID));
                             updateTab(desIndex, tab, isSelected, false, false);
                             return;
@@ -811,7 +811,7 @@ class TabListMediator {
 
                         // If the added tab is part of the group add it and update the dialog.
                         int firstTabId = mModel.get(0).model.get(TabProperties.TAB_ID);
-                        Tab firstTab = TabModelUtils.getTabById(tabModel, firstTabId);
+                        Tab firstTab = tabModel.getTabById(firstTabId);
                         if (firstTab == null || firstTab.getRootId() != movedTab.getRootId()) {
                             return;
                         }
@@ -1161,7 +1161,7 @@ class TabListMediator {
                         TabGroupModelFilter filter =
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
                         TabModel tabModel = filter.getTabModel();
-                        Tab closingTab = TabModelUtils.getTabById(tabModel, tabId);
+                        Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
                         RecordUserAction.record("MobileTabClosed." + mComponentName);
@@ -1203,8 +1203,10 @@ class TabListMediator {
                                                     .get(TabProperties.TAB_ID);
                         }
 
-                        return TabModelUtils.getTabById(
-                                mCurrentTabModelFilterSupplier.get().getTabModel(), nextTabId);
+                        return mCurrentTabModelFilterSupplier
+                                .get()
+                                .getTabModel()
+                                .getTabById(nextTabId);
                     }
                 };
 
@@ -1538,7 +1540,7 @@ class TabListMediator {
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
         assert !tabModel.isIncognito();
         int tabId = mModel.get(tabIndex).model.get(TabProperties.TAB_ID);
-        assert TabModelUtils.getTabById(tabModel, tabId) != null;
+        assert tabModel.getTabById(tabId) != null;
         sViewedTabIds.add(tabId);
     }
 
@@ -1598,7 +1600,7 @@ class TabListMediator {
         // The filter's underlying model should have any tab that was viewed.
         TabModel model = filter.getTabModel();
         for (Integer tabId : sViewedTabIds) {
-            Tab tab = TabModelUtils.getTabById(model, tabId);
+            Tab tab = model.getTabById(tabId);
             if (tab != null && !filter.isTabInTabGroup(tab)) {
                 ShoppingPersistedTabData.from(
                         tab,
@@ -2601,9 +2603,10 @@ class TabListMediator {
     }
 
     private @Nullable Tab getTabForIndex(int index) {
-        return TabModelUtils.getTabById(
-                mCurrentTabModelFilterSupplier.get().getTabModel(),
-                mModel.get(index).model.get(TabProperties.TAB_ID));
+        return mCurrentTabModelFilterSupplier
+                .get()
+                .getTabModel()
+                .getTabById(mModel.get(index).model.get(TabProperties.TAB_ID));
     }
 
     Tab getTabToAddDelayedForTesting() {
@@ -2840,7 +2843,7 @@ class TabListMediator {
     private void closeTabGroup(int tabId, boolean hideTabGroups) {
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         TabModel tabModel = filter.getTabModel();
-        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        int rootId = tabModel.getTabById(tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.getTabModel().isIncognito();
 
@@ -2869,7 +2872,7 @@ class TabListMediator {
 
     private void renameTabGroup(int tabId) {
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        int rootId = tabModel.getTabById(tabId).getRootId();
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
 
         var tabGroupVisualDataDialogManager =
@@ -2936,7 +2939,7 @@ class TabListMediator {
 
     private void ungroupTabGroup(int tabId) {
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
+        int rootId = tabModel.getTabById(tabId).getRootId();
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.getTabModel().isIncognito();

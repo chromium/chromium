@@ -1336,7 +1336,7 @@ public class TabStripTest {
      */
     protected void compareTabViewWithModel(boolean incognito, int id) throws ExecutionException {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(incognito);
-        Tab tab = TabModelUtils.getTabById(model, id);
+        Tab tab = model.getTabById(id);
         StripLayoutHelper tabStrip =
                 TabStripUtils.getStripLayoutHelper(sActivityTestRule.getActivity(), incognito);
         StripLayoutTab tabView =

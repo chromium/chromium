@@ -4981,7 +4981,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
     @VisibleForTesting
     Tab getTabById(int tabId) {
-        return TabModelUtils.getTabById(mModel, tabId);
+        return mModel.getTabById(tabId);
     }
 
     private int getSelectedTabId() {

@@ -71,7 +71,7 @@ public class HubTabSwitcherMetricsRecorder {
         if (currentPane == null) return;
 
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        Tab previousTab = TabModelUtils.getTabById(tabModel, lastId);
+        Tab previousTab = tabModel.getTabById(lastId);
         if (previousTab == null) return;
 
         if (mPaneIdWhenShown.intValue() == currentPane.getPaneId()) {

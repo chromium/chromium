@@ -67,7 +67,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 // If the tab was opened in the foreground, insert it adjacent to its parent tab if
                 // that exists and that tab is not the current selected tab, else insert the tab
                 // adjacent to the current tab that opened that link.
-                Tab parentTab = TabModelUtils.getTabById(currentModel, newTab.getParentId());
+                Tab parentTab = currentModel.getTabById(newTab.getParentId());
                 if (parentTab != null && currentTab != parentTab) {
                     int parentTabIndex =
                             TabModelUtils.getTabIndexById(currentModel, parentTab.getId());

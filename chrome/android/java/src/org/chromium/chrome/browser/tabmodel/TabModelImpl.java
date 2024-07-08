@@ -373,9 +373,9 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     private Tab findTabInAllTabModels(int tabId) {
-        Tab tab = TabModelUtils.getTabById(mModelDelegate.getModel(isIncognito()), tabId);
+        Tab tab = mModelDelegate.getModel(isIncognito()).getTabById(tabId);
         if (tab != null) return tab;
-        return TabModelUtils.getTabById(mModelDelegate.getModel(!isIncognito()), tabId);
+        return mModelDelegate.getModel(!isIncognito()).getTabById(tabId);
     }
 
     private Tab findNearbyNotClosingTab(int closingIndex) {

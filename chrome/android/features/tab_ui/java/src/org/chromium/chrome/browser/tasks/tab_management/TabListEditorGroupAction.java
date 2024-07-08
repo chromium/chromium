@@ -73,7 +73,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
         boolean isEnabled = tabIds.size() > 1;
         if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() && tabIds.size() == 1) {
             TabGroupModelFilter filter = getTabGroupModelFilter();
-            Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabIds.get(0));
+            Tab tab = filter.getTabModel().getTabById(tabIds.get(0));
             isEnabled = tab != null && !filter.isTabInTabGroup(tab);
         }
         setEnabledAndItemCount(isEnabled, size);

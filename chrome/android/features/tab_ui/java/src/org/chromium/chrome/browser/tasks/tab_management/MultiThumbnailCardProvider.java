@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.url.GURL;
@@ -443,7 +442,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             int tabId, Size thumbnailSize, Callback<Bitmap> finalCallback, boolean isSelected) {
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         assert filter.isTabModelRestored();
-        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
+        Tab tab = filter.getTabModel().getTabById(tabId);
         boolean useMultiThumbnail = filter.isTabInTabGroup(tab);
         if (useMultiThumbnail) {
             assert tab != null;

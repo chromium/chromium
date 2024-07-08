@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
@@ -865,7 +864,7 @@ public class TabListCoordinator
         if (index != TabModel.INVALID_TAB_INDEX) return index;
 
         TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        Tab tab = TabModelUtils.getTabById(tabModel, tabId);
+        Tab tab = tabModel.getTabById(tabId);
         if (tab == null) return TabModel.INVALID_TAB_INDEX;
 
         return mMediator.getIndexForTabWithRelatedTabs(tab);

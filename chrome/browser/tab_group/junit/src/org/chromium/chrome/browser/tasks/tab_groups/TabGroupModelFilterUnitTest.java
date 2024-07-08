@@ -243,7 +243,7 @@ public class TabGroupModelFilterUnitTest {
                             // Mirror behavior of real tab model here.
                             if (oldIndex == newIndex || oldIndex + 1 == newIndex) return null;
 
-                            Tab tab = TabModelUtils.getTabById(mTabModel, movedTabId);
+                            Tab tab = mTabModel.getTabById(movedTabId);
 
                             mTabs.remove(tab);
                             if (oldIndex < newIndex) --newIndex;

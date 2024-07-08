@@ -158,7 +158,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                     @Override
                     public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                         // Only invalidate if the tab exists in the currently selected model.
-                        if (TabModelUtils.getTabById(getCurrentModel(), tab.getId()) != null) {
+                        if (getCurrentModel().getTabById(tab.getId()) != null) {
                             mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
                         }
                     }

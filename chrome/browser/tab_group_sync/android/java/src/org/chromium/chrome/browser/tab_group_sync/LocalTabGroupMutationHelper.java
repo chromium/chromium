@@ -213,7 +213,7 @@ public class LocalTabGroupMutationHelper {
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.add(newTab);
         mTabGroupModelFilter.mergeListOfTabsToGroup(
-                tabsToMerge, TabModelUtils.getTabById(getTabModel(), rootId), /* notify= */ false);
+                tabsToMerge, getTabModel().getTabById(rootId), /* notify= */ false);
         return newTab;
     }
 
@@ -285,7 +285,7 @@ public class LocalTabGroupMutationHelper {
     }
 
     private Tab getLocalTabInGroup(Integer tabId, int rootId) {
-        Tab tab = tabId == null ? null : TabModelUtils.getTabById(getTabModel(), tabId);
+        Tab tab = tabId == null ? null : getTabModel().getTabById(tabId);
         // Check if the tab is still attached to the same root ID. If not, it belongs to another
         // group. Don't touch it and rather create a new one in subsequent step.
         return tab != null && tab.getRootId() == rootId ? tab : null;

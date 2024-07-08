@@ -561,7 +561,7 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, selectedColor);
 
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
 
         if (currentTab != null) {
             filter.setTabGroupColor(currentTab.getRootId(), selectedColor);
@@ -591,7 +591,7 @@ public class TabGridDialogMediator
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-            Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+            Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
             final @TabGroupColorId int color =
                     filter.getTabGroupColorWithFallback(currentTab.getRootId());
             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
@@ -603,7 +603,7 @@ public class TabGridDialogMediator
         Resources res = mContext.getResources();
 
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
         if (mTabGroupTitleEditor != null) {
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
             if (storedTitle != null && filter.isTabInTabGroup(currentTab)) {
@@ -777,7 +777,7 @@ public class TabGridDialogMediator
             // Get the current Tab first since hideDialog causes mCurrentTabId to be
             // Tab.INVALID_TAB_ID.
             TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-            Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+            Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
             hideDialog(false);
 
             // Reset the list of tabs so the new tab doesn't appear on the dialog before the
@@ -852,7 +852,7 @@ public class TabGridDialogMediator
 
     private void saveCurrentGroupModifiedTitle() {
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-        Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
+        Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
         // When current group no longer exists, skip saving the title.
         if (currentTab == null || !filter.isTabInTabGroup(currentTab)) {
             mCurrentGroupModifiedTitle = null;
@@ -983,9 +983,7 @@ public class TabGridDialogMediator
     }
 
     private boolean currentTabRootIdMatchesRootId(int rootId) {
-        Tab tab =
-                TabModelUtils.getTabById(
-                        mCurrentTabModelFilterSupplier.get().getTabModel(), mCurrentTabId);
+        Tab tab = mCurrentTabModelFilterSupplier.get().getTabModel().getTabById(mCurrentTabId);
         return tab != null && tab.getRootId() == rootId;
     }
 

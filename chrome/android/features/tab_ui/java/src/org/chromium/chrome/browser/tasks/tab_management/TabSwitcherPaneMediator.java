@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -276,7 +275,7 @@ public class TabSwitcherPaneMediator
     public void onTabSelecting(int tabId, boolean fromActionButton) {
         if (fromActionButton && getMode() == TabListMode.GRID) {
             TabModel model = mTabModelFilterSupplier.get().getTabModel();
-            Tab newlySelectedTab = TabModelUtils.getTabById(model, tabId);
+            Tab newlySelectedTab = model.getTabById(tabId);
             StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
         }
         mOnTabClickCallback.onResult(tabId);
