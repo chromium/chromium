@@ -246,13 +246,6 @@ class PickerClientImplTest : public BrowserWithTestWindowTest {
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
 };
 
-TEST_F(PickerClientImplTest, GetsSharedURLLoaderFactory) {
-  ash::PickerController controller;
-  PickerClientImpl client(&controller, user_manager());
-
-  EXPECT_EQ(client.GetSharedURLLoaderFactory(), GetSharedURLLoaderFactory());
-}
-
 TEST_F(PickerClientImplTest, StartCrosSearch) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());

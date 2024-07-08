@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -62,8 +61,6 @@ class PickerClientImpl
   ~PickerClientImpl() override;
 
   // ash::PickerClient:
-  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
-      override;
   void StartCrosSearch(const std::u16string& query,
                        std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;

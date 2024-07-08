@@ -159,9 +159,6 @@ class TestPickerClient : public MockPickerClient {
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     // Set default behaviours. These can be overridden with `WillOnce` and
     // `WillRepeatedly`.
-    ON_CALL(*this, GetSharedURLLoaderFactory)
-        .WillByDefault(
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>);
     ON_CALL(*this, IsFeatureAllowedForDogfood).WillByDefault(Return(true));
     ON_CALL(*this, GetPrefs).WillByDefault(Return(&prefs_));
   }

@@ -22,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
@@ -52,7 +51,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -241,12 +239,6 @@ PickerClientImpl::~PickerClientImpl() {
   // (this client) to be valid. This is fine as we have not started destructing
   // anything yet.
   controller_->SetClient(nullptr);
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-PickerClientImpl::GetSharedURLLoaderFactory() {
-  CHECK(profile_);
-  return profile_->GetURLLoaderFactory();
 }
 
 void PickerClientImpl::StartCrosSearch(
