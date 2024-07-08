@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {RelatedWebsiteSetsAppElement} from './app.js';
 
 export function getHtml(this: RelatedWebsiteSetsAppElement) {
+  // clang-format off
   return html`
 <related-website-sets-toolbar id="toolbar" .pageName="${this.pageTitle_}"
     ?narrow="${this.narrow_}">
@@ -14,6 +15,12 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
 <div id="container" role="group">
   <related-website-sets-sidebar id="sidebar" ?hidden="${this.narrow_}">
   </related-website-sets-sidebar>
+  <div id="content">
+    <related-website-sets-list-container id="rws-list-container"
+        class="cr-centered-card-container">
+    </related-website-sets-list-container>
+  </div>
+  <div id="space-holder" ?hidden="${this.narrow_}"></div>
   <cr-drawer id="drawer" heading="Related Website Sets"
       @close="${this.onDrawerClose_}">
     <div slot="body">
@@ -21,4 +28,5 @@ export function getHtml(this: RelatedWebsiteSetsAppElement) {
     </div>
   </cr-drawer>
 </div>`;
+  // clang-format on
 }

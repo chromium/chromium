@@ -29,6 +29,16 @@ IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, App) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, Container) {
+  RunTest("privacy_sandbox/internals/related_website_sets/container_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, ListItem) {
+  RunTest("privacy_sandbox/internals/related_website_sets/list_item_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, Toolbar) {
   RunTest("privacy_sandbox/internals/related_website_sets/toolbar_test.js",
           "mocha.run()");
@@ -36,5 +46,10 @@ IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, Toolbar) {
 
 IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, Sidebar) {
   RunTest("privacy_sandbox/internals/related_website_sets/sidebar_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(RelatedWebsiteSetsTest, SiteFavicon) {
+  RunTest("privacy_sandbox/internals/related_website_sets/site_favicon_test.js",
           "mocha.run()");
 }

@@ -5,9 +5,17 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
- * #include=cr-hidden-style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit cr-hidden-style-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 @media (prefers-color-scheme: dark) {
   :host {
@@ -23,9 +31,27 @@
   position: relative;
 }
 
-#sidebar {
+#sidebar,
+#content,
+#space-holder {
   flex: 1 1 0;
+}
+
+#sidebar {
   height: 100%;
   position: sticky;
   top: 0;
+}
+
+#content {
+  flex-basis: var(--related-website-sets-main-basis);
+  height: 100%;
+}
+
+#space-holder {
+  min-width: 56px;
+}
+
+#rws-list-container {
+  padding-bottom: 28px;
 }
