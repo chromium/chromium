@@ -430,7 +430,7 @@ class CookieControlsBubbleViewController3pcdEnforcementTest
 TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
        DisplaysCookieEnforcement) {
   VerifyEnforcementValues(
-      vector_icons::kSettingsIcon.name,
+      vector_icons::kSettingsChromeRefreshIcon.name,
       IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP,
       /*labels_visible=*/true);
   EXPECT_CALL(
@@ -450,7 +450,7 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
 // Verify enforcement states
 TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
        DisplaysPolicyEnforcement) {
-  VerifyEnforcementValues(vector_icons::kBusinessIcon.name,
+  VerifyEnforcementValues(vector_icons::kBusinessChromeRefreshIcon.name,
                           IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY);
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
@@ -461,7 +461,7 @@ TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
 
 TEST_P(CookieControlsBubbleViewController3pcdEnforcementTest,
        DisplaysExtensionEnforcement) {
-  VerifyEnforcementValues(vector_icons::kExtensionIcon.name,
+  VerifyEnforcementValues(vector_icons::kExtensionChromeRefreshIcon.name,
                           IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION);
   blocking_status_ = testing::get<0>(GetParam());
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
