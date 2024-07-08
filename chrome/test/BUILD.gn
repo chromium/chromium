@@ -886,6 +886,8 @@ static_library("test_support") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/app_mode",
       "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/login/enrollment",
+      "//chrome/browser/ash/login/enrollment:test_support",
       "//chrome/browser/ash/system_web_apps",
       "//chromeos/ash/components/account_manager",
       "//chromeos/ash/components/dbus/session_manager",
@@ -904,6 +906,7 @@ static_library("test_support") {
       "//ui/base/ime/init",
       "//ui/chromeos/resources:resources_grit",
     ]
+
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/arc",
@@ -4580,10 +4583,6 @@ if (!is_android) {
         "../browser/ash/login/device_family_link_allowed_policy_browsertest.cc",
         "../browser/ash/login/enable_debugging_browsertest.cc",
         "../browser/ash/login/encryption_migration_browsertest.cc",
-        "../browser/ash/login/enrollment/enrollment_embedded_policy_server_browsertest.cc",
-        "../browser/ash/login/enrollment/enrollment_screen_browsertest.cc",
-        "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.cc",
-        "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h",
         "../browser/ash/login/enrollment_nudge_browsertest.cc",
         "../browser/ash/login/enterprise_enrollment_browsertest.cc",
         "../browser/ash/login/error_screen_browsertest.cc",
@@ -5127,6 +5126,7 @@ if (!is_android) {
         "//chrome/browser/ash/login/auth",
         "//chrome/browser/ash/login/demo_mode",
         "//chrome/browser/ash/login/demo_mode:test_support",
+        "//chrome/browser/ash/login/enrollment",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/notifications",
