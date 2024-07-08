@@ -213,11 +213,6 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return bridge().AddSpecifics(specifics);
   }
 
-  std::optional<sync_pb::ProductComparisonSpecifics>
-  UpdateProductSpecificationsSet(const ProductSpecificationsSet& set) {
-    return bridge().UpdateProductSpecificationsSet(set);
-  }
-
   void DeleteProductSpecifications(const std::string& uuid) {
     bridge().DeleteProductSpecificationsSet(uuid);
   }
@@ -304,7 +299,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     EXPECT_EQ(entries().size(), initial_entries_.size() + size);
   }
 
-  ProductSpecificationsSyncBridge::CompareSpecificsEntries& entries() {
+  std::map<std::string, sync_pb::ProductComparisonSpecifics>& entries() {
     return bridge().entries_;
   }
 
@@ -332,6 +327,10 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
         commerce::kProductSpecificationsMultiSpecifics);
   }
 
+  void UpdateSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
+    bridge().UpdateSpecifics(specifics);
+  }
+
   testing::NiceMock<ProductSpecificationsSyncBridgeObserver>* observer() {
     return &observer_;
   }
@@ -342,7 +341,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
-  ProductSpecificationsSyncBridge::CompareSpecificsEntries initial_entries_;
+  std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_entries_;
   std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_store_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -512,27 +511,16 @@ TEST_F(ProductSpecificationsSyncBridgeTest, AddSpecifics) {
 TEST_F(ProductSpecificationsSyncBridgeTest, TestUpdate) {
   VerifyEntriesAndStoreSize(3);
 
-  sync_pb::ProductComparisonSpecifics specifics = entries().begin()->second;
-
-  const std::string original_name = specifics.name();
-  const int original_url_count = specifics.data().size();
-  const std::string original_uuid = specifics.uuid();
-
-  std::vector<GURL> urls;
-  for (const sync_pb::ComparisonData& data : specifics.data()) {
-    urls.emplace_back(data.url());
-  }
-  urls.emplace_back(GURL("http://example.com/additional_url"));
-
-  ProductSpecificationsSet set(
-      specifics.uuid(), specifics.creation_time_unix_epoch_millis(),
-      specifics.update_time_unix_epoch_millis(), urls, "new name");
-
-  EXPECT_TRUE(UpdateProductSpecificationsSet(set).has_value());
+  sync_pb::ProductComparisonSpecifics original = entries().begin()->second;
+  sync_pb::ProductComparisonSpecifics updated = original;
+  updated.set_name("new name");
+  sync_pb::ComparisonData* data = updated.add_data();
+  data->set_url("http://example.com/additional_url");
+  UpdateSpecifics(updated);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_NE(original_name, entries()[original_uuid].name());
-  EXPECT_NE(original_url_count, entries()[original_uuid].data().size());
+  EXPECT_NE(original.name(), entries()[original.uuid()].name());
+  EXPECT_NE(original.data().size(), entries()[original.uuid()].data().size());
 
   VerifyEntriesAndStoreSize(3);
 }

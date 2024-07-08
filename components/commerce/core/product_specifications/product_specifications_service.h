@@ -92,6 +92,14 @@ class ProductSpecificationsService
   void OnSpecificsAdded(const std::vector<sync_pb::ProductComparisonSpecifics>
                             specifics) override;
 
+  void OnSpecificsUpdated(
+      const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
+                                  sync_pb::ProductComparisonSpecifics>>
+          before_after_specifics) override;
+
+  void NotifyProductSpecificationsUpdate(const ProductSpecificationsSet& before,
+                                         const ProductSpecificationsSet& after);
+
   base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };
 

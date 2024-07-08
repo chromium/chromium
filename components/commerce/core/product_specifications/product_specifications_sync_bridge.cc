@@ -97,7 +97,7 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
             entries_[change->storage_key()] = specifics;
             batch->WriteData(change->storage_key(),
                              specifics.SerializeAsString());
-            OnSpecificsUpdated(before, specifics);
+            delegate_->OnSpecificsUpdated({{before, specifics}});
           }
         }
         break;
@@ -182,38 +182,23 @@ void ProductSpecificationsSyncBridge::AddSpecifics(
     Commit(std::move(batch));
 }
 
-sync_pb::ProductComparisonSpecifics
-ProductSpecificationsSyncBridge::UpdateProductSpecificationsSet(
-    const ProductSpecificationsSet& product_specs_set) {
-  auto it = entries_.find(product_specs_set.uuid().AsLowercaseString());
-
-  CHECK(it != entries_.end());
+void ProductSpecificationsSyncBridge::UpdateSpecifics(
+    const sync_pb::ProductComparisonSpecifics& new_specifics) {
+  CHECK(entries_.find(new_specifics.uuid()) != entries_.end());
 
   // Sync is mandatory for this feature to be usable.
   CHECK(change_processor()->IsTrackingMetadata());
 
-  sync_pb::ProductComparisonSpecifics before = it->second;
-  sync_pb::ProductComparisonSpecifics& specifics = it->second;
-  specifics.set_update_time_unix_epoch_millis(
-      base::Time::Now().InMillisecondsSinceUnixEpoch());
-  specifics.set_name(product_specs_set.name());
-
-  specifics.clear_data();
-  for (const GURL& url : product_specs_set.urls()) {
-    sync_pb::ComparisonData* comparison_data = specifics.add_data();
-    comparison_data->set_url(url.spec());
-  }
+  entries_[new_specifics.uuid()] = new_specifics;
 
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  change_processor()->Put(specifics.uuid(), CreateEntityData(specifics),
+  change_processor()->Put(new_specifics.uuid(), CreateEntityData(new_specifics),
                           batch->GetMetadataChangeList());
 
-  batch->WriteData(specifics.uuid(), specifics.SerializeAsString());
+  batch->WriteData(new_specifics.uuid(), new_specifics.SerializeAsString());
   Commit(std::move(batch));
-  OnSpecificsUpdated(before, specifics);
-  return specifics;
 }
 
 void ProductSpecificationsSyncBridge::DeleteProductSpecificationsSet(
@@ -339,21 +324,6 @@ void ProductSpecificationsSyncBridge::AddObserver(
 void ProductSpecificationsSyncBridge::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
-    const sync_pb::ProductComparisonSpecifics& before,
-    const sync_pb::ProductComparisonSpecifics& after) {
-  for (auto& observer : observers_) {
-    observer.OnProductSpecificationsSetUpdate(
-        ProductSpecificationsSet::FromProto(before),
-        ProductSpecificationsSet::FromProto(after));
-
-    if (before.name() != after.name()) {
-      observer.OnProductSpecificationsSetNameUpdate(before.name(),
-                                                    after.name());
-    }
-  }
 }
 
 void ProductSpecificationsSyncBridge::OnSpecificsRemoved(

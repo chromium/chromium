@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -240,42 +241,45 @@ ProductSpecificationsService::AddProductSpecificationsSet(
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
                                       const std::vector<GURL>& urls) {
-  std::optional<ProductSpecificationsSet> product_specs_set =
-      GetSetByUuid(uuid);
-  if (!product_specs_set.has_value()) {
+  auto entry = bridge_->entries().find(uuid.AsLowercaseString());
+
+  if (entry == bridge_->entries().end()) {
     return std::nullopt;
   }
-
-  product_specs_set->urls_.clear();
-  for (const auto& url : urls) {
-    product_specs_set->urls_.push_back(url);
+  sync_pb::ProductComparisonSpecifics original = entry->second;
+  sync_pb::ProductComparisonSpecifics& specifics = entry->second;
+  specifics.clear_data();
+  for (const GURL& url : urls) {
+    sync_pb::ComparisonData* data = specifics.add_data();
+    data->set_url(url.spec());
   }
-
-  std::optional<sync_pb::ProductComparisonSpecifics> updated_specifics =
-      bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
-  if (!updated_specifics.has_value()) {
-    return std::nullopt;
-  }
-  return ProductSpecificationsSet::FromProto(updated_specifics.value());
+  specifics.set_update_time_unix_epoch_millis(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  bridge_->UpdateSpecifics(specifics);
+  ProductSpecificationsSet set = ProductSpecificationsSet::FromProto(specifics);
+  NotifyProductSpecificationsUpdate(
+      ProductSpecificationsSet::FromProto(original), set);
+  return set;
 }
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetName(const base::Uuid& uuid,
                                       const std::string& name) {
-  std::optional<ProductSpecificationsSet> product_specs_set =
-      GetSetByUuid(uuid);
-  if (!product_specs_set.has_value()) {
+  auto entry = bridge_->entries().find(uuid.AsLowercaseString());
+
+  if (entry == bridge_->entries().end()) {
     return std::nullopt;
   }
-
-  product_specs_set->name_ = name;
-
-  std::optional<sync_pb::ProductComparisonSpecifics> updated_specifics =
-      bridge_->UpdateProductSpecificationsSet(product_specs_set.value());
-  if (!updated_specifics.has_value()) {
-    return std::nullopt;
-  }
-  return ProductSpecificationsSet::FromProto(updated_specifics.value());
+  sync_pb::ProductComparisonSpecifics original = entry->second;
+  sync_pb::ProductComparisonSpecifics& specifics = entry->second;
+  specifics.set_update_time_unix_epoch_millis(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  specifics.set_name(name);
+  bridge_->UpdateSpecifics(specifics);
+  ProductSpecificationsSet set = ProductSpecificationsSet::FromProto(specifics);
+  NotifyProductSpecificationsUpdate(
+      ProductSpecificationsSet::FromProto(original), set);
+  return set;
 }
 
 void ProductSpecificationsService::DeleteProductSpecificationsSet(
@@ -325,6 +329,36 @@ void ProductSpecificationsService::OnSpecificsAdded(
     }
   }
   // TODO(crbug.com/350346263) Handle new multi specifics format.
+}
+
+void ProductSpecificationsService::OnSpecificsUpdated(
+    const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
+                                sync_pb::ProductComparisonSpecifics>>
+        before_after_specifics) {
+  for (const auto& [before, after] : before_after_specifics) {
+    if (!before.has_product_comparison() &&
+        !before.has_product_comparison_item() &&
+        !after.has_product_comparison() &&
+        !after.has_product_comparison_item()) {
+      NotifyProductSpecificationsUpdate(
+          ProductSpecificationsSet::FromProto(before),
+          ProductSpecificationsSet::FromProto(after));
+    }
+  }
+  // TODO(crbug.com/350983597) Handle new multi specifics format.
+}
+
+void ProductSpecificationsService::NotifyProductSpecificationsUpdate(
+    const ProductSpecificationsSet& before,
+    const ProductSpecificationsSet& after) {
+  for (auto& observer : observers_) {
+    observer.OnProductSpecificationsSetUpdate(before, after);
+
+    if (before.name() != after.name()) {
+      observer.OnProductSpecificationsSetNameUpdate(before.name(),
+                                                    after.name());
+    }
+  }
 }
 
 }  // namespace commerce
