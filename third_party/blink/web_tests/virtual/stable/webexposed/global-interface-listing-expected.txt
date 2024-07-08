@@ -6694,6 +6694,7 @@ interface PointerEvent : MouseEvent
     getter azimuthAngle
     getter height
     getter isPrimary
+    getter persistentDeviceId
     getter pointerId
     getter pointerType
     getter pressure

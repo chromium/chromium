@@ -3081,7 +3081,7 @@
     },
     {
       name: "PointerEventDeviceId",
-      status: "test",
+      status: "stable",
     },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
