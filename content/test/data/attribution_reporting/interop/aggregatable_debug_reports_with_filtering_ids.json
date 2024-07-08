@@ -1,0 +1,137 @@
+{
+  "description": "Aggregatable debug reports creation when filtering ids is enabled",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "needs_aggregatable_filtering_ids": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "a": "0x5"
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 1024,
+                  "key_piece": "0x1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Should create an aggregatable debug report with version 1.0 and a
+      // default filtering id value.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 64513
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x4",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 123
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Should create a null aggregatable debug report with version 1.0 and a
+      // default filtering id value.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://different-destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 64513
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x4",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 123
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+            "aggregation_coordinator_origin": "https://coordinator.test",
+            "histograms": [ {
+              "id": "0",
+              "key": "0xd",
+              "value": 123
+            } ],
+            "shared_info": {
+              "api": "attribution-reporting-debug",
+              "attribution_destination": "https://destination.test",
+              "reporting_origin": "https://reporter.test",
+              "scheduled_report_time": "1",
+              "version": "1.0"
+            }
+        },
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+           "aggregation_coordinator_origin": "https://coordinator.test",
+           "histograms": [ {
+              "id": "0",
+              "key": "0x0",
+              "value": 0
+           } ],
+           "shared_info": {
+              "api": "attribution-reporting-debug",
+              "attribution_destination": "https://different-destination.test",
+              "reporting_origin": "https://reporter.test",
+              "scheduled_report_time": "2",
+              "version": "1.0"
+           }
+        },
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      }
+    ]
+  }
+}
