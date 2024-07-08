@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -425,6 +426,49 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_Camera_twice) {
   EXPECT_FALSE(GetDashboardController()->is_verbose());
 
   target_ = TargetViewToVerify::kLocationBar;
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_camera_blocked_on_system_level) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
+
+  UpdatePageInfo();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_mic_blocked_on_system_level) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+      ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+
+  UpdatePageInfo();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LHSIndicatorsUiBrowserTest,
+    InvokeUi_PageInfo_camera_and_mic_blocked_on_system_level) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission_camera(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission_mic(
+      ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
+
+  UpdatePageInfo();
 
   ShowAndVerifyUi();
 }
