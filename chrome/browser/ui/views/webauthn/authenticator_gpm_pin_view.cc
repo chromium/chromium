@@ -11,6 +11,10 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace {
+constexpr int kBetweenChildSpacing = 8;
+}  // namespace
+
 AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
                                                  bool ui_disabled,
                                                  const std::u16string& pin,
@@ -20,6 +24,7 @@ AuthenticatorGPMPinView::AuthenticatorGPMPinView(int pin_digits_count,
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(kBetweenChildSpacing);
 
   auto pin_textfield = std::make_unique<PinTextfield>(pin_digits_count);
   pin_textfield->SetController(this);

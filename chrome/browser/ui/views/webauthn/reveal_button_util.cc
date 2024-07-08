@@ -10,10 +10,6 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/vector_icons.h"
 
-namespace {
-constexpr int kEyePaddingWidth = 4;
-}  // namespace
-
 std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
     views::ImageButton::PressedCallback callback) {
   auto button =
@@ -23,7 +19,6 @@ std::unique_ptr<views::ToggleImageButton> CreateRevealButton(
           .SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE)
           .SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER)
           .SetCallback(std::move(callback))
-          .SetBorder(views::CreateEmptyBorder(kEyePaddingWidth))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_WEBAUTHN_SHOW_PIN))
           .SetToggledTooltipText(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_HIDE_PIN))

@@ -12,6 +12,8 @@
 
 namespace {
 constexpr int kGpmArbitraryPinMinLength = 4;
+constexpr int kBetweenChildSpacing = 8;
+constexpr int kPinTextfieldWithInChars = 25;
 }  // namespace
 
 AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
@@ -23,12 +25,13 @@ AuthenticatorGPMArbitraryPinView::AuthenticatorGPMArbitraryPinView(
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->set_between_child_spacing(kBetweenChildSpacing);
 
   auto pin_textfield = std::make_unique<views::Textfield>();
   pin_textfield->SetController(this);
   pin_textfield->GetViewAccessibility().SetName(u"Pin field (UNTRANSLATED)");
   pin_textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  pin_textfield->SetDefaultWidthInChars(20);
+  pin_textfield->SetDefaultWidthInChars(kPinTextfieldWithInChars);
   pin_textfield->SetReadOnly(ui_disabled);
   pin_textfield->SetText(pin);
   pin_textfield->SetEnabled(!ui_disabled);
