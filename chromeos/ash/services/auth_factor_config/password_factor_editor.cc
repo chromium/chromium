@@ -162,28 +162,50 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
                        mojom::ConfigureResult::kFatalError));
     return;
   }
-  bool new_password_local = label.value() == kCryptohomeLocalPasswordKeyLabel;
 
-  if (IsLocalPassword(*password_factor) != new_password_local) {
-    // TODO(b/290916811):  *Atomically* replace the Gaia password factor with
-    // a local password factor.
-    LOG(ERROR)
-        << "Switching between online and local password is not supported";
-    auth_factor_config_->NotifyFactorObserversAfterFailure(
-        auth_token, std::move(user_context),
-        base::BindOnce(std::move(callback),
-                       mojom::ConfigureResult::kFatalError));
-    return;
+  bool is_new_password_local =
+      label.value() == kCryptohomeLocalPasswordKeyLabel;
+  bool is_old_password_local = IsLocalPassword(*password_factor);
+  bool is_label_update_required =
+      is_new_password_local != is_old_password_local;
+
+  if (is_label_update_required) {
+    if (!features::IsChangePasswordFactorSetupEnabled()) {
+      LOG(ERROR)
+          << "Switching between online and local password is not supported";
+      auth_factor_config_->NotifyFactorObserversAfterFailure(
+          auth_token, std::move(user_context),
+          base::BindOnce(std::move(callback),
+                         mojom::ConfigureResult::kFatalError));
+      return;
+    }
+    if (!is_new_password_local) {
+      LOG(ERROR) << "Switching from local to online password is not supported";
+      auth_factor_config_->NotifyFactorObserversAfterFailure(
+          auth_token, std::move(user_context),
+          base::BindOnce(std::move(callback),
+                         mojom::ConfigureResult::kFatalError));
+      return;
+    }
+    // Atomically replace the Gaia password factor with a local password
+    // factor.
+    auth_factor_editor_.ReplacePasswordFactor(
+        std::move(user_context), /*old_label=*/password_factor->ref().label(),
+        cryptohome::RawPassword(new_password),
+        /*new_label=*/cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
+        base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       auth_token));
+  } else {
+    // Note that old online factors might have label "legacy-0" instead of
+    // "gaia", so we use password_factor->ref().label() here.
+    auth_factor_editor_.UpdatePasswordFactor(
+        std::move(user_context), cryptohome::RawPassword(new_password),
+        password_factor->ref().label(),
+        base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       auth_token));
   }
-
-  // Note that old online factors might have label "legacy-0" instead of
-  // "gaia", so we use password_factor->ref().label() here.
-  auth_factor_editor_.UpdatePasswordFactor(
-      std::move(user_context), cryptohome::RawPassword(new_password),
-      password_factor->ref().label(),
-      base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     auth_token));
 }
 
 void PasswordFactorEditor::SetPasswordWithContext(

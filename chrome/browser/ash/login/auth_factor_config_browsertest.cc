@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,13 +27,6 @@
 
 namespace ash::auth {
 
-namespace {
-
-// The initial password set up by the test fixture.
-const char kPassword[] = "the-password";
-
-}  // namespace
-
 using extensions::api::quick_unlock_private::TokenInfo;
 
 class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
@@ -39,10 +34,10 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
   explicit AuthFactorConfigTestBase(ash::AshAuthFactor password_type) {
     test::UserAuthConfig config;
     if (password_type == ash::AshAuthFactor::kGaiaPassword) {
-      config.WithOnlinePassword(kPassword);
+      config.WithOnlinePassword(test::kGaiaPassword);
     } else {
       CHECK_EQ(password_type, ash::AshAuthFactor::kLocalPassword);
-      config.WithLocalPassword(kPassword);
+      config.WithLocalPassword(test::kLocalPassword);
     }
 
     logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
@@ -84,6 +79,7 @@ class AuthFactorConfigTestBase : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<LoggedInUserMixin> logged_in_user_mixin_;
   raw_ptr<CryptohomeMixin> cryptohome_{nullptr};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class AuthFactorConfigTestWithLocalPassword : public AuthFactorConfigTestBase {
@@ -97,22 +93,20 @@ class AuthFactorConfigTestWithLocalPassword : public AuthFactorConfigTestBase {
 // works as intended.
 IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordSuccess) {
-  static const std::string kGoodPassword = "asdfas∆f";
-
-  std::optional<std::string> auth_token = MakeAuthToken(kPassword);
+  std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
       GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
                               g_browser_process->local_state());
 
   base::test::TestFuture<mojom::ConfigureResult> result;
-  password_editor.UpdateLocalPassword(*auth_token, kGoodPassword,
+  password_editor.UpdateLocalPassword(*auth_token, test::kNewPassword,
                                       result.GetCallback());
 
   ASSERT_EQ(result.Get(), mojom::ConfigureResult::kSuccess);
   // Since MakeAuthToken authenticates using the provided password, this will
   // check that the new password works:
-  auth_token = MakeAuthToken(kGoodPassword);
+  auth_token = MakeAuthToken(test::kNewPassword);
   ASSERT_TRUE(auth_token.has_value());
 }
 
@@ -122,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordComplexityFailure) {
   static const std::string kBadPassword = "asdfas∆";
 
-  std::optional<std::string> auth_token = MakeAuthToken(kPassword);
+  std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
       GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
@@ -137,6 +131,40 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
   // check that the bad password really hasn't been set:
   auth_token = MakeAuthToken(kBadPassword);
   ASSERT_TRUE(!auth_token.has_value());
+}
+
+class AuthFactorConfigTestWithGaiaPassword : public AuthFactorConfigTestBase {
+ public:
+  AuthFactorConfigTestWithGaiaPassword()
+      : AuthFactorConfigTestBase(ash::AshAuthFactor::kGaiaPassword) {}
+};
+
+class ChangeGaiaPasswordFactorTest
+    : public AuthFactorConfigTestWithGaiaPassword {
+ public:
+  ChangeGaiaPasswordFactorTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kChangePasswordFactorSetup);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChangeGaiaPasswordFactorTest,
+                       UpdateToLocalPasswordSuccess) {
+  std::optional<std::string> auth_token = MakeAuthToken(test::kGaiaPassword);
+  ASSERT_TRUE(auth_token.has_value());
+  mojom::PasswordFactorEditor& password_editor =
+      GetPasswordFactorEditor(quick_unlock::QuickUnlockFactory::GetDelegate(),
+                              g_browser_process->local_state());
+
+  base::test::TestFuture<mojom::ConfigureResult> result;
+  password_editor.UpdateLocalPassword(*auth_token, test::kLocalPassword,
+                                      result.GetCallback());
+
+  ASSERT_EQ(result.Get(), mojom::ConfigureResult::kSuccess);
+  // Since MakeAuthToken authenticates using the provided password, this will
+  // check that the new password works:
+  auth_token = MakeAuthToken(test::kLocalPassword);
+  ASSERT_TRUE(auth_token.has_value());
 }
 
 }  // namespace ash::auth

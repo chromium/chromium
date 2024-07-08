@@ -124,11 +124,11 @@ enum PasswordComplexity {
 // adding a non existing auth factor and updating an existing auth factor, we
 // also make this distinction in this interface.
 interface PasswordFactorEditor {
-  // Updates the user's local password to the desired value. This assumes that
-  // the user has a local password factor set up. Callers must provide a
-  // sufficiently complex password. A password is considered sufficiently
-  // complex if the `CheckLocalPasswordComplexity` call returns `kOk` for
-  // the password.
+  // Updates the user's password to the local password with the desired value.
+  // This assumes that the user has a password factor set up (either local or
+  // Gaia). Callers must provide a sufficiently complex password. A password
+  // is considered sufficiently complex if the `CheckLocalPasswordComplexity`
+  // call returns `kOk` for the password.
   UpdateLocalPassword(string auth_token, string new_password) =>
       (ConfigureResult result);
 

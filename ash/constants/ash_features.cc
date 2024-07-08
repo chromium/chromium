@@ -425,6 +425,12 @@ BASE_FEATURE(kCellularUseSecondEuicc,
              "CellularUseSecondEuicc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, allow the user to switch from Gaia password to local password in
+// Settings and in the recovery flow.
+BASE_FEATURE(kChangePasswordFactorSetup,
+             "ChangePasswordFactorSeteup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Multiple scraped passwords should be checked against password in
 // cryptohome.
 BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
@@ -3422,6 +3428,10 @@ bool IsCaptureModeEducationEnabled() {
 
 bool IsCaptureModeEducationBypassLimitsEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
+}
+
+bool IsChangePasswordFactorSetupEnabled() {
+  return base::FeatureList::IsEnabled(kChangePasswordFactorSetup);
 }
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
