@@ -55,6 +55,7 @@ class BoundSessionParamsStorage {
 
   // Patches up storage entries that have one of the known issues:
   // - https://crbug.com/349411334 (added 2024/06)
+  // - https://crbug.com/325441004 (added 2024/07)
   // After update is complete, prunes all invalid entries, and returns
   // parameters for all valid stored sessions.
   virtual std::vector<bound_session_credentials::BoundSessionParams>

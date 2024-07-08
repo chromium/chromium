@@ -14,11 +14,13 @@ namespace {
 
 BoundSessionParams CreateBoundSessionParamsWithNoCookies(
     const std::string& session_id,
-    const std::string& site = "https://google.com/") {
+    const std::string& site = "https://google.com/",
+    const std::string& refresh_url = "https://google.com/rotate") {
   BoundSessionParams params;
   params.set_session_id(session_id);
   params.set_site(site);
   params.set_wrapped_key("456");
+  params.set_refresh_url(refresh_url);
   return params;
 }
 
@@ -42,11 +44,20 @@ BoundSessionParams CreateValidBoundSessionParams() {
 void UpdateAllCookieCredentialsDomains(BoundSessionParams& params,
                                        const std::string& domain) {
   for (Credential& credential : *params.mutable_credentials()) {
-    if (!credential.has_cookie_credential()) {
-      continue;
-    }
     credential.mutable_cookie_credential()->set_domain(domain);
   }
+}
+
+void UpdateAllDomains(BoundSessionParams& params, const std::string& domain) {
+  for (Credential& credential : *params.mutable_credentials()) {
+    credential.mutable_cookie_credential()->set_domain(domain);
+  }
+
+  GURL refresh_url(params.refresh_url());
+  GURL::Replacements replacements;
+  replacements.SetHostStr(domain);
+  refresh_url = refresh_url.ReplaceComponents(replacements);
+  params.set_refresh_url(refresh_url.spec());
 }
 }  // namespace
 
@@ -63,13 +74,7 @@ TEST(BoundSessionParamsUtilTest, ParamsValid) {
 TEST(BoundSessionParamsUtilTest, ParamsValidYoutube) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   params.set_site("https://youtube.com/");
-  UpdateAllCookieCredentialsDomains(params, ".youtube.com");
-  EXPECT_TRUE(AreParamsValid(params));
-}
-
-TEST(BoundSessionParamsUtilTest, ParamsValidWithRefreshUrl) {
-  BoundSessionParams params = CreateValidBoundSessionParams();
-  params.set_refresh_url("https://google.com/rotate");
+  UpdateAllDomains(params, "youtube.com");
   EXPECT_TRUE(AreParamsValid(params));
 }
 
@@ -133,7 +138,17 @@ TEST(BoundSessionParamsUtilTest, ParamsInvalidSiteNotCanonical) {
 TEST(BoundSessionParamsUtilTest, ParamsInvalidSiteNotGoogle) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   params.set_site("https://example.org");
-  UpdateAllCookieCredentialsDomains(params, ".example.org");
+  UpdateAllDomains(params, "example.org");
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST(BoundSessionParamsUtilTest, ParamsInvalidMissingRefreshUrl) {
+  bound_session_credentials::BoundSessionParams params =
+      CreateValidBoundSessionParams();
+  params.set_refresh_url("");
+  EXPECT_FALSE(AreParamsValid(params));
+
+  params.clear_refresh_url();
   EXPECT_FALSE(AreParamsValid(params));
 }
 
@@ -308,7 +323,7 @@ TEST(BoundSessionParamsUtilTest, AreSameSessionParamsDifferentSite) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   BoundSessionParams params2 = CreateValidBoundSessionParams();
   params2.set_site("https://youtube.com/");
-  UpdateAllCookieCredentialsDomains(params2, ".youtube.com");
+  UpdateAllDomains(params2, "youtube.com");
   EXPECT_FALSE(AreSameSessionParams(params, params2));
 }
 

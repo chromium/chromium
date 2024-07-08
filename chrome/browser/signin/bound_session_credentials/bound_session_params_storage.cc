@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 
 namespace {
@@ -110,6 +111,13 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
       GURL site_url(params.site());
       if (site_url.spec() != params.site()) {
         params.set_site(site_url.spec());
+        clean_up_needed = true;
+      }
+      // Populate `params.refresh_url()` if needed. Migration for
+      // https://crbug.com/325441004.
+      if (!params.has_refresh_url()) {
+        params.set_refresh_url(
+            GaiaUrls::GetInstance()->rotate_bound_cookies_url().spec());
         clean_up_needed = true;
       }
 

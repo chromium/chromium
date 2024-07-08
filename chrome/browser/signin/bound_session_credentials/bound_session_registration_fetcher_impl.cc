@@ -285,7 +285,7 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
   std::string* session_id = maybe_root->FindString(kSessionIdentifier);
   base::Value::List* credentials_list = maybe_root->FindList(kCredentials);
   std::string* refresh_url = maybe_root->FindString(kRefreshUrl);
-  if (!session_id || !credentials_list) {
+  if (!session_id || !credentials_list || !refresh_url) {
     // Incorrect registration params.
     return base::unexpected(RegistrationError::kRequiredFieldMissing);
   }
@@ -303,16 +303,13 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
     *params.add_credentials() = std::move(credential);
   }
 
-  // The refresh URL is optional, with fallback to a hardcoded URL. If a value
-  // is provided, it must be a correct, same-site URL.
-  if (refresh_url) {
-    GURL refresh_endpoint = bound_session_credentials::ResolveEndpointPath(
-        request_url, *refresh_url);
-    if (!refresh_endpoint.is_valid()) {
-      return base::unexpected(RegistrationError::kInvalidSessionParams);
-    }
-    params.set_refresh_url(refresh_endpoint.spec());
+  // The refresh URL must be a correct, same-site URL.
+  GURL refresh_endpoint =
+      bound_session_credentials::ResolveEndpointPath(request_url, *refresh_url);
+  if (!refresh_endpoint.is_valid()) {
+    return base::unexpected(RegistrationError::kInvalidSessionParams);
   }
+  params.set_refresh_url(refresh_endpoint.spec());
 
   return params;
 }

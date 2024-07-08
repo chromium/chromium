@@ -34,6 +34,7 @@ bound_session_credentials::BoundSessionParams CreateValidBoundSessionParams() {
   params.set_session_id("123");
   params.set_site("https://google.com/");
   params.set_wrapped_key("456");
+  params.set_refresh_url("https://google.com/rotate/");
 
   bound_session_credentials::CookieCredential* cookie =
       params.add_credentials()->mutable_cookie_credential();
@@ -90,11 +91,6 @@ CreateInvalidBoundSessionParams() {
   return params;
 }
 
-MATCHER(TupleEqualsProto, "") {
-  return testing::ExplainMatchResult(base::test::EqualsProto(std::get<1>(arg)),
-                                     std::get<0>(arg), result_listener);
-}
-
 }  // namespace
 
 class BoundSessionParamsStorageTest : public testing::TestWithParam<bool> {
@@ -130,7 +126,7 @@ TEST_P(BoundSessionParamsStorageTest, SaveAndRead) {
       CreateValidBoundSessionParams();
   ASSERT_TRUE(storage().SaveParams(params));
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {params}));
+              testing::Pointwise(base::test::EqualsProto(), {params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveInvalidParams) {
@@ -146,7 +142,7 @@ TEST_P(BoundSessionParamsStorageTest, OverwriteWithValidParams) {
   new_params.set_wrapped_key("new_wrapped_key");
   EXPECT_TRUE(storage().SaveParams(new_params));
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {new_params}));
+              testing::Pointwise(base::test::EqualsProto(), {new_params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, OverwriteWithInvalidParams) {
@@ -155,7 +151,7 @@ TEST_P(BoundSessionParamsStorageTest, OverwriteWithInvalidParams) {
   ASSERT_TRUE(storage().SaveParams(valid_params));
   EXPECT_FALSE(storage().SaveParams(CreateInvalidBoundSessionParams()));
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {valid_params}));
+              testing::Pointwise(base::test::EqualsProto(), {valid_params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsSameSite) {
@@ -164,8 +160,9 @@ TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsSameSite) {
   for (const auto& params : all_params) {
     EXPECT_TRUE(storage().SaveParams(params));
   }
-  EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), all_params));
+  EXPECT_THAT(
+      storage().ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), all_params));
 }
 
 TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsDifferentSites) {
@@ -174,8 +171,9 @@ TEST_P(BoundSessionParamsStorageTest, SaveMultipleParamsDifferentSites) {
   for (const auto& params : all_params) {
     EXPECT_TRUE(storage().SaveParams(params));
   }
-  EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), all_params));
+  EXPECT_THAT(
+      storage().ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), all_params));
 }
 
 TEST_P(BoundSessionParamsStorageTest, Clear) {
@@ -199,16 +197,18 @@ TEST_P(BoundSessionParamsStorageTest, Clear) {
   ASSERT_TRUE(storage().SaveParams(params_to_be_removed));
   expected_params.push_back(params_to_be_removed);
   // Verify that the storage is populated as expected.
-  ASSERT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+  ASSERT_THAT(
+      storage().ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), expected_params));
 
   EXPECT_TRUE(storage().ClearParams(GURL(params_to_be_removed.site()),
                                     params_to_be_removed.session_id()));
   // Removes `params_to_be_removed`.
   expected_params.pop_back();
 
-  EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+  EXPECT_THAT(
+      storage().ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), expected_params));
 }
 
 TEST_P(BoundSessionParamsStorageTest, ClearNonExisting) {
@@ -223,7 +223,7 @@ TEST_P(BoundSessionParamsStorageTest, ClearNonExisting) {
                                      other_params.session_id()));
 
   EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {params}));
+              testing::Pointwise(base::test::EqualsProto(), {params}));
 }
 
 TEST_P(BoundSessionParamsStorageTest, ClearAll) {
@@ -247,7 +247,7 @@ TEST_P(BoundSessionParamsStorageTest, Persistence) {
                 testing::IsEmpty());
   } else {
     EXPECT_THAT(storage().ReadAllParamsAndCleanStorageIfNecessary(),
-                testing::Pointwise(TupleEqualsProto(), {params}));
+                testing::Pointwise(base::test::EqualsProto(), {params}));
   }
 }
 
@@ -288,11 +288,11 @@ TEST_F(BoundSessionParamsStorageOTRTest, NoInheritance) {
   params2.set_session_id("otr_session");
   ASSERT_TRUE(otr_storage->SaveParams(params2));
   EXPECT_THAT(otr_storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {params2}));
+              testing::Pointwise(base::test::EqualsProto(), {params2}));
 
   // Parent storage hasn't changed.
   EXPECT_THAT(parent_storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::Pointwise(TupleEqualsProto(), {params}));
+              testing::Pointwise(base::test::EqualsProto(), {params}));
 }
 
 class BoundSessionParamsPrefsStorageTest : public testing::Test {
@@ -338,15 +338,58 @@ TEST_F(BoundSessionParamsPrefsStorageTest, CanonicalizeSiteInStorage) {
 
   // Site should be canonicalized both in the result and in the storage.
   EXPECT_CALL(pref_changed_callback, Run);
-  ASSERT_THAT(storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), {fixed_params}));
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), {fixed_params}));
 
   testing::Mock::VerifyAndClearExpectations(&pref_changed_callback);
 
   // Clean-up update shouldn't be needed afterwards.
   EXPECT_CALL(pref_changed_callback, Run).Times(0);
-  ASSERT_THAT(storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), {fixed_params}));
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), {fixed_params}));
+}
+
+TEST_F(BoundSessionParamsPrefsStorageTest, PopulateRefreshUrl) {
+  std::unique_ptr<BoundSessionParamsStorage> storage =
+      BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs());
+
+  // Insert an old version entry into storage. Cannot use `SaveParams()` here
+  // because it rejects invalid params.
+  bound_session_credentials::BoundSessionParams prev_version_params =
+      CreateValidBoundSessionParams();
+  prev_version_params.clear_refresh_url();
+  {
+    ScopedDictPrefUpdate root(&prefs(), kBoundSessionParamsPref);
+    root->EnsureDict(prev_version_params.site())
+        ->Set(prev_version_params.session_id(),
+              base::Base64Encode(prev_version_params.SerializeAsString()));
+  }
+
+  bound_session_credentials::BoundSessionParams fixed_params =
+      prev_version_params;
+  const std::string default_refresh_url =
+      "https://accounts.google.com/RotateBoundCookies";
+  fixed_params.set_refresh_url(default_refresh_url);
+
+  testing::StrictMock<base::MockCallback<base::RepeatingClosure>>
+      pref_changed_callback;
+  prefs_observer().Add(kBoundSessionParamsPref, pref_changed_callback.Get());
+
+  // Refresh URL should be populated both in the result and in the storage.
+  EXPECT_CALL(pref_changed_callback, Run);
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), {fixed_params}));
+
+  testing::Mock::VerifyAndClearExpectations(&pref_changed_callback);
+
+  // Clean-up update shouldn't be needed afterwards.
+  EXPECT_CALL(pref_changed_callback, Run).Times(0);
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), {fixed_params}));
 }
 
 TEST_F(BoundSessionParamsPrefsStorageTest, CleanUpInvalidEntries) {
@@ -384,13 +427,15 @@ TEST_F(BoundSessionParamsPrefsStorageTest, CleanUpInvalidEntries) {
   // Invalid params shouldn't be added to the result and the storage pref should
   // be updated to remove an invalid entry.
   EXPECT_CALL(pref_changed_callback, Run);
-  ASSERT_THAT(storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), expected_params));
 
   testing::Mock::VerifyAndClearExpectations(&pref_changed_callback);
 
   // Clean-up update shouldn't be needed afterwards.
   EXPECT_CALL(pref_changed_callback, Run).Times(0);
-  ASSERT_THAT(storage->ReadAllParamsAndCleanStorageIfNecessary(),
-              testing::UnorderedPointwise(TupleEqualsProto(), expected_params));
+  ASSERT_THAT(
+      storage->ReadAllParamsAndCleanStorageIfNecessary(),
+      testing::UnorderedPointwise(base::test::EqualsProto(), expected_params));
 }

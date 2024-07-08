@@ -306,6 +306,7 @@ bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
   params.set_site(site.spec());
   params.set_session_id(session_id);
   params.set_wrapped_key(kWrappedKey);
+  params.set_refresh_url(site.Resolve("/rotate").spec());
   *params.mutable_creation_time() =
       bound_session_credentials::TimeToTimestamp(base::Time::Now());
   for (const auto& cookie_name : cookie_names) {

@@ -35,7 +35,8 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
   bool is_valid = !bound_session_params.session_id().empty() &&
                   !bound_session_params.site().empty() &&
                   !bound_session_params.wrapped_key().empty() &&
-                  !bound_session_params.credentials().empty();
+                  !bound_session_params.credentials().empty() &&
+                  !bound_session_params.refresh_url().empty();
 
   if (!is_valid) {
     return false;
@@ -55,14 +56,10 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
     return false;
   }
 
-  // TODO(b/325441004): require that `refresh_url()` is not empty after
-  // old clients data is migrated.
-  if (bound_session_params.has_refresh_url()) {
-    GURL refresh_url(bound_session_params.refresh_url());
-    if (!refresh_url.is_valid() ||
-        net::SchemefulSite(site) != net::SchemefulSite(refresh_url)) {
-      return false;
-    }
+  GURL refresh_url(bound_session_params.refresh_url());
+  if (!refresh_url.is_valid() ||
+      net::SchemefulSite(site) != net::SchemefulSite(refresh_url)) {
+    return false;
   }
 
   GURL scope = GetBoundSessionScope(bound_session_params);

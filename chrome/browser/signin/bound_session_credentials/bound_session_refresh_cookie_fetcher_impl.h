@@ -98,18 +98,10 @@ class BoundSessionRefreshCookieFetcherImpl
   void Clone(mojo::PendingReceiver<network::mojom::CookieAccessObserver>
                  observer) override;
 
-  // TODO(b/325441004): remove after `refresh_url_` is always valid.
-  const GURL& GetRefreshUrl();
-
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ref<SessionBindingHelper> session_binding_helper_;
 
   const std::string session_id_;
-
-  // Temporarily, this URL might be empty, meaning that the hardcoded URL must
-  // be used instead. Use `GetRefreshUrl()` instead of reading this value
-  // directly.
-  // TODO(b/325441004): require URL to be valid after migrating the storage.
   const GURL refresh_url_;
 
   // Used to check whether the refresh request has set the required cookie.

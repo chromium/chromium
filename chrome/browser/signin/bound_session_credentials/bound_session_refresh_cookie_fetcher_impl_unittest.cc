@@ -136,7 +136,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
         *unexportable_key_service_.GetWrappedKey(binding_key_id_), kSessionId);
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
         test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-        kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
+        kSessionId, kRefreshUrl, kGaiaUrl,
         base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
         /*is_off_the_record_profile=*/false,
         bound_session_credentials::RotationDebugInfo());
@@ -145,6 +145,7 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
 
  protected:
   const GURL kGaiaUrl = GURL("https://google.com/");
+  const GURL kRefreshUrl = GURL("https://accounts.google.com/rotate");
   const std::string k1PSIDTSCookieName = "__Secure-1PSIDTS";
   const std::string k3PSIDTSCookieName = "__Secure-3PSIDTS";
 
@@ -257,8 +258,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
   EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
-  EXPECT_EQ(pending_request->request.url,
-            "https://accounts.google.com/RotateBoundCookies");
+  EXPECT_EQ(pending_request->request.url, kRefreshUrl);
   EXPECT_EQ(pending_request->request.method, "GET");
   EXPECT_EQ(pending_request->request.credentials_mode,
             network::mojom::CredentialsMode::kInclude);
@@ -276,47 +276,6 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
   EXPECT_FALSE(fetcher_->IsChallengeReceived());
   VerifyMetricsRecorded(Result::kSuccess,
                         /*expect_assertion_was_generated_count=*/0);
-}
-
-TEST_F(BoundSessionRefreshCookieFetcherImplTest,
-       SuccessWithChallengeNonEmptyRefreshUrl) {
-  const GURL refresh_url("https://security.google.com/CheckBinding");
-  fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
-      test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      kSessionId, refresh_url, kGaiaUrl,
-      base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
-      /*is_off_the_record_profile=*/false,
-      bound_session_credentials::RotationDebugInfo());
-  RefreshTestFuture future;
-  fetcher_->Start(future.GetCallback(), std::nullopt);
-
-  SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(future.IsReady());
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  EXPECT_EQ(pending_request->request.url, refresh_url);
-  auto headers = pending_request->request.headers;
-  std::string assertion;
-  EXPECT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
-
-  EXPECT_TRUE(signin::VerifyJwtSignature(
-      assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
-      *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
-  EXPECT_THAT(assertion,
-              JwtHasExpectedFields(kSessionId, kChallenge, refresh_url));
-
-  // Set required cookies and complete the request.
-  SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), "");
-
-  EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), Result::kSuccess);
-  EXPECT_EQ(sec_session_challenge_response(), assertion);
-  VerifyMetricsRecorded(Result::kSuccess,
-                        /*expect_assertion_was_generated_count=*/1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -489,6 +448,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url, kRefreshUrl);
   auto headers = pending_request->request.headers;
   std::string assertion;
   EXPECT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
@@ -497,9 +457,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
       assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
       *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
   EXPECT_THAT(assertion,
-              JwtHasExpectedFields(
-                  kSessionId, kChallenge,
-                  GURL("https://accounts.google.com/RotateBoundCookies")));
+              JwtHasExpectedFields(kSessionId, kChallenge, kRefreshUrl));
 
   // Set required cookies and complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
@@ -614,7 +572,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SignChallengeFailed) {
       unexportable_key_service_, wrapped_key, kSessionId);
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
+      kSessionId, kRefreshUrl, kGaiaUrl,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false,
       bound_session_credentials::RotationDebugInfo());
@@ -760,7 +718,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, DebugHeaderSent) {
 
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-      kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
+      kSessionId, kRefreshUrl, kGaiaUrl,
       base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
       /*is_off_the_record_profile_=*/false, info);
   RefreshTestFuture future;
@@ -831,7 +789,7 @@ class BoundSessionRefreshCookieFetcherImplSignChallengeVerificationTest
 
     fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
         test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
-        kSessionId, /*refresh_url=*/GURL(), kGaiaUrl,
+        kSessionId, kRefreshUrl, kGaiaUrl,
         base::flat_set<std::string>{k1PSIDTSCookieName, k3PSIDTSCookieName},
         /*is_off_the_record_profile_=*/false,
         bound_session_credentials::RotationDebugInfo());

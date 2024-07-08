@@ -84,7 +84,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
       debug_info_(std::move(debug_info)) {
-  CHECK(refresh_url.is_empty() || refresh_url.is_valid());
+  CHECK(refresh_url.is_valid());
 }
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
@@ -187,7 +187,7 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
         })");
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GetRefreshUrl();
+  request->url = refresh_url_;
   request->method = "GET";
 
   if (sec_session_challenge_response_) {
@@ -392,7 +392,7 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
   session_binding_helper_->GenerateBindingKeyAssertion(
-      challenge, GetRefreshUrl(),
+      challenge, refresh_url_,
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
           weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge,
@@ -470,10 +470,4 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
 void BoundSessionRefreshCookieFetcherImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
   cookie_observers_.Add(this, std::move(observer));
-}
-
-const GURL& BoundSessionRefreshCookieFetcherImpl::GetRefreshUrl() {
-  return !refresh_url_.is_empty()
-             ? refresh_url_
-             : GaiaUrls::GetInstance()->rotate_bound_cookies_url();
 }
