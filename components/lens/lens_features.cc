@@ -121,6 +121,9 @@ const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
 const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
     &kLensOverlay, "use-for-image-search", true};
 
+const base::FeatureParam<bool> kUseLensOverlayForVideoFrameSearch{
+    &kLensOverlay, "use-for-video-frame-search", true};
+
 const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
     &kLensOverlay, "find-in-page-entry-point", false};
 
@@ -453,6 +456,10 @@ int GetLensOverlayTapRegionWidth() {
 
 bool UseLensOverlayForImageSearch() {
   return kUseLensOverlayForImageSearch.Get();
+}
+
+bool UseLensOverlayForVideoFrameSearch() {
+  return kUseLensOverlayForVideoFrameSearch.Get();
 }
 
 bool IsFindInPageEntryPointEnabled() {
