@@ -42,6 +42,7 @@ public class TripUnitTest {
             elements.declareExitCondition(
                     InstrumentationThreadCondition.from(
                             "Exit Condition 1, always True", () -> Condition.fulfilled()));
+            elements.declareEnterCondition(mOuterCondition);
             elements.declareElementFactory(
                     mOuterCondition,
                     (nestedElements) -> {
@@ -57,6 +58,7 @@ public class TripUnitTest {
                                 InstrumentationThreadCondition.from(
                                         "Exit Condition 2, always True",
                                         () -> Condition.fulfilled()));
+                        nestedElements.declareEnterCondition(mInnerCondition);
                         nestedElements.declareElementFactory(
                                 mInnerCondition,
                                 (nestedNestedElements) -> {
@@ -162,7 +164,7 @@ public class TripUnitTest {
         // All elements from nested factories added to the destination elements.
         assertEquals(3, destinationStation.getElements().getElementsInState().size());
         assertEquals(2, destinationStation.getElements().getElementFactories().size());
-        assertEquals(3, destinationStation.getElements().getOtherEnterConditions().size());
+        assertEquals(5, destinationStation.getElements().getOtherEnterConditions().size());
         assertEquals(3, destinationStation.getElements().getOtherExitConditions().size());
 
         // Conditions started and stopped monitoring during transition.

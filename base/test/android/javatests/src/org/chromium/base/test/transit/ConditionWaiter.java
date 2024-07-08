@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import static org.junit.Assert.fail;
+
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -189,7 +191,7 @@ public class ConditionWaiter {
 
     protected final Transition mTransition;
     protected List<ConditionWait> mWaits;
-    protected Map<ConditionWait, ElementFactory> mWaitsGuardingFactories;
+    protected Map<Condition, ElementFactory> mConditionsGuardingFactories;
     protected final Map<String, ConditionWait> mExitWaitsByElementId = new HashMap<>();
 
     ConditionWaiter(Transition transition) {
@@ -218,9 +220,8 @@ public class ConditionWaiter {
      * {@link Condition#onStartMonitoring()} is called.
      */
     void preCheck(boolean failOnAlreadyFulfilled) {
-        var result = createWaits();
-        mWaits = result.first;
-        mWaitsGuardingFactories = result.second;
+        mWaits = createWaits();
+        mConditionsGuardingFactories = createFactories();
 
         if (mWaits.isEmpty()) {
             Log.i(TAG, "No conditions to fulfill.");
@@ -269,20 +270,26 @@ public class ConditionWaiter {
         TransitionOptions options = mTransition.getOptions();
         long timeoutMs = options.mTimeoutMs != 0 ? options.mTimeoutMs : MAX_TIME_TO_POLL;
         CriteriaHelper.pollInstrumentationThread(checker, timeoutMs, POLLING_INTERVAL);
+
+        // Check that all element factories were used.
+        if (!mConditionsGuardingFactories.isEmpty()) {
+            StringBuilder failureMessage =
+                    new StringBuilder("Some Conditions of element factories were not declared:\n");
+            for (Condition condition : mConditionsGuardingFactories.keySet()) {
+                failureMessage.append("  * ").append(condition.getDescription()).append("\n");
+            }
+            fail(failureMessage.toString());
+        }
     }
 
-    private Pair<List<ConditionWait>, Map<ConditionWait, ElementFactory>> createWaits() {
+    private List<ConditionWait> createWaits() {
         List<ConditionWait> allWaits = new ArrayList<>();
-        Map<ConditionWait, ElementFactory> allWaitsGuardingFactories = new HashMap<>();
 
         Set<String> destinationElementIds = new HashSet<>();
         for (ConditionalState conditionalState : mTransition.getEnteredStates()) {
             final Elements destinationElements = conditionalState.getElements();
-            var result = getEnterConditionWaits(destinationElements);
-            List<ConditionWait> newWaits = result.first;
-            Map<ConditionWait, ElementFactory> newWaitsGuardingFactories = result.second;
+            List<ConditionWait> newWaits = createEnterConditionWaits(destinationElements);
             allWaits.addAll(newWaits);
-            allWaitsGuardingFactories.putAll(newWaitsGuardingFactories);
             destinationElementIds.addAll(destinationElements.getElementsInStateIds());
         }
 
@@ -315,7 +322,18 @@ public class ConditionWaiter {
             allWaits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
         }
 
-        return Pair.create(allWaits, allWaitsGuardingFactories);
+        return allWaits;
+    }
+
+    private Map<Condition, ElementFactory> createFactories() {
+        Map<Condition, ElementFactory> allConditionsGuardingFactories = new HashMap<>();
+
+        for (ConditionalState conditionalState : mTransition.getEnteredStates()) {
+            final Elements destinationElements = conditionalState.getElements();
+            allConditionsGuardingFactories.putAll(destinationElements.getElementFactories());
+        }
+
+        return allConditionsGuardingFactories;
     }
 
     /**
@@ -323,11 +341,9 @@ public class ConditionWaiter {
      * when processing new elements from ElementFactory.
      *
      * @param elements The elements to process (i.e. create ConditionWaits for).
-     * @return a Pair with list of {@link ConditionWait}s and a map of waits with factories.
+     * @return the created {@link ConditionWait}s.
      */
-    private Pair<List<ConditionWait>, Map<ConditionWait, ElementFactory>> getEnterConditionWaits(
-            Elements elements) {
-        final Map<ConditionWait, ElementFactory> newWaitsGuardingFactories = new HashMap<>();
+    private List<ConditionWait> createEnterConditionWaits(Elements elements) {
         final List<ConditionWait> newWaits = new ArrayList<>();
         for (ElementInState<?> element : elements.getElementsInState()) {
             @Nullable Condition enterCondition = element.getEnterCondition();
@@ -342,15 +358,7 @@ public class ConditionWaiter {
             newWaits.add(new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
         }
 
-        // Process waits guarding ElementFactories.
-        for (Map.Entry<Condition, ElementFactory> entry :
-                elements.getElementFactories().entrySet()) {
-            ConditionWait factoryGuard =
-                    new ConditionWait(entry.getKey(), ConditionWaiter.ConditionOrigin.ENTER);
-            newWaits.add(factoryGuard);
-            newWaitsGuardingFactories.put(factoryGuard, entry.getValue());
-        }
-        return Pair.create(newWaits, newWaitsGuardingFactories);
+        return newWaits;
     }
 
     private boolean processWaits(boolean startMonitoringNewWaits) {
@@ -370,11 +378,11 @@ public class ConditionWaiter {
             for (ConditionWait wait : nextBatch) {
                 boolean stillNeedsWait = wait.update();
                 anyCriteriaMissing |= stillNeedsWait;
-                ElementFactory generator = mWaitsGuardingFactories.get(wait);
+                ElementFactory generator = mConditionsGuardingFactories.get(wait.mCondition);
                 if (!stillNeedsWait && generator != null) {
                     // Remove from the map so that next time we check this wait
                     // we dont rerun the factory.
-                    mWaitsGuardingFactories.remove(wait);
+                    mConditionsGuardingFactories.remove(wait.mCondition);
                     newFactories.add(generator);
                 }
             }
@@ -382,9 +390,7 @@ public class ConditionWaiter {
             mWaits.addAll(nextBatch);
 
             Elements newElements = fabricateElements(newFactories);
-            var result = getEnterConditionWaits(newElements);
-            nextBatch = result.first;
-            Map<ConditionWait, ElementFactory> newWaitsGuardingFactories = result.second;
+            nextBatch = createEnterConditionWaits(newElements);
 
             for (ConditionWait wait : nextBatch) {
                 wait.markAsDelayedWait();
@@ -397,7 +403,7 @@ public class ConditionWaiter {
                 }
             }
 
-            mWaitsGuardingFactories.putAll(newWaitsGuardingFactories);
+            mConditionsGuardingFactories.putAll(newElements.getElementFactories());
             newElementIds.addAll(newElements.getElementsInStateIds());
         }
 
