@@ -573,6 +573,10 @@ void NetworkQualityEstimator::ComputeEffectiveConnectionType() {
     UMA_HISTOGRAM_TIMES("NQE.RTT.OnECTComputation",
                         network_quality_.http_rtt());
   }
+  if (network_quality_.transport_rtt() != nqe::internal::InvalidRTT()) {
+    base::UmaHistogramTimes("NQE.TransportRTT.OnECTComputation",
+                            network_quality_.transport_rtt());
+  }
 
   end_to_end_rtt_ = std::nullopt;
   if (end_to_end_rtt != nqe::internal::InvalidRTT()) {

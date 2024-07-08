@@ -6131,6 +6131,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NQE.TransportRTT.OnECTComputation" units="ms"
+    expires_after="2024-10-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Rough estimate of the round trip time at the Transport layer. Recorded by
+    the network quality estimator every time the effective connection type is
+    computed.
+  </summary>
+</histogram>
+
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
     expires_after="2024-11-01">
   <owner>emaamari@google.com</owner>
