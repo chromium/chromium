@@ -472,26 +472,15 @@ void PickerView::PublishSearchResults(
     return;
   }
 
-  // TODO: b/349891147 - This is always true. Inline this.
-  bool appended_results = !results.empty();
   for (PickerSearchResultsSection& result : results) {
     search_results_view_->AppendSearchResults(std::move(result));
   }
 
   PickerPerformanceMetrics::SearchResultsUpdate update;
   if (clear_stale_results) {
-    if (appended_results) {
-      update = PickerPerformanceMetrics::SearchResultsUpdate::kReplace;
-    } else {
-      update = PickerPerformanceMetrics::SearchResultsUpdate::kClear;
-    }
+    update = PickerPerformanceMetrics::SearchResultsUpdate::kReplace;
   } else {
-    if (appended_results) {
-      update = PickerPerformanceMetrics::SearchResultsUpdate::kAppend;
-    } else {
-      // Nothing happened.
-      return;
-    }
+    update = PickerPerformanceMetrics::SearchResultsUpdate::kAppend;
   }
   performance_metrics_.MarkSearchResultsUpdated(update);
 }
