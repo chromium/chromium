@@ -4,10 +4,14 @@
 
 #include "chrome/enterprise_companion/enterprise_companion.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -25,6 +29,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/installer.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/lock.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
@@ -39,6 +44,7 @@ namespace {
 constexpr char kLoggingModuleSwitch[] = "vmodule";
 constexpr char kLoggingModuleSwitchValue[] =
     "*/chrome/enterprise_companion/*=2";
+constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
 
 void InitLogging() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -46,7 +52,28 @@ void InitLogging() {
     command_line->AppendSwitchASCII(kLoggingModuleSwitch,
                                     kLoggingModuleSwitchValue);
   }
-  logging::InitLogging({.logging_dest = logging::LOG_TO_STDERR});
+
+  logging::LoggingSettings settings{.logging_dest = logging::LOG_TO_STDERR};
+  std::optional<base::FilePath> log_file_path = GetInstallDirectory();
+  if (!log_file_path) {
+    LOG(ERROR) << "Error getting log file path.";
+  } else {
+    base::CreateDirectory(*log_file_path);
+    log_file_path =
+        log_file_path->Append(FILE_PATH_LITERAL("enterprise_companion.log"));
+
+    // Rotate the log if needed.
+    int64_t size = 0;
+    if (base::GetFileSize(*log_file_path, &size) && size >= kLogRotateAtSize) {
+      base::ReplaceFile(*log_file_path,
+                        log_file_path->AddExtension(FILE_PATH_LITERAL(".old")),
+                        nullptr);
+    }
+    settings.log_file_path = log_file_path->value().c_str();
+    settings.logging_dest |= logging::LOG_TO_FILE;
+  }
+
+  logging::InitLogging(settings);
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
