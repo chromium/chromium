@@ -316,7 +316,6 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
     auto learn_more_link_text_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(
             base::BindRepeating(&OpenLearnMoreLink, web_contents));
-    // TODO: crbug.com/350660518 - Investigate missing underline.
     learn_more_link_text_style.text_style =
         views::style::TextStyle::STYLE_LINK_5;
     notice_label->AddStyleRange(
