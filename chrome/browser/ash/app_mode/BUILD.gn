@@ -65,6 +65,7 @@ static_library("app_mode") {
     "startup_app_launcher.cc",
     "startup_app_launcher.h",
   ]
+
   public_deps = [
     "//ash/public/cpp",
     "//chrome/browser/ash/crosapi",
@@ -102,6 +103,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/metrics",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
@@ -129,7 +131,11 @@ static_library("app_mode") {
     "//ui/gfx/codec",
     "//ui/wm",
   ]
-  allow_circular_includes_from = [ "//chrome/browser/ash/app_mode/web_app" ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/app_mode",
+  ]
 }
 
 static_library("test_support") {
@@ -151,6 +157,7 @@ static_library("test_support") {
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/auto_sleep",
     "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/login/app_mode",
     "//chromeos/ash/components/policy",
     "//extensions:test_support",
     "//extensions/common",
@@ -226,6 +233,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_mode/auto_sleep:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/core:test_support",

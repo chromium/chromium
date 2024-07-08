@@ -5222,10 +5222,12 @@ static_library("browser") {
       "upgrade_detector/upgrade_detector_chromeos.cc",
       "upgrade_detector/upgrade_detector_chromeos.h",
     ]
+
     public_deps += [
       "//chromeos/components/sharesheet:constants",
       "//ui/lottie",
     ]
+
     deps += [
       "//ash",
       "//ash/components/arc",
@@ -5373,6 +5375,7 @@ static_library("browser") {
       "//chrome/browser/ash/kerberos",
       "//chrome/browser/ash/language_packs",
       "//chrome/browser/ash/lock_screen_apps",
+      "//chrome/browser/ash/login/app_mode",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
@@ -5583,6 +5586,7 @@ static_library("browser") {
       "//ui/ozone",
       "//ui/wm/public",
     ]
+
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/app_mode",
@@ -5660,6 +5664,7 @@ static_library("browser") {
       "//chrome/browser/ash/kcer/nssdb_migration",
       "//chrome/browser/ash/kerberos",
       "//chrome/browser/ash/lock_screen_apps",
+      "//chrome/browser/ash/login/app_mode",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/nearby",

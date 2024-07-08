@@ -735,6 +735,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/net",
