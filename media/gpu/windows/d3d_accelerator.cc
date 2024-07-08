@@ -19,24 +19,6 @@ D3DAccelerator::D3DAccelerator(D3D11VideoDecoderClient* client,
 
 D3DAccelerator::~D3DAccelerator() = default;
 
-void D3DAccelerator::RecordFailure(std::string_view reason,
-                                   D3D11Status::Codes code) const {
-  DLOG(ERROR) << reason;
-  MEDIA_LOG(ERROR, media_log_) << reason;
-}
-
-void D3DAccelerator::RecordFailure(std::string_view reason,
-                                   D3D11Status::Codes code,
-                                   HRESULT hr) const {
-  DCHECK(FAILED(hr));
-  std::string hr_string = logging::SystemErrorCodeToString(hr);
-  if (!base::IsStringUTF8AllowingNoncharacters(hr_string)) {
-    hr_string = "WARNING: system message could not be rendered!";
-  }
-  DLOG(ERROR) << reason << ": " << hr_string;
-  MEDIA_LOG(ERROR, media_log_) << reason << ": " << hr_string;
-}
-
 void D3DAccelerator::SetVideoDecoderWrapper(
     std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
   CHECK(video_decoder_wrapper);

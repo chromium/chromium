@@ -71,8 +71,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   auto params_buffer =
       video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_params));
   if (params_buffer.size() < sizeof(pic_params)) {
-    RecordFailure("Insufficient picture parameter buffer size",
-                  D3D11Status::Codes::kGetPicParamBufferFailed);
+    MEDIA_LOG(ERROR, media_log_)
+        << "Insufficient picture parameter buffer size";
     return false;
   }
 
@@ -82,8 +82,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   const auto tile_size = sizeof(DXVA_Tile_AV1) * tile_buffers.size();
   auto tile_buffer = video_decoder_wrapper_->GetSliceControlBuffer(tile_size);
   if (tile_buffer.size() < tile_size) {
-    RecordFailure("Insufficient slice control buffer size",
-                  D3D11Status::Codes::kGetSliceControlBufferFailed);
+    MEDIA_LOG(ERROR, media_log_) << "Insufficient slice control buffer size";
     return false;
   }
 
@@ -96,8 +95,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   auto& bitstream_buffer =
       video_decoder_wrapper_->GetBitstreamBuffer(bitstream_size);
   if (bitstream_buffer.size() < bitstream_size) {
-    RecordFailure("Insufficient bitstream buffer size",
-                  D3D11Status::Codes::kGetBitstreamBufferFailed);
+    MEDIA_LOG(ERROR, media_log_) << "Insufficient bitstream buffer size";
     return false;
   }
 
@@ -136,8 +134,10 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
                 pic_ptr->apply_grain(), pic.frame_header, seq_header,
                 ref_frames, &pic_params);
 
-  if (!SubmitDecoderBuffer(pic_params, tile_buffers))
+  if (!SubmitDecoderBuffer(pic_params, tile_buffers)) {
+    // Errors are logged during SubmitDecoderBuffer.
     return DecodeStatus::kFail;
+  }
 
   return video_decoder_wrapper_->SubmitDecode() ? DecodeStatus::kOk
                                                 : DecodeStatus::kFail;

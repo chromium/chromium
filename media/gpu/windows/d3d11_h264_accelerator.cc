@@ -289,8 +289,8 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
     auto params_buffer =
         video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_param));
     if (params_buffer.size() < sizeof(pic_param)) {
-      RecordFailure("Insufficient picture parameter buffer size",
-                    D3D11StatusCode::kGetPicParamBufferFailed);
+      MEDIA_LOG(ERROR, media_log_)
+          << "Insufficient picture parameter buffer size";
       return H264DecoderStatus::kFail;
     }
 
@@ -334,8 +334,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
         video_decoder_wrapper_->GetInverseQuantizationMatrixBuffer(
             sizeof(iq_matrix));
     if (iq_matrix_buffer.size() < sizeof(iq_matrix)) {
-      RecordFailure("Insufficient quant buffer size",
-                    D3D11StatusCode::kGetQuantBufferFailed);
+      MEDIA_LOG(ERROR, media_log_) << "Insufficient quant buffer size";
       return H264DecoderStatus::kFail;
     }
 

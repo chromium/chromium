@@ -199,8 +199,8 @@ bool D3D11VP9Accelerator::SubmitDecoderBuffer(
   auto pic_params_buffer =
       video_decoder_wrapper_->GetPictureParametersBuffer(sizeof(pic_params));
   if (pic_params_buffer.size() < sizeof(pic_params)) {
-    RecordFailure("Insufficient picture parameter buffer size",
-                  D3D11StatusCode::kGetPicParamBufferFailed);
+    MEDIA_LOG(ERROR, media_log_)
+        << "Insufficient picture parameter buffer size";
     return false;
   }
 

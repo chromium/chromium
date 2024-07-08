@@ -98,8 +98,9 @@ D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
     TRACE_EVENT0("gpu", "D3D11TextureWrapper::BeginScopedWriteAccess");
     shared_image_access_ = shared_image_rep_->BeginScopedWriteAccess();
     if (!shared_image_access_) {
-      return D3D11Status::Codes::
-          kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed;
+      return {D3D11Status::Codes::
+                  kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed,
+              "Failed to begin shared image access"};
     }
   }
 

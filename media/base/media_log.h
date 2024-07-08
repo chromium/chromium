@@ -103,6 +103,9 @@ class MEDIA_EXPORT MediaLog {
         CreateRecord(MediaLogRecord::Type::kMediaStatus);
     base::Value serialized = MediaSerialize(status);
     DCHECK(serialized.is_dict());
+    if (DCHECK_IS_ON() && DLOG_IS_ON(ERROR) && ShouldLogToDebugConsole()) {
+      EmitConsoleErrorLog(serialized.GetDict().Clone());
+    }
     record->params.Merge(std::move(serialized.GetDict()));
     AddLogRecord(std::move(record));
   }
@@ -205,6 +208,9 @@ class MEDIA_EXPORT MediaLog {
   // Helper methods to create events and their parameters.
   std::unique_ptr<MediaLogRecord> CreateRecord(MediaLogRecord::Type type);
 
+  // Helper method for emitting error logs to console.
+  void EmitConsoleErrorLog(base::Value::Dict status_dict);
+
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;
 };
@@ -215,11 +221,13 @@ class MEDIA_EXPORT LogHelper {
   LogHelper(MediaLogMessageLevel level,
             MediaLog* media_log,
             const char* file,
-            int line);
+            int line,
+            std::optional<logging::SystemErrorCode> code = std::nullopt);
   LogHelper(MediaLogMessageLevel level,
             const std::unique_ptr<MediaLog>& media_log,
             const char* file,
-            int line);
+            int line,
+            std::optional<logging::SystemErrorCode> code = std::nullopt);
   ~LogHelper();
 
   std::ostream& stream() { return stream_; }
@@ -229,12 +237,17 @@ class MEDIA_EXPORT LogHelper {
   const int line_;
   const MediaLogMessageLevel level_;
   const raw_ptr<MediaLog> media_log_;
+  const std::optional<logging::SystemErrorCode> code_;
   std::stringstream stream_;
 };
 
 // Provides a stringstream to collect a log entry to pass to the provided
 // MediaLog at the requested level.
 #if DCHECK_IS_ON()
+#define MEDIA_PLOG(level, code, media_log)                               \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
+                   __FILE__, __LINE__, code)                             \
+      .stream()
 #define MEDIA_LOG(level, media_log)                                      \
   media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
                    __FILE__, __LINE__)                                   \
@@ -243,6 +256,10 @@ class MEDIA_EXPORT LogHelper {
 #define MEDIA_LOG(level, media_log)                                      \
   media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
                    nullptr, 0)                                           \
+      .stream()
+#define MEDIA_PLOG(level, code, media_log)                               \
+  media::LogHelper((media::MediaLogMessageLevel::k##level), (media_log), \
+                   nullptr, 0, code)                                     \
       .stream()
 #endif
 

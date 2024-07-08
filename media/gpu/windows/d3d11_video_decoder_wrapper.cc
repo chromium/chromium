@@ -58,8 +58,8 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     D3D11_VIDEO_DECODER_CONFIG config;
     HRESULT hr = video_decoder_->GetCreationParameters(&desc, &config);
     if (FAILED(hr)) {
-      RecordFailure("D3D11VideoDecoder GetCreationParameters failed",
-                    D3D11StatusCode::kDecoderGetCreationParametersFailed, hr);
+      MEDIA_PLOG(ERROR, hr, media_log_)
+          << "D3D11VideoDecoder GetCreationParameters failed";
       return std::nullopt;
     }
     // Prefer whatever the config tells us about whether to use one Texture2D
@@ -91,8 +91,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
   bool WaitForFrameBegins(D3D11PictureBuffer* output_picture) override {
     auto result = output_picture->AcquireOutputView();
     if (!result.has_value()) {
-      RecordFailure("Picture AcquireOutputView failed",
-                    std::move(result).error().code());
+      media_log_->NotifyError(std::move(result).error().AddHere());
       return false;
     }
     ID3D11VideoDecoderOutputView* output_view = std::move(result).value();
@@ -107,8 +106,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     } while (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING);
 
     if (FAILED(hr)) {
-      RecordFailure("DecoderBeginFrame failed",
-                    D3D11StatusCode::kDecoderBeginFrameFailed, hr);
+      MEDIA_PLOG(ERROR, hr, media_log_) << "DecoderBeginFrame failed";
       return false;
     }
 
@@ -131,8 +129,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     if (!slice_info_bytes_.empty()) {
       auto buffer = GetSliceControlBuffer(slice_info_bytes_.size());
       if (buffer.size() < slice_info_bytes_.size()) {
-        RecordFailure("Insufficient slice info buffer size",
-                      D3D11StatusCode::kGetSliceControlBufferFailed);
+        MEDIA_LOG(ERROR, media_log_) << "Insufficient slice info buffer size";
         return false;
       }
 
@@ -150,8 +147,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
   bool SubmitDecode() override {
     HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
     if (FAILED(hr)) {
-      RecordFailure("SubmitDecode failed",
-                    D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
+      MEDIA_PLOG(ERROR, hr, media_log_) << "SubmitDecode failed";
       return false;
     }
     return true;
@@ -165,7 +161,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
                                              uint32_t desired_size) override {
     return std::make_unique<ScopedD3D11DecoderBuffer<
         D3D11VideoContext, D3D11VideoDecoderBufferDesc>>(
-        this, BufferTypeToD3D11BufferType(type), desired_size);
+        this, BufferTypeToD3D11BufferType(type), desired_size, media_log_);
   }
 
   bool SubmitBitstreamBuffer() {
@@ -192,8 +188,7 @@ bool D3D11VideoDecoderWrapperImpl<
       video_decoder_.Get(), video_buffers_.size(), video_buffers_.data());
   video_buffers_.clear();
   if (FAILED(hr)) {
-    RecordFailure("SubmitDecoderBuffers failed",
-                  D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
+    MEDIA_PLOG(ERROR, hr, media_log_) << "SubmitDecoderBuffers failed";
     return false;
   }
 
@@ -209,8 +204,7 @@ bool D3D11VideoDecoderWrapperImpl<
       video_decoder_.Get(), video_buffers_.size(), video_buffers_.data());
   video_buffers_.clear();
   if (FAILED(hr)) {
-    RecordFailure("SubmitDecoderBuffers failed",
-                  D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
+    MEDIA_PLOG(ERROR, hr, media_log_) << "SubmitDecoderBuffers failed";
     return false;
   }
 
@@ -224,8 +218,12 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       D3D11VideoDecoderWrapperImpl<D3D11VideoContext,
                                    D3D11VideoDecoderBufferDesc>* decoder,
       D3D11_VIDEO_DECODER_BUFFER_TYPE type,
-      uint32_t desired_size)
-      : decoder_(decoder), type_(type), desired_size_(desired_size) {
+      uint32_t desired_size,
+      MediaLog* media_log)
+      : decoder_(decoder),
+        type_(type),
+        desired_size_(desired_size),
+        media_log_(media_log->Clone()) {
     UINT size;
     uint8_t* buffer;
     HRESULT hr = decoder_->video_context_->GetDecoderBuffer(
@@ -249,7 +247,8 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
         default:
           NOTREACHED_NORETURN();
       }
-      decoder_->RecordFailure("D3D11 GetDecoderBuffer failed", status_code, hr);
+      media_log_->NotifyError(
+          D3D11Status{status_code, "D3D11 GetDecoderBuffer failed", hr});
       return;
     }
 
@@ -290,8 +289,8 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
         default:
           NOTREACHED_NORETURN();
       }
-      decoder_->RecordFailure("D3D11 ReleaseDecoderBuffer failed", status_code,
-                              hr);
+      media_log_->NotifyError(
+          D3D11Status{status_code, "D3D11 ReleaseDecoderBuffer failed", hr});
       return false;
     }
 
@@ -310,6 +309,7 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
       decoder_;
   const D3D11_VIDEO_DECODER_BUFFER_TYPE type_;
   const uint32_t desired_size_;
+  const std::unique_ptr<MediaLog> media_log_;
 };
 
 }  // namespace
@@ -326,8 +326,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
   HRESULT hr = video_device->GetVideoDecoderConfigCount(
       decoder_configurator->DecoderDescriptor(), &config_count);
   if (FAILED(hr) || config_count == 0) {
-    MEDIA_LOG(ERROR, media_log) << "GetVideoDecoderConfigCount failed: "
-                                << logging::SystemErrorCodeToString(hr);
+    MEDIA_PLOG(ERROR, hr, media_log) << "GetVideoDecoderConfigCount failed";
     return nullptr;
   }
 
@@ -337,8 +336,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
     hr = video_device->GetVideoDecoderConfig(
         decoder_configurator->DecoderDescriptor(), i, &dec_config);
     if (FAILED(hr)) {
-      MEDIA_LOG(ERROR, media_log) << "GetVideoDecoderConfig failed: "
-                                  << logging::SystemErrorCodeToString(hr);
+      MEDIA_PLOG(ERROR, hr, media_log) << "GetVideoDecoderConfig failed";
       return nullptr;
     }
 
@@ -369,8 +367,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
   hr = video_device->CreateVideoDecoder(
       decoder_configurator->DecoderDescriptor(), &dec_config, &video_decoder);
   if (FAILED(hr)) {
-    MEDIA_LOG(ERROR, media_log) << "CreateVideoDecoder failed: "
-                                << logging::SystemErrorCodeToString(hr);
+    MEDIA_PLOG(ERROR, hr, media_log) << "CreateVideoDecoder failed";
     return nullptr;
   }
 

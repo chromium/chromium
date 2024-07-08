@@ -88,11 +88,6 @@ class D3DVideoDecoderWrapper {
   virtual std::unique_ptr<ScopedD3DBuffer> GetBuffer(BufferType type,
                                                      uint32_t desired_size) = 0;
 
-  void RecordFailure(std::string_view reason, D3D11Status::Codes code) const;
-  void RecordFailure(std::string_view reason,
-                     D3D11Status::Codes code,
-                     HRESULT hr) const;
-
   // Information that's accumulated during slices and submitted at the end
   std::vector<uint8_t> slice_info_bytes_;
   std::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;

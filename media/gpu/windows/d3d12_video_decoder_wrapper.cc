@@ -16,21 +16,20 @@
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 
-#define RETURN_IF_FAILED(message, status_code, hr) \
-  do {                                             \
-    if (FAILED(hr)) {                              \
-      RecordFailure(message, status_code, hr);     \
-      return false;                                \
-    }                                              \
+#define RETURN_IF_FAILED(message, status_code, hr)                            \
+  do {                                                                        \
+    if (FAILED(hr)) {                                                         \
+      media_log_->NotifyError<D3D11StatusTraits>({status_code, message, hr}); \
+      return false;                                                           \
+    }                                                                         \
   } while (0)
 
-#define RETURN_IF_FAILED2(hr, message)                                \
-  do {                                                                \
-    if (FAILED(hr)) {                                                 \
-      MEDIA_LOG(ERROR, media_log)                                     \
-          << message << ": " << logging::SystemErrorCodeToString(hr); \
-      return nullptr;                                                 \
-    }                                                                 \
+#define STATIC_RETURN_IF_FAILED(hr, message)       \
+  do {                                             \
+    if (FAILED(hr)) {                              \
+      MEDIA_PLOG(ERROR, hr, media_log) << message; \
+      return nullptr;                              \
+    }                                              \
   } while (0)
 
 namespace media {
@@ -81,10 +80,10 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     Reset();
     HRESULT hr = command_allocator_->Reset();
     RETURN_IF_FAILED("Failed to reset command allocator",
-                     D3D11StatusCode::kDecoderBeginFrameFailed, hr);
+                     D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
     hr = command_list_->Reset(command_allocator_.Get());
     RETURN_IF_FAILED("Failed to reset command list",
-                     D3D11StatusCode::kDecoderBeginFrameFailed, hr);
+                     D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
 
     // Previous output texture will be read as a reference frame now.
     if (output_stream_arguments_.pOutputTexture2D) {
@@ -184,7 +183,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
     HRESULT hr = command_list_->Close();
     RETURN_IF_FAILED("Failed to close command list",
-                     D3D11StatusCode::kSubmitDecoderBuffersFailed, hr);
+                     D3D11Status::Codes::kSubmitDecoderBuffersFailed, hr);
 
     ID3D12CommandList* command_lists[] = {command_list_.Get()};
     command_queue_->ExecuteCommandLists(std::size(command_lists),
@@ -192,8 +191,8 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
     auto fence_value_or_error = fence_->Signal(*command_queue_.Get());
     if (!fence_value_or_error.has_value()) {
-      RecordFailure("Failed to signal fence",
-                    std::move(fence_value_or_error).error().code());
+      media_log_->NotifyError<D3D11StatusTraits>(
+          std::move(fence_value_or_error).error());
       return false;
     }
     // Just wait here like D3D11's behavior before render side supports D3D12
@@ -201,7 +200,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     // ID3D11Fence instead.
     D3D11Status status = fence_->Wait(std::move(fence_value_or_error).value());
     if (!status.is_ok()) {
-      RecordFailure("Failed to wait for fence", status.code());
+      media_log_->NotifyError<D3D11StatusTraits>(status);
       return false;
     }
     return true;
@@ -272,13 +271,14 @@ class ScopedD3D12MemoryBuffer : public ScopedD3DBuffer {
 class ScopedD3D12ResourceBuffer : public ScopedD3DBuffer {
  public:
   ScopedD3D12ResourceBuffer(D3D12VideoDecoderWrapperImpl* decoder,
-                            ID3D12Resource* resource)
-      : resource_(resource) {
+                            ID3D12Resource* resource,
+                            MediaLog* media_log)
+      : resource_(resource), media_log_(media_log->Clone()) {
     void* mapped_data;
     HRESULT hr = resource_->Map(0, nullptr, &mapped_data);
     if (FAILED(hr)) {
-      decoder->RecordFailure("Mapping data of ID3D12Resource failed",
-                             D3D11StatusCode::kGetBitstreamBufferFailed, hr);
+      MEDIA_PLOG(ERROR, hr, media_log_)
+          << "Failed to map data of ID3D12Resource";
       return;
     }
     data_ = base::span(reinterpret_cast<uint8_t*>(mapped_data),
@@ -304,6 +304,7 @@ class ScopedD3D12ResourceBuffer : public ScopedD3DBuffer {
 
  protected:
   raw_ptr<ID3D12Resource> resource_;
+  const std::unique_ptr<MediaLog> media_log_;
 };
 
 std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
@@ -341,14 +342,13 @@ std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
           &heap_properties, {}, &desc, D3D12_RESOURCE_STATE_GENERIC_READ,
           nullptr, IID_PPV_ARGS(&compressed_bitstream_));
       if (FAILED(hr)) {
-        RecordFailure("Failed to CreateCommittedResource",
-                      D3D11StatusCode::kCreateVideoProcessorInputViewFailed,
-                      hr);
+        MEDIA_PLOG(ERROR, hr, media_log_)
+            << "Failed to CreateCommittedResource";
         return std::make_unique<ScopedD3D12MemoryBuffer>(
             this, D3D12_VIDEO_DECODE_ARGUMENT_TYPE{}, base::span<uint8_t>{});
       }
       return std::make_unique<ScopedD3D12ResourceBuffer>(
-          this, compressed_bitstream_.Get());
+          this, compressed_bitstream_.Get(), media_log_);
   }
   NOTREACHED_NORETURN();
 }
@@ -381,7 +381,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   };
   HRESULT hr = video_device->CheckFeatureSupport(
       D3D12_FEATURE_VIDEO_DECODE_SUPPORT, &feature, sizeof(feature));
-  RETURN_IF_FAILED2(hr, "D3D12VideoDevice CheckFeatureSupport failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12VideoDevice CheckFeatureSupport failed");
   if (feature.SupportFlags != D3D12_VIDEO_DECODE_SUPPORT_FLAG_SUPPORTED) {
     MEDIA_LOG(ERROR, media_log)
         << "D3D12VideoDecoder does not support profile "
@@ -396,7 +396,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   ComD3D12VideoDecoder video_decoder;
   D3D12_VIDEO_DECODER_DESC desc{.Configuration = {guid}};
   hr = video_device->CreateVideoDecoder(&desc, IID_PPV_ARGS(&video_decoder));
-  RETURN_IF_FAILED2(hr, "D3D12VideoDevice CreateVideoDecoder failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12VideoDevice CreateVideoDecoder failed");
 
   D3D12_VIDEO_DECODER_HEAP_DESC heap_desc{
       .Configuration = {guid},
@@ -407,7 +407,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
   ComD3D12VideoDecoderHeap video_decoder_heap;
   hr = video_device->CreateVideoDecoderHeap(&heap_desc,
                                             IID_PPV_ARGS(&video_decoder_heap));
-  RETURN_IF_FAILED2(hr, "D3D12VideoDevice CreateVideoDecoderHeap failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12VideoDevice CreateVideoDecoderHeap failed");
 
   ComD3D12Device device;
   hr = video_decoder->GetDevice(IID_PPV_ARGS(&device));
@@ -419,18 +419,18 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
       D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE};
   hr = device->CreateCommandQueue(&command_queue_desc,
                                   IID_PPV_ARGS(&command_queue));
-  RETURN_IF_FAILED2(hr, "D3D12Device CreateCommandQueue failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12Device CreateCommandQueue failed");
 
   ComD3D12CommandAllocator command_allocator;
   hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
                                       IID_PPV_ARGS(&command_allocator));
-  RETURN_IF_FAILED2(hr, "D3D12Device CreateCommandAllocator failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12Device CreateCommandAllocator failed");
 
   ComD3D12VideoDecodeCommandList command_list;
   hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
                                  command_allocator.Get(), nullptr,
                                  IID_PPV_ARGS(&command_list));
-  RETURN_IF_FAILED2(hr, "D3D12Device CreateCommandList failed");
+  STATIC_RETURN_IF_FAILED(hr, "D3D12Device CreateCommandList failed");
 
   CHECK_EQ(command_list->Close(), S_OK);
 

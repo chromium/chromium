@@ -135,22 +135,4 @@ template bool D3DVideoDecoderWrapper::AppendBitstreamAndSliceDataWithStartCode<
     DXVA_Slice_VPx_Short>(base::span<const uint8_t> bitstream,
                           base::span<const uint8_t> start_code);
 
-void D3DVideoDecoderWrapper::RecordFailure(std::string_view reason,
-                                           D3D11Status::Codes code) const {
-  DLOG(ERROR) << reason;
-  MEDIA_LOG(ERROR, media_log_) << reason;
-}
-
-void D3DVideoDecoderWrapper::RecordFailure(std::string_view reason,
-                                           D3D11Status::Codes code,
-                                           HRESULT hr) const {
-  DCHECK(FAILED(hr));
-  std::string hr_string = logging::SystemErrorCodeToString(hr);
-  if (!base::IsStringUTF8AllowingNoncharacters(hr_string)) {
-    hr_string = "WARNING: system message could not be rendered!";
-  }
-  DLOG(ERROR) << reason << ": " << hr_string;
-  MEDIA_LOG(ERROR, media_log_) << reason << ": " << hr_string;
-}
-
 }  // namespace media
