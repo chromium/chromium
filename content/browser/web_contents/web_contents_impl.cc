@@ -10948,12 +10948,9 @@ void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(
     return;
   }
 
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MediaStreamManager::GetRawDeviceIdsOpenedForFrame,
-                     base::Unretained(media_stream_manager),
-                     GetPrimaryMainFrame(), type,
-                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+  media_stream_manager->GetRawDeviceIdsOpenedForFrame(
+      GetPrimaryMainFrame(), type,
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 }  // namespace content
