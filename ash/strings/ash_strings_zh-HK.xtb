@@ -110,6 +110,7 @@
 <translation id="1341651618736211726">展開</translation>
 <translation id="1341926407152459446">使用「<ph name="DEVICE_NAME" />」作為音訊輸入和輸出裝置</translation>
 <translation id="1346748346194534595">向右</translation>
+<translation id="1350494136075914725">進行中 · 切換至分頁</translation>
 <translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1360220746312242196">搜尋頁面時，前往上一個符合搜尋的項目</translation>
 <translation id="1360788414852622716">正在停用個人檔案，請稍候片刻。</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4876935764454575645">音訊選項</translation>
 <translation id="4881323000405981760">Linux 應用程式不支援特效</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">您可選擇提供意見，協助我們改善建議：</translation>
 <translation id="4890187583552566966">您的管理員已停用「Google 助理」。</translation>
 <translation id="4890408602550914571">請確認您的手機在附近，且已開啟藍牙。</translation>
@@ -1748,6 +1750,7 @@
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
+<translation id="7441711280402516925">播放中 · 切換至分頁</translation>
 <translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
 <translation id="7459485586006128091">由於發生內部問題，因此熱點已關閉。請過幾分鐘再重試連線。</translation>
 <translation id="7461924472993315131">Pin</translation>

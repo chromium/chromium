@@ -329,6 +329,7 @@
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5809516625706423866">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. HTTP 401 ಅನಧಿಕೃತವಾಗಿದೆ. ನಿಮ್ಮ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
+<translation id="5825922397106002626">Chrome ನಿಂದ <ph name="EXTENSION_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5858486459377137936">ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಆಗಿದ್ದರೆ, ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಹೊರತುಪಡಿಸಿ ಎಲ್ಲಾ Chrome ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚುವುದರಿಂದ ಹೆಚ್ಚಿನ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ. ಸೈಟ್‌ಗಳು ನಿಮ್ಮನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ಅವಕಾಶ ಮಾಡಿಕೊಡಲು, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಕುರಿತು <ph name="BEGIN_LINK" />Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ<ph name="END_LINK" /></translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
