@@ -51,6 +51,7 @@ source_set("base") {
     "enterprise_companion_status.h",
     "event_logger.cc",
     "event_logger.h",
+    "installer.h",
     "ipc_support.cc",
     "ipc_support.h",
     "lock.cc",
@@ -76,6 +77,15 @@ source_set("base") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+
+  if (is_linux) {
+    sources += [ "installer_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "installer_mac.mm" ]
+    frameworks = [ "Foundation.framework" ]
+  } else if (is_win) {
+    sources += [ "installer_win.cc" ]
+  }
 }
 
 test("enterprise_companion_tests") {
