@@ -5,12 +5,12 @@
 #ifndef PARTITION_ALLOC_COMPRESSED_POINTER_H_
 #define PARTITION_ALLOC_COMPRESSED_POINTER_H_
 
-#include <bit>
 #include <climits>
 #include <type_traits>
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 
@@ -78,7 +78,7 @@ constexpr bool IsDecayedSame =
 class CompressedPointerBaseGlobal final {
  public:
   static constexpr size_t kUsefulBits =
-      std::countr_zero(PartitionAddressSpace::CorePoolsSize());
+      base::bits::CountrZero(PartitionAddressSpace::CorePoolsSize());
   static_assert(kUsefulBits >= sizeof(uint32_t) * CHAR_BIT);
   static constexpr size_t kBitsToShift =
       kUsefulBits - sizeof(uint32_t) * CHAR_BIT;

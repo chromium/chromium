@@ -5,12 +5,12 @@
 #include "partition_alloc/page_allocator.h"
 
 #include <atomic>
-#include <bit>
 #include <cstdint>
 
 #include "partition_alloc/address_space_randomization.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator_internal.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_lock.h"
@@ -79,7 +79,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
                       uintptr_t alignment_offset,
                       PageAccessibilityConfiguration accessibility) {
   PA_DCHECK(base_length >= trim_length);
-  PA_DCHECK(std::has_single_bit(alignment));
+  PA_DCHECK(internal::base::bits::HasSingleBit(alignment));
   PA_DCHECK(alignment_offset < alignment);
   uintptr_t new_base =
       NextAlignedWithOffset(base_address, alignment, alignment_offset);
@@ -108,7 +108,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
 uintptr_t NextAlignedWithOffset(uintptr_t address,
                                 uintptr_t alignment,
                                 uintptr_t requested_offset) {
-  PA_DCHECK(std::has_single_bit(alignment));
+  PA_DCHECK(internal::base::bits::HasSingleBit(alignment));
   PA_DCHECK(requested_offset < alignment);
 
   uintptr_t actual_offset = address & (alignment - 1);
@@ -183,7 +183,7 @@ uintptr_t AllocPagesWithAlignOffset(
   PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(align >= internal::PageAllocationGranularity());
   // Alignment must be power of 2 for masking math to work.
-  PA_DCHECK(std::has_single_bit(align));
+  PA_DCHECK(internal::base::bits::HasSingleBit(align));
   PA_DCHECK(align_offset < align);
   PA_DCHECK(!(align_offset & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));

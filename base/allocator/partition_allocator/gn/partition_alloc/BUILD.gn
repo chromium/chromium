@@ -13,7 +13,7 @@ config("default") {
     "-fvisibility=hidden",
   ]
   cflags_cc = [
-    "-std=c++20",
+    "-std=c++17",
     "-fvisibility-inlines-hidden",
   ]
   cflags_objcc = cflags_cc

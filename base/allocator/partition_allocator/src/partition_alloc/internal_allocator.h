@@ -26,7 +26,7 @@ PartitionRoot& InternalAllocatorRoot();
 
 // A class that meets C++ named requirements, Allocator.
 template <typename T>
-InternalAllocator<T>::value_type* InternalAllocator<T>::allocate(
+typename InternalAllocator<T>::value_type* InternalAllocator<T>::allocate(
     std::size_t count) {
   PA_CHECK(count <=
            std::numeric_limits<std::size_t>::max() / sizeof(value_type));

@@ -15,9 +15,12 @@ use_allocator_shim_default = false
 enable_backup_ref_ptr_support_default = false
 enable_backup_ref_ptr_slow_checks_default = false
 enable_dangling_raw_ptr_checks_default = false
-assert_cpp20_default = true
 
 # This is the default build configuration for pointers/raw_ptr*.
 raw_ptr_zero_on_construct_default = true
 raw_ptr_zero_on_move_default = true
 raw_ptr_zero_on_destruct_default = false
+
+# PartitionAlloc needs to support cpp17 for standalone builds, as long as Skia
+# supports it.
+assert_cpp20_default = false

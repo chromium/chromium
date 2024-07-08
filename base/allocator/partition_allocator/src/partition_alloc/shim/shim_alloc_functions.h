@@ -9,7 +9,6 @@
 #ifndef PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 #define PARTITION_ALLOC_SHIM_SHIM_ALLOC_FUNCTIONS_H_
 
-#include <bit>
 #include <cerrno>
 
 #include "partition_alloc/build_config.h"
@@ -158,7 +157,8 @@ PA_ALWAYS_INLINE int ShimPosixMemalign(void** res,
                                        size_t size) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
-  if (((alignment % sizeof(void*)) != 0) || !std::has_single_bit(alignment)) {
+  if (((alignment % sizeof(void*)) != 0) ||
+      !partition_alloc::internal::base::bits::HasSingleBit(alignment)) {
     return EINVAL;
   }
   void* ptr = ShimMemalign(alignment, size, nullptr);

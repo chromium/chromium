@@ -86,7 +86,7 @@ bool LightweightQuarantineBranch::Quarantine(void* object,
 
     // Put the entry onto the list.
     branch_size_in_bytes_ += usable_size;
-    slots_.emplace_back(slot_start, usable_size);
+    slots_.push_back({slot_start, usable_size});
 
     // Swap randomly so that the quarantine list remain shuffled.
     // This is not uniformly random, but sufficiently random.

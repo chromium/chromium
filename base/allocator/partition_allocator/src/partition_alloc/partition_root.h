@@ -32,7 +32,6 @@
 
 #include <algorithm>
 #include <atomic>
-#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -150,7 +149,11 @@ struct PartitionOptions {
   // positive of the plugin, since constexpr implies inline.
   inline constexpr PartitionOptions();
   inline constexpr PartitionOptions(const PartitionOptions& other);
+#if __cplusplus >= 202002L
   inline constexpr ~PartitionOptions();
+#else
+  inline ~PartitionOptions();
+#endif
 
   enum class AllowToggle : uint8_t {
     kDisallowed,
@@ -194,7 +197,11 @@ struct PartitionOptions {
 constexpr PartitionOptions::PartitionOptions() = default;
 constexpr PartitionOptions::PartitionOptions(const PartitionOptions& other) =
     default;
+#if __cplusplus >= 202002L
 constexpr PartitionOptions::~PartitionOptions() = default;
+#else
+PartitionOptions::~PartitionOptions() = default;
+#endif
 
 // When/if free lists should be "straightened" when calling
 // PartitionRoot::PurgeMemory(..., accounting_only=false).
@@ -1274,7 +1281,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
                                size_t* slot_size,
                                bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
-            std::has_single_bit(slot_span_alignment));
+            internal::base::bits::HasSingleBit(slot_span_alignment));
   SlotSpanMetadata* slot_span = bucket->active_slot_spans_head;
   // There always must be a slot span on the active list (could be a sentinel).
   PA_DCHECK(slot_span);
@@ -2076,7 +2083,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternal(size_t requested_size,
                                                     const char* type_name) {
   static_assert(AreValidFlags(flags));
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
-            std::has_single_bit(slot_span_alignment));
+            internal::base::bits::HasSingleBit(slot_span_alignment));
   static_assert(!ContainsFlags(
       flags, AllocFlags::kMemoryShouldBeTaggedForMte));  // Internal only.
 
@@ -2371,7 +2378,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // crbug.com/1185484.
 
   // This is mandated by |posix_memalign()|, so should never fire.
-  PA_CHECK(std::has_single_bit(alignment));
+  PA_CHECK(internal::base::bits::HasSingleBit(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= internal::kMaxSupportedAlignment);
   size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
@@ -2387,10 +2394,12 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
       // PartitionAlloc only guarantees alignment for power-of-two sized
       // allocations. To make sure this applies here, round up the allocation
       // size.
-      raw_size = static_cast<size_t>(1)
-                 << (int{sizeof(size_t) * 8} - std::countl_zero(raw_size - 1));
+      raw_size =
+          static_cast<size_t>(1)
+          << (int{sizeof(size_t) * 8} -
+              partition_alloc::internal::base::bits::CountlZero(raw_size - 1));
     }
-    PA_DCHECK(std::has_single_bit(raw_size));
+    PA_DCHECK(internal::base::bits::HasSingleBit(raw_size));
     // Adjust back, because AllocInternalNoHooks/Alloc will adjust it again.
     adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
 

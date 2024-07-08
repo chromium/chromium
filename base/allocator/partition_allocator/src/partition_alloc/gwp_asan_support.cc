@@ -19,17 +19,21 @@
 
 namespace partition_alloc {
 
+namespace {
+PartitionOptions GwpAsanPartitionOptions() {
+  PartitionOptions options;
+  options.backup_ref_ptr = PartitionOptions::kEnabled;
+  return options;
+}
+}  // namespace
+
 // static
 void* GwpAsanSupport::MapRegion(size_t slot_count,
                                 std::vector<uint16_t>& free_list) {
   PA_CHECK(slot_count > 0);
 
-  constexpr PartitionOptions kConfig = []() {
-    PartitionOptions opts;
-    opts.backup_ref_ptr = PartitionOptions::kEnabled;
-    return opts;
-  }();
-  static internal::base::NoDestructor<PartitionRoot> root(kConfig);
+  static internal::base::NoDestructor<PartitionRoot> root(
+      GwpAsanPartitionOptions());
 
   const size_t kSlotSize = 2 * internal::SystemPageSize();
   uint16_t bucket_index = PartitionRoot::SizeToBucketIndex(

@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
-#include <bit>
 #include <climits>
 #include <cstddef>
 #include <cstdint>
@@ -69,7 +68,7 @@ class StateBitmap final {
   using CellType = uintptr_t;
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
-      std::bit_width(static_cast<uint8_t>(State::kMaxValue));
+      base::bits::BitWidth(static_cast<uint8_t>(State::kMaxValue));
   static constexpr CellType kStateMask = (1 << kBitsNeededForAllocation) - 1;
 
   static constexpr size_t kBitmapSize =
@@ -404,7 +403,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     CellType value = LoadCell(cell_index);
     while (value) {
       const size_t trailing_zeroes =
-          static_cast<size_t>(std::countr_zero(value) & ~0b1);
+          static_cast<size_t>(base::bits::CountrZero(value) & ~0b1);
       const size_t clear_value_mask =
           ~(static_cast<CellType>(kStateMask) << trailing_zeroes);
       const CellType bits = (value >> trailing_zeroes) & kStateMask;

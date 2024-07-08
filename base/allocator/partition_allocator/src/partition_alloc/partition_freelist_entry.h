@@ -101,7 +101,7 @@ struct PartitionFreelistDispatcher {
                                         PartitionFreelistEntry* next) const = 0;
   PA_ALWAYS_INLINE virtual uintptr_t ClearForAllocation(
       PartitionFreelistEntry* entry) const = 0;
-  PA_ALWAYS_INLINE virtual constexpr bool IsEncodedNextPtrZero(
+  PA_ALWAYS_INLINE virtual bool IsEncodedNextPtrZero(
       PartitionFreelistEntry* entry) const = 0;
 #else
   static const PartitionFreelistDispatcher* Create(
@@ -177,7 +177,7 @@ struct PartitionFreelistDispatcher {
     return entry->ClearForAllocation();
   }
 
-  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero(
+  PA_ALWAYS_INLINE bool IsEncodedNextPtrZero(
       PartitionFreelistEntry* entry) const {
     return entry->IsEncodedNextPtrZero();
   }
@@ -286,7 +286,7 @@ struct PartitionFreelistDispatcherImpl final : PartitionFreelistDispatcher {
     return GetEntryImpl(entry)->ClearForAllocation();
   }
 
-  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero(
+  PA_ALWAYS_INLINE bool IsEncodedNextPtrZero(
       PartitionFreelistEntry* entry) const override {
     return GetEntryImpl(entry)->IsEncodedNextPtrZero();
   }

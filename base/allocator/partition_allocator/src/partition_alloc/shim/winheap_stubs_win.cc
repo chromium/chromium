@@ -14,7 +14,6 @@
 #include <new.h>
 
 #include <algorithm>
-#include <bit>
 #include <climits>
 #include <limits>
 
@@ -158,7 +157,7 @@ void* UnalignAllocation(void* ptr) {
 }  // namespace
 
 void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
-  PA_CHECK(std::has_single_bit(alignment));
+  PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
 
   size_t adjusted = AdjustedSize(size, alignment);
   if (adjusted >= kMaxWindowsAllocation) {
@@ -174,7 +173,7 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
 }
 
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
-  PA_CHECK(std::has_single_bit(alignment));
+  PA_CHECK(partition_alloc::internal::base::bits::HasSingleBit(alignment));
 
   if (!ptr) {
     return WinHeapAlignedMalloc(size, alignment);

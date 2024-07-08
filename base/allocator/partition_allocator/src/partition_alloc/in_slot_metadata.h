@@ -6,7 +6,6 @@
 #define PARTITION_ALLOC_IN_SLOT_METADATA_H_
 
 #include <atomic>
-#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -14,6 +13,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
@@ -22,10 +22,6 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/tagging.h"
-
-#if PA_BUILDFLAG(IS_APPLE)
-#include "partition_alloc/partition_alloc_base/bits.h"
-#endif  // PA_BUILDFLAG(IS_APPLE)
 
 namespace partition_alloc::internal {
 
@@ -42,7 +38,7 @@ namespace partition_alloc::internal {
 PA_ALWAYS_INLINE size_t
 AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
 #if PA_BUILDFLAG(IS_APPLE)
-  return internal::base::bits::AlignUp<size_t>(in_slot_metadata_size, 8);
+  return base::bits::AlignUp<size_t>(in_slot_metadata_size, 8);
 #else
   return in_slot_metadata_size;
 #endif  // PA_BUILDFLAG(IS_APPLE)
@@ -170,9 +166,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
                 std::numeric_limits<CountType>::max());
 
   static constexpr auto kPtrInc =
-      SafeShift<CountType>(1, std::countr_zero(kPtrCountMask));
+      SafeShift<CountType>(1, base::bits::CountrZero(kPtrCountMask));
   static constexpr auto kUnprotectedPtrInc =
-      SafeShift<CountType>(1, std::countr_zero(kUnprotectedPtrCountMask));
+      SafeShift<CountType>(1, base::bits::CountrZero(kUnprotectedPtrCountMask));
 
   PA_ALWAYS_INLINE explicit InSlotMetadata(bool needs_mac11_malloc_size_hack);
 
