@@ -9,6 +9,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace policy::local_user_files {
 
@@ -29,9 +31,16 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
                    base::TimeDelta migration_delay,
                    StartMigrationCallback migration_callback);
 
+  // Returns a pointer to the instance of LocalFilesMigrationDialog, if it
+  // exists.
+  static LocalFilesMigrationDialog* GetDialog();
+
   LocalFilesMigrationDialog(const LocalFilesMigrationDialog&) = delete;
   LocalFilesMigrationDialog& operator=(const LocalFilesMigrationDialog&) =
       delete;
+
+  // Returns the native window. Should only be used in tests.
+  gfx::NativeWindow GetDialogWindowForTesting() const;
 
  private:
   LocalFilesMigrationDialog(CloudProvider cloud_provider,
@@ -41,6 +50,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
 
   // ash::SystemWebDialogDelegate:
   bool ShouldShowCloseButton() const override;
+  ui::ModalType GetDialogModalType() const override;
 
   // Called when the dialog is closed. If `ret-value` is set to kStartMigration,
   // the user clicked "Upload now" and uploads should start.

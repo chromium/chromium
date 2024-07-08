@@ -6,22 +6,29 @@
 
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace policy::local_user_files {
 
+// static
 bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
                                      base::TimeDelta migration_delay,
                                      base::OnceClosure migration_callback) {
-  if (SystemWebDialogDelegate::HasInstance(
-          GURL(chrome::kChromeUILocalFilesMigrationURL))) {
-    // TODO(aidazolic): Bring the dialog forward.
+  ash::SystemWebDialogDelegate* existing_dialog =
+      SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUILocalFilesMigrationURL);
+  if (existing_dialog) {
+    // TODO(aidazolic): Check params & maybe update title.
+    existing_dialog->StackAtTop();
     return false;
   }
   // This pointer is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
@@ -29,6 +36,14 @@ bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
       cloud_provider, migration_delay, std::move(migration_callback));
   dialog->ShowSystemDialog();
   return true;
+}
+
+// static
+LocalFilesMigrationDialog* LocalFilesMigrationDialog::GetDialog() {
+  ash::SystemWebDialogDelegate* dialog =
+      ash::SystemWebDialogDelegate::FindInstance(
+          chrome::kChromeUILocalFilesMigrationURL);
+  return static_cast<LocalFilesMigrationDialog*>(dialog);
 }
 
 LocalFilesMigrationDialog::LocalFilesMigrationDialog(
@@ -52,8 +67,17 @@ LocalFilesMigrationDialog::LocalFilesMigrationDialog(
 
 LocalFilesMigrationDialog::~LocalFilesMigrationDialog() = default;
 
+gfx::NativeWindow LocalFilesMigrationDialog::GetDialogWindowForTesting() const {
+  CHECK_IS_TEST();
+  return dialog_window();
+}
+
 bool LocalFilesMigrationDialog::ShouldShowCloseButton() const {
   return false;
+}
+
+ui::ModalType LocalFilesMigrationDialog::GetDialogModalType() const {
+  return ui::MODAL_TYPE_WINDOW;
 }
 
 void LocalFilesMigrationDialog::ProcessDialogClosing(

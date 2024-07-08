@@ -137,7 +137,10 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
 
 void MigrationNotificationManager::CloseAll() {
   CloseNotification(profile_);
-  // TODO(b/342340599): Close the dialog.
+  LocalFilesMigrationDialog* dialog = LocalFilesMigrationDialog::GetDialog();
+  if (dialog) {
+    dialog->Close();
+  }
 }
 
 }  // namespace policy::local_user_files
