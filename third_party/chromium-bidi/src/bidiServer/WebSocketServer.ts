@@ -20,7 +20,11 @@ import debug from 'debug';
 import * as websocket from 'websocket';
 
 import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import {ErrorCode} from '../protocol/protocol.js';
+import {
+  ErrorCode,
+  InvalidArgumentException,
+  Session,
+} from '../protocol/protocol.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
@@ -449,9 +453,42 @@ export class WebSocketServer {
   #getMapperOptions(capabilities: any): MapperOptions {
     const acceptInsecureCerts =
       capabilities?.alwaysMatch?.acceptInsecureCerts ?? false;
-    const unhandledPromptBehavior =
-      capabilities?.alwaysMatch?.unhandledPromptBehavior ?? undefined;
+    const unhandledPromptBehavior = this.#getUnhandledPromptBehavior(
+      capabilities?.alwaysMatch?.unhandledPromptBehavior
+    );
+
     return {acceptInsecureCerts, unhandledPromptBehavior};
+  }
+
+  #getUnhandledPromptBehavior(
+    capabilityValue: unknown
+  ): Session.UserPromptHandler | undefined {
+    if (capabilityValue === undefined) {
+      return undefined;
+    }
+    if (typeof capabilityValue === 'object') {
+      // Do not validate capabilities. Incorrect ones will be ignored by Mapper.
+      return capabilityValue as Session.UserPromptHandler;
+    }
+    if (typeof capabilityValue !== 'string') {
+      throw new InvalidArgumentException(
+        `Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`
+      );
+    }
+    switch (capabilityValue) {
+      case 'accept':
+      case 'accept and notify':
+        return {default: Session.UserPromptHandlerType.Accept};
+      case 'dismiss':
+      case 'dismiss and notify':
+        return {default: Session.UserPromptHandlerType.Dismiss};
+      case 'ignore':
+        return {default: Session.UserPromptHandlerType.Ignore};
+      default:
+        throw new InvalidArgumentException(
+          `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`
+        );
+    }
   }
 
   #getChromeOptions(capabilities: any): ChromeOptions {

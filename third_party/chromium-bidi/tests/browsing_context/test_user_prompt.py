@@ -19,6 +19,10 @@ from test_helpers import send_JSON_command, subscribe, wait_for_event
 @pytest.mark.asyncio
 @pytest.mark.parametrize("prompt_type", ["alert", "confirm", "prompt"])
 @pytest.mark.parametrize('capabilities', [{}, {
+    'unhandledPromptBehavior': 'dismiss'
+}, {
+    'unhandledPromptBehavior': 'dismiss and notify'
+}, {
     'unhandledPromptBehavior': {
         'default': 'dismiss'
     }
@@ -38,6 +42,10 @@ from test_helpers import send_JSON_command, subscribe, wait_for_event
         'default': 'ignore'
     }
 }, {
+    'unhandledPromptBehavior': 'accept'
+}, {
+    'unhandledPromptBehavior': 'accept and notify'
+}, {
     'unhandledPromptBehavior': {
         'default': 'accept'
     }
@@ -56,6 +64,8 @@ from test_helpers import send_JSON_command, subscribe, wait_for_event
         'prompt': 'accept',
         'default': 'ignore'
     }
+}, {
+    'unhandledPromptBehavior': 'ignore'
 }, {
     'unhandledPromptBehavior': {
         'default': 'ignore'
@@ -102,7 +112,10 @@ async def test_browsingContext_userPromptOpened_userPromptClosed(
 
     expected_handler = 'dismiss'
     if 'unhandledPromptBehavior' in capabilities:
-        if prompt_type in capabilities['unhandledPromptBehavior']:
+        if isinstance(capabilities['unhandledPromptBehavior'], str):
+            expected_handler = capabilities['unhandledPromptBehavior'].replace(
+                ' and notify', '')
+        elif prompt_type in capabilities['unhandledPromptBehavior']:
             expected_handler = capabilities['unhandledPromptBehavior'][
                 prompt_type]
         elif 'default' in capabilities['unhandledPromptBehavior']:
