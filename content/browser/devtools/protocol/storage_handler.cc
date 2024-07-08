@@ -2094,9 +2094,8 @@ ToAggregatableValueDictEntries(
     out->emplace_back(
         Storage::AttributionReportingAggregatableValueDictEntry::Create()
             .SetKey(key)
-            // TODO(https://crbug.com/345274918): Update DevTools protocol to
-            // include the max bytes field.
             .SetValue(value.value())
+            .SetFilteringId(base::NumberToString(value.filtering_id()))
             .Build());
   }
 
@@ -2198,6 +2197,10 @@ void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
               ToAggregatableTriggerData(registration.aggregatable_trigger_data))
           .SetAggregatableValues(
               ToAggregatableValueEntries(registration.aggregatable_values))
+          .SetAggregatableFilteringIdMaxBytes(
+              registration.aggregatable_trigger_config
+                  .aggregatable_filtering_id_max_bytes()
+                  .value())
           .SetDebugReporting(registration.debug_reporting)
           .SetSourceRegistrationTimeConfig(ToSourceRegistrationTimeConfig(
               registration.aggregatable_trigger_config

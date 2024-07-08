@@ -14,6 +14,7 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
             }
         ]
+        aggregatableFilteringIdMaxBytes : 1
         aggregatableTriggerData : [
             [0] : {
                 filters : {
@@ -37,6 +38,7 @@ Test that the Storage.attributionReportingTriggerRegistered event is fired.
                 }
                 values : [
                     [0] : {
+                        filteringId : 0
                         key : a
                         value : 2
                     }

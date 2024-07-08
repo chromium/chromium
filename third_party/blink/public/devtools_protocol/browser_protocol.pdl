@@ -10537,6 +10537,8 @@ experimental domain Storage
       # number instead of integer because not all uint32 can be represented by
       # int
       number value
+      UnsignedInt64AsBase10 filteringId
+
 
   experimental type AttributionReportingAggregatableValueEntry extends object
     properties
@@ -10569,6 +10571,7 @@ experimental domain Storage
       array of AttributionReportingEventTriggerData eventTriggerData
       array of AttributionReportingAggregatableTriggerData aggregatableTriggerData
       array of AttributionReportingAggregatableValueEntry aggregatableValues
+      integer aggregatableFilteringIdMaxBytes
       boolean debugReporting
       optional string aggregationCoordinatorOrigin
       AttributionReportingSourceRegistrationTimeConfig sourceRegistrationTimeConfig
