@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -51,6 +53,20 @@ PlusAddressSettingSyncBridge::PlusAddressSettingSyncBridge(
 }
 
 PlusAddressSettingSyncBridge::~PlusAddressSettingSyncBridge() = default;
+
+// static
+std::unique_ptr<PlusAddressSettingSyncBridge>
+PlusAddressSettingSyncBridge::CreateBridge(
+    syncer::OnceModelTypeStoreFactory store_factory) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+    return nullptr;
+  }
+  return std::make_unique<plus_addresses::PlusAddressSettingSyncBridge>(
+      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          syncer::PLUS_ADDRESS_SETTING,
+          /*dump_stack=*/base::DoNothing()),
+      std::move(store_factory));
+}
 
 std::optional<sync_pb::PlusAddressSettingSpecifics>
 PlusAddressSettingSyncBridge::GetSetting(std::string_view name) const {

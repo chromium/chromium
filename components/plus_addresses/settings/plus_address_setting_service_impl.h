@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
-#include "components/sync/model/model_type_store.h"
 
 namespace syncer {
 class ModelTypeControllerDelegate;
@@ -25,7 +24,7 @@ class PlusAddressSettingSyncBridge;
 class PlusAddressSettingServiceImpl : public PlusAddressSettingService {
  public:
   explicit PlusAddressSettingServiceImpl(
-      syncer::OnceModelTypeStoreFactory store_factory);
+      std::unique_ptr<PlusAddressSettingSyncBridge> bridge);
   ~PlusAddressSettingServiceImpl() override;
 
   // PlusAddressSettingService:
@@ -49,7 +48,7 @@ class PlusAddressSettingServiceImpl : public PlusAddressSettingService {
   // No string or int64_t getters exists, since no such settings are synced yet.
   bool GetBoolean(std::string_view name) const;
 
-  std::unique_ptr<PlusAddressSettingSyncBridge> sync_bridge_;
+  const std::unique_ptr<PlusAddressSettingSyncBridge> sync_bridge_;
 };
 
 }  // namespace plus_addresses

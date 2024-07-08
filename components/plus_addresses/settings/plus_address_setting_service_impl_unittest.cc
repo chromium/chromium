@@ -4,61 +4,62 @@
 
 #include "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/protocol/plus_address_setting_specifics.pb.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses {
 
 namespace {
 
+using ::testing::Return;
+
+class TestPlusAddressSettingSyncBridge : public PlusAddressSettingSyncBridge {
+ public:
+  using PlusAddressSettingSyncBridge::PlusAddressSettingSyncBridge;
+  MOCK_METHOD(std::optional<sync_pb::PlusAddressSettingSpecifics>,
+              GetSetting,
+              (std::string_view),
+              (const, override));
+};
+
 class PlusAddressSettingServiceImplTest : public testing::Test {
  public:
-  PlusAddressSettingServiceImplTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
-    RecreateServiceWithSpecifics({});
+  PlusAddressSettingServiceImplTest() {
+    auto bridge =
+        std::make_unique<testing::NiceMock<TestPlusAddressSettingSyncBridge>>(
+            mock_processor_.CreateForwardingProcessor(),
+            /*store_factory=*/base::DoNothing());
+    bridge_ = static_cast<TestPlusAddressSettingSyncBridge*>(bridge.get());
+    service_ =
+        std::make_unique<PlusAddressSettingServiceImpl>(std::move(bridge));
   }
 
   PlusAddressSettingService& service() { return *service_; }
-
-  // Simulates creating a service that is aware of the given `specifics`. It
-  // does so by injecting the `specifics` into the store used by service's
-  // sync bridge.
-  void RecreateServiceWithSpecifics(
-      const std::vector<sync_pb::PlusAddressSettingSpecifics>& specifics) {
-    store_->DeleteAllDataAndMetadata(base::DoNothing());
-    auto batch = store_->CreateWriteBatch();
-    for (const sync_pb::PlusAddressSettingSpecifics& specific : specifics) {
-      batch->WriteData(specific.name(), specific.SerializeAsString());
-    }
-    store_->CommitWriteBatch(std::move(batch), base::DoNothing());
-    service_ = std::make_unique<PlusAddressSettingServiceImpl>(
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
-    // Wait for the `service_`'s initialisation to finish.
-    task_environment_.RunUntilIdle();
-  }
+  TestPlusAddressSettingSyncBridge& bridge() { return *bridge_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_{syncer::kSyncPlusAddressSetting};
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingService> service_;
+  raw_ptr<TestPlusAddressSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
 
 TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
-  RecreateServiceWithSpecifics(
-      {CreateSettingSpecifics("plus_address.is_enabled", true),
-       CreateSettingSpecifics("plus_address.has_accepted_notice", false)});
-
+  ON_CALL(bridge(), GetSetting("plus_address.is_enabled"))
+      .WillByDefault(
+          Return(CreateSettingSpecifics("plus_address.is_enabled", true)));
+  ON_CALL(bridge(), GetSetting("plus_address.has_accepted_notice"))
+      .WillByDefault(Return(
+          CreateSettingSpecifics("plus_address.has_accepted_notice", false)));
   // For settings that the client knows about, the correct values are returned.
   EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
   EXPECT_FALSE(service().GetHasAcceptedNotice());

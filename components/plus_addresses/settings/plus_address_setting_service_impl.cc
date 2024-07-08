@@ -20,15 +20,8 @@
 namespace plus_addresses {
 
 PlusAddressSettingServiceImpl::PlusAddressSettingServiceImpl(
-    syncer::OnceModelTypeStoreFactory store_factory) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    sync_bridge_ = std::make_unique<PlusAddressSettingSyncBridge>(
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::PLUS_ADDRESS_SETTING,
-            /*dump_stack=*/base::DoNothing()),
-        std::move(store_factory));
-  }
-}
+    std::unique_ptr<PlusAddressSettingSyncBridge> bridge)
+    : sync_bridge_(std::move(bridge)) {}
 
 PlusAddressSettingServiceImpl::~PlusAddressSettingServiceImpl() = default;
 

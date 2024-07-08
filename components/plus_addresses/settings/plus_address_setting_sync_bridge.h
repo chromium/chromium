@@ -25,9 +25,15 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
       syncer::OnceModelTypeStoreFactory store_factory);
   ~PlusAddressSettingSyncBridge() override;
 
+  // Factory function to create the bridge (to share the creation logic between
+  // the iOS and non-iOS service factories owning the bridge).
+  static std::unique_ptr<PlusAddressSettingSyncBridge> CreateBridge(
+      syncer::OnceModelTypeStoreFactory store_factory);
+
   // Returns the specifics for the setting of the given `name` if the bridge
   // is aware of any such setting. Otherwise, nullopt is returned.
-  std::optional<sync_pb::PlusAddressSettingSpecifics> GetSetting(
+  // Virtual for testing.
+  virtual std::optional<sync_pb::PlusAddressSettingSpecifics> GetSetting(
       std::string_view name) const;
 
   // syncer::ModelTypeSyncBridge:
