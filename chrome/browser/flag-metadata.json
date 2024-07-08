@@ -2331,6 +2331,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "enable-accessibility-disable-trackpad",
+    "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "enable-accessibility-facegaze",
     "owners": [ "bkersting@chromium.org", "eariassoto@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 140

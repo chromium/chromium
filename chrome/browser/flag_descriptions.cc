@@ -1114,6 +1114,11 @@ const char kAccessibilityCaretBlinkIntervalSettingDescription[] =
     "Allows the user to change their text caret blink rate setting across Ash "
     "and Chrome.";
 
+const char kAccessibilityDisableTrackpadName[] =
+    "Accessibility disable trackpad";
+const char kAccessibilityDisableTrackpadDescription[] =
+    "Adds a setting that allows the user to disable the built-in trackpad.";
+
 const char kAccessibilityOverscrollSettingFeatureName[] =
     "Adds overscroll to navigate setting";
 const char kAccessibilityOverscrollSettingFeatureDescription[] =

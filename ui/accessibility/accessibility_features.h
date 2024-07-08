@@ -187,6 +187,10 @@ AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
 AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
 
+// Controls whether the Select to Speak keyboard shortcut is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
+AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

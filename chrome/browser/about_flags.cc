@@ -8238,6 +8238,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
 
+    {"enable-accessibility-disable-trackpad",
+     flag_descriptions::kAccessibilityDisableTrackpadName,
+     flag_descriptions::kAccessibilityDisableTrackpadDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityDisableTrackpad)},
+
     {"enable-accessibility-magnify-accelerator-dialog",
      flag_descriptions::kAccessibilityMagnifyAcceleratorDialogName,
      flag_descriptions::kAccessibilityMagnifyAcceleratorDialogDescription,

@@ -659,6 +659,9 @@ extern const char kAccessibilityAcceleratorDescription[];
 extern const char kAccessibilityCaretBlinkIntervalSettingName[];
 extern const char kAccessibilityCaretBlinkIntervalSettingDescription[];
 
+extern const char kAccessibilityDisableTrackpadName[];
+extern const char kAccessibilityDisableTrackpadDescription[];
+
 extern const char kAccessibilityOverscrollSettingFeatureName[];
 extern const char kAccessibilityOverscrollSettingFeatureDescription[];
 

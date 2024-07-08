@@ -15860,6 +15860,7 @@ from previous Chrome versions.
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
+  <int value="-2046366419" label="AccessibilityDisableTrackpad:enabled"/>
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2044252895"
       label="QuickActionSearchWidgetAndroidDinoVariant:disabled"/>
@@ -16112,6 +16113,7 @@ from previous Chrome versions.
       label="SearchCustomizableShortcutsInLauncher:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
+  <int value="-1952743491" label="AccessibilityDisableTrackpad:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>

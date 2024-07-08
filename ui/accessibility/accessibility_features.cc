@@ -238,6 +238,14 @@ bool IsAccessibilitySelectToSpeakShortcutEnabled() {
       ::features::kAccessibilitySelectToSpeakShortcut);
 }
 
+BASE_FEATURE(kAccessibilityDisableTrackpad,
+             "AccessibilityDisableTrackpad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityDisableTrackpadEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityDisableTrackpad);
+}
+
 BASE_FEATURE(kAccessibilityShakeToLocate,
              "AccessibilityShakeToLocate",
              base::FEATURE_DISABLED_BY_DEFAULT);
