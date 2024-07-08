@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -435,7 +434,7 @@ public class TabListCoordinator
                 mRecyclerView.getRectOfCurrentThumbnail(
                         mModel.indexFromId(mMediator.selectedTabId()), mMediator.selectedTabId());
         if (rect == null) return new Rect();
-        rect.offset(0, getTabListTopOffset());
+        rect.offset(0, 0);
         return rect;
     }
 
@@ -620,25 +619,6 @@ public class TabListCoordinator
                         TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
             }
         }
-    }
-
-    /**
-     * @return The top offset from top toolbar to the tab list recycler view. Used to adjust the
-     *         animations for tab switcher.
-     */
-    int getTabListTopOffset() {
-        if (!ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) return 0;
-        Rect tabListRect = getRecyclerViewLocation();
-        Rect parentRect = new Rect();
-        mRootView.getGlobalVisibleRect(parentRect);
-        // Offset by CompositorViewHolder top offset and top toolbar height.
-        tabListRect.offset(
-                0,
-                -parentRect.top
-                        - (int)
-                                mContext.getResources()
-                                        .getDimension(R.dimen.toolbar_height_no_shadow));
-        return tabListRect.top;
     }
 
     /**

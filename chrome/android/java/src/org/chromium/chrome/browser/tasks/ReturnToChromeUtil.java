@@ -312,9 +312,7 @@ public final class ReturnToChromeUtil {
             return sActivityPresentingOverivewWithOmniboxForTesting;
         }
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (activity == null
-                || !isStartSurfaceEnabled(activity)
-                || !(activity instanceof ChromeActivity)) {
+        if (activity == null || !(activity instanceof ChromeActivity)) {
             return null;
         }
 

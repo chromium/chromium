@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -276,37 +275,6 @@ public class ReturnToChromeUtilUnitTest {
         // Clean up.
         sharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS);
-    }
-
-    @Test
-    @SmallTest
-    public void testStartSurfaceIsDisabledOnTablet() {
-        // Sets for !DeviceFormFactor.isNonMultiDisplayContextOnTablet()
-        setupAndVerifyTablets();
-
-        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
-    public void testStartSurfaceIsDisabledWithShowNtpAtStartup() {
-        assertTrue(ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled());
-        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-    }
-
-    @Test
-    @SmallTest
-    public void testStartSurfaceMayBeDisabledWithNewTabSearchEngineUrlEnabled() {
-        assertTrue(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);
-        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
-        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(mContext));
-
-        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.IS_DSE_GOOGLE);
-        DseNewTabUrlManager.resetIsEeaChoiceCountryForTesting();
     }
 
     @Test

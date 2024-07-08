@@ -2686,14 +2686,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             LoadUrlParams params =
                     new LoadUrlParams(UrlConstants.RECENT_TABS_URL, PageTransition.AUTO_BOOKMARK);
             boolean isInOverviewMode = isInOverviewMode();
-            if (isInOverviewMode && !isTablet() && ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
-                // When tapping the "Recent tabs" menu item from the overview page (Start surface or
-                // GTS), we will create the tab with the launch type FROM_START_SURFACE. Thus, if
-                // the back button is tapped on this "Recent tabs" page, it can go back to the
-                // overview page.
-                ReturnToChromeUtil.handleLoadUrlFromStartSurface(
-                        params, getCurrentTabModel().isIncognito(), null);
-            } else if (currentTab != null) {
+            if (currentTab != null) {
                 currentTab.loadUrl(params);
             } else {
                 getTabCreator(getCurrentTabModel().isIncognito())

@@ -99,7 +99,7 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
   }
   TabGroupEnabledState GetTabGroupEnabledState() override {
 #if BUILDFLAG(IS_ANDROID)
-    return FeedServiceBridge::GetTabGroupEnabledState();
+    return TabGroupEnabledState::kBoth;
 #else
     return TabGroupEnabledState::kNone;
 #endif
