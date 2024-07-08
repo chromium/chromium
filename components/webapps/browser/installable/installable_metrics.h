@@ -70,10 +70,10 @@ enum class WebappInstallSource {
   // Extensions management API (not reported).
   MANAGEMENT_API = 7,
 
-  // PWA ambient badge in an Android Custom Tab.
+  // PWA ambient badge in Android browser Tab.
   AMBIENT_BADGE_BROWSER_TAB = 8,
 
-  // PWA ambient badge in browser Tab.
+  // PWA ambient badge in an Android Custom Tab.
   AMBIENT_BADGE_CUSTOM_TAB = 9,
 
   // Installation via ARC on Chrome OS.
