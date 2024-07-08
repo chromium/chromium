@@ -1345,11 +1345,9 @@ void RenderWidgetHostViewAura::SetCompositionText(
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return;
 
-  // TODO(suzhe): due to a bug of webkit, we can't use selection range with
-  // composition string. See: https://bugs.webkit.org/show_bug.cgi?id=37788
   text_input_manager_->GetActiveWidget()->ImeSetComposition(
       composition.text, composition.ime_text_spans, gfx::Range::InvalidRange(),
-      composition.selection.end(), composition.selection.end());
+      composition.selection.start(), composition.selection.end());
 
   has_composition_text_ = !composition.text.empty();
 }
