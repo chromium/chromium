@@ -676,7 +676,8 @@ void InputDeviceSettingsControllerImpl::Init() {
     duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
   }
 
-  if (features::IsPeripheralNotificationEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kWelcomeExperience) ||
+      base::FeatureList::IsEnabled(features::kPeripheralNotification)) {
     notification_controller_ =
         std::make_unique<InputDeviceSettingsNotificationController>(
             message_center::MessageCenter::Get());
