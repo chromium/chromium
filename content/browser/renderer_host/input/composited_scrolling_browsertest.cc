@@ -29,6 +29,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace {
@@ -182,21 +183,38 @@ IN_PROC_BROWSER_TEST_F(CompositedScrollingBrowserTest,
   EXPECT_NEAR(100 / std::cos(base::DegToRad(30.0f)), scroll_distance, 1.0f);
 }
 
-class CompositedScrollingMetricTest : public CompositedScrollingBrowserTest,
-                                      public testing::WithParamInterface<bool> {
- public:
-  CompositedScrollingMetricTest() = default;
-  ~CompositedScrollingMetricTest() override = default;
+static constexpr unsigned kCompositedScroll = 1 << 0;
+static constexpr unsigned kRasterInducingScroll = 1 << 1;
 
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    const bool enable_composited_scrolling = GetParam();
-    if (enable_composited_scrolling)
-      cmd->AppendSwitch(blink::switches::kEnablePreferCompositingToLCDText);
-    else
-      cmd->AppendSwitch(blink::switches::kDisablePreferCompositingToLCDText);
+class CompositedScrollingMetricTest
+    : public CompositedScrollingBrowserTest,
+      public testing::WithParamInterface<unsigned> {
+ public:
+  CompositedScrollingMetricTest() {
+    if (RasterInducingScrollEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kRasterInducingScroll);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kRasterInducingScroll);
+    }
   }
 
-  bool CompositingEnabled() { return GetParam(); }
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    if (CompositedScrollEnabled()) {
+      cmd->AppendSwitch(blink::switches::kEnablePreferCompositingToLCDText);
+    } else {
+      cmd->AppendSwitch(blink::switches::kDisablePreferCompositingToLCDText);
+    }
+  }
+
+  static bool CompositedScrollEnabled() {
+    return GetParam() & kCompositedScroll;
+  }
+
+  static bool RasterInducingScrollEnabled() {
+    return GetParam() & kRasterInducingScroll;
+  }
 
   const char* kWheelHistogramName = "Renderer4.ScrollingThread.Wheel";
   const char* kTouchHistogramName = "Renderer4.ScrollingThread.Touch";
@@ -209,11 +227,23 @@ class CompositedScrollingMetricTest : public CompositedScrollingBrowserTest,
     kScrollingOnMain = 2,
     kMaxValue = kScrollingOnMain,
   };
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         CompositedScrollingMetricTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CompositedScrollingMetricTest,
+    ::testing::Values(0,
+                      kCompositedScroll,
+                      kRasterInducingScroll,
+                      kCompositedScroll | kRasterInducingScroll),
+    [](const ::testing::TestParamInfo<unsigned>& info) {
+      return base::StringPrintf(
+          "%s%s",
+          (info.param & kCompositedScroll) ? "Composited" : "NonComposited",
+          (info.param & kRasterInducingScroll) ? "_RasterInducingScroll" : "");
+    });
 
 // Tests the functionality of the histogram tracking composited vs main thread
 // scrolls.
@@ -251,7 +281,11 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
   content::FetchHistogramsFromChildProcesses();
 
   base::HistogramBase::Sample expected_bucket =
-      CompositingEnabled() ? kScrollingOnCompositor : kScrollingOnMain;
+      CompositedScrollEnabled() ? kScrollingOnCompositor
+      // TODO(crbug.com/329115115): For now we still need main-thread
+      // hit-testing in RasterInducingScroll for non-composited scroller.
+      : RasterInducingScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
+                                      : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
@@ -297,8 +331,8 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest, BlockingEventHandlers) {
   content::FetchHistogramsFromChildProcesses();
 
   base::HistogramBase::Sample expected_bucket =
-      CompositingEnabled() ? kScrollingOnCompositorBlockedOnMain
-                           : kScrollingOnMain;
+      CompositedScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
+                                : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
@@ -353,7 +387,11 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
   content::FetchHistogramsFromChildProcesses();
 
   base::HistogramBase::Sample expected_bucket =
-      CompositingEnabled() ? kScrollingOnCompositor : kScrollingOnMain;
+      CompositedScrollEnabled() ? kScrollingOnCompositor
+      // TODO(crbug.com/329115115): For now we still need main-thread
+      // hit-testing in RasterInducingScroll for non-composited scroller.
+      : RasterInducingScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
+                                      : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
