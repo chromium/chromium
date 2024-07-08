@@ -144,6 +144,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -609,6 +610,12 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     // Disable the Windows WebAuthn API integration by default. Individual tests
     // can modify this.
     fake_win_webauthn_api_.set_available(false);
+
+    // Prevent `FidoRequestHandlerBase` from doing a system API call, which can
+    // cause tests to finish early since `RunUntilIdle` won't see it in the task
+    // queue.
+    biometrics_override_ =
+        std::make_unique<device::fido::win::ScopedBiometricsOverride>(false);
 #endif
 
     ResetVirtualDevice();
@@ -654,6 +661,8 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{
       &fake_win_webauthn_api_};
+  std::unique_ptr<device::fido::win::ScopedBiometricsOverride>
+      biometrics_override_;
 #endif
 
  private:
