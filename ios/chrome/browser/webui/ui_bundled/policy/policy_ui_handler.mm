@@ -226,6 +226,12 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
   std::string json_policies_string = args[1].GetString();
 
+  if (!PolicyUI::ShouldLoadTestPage(
+          ChromeBrowserState::FromWebUIIOS(web_ui()))) {
+    web_ui()->ResolveJavascriptCallback(args[0], true);
+    return;
+  }
+
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
           GetApplicationContext()
@@ -244,6 +250,11 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
+  if (!PolicyUI::ShouldLoadTestPage(
+          ChromeBrowserState::FromWebUIIOS(web_ui()))) {
+    return;
+  }
+
   ChromeBrowserState::FromWebUIIOS(web_ui())
       ->GetPolicyConnector()
       ->RevertUseLocalTestPolicyProvider();

@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -69,6 +70,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_scheduler.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/policy_utils.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
@@ -318,6 +320,12 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
   std::string policies = args[1].GetString();
+  AllowJavascript();
+
+  if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
+    ResolveJavascriptCallback(args[0], true);
+    return;
+  }
 
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
@@ -340,12 +348,14 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
       ->UseLocalTestPolicyProvider();
 
   local_test_provider->LoadJsonPolicies(policies);
-  AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
+  if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
+    return;
+  }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);

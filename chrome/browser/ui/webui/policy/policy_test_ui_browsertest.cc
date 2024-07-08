@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -271,6 +272,57 @@ class PolicyTestHandlerTest : public PlatformBrowserTest {
       relaunch_chrome_override_;
 #endif
 };
+
+IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
+                       HandleSetLocalTestPoliciesNotSupported) {
+  // Ensure chrome://policy/test not supported.
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  std::unique_ptr<PolicyUIHandler> handler = SetUpHandler();
+  const std::string jsonString =
+      R"([
+      {"level": 0,"scope": 0,"source": 0, "namespace": "chrome",
+       "name": "AutofillAddressEnabled","value": false},
+      {"level": 1,"scope": 1,"source": 2, "namespace": "chrome",
+       "name": "CloudReportingEnabled","value": true}
+      ])";
+  const std::string revertAppliedPoliciesButtonDisabledJs =
+      R"(
+        document
+          .querySelector('#revert-applied-policies')
+          .disabled;
+      )";
+
+  base::Value::List list_args;
+
+  list_args.Append("setLocalTestPolicies");
+  list_args.Append(jsonString);
+  list_args.Append("{}");
+
+  // Open chrome://policy
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  web_ui()->HandleReceivedMessage("setLocalTestPolicies", list_args);
+
+  base::RunLoop().RunUntilIdle();
+
+  const policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME,
+                                                 std::string());
+  policy::PolicyService* policy_service =
+      GetProfile()->GetProfilePolicyConnector()->policy_service();
+
+  // Check policies not applied
+  const policy::PolicyMap* policy_map =
+      &policy_service->GetPolicies(chrome_namespace);
+  ASSERT_TRUE(policy_map);
+
+  {
+    const policy::PolicyMap::Entry* entry =
+        policy_map->Get(policy::key::kAutofillAddressEnabled);
+    ASSERT_FALSE(entry);
+  }
+}
 
 IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
                        HandleSetAndRevertLocalTestPolicies) {
