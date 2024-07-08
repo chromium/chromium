@@ -303,6 +303,9 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // context.
   bool off_the_record_confirmed_ = false;
 
+  // Whether the user confirmed GPM PIN creation in the flow.
+  bool gpm_pin_creation_confirmed_ = false;
+
   const raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};

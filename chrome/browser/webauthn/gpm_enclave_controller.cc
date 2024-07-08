@@ -39,6 +39,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -1072,6 +1073,13 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
   model_->ui_disabled_ = true;
   model_->OnSheetModelChanged();
 
+  if (model_->step() == Step::kGPMChangeArbitraryPin ||
+      model_->step() == Step::kGPMChangePin ||
+      model_->step() == Step::kGPMCreateArbitraryPin ||
+      model_->step() == Step::kGPMCreatePin) {
+    gpm_pin_creation_confirmed_ = true;
+  }
+
   if (account_state_ == AccountState::kRecoverable) {
     CHECK(enclave_manager_->has_pending_keys());
     // In this case, we were waiting for the user to create their GPM PIN.
@@ -1296,8 +1304,22 @@ void GPMEnclaveController::OnPasskeyCreated(
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(GetProfile());
   passkey_model->CreatePasskey(passkey);
+
   if (device::kWebAuthnGpmPin.Get()) {
-    model_->OnPasskeySaved();
+    content::WebContents* web_contents = model_->GetWebContents();
+    if (!web_contents) {
+      return;
+    }
+
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      bool gpm_pin_created_in_this_request =
+          gpm_pin_creation_confirmed_ && enclave_manager_->has_wrapped_pin();
+      manage_passwords_ui_controller->OnPasskeySaved(
+          base::UTF8ToUTF16(model_->user_entity.name.value_or("")),
+          gpm_pin_created_in_this_request);
+    }
   }
 }
 

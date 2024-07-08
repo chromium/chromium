@@ -31,7 +31,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
@@ -1545,22 +1544,6 @@ void AuthenticatorRequestDialogController::SetPriorityPhoneIndex(
     model_->priority_phone_name.reset();
   }
   priority_phone_index_ = index;
-}
-
-void AuthenticatorRequestDialogController::OnPasskeySaved() {
-  content::WebContents* web_contents = model_->GetWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  PasswordsClientUIDelegate* manage_passwords_ui_controller =
-      PasswordsClientUIDelegateFromWebContents(web_contents);
-  if (manage_passwords_ui_controller) {
-    // TODO(b/345242100): Pass whether gpm pin was actually created.
-    manage_passwords_ui_controller->OnPasskeySaved(
-        base::UTF8ToUTF16(model_->user_entity.name.value_or("")),
-        /*gpm_pin_created=*/false);
-  }
 }
 
 void AuthenticatorRequestDialogController::StartTransportFlowForTesting(
