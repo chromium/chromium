@@ -257,7 +257,10 @@ class DummyKeyboardBrightnessControlDelegate
         ui::Accelerator(ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE);
   }
 
-  void HandleSetKeyboardBrightness(double percent, bool gradual) override {}
+  void HandleSetKeyboardBrightness(
+      double percent,
+      bool gradual,
+      KeyboardBrightnessChangeSource source) override {}
 
   void HandleGetKeyboardBrightness(
       base::OnceCallback<void(std::optional<double>)> callback) override {

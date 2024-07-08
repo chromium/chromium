@@ -341,8 +341,12 @@ class FakeKeyboardBrightnessControlDelegate
   void HandleKeyboardBrightnessDown() override {}
   void HandleKeyboardBrightnessUp() override {}
   void HandleToggleKeyboardBacklight() override {}
-  void HandleSetKeyboardBrightness(double percent, bool gradual) override {
+  void HandleSetKeyboardBrightness(
+      double percent,
+      bool gradual,
+      KeyboardBrightnessChangeSource source) override {
     keyboard_brightness_ = percent;
+    keyboard_brightness_change_source_ = source;
   }
   void HandleGetKeyboardBrightness(
       base::OnceCallback<void(std::optional<double>)> callback) override {
@@ -357,6 +361,9 @@ class FakeKeyboardBrightnessControlDelegate
   }
 
   double keyboard_brightness() { return keyboard_brightness_; }
+  KeyboardBrightnessChangeSource keyboard_brightness_change_source() const {
+    return keyboard_brightness_change_source_;
+  }
   bool keyboard_ambient_light_sensor_enabled() {
     return keyboard_ambient_light_sensor_enabled_;
   }
@@ -364,6 +371,8 @@ class FakeKeyboardBrightnessControlDelegate
  private:
   double keyboard_brightness_ = 0;
   bool keyboard_ambient_light_sensor_enabled_ = true;
+  KeyboardBrightnessChangeSource keyboard_brightness_change_source_ =
+      KeyboardBrightnessChangeSource::kRestoredFromUserPref;
 };
 
 class FakeInputDeviceSettingsController
@@ -1116,7 +1125,11 @@ TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
   // Set initial brightness to 40.0.
   double initial_brightness = 40.0;
   keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
-      initial_brightness, /*gradual=*/false);
+      initial_brightness, /*gradual=*/false,
+      KeyboardBrightnessChangeSource::kSettingsApp);
+  EXPECT_EQ(KeyboardBrightnessChangeSource::kSettingsApp,
+            keyboard_brightness_control_delegate_
+                ->keyboard_brightness_change_source());
 
   provider_->ObserveKeyboardBrightness(
       fake_observer.receiver.BindNewPipeAndPassRemote());
@@ -1185,14 +1198,17 @@ TEST_F(InputDeviceSettingsProviderTest,
 
 TEST_F(InputDeviceSettingsProviderTest, SetKeyboardBrightness) {
   double adjustedBrightness = 60.9;
-  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
-      adjustedBrightness, /*gradual=*/false);
+  provider_->SetKeyboardBrightness(adjustedBrightness);
   EXPECT_EQ(adjustedBrightness,
             keyboard_brightness_control_delegate_->keyboard_brightness());
+  // When user change keyboard brightness from settings(using provider), the
+  // change source should be kSettingsApp.
+  EXPECT_EQ(KeyboardBrightnessChangeSource::kSettingsApp,
+            keyboard_brightness_control_delegate_
+                ->keyboard_brightness_change_source());
 
   adjustedBrightness = 20.3;
-  keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
-      adjustedBrightness, /*gradual=*/false);
+  provider_->SetKeyboardBrightness(adjustedBrightness);
   EXPECT_EQ(adjustedBrightness,
             keyboard_brightness_control_delegate_->keyboard_brightness());
 }

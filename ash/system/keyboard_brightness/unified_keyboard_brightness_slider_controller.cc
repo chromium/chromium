@@ -19,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "base/functional/bind.h"
@@ -152,6 +153,19 @@ void UnifiedKeyboardBrightnessSliderController::SliderValueChanged(
     float old_value,
     views::SliderChangeReason reason) {
   if (reason != views::SliderChangeReason::kByUser) {
+    return;
+  }
+
+  if (features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    KeyboardBrightnessControlDelegate* keyboard_brightness_control_delegate =
+        Shell::Get()->keyboard_brightness_control_delegate();
+    if (!keyboard_brightness_control_delegate) {
+      return;
+    }
+    const double percent = value * 100;
+    keyboard_brightness_control_delegate->HandleSetKeyboardBrightness(
+        percent, /*gradual=*/true,
+        /*source=*/KeyboardBrightnessChangeSource::kQuickSettings);
     return;
   }
 

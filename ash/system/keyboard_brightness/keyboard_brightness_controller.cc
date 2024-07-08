@@ -198,16 +198,24 @@ void KeyboardBrightnessController::HandleToggleKeyboardBacklight() {
   chromeos::PowerManagerClient::Get()->ToggleKeyboardBacklight();
 }
 
-void KeyboardBrightnessController::HandleSetKeyboardBrightness(double percent,
-                                                               bool gradual) {
+void KeyboardBrightnessController::HandleSetKeyboardBrightness(
+    double percent,
+    bool gradual,
+    KeyboardBrightnessChangeSource source) {
   power_manager::SetBacklightBrightnessRequest request;
   request.set_percent(percent);
   request.set_transition(
       gradual
           ? power_manager::SetBacklightBrightnessRequest_Transition_FAST
           : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
-  request.set_cause(
-      power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
+
+  power_manager::SetBacklightBrightnessRequest_Cause
+      keyboard_brightness_change_cause =
+          source == KeyboardBrightnessChangeSource::kSettingsApp
+              ? power_manager::
+                    SetBacklightBrightnessRequest_Cause_USER_REQUEST_FROM_SETTINGS_APP
+              : power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST;
+  request.set_cause(keyboard_brightness_change_cause);
   chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
 }
 
@@ -247,8 +255,10 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
         known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
             ->GetIfDouble();
     if (keyboard_brightness_for_account.has_value()) {
-      HandleSetKeyboardBrightness(keyboard_brightness_for_account.value(),
-                                  /*gradual=*/true);
+      HandleSetKeyboardBrightness(
+          keyboard_brightness_for_account.value(),
+          /*gradual=*/true,
+          KeyboardBrightnessChangeSource::kRestoredFromUserPref);
     }
   }
 

@@ -11,6 +11,14 @@
 
 namespace ash {
 
+// Enum to represent the source of a keyboard brightness change.
+enum class KeyboardBrightnessChangeSource {
+  kQuickSettings = 0,
+  kSettingsApp = 1,
+  kRestoredFromUserPref = 2,
+  kMaxValue = kRestoredFromUserPref,
+};
+
 // Delegate for controlling the keyboard brightness.
 class KeyboardBrightnessControlDelegate {
  public:
@@ -27,7 +35,10 @@ class KeyboardBrightnessControlDelegate {
   // Requests that the keyboard brightness be set to |percent|, in the range
   // [0.0, 100.0].  |gradual| specifies whether the transition to the new
   // brightness should be animated or instantaneous.
-  virtual void HandleSetKeyboardBrightness(double percent, bool gradual) = 0;
+  virtual void HandleSetKeyboardBrightness(
+      double percent,
+      bool gradual,
+      KeyboardBrightnessChangeSource source) = 0;
 
   // Asynchronously invokes |callback| with the current brightness, in the range
   // [0.0, 100.0]. In case of error, it is called with nullopt.

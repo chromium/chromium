@@ -233,6 +233,7 @@ void FakePowerManagerClient::GetKeyboardBrightnessPercent(
 void FakePowerManagerClient::SetKeyboardBrightness(
     const power_manager::SetBacklightBrightnessRequest& request) {
   keyboard_brightness_percent_ = request.percent();
+  requested_keyboard_brightness_cause_ = request.cause();
 
   power_manager::BacklightBrightnessChange change;
   change.set_percent(request.percent());

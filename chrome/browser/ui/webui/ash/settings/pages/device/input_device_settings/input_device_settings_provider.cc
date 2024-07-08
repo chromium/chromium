@@ -378,7 +378,7 @@ void InputDeviceSettingsProvider::SetKeyboardBrightness(double percent) {
     return;
   }
   keyboard_brightness_control_delegate_->HandleSetKeyboardBrightness(
-      percent, /*gradual=*/true);
+      percent, /*gradual=*/true, KeyboardBrightnessChangeSource::kSettingsApp);
 }
 
 void InputDeviceSettingsProvider::SetKeyboardAmbientLightSensorEnabled(
