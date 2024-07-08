@@ -77,7 +77,7 @@
         $i18n{cancel}
       </cr-button>
       <cr-button class="action-button" on-click="onPinSubmit_"
-          disabled="[[isConfirmDisabled_(pinValue_, isVerificationPending_)]]">
+          disabled="[[!enableSubmit_]]">
         $i18n{confirm}
       </cr-button>
     </div>

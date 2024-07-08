@@ -17,10 +17,14 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash::settings {
 
 namespace {
+constexpr size_t kValidPinLength = 6u;
+const char kNumericOnlyRegex[] = R"(^\d+$)";
+
 app_parental_controls::mojom::AppPtr CreateAppPtr(
     const apps::AppUpdate& update) {
   auto app = app_parental_controls::mojom::App::New();
@@ -87,6 +91,22 @@ void AppParentalControlsHandler::AddObserver(
 
 void AppParentalControlsHandler::OnControlsDisabled() {
   blocked_app_registry_->RemoveAllApps();
+}
+
+void AppParentalControlsHandler::ValidatePin(const std::string& pin,
+                                             ValidatePinCallback callback) {
+  if (pin.length() != kValidPinLength) {
+    std::move(callback).Run(
+        app_parental_controls::mojom::PinValidationResult::kPinLengthError);
+    return;
+  }
+  if (!RE2::FullMatch(pin, kNumericOnlyRegex)) {
+    std::move(callback).Run(
+        app_parental_controls::mojom::PinValidationResult::kPinNumericError);
+    return;
+  }
+  std::move(callback).Run(
+      app_parental_controls::mojom::PinValidationResult::kPinValidationSuccess);
 }
 
 void AppParentalControlsHandler::OnAppUpdate(const apps::AppUpdate& update) {

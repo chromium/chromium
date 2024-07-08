@@ -5,11 +5,14 @@
 import {appParentalControlsHandlerMojom} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+const {PinValidationResult} = appParentalControlsHandlerMojom;
 type App = appParentalControlsHandlerMojom.App;
 type AppParentalControlsHandlerInterface =
     appParentalControlsHandlerMojom.AppParentalControlsHandlerInterface;
 type AppParentalControlsObserverRemoteType =
     appParentalControlsHandlerMojom.AppParentalControlsObserverRemote;
+type PinValidationResultType =
+    appParentalControlsHandlerMojom.PinValidationResult;
 
 export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     AppParentalControlsHandlerInterface {
@@ -17,7 +20,13 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
   private observer_: AppParentalControlsObserverRemoteType|null = null;
 
   constructor() {
-    super(['getApps', 'updateApp', 'addObserver', 'onControlsDisabled']);
+    super([
+      'getApps',
+      'updateApp',
+      'addObserver',
+      'onControlsDisabled',
+      'validatePin',
+    ]);
   }
 
   getApps(): Promise<{apps: App[]}> {
@@ -51,6 +60,19 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
+  validatePin(pin: string): Promise<{result: PinValidationResultType}> {
+    this.methodCalled('validatePin');
+    // Keep these conditions consistent with the production-used implementation
+    // in the C++ implementation.
+    if (pin.length !== 6) {
+      return Promise.resolve({result: PinValidationResult.kPinLengthError});
+    }
+    if (!this.isNumeric(pin)) {
+      return Promise.resolve({result: PinValidationResult.kPinNumericError});
+    }
+    return Promise.resolve({result: PinValidationResult.kPinValidationSuccess});
+  }
+
   addAppForTesting(app: App) {
     this.apps_.push(app);
   }
@@ -64,5 +86,9 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
 
   getObserverRemote(): AppParentalControlsObserverRemoteType|null {
     return this.observer_;
+  }
+
+  private isNumeric(pin: string): boolean {
+    return /^\d+$/.test(pin);
   }
 }

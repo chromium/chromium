@@ -47,6 +47,8 @@ class AppParentalControlsHandler
                    app_parental_controls::mojom::AppParentalControlsObserver>
                        observer) override;
   void OnControlsDisabled() override;
+  void ValidatePin(const std::string& pin,
+                   ValidatePinCallback callback) override;
 
   void BindInterface(
       mojo::PendingReceiver<

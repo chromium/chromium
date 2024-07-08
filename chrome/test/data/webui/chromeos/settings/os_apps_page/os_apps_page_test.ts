@@ -481,6 +481,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!pinKeyboard);
             assertTrue(hasStringProperty(pinKeyboard, 'value'));
             pinKeyboard.value = pin;
+            await flushTasks();
 
             const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
@@ -494,6 +495,7 @@ suite('AppsPageTests', () => {
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
+            await flushTasks();
 
             assertTrue(!!continuePinSetupButton);
             continuePinSetupButton.click();
@@ -545,6 +547,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!pinKeyboard);
             assertTrue(hasStringProperty(pinKeyboard, 'value'));
             pinKeyboard.value = pin;
+            await flushTasks();
 
             const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
@@ -558,6 +561,7 @@ suite('AppsPageTests', () => {
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
+            await flushTasks();
 
             assertTrue(!!continuePinSetupButton);
             continuePinSetupButton.click();
@@ -600,6 +604,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!verifyPinKeyboard);
             assertTrue(hasStringProperty(verifyPinKeyboard, 'value'));
             verifyPinKeyboard.value = pin;
+            await flushTasks();
 
             // Simulate pressing the enter key.
             const pinInput =
@@ -654,6 +659,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!pinKeyboard);
             assertTrue(hasStringProperty(pinKeyboard, 'value'));
             pinKeyboard.value = pin;
+            await flushTasks();
 
             const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
@@ -667,6 +673,7 @@ suite('AppsPageTests', () => {
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
+            await flushTasks();
 
             assertTrue(!!continuePinSetupButton);
             continuePinSetupButton.click();
@@ -709,6 +716,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!verifyPinKeyboard);
             assertTrue(hasStringProperty(verifyPinKeyboard, 'value'));
             verifyPinKeyboard.value = '123457';
+            await flushTasks();
 
             // Simulate pressing the enter key.
             const pinInput =
@@ -758,6 +766,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!pinKeyboard);
             assertTrue(hasStringProperty(pinKeyboard, 'value'));
             pinKeyboard.value = pin;
+            await flushTasks();
 
             const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
@@ -771,6 +780,7 @@ suite('AppsPageTests', () => {
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
+            await flushTasks();
 
             assertTrue(!!continuePinSetupButton);
             continuePinSetupButton.click();
@@ -879,6 +889,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!pinKeyboard);
             assertTrue(hasStringProperty(pinKeyboard, 'value'));
             pinKeyboard.value = pin;
+            await flushTasks();
 
             const continuePinSetupButton =
                 setupPinDialog.shadowRoot!
@@ -892,6 +903,7 @@ suite('AppsPageTests', () => {
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
+            await flushTasks();
 
             assertTrue(!!continuePinSetupButton);
             continuePinSetupButton.click();

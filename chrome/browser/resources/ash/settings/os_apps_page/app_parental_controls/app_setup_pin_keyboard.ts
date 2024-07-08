@@ -18,8 +18,11 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppParentalControlsHandlerInterface, PinValidationResult} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+
 import {getTemplate} from './app_setup_pin_keyboard.html.js';
 import {ParentalControlsPinDialogError, recordPinDialogError} from './metrics_utils.js';
+import {getAppParentalControlsProvider} from './mojo_interface_provider.js';
 
 /**
  * Error type mapped to the corresponding i18n string.
@@ -115,8 +118,14 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
 
   private initialPin_: string;
   private isSetPinCallPending_: boolean;
+  private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
   private pinKeyboardValue_: string;
   private problemMessage_: string;
+
+  constructor() {
+    super();
+    this.mojoInterfaceProvider = getAppParentalControlsProvider();
+  }
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
@@ -146,44 +155,35 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     return this.isConfirmStep && (this.initialPin_ === this.pinKeyboardValue_);
   }
 
-  private canGoToConfirmStep_(newPin: string): boolean {
+  private async canGoToConfirmStep_(newPin: string): Promise<boolean> {
     this.problemMessage_ = '';
 
     if (this.isConfirmStep) {
       return true;
     }
 
-    return this.isValidPin_(newPin);
-  }
-
-  private isValidPin_(newPin: string): boolean {
-    // If no PIN is entered erase the problem message.
     if (newPin.length === 0) {
-      this.problemMessage_ = '';
-      return true;
-    }
-
-    if (newPin.length !== PIN_LENGTH) {
-      this.problemMessage_ = this.i18n(MessageType.WRONG_LENGTH);
       return false;
     }
 
-    if (!this.isNumeric_(newPin)) {
-      this.problemMessage_ = this.i18n(MessageType.NUMBERS_ONLY);
-      return false;
+    // Check if a valid PIN is entered before going to confirm step.
+    const validationResult =
+        await this.mojoInterfaceProvider.validatePin(newPin);
+    switch (validationResult.result) {
+      case (PinValidationResult.kPinValidationSuccess):
+        return true;
+      case (PinValidationResult.kPinLengthError):
+        this.problemMessage_ = this.i18n(MessageType.WRONG_LENGTH);
+        return false;
+      case (PinValidationResult.kPinNumericError):
+        this.problemMessage_ = this.i18n(MessageType.NUMBERS_ONLY);
+        return false;
     }
-
-    return true;
   }
 
-  private isNumeric_(str: string): boolean {
-    // RegExp to test if all characters are digits.
-    return /^\d+$/.test(str);
-  }
-
-  private onPinChange_(e: CustomEvent<{pin: string}>): void {
+  private async onPinChange_(e: CustomEvent<{pin: string}>): Promise<void> {
     const newPin = e.detail.pin;
-    this.enableSubmit = this.canGoToConfirmStep_(newPin);
+    this.enableSubmit = await this.canGoToConfirmStep_(newPin);
   }
 
   /**

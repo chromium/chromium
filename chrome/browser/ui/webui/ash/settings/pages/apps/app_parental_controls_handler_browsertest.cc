@@ -330,4 +330,106 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, UninstallApp) {
   EXPECT_EQ(observer()->recently_uninstalled_app()->id, arc_app_id1);
 }
 
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinSuccess) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      "123456",
+      base::BindLambdaForTesting(
+          [&](app_parental_controls::mojom::PinValidationResult result)
+              -> void {
+            EXPECT_EQ(result, app_parental_controls::mojom::
+                                  PinValidationResult::kPinValidationSuccess);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinEmptyString) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      std::string(),
+      base::BindLambdaForTesting([&](app_parental_controls::mojom::
+                                         PinValidationResult result) -> void {
+        EXPECT_EQ(
+            result,
+            app_parental_controls::mojom::PinValidationResult::kPinLengthError);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinTooShortError) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      "1234",
+      base::BindLambdaForTesting([&](app_parental_controls::mojom::
+                                         PinValidationResult result) -> void {
+        EXPECT_EQ(
+            result,
+            app_parental_controls::mojom::PinValidationResult::kPinLengthError);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinTooLongError) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      "1234567",
+      base::BindLambdaForTesting([&](app_parental_controls::mojom::
+                                         PinValidationResult result) -> void {
+        EXPECT_EQ(
+            result,
+            app_parental_controls::mojom::PinValidationResult::kPinLengthError);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinNumericError) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      "1a3%56",
+      base::BindLambdaForTesting(
+          [&](app_parental_controls::mojom::PinValidationResult result)
+              -> void {
+            EXPECT_EQ(result, app_parental_controls::mojom::
+                                  PinValidationResult::kPinNumericError);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
+                       ValidatePinWithSpecialCharactersNumericError) {
+  AppParentalControlsHandler* handler = GetHandler();
+
+  base::RunLoop run_loop;
+  handler->ValidatePin(
+      "1a3%û", base::BindLambdaForTesting(
+                   [&](app_parental_controls::mojom::PinValidationResult result)
+                       -> void {
+                     EXPECT_EQ(result,
+                               app_parental_controls::mojom::
+                                   PinValidationResult::kPinNumericError);
+                     run_loop.Quit();
+                   }));
+  run_loop.Run();
+}
+
 }  // namespace ash::settings

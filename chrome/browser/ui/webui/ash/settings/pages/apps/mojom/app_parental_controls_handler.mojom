@@ -4,6 +4,15 @@
 
 module ash.settings.app_parental_controls.mojom;
 
+// Types of validation results for a PIN.
+enum PinValidationResult {
+  kPinValidationSuccess,
+  // PIN is not the correct length.
+  kPinLengthError,
+  // PIN is not numbers only.
+  kPinNumericError,
+};
+
 // App representation for on-device parental controls settings. Contains the app
 // id and title. Represents Apps that can be managed.
 struct App {
@@ -32,6 +41,10 @@ interface AppParentalControlsHandler {
 
   // Called when app controls are disabled in settings.
   OnControlsDisabled();
+
+  // Returns if the PIN is a valid PIN that can be stored. If it is not a valid
+  // PIN, returns the type of error that makes the PIN invalid.
+  ValidatePin(string pin) => (PinValidationResult result);
 };
 
 // Observer interface that sends remote updates to the app parental controls UI

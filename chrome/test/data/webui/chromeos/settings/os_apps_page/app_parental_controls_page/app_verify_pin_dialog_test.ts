@@ -5,17 +5,24 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppVerifyPinDialogElement, ParentalControlsPinDialogError} from 'chrome://os-settings/lazy_load.js';
+import {setAppParentalControlsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../../fake_metrics_private.js';
 import {hasStringProperty} from '../../utils.js';
 
+import {FakeAppParentalControlsHandler} from './fake_app_parental_controls_handler.js';
+
 suite('AppVerifyPinDialogTest', () => {
   let verifyPinDialog: AppVerifyPinDialogElement;
   let fakeMetricsPrivate: FakeMetricsPrivate;
+  let handler: FakeAppParentalControlsHandler;
 
   setup(() => {
+    handler = new FakeAppParentalControlsHandler();
+    setAppParentalControlsProviderForTesting(handler);
+
     fakeMetricsPrivate = new FakeMetricsPrivate();
     chrome.metricsPrivate = fakeMetricsPrivate;
 
