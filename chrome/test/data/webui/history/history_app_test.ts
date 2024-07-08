@@ -24,7 +24,10 @@ suite('HistoryAppTest', function() {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 2});
+    loadTimeData.overrideValues({
+      historyEmbeddingsSearchMinimumWordCount: 2,
+      enableHistoryEmbeddings: true,
+    });
 
     browserService = new TestBrowserService();
     BrowserServiceImpl.setInstance(browserService);
@@ -50,6 +53,35 @@ suite('HistoryAppTest', function() {
     element.$.router.selectedPage = 'grouped';
     await flushTasks();
     assertEquals(element.$.tabsScrollContainer, element.scrollTarget);
+
+    // Switching to synced tabs should change scroll target to it.
+    element.$.router.selectedPage = 'syncedTabs';
+    await flushTasks();
+    assertEquals(
+        element.shadowRoot!.querySelector('history-synced-device-manager'),
+        element.scrollTarget);
+  });
+
+  test('SetsScrollTargetForEmbeddingsDisabled', async () => {
+    // Override loadTimeData and re-create the element to disable history
+    // embeddings.
+    loadTimeData.overrideValues({enableHistoryEmbeddings: false});
+    element.remove();
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    await flushTasks();
+
+    // By default, the history-list should be its own scroll container.
+    assertEquals(
+        element.shadowRoot!.querySelector('history-list'),
+        element.scrollTarget);
+
+    // 'By group' view switches the scroll target to it.
+    element.$.router.selectedPage = 'grouped';
+    await flushTasks();
+    assertEquals(
+        element.shadowRoot!.querySelector('history-clusters'),
+        element.scrollTarget);
 
     // Switching to synced tabs should change scroll target to it.
     element.$.router.selectedPage = 'syncedTabs';

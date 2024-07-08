@@ -67,9 +67,27 @@
         width: 100%;
       }
 
+      /**
+       * If history embeddings is enabled, all tabbed content shares the same
+       * parent scroll container #tabsScrollContainer. Otherwise, tabbed
+       * content are their own individual scroll containers.
+       */
       #tabsScrollContainer {
-        overflow: auto;
+        overflow: hidden;
         height: 100%;
+      }
+
+      :host([enable-history-embeddings_]) #tabsScrollContainer {
+        overflow: auto;
+      }
+
+      :host(:not([enable-history-embeddings_])) #tabs-content {
+        height: 100%;
+      }
+
+      :host(:not([enable-history-embeddings_])) #tabs-content > * {
+        height: 100%;
+        overflow: auto;
       }
 
       :host([show-history-clusters_]) #tabsScrollContainer {

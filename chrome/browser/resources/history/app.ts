@@ -165,6 +165,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       enableHistoryEmbeddings_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableHistoryEmbeddings'),
+        reflectToAttribute: true,
       },
 
       // The id of the currently selected page.
@@ -657,9 +658,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
     const topLevelHistoryPage = this.$['tabs-container'];
     if (topLevelIronPages.selectedItem &&
         topLevelIronPages.selectedItem === topLevelHistoryPage) {
-      // The top-level History page has another inner IronPages element that
-      // can toggle between different pages.
-      this.scrollTarget = this.$.tabsScrollContainer;
+      if (this.enableHistoryEmbeddings_) {
+        // The top-level History page has another inner IronPages element that
+        // can toggle between different pages.
+        this.scrollTarget = this.$.tabsScrollContainer;
+      } else {
+        this.scrollTarget = this.$['tabs-content'].selectedItem as HTMLElement;
+      }
     } else if (topLevelIronPages.selectedItem) {
       this.scrollTarget = topLevelIronPages.selectedItem as HTMLElement;
     } else {
