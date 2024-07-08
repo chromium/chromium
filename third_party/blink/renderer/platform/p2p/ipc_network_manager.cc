@@ -158,8 +158,7 @@ void IpcNetworkManager::OnNetworkListChanged(
       // TODO(b/350111561): Remove once the applications are updated to handle
       // ULA addresses properly.
 #if BUILDFLAG(IS_FUCHSIA)
-      if (iface_addr.family() == AF_INET6 &&
-          rtc::IPIsPrivateNetwork(iface_addr)) {
+      if (rtc::IPIsPrivate(iface_addr)) {
         continue;
       }
 #endif  // BUILDFLAG(IS_FUCHSIA)
