@@ -97,6 +97,11 @@ public abstract class HubBaseStation extends Station {
         return mTabModelSelectorSupplier;
     }
 
+    /** Returns the {@link ChromeTabbedActivity} supplier for this station. */
+    public Supplier<ChromeTabbedActivity> getActivitySupplier() {
+        return mActivitySupplier;
+    }
+
     /** Returns the {@link ChromeTabbedActivity} for this station. */
     public ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();

@@ -34,6 +34,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
 import org.chromium.chrome.test.transit.tab_groups.TabGroupUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.test.transit.SoftKeyboardElement;
 
 import java.util.List;
 
@@ -107,6 +108,8 @@ public class HubNewTabGroupDialogFacility extends Facility<HubTabSwitcherBaseSta
         }
 
         elements.declareView(DONE_BUTTON);
+
+        elements.declareElementInState(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
     }
 
     private Matcher<View> colorPickerIconMatcher(

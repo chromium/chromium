@@ -512,6 +512,8 @@ robolectric_library("ui_junit_test_support") {
 android_library("ui_java_test_support") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/ui/test/transit/SoftKeyboardCondition.java",
+    "javatests/src/org/chromium/ui/test/transit/SoftKeyboardElement.java",
     "javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java",
     "javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/DeviceRestriction.java",
@@ -531,6 +533,7 @@ android_library("ui_java_test_support") {
     ":ui_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base/test:public_transit_java",
     "//components/browser_ui/modaldialog/android:java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
 
