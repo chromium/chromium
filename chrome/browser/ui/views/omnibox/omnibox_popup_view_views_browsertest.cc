@@ -104,7 +104,7 @@ class TestAXEventObserver : public views::AXEventObserver {
       return;
     }
     ui::AXNodeData node_data;
-    view->GetAccessibleNodeData(&node_data);
+    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
     ax::mojom::Role role = node_data.role;
     if (event_type == ax::mojom::Event::kTextChanged &&
         role == ax::mojom::Role::kListBoxOption) {
@@ -412,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 
   // Check that active descendant on textbox matches the selected result view.
   ui::AXNodeData ax_node_data_omnibox;
-  omnibox_view()->GetAccessibleNodeData(&ax_node_data_omnibox);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
   OmniboxResultView* selected_result_view = GetResultViewAt(2);
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),

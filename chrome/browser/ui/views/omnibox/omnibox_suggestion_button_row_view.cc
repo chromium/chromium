@@ -144,6 +144,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       return v->GetVisible() && v->popup_view_->GetSelection() == v->selection_;
     }));
     focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
   }
 
   OmniboxSuggestionRowButton(const OmniboxSuggestionRowButton&) = delete;
@@ -198,13 +200,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
             fill_color, stroke_color, GetCornerRadiusValue(),
             SkBlendMode::kSrcOver, /*antialias=*/true,
             /*should_border_scale=*/true)));
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Although this appears visually as a button, expose as a list box option
-    // so that it matches the other options within its list box container.
-    node_data->role = ax::mojom::Role::kListBoxOption;
-    node_data->SetName(GetViewAccessibility().GetCachedName());
   }
 
   void SetIcon(const gfx::VectorIcon& icon) {
