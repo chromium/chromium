@@ -6,7 +6,7 @@ import 'chrome-untrusted://compose/app.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement} from 'chrome-untrusted://compose/app.js';
-import { StyleModifier, UserFeedback } from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import {StyleModifier} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -131,6 +131,10 @@ suite('ComposeApp', function() {
   });
 
   test('FocusesUndoButtonAfterUndoClick', async () => {
+    // This test is only useful for non-refinement UI.
+    loadTimeData.overrideValues({
+      enableRefinedUi: false,
+    });
     // Set up initial state to show undo button and mock up a previous state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy.setOpenMetadata({}, {
@@ -145,34 +149,101 @@ suite('ComposeApp', function() {
         triggeredFromModifier: false,
       },
     });
-    testProxy.setUndoResponse({
+    const appWithUndo = document.createElement('compose-app');
+    document.body.appendChild(appWithUndo);
+    await testProxy.whenCalled('requestInitialState');
+
+    // The undo button keeps focus after it is clicked.
+    testProxy.setUndoResponseWithUndoAndRedo(true, false);
+    appWithUndo.$.undoButton.click();
+    await testProxy.whenCalled('undo');
+    await flushTasks();
+
+    assertEquals(
+        appWithUndo.$.undoButton, appWithUndo.shadowRoot!.activeElement);
+  });
+
+  test('FocusesUndoOrRedoButtonAfterUndoClick', async () => {
+    // This test is only useful for Refinements UI.
+    loadTimeData.overrideValues({
+      enableRefinedUi: true,
+    });
+    // Set up initial state to show undo/redo buttons and mock up a previous
+    // state.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy.setOpenMetadata({}, {
       hasPendingRequest: false,
       response: {
         status: ComposeStatus.kOk,
-        undoAvailable: false,
-        redoAvailable: false,
+        undoAvailable: true,
+        redoAvailable: true,
         providedByUser: false,
-        result: 'some undone result',
+        result: 'here is a result',
         onDeviceEvaluationUsed: false,
         triggeredFromModifier: false,
       },
-      webuiState: JSON.stringify({
-        input: 'my old input',
-        selectedLength: Number(StyleModifier.kUnset),
-        selectedTone: Number(StyleModifier.kUnset),
-      }),
-      feedback: UserFeedback.kUserFeedbackUnspecified,
     });
     const appWithUndo = document.createElement('compose-app');
     document.body.appendChild(appWithUndo);
     await testProxy.whenCalled('requestInitialState');
 
-    // CLick undo.
-    appWithUndo.$.undoButton.click();
+    // If undo is enabled after the undo action, the undo button keeps focus.
+    testProxy.setUndoResponseWithUndoAndRedo(true, false);
+    appWithUndo.$.undoButtonRefined.click();
     await testProxy.whenCalled('undo');
-
+    await flushTasks();
     assertEquals(
-        appWithUndo.$.undoButton, appWithUndo.shadowRoot!.activeElement);
+        appWithUndo.$.undoButtonRefined, appWithUndo.shadowRoot!.activeElement);
+
+    // If undo is disabled after the undo action, the redo button gains
+    // focus.
+    testProxy.setUndoResponseWithUndoAndRedo(false, true);
+    appWithUndo.$.undoButtonRefined.click();
+    await testProxy.whenCalled('undo');
+    await flushTasks();
+    assertEquals(
+        appWithUndo.$.redoButton, appWithUndo.shadowRoot!.activeElement);
+  });
+
+  test('FocusesUndoOrRedoButtonAfterRedoClick', async () => {
+    // This test is only useful for Refinements UI.
+    loadTimeData.overrideValues({
+      enableRefinedUi: true,
+    });
+    // Set up initial state to show undo/redo buttons and mock up a previous
+    // state.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy.setOpenMetadata({}, {
+      hasPendingRequest: false,
+      response: {
+        status: ComposeStatus.kOk,
+        undoAvailable: true,
+        redoAvailable: true,
+        providedByUser: false,
+        result: 'here is a result',
+        onDeviceEvaluationUsed: false,
+        triggeredFromModifier: false,
+      },
+    });
+    const appWithRedo = document.createElement('compose-app');
+    document.body.appendChild(appWithRedo);
+    await testProxy.whenCalled('requestInitialState');
+
+    // If redo is enabled after the redo action, the redo button keeps focus.
+    testProxy.setRedoResponseWithUndoAndRedo(false, true);
+    appWithRedo.$.redoButton.click();
+    await testProxy.whenCalled('redo');
+    await flushTasks();
+    assertEquals(
+        appWithRedo.$.redoButton, appWithRedo.shadowRoot!.activeElement);
+
+    // If redo is disabled after the redo action, the undo button gains focus.
+    testProxy.setRedoResponseWithUndoAndRedo(true, false);
+    appWithRedo.$.redoButton.click();
+    await testProxy.whenCalled('redo');
+    await flushTasks();
+    assertEquals(
+        appWithRedo.$.undoButtonRefined, appWithRedo.shadowRoot!.activeElement);
   });
 
 });
