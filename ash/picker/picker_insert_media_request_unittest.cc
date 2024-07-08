@@ -159,43 +159,50 @@ class PickerInsertMediaRequestTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PickerInsertMediaRequestTest,
-    testing::Values(
-        BasicTestCase(
-            /*media_to_insert=*/PickerTextMedia(u"hello"),
-            /*expected_text=*/u"hello")
-            .ToCallback(),
-        BasicTestCase(
-            /*media_to_insert=*/PickerImageMedia(
-                GURL("http://foo.com/fake.jpg"),
-                gfx::Size(10, 10)),
-            /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
-            .ToCallback(),
-        BasicTestCase(
-            /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
-            /*expected_text=*/u"http://foo.com/")
-            .ToCallback(),
-        MakeLocalImageTestCaseCallback(
-            "png",
-            base::BindRepeating([](const SkBitmap& bitmap,
-                                   std::vector<uint8_t>* output) {
+const TestCaseCallback kTextTestCases[] = {
+    BasicTestCase(
+        /*media_to_insert=*/PickerTextMedia(u"hello"),
+        /*expected_text=*/u"hello")
+        .ToCallback(),
+    BasicTestCase(
+        /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
+        /*expected_text=*/u"http://foo.com/")
+        .ToCallback(),
+};
+
+const TestCaseCallback kImageTestCases[] = {
+    BasicTestCase(
+        /*media_to_insert=*/PickerImageMedia(GURL("http://foo.com/fake.jpg"),
+                                             gfx::Size(10, 10)),
+        /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
+        .ToCallback(),
+    MakeLocalImageTestCaseCallback(
+        "png",
+        base::BindRepeating(
+            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
               return gfx::PNGCodec::EncodeBGRASkBitmap(
                   bitmap, /*discard_transparency=*/false, output);
             })),
-        MakeLocalImageTestCaseCallback(
-            "jpeg",
-            base::BindRepeating([](const SkBitmap& bitmap,
-                                   std::vector<uint8_t>* output) {
+    MakeLocalImageTestCaseCallback(
+        "jpeg",
+        base::BindRepeating(
+            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
               return gfx::JPEGCodec::Encode(bitmap, /*quality=*/80, output);
             })),
-        MakeLocalImageTestCaseCallback(
-            "webp",
-            base::BindRepeating([](const SkBitmap& bitmap,
-                                   std::vector<uint8_t>* output) {
+    MakeLocalImageTestCaseCallback(
+        "webp",
+        base::BindRepeating(
+            [](const SkBitmap& bitmap, std::vector<uint8_t>* output) {
               return gfx::WebpCodec::Encode(bitmap, /*quality=*/80, output);
-            }))));
+            }))};
+
+INSTANTIATE_TEST_SUITE_P(Text,
+                         PickerInsertMediaRequestTest,
+                         testing::ValuesIn(kTextTestCases));
+
+INSTANTIATE_TEST_SUITE_P(Image,
+                         PickerInsertMediaRequestTest,
+                         testing::ValuesIn(kImageTestCases));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(
