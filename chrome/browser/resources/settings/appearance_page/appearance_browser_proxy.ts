@@ -15,6 +15,7 @@ export interface AppearanceBrowserProxy {
   /** @return Whether the current profile is a child account. */
   isChildAccount(): boolean;
 
+  openCustomizeChrome(): void;
   recordHoverCardImagesEnabledChanged(enabled: boolean): void;
 
   useDefaultTheme(): void;
@@ -38,6 +39,10 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
 
   isChildAccount() {
     return loadTimeData.getBoolean('isChildAccount');
+  }
+
+  openCustomizeChrome() {
+    chrome.send('openCustomizeChrome');
   }
 
   recordHoverCardImagesEnabledChanged(enabled: boolean) {

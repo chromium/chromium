@@ -37,9 +37,10 @@
       <div route-path="default">
         <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
-          <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
+          <cr-link-row id="openTheme" class="first"
+              hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
-              on-click="openThemeUrl_" external></cr-link-row>
+              on-click="openCustomizeChrome_" external></cr-link-row>
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>

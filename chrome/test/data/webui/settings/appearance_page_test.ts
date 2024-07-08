@@ -22,6 +22,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'getDefaultZoom',
       'getThemeInfo',
       'isChildAccount',
+      'openCustomizeChrome',
       'recordHoverCardImagesEnabledChanged',
       'useDefaultTheme',
       // <if expr="is_linux">
@@ -58,6 +59,10 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
   isChildAccount() {
     this.methodCalled('isChildAccount');
     return this.isChildAccount_;
+  }
+
+  openCustomizeChrome() {
+    this.methodCalled('openCustomizeChrome');
   }
 
   recordHoverCardImagesEnabledChanged(enabled: boolean) {
@@ -190,7 +195,7 @@ suite('AppearanceHandler', function() {
         appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
 
-    button!.click();
+    button.click();
     return appearanceBrowserProxy.whenCalled('useDefaultTheme');
   });
 
@@ -225,7 +230,7 @@ suite('AppearanceHandler', function() {
         appearancePage.shadowRoot!.querySelector<HTMLElement>('#useGtk');
     assertTrue(!!button);
 
-    button!.click();
+    button.click();
     return appearanceBrowserProxy.whenCalled('useGtkTheme');
   });
   // </if>
@@ -243,7 +248,7 @@ suite('AppearanceHandler', function() {
         appearancePage.shadowRoot!.querySelector<HTMLElement>('#useDefault');
     assertTrue(!!button);
 
-    button!.click();
+    button.click();
     return appearanceBrowserProxy.whenCalled('useDefaultTheme');
   });
 
@@ -277,13 +282,22 @@ suite('AppearanceHandler', function() {
     assertEquals(
         null, appearancePage.shadowRoot!.querySelector('managed-dialog'));
 
-    button!.click();
+    button.click();
     flush();
 
     assertFalse(
         appearancePage.shadowRoot!.querySelector('managed-dialog')!.hidden);
   });
   // </if>
+
+  test('openCustomizeChrome', function() {
+    const button =
+        appearancePage.shadowRoot!.querySelector<HTMLElement>('#openTheme');
+    assertTrue(!!button);
+
+    button.click();
+    return appearanceBrowserProxy.whenCalled('openCustomizeChrome');
+  });
 
   test('ColorSchemeMode', async () => {
     assertFalse(isVisible(appearancePage.$.colorSchemeModeRow));

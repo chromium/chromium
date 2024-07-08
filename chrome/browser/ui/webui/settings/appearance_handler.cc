@@ -9,8 +9,11 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "content/public/browser/web_ui.h"
 
 namespace settings {
@@ -38,12 +41,25 @@ void AppearanceHandler::RegisterMessages() {
       base::BindRepeating(&AppearanceHandler::HandleUseTheme,
                           base::Unretained(this), ui::SystemTheme::kQt));
 #endif
+
+  web_ui()->RegisterMessageCallback(
+      "openCustomizeChrome",
+      base::BindRepeating(&AppearanceHandler::OpenCustomizeChrome,
+                          base::Unretained(this)));
 }
 
 void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
                                        const base::Value::List& args) {
   DCHECK(system_theme != ui::SystemTheme::kDefault || !profile_->IsChild());
   ThemeServiceFactory::GetForProfile(profile_)->UseTheme(system_theme);
+}
+
+void AppearanceHandler::OpenCustomizeChrome(const base::Value::List& args) {
+  auto* browser = chrome::FindLastActive();
+  if (!browser) {
+    return;
+  }
+  chrome::ExecuteCommand(browser, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
 }
 
 }  // namespace settings
