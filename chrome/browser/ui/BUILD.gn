@@ -436,6 +436,14 @@ static_library("ui") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (enable_bound_session_credentials) {
+    public_deps += [
+      # TODO: Use //chrome/browser/ui instead after fixing cyclic dependency.
+      "//chrome/browser:bound_session_credentials_proto",
+    ]
+  }
+
   deps = [
     ":browser_element_identifiers",
     "//base",
