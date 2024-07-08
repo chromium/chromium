@@ -795,6 +795,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // needs to be defined after `shared_dictionary_manager_`.
   std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
 
+  std::unique_ptr<domain_reliability::DomainReliabilityMonitor>
+      domain_reliability_monitor_;
+
   // Holds owning pointer to |url_request_context_|. Will contain a nullptr for
   // |url_request_context| when the NetworkContextImpl doesn't own its own
   // URLRequestContext.
@@ -940,9 +943,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   std::unique_ptr<NetworkQualitiesPrefDelegate>
       network_qualities_pref_delegate_;
-
-  std::unique_ptr<domain_reliability::DomainReliabilityMonitor>
-      domain_reliability_monitor_;
 
   // Each network context holds its own HttpAuthPreferences.
   // The dynamic preferences of |NetworkService| and the static
