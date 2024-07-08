@@ -28,6 +28,7 @@ namespace plus_addresses {
 namespace {
 
 using SettingSpecifics = sync_pb::PlusAddressSettingSpecifics;
+using ::testing::_;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
@@ -97,8 +98,12 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
       change_list.push_back(syncer::EntityChange::CreateAdd(
           specifics.name(), EntityFromSpecifics(specifics)));
     }
-    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
-                                       std::move(change_list));
+    // `MergeFullSyncData()` returns an error if it fails.
+    const bool success = !bridge().MergeFullSyncData(
+        bridge().CreateMetadataChangeList(), std::move(change_list));
+    ON_CALL(mock_processor(), IsTrackingMetadata)
+        .WillByDefault(testing::Return(success));
+    return success;
   }
 
  private:
@@ -210,6 +215,23 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   EXPECT_FALSE(bridge().GetSetting("name1"));
   EXPECT_THAT(bridge().GetSetting("name2"),
               Optional(HasStringSetting("name2", "string")));
+}
+
+TEST_F(PlusAddressSettingSyncBridgeTest, WriteSetting) {
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", false)}));
+  ASSERT_THAT(bridge().GetSetting("name"),
+              Optional(HasBoolSetting("name", false)));
+
+  EXPECT_CALL(mock_processor(), Put("name", _, _));
+  bridge().WriteSetting(CreateSettingSpecifics("name", true));
+
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasBoolSetting("name", true)));
+  // Recreate the bridge, reloading from the `store()`.
+  RecreateBridge();
+  EXPECT_THAT(bridge().GetSetting("name"),
+              Optional(HasBoolSetting("name", true)));
 }
 
 TEST_F(PlusAddressSettingSyncBridgeTest, ApplyDisableSyncChanges) {

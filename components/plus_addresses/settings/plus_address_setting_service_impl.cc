@@ -5,10 +5,12 @@
 #include "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
+#include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -19,6 +21,19 @@
 
 namespace plus_addresses {
 
+namespace {
+
+// Setting names - must be in sync with the server.
+// TODO(crbug.com/342089839): Agree upon names with server-side team.
+constexpr std::string_view kPlusAddressEnabledSetting =
+    "plus_address.is_enabled";
+constexpr std::string_view kAcceptedNoticeSetting =
+    "plus_address.has_accepted_notice";
+constexpr std::string_view kIsOptedInToDogfoodSetting =
+    "plus_address.is_opted_in_to_dogfood";
+
+}  // namespace
+
 PlusAddressSettingServiceImpl::PlusAddressSettingServiceImpl(
     std::unique_ptr<PlusAddressSettingSyncBridge> bridge)
     : sync_bridge_(std::move(bridge)) {}
@@ -26,22 +41,22 @@ PlusAddressSettingServiceImpl::PlusAddressSettingServiceImpl(
 PlusAddressSettingServiceImpl::~PlusAddressSettingServiceImpl() = default;
 
 bool PlusAddressSettingServiceImpl::GetIsPlusAddressesEnabled() const {
-  // TODO(crbug.com/342089839): Finalize setting name.
-  return GetBoolean("plus_address.is_enabled");
+  return GetBoolean(kPlusAddressEnabledSetting);
 }
 
 bool PlusAddressSettingServiceImpl::GetHasAcceptedNotice() const {
-  // TODO(crbug.com/342089839): Finalize setting name.
-  return GetBoolean("plus_address.has_accepted_notice");
+  return GetBoolean(kAcceptedNoticeSetting);
 }
 
 bool PlusAddressSettingServiceImpl::GetIsOptedInToDogfood() const {
-  // TODO(crbug.com/342089839): Finalize setting name.
-  return GetBoolean("plus_address.is_opted_in_to_dogfood");
+  return GetBoolean(kIsOptedInToDogfoodSetting);
 }
 
 void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {
-  // TODO(crbug.com/342089839): Implement.
+  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
+    sync_bridge_->WriteSetting(
+        CreateSettingSpecifics(kAcceptedNoticeSetting, true));
+  }
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>

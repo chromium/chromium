@@ -22,6 +22,12 @@ namespace {
 
 using ::testing::Return;
 
+// Since protos lack an equality operator, this matcher tests whether given
+// `PlusAddressSettingSpecifics` match the arg.
+MATCHER_P(EqualsSetting, setting, "") {
+  return arg.SerializeAsString() == setting.SerializeAsString();
+}
+
 class TestPlusAddressSettingSyncBridge : public PlusAddressSettingSyncBridge {
  public:
   using PlusAddressSettingSyncBridge::PlusAddressSettingSyncBridge;
@@ -29,6 +35,10 @@ class TestPlusAddressSettingSyncBridge : public PlusAddressSettingSyncBridge {
               GetSetting,
               (std::string_view),
               (const, override));
+  MOCK_METHOD(void,
+              WriteSetting,
+              (const sync_pb::PlusAddressSettingSpecifics&),
+              (override));
 };
 
 class PlusAddressSettingServiceImplTest : public testing::Test {
@@ -65,6 +75,12 @@ TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
   EXPECT_FALSE(service().GetHasAcceptedNotice());
   // For settings that the client hasn't received, defaults are returned.
   EXPECT_FALSE(service().GetIsOptedInToDogfood());
+}
+
+TEST_F(PlusAddressSettingServiceImplTest, SetValue) {
+  EXPECT_CALL(bridge(), WriteSetting(EqualsSetting(CreateSettingSpecifics(
+                            "plus_address.has_accepted_notice", true))));
+  service().SetHasAcceptedNotice();
 }
 
 }  // namespace

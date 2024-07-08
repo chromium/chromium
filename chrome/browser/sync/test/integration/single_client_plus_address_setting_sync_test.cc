@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -50,6 +52,26 @@ class PlusAddressEnabledChecker : public SingleClientStatusChangeChecker {
  private:
   const raw_ptr<PlusAddressSettingService> setting_service_;
   const bool expected_state_;
+};
+
+// Waits until the fake server's PlusAddressSettingSpecifics contain specifics
+// with a given name.
+class FakeServerSpecificsChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit FakeServerSpecificsChecker(const std::string& name) : name_(name) {}
+
+  // SingleClientStatusChangeChecker:
+  bool IsExitConditionSatisfied(std::ostream*) override {
+    return base::ranges::any_of(
+        fake_server()->GetSyncEntitiesByModelType(syncer::PLUS_ADDRESS_SETTING),
+        [&](const sync_pb::SyncEntity& entity) {
+          return name_ == entity.specifics().plus_address_setting().name();
+        });
+  }
+
+ private:
+  const std::string name_;
 };
 
 // PLUS_ADDRESS_SETTING is supposed to behave the same in and outside of
@@ -145,6 +167,16 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   InjectSpecificsToServer(
       plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, false));
   EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
+                       WriteAcceptedNotice) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_FALSE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
+  GetPlusAddressSettingService()->SetHasAcceptedNotice();
+  EXPECT_TRUE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
+  EXPECT_TRUE(
+      FakeServerSpecificsChecker("plus_address.has_accepted_notice").Wait());
 }
 
 // ChromeOS does not support signing out of the primary account.

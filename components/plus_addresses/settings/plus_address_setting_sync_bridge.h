@@ -36,6 +36,13 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   virtual std::optional<sync_pb::PlusAddressSettingSpecifics> GetSetting(
       std::string_view name) const;
 
+  // Commits the `specifics` and updates the `store_` as well as the in memory
+  // `settings_` cache. The updated setting is immediately visible through
+  // `GetSetting()`.
+  // Virtual for testing.
+  virtual void WriteSetting(
+      const sync_pb::PlusAddressSettingSpecifics& specifics);
+
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;

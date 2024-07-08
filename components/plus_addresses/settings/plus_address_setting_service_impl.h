@@ -36,7 +36,7 @@ class PlusAddressSettingServiceImpl : public PlusAddressSettingService {
   GetSyncControllerDelegate() override;
 
  private:
-  // Internals helpers to get the setting value for a given setting name by
+  // Internal helpers to get the setting value for a given setting name by
   // type. If no setting of the given name exists, the default value is
   // returned.
   // If a setting of the given name exists, but the type doesn't match...

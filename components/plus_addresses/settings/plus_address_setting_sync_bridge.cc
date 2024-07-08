@@ -77,6 +77,35 @@ PlusAddressSettingSyncBridge::GetSetting(std::string_view name) const {
   return it->second;
 }
 
+void PlusAddressSettingSyncBridge::WriteSetting(
+    const sync_pb::PlusAddressSettingSpecifics& specifics) {
+  if (!store_ || !change_processor()->IsTrackingMetadata()) {
+    // If initialized hasn't finished yet, no changes can be uploaded. In this
+    // case, writes will fail silently. In practice, this shouldn't happen,
+    // since the feature can only be considered enabled after the enabled
+    // setting was loaded from the `store_`.
+    return;
+  }
+  std::unique_ptr<syncer::EntityData> entity_data = CreateEntityData(specifics);
+  const std::string storage_key = GetStorageKey(*entity_data);
+  // Update the cache.
+  settings_.insert_or_assign(storage_key, specifics);
+  // Commit the write.
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+  change_processor()->Put(storage_key, std::move(entity_data),
+                          metadata_change_list.get());
+  // Update the `store_`'s data and metadata.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  batch->WriteData(storage_key, specifics.SerializeAsString());
+  batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&PlusAddressSettingSyncBridge::ReportErrorIfSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 PlusAddressSettingSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();

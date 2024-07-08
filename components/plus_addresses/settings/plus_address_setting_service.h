@@ -35,6 +35,8 @@ class PlusAddressSettingService : public KeyedService {
   // have not opted in, no UI will be shown.
   // This is necessary, since group targeted rollouts are per installation.
   virtual bool GetIsOptedInToDogfood() const = 0;
+
+  // Setters for the settings writable from Chrome.
   // Sets the state that the user has accepted the notice to true.
   virtual void SetHasAcceptedNotice() = 0;
 
