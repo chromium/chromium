@@ -5126,6 +5126,7 @@ if (!is_android) {
         "//chrome/browser/ash/guest_os",
         "//chrome/browser/ash/guest_os/public",
         "//chrome/browser/ash/login/app_mode/test:test_support",
+        "//chrome/browser/ash/login/auth",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/notifications",

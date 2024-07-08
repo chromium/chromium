@@ -104,6 +104,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/app_mode",
+    "//chrome/browser/ash/login/auth",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
