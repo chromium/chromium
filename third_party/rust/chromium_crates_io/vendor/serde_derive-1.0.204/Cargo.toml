@@ -13,7 +13,7 @@
 edition = "2015"
 rust-version = "1.56"
 name = "serde_derive"
-version = "1.0.203"
+version = "1.0.204"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",

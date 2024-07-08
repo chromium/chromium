@@ -532,6 +532,13 @@ impl<'a> Display for Expected + 'a {
 /// deserializer lifetimes] for a more detailed explanation of these lifetimes.
 ///
 /// [Understanding deserializer lifetimes]: https://serde.rs/lifetimes.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        note = "for local types consider adding `#[derive(serde::Deserialize)]` to your `{Self}` type",
+        note = "for types from other crates check whether the crate offers a `serde` feature flag",
+    )
+)]
 pub trait Deserialize<'de>: Sized {
     /// Deserialize this value from the given Serde deserializer.
     ///

@@ -215,6 +215,13 @@ declare_error_trait!(Error: Sized + Debug + Display);
 /// [`linked-hash-map`]: https://crates.io/crates/linked-hash-map
 /// [`serde_derive`]: https://crates.io/crates/serde_derive
 /// [derive section of the manual]: https://serde.rs/derive.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        note = "for local types consider adding `#[derive(serde::Serialize)]` to your `{Self}` type",
+        note = "for types from other crates check whether the crate offers a `serde` feature flag",
+    )
+)]
 pub trait Serialize {
     /// Serialize this value into the given Serde serializer.
     ///

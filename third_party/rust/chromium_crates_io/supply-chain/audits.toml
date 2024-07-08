@@ -1290,6 +1290,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.202 -> 1.0.203"
 notes = "s/doc_cfg/docsrs/ + tuple_impls/tuple_impl_body-related changes"
 
+[[audits.serde]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.203 -> 1.0.204"
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -1329,6 +1334,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.202 -> 1.0.203"
 notes = "Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits"
+
+[[audits.serde_derive]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.203 -> 1.0.204"
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"

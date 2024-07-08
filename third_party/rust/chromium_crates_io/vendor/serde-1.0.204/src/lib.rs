@@ -95,7 +95,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.203")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.204")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
 // Show which crate feature enables conditionally compiled APIs in documentation.
@@ -105,7 +105,7 @@
 // discussion of these features please refer to this issue:
 //
 //    https://github.com/serde-rs/serde/issues/812
-#![cfg_attr(feature = "unstable", feature(error_in_core, never_type))]
+#![cfg_attr(feature = "unstable", feature(never_type))]
 #![allow(unknown_lints, bare_trait_objects, deprecated)]
 // Ignored clippy and clippy_pedantic lints
 #![allow(

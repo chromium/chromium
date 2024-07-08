@@ -17,6 +17,7 @@ fn main() {
         println!("cargo:rustc-check-cfg=cfg(no_core_cstr)");
         println!("cargo:rustc-check-cfg=cfg(no_core_num_saturating)");
         println!("cargo:rustc-check-cfg=cfg(no_core_try_from)");
+        println!("cargo:rustc-check-cfg=cfg(no_diagnostic_namespace)");
         println!("cargo:rustc-check-cfg=cfg(no_float_copysign)");
         println!("cargo:rustc-check-cfg=cfg(no_num_nonzero_signed)");
         println!("cargo:rustc-check-cfg=cfg(no_relaxed_trait_bounds)");
@@ -83,6 +84,12 @@ fn main() {
     // https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html#stabilized-apis
     if minor < 74 {
         println!("cargo:rustc-cfg=no_core_num_saturating");
+    }
+
+    // Support for the `#[diagnostic]` tool attribute namespace
+    // https://blog.rust-lang.org/2024/05/02/Rust-1.78.0.html#diagnostic-attributes
+    if minor < 78 {
+        println!("cargo:rustc-cfg=no_diagnostic_namespace");
     }
 }
 
