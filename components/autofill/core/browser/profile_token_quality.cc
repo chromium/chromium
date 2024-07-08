@@ -173,9 +173,8 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     // meaningful. Currently, only <select> elements may have a selected option.
     base::optional_ref<const SelectOption> selected_option =
         form_data.fields()[i].selected_option();
-    std::u16string value = selected_option.has_value()
-                               ? selected_option->text
-                               : form_data.fields()[i].value();
+    std::u16string value =
+        selected_option ? selected_option->text : form_data.fields()[i].value();
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = base::to_underlying(GetObservationTypeFromField(

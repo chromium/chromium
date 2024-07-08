@@ -314,6 +314,18 @@ TEST(OptionalRefTest, Star) {
   }
 }
 
+TEST(OptionalRefTest, BoolConversion) {
+  {
+    optional_ref<int> r;
+    EXPECT_FALSE(r);
+  }
+  {
+    int i;
+    base::optional_ref<int> r = i;
+    EXPECT_TRUE(r);
+  }
+}
+
 TEST(OptionalRefTest, Value) {
   // has_value() and value() are generally covered by the construction tests.
   // Make sure value() doesn't somehow break const-ness here.

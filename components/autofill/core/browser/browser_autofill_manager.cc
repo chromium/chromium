@@ -3027,7 +3027,7 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       base::optional_ref<const SelectOption> selected_option =
           field->selected_option();
       const std::u16string& value =
-          selected_option.has_value() ? selected_option->text : field->value();
+          selected_option ? selected_option->text : field->value();
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(

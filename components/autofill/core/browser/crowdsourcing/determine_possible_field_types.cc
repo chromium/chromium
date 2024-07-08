@@ -142,7 +142,7 @@ void FindAndSetPossibleFieldTypesForField(
   base::optional_ref<const SelectOption> selected_option =
       field.selected_option();
   std::u16string value =
-      selected_option.has_value() ? selected_option->text : field.value();
+      selected_option ? selected_option->text : field.value();
   base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {

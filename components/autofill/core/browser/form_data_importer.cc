@@ -982,8 +982,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
       // only <select> elements may have a selected option.
       base::optional_ref<const SelectOption> selected_option =
           field.selected_option();
-      return selected_option.has_value() ? selected_option->text
-                                         : field.value();
+      return selected_option ? selected_option->text : field.value();
     }();
     base::TrimWhitespace(value, base::TRIM_ALL);
 
