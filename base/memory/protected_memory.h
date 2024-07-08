@@ -33,11 +33,15 @@
 // Instances of `base::ProtectedMemory` use constant initialization. To allow
 // protection of objects which do not provide constant initialization or would
 // require a global constructor, `base::ProtectedMemory` provides lazy
-// initialization. With template parameter `ConstructLazily` set to `true`, the
-// value is constructed lazily when initialized through
-// `ProtectedMemoryInitializer`. In this case, explicit initialization through
-// `ProtectedMemoryInitializer` is mandatory to prevent accessing uninitialized
-// memory. If data is accessed without initialization a CHECK triggers.
+// initialization through `ProtectedMemoryInitializer`. Explicit initialization
+// through `ProtectedMemoryInitializer` is mandatory, even for objects that
+// provide constant initialization. This is because on some platforms, the
+// memory section doesn't start as readonly and needs to be initialized that way
+// at runtime. The requirement for explicit initialization gives an opportunity
+// to perform this initialization and ensures that in the unlikely event that
+// the value is modified before the memory is initialized to read-only, it will
+// be forced back to a known, safe, initial state before it ever used. If data
+// is accessed without initialization a CHECK triggers.
 //
 // `base::ProtectedMemory` requires T to be trivially destructible. T having
 // a non-trivial constructor indicates that is holds data which can not be
@@ -112,7 +116,7 @@ __declspec(selectany) char __stop_protected_memory;
 #define DEFINE_PROTECTED_DATA constinit __declspec(allocate("prot$mem"))
 #else
 #error "Protected Memory is currently only supported on Windows."
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 
 #else
 #define DECLARE_PROTECTED_DATA constinit
@@ -121,43 +125,17 @@ __declspec(selectany) char __stop_protected_memory;
 
 namespace base {
 
-template <typename T, bool ConstructLazily>
+template <typename T>
 class AutoWritableMemory;
 
 FORWARD_DECLARE_TEST(ProtectedMemoryDeathTest, VerifyTerminationOnAccess);
 
 namespace internal {
-// Helper classes which store the data and implement and initialization
-// according to `ConstructLazily`. With `ConstructLazily` set to false, the
-// instance of T is created upon construction time, whereas with
-// `ConstructLazily` set to true, the instance of T is only constructed when
-// emplace is called.
-template <typename T, bool ConstructLazily>
-class ProtectedDataHolder {
- public:
-  consteval ProtectedDataHolder() = default;
-
-  template <typename... U>
-  consteval explicit ProtectedDataHolder(U&&... args)
-      : data_(std::forward<U>(args)...) {}
-
-  T& GetReference() { return data_; }
-  const T& GetReference() const { return data_; }
-
-  T* GetPointer() { return &data_; }
-  const T* GetPointer() const { return &data_; }
-
-  template <typename... U>
-  void emplace(U&&... data) {
-    data_ = T(std::forward<U>(data)...);
-  }
-
- private:
-  T data_ = T();
-};
-
+// Helper class which store the data and implement and initialization for
+// constructing the underlying protected data lazily. The instance of T is only
+// constructed when emplace is called.
 template <typename T>
-class ProtectedDataHolder<T, true /*ConstructLazily*/> {
+class ProtectedDataHolder {
  public:
   consteval ProtectedDataHolder() = default;
 
@@ -202,7 +180,7 @@ class ProtectedDataHolder<T, true /*ConstructLazily*/> {
 // parameter `ConstructLazily` enables a lazy initialization. In this case, an
 // initialization before first access is mandatory (see
 // `ProtectedMemoryInitializer`).
-template <typename T, bool ConstructLazily = false>
+template <typename T>
 class ProtectedMemory {
  public:
   // T must be trivially destructible. Otherwise it indicates that T holds data
@@ -216,12 +194,7 @@ class ProtectedMemory {
   // no arguments. For lazily constructed data no arguments are accepted as T is
   // not initialized when `ProtectedMemory<T>` is created but through
   // `ProtectedMemoryInitializer` instead.
-  template <
-      typename... U,
-      bool ConstructLazilyP = ConstructLazily,
-      std::enable_if_t<!ConstructLazilyP || sizeof...(U) == 0, bool> = true>
-  consteval explicit ProtectedMemory(U&&... args)
-      : data_(std::forward<U>(args)...) {
+  consteval explicit ProtectedMemory() : data_() {
     static_assert(std::is_trivially_destructible_v<ProtectedMemory>);
   }
 
@@ -233,10 +206,10 @@ class ProtectedMemory {
   const T* operator->() const { return data_.GetPointer(); }
 
  private:
-  friend class AutoWritableMemory<T, ConstructLazily>;
+  friend class AutoWritableMemory<T>;
   FRIEND_TEST_ALL_PREFIXES(ProtectedMemoryDeathTest, VerifyTerminationOnAccess);
 
-  internal::ProtectedDataHolder<T, ConstructLazily> data_;
+  internal::ProtectedDataHolder<T> data_;
 };
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
@@ -262,7 +235,7 @@ class BASE_EXPORT AutoWritableMemoryBase {
   static bool IsObjectInProtectedSection(const T& object) {
     const T* const ptr = std::addressof(object);
     const T* const ptr_end = ptr + 1;
-    return (ptr > internal::kProtectedMemoryStart) &&
+    return (ptr >= internal::kProtectedMemoryStart) &&
            (ptr_end <= internal::kProtectedMemoryEnd);
   }
 
@@ -337,11 +310,10 @@ class BASE_EXPORT AutoWritableMemoryBase {
 // support enforcing write protection can only be changed at page level. To
 // allow a more fine grained control a dedicated page per instance of protected
 // data would be required.
-template <typename T, bool ConstructLazily>
+template <typename T>
 class AutoWritableMemory : public AutoWritableMemoryBase {
  public:
-  explicit AutoWritableMemory(
-      ProtectedMemory<T, ConstructLazily>& protected_memory)
+  explicit AutoWritableMemory(ProtectedMemory<T>& protected_memory)
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
       LOCKS_EXCLUDED(WriterData::writers_lock())
 #endif
@@ -404,16 +376,15 @@ class AutoWritableMemory : public AutoWritableMemoryBase {
   }
 
  private:
-  const raw_ref<ProtectedMemory<T, ConstructLazily>> protected_memory_;
+  const raw_ref<ProtectedMemory<T>> protected_memory_;
 };
 
 // Helper class for creating simple ProtectedMemory static initializers.
 class ProtectedMemoryInitializer {
  public:
-  template <typename T, bool ConstructLazily, typename... U>
-  explicit ProtectedMemoryInitializer(
-      ProtectedMemory<T, ConstructLazily>& protected_memory,
-      U&&... args) {
+  template <typename T, typename... U>
+  explicit ProtectedMemoryInitializer(ProtectedMemory<T>& protected_memory,
+                                      U&&... args) {
     AutoWritableMemory writer(protected_memory);
     writer.emplace(std::forward<U>(args)...);
   }

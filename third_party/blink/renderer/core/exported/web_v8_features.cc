@@ -72,6 +72,11 @@ void WebV8Features::EnableMojoJSFileSystemAccessHelper(
 }
 
 // static
+void WebV8Features::InitializeMojoJSAllowedProtectedMemory() {
+  ContextFeatureSettings::InitializeMojoJSAllowedProtectedMemory();
+}
+
+// static
 void WebV8Features::AllowMojoJSForProcess() {
   ContextFeatureSettings::AllowMojoJSForProcess();
 }
