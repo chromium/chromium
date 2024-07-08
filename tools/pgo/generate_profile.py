@@ -80,14 +80,17 @@ def main():
         help='Only run benchmarks that do not require any special access. See '
         'https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners '
         'for more information.')
-    parser.add_argument('--skip-jetstream',
-                        action='store_true',
-                        help='Jetstream2 is very flaky (60% pass rate), so it '
-                        'is helpful to skip it when iterating fast locally.')
     parser.add_argument(
         '--temporal-trace-length',
         type=int,
         help='Add flags necessary for temporal PGO (experimental).')
+    parser.add_argument(
+        '-r',
+        '--repeat',
+        type=int,
+        default=5,
+        help='Number of times to attempt each benchmark if it fails, default 5.'
+    )
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -122,10 +125,15 @@ def main():
     def run_benchmark(benchmark_args):
         '''Puts profdata in {profiledir}/{args[0]}.profdata'''
         name = benchmark_args[0]
+
+        # Clean up intermediate files from previous runs.
         profraw_path = f'{profiledir}/{name}/raw'
         if os.path.exists(profraw_path):
             shutil.rmtree(profraw_path)
         os.makedirs(profraw_path, exist_ok=True)
+        profdata_path = f'{profiledir}/{name}.profdata'
+        if os.path.exists(profdata_path):
+            os.remove(profdata_path)
 
         env = os.environ.copy()
         if args.android_browser:
@@ -134,15 +142,20 @@ def main():
             env['LLVM_PROFILE_FILE'] = f'{profraw_path}/default-%2m.profraw'
 
         cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
-            '--assert-gpu-compositing'
+            '--assert-gpu-compositing',
+            # Abort immediately when any story fails, since a failed story fails
+            # to produce valid profdata. Fail fast and rely on repeats to get a
+            # valid profdata.
+            '--max-failures=0',
         ] + ['-v'] * args.verbose
 
         if args.android_browser:
             cmd += [
-                f'--browser={args.android_browser}', '--fetch-device-data',
+                f'--browser={args.android_browser}',
+                '--fetch-device-data',
                 '--fetch-device-data-platform=android',
                 f'--fetch-data-path-device={args.android_device_path}',
-                f'--fetch-data-path-local={profraw_path}'
+                f'--fetch-data-path-local={profraw_path}',
             ]
         else:
             cmd += [
@@ -155,46 +168,63 @@ def main():
                        shell=sys.platform == 'win32',
                        env=env,
                        cwd=ROOT_DIR)
-        if args.skip_profdata:
-            return
 
-        profdata_path = f'{profiledir}/{name}.profdata'
+        if not args.skip_profdata:
+            # Android's `adb pull` does not allow * globbing (i.e. pulling
+            # pgo_profiles/*). Since the naming of profraw files can vary, pull
+            # the directory and check subdirectories recursively for .profraw
+            # files.
+            subprocess.run(
+                [PROFDATA, 'merge', '-o', profdata_path] +
+                glob.glob(f'{profraw_path}/**/*.profraw', recursive=True),
+                check=True)
 
-        # Android's `adb pull` does not allow * globbing (i.e. pulling
-        # pgo_profiles/*). Since the naming of profraw files can vary, pull the
-        # directory and check subdirectories recursively for .profraw files.
-        subprocess.run(
-            [PROFDATA, 'merge', '-o', profdata_path] +
-            glob.glob(f'{profraw_path}/**/*.profraw', recursive=True),
-            check=True)
+    def run_benchmark_with_repeats(benchmark_args, repeats=args.repeat):
+        assert repeats > 0, 'repeats must be at least 1'
+        for idx in range(repeats):
+            try:
+                if idx > 0:
+                    print(f'Running attempt {idx} for {benchmark_args}')
+                run_benchmark(benchmark_args)
+            except subprocess.CalledProcessError as e:
+                if idx < repeats - 1:
+                    print(e)
+                    print(f'Retrying... ')
+                else:
+                    print(f'Failed {repeats} times')
+                    raise e
+            else:
+                # Succeeded!
+                return
 
     if os.path.exists(profiledir):
         shutil.rmtree(profiledir)
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
-    run_benchmark(['speedometer3'])
-
-    if not args.skip_jetstream:
-        run_benchmark(['jetstream2'])
+    run_benchmark_with_repeats(['speedometer3'])
+    run_benchmark_with_repeats(['jetstream2'])
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
     if not args.run_public_benchmarks_only:
-        run_benchmark([
-            'system_health.common_mobile' if args.android_browser else
-            'system_health.common_desktop', '--run-abridged-story-set'
+        run_benchmark_with_repeats([
+            'system_health.common_mobile'
+            if args.android_browser else 'system_health.common_desktop',
+            '--run-abridged-story-set',
         ])
-        run_benchmark([
-            'rendering.mobile' if args.android_browser else
-            'rendering.desktop', '--also-run-disabled-tests',
+        run_benchmark_with_repeats([
+            'rendering.mobile'
+            if args.android_browser else 'rendering.desktop',
+            '--also-run-disabled-tests',
             '--story-tag-filter=motionmark_fixed_2_seconds',
-            '--story-filter-exclude=motionmark_fixed_2_seconds_images'
+            '--story-filter-exclude=motionmark_fixed_2_seconds_images',
         ])
         if sys.platform == 'darwin':
-            run_benchmark([
-                'rendering.desktop', '--also-run-disabled-tests',
+            run_benchmark_with_repeats([
+                'rendering.desktop',
+                '--also-run-disabled-tests',
                 '--story-tag-filter=motionmark_fixed_2_seconds',
-                '--extra-browser-args=--enable-features=SkiaGraphite'
+                '--extra-browser-args=--enable-features=SkiaGraphite',
             ])
 
     if not args.skip_profdata:
