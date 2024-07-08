@@ -105,21 +105,18 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
   leveldb::Status error_ = leveldb::Status::OK();
 };
 
-LevelDBScope::LevelDBScope(
-    int64_t scope_id,
-    std::vector<uint8_t> prefix,
-    size_t write_batch_size,
-    scoped_refptr<LevelDBState> level_db,
-    std::vector<PartitionedLock> locks,
-    RollbackCallback rollback_callback,
-    TearDownCallback tear_down_callback)
+LevelDBScope::LevelDBScope(int64_t scope_id,
+                           std::vector<uint8_t> prefix,
+                           size_t write_batch_size,
+                           scoped_refptr<LevelDBState> level_db,
+                           std::vector<PartitionedLock> locks,
+                           RollbackCallback rollback_callback)
     : scope_id_(scope_id),
       prefix_(std::move(prefix)),
       write_batch_size_(write_batch_size),
       level_db_(std::move(level_db)),
       locks_(std::move(locks)),
-      rollback_callback_(std::move(rollback_callback)),
-      tear_down_callback_(std::move(tear_down_callback)) {
+      rollback_callback_(std::move(rollback_callback)) {
   DCHECK(!locks_.empty());
 }
 

@@ -565,6 +565,9 @@ TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
   std::move(break_db).Run(error);
   scope.reset();
 
+  // Wait until revert task reports failure.
+  task_env_.RunUntilIdle();
+
   EXPECT_FALSE(failure_status.ok());
   EXPECT_EQ(failure_status.ToString(), error.ToString());
 }

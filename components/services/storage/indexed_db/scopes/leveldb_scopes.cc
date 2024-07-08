@@ -237,7 +237,7 @@ std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
       base::BindOnce(&LevelDBScopes::Rollback, weak_factory_.GetWeakPtr());
   return base::WrapUnique(new LevelDBScope(
       scope_id, metadata_key_prefix_, max_write_batch_size_bytes_, level_db_,
-      std::move(locks), std::move(rollback_callback), tear_down_callback_));
+      std::move(locks), std::move(rollback_callback)));
 }
 
 leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
@@ -273,7 +273,10 @@ void LevelDBScopes::Rollback(int64_t scope_id,
                       max_write_batch_size_bytes_)
           .Run();
   if (UNLIKELY(!result.ok())) {
-    tear_down_callback_.Run(result);
+    // Prospective fix for crbug.com/350196532: synchronous teardown seems to
+    // cause issues.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(tear_down_callback_, result));
     return;
   }
 
