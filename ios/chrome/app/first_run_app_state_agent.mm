@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 @interface FirstRunAppAgent () <AppStateObserver,

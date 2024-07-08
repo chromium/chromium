@@ -137,7 +137,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/promo/omnibox_position_choice_scene_agent.h"
-#import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
