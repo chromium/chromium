@@ -186,7 +186,7 @@ TEST_F(PrivateAggregationHostTest,
               /*reporting_origin=*/kExampleOrigin,
               AggregatableReportSharedInfo::DebugMode::kDisabled,
               /*additional_fields=*/base::Value::Dict(),
-              /*api_version=*/"0.1",
+              /*api_version=*/"1.0",
               /*api_identifier=*/"protected-audience"),
           /*reporting_path=*/
           "/.well-known/private-aggregation/report-protected-audience");

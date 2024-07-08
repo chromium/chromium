@@ -25,12 +25,11 @@ report format matches the format produced by the current implementation
 The history of report versions is listed below, with links to past commits of
 documentation.
 
-TODO: Replace past explainer links with draft spec when available.
-
-| Version string | Explainer | Payload encryption details | Changes |
+| Version string | Spec | Payload encryption details | Changes |
 | --- | --- | --- | --- |
-| "" (empty string) | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | n/a | Placeholder legacy version. TODO: remove directory and explainer row when first version bump occurs. |
-| "`0.1`" | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | [link](https://chromium.googlesource.com/chromium/src/+/57a65e032513965829e3ed1c1cd20b39d63d2224/content/browser/aggregation_service/payload_encryption.md) | n/a (initial release).
+| "`0.1`" | [link](https://patcg-individual-drafts.github.io/private-aggregation-api/pr-preview/refs/pull/128/merge/index.html) | [link](https://chromium.googlesource.com/chromium/src/+/57a65e032513965829e3ed1c1cd20b39d63d2224/content/browser/aggregation_service/payload_encryption.md) | n/a (initial release).
+| "`1.0`" | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | [link](https://chromium.googlesource.com/chromium/src/+/main/content/browser/aggregation_service/payload_encryption.md) | Adds [filtering IDs](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md)
+
 
 ## Golden Report Descriptions
 
@@ -40,4 +39,8 @@ TODO: Replace past explainer links with draft spec when available.
 4. Non-debug report, 2 contributions, Shared Storage API.
 5. Debug report, key with extreme value, Protected Audience API.
 6. Non-debug report, key with extreme value, Protected Audience API.
-7. Non-debug report, null report, Shared Storage API
+7. Non-debug report, null report, Shared Storage API.
+8. Debug report, filtering ID set, Protected Audience API.
+9. Non-debug report, filtering ID set, Protected Audience API.
+10. Debug report, extreme filtering ID with extreme max bytes, Protected
+    Audience API.
