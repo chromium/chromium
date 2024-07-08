@@ -2189,8 +2189,7 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
   constexpr gfx::ColorSpace color_space;
   constexpr gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
   constexpr auto format = viz::MultiPlaneFormat::kNV12;
   const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
 
