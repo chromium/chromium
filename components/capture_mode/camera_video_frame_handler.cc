@@ -49,7 +49,7 @@ bool g_force_use_gpu_memory_buffer_for_test = false;
 // for the video frames will be used with. They will be read via the raster
 // interface (which will be going over GLES2 if OOP-R is not enabled), sent
 // to the display compositor, and may be used as overlays.
-constexpr uint32_t kSharedImageUsage =
+constexpr gpu::SharedImageUsageSet kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 

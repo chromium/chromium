@@ -69,7 +69,8 @@ const gfx::BufferUsage kDefaultBufferUsage = gfx::BufferUsage::GPU_READ;
 
 // Default usage in order to create a mappable shared image and get a
 // GpuMemoryBufferHandle from it.
-const uint32_t kDefaultMappableSIUsage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+const gpu::SharedImageUsageSet kDefaultMappableSIUsage =
+    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
@@ -263,9 +264,9 @@ Buffer::Texture::Texture(
   // and destination of writes. Note that as the browser process raster
   // interface uses RasterImplementation (and not RasterImplementationGLES) as
   // its implementation, GLES2 usage is not needed.
-  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   shared_image_ =
       sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888, size,
@@ -304,9 +305,9 @@ Buffer::Texture::Texture(
   // and destination of writes. Note that as the browser process raster
   // interface uses RasterImplementation (and not RasterImplementationGLES) as
   // its implementation, GLES2 usage is not needed.
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }

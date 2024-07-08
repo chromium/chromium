@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -75,7 +76,7 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
       gfx::BufferFormat buffer_format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override;
 
   void DestroySharedImage(

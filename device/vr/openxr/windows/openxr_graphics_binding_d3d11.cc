@@ -184,10 +184,10 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     // The SharedImages created here will eventually be transferred to other
     // processes to have their contents written by WebGL and read via GL by
     // OpenXR.
-    const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    const gpu::SharedImageUsageSet shared_image_usage =
+        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     swap_chain_info.shared_image = sii->CreateSharedImage(
         {viz::SinglePlaneFormat::kRGBA_8888, buffer_size,

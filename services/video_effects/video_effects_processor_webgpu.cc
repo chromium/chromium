@@ -41,7 +41,7 @@ namespace {
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImageRGBA(
     gpu::SharedImageInterface* sii,
     const media::mojom::VideoFrameInfo& frame_info,
-    uint32_t gpu_usage) {
+    gpu::SharedImageUsageSet gpu_usage) {
   scoped_refptr<gpu::ClientSharedImage> destination = sii->CreateSharedImage(
       {viz::SinglePlaneFormat::kRGBA_8888, frame_info.coded_size,
        frame_info.color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,

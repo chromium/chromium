@@ -72,8 +72,8 @@ class PPB_Graphics3D_Impl::ColorBuffer {
               bool has_alpha,
               bool is_single_buffered)
       : sii_(sii), size_(size), is_single_buffered_(is_single_buffered) {
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                     gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                     gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     if (is_single_buffered_)
       usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;

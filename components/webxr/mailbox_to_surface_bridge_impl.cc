@@ -345,7 +345,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
     gfx::BufferFormat buffer_format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());

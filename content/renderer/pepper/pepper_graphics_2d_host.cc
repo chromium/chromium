@@ -699,8 +699,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       // We will potentially write to this SharedImage via the raster interface
       // (which might be going over GLES2) and will later send it off to the
       // display compositor.
-      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       shared_image = sii->CreateSharedImage(

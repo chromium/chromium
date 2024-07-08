@@ -159,7 +159,7 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
 
   static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
-  uint32_t shared_image_usage =
+  gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 

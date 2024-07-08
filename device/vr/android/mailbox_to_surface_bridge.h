@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_MAILBOX_TO_SURFACE_BRIDGE_H_
 
 #include "base/functional/callback_forward.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace gfx {
 enum class BufferFormat : uint8_t;
@@ -86,7 +87,7 @@ class MailboxToSurfaceBridge {
       gfx::BufferFormat buffer_format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) = 0;
 
   // Destroys a shared image created by CreateSharedImage. The sync_token
