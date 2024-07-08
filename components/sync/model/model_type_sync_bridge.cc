@@ -26,30 +26,6 @@ ModelTypeSyncBridge::~ModelTypeSyncBridge() = default;
 void ModelTypeSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {}
 
-void ModelTypeSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
-                                           DataCallback callback) {
-  std::unique_ptr<DataBatch> batch = GetDataForCommit(std::move(storage_keys));
-  if (batch) {
-    std::move(callback).Run(std::move(batch));
-  }
-}
-
-std::unique_ptr<DataBatch> ModelTypeSyncBridge::GetDataForCommit(
-    StorageKeyList storage_keys) {
-  NOTREACHED();
-}
-
-void ModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  std::unique_ptr<DataBatch> batch = GetAllDataForDebugging();
-  if (batch) {
-    std::move(callback).Run(std::move(batch));
-  }
-}
-
-std::unique_ptr<DataBatch> ModelTypeSyncBridge::GetAllDataForDebugging() {
-  NOTREACHED();
-}
-
 bool ModelTypeSyncBridge::SupportsGetClientTag() const {
   return true;
 }
