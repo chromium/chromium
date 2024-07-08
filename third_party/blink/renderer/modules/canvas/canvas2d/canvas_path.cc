@@ -594,8 +594,9 @@ void CanvasPath::roundRect(
     ExceptionState& exception_state) {
   UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DRoundRect);
+  constexpr int kMaxRadii = 4;
   const int num_radii = radii.size();
-  if (UNLIKELY(num_radii < 1 || num_radii > 4)) {
+  if (UNLIKELY(num_radii < 1 || num_radii > kMaxRadii)) {
     exception_state.ThrowRangeError(
         String::Number(num_radii) +
         " radii provided. Between one and four radii are necessary.");
@@ -616,7 +617,7 @@ void CanvasPath::roundRect(
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
-  gfx::SizeF r[num_radii];
+  gfx::SizeF r[kMaxRadii];
   for (int i = 0; i < num_radii; ++i) {
     switch (radii[i]->GetContentType()) {
       case V8UnionDOMPointInitOrUnrestrictedDouble::ContentType::
