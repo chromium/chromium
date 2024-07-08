@@ -1409,6 +1409,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.TrackingProtection.NoticeServiceEvent"
+    enum="TrackingProtectionNoticeServiceEvent" expires_after="2025-07-01">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records different events, such as tab changes, navigation finishing, and
+    browser type being non normal, that occur in the notice service during
+    Tracking Protection Onboarding.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
     enum="Boolean" expires_after="2024-12-08">
@@ -1487,18 +1498,6 @@ reviewer.
     the message was requested to be shown but wasn't due to e.g. navigation only
     on tabs with non-secure connection state. This histogram is in the
     deprecation process and will be removed soon.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent"
-    enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-12-08">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records different events, such as tab changes, navigation finishing, and
-    browser type being non normal, that occur in the notice service during
-    onboarding for 3PCD.
   </summary>
 </histogram>
 
@@ -1608,18 +1607,6 @@ reviewer.
   <summary>
     Records a boolean for whether or not the MaybeMarkSilentIneligible function
     changed the user to ineligible.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.SilentOnboarding.NoticeServiceEvent"
-    enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-09-30">
-  <owner>linnan@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records different events, such as tab changes, navigation finishing, and
-    browser type being non normal, that occur in the notice service during
-    silent onboarding for 3PCD control groups.
   </summary>
 </histogram>
 

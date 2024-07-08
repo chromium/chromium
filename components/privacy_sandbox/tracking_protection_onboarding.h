@@ -170,6 +170,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Called by UI code to determine what type of notice is required.
   NoticeType GetRequiredNotice();
 
+  bool ShouldRunUILogic();
+
   // To be called by UI code when the user has taken action on the onboarding
   // notice.
   void OnboardingNoticeActionTaken(NoticeAction action);
@@ -211,6 +213,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   PrefChangeRegistrar pref_change_registrar_;
   version_info::Channel channel_;
   bool is_silent_onboarding_enabled_;
+  bool should_run_3pcd_ui_;
 };
 
 }  // namespace privacy_sandbox

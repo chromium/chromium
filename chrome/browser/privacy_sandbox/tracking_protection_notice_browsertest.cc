@@ -245,9 +245,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   // Notice is showing.
   EXPECT_FALSE(IsOnboardingPromoActive(browser()));
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kInactiveWebcontentUpdated,
+          TrackingProtectionNoticeServiceEvent::kInactiveWebcontentUpdated,
       1);
 }
 
@@ -342,9 +342,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   // Notice is Not showing.
   EXPECT_FALSE(IsOnboardingPromoActive(browser()));
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kBrowserTypeNonNormal,
+          TrackingProtectionNoticeServiceEvent::kBrowserTypeNonNormal,
       1);
 }
 
@@ -368,14 +368,14 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   // due to the first page load being a non secure page.
   // Once the navigation to empty.html goes through, the promo is then active
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kLocationIconNonVisible,
+          TrackingProtectionNoticeServiceEvent::kLocationIconNonVisible,
       1);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kLocationIconNonSecure,
+          TrackingProtectionNoticeServiceEvent::kLocationIconNonSecure,
       1);
 }
 
@@ -406,9 +406,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   // Doesn't create a second notice on the second window.
   EXPECT_FALSE(IsOnboardingPromoActive(BrowserList::GetInstance()->get(1)));
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNoticeRequestedButNotShown,
+          TrackingProtectionNoticeServiceEvent::kNoticeRequestedButNotShown,
       1);
 }
 
@@ -497,9 +497,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kOnboarded);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kPromoPreviouslyDismissed,
+          TrackingProtectionNoticeServiceEvent::kPromoPreviouslyDismissed,
       1);
 }
 
@@ -563,12 +563,6 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
 
   browser()->window()->Activate();
 
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
-      privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated,
-      1);
-
   // Action: Navigate to an HTTPS eligible page in current tab.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser(), https_server_.GetURL("a.test", "/empty.html"), 1,
@@ -580,26 +574,26 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
   // goes through which also calls the MaybeUpdateNoticeVisibility which is why
   // there are two histograms emitted for kUpdateNoticeVisibility.
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kUpdateNoticeVisibility,
+          TrackingProtectionNoticeServiceEvent::kUpdateNoticeVisibility,
       2);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kActiveTabChanged,
+          TrackingProtectionNoticeServiceEvent::kActiveTabChanged,
       1);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNoticeRequestedAndShown,
+          TrackingProtectionNoticeServiceEvent::kNoticeRequestedAndShown,
       1);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNavigationFinished,
+          TrackingProtectionNoticeServiceEvent::kNavigationFinished,
       1);
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       browser(), https_server_.GetURL("b.test", "/empty.html"), 1,
@@ -607,9 +601,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNoticeAlreadyShowing,
+          TrackingProtectionNoticeServiceEvent::kNoticeAlreadyShowing,
       1);
 
   // Acknowledging the notice with the "Got It" button. Then navigating to a
@@ -623,9 +617,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionOnboardingNoticeBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kNoticeShowingButShouldnt,
+          TrackingProtectionNoticeServiceEvent::kNoticeShowingButShouldnt,
       1);
 }
 
@@ -684,9 +678,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
             privacy_sandbox::TrackingProtectionOnboarding::
                 SilentOnboardingStatus::kEligible);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SilentOnboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kInactiveWebcontentUpdated,
+          TrackingProtectionNoticeServiceEvent::kInactiveWebcontentUpdated,
       1);
 }
 
@@ -769,9 +763,9 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionSilentOnboardingNoticeBrowserTest,
             privacy_sandbox::TrackingProtectionOnboarding::
                 SilentOnboardingStatus::kEligible);
   histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SilentOnboarding.NoticeServiceEvent",
+      "PrivacySandbox.TrackingProtection.NoticeServiceEvent",
       privacy_sandbox::TrackingProtectionNoticeService::
-          TrackingProtectionMetricsNoticeEvent::kBrowserTypeNonNormal,
+          TrackingProtectionNoticeServiceEvent::kBrowserTypeNonNormal,
       1);
 }
 

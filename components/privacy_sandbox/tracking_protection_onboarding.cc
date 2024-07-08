@@ -555,6 +555,12 @@ bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
   return GetRequiredNotice() == NoticeType::kOnboarding;
 }
 
+bool TrackingProtectionOnboarding::ShouldRunUILogic() {
+  // TODO(crbug.com/341975190) Remove dependency on GetRequiredNotice for when
+  // Full 3PCD logic is implemented.
+  return GetRequiredNotice() != NoticeType::kNone;
+}
+
 NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
   auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
   switch (onboarding_status) {
