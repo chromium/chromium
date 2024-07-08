@@ -14,6 +14,8 @@
   font-weight: 500;
   line-height: 16px;
   padding: var(--sp-card-padding);
+  max-width: calc(360px - 2 * var(--sp-body-padding) - 2 * var(
+      --sp-card-inline-padding));
 }
 
 #pinningSelectionCard {
@@ -81,5 +83,24 @@
   gap: 12px;
   justify-content: flex-start;
   line-height: 20px;
+  padding: 16px;
+}
+
+#miniToolbar {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: var(--cr-elevation-2);
+  height: 148px;
+  width: 280px;
+  z-index: 1;
+}
+
+#miniToolbarBackground {
+  background-color: var(--color-sys-tonal-container);
+  border: 0;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
   padding: 16px;
 }

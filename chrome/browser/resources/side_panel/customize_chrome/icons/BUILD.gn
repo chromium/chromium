@@ -20,6 +20,7 @@ generate_grd("build_grdp") {
     "image.svg",
     "lightbulb_outline.svg",
     "mini_new_tab_page.svg",
+    "mini_toolbar.svg",
     "productivity.svg",
     "reset.svg",
     "sparkle.svg",

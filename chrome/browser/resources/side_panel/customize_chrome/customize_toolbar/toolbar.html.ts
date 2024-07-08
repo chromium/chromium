@@ -14,6 +14,11 @@ export function getHtml(this: ToolbarElement) {
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{toolbarHeader}</h2>
   </sp-heading>
+  <div id="miniToolbarBackground">
+    <svg id="miniToolbar" src="icons/mini_toolbar.svg">
+      <use href="icons/mini_toolbar.svg#miniToolbar"></use>
+    </svg>
+  </div>
   <div class="intro-text">$i18n{chooseToolbarIconsLabel}</div>
   <cr-button id="resetToDefaultButton" @click="${this.onResetToDefaultClicked_}"
       class="floating-button">
