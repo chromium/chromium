@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager_impl.h"
@@ -239,7 +240,7 @@ void RemoteCharacteristicImpl::SetRegisterNotificationOrIndicationInternal(
   }
 
   auto it = uuid_to_descriptor_.find(RemoteDescriptor::kCccdUuid);
-  DCHECK(it != uuid_to_descriptor_.end());
+  CHECK(it != uuid_to_descriptor_.end(), base::NotFatalUntil::M130);
 
   // CCCD must exist. |fake_cccd_| should have been created if it doesn't exist.
   std::vector<uint8_t> write_val = indication
