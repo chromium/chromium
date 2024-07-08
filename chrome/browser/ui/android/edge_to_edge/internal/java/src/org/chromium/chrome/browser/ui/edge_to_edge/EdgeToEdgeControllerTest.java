@@ -129,6 +129,7 @@ public class EdgeToEdgeControllerTest {
     @Before
     public void setUp() {
         ChromeFeatureList.sDrawEdgeToEdge.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
 

@@ -64,7 +64,11 @@ import org.chromium.ui.test.util.UiRestriction;
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-@EnableFeatures({ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE, ChromeFeatureList.DRAW_EDGE_TO_EDGE})
+@EnableFeatures({
+    ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
+    ChromeFeatureList.DRAW_EDGE_TO_EDGE,
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+})
 public class EdgeToEdgeInstrumentationTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

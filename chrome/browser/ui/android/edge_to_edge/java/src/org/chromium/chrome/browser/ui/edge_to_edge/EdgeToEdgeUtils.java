@@ -68,6 +68,13 @@ public class EdgeToEdgeUtils {
     }
 
     /**
+     * @return True if the edge-to-edge bottom chin is enabled.
+     */
+    public static boolean isFullWebEdgeToEdgeOptInEnabled() {
+        return ChromeFeatureList.sDrawWebEdgeToEdge.isEnabled();
+    }
+
+    /**
      * Record if the current activity is eligible for edge to edge. If not, also record the reason
      * why it is ineligible.
      *

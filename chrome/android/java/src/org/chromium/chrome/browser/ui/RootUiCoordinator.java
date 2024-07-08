@@ -1872,7 +1872,7 @@ public class RootUiCoordinator
             ObservableSupplierImpl<EdgeToEdgeController> supplier,
             BrowserControlsManager browserControlsManager) {
         EdgeToEdgeUtils.recordEligibility(activity);
-        if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
+        if (supportsEdgeToEdge()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
                             activity, mWindowAndroid, activityTabProvider, browserControlsManager);

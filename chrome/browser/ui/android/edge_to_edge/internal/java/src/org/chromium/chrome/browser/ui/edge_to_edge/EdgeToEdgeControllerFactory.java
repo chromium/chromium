@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -76,21 +75,18 @@ public class EdgeToEdgeControllerFactory {
     }
 
     /**
-     * @return whether the feature is enabled or not.
-     */
-    public static boolean isEnabled() {
-        // Make sure we test SDK version before checking the Feature so Field Trials only collect
-        // from qualifying devices.
-        if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
-        return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
-    }
-
-    /**
      * @return whether the configuration of the device should allow Edge To Edge.
      */
     public static boolean isSupportedConfiguration(Activity activity) {
+        // Make sure we test SDK version before checking the Feature so Field Trials only collect
+        // from qualifying devices.
         if (android.os.Build.VERSION.SDK_INT < VERSION_CODES.R) return false;
-        return isEnabled()
+
+        boolean atLeastOneE2EFeatureEnabled =
+                EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()
+                        || EdgeToEdgeUtils.isFullWebEdgeToEdgeOptInEnabled();
+
+        return atLeastOneE2EFeatureEnabled
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
                 // TODO(https://crbug.com/325356134) use UiUtils#isGestureNavigationMode instead.
