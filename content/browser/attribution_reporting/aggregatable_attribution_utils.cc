@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -29,11 +30,13 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "net/base/schemeful_site.h"
@@ -53,6 +56,14 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
       attribution_reporting::RoundDownToWholeDaySinceUnixEpoch(time);
   return base::NumberToString(rounded.InMillisecondsSinceUnixEpoch() /
                               base::Time::kMillisecondsPerSecond);
+}
+
+bool IsAggregatableFilteringIdsEnabled() {
+  return base::FeatureList::IsEnabled(
+             attribution_reporting::features::
+                 kAttributionReportingAggregatableFilteringIds) &&
+         base::FeatureList::IsEnabled(
+             kPrivacySandboxAggregationServiceFilteringIds);
 }
 
 }  // namespace
@@ -94,6 +105,7 @@ CreateAggregatableHistogram(
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions;
+  const bool filtering_id_enabled = IsAggregatableFilteringIdsEnabled();
   for (const auto& aggregatable_value : aggregatable_values) {
     if (source_filter_data.Matches(source_type, source_time, trigger_time,
                                    aggregatable_value.filters())) {
@@ -105,11 +117,14 @@ CreateAggregatableHistogram(
           continue;
         }
 
+        std::optional<uint64_t> filtering_id;
+        if (filtering_id_enabled) {
+          filtering_id = value->second.filtering_id();
+        }
+
         contributions.emplace_back(
             key, base::checked_cast<int32_t>(value->second.value()),
-            // TODO(https://crbug.com/345274918): Add the filtering id to
-            // contributions.
-            /*filtering_id=*/std::nullopt);
+            filtering_id);
       }
       break;
     }
@@ -212,6 +227,21 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
                         std::move(serialized_source_time));
   SetAttributionDestination(
       additional_fields, net::SchemefulSite(attribution_info.context_origin));
+
+  std::optional<size_t> filtering_id_max_bytes;
+  if (IsAggregatableFilteringIdsEnabled()) {
+    filtering_id_max_bytes =
+        common_aggregatable_data->aggregatable_trigger_config
+            .aggregatable_filtering_id_max_bytes()
+            .value();
+  } else {
+    // We clear the filtering ids to avoid hitting `FilteringIdsFitInMaxBytes()`
+    // invalidly in case that filtering ids were unexpectedly set in the db for
+    // some reason like db corruption.
+    for (auto& contribution : contributions) {
+      contribution.filtering_id.reset();
+    }
+  }
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
@@ -223,11 +253,14 @@ std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
               : std::nullopt,
           /*max_contributions_allowed=*/
           attribution_reporting::kMaxAggregationKeysPerSource,
-          /*filtering_id_max_bytes=*/std::nullopt),
+          filtering_id_max_bytes),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),
-          AttributionReport::CommonAggregatableData::kVersion,
+          filtering_id_max_bytes.has_value()
+              ? AttributionReport::CommonAggregatableData::
+                    kVersionWithFlexibleContributionFiltering
+              : AttributionReport::CommonAggregatableData::kVersion,
           AttributionReport::CommonAggregatableData::kApiIdentifier));
 }
 

@@ -5,7 +5,7 @@ implemented matches the intended behavior of the Attribution Reporting API.
 
 See https://wicg.github.io/attribution-reporting-api/ for the draft specification.
 
-See //content/browser/attribution_reporting/attribution_interop_unittest.cc
+See //content/browser/attribution_reporting/interop/interop_unittest.cc
 for the tests.
 
 These tests are purposefully not implemented as web platform tests, so that

@@ -43,6 +43,12 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerConfig {
 
   void Serialize(base::Value::Dict&) const;
 
+  // Returns true when this config requires that a report be sent
+  // unconditionally, i.e., if there is no report created a null report should
+  // be sent.
+  // https://wicg.github.io/attribution-reporting-api/#should-send-a-report-unconditionally
+  bool ShouldCauseAReportToBeSentUnconditionally() const;
+
   mojom::SourceRegistrationTimeConfig source_registration_time_config() const {
     return source_registration_time_config_;
   }

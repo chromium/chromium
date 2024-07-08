@@ -21,6 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -140,10 +141,20 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
       continue;
     }
 
-    list.Append(
+    base::Value::Dict dict =
         base::Value::Dict()
             .Set("key", attribution_reporting::HexEncodeAggregationKey(bucket))
-            .Set("value", base::checked_cast<int>(value)));
+            .Set("value", base::checked_cast<int>(value));
+
+    if (data_map.contains(cbor::Value("id"))) {
+      const cbor::Value::BinaryValue& id_byte_string =
+          data_map.at(cbor::Value("id")).GetBytestring();
+      uint64_t id;
+      CHECK(base::HexStringToUInt64(base::HexEncode(id_byte_string), &id));
+      dict.Set("id", base::NumberToString(id));
+    }
+
+    list.Append(std::move(dict));
   }
   return list;
 }

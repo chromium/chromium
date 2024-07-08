@@ -80,6 +80,7 @@ class CONTENT_EXPORT AttributionReport {
     // When updating the string, update the goldens and version history too, see
     // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md
     static constexpr char kVersion[] = "0.1";
+    static constexpr char kVersionWithFlexibleContributionFiltering[] = "1.0";
 
     // Enum string identifying this API for use in reports.
     static constexpr char kApiIdentifier[] = "attribution-reporting";

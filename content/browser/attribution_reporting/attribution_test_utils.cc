@@ -515,6 +515,12 @@ ReportBuilder& ReportBuilder::SetSourceRegistrationTimeConfig(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetAggregatableFilteringIdsMaxBytes(
+    attribution_reporting::AggregatableFilteringIdsMaxBytes max_bytes) {
+  aggregatable_filtering_ids_max_bytes_ = max_bytes;
+  return *this;
+}
+
 ReportBuilder& ReportBuilder::SetTriggerContextId(
     std::string trigger_context_id) {
   trigger_context_id_ = std::move(trigger_context_id);
@@ -539,7 +545,7 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
               aggregation_coordinator_origin_, verification_token_,
               *attribution_reporting::AggregatableTriggerConfig::Create(
                   source_registration_time_config_, trigger_context_id_,
-                  attribution_reporting::AggregatableFilteringIdsMaxBytes())),
+                  aggregatable_filtering_ids_max_bytes_)),
           contributions_, source_));
 }
 

@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "build/build_config.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -34,6 +33,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -144,6 +144,7 @@ struct AttributionAggregatableMetadataRecord {
     std::optional<uint64_t> high_bits;
     std::optional<uint64_t> low_bits;
     std::optional<uint32_t> value;
+    std::optional<uint64_t> id;
   };
   std::vector<Contribution> contributions;
   std::optional<url::Origin> coordinator_origin;
@@ -152,6 +153,7 @@ struct AttributionAggregatableMetadataRecord {
       source_registration_time_config =
           proto::AttributionCommonAggregatableMetadata::INCLUDE;
   std::optional<std::string> trigger_context_id;
+  std::optional<uint32_t> filtering_id_max_bytes;
 };
 
 struct AttributionNullAggregatableMetadataRecord {
@@ -215,6 +217,9 @@ std::string SerializeReportMetadata(
     if (contribution.value) {
       contribution_msg->set_value(*contribution.value);
     }
+    if (contribution.id) {
+      contribution_msg->set_filtering_id(*contribution.id);
+    }
   }
 
   if (record.coordinator_origin.has_value()) {
@@ -230,6 +235,11 @@ std::string SerializeReportMetadata(
   if (record.trigger_context_id.has_value()) {
     msg.mutable_common_data()->set_trigger_context_id(
         *record.trigger_context_id);
+  }
+
+  if (record.filtering_id_max_bytes.has_value()) {
+    msg.mutable_common_data()->set_filtering_id_max_bytes(
+        *record.filtering_id_max_bytes);
   }
 
   std::string str;
@@ -2113,6 +2123,7 @@ TEST_F(AttributionStorageSqlTest,
                               .low_bits = 2,
                               .value =
                                   attribution_reporting::kMaxAggregatableValue,
+                              .id = 125,
                           },
                       },
               },
@@ -2201,9 +2212,62 @@ TEST_F(AttributionStorageSqlTest,
               },
           .valid = false,
       },
+      {
+          .desc = "invalid_filtering_id_max_bytes_value",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value =
+                                  attribution_reporting::kMaxAggregatableValue,
+                          },
+                      },
+                  .filtering_id_max_bytes = 10,
+              },
+          .valid = false,
+      },
+      {
+          .desc = "invalid_filtering_id_max_bytes",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value =
+                                  attribution_reporting::kMaxAggregatableValue,
+                          },
+                      },
+                  .source_registration_time_config =
+                      proto::AttributionCommonAggregatableMetadata::INCLUDE,
+                  .filtering_id_max_bytes = 2,
+              },
+          .valid = false,
+      },
+      {
+          .desc = "invalid_filtering_id",
+          .record =
+              AttributionAggregatableMetadataRecord{
+                  .contributions =
+                      {
+                          AttributionAggregatableMetadataRecord::Contribution{
+                              .high_bits = 1,
+                              .low_bits = 2,
+                              .value =
+                                  attribution_reporting::kMaxAggregatableValue,
+                              .id = 256},
+                      }},
+          .valid = false,
+      },
   };
 
   for (auto test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
     OpenDatabase();
     storage()->StoreSource(SourceBuilder()
                                .SetReportingOrigin(*SuitableOrigin::Deserialize(

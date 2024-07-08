@@ -972,12 +972,12 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
     value.Set("debug_key", base::NumberToString(debug_key_.value()));
   }
 
-    value.Set(
-        "aggregation_coordinator_origin",
-        aggregation_coordinator_origin_
-            .value_or(
-                ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())
-            .Serialize());
+  value.Set(
+      "aggregation_coordinator_origin",
+      aggregation_coordinator_origin_
+          .value_or(
+              ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())
+          .Serialize());
 
   for (const auto& item : additional_fields_) {
     CHECK(!value.contains(item.first))

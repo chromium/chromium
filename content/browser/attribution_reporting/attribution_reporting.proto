@@ -73,6 +73,7 @@ message AttributionCommonAggregatableMetadata {
   optional SourceRegistrationTimeConfig source_registration_time_config = 3;
   optional string coordinator_origin = 4;
   optional string trigger_context_id = 5;
+  optional uint32 filtering_id_max_bytes = 6;
 
   reserved 1;
   reserved "coordinator";
@@ -84,6 +85,7 @@ message AttributionAggregatableMetadata {
   message Contribution {
     optional AttributionAggregationKey key = 1;
     optional uint32 value = 2;
+    optional uint64 filtering_id = 3;
   }
   repeated Contribution contributions = 2;
 }

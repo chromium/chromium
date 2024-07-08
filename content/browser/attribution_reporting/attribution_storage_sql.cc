@@ -743,7 +743,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-
   RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
       rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
                                                              source_time);
@@ -3443,8 +3442,8 @@ base::Time AttributionStorageSql::GetAggregatableReportTime(
     const AttributionTrigger& trigger,
     base::Time trigger_time) const {
   if (trigger.registration()
-          .aggregatable_trigger_config.trigger_context_id()
-          .has_value()) {
+          .aggregatable_trigger_config
+          .ShouldCauseAReportToBeSentUnconditionally()) {
     return trigger_time;
   }
   return delegate_->GetAggregatableReportTime(trigger_time);

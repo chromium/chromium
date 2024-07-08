@@ -101,6 +101,7 @@ struct AttributionInteropConfig {
   bool needs_cross_app_web = false;
   bool needs_aggregatable_debug = false;
   bool needs_source_destination_limit = false;
+  bool needs_aggregatable_filtering_ids = false;
   std::vector<url::Origin> aggregation_coordinator_origins;
 
   AttributionInteropConfig();

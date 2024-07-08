@@ -98,12 +98,12 @@ bool IsMaxBytesAllowed(
 bool IsValid(SourceRegistrationTimeConfig source_registration_time_config,
              const std::optional<std::string>& trigger_context_id,
              AggregatableFilteringIdsMaxBytes max_bytes) {
-  if (!trigger_context_id.has_value()) {
-    return true;
-  }
+  const bool trigger_context_id_valid =
+      !trigger_context_id.has_value() ||
+      (IsTriggerContextIdValid(*trigger_context_id) &&
+       IsTriggerContextIdAllowed(source_registration_time_config));
 
-  return IsTriggerContextIdValid(*trigger_context_id) &&
-         IsTriggerContextIdAllowed(source_registration_time_config) &&
+  return trigger_context_id_valid &&
          IsMaxBytesAllowed(max_bytes, source_registration_time_config);
 }
 
@@ -203,6 +203,12 @@ void AggregatableTriggerConfig::Serialize(base::Value::Dict& dict) const {
   if (FilteringIdEnabled()) {
     aggregatable_filtering_id_max_bytes_.Serialize(dict);
   }
+}
+
+bool AggregatableTriggerConfig::ShouldCauseAReportToBeSentUnconditionally()
+    const {
+  return trigger_context_id_.has_value() ||
+         !aggregatable_filtering_id_max_bytes_.IsDefault();
 }
 
 }  // namespace attribution_reporting

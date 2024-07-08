@@ -197,49 +197,70 @@ TEST(AggregatableUtilsTest, GetNullAggregatableReports_RoundedTime) {
   }
 }
 
-TEST(AggregatableUtilsTest, GetNullAggregatableReports_TriggerContextId) {
-  auto config = *AggregatableTriggerConfig::Create(
-      SourceRegistrationTimeConfig::kExclude,
-      /*trigger_context_id=*/"", kFilteringIdMaxBytes);
-  base::Time now = base::Time::Now();
+TEST(AggregatableUtilsTest, GetNullAggregatableReportsUnconditionally) {
+  const struct {
+    const char* description;
+    AggregatableTriggerConfig config;
+  } kTestCases[] = {
+      {
+          .description = "Trigger context id",
+          .config = *AggregatableTriggerConfig::Create(
+              SourceRegistrationTimeConfig::kExclude,
+              /*trigger_context_id=*/"", kFilteringIdMaxBytes),
+      },
+      {
+          .description = "Non-default filtering id max bytes",
+          .config = *AggregatableTriggerConfig::Create(
+              SourceRegistrationTimeConfig::kExclude,
+              /*trigger_context_id=*/std::nullopt,
+              *AggregatableFilteringIdsMaxBytes::Create(3)),
+      },
+  };
+  for (auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
 
-  const auto always_true = [](int) { return true; };
+    base::Time now = base::Time::Now();
 
-  const auto always_false = [](int) { return false; };
+    const AggregatableTriggerConfig& config = test_case.config;
 
-  const auto selective = [](int day) { return day == 0 || day == 5; };
+    const auto always_true = [](int) { return true; };
 
-  EXPECT_THAT(GetNullAggregatableReports(
-                  config,
-                  /*trigger_time=*/now,
-                  /*attributed_source_time=*/std::nullopt, always_true),
-              UnorderedElementsAre(NullAggregatableReport(now)));
-  EXPECT_THAT(GetNullAggregatableReports(
-                  config,
-                  /*trigger_time=*/now,
-                  /*attributed_source_time=*/std::nullopt, always_false),
-              UnorderedElementsAre(NullAggregatableReport(now)));
-  EXPECT_THAT(GetNullAggregatableReports(
-                  config,
-                  /*trigger_time=*/now,
-                  /*attributed_source_time=*/std::nullopt, selective),
-              UnorderedElementsAre(NullAggregatableReport(now)));
+    const auto always_false = [](int) { return false; };
 
-  EXPECT_THAT(
-      GetNullAggregatableReports(config,
-                                 /*trigger_time=*/now,
-                                 /*attributed_source_time=*/now, always_true),
-      IsEmpty());
-  EXPECT_THAT(
-      GetNullAggregatableReports(config,
-                                 /*trigger_time=*/now,
-                                 /*attributed_source_time=*/now, always_false),
-      IsEmpty());
-  EXPECT_THAT(
-      GetNullAggregatableReports(config,
-                                 /*trigger_time=*/now,
-                                 /*attributed_source_time=*/now, selective),
-      IsEmpty());
+    const auto selective = [](int day) { return day == 0 || day == 5; };
+
+    EXPECT_THAT(GetNullAggregatableReports(
+                    config,
+                    /*trigger_time=*/now,
+                    /*attributed_source_time=*/std::nullopt, always_true),
+                UnorderedElementsAre(NullAggregatableReport(now)));
+    EXPECT_THAT(GetNullAggregatableReports(
+                    config,
+                    /*trigger_time=*/now,
+                    /*attributed_source_time=*/std::nullopt, always_false),
+                UnorderedElementsAre(NullAggregatableReport(now)));
+    EXPECT_THAT(GetNullAggregatableReports(
+                    config,
+                    /*trigger_time=*/now,
+                    /*attributed_source_time=*/std::nullopt, selective),
+                UnorderedElementsAre(NullAggregatableReport(now)));
+
+    EXPECT_THAT(
+        GetNullAggregatableReports(config,
+                                   /*trigger_time=*/now,
+                                   /*attributed_source_time=*/now, always_true),
+        IsEmpty());
+    EXPECT_THAT(GetNullAggregatableReports(config,
+                                           /*trigger_time=*/now,
+                                           /*attributed_source_time=*/now,
+                                           always_false),
+                IsEmpty());
+    EXPECT_THAT(
+        GetNullAggregatableReports(config,
+                                   /*trigger_time=*/now,
+                                   /*attributed_source_time=*/now, selective),
+        IsEmpty());
+  }
 }
 
 int GetNumLookbackDays(SourceRegistrationTimeConfig config) {

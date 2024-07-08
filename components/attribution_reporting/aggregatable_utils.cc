@@ -54,9 +54,6 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
     GenerateNullAggregatableReportFunc generate_func) {
   // See spec
   // https://wicg.github.io/attribution-reporting-api/#generate-null-reports.
-
-  bool has_trigger_context_id = config.trigger_context_id().has_value();
-
   mojom::SourceRegistrationTimeConfig source_registration_time_config =
       config.source_registration_time_config();
 
@@ -74,7 +71,7 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
             RoundDownToWholeDaySinceUnixEpoch(*attributed_source_time);
       }
 
-      CHECK(!has_trigger_context_id);
+      CHECK(!config.ShouldCauseAReportToBeSentUnconditionally());
 
       return GetNullAggregatableReportsForLookback(
           trigger_time, rounded_attributed_source_time,
@@ -87,7 +84,7 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
         return {};
       }
 
-      if (has_trigger_context_id) {
+      if (config.ShouldCauseAReportToBeSentUnconditionally()) {
         return {
             NullAggregatableReport{
                 .fake_source_time = trigger_time,

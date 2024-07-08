@@ -81,6 +81,10 @@ void SerializeCommonAggregatableData(
       trigger_context_id.has_value()) {
     msg.set_trigger_context_id(*trigger_context_id);
   }
+
+  msg.set_filtering_id_max_bytes(
+      data.aggregatable_trigger_config.aggregatable_filtering_id_max_bytes()
+          .value());
 }
 
 [[nodiscard]] bool DeserializeCommonAggregatableData(
@@ -123,11 +127,20 @@ void SerializeCommonAggregatableData(
     trigger_context_id = msg.trigger_context_id();
   }
 
+  attribution_reporting::AggregatableFilteringIdsMaxBytes max_bytes;
+  if (msg.has_filtering_id_max_bytes()) {
+    auto read_max_bytes =
+        attribution_reporting::AggregatableFilteringIdsMaxBytes::Create(
+            msg.filtering_id_max_bytes());
+    if (!read_max_bytes.has_value()) {
+      return false;
+    }
+    max_bytes = read_max_bytes.value();
+  }
+
   auto aggregatable_trigger_config =
       attribution_reporting::AggregatableTriggerConfig::Create(
-          source_registration_time_config, trigger_context_id,
-          // TODO(https://crbug.com/345274918): Read the max bytes value.
-          attribution_reporting::AggregatableFilteringIdsMaxBytes());
+          source_registration_time_config, trigger_context_id, max_bytes);
   if (!aggregatable_trigger_config.has_value()) {
     return false;
   }
@@ -356,6 +369,9 @@ std::string SerializeReportMetadata(
         absl::Uint128Low64(contribution.bucket));
     contribution_msg->set_value(
         base::checked_cast<uint32_t>(contribution.value));
+    if (contribution.filtering_id.has_value()) {
+      contribution_msg->set_filtering_id(contribution.filtering_id.value());
+    }
   }
 
   return msg.SerializeAsString();
@@ -379,11 +395,19 @@ bool DeserializeReportMetadata(
             attribution_reporting::kMaxAggregatableValue) {
       return false;
     }
+    std::optional<uint64_t> filtering_id;
+    if (contribution_msg.has_filtering_id()) {
+      if (!data.common_data.aggregatable_trigger_config
+               .aggregatable_filtering_id_max_bytes()
+               .CanEncompass(contribution_msg.filtering_id())) {
+        return false;
+      }
+      filtering_id = contribution_msg.filtering_id();
+    }
     data.contributions.emplace_back(
         absl::MakeUint128(contribution_msg.key().high_bits(),
                           contribution_msg.key().low_bits()),
-        base::checked_cast<int32_t>(contribution_msg.value()),
-        /*filtering_id=*/std::nullopt);
+        base::checked_cast<int32_t>(contribution_msg.value()), filtering_id);
   }
 
   return true;

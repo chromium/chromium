@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -298,6 +299,9 @@ class ReportBuilder {
   ReportBuilder& SetSourceRegistrationTimeConfig(
       attribution_reporting::mojom::SourceRegistrationTimeConfig);
 
+  ReportBuilder& SetAggregatableFilteringIdsMaxBytes(
+      attribution_reporting::AggregatableFilteringIdsMaxBytes);
+
   ReportBuilder& SetVerificationToken(
       std::optional<std::string> verification_token);
 
@@ -317,6 +321,8 @@ class ReportBuilder {
   int64_t priority_ = 0;
   base::Uuid external_report_id_;
   AttributionReport::Id report_id_{0};
+  attribution_reporting::AggregatableFilteringIdsMaxBytes
+      aggregatable_filtering_ids_max_bytes_;
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
       contributions_;
   std::optional<attribution_reporting::SuitableOrigin>

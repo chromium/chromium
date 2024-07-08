@@ -241,51 +241,101 @@ TEST(AggregatableTriggerConfigTest, Create) {
     const char* desc;
     SourceRegistrationTimeConfig source_registration_time_config;
     std::optional<std::string> trigger_context_id;
+    AggregatableFilteringIdsMaxBytes filtering_id_max_bytes;
     std::optional<AggregatableTriggerConfig> expected;
+    std::optional<bool> should_cause_a_report_to_be_sent_unconditionally;
   } kTestCases[] = {
       {
           "valid_exclude_source_registration_time_with_trigger_context_id",
           SourceRegistrationTimeConfig::kExclude,
           "123",
+          kFilteringIdMaxBytes,
           *AggregatableTriggerConfig::Create(
               SourceRegistrationTimeConfig::kExclude, "123",
               kFilteringIdMaxBytes),
+          /*should_cause_a_report_to_be_sent_unconditionally=*/true,
       },
       {
           "valid_exclude_source_registration_time_without_trigger_context_id",
           SourceRegistrationTimeConfig::kExclude,
-          std::nullopt,
+          /*trigger_context_id=*/std::nullopt,
+          kFilteringIdMaxBytes,
           AggregatableTriggerConfig(),
+          /*should_cause_a_report_to_be_sent_unconditionally=*/false,
       },
       {
           "valid_include_source_registration_time_without_trigger_context_id",
           SourceRegistrationTimeConfig::kInclude,
-          std::nullopt,
+          /*trigger_context_id=*/std::nullopt,
+          kFilteringIdMaxBytes,
           *AggregatableTriggerConfig::Create(
               SourceRegistrationTimeConfig::kInclude, std::nullopt,
               kFilteringIdMaxBytes),
+          /*should_cause_a_report_to_be_sent_unconditionally=*/false,
       },
       {
           "trigger_context_id_too_long",
           SourceRegistrationTimeConfig::kExclude,
           std::string(65, 'a'),
-          std::nullopt,
+          kFilteringIdMaxBytes,
+          /*expected=*/std::nullopt,
+          /*should_cause_a_report_to_be_sent_unconditionally=*/std::nullopt,
       },
       {
           "trigger_context_id_disallowed",
           SourceRegistrationTimeConfig::kInclude,
           "123",
-          std::nullopt,
+          kFilteringIdMaxBytes,
+          /*expected=*/std::nullopt,
+          /*should_cause_a_report_to_be_sent_unconditionally=*/std::nullopt,
+      },
+      {
+          "non_default_filtering_id_max_bytes_disallowed",
+          SourceRegistrationTimeConfig::kInclude,
+          /*trigger_context_id=*/std::nullopt,
+          *AggregatableFilteringIdsMaxBytes::Create(2),
+          /*expected=*/std::nullopt,
+          /*should_cause_a_report_to_be_sent_unconditionally=*/std::nullopt,
+      },
+      {
+          "valid_non_default_filtering_id_max_bytes",
+          SourceRegistrationTimeConfig::kExclude,
+          /*trigger_context_id=*/std::nullopt,
+          *AggregatableFilteringIdsMaxBytes::Create(2),
+          /*expected=*/
+          *AggregatableTriggerConfig::Create(
+              SourceRegistrationTimeConfig::kExclude, std::nullopt,
+              *AggregatableFilteringIdsMaxBytes::Create(2)),
+          /*should_cause_a_report_to_be_sent_unconditionally=*/true,
+      },
+      {
+          "valid_non_default_filtering_id_max_bytes_and_triger_context_id",
+          SourceRegistrationTimeConfig::kExclude,
+          /*trigger_context_id=*/"123",
+          *AggregatableFilteringIdsMaxBytes::Create(2),
+          /*expected=*/
+          *AggregatableTriggerConfig::Create(
+              SourceRegistrationTimeConfig::kExclude, "123",
+              *AggregatableFilteringIdsMaxBytes::Create(2)),
+          /*should_cause_a_report_to_be_sent_unconditionally=*/true,
       },
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    EXPECT_EQ(AggregatableTriggerConfig::Create(
-                  test_case.source_registration_time_config,
-                  test_case.trigger_context_id, kFilteringIdMaxBytes),
-              test_case.expected);
+    ASSERT_EQ(
+        test_case.expected.has_value(),
+        test_case.should_cause_a_report_to_be_sent_unconditionally.has_value());
+
+    auto actual = AggregatableTriggerConfig::Create(
+        test_case.source_registration_time_config, test_case.trigger_context_id,
+        test_case.filtering_id_max_bytes);
+    EXPECT_EQ(actual, test_case.expected);
+    if (test_case.expected.has_value()) {
+      EXPECT_EQ(actual->ShouldCauseAReportToBeSentUnconditionally(),
+                test_case.should_cause_a_report_to_be_sent_unconditionally);
+    }
   }
 }
 

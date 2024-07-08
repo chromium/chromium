@@ -52,6 +52,7 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -431,6 +432,14 @@ RunAttributionInteropSimulation(
   if (run.config.needs_source_destination_limit) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionSourceDestinationLimit);
+  }
+
+  if (run.config.needs_aggregatable_filtering_ids) {
+    enabled_features.emplace_back(
+        attribution_reporting::features::
+            kAttributionReportingAggregatableFilteringIds);
+    enabled_features.emplace_back(
+        kPrivacySandboxAggregationServiceFilteringIds);
   }
 
   base::test::ScopedFeatureList scoped_feature_list;

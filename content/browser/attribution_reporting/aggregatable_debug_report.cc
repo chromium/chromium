@@ -354,7 +354,9 @@ AggregatableDebugReport::CreateAggregatableReportRequest() const {
       AggregatableReportSharedInfo(
           scheduled_report_time_, report_id_, reporting_origin_,
           AggregatableReportSharedInfo::DebugMode::kDisabled,
-          std::move(additional_fields), kVersion, kApiIdentifier));
+          std::move(additional_fields),
+          kVersion,  // TODO(https://crbug.com/345274918): Bump the version.
+          kApiIdentifier));
 }
 
 }  // namespace content
