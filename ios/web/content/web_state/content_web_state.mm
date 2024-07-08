@@ -104,7 +104,8 @@ ContentWebState::ContentWebState(const CreateParams& params,
   scoped_refptr<content::SiteInstance> site_instance;
   content::WebContents::CreateParams createParams(browser_context,
                                                   site_instance);
-  if (params.created_with_opener) {
+  created_with_opener_ = params.created_with_opener;
+  if (created_with_opener_) {
     ContentWebState* opener_web_state =
         static_cast<ContentWebState*>(params.opener_web_state);
     DCHECK(opener_web_state->child_web_contents_);
@@ -187,6 +188,7 @@ void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
   // CRWSessionStorage and then converting to protobuf message format.
   DCHECK(IsRealized());
   CRWSessionStorage* session_storage = BuildSessionStorage();
+  storage.set_has_opener(created_with_opener_);
   [session_storage serializeToProto:storage];
 }
 
@@ -539,10 +541,12 @@ void ContentWebState::DidChangeVisibleSecurityState() {
 }
 
 bool ContentWebState::HasOpener() const {
-  return false;
+  return created_with_opener_;
 }
 
-void ContentWebState::SetHasOpener(bool has_opener) {}
+void ContentWebState::SetHasOpener(bool has_opener) {
+  created_with_opener_ = has_opener;
+}
 
 bool ContentWebState::CanTakeSnapshot() const {
   return false;

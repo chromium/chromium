@@ -245,6 +245,7 @@ class ContentWebState : public WebState,
   FaviconStatus favicon_status_;
   bool top_control_scroll_in_progress_ = false;
   bool cached_shrink_controls_ = false;
+  bool created_with_opener_ = false;
   id keyboard_showing_observer_;
   id keyboard_hiding_observer_;
   int keyboard_height_ = 0;
