@@ -1055,21 +1055,6 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
-  autofill::FormStructure* credit_card_form =
-      AddFormToAutofillManagerCache(SetUpCreditCardForm());
-  auto card_type = autofill::CreditCard::RecordType::kFullServerCard;
-  auto failure_type =
-      autofill::payments::FullCardRequest::FailureType::GENERIC_FAILURE;
-  StartRunAndSelectOptions({credit_card_form->form_signature()});
-
-  EXPECT_TRUE(fast_checkout_client()->IsRunning());
-  fast_checkout_client()->OnFullCardRequestFailed(card_type, failure_type);
-  EXPECT_FALSE(fast_checkout_client()->IsRunning());
-  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kCvcPopupError);
-  EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
-}
-
 TEST_F(
     DISABLED_FastCheckoutClientImplTest,
     OnAfterDidFillAutofillFormData_AddressForm_MakesAddressFormA11yAnnouncement) {

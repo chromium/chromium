@@ -63,7 +63,6 @@ public class FastCheckoutCreditCard {
     private final String mGUID;
     private final String mOrigin;
     private final boolean mIsLocal;
-    private final boolean mIsCached;
     private final String mName;
     private final String mNumber;
     private final String mObfuscatedNumber;
@@ -84,7 +83,6 @@ public class FastCheckoutCreditCard {
             String guid,
             String origin,
             boolean isLocal,
-            boolean isCached,
             String name,
             String number,
             String obfuscatedNumber,
@@ -102,7 +100,6 @@ public class FastCheckoutCreditCard {
         mGUID = guid;
         mOrigin = origin;
         mIsLocal = isLocal;
-        mIsCached = isCached;
         mName = name;
         mNumber = number;
         mObfuscatedNumber = obfuscatedNumber;
@@ -132,11 +129,6 @@ public class FastCheckoutCreditCard {
     @CalledByNative
     public boolean getIsLocal() {
         return mIsLocal;
-    }
-
-    @CalledByNative
-    public boolean getIsCached() {
-        return mIsCached;
     }
 
     @CalledByNative

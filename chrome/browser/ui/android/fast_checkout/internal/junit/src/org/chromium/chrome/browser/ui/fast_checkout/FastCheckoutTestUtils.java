@@ -65,7 +65,6 @@ class FastCheckoutTestUtils {
                 guid,
                 origin,
                 /* isLocal= */ isLocal,
-                /* isCached= */ true,
                 name,
                 number,
                 obfuscatedNumber,
