@@ -21,7 +21,8 @@ desc: |-
   enabled, but site-two.com will use the policy from <ph
   name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME">
   DefaultJavaScriptOptimizerSetting</ph>, if set, or default to JavaScript
-  optimizations enabled.
+  optimizations enabled. Blocklist entries have higher priority than allowlist
+  entries, which in turn have higher priority than the configured default value.
 
   If this policy is not set for a site then the policy from <ph
   name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME">
