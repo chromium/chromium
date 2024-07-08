@@ -559,9 +559,9 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   }
   // Add |entry| to the end of the queue along with the presentation promise
   // index in order to match with corresponding presentation feedback later.
-  events_data_.push_back(EventData::Create(entry,
-                                           event_presentation_promise_count_,
-                                           start_time, key_code, pointer_id));
+  events_data_.push_back(EventData::Create(
+      entry, event_presentation_promise_count_, start_time, processing_start,
+      processing_end, key_code, pointer_id));
   SetCurrentEventTimingEvent(nullptr);
 }
 
@@ -639,24 +639,26 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                                     base::TimeTicks presentation_timestamp) {
   PerformanceEventTiming* entry = event_data->GetEventTiming();
   base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
+  base::TimeTicks processing_start = event_data->GetProcessingStart();
+  base::TimeTicks processing_end = event_data->GetProcessingEnd();
   std::optional<int> key_code = event_data->GetKeyCode();
   std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
-  std::optional<base::TimeTicks> fallback_time =
-      GetFallbackTime(entry, event_timestamp, presentation_timestamp);
+  std::optional<base::TimeTicks> fallback_time = GetFallbackTime(
+      entry, event_timestamp, processing_end, presentation_timestamp);
 
   base::TimeTicks entry_end_timetick =
       fallback_time.has_value() ? *fallback_time : presentation_timestamp;
-  DOMHighResTimeStamp entry_end_time =
-      MonotonicTimeToDOMHighResTimeStamp(entry_end_timetick);
 
-  base::TimeDelta processing_time =
-      base::Milliseconds(entry->processingEnd() - entry->processingStart());
-  base::TimeDelta time_to_next_paint =
-      base::Milliseconds(entry_end_time - entry->processingEnd());
+  base::TimeDelta processing_time = processing_end - processing_start;
 
+  base::TimeDelta time_to_next_paint = entry_end_timetick - processing_end;
+
+  // Round to 8ms.
   int rounded_duration =
-      std::round((entry_end_time - entry->startTime()) / 8) * 8;
+      std::round((entry_end_timetick - event_timestamp).InMillisecondsF() / 8) *
+      8;
+
   entry->SetDuration(rounded_duration);
   entry->SetUnsafePresentationTimestamp(entry_end_timetick);
 
@@ -751,6 +753,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
 std::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
     PerformanceEventTiming* entry,
     base::TimeTicks event_timestamp,
+    base::TimeTicks processing_end,
     base::TimeTicks presentation_timestamp) {
   // For artificial events on MacOS, we will fallback entry's end time to its
   // processingEnd (as if there was no next paint needed). crbug.com/1321819.
@@ -800,14 +803,12 @@ std::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
       ;
 
   // Return minimum fallback time.
-  base::TimeTicks processing_end_timetick =
-      GetTimeOriginInternal() + base::Milliseconds(entry->processingEnd());
   if (fallback_end_time_to_dialog_time && fallback_end_time_to_processing_end) {
-    return std::min(first_modal_dialog_timestamp, processing_end_timetick);
+    return std::min(first_modal_dialog_timestamp, processing_end);
   } else if (fallback_end_time_to_dialog_time) {
     return first_modal_dialog_timestamp;
   } else if (fallback_end_time_to_processing_end) {
-    return processing_end_timetick;
+    return processing_end;
   }
   return std::nullopt;
 }

@@ -72,22 +72,28 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     EventData(PerformanceEventTiming* event_timing,
               uint64_t presentation_index,
               base::TimeTicks event_timestamp,
+              base::TimeTicks processing_start,
+              base::TimeTicks processing_end,
               std::optional<int> key_code,
               std::optional<PointerId> pointer_id)
         : event_timing_(event_timing),
           presentation_index_(presentation_index),
           event_timestamp_(event_timestamp),
+          processing_start_(processing_start),
+          processing_end_(processing_end),
           key_code_(key_code),
           pointer_id_(pointer_id) {}
 
     static EventData* Create(PerformanceEventTiming* event_timing,
                              uint64_t presentation_index,
                              base::TimeTicks event_timestamp,
+                             base::TimeTicks processing_start,
+                             base::TimeTicks processing_end,
                              std::optional<int> key_code,
                              std::optional<PointerId> pointer_id) {
-      return MakeGarbageCollected<EventData>(event_timing, presentation_index,
-                                             event_timestamp, key_code,
-                                             pointer_id);
+      return MakeGarbageCollected<EventData>(
+          event_timing, presentation_index, event_timestamp, processing_start,
+          processing_end, key_code, pointer_id);
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
@@ -96,6 +102,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     }
     uint64_t GetPresentationIndex() const { return presentation_index_; }
     base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
+    base::TimeTicks GetProcessingStart() const { return processing_start_; }
+    base::TimeTicks GetProcessingEnd() const { return processing_end_; }
     std::optional<int> GetKeyCode() const { return key_code_; }
     std::optional<PointerId> GetPointerId() const { return pointer_id_; }
 
@@ -109,6 +117,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     uint64_t presentation_index_;
     // The event creation timestamp.
     base::TimeTicks event_timestamp_;
+
+    base::TimeTicks processing_start_;
+
+    base::TimeTicks processing_end_;
     // Keycode for the event. If the event is not a keyboard event, the keycode
     // wouldn't be set.
     std::optional<int> key_code_;
@@ -243,6 +255,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   std::optional<base::TimeTicks> GetFallbackTime(
       PerformanceEventTiming* entry,
       base::TimeTicks event_timestamp,
+      base::TimeTicks processing_end,
       base::TimeTicks presentation_timestamp);
 
   // The last time the page visibility was changed.
