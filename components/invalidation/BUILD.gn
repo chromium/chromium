@@ -29,6 +29,8 @@ static_library("invalidation") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test_support/fake_invalidation_listener.cc",
+    "test_support/fake_invalidation_listener.h",
     "test_support/fake_registration_token_handler.cc",
     "test_support/fake_registration_token_handler.h",
   ]
