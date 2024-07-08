@@ -115,6 +115,9 @@
   <message name="IDS_COMPOSE_MODIFIERS_MENU_TITLE" desc="Title for options to select a style modifier to apply on returned text.">
     Refine
   </message>
+  <message name="IDS_COMPOSE_MODIFIERS_MENU_LABEL" desc="Accessibility label for the menu used to select a style modifier to apply.">
+    Refine results
+  </message>
   <message name="IDS_COMPOSE_MENU_RETRY_OPTION" desc="Option title to regenerate the text result without modifiers.">
     Retry
   </message>
@@ -162,6 +165,9 @@
   </message>
   <message name="IDS_COMPOSE_THUMBS_UP" desc="Accessibility label for thumbs up button that submits positive feedback for the generated text.">
     Thumbs up submits feedback that you like these results
+  </message>
+  <message name="IDS_COMPOSE_RESULT_TEXT_LABEL" desc="Accesibility label for the area holding the result text.">
+    Result
   </message>
 
   <!-- Errors -->

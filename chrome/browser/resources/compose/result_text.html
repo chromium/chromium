@@ -28,7 +28,8 @@
 <div id="root">
   <div id="resultText" class="result-text"
       hidden="[[textInput.streamingEnabled]]" contenteditable$="[[canEdit_()]]"
-      on-focusin="onFocusIn_" on-focusout="onFocusOut_"></div>
+      on-focusin="onFocusIn_" on-focusout="onFocusOut_"
+      aria-label="$i18n{resultText}"></div>
   <div id="partialResultText" class="result-text"
       hidden="[[!textInput.streamingEnabled]]"
       contenteditable$="[[partialTextCanEdit_()]]" on-focusin="onFocusIn_"

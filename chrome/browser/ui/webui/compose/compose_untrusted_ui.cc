@@ -69,6 +69,7 @@ webui::SetupWebUIDataSource(
       {"lengthMenuTitle", IDS_COMPOSE_MENU_LENGTH_TITLE},
       {"toneMenuTitle", IDS_COMPOSE_MENU_TONE_TITLE},
       {"modifierMenuTitle", IDS_COMPOSE_MODIFIERS_MENU_TITLE},
+      {"modifierMenuLabel", IDS_COMPOSE_MODIFIERS_MENU_LABEL},
       {"retryOption", IDS_COMPOSE_MENU_RETRY_OPTION},
       {"shorterOption", IDS_COMPOSE_MENU_SHORTER_OPTION},
       {"longerOption", IDS_COMPOSE_MENU_LONGER_OPTION},
@@ -94,6 +95,7 @@ webui::SetupWebUIDataSource(
       {"resubmit", IDS_COMPOSE_RESUBMIT},
       {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
       {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
+      {"resultText", IDS_COMPOSE_RESULT_TEXT_LABEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",
