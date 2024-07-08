@@ -1083,14 +1083,14 @@ deps = {
     'condition': 'checkout_win'
   },
 
-  'src/third_party/aosp_dalvik': {
+  'src/third_party/aosp_dalvik/cipd': {
       'packages': [
           {
               'package': 'chromium/third_party/aosp_dalvik/linux-amd64',
               'version': 'version:2@13.0.0_r24.cr1',
           },
       ],
-      'condition': 'checkout_android',
+      'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
