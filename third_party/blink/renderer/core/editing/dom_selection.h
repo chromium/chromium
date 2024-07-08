@@ -101,6 +101,9 @@ class CORE_EXPORT DOMSelection final : public ScriptWrappable,
   // Microsoft Selection Object API
   void empty();
 
+  // Selection API across shadow DOM
+  String direction() const;
+
   void Trace(Visitor*) const override;
 
  private:

@@ -194,6 +194,20 @@ String DOMSelection::type() const {
   return "Range";
 }
 
+String DOMSelection::direction() const {
+  if (!IsAvailable()) {
+    return "none";
+  }
+  if (!Selection().IsDirectional() ||
+      Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone()) {
+    return "none";
+  }
+  if (IsAnchorFirstInSelection()) {
+    return "forward";
+  }
+  return "backward";
+}
+
 unsigned DOMSelection::rangeCount() const {
   if (!IsAvailable())
     return 0;

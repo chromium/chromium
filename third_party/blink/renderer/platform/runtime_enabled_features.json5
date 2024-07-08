@@ -3575,6 +3575,12 @@
       base_feature: "none",
     },
     {
+      // Implement Selection API across shadow DOM
+      // See https://w3c.github.io/selection-api/
+      name: "SelectionAcrossShadowDOM",
+      status: "experimental",
+    },
+    {
       // Maintain author-defined ::selection highlight colors, even if they
       // match the text color.
       name: "SelectionRespectsColors",

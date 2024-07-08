@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
-Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Selection interface: attribute direction
-  assert_true: The prototype object must have a property "direction" expected true got false
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Selection interface: operation getComposedRanges(ShadowRoot...)
   assert_own_property: interface prototype object missing non-static operation expected property "getComposedRanges" missing
-[FAIL] Selection interface: getSelection() must inherit property "direction" with the proper type
-  assert_inherits: property "direction" not found in prototype chain
 [FAIL] Selection interface: getSelection() must inherit property "getComposedRanges(ShadowRoot...)" with the proper type
   assert_inherits: property "getComposedRanges" not found in prototype chain
 [FAIL] Selection interface: calling getComposedRanges(ShadowRoot...) on getSelection() with too few arguments must throw TypeError

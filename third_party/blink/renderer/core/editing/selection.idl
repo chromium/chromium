@@ -58,6 +58,8 @@
     [MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
     [MeasureAs=SelectionDOMString] stringifier;
 
+    [RuntimeEnabled=SelectionAcrossShadowDOM] readonly attribute DOMString direction;
+
     // Non-standard APIs
 
     // https://github.com/w3c/selection-api/issues/34
