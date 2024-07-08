@@ -376,10 +376,12 @@ add this to your .bashrc / .bash_profile.
 
 ```shell
 if [[ -z "${DISPLAY}" ]]; then
-  export DISPLAY=:$(
-    find /tmp/.X11-unix -maxdepth 1 -mindepth 1 -name 'X*' |
-      grep -o '[0-9]\+$' | head -n 1
-  )
+  # In reality, Chrome Remote Desktop starts with 20 and increases until it
+  # finds an available ID [1]. So this isn't guaranteed to always work, but
+  # should work on the vast majoriy of cases.
+  #
+  # [1] https://source.chromium.org/chromium/chromium/src/+/main:remoting/host/linux/linux_me2me_host.py;l=112;drc=464a632e21bcec76c743930d4db8556613e21fd8
+  export DISPLAY=:20
 fi
 ```
 
