@@ -511,8 +511,10 @@ vars = {
   # GN CIPD package version.
   'gn_version': 'git_revision:b2afae122eeb6ce09c52d63f67dc53fc517dbdc8',
 
+  # ninja CIPD package.
+  'ninja_package': 'infra/3pp/build_support/ninja-1_11_1/',
+
   # ninja CIPD package version.
-  # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   'ninja_version': 'version:2@1.11.1.chromium.2',
 
   # 'magic' variable to tell depot_tools that git submodules should be accepted
@@ -2170,7 +2172,7 @@ deps = {
   'src/third_party/ninja': {
     'packages': [
       {
-        'package': 'infra/3pp/build_support/ninja-1_11_1/${{platform}}',
+        'package': Var('ninja_package') + '${{platform}}',
         'version': Var('ninja_version'),
       }
     ],
