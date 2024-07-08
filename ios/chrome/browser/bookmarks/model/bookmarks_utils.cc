@@ -76,22 +76,20 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     case BookmarkModelType::kLocalOrSyncable:
       return {model->mobile_node(), model->bookmark_bar_node(),
               model->other_node()};
-    case BookmarkModelType::kAccount:
-      // When dealing with account bookmarks, it is possible that they don't
-      // actually exist (e.g. the user is signed out). It is guaranteed that all
-      // exist or none.
-      if (!model->account_mobile_node()) {
-        // Account bookmarks do not exist, no need to return them.
-        CHECK(!model->account_bookmark_bar_node());
-        CHECK(!model->account_other_node());
-        return {};
+    case BookmarkModelType::kAccount: {
+      std::vector<const bookmarks::BookmarkNode*> nodes;
+      // Normally either all account permanent nodes exists or none does, but
+      // during transitional states (i.e. during creation or removal of account
+      // permanent nodes) it is also possible that a subset exists.
+      for (const bookmarks::BookmarkNode* node :
+           {model->account_mobile_node(), model->account_bookmark_bar_node(),
+            model->account_other_node()}) {
+        if (node) {
+          nodes.push_back(node);
+        }
       }
-      // Account bookmarks do exist (all three). Return them.
-      CHECK(model->account_bookmark_bar_node());
-      CHECK(model->account_other_node());
-
-      return {model->account_mobile_node(), model->account_bookmark_bar_node(),
-              model->account_other_node()};
+      return nodes;
+    }
   }
   NOTREACHED_NORETURN();
 }

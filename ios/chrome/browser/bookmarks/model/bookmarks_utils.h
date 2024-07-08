@@ -52,9 +52,17 @@ extern const int64_t kLastUsedBookmarkFolderNone;
                                              const base::Location& location);
 
 // Returns the permanent bookmark folders that match `type`.
-// `model` must not be null and must be loaded. An empty result may be returned
-// if `BookmarkModelType::kAccount` is used and account bookmarks don't actually
-// exist (e.g. the user is signed out).
+// `model` must not be null and must be loaded. The returned list follows the
+// ordering used to display the folders in the management UI. Note that the
+// managed bookmarks folder is never included.
+//
+// Additional caveats if `BookmarkModelType::kAccount` is used:
+// 1. The function may return an empty result if account bookmarks don't
+//    actually exist (e.g. the user is signed out).
+// 2. In rare cases, it may also return a non-empty but partial list, if this
+//    function is exercised *during* the creation of account permanent folders,
+//    which report BookmarkModelObserver::BookmarkNodeAdded() individually. The
+//    same is true during their destruction (during signout).
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     const bookmarks::BookmarkModel* model,
     BookmarkModelType type);

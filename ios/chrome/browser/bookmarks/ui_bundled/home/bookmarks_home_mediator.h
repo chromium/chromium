@@ -14,10 +14,10 @@
 @class BookmarkTableCell;
 @protocol BookmarkTableCellTitleEditing;
 class Browser;
-class LegacyBookmarkModel;
 @class TableViewModel;
 
 namespace bookmarks {
+class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
@@ -86,24 +86,16 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 // The newly created folder node its name is being edited.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* editingFolderNode;
 
-// Bookmark model of the current displayed folder node. If the view is at
-// the root level, `displayedBookmarkModel` returns the localOrSyncable storage.
-@property(nonatomic, assign, readonly)
-    LegacyBookmarkModel* displayedBookmarkModel;
-
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Designated initializer.
-// `localOrSyncableBookmarkModel` must not be `nullptr`. It should also be
-// loaded.
+// `bookmarkModel` must not be `nullptr`. It must also be loaded.
 // TODO(crbug.com/40251259): `browser`  need to be removed from
 // `BookmarksHomeMediator`. A mediator should not be aware of this class.
 - (instancetype)initWithBrowser:(Browser*)browser
-    localOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
-                   displayedNode:(const bookmarks::BookmarkNode*)displayedNode
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                  displayedNode:(const bookmarks::BookmarkNode*)displayedNode
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -135,9 +127,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
                                       std::string user_email))completion;
 
 // Returns weather the slashed cloud icon should be displayed for
-// `bookmarkModel`.
-- (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
-    (LegacyBookmarkModel*)bookmarkModel;
+// `bookmarkNode`.
+- (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
+    (const bookmarks::BookmarkNode*)bookmarkNode;
 
 @end
 

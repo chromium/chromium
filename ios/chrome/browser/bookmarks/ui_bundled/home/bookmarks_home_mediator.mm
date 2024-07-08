@@ -10,6 +10,8 @@
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/browser/titled_url_match.h"
 #import "components/bookmarks/common/bookmark_features.h"
@@ -26,8 +28,8 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
@@ -56,15 +58,32 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using bookmarks::BookmarkNode;
-
 namespace {
+
+using bookmarks::BookmarkNode;
 
 // The size of the symbol displayed in the batch upload dialog.
 constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 // Maximum number of entries to fetch when searching.
 const int kMaxBookmarksSearchResults = 50;
+
+// Returns true if `node` contains at least one child node.
+bool NodeHasChildren(const BookmarkNode* node) {
+  CHECK(node);
+  return !node->children().empty();
+}
+
+// Returns true if at least one node in `nodes` contains at least one child
+// node.
+bool AnyNodeHasChildren(const std::vector<const BookmarkNode*>& nodes) {
+  for (const BookmarkNode* node : nodes) {
+    if (NodeHasChildren(node)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -113,14 +132,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 @end
 
 @implementation BookmarksHomeMediator {
-  // The model holding localOrSyncable bookmark data.
-  base::WeakPtr<LegacyBookmarkModel> _localOrSyncableBookmarkModel;
-  // The model holding account bookmark data.
-  base::WeakPtr<LegacyBookmarkModel> _accountBookmarkModel;
-  // Bridge to register for bookmark changes in the localOrSyncable model.
-  std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelBridge;
-  // Bridge to register for bookmark changes in the account model.
-  std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
+  // The model holding bookmark data.
+  base::WeakPtr<bookmarks::BookmarkModel> _bookmarkModel;
+  // Bridge to register for bookmark changes.
+  std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridge;
   // List of nodes selected by the user when being in the edit mode.
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
 }
@@ -131,18 +146,15 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-    localOrSyncableBookmarkModel:
-        (LegacyBookmarkModel*)localOrSyncableBookmarkModel
-            accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
-                   displayedNode:(const bookmarks::BookmarkNode*)displayedNode {
+                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                  displayedNode:(const BookmarkNode*)displayedNode {
   if ((self = [super init])) {
     DCHECK(browser);
     CHECK(displayedNode);
     CHECK(AreAllAvailableBookmarkModelsLoaded(browser->GetBrowserState()));
 
     _browser = browser->AsWeakPtr();
-    _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
-    _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
+    _bookmarkModel = bookmarkModel->AsWeakPtr();
     _displayedNode = displayedNode;
   }
   return self;
@@ -153,10 +165,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 
   // Set up observers.
   ChromeBrowserState* browserState = [self originalBrowserState];
-  _localOrSyncableBookmarkModelBridge = std::make_unique<BookmarkModelBridge>(
-      self, _localOrSyncableBookmarkModel.get());
-  _accountBookmarkModelBridge =
-      std::make_unique<BookmarkModelBridge>(self, _accountBookmarkModel.get());
+  _bookmarkModelBridge =
+      std::make_unique<BookmarkModelBridge>(self, _bookmarkModel.get());
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
@@ -192,10 +202,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   self.consumer = nil;
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
-  _localOrSyncableBookmarkModel.reset();
-  _accountBookmarkModel.reset();
-  _localOrSyncableBookmarkModelBridge.reset();
-  _accountBookmarkModelBridge.reset();
+  _bookmarkModel.reset();
+  _bookmarkModelBridge.reset();
 }
 
 - (void)dealloc {
@@ -223,8 +231,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   if (!self.displayedNode) {
     return;
   }
-  BOOL shouldDisplayCloudSlashIcon = [self
-      shouldDisplayCloudSlashIconWithBookmarkModel:self.displayedBookmarkModel];
+  BOOL shouldDisplayCloudSlashIcon =
+      [self shouldDisplayCloudSlashIconWithBookmarkNode:self.displayedNode];
   // Add all bookmarks and folders of the currently displayed node to the table.
   for (const auto& child : self.displayedNode->children()) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
@@ -240,28 +248,41 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Generate the table view data when the current currently displayed node is the
 // outermost root.
 - (void)generateTableViewDataForRootNode {
-  BOOL showProfileSection =
-      [self hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()];
+  ChromeBrowserState* browserState = [self originalBrowserState];
+  bookmarks::ManagedBookmarkService* managedBookmarkService =
+      ManagedBookmarkServiceFactory::GetForBrowserState(browserState);
+  const BookmarkNode* managedNode = managedBookmarkService->managed_node();
+
+  std::vector<const bookmarks::BookmarkNode*> localPermanentNodes =
+      PrimaryPermanentNodes(_bookmarkModel.get(),
+                            BookmarkModelType::kLocalOrSyncable);
+  std::vector<const bookmarks::BookmarkNode*> accountPermanentNodes =
+      PrimaryPermanentNodes(_bookmarkModel.get(), BookmarkModelType::kAccount);
+
+  if (managedNode) {
+    localPermanentNodes.push_back(managedNode);
+  }
+
+  BOOL showProfileSection = AnyNodeHasChildren(localPermanentNodes);
+
   // Whether the account part should be displayed, if possible.
   BOOL shouldShowIfPossible =
-      [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()] ||
-      showProfileSection;
+      showProfileSection || AnyNodeHasChildren(accountPermanentNodes);
   BOOL showAccountSection =
       shouldShowIfPossible &&
       bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
-          _syncService, _accountBookmarkModel.get());
+          _bookmarkModel.get());
   if (showProfileSection) {
     [self
-        generateTableViewDataForModel:_localOrSyncableBookmarkModel.get()
-                            inSection:
-                                BookmarksHomeSectionIdentifierRootLocalOrSyncable
-                  addManagedBookmarks:YES];
+        generateTableViewDataWithPermanentNodes:localPermanentNodes
+                                      inSection:
+                                          BookmarksHomeSectionIdentifierRootLocalOrSyncable];
   }
   if (showAccountSection) {
     [self
-        generateTableViewDataForModel:_accountBookmarkModel.get()
-                            inSection:BookmarksHomeSectionIdentifierRootAccount
-                  addManagedBookmarks:NO];
+        generateTableViewDataWithPermanentNodes:accountPermanentNodes
+                                      inSection:
+                                          BookmarksHomeSectionIdentifierRootAccount];
   }
   if (showProfileSection && showAccountSection) {
     // Headers are only shown if both sections are visible.
@@ -273,56 +294,22 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self maybeShowBatchUploadSection];
 }
 
-- (void)generateTableViewDataForModel:(LegacyBookmarkModel*)model
-                            inSection:(BookmarksHomeSectionIdentifier)
-                                          sectionIdentifier
-                  addManagedBookmarks:(BOOL)addManagedBookmarks {
-  BOOL shouldDisplayCloudSlashIcon =
-      [self shouldDisplayCloudSlashIconWithBookmarkModel:model];
-  // Add "Mobile Bookmarks" to the table.
-  const BookmarkNode* mobileNode = model->subtle_mobile_node();
-  BookmarksHomeNodeItem* mobileItem =
-      [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
-                                     bookmarkNode:mobileNode];
-  mobileItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-  [self.consumer.tableViewModel addItem:mobileItem
-                toSectionWithIdentifier:sectionIdentifier];
+- (void)generateTableViewDataWithPermanentNodes:
+            (const std::vector<const BookmarkNode*>&)permanentNodes
+                                      inSection:(BookmarksHomeSectionIdentifier)
+                                                    sectionIdentifier {
+  for (const BookmarkNode* permanentNode : permanentNodes) {
+    CHECK(permanentNode);
+    if (!permanentNode->IsVisible()) {
+      continue;
+    }
 
-  // Add "Bookmarks Bar" and "Other Bookmarks" only when they are not empty.
-  const BookmarkNode* bookmarkBar = model->subtle_bookmark_bar_node();
-  if (!bookmarkBar->children().empty()) {
-    BookmarksHomeNodeItem* barItem = [[BookmarksHomeNodeItem alloc]
+    BookmarksHomeNodeItem* item = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:bookmarkBar];
-    barItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.consumer.tableViewModel addItem:barItem
-                  toSectionWithIdentifier:sectionIdentifier];
-  }
-
-  const BookmarkNode* otherBookmarks = model->subtle_other_node();
-  if (!otherBookmarks->children().empty()) {
-    BookmarksHomeNodeItem* otherItem = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:otherBookmarks];
-    otherItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.consumer.tableViewModel addItem:otherItem
-                  toSectionWithIdentifier:sectionIdentifier];
-  }
-
-  if (!addManagedBookmarks) {
-    return;
-  }
-  // Add "Managed Bookmarks" to the table if it exists.
-  ChromeBrowserState* browserState = [self originalBrowserState];
-  bookmarks::ManagedBookmarkService* managedBookmarkService =
-      ManagedBookmarkServiceFactory::GetForBrowserState(browserState);
-  const BookmarkNode* managedNode = managedBookmarkService->managed_node();
-  if (managedNode && managedNode->IsVisible()) {
-    BookmarksHomeNodeItem* managedItem = [[BookmarksHomeNodeItem alloc]
-        initWithType:BookmarksHomeItemTypeBookmark
-        bookmarkNode:managedNode];
-    managedItem.shouldDisplayCloudSlashIcon = shouldDisplayCloudSlashIcon;
-    [self.consumer.tableViewModel addItem:managedItem
+        bookmarkNode:permanentNode];
+    item.shouldDisplayCloudSlashIcon =
+        [self shouldDisplayCloudSlashIconWithBookmarkNode:permanentNode];
+    [self.consumer.tableViewModel addItem:item
                   toSectionWithIdentifier:sectionIdentifier];
   }
 }
@@ -334,21 +321,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   // Total count of search result for both models.
-  int totalSearchResultCount = 0;
-  if (bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
-          self.syncService, _accountBookmarkModel.get())) {
-    totalSearchResultCount =
-        [self populateNodeItemWithQuery:query
-                          bookmarkModel:_accountBookmarkModel.get()
-                  displayCloudSlashIcon:NO];
-  }
-  BOOL displayCloudSlashIcon = [self
-      shouldDisplayCloudSlashIconWithBookmarkModel:_localOrSyncableBookmarkModel
-                                                       .get()];
-  totalSearchResultCount +=
-      [self populateNodeItemWithQuery:query
-                        bookmarkModel:_localOrSyncableBookmarkModel.get()
-                displayCloudSlashIcon:displayCloudSlashIcon];
+  int totalSearchResultCount = [self populateNodeItemWithQuery:query];
   if (totalSearchResultCount) {
     [self updateTableViewBackground];
     return;
@@ -368,7 +341,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
   if (self.consumer.isDisplayingBookmarkRoot) {
-    if (_localOrSyncableBookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
+    if (_bookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarksHomeBackgroundStyleLoading];
@@ -501,29 +474,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self.consumer.tableView setEditing:currentlyInEditMode animated:YES];
 }
 
-- (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
-    (LegacyBookmarkModel*)bookmarkModel {
-  if (bookmarkModel == _localOrSyncableBookmarkModel.get()) {
-    return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
-        self.syncService);
-  }
-  CHECK_EQ(bookmarkModel, _accountBookmarkModel.get())
-      << "bookmarkModel: " << bookmarkModel
-      << ", localOrSyncableBookmarkModel: "
-      << _localOrSyncableBookmarkModel.get()
-      << ", accountBookmarkModel: " << _accountBookmarkModel.get();
-  return NO;
-}
-
-#pragma mark - Properties
-
-- (LegacyBookmarkModel*)displayedBookmarkModel {
-  if (!self.displayedNode) {
-    return _localOrSyncableBookmarkModel.get();
-  }
-  return bookmark_utils_ios::GetBookmarkModelForNode(
-      self.displayedNode, _localOrSyncableBookmarkModel.get(),
-      _accountBookmarkModel.get());
+- (BOOL)shouldDisplayCloudSlashIconWithBookmarkNode:
+    (const BookmarkNode*)bookmarkNode {
+  return bookmarkNode && _bookmarkModel->IsLocalOnlyNode(*bookmarkNode) &&
+         bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService);
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -548,7 +502,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // The node has changed, but not its children.
-- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const BookmarkNode*)bookmarkNode {
   // The root folder changed. Do nothing.
   if (bookmarkNode == self.displayedNode) {
     return;
@@ -561,7 +515,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // The node has not changed, but its children have.
-- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const BookmarkNode*)bookmarkNode {
   // In search mode, we want to refresh any changes (like undo).
   if (self.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
@@ -588,9 +542,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // The node has moved to a new parent folder.
-- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-         fromParent:(const bookmarks::BookmarkNode*)oldParent
-           toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const BookmarkNode*)bookmarkNode
+         fromParent:(const BookmarkNode*)oldParent
+           toParent:(const BookmarkNode*)newParent {
   if (oldParent == self.displayedNode || newParent == self.displayedNode) {
     // A folder was added or removed from the currently displayed folder.
     [self.consumer refreshContents];
@@ -598,8 +552,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // `node` will be deleted from `folder`.
-- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
-            fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)willDeleteNode:(const BookmarkNode*)node
+            fromFolder:(const BookmarkNode*)folder {
   DCHECK(node);
   if (self.displayedNode == node) {
     [self.consumer closeThisFolder];
@@ -607,8 +561,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // `node` was deleted from `folder`.
-- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)didDeleteNode:(const BookmarkNode*)node
+           fromFolder:(const BookmarkNode*)folder {
   [self.consumer refreshContents];
 }
 
@@ -617,7 +571,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // TODO(crbug.com/40508042) Check if this case is applicable in the new UI.
 }
 
-- (void)didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeFaviconForNode:(const BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
   DCHECK(bookmarkNode->is_url());
 
@@ -639,8 +593,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self.consumer loadFaviconAtIndexPath:indexPath fallbackToGoogleServer:NO];
 }
 
-- (BookmarksHomeNodeItem*)itemForNode:
-    (const bookmarks::BookmarkNode*)bookmarkNode {
+- (BookmarksHomeNodeItem*)itemForNode:(const BookmarkNode*)bookmarkNode {
   NSArray<TableViewItem*>* items = [self.consumer.tableViewModel
       itemsInSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
   for (TableViewItem* item in items) {
@@ -769,8 +722,8 @@ bool IsABookmarkNodeSectionForIdentifier(
 // appropriate feature flags, bookmarks state and sync state.
 - (BOOL)shouldShowBatchUploadSection {
   // Do not show if profile section is empty.
-  BOOL showProfileSection =
-      [self hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()];
+  BOOL showProfileSection = AnyNodeHasChildren(PrimaryPermanentNodes(
+      _bookmarkModel.get(), BookmarkModelType::kLocalOrSyncable));
   if (!showProfileSection) {
     return NO;
   }
@@ -905,31 +858,18 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (BOOL)hasBookmarksOrFolders {
-  if (self.consumer.isDisplayingBookmarkRoot) {
-    if ([self
-            hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()]) {
+  if (!self.consumer.isDisplayingBookmarkRoot) {
+    return self.displayedNode && !self.displayedNode->children().empty();
+  }
+
+  // For the root node, it is necessary to check if any of the top-level
+  // permanent nodes (local ones, account ones and possibly the managed node)
+  // has children.
+  for (const auto& node : _bookmarkModel->root_node()->children()) {
+    if (NodeHasChildren(node.get())) {
       return YES;
     }
-    return bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
-               _syncService, _accountBookmarkModel.get()) &&
-           [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
   }
-  return self.displayedNode && !self.displayedNode->children().empty();
-}
-
-// Returns whether there are bookmark nodes in `model`, excluding permanent
-// nodes themselves.
-- (BOOL)hasBookmarksOrFoldersInModel:(LegacyBookmarkModel*)model {
-  if (!model->HasNoUserCreatedBookmarksOrFolders()) {
-    return YES;
-  }
-
-  // In addition to user-created bookmarks, there could be managed bookmarks.
-  if (model->subtle_managed_node() &&
-      !model->subtle_managed_node()->children().empty()) {
-    return YES;
-  }
-
   return NO;
 }
 
@@ -972,20 +912,20 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 // Populates the table view model with BookmarksHomeNodeItem based on the search
-// result done in `model` using `query`.
+// result done in BookmarkModel using `query`.
 // For each BookmarksHomeNodeItem, the cloud icon is displayed or not according
-// to `displayCloudSlashIcon`.
+// to the bookmark node's properties.
 // Returns the number of added items in the table view model.
-- (int)populateNodeItemWithQuery:(const bookmarks::QueryFields&)query
-                   bookmarkModel:(LegacyBookmarkModel*)model
-           displayCloudSlashIcon:(BOOL)displayCloudSlashIcon {
+- (int)populateNodeItemWithQuery:(const bookmarks::QueryFields&)query {
   std::vector<const BookmarkNode*> nodes =
-      model->GetBookmarksMatchingProperties(query, kMaxBookmarksSearchResults);
+      bookmarks::GetBookmarksMatchingProperties(_bookmarkModel.get(), query,
+                                                kMaxBookmarksSearchResults);
   for (const BookmarkNode* node : nodes) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:node];
-    nodeItem.shouldDisplayCloudSlashIcon = displayCloudSlashIcon;
+    nodeItem.shouldDisplayCloudSlashIcon =
+        [self shouldDisplayCloudSlashIconWithBookmarkNode:node];
     [self.consumer.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
