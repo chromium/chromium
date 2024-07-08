@@ -4413,6 +4413,9 @@
         'args': [
           '--out_dir=.',
         ],
+        'linux_args': [
+          '--use-xvfb',
+        ],
       },
     },
 
@@ -4429,6 +4432,7 @@
           'chromedriver',
           '--binary',
           'chrome',
+          '--use-xvfb',
         ],
         'mac_args': [
           '--chromedriver',
@@ -4630,6 +4634,7 @@
           'chromedriver',
           '--binary',
           'chrome',
+          '--no-xvfb',
         ],
         'mac_args': [
           '--chromedriver',
@@ -4657,6 +4662,7 @@
           'chromedriver',
           '--binary',
           'chrome',
+          '--no-xvfb',
         ],
         'mac_args': [
           '--chromedriver',
@@ -4675,6 +4681,9 @@
         'mixins': [
           'has_native_resultdb_integration',
         ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
       },
     },
 
@@ -4688,15 +4697,26 @@
     },
 
     'optimization_guide_gpu_gtests': {
-      'optimization_guide_gpu_unittests': {},
+      'optimization_guide_gpu_unittests': {
+        'linux_args': [
+          '-use-xvfb',
+        ],
+      },
     },
 
     'optimization_guide_nogpu_gtests': {
-      'chrome_ml_unittests': {},
+      'chrome_ml_unittests': {
+        'linux_args': [
+          '--use-xvfb',
+        ],
+      },
       'optimization_guide_browser_tests': {
         'test': 'browser_tests',
         'args': [
           '--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*',
+        ],
+        'linux_args': [
+          '--use-xvfb',
         ],
       },
       'optimization_guide_components_unittests': {
@@ -4704,8 +4724,15 @@
         'args': [
           '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
         ],
+        'linux_args': [
+          '--use-xvfb',
+        ],
       },
-      'optimization_guide_unittests': {},
+      'optimization_guide_unittests': {
+        'linux_args': [
+          '--use-xvfb',
+        ],
+      },
     },
 
     'perfetto_gtests': {

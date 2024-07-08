@@ -4297,6 +4297,9 @@ targets.legacy_basic_suite(
             args = [
                 "--out_dir=.",
             ],
+            linux_args = [
+                "--use-xvfb",
+            ],
         ),
     },
 )
@@ -4316,6 +4319,7 @@ targets.legacy_basic_suite(
                 "chromedriver",
                 "--binary",
                 "chrome",
+                "--use-xvfb",
             ],
             mac_args = [
                 "--chromedriver",
@@ -4510,6 +4514,7 @@ targets.legacy_basic_suite(
                 "chromedriver",
                 "--binary",
                 "chrome",
+                "--no-xvfb",
             ],
             mac_args = [
                 "--chromedriver",
@@ -4541,6 +4546,7 @@ targets.legacy_basic_suite(
                 "chromedriver",
                 "--binary",
                 "chrome",
+                "--no-xvfb",
             ],
             mac_args = [
                 "--chromedriver",
@@ -4559,6 +4565,9 @@ targets.legacy_basic_suite(
             mixins = [
                 "has_native_resultdb_integration",
             ],
+            linux_args = [
+                "--no-xvfb",
+            ],
         ),
     },
 )
@@ -4574,17 +4583,37 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "optimization_guide_nogpu_gtests",
     tests = {
-        "chrome_ml_unittests": targets.legacy_test_config(),
-        "optimization_guide_browser_tests": targets.legacy_test_config(),
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
-        "optimization_guide_unittests": targets.legacy_test_config(),
+        "chrome_ml_unittests": targets.legacy_test_config(
+            linux_args = [
+                "--use-xvfb",
+            ],
+        ),
+        "optimization_guide_browser_tests": targets.legacy_test_config(
+            linux_args = [
+                "--use-xvfb",
+            ],
+        ),
+        "optimization_guide_components_unittests": targets.legacy_test_config(
+            linux_args = [
+                "--use-xvfb",
+            ],
+        ),
+        "optimization_guide_unittests": targets.legacy_test_config(
+            linux_args = [
+                "--use-xvfb",
+            ],
+        ),
     },
 )
 
 targets.legacy_basic_suite(
     name = "optimization_guide_gpu_gtests",
     tests = {
-        "optimization_guide_gpu_unittests": targets.legacy_test_config(),
+        "optimization_guide_gpu_unittests": targets.legacy_test_config(
+            linux_args = [
+                "-use-xvfb",
+            ],
+        ),
     },
 )
 
