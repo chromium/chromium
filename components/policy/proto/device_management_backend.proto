@@ -361,7 +361,11 @@ message DeviceRegisterRequest {
   // DeviceRegisterRequest.requisition == "cros-demo-mode".
   optional DemoModeDimensions demo_mode_dimensions = 21;
 
-  // Next id: 22.
+  // Contains encoded customer information relevant for the generic OIDC profile
+  // enrollment process.
+  optional string oidc_profile_enrollment_state = 22;
+
+  // Next id: 23.
 }
 
 // Identification of a device used during its registration.
