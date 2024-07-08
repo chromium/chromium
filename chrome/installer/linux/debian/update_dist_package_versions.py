@@ -21,7 +21,6 @@ import urllib.request
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 SUPPORTED_DEBIAN_RELEASES = {
-    "Debian 10 (Buster)": "buster",
     "Debian 11 (Bullseye)": "bullseye",
     "Debian 12 (Bookworm)": "bookworm",
 }
@@ -43,10 +42,7 @@ PACKAGE_FILTER = {
     "libdrm2",
     "libexpat1",
     "libgbm1",
-    # See the comment in calculate_package_deps.py about libgcc_s.
-    # TODO(https://crbug.com/40549424): Add this once support for
-    # Debian Buster is dropped.
-    # "libgcc-s1",
+    "libgcc-s1",
     "libglib2.0-0",
     "libnspr4",
     "libnss3",
@@ -93,8 +89,7 @@ for release in SUPPORTED_DEBIAN_RELEASES:
     } for url in [
         "http://ftp.us.debian.org/debian/dists/%s" % codename,
         "http://ftp.us.debian.org/debian/dists/%s-updates" % codename,
-        "http://security.debian.org/dists/%s/updates" %
-        (codename if codename == "buster" else codename + "-security"),
+        "http://security.debian.org/dists/%s-security/updates" % codename,
     ]]
 for release in SUPPORTED_UBUNTU_RELEASES:
     codename = SUPPORTED_UBUNTU_RELEASES[release]

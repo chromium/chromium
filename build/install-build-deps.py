@@ -162,7 +162,7 @@ def check_distro(options):
         "\tUbuntu 20.04 LTS (focal with EoS April 2025)",
         "\tUbuntu 22.04 LTS (jammy with EoS June 2027)",
         "\tUbuntu 24.04 LTS (noble with EoS June 2029)",
-        "\tDebian 10 (buster) or later",
+        "\tDebian 11 (bullseye) or later",
         sep="\n",
         file=sys.stderr,
     )
