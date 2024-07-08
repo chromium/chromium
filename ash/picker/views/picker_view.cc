@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -40,6 +41,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -286,7 +288,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
                  std::get_if<PickerSearchResult::SearchRequestData>(
                      &result.data())) {
     search_field_view_->SetQueryText(search_request_data->text);
-    StartSearch(search_request_data->text);
+    StartSearch();
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
     delegate_->ShowEditor(editor_data->preset_query_id,
@@ -405,7 +407,9 @@ gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                  main_container_view_->bounds().y());
 }
 
-void PickerView::StartSearch(const std::u16string& query) {
+void PickerView::StartSearch() {
+  std::u16string_view query = search_field_view_->GetQueryText();
+
   if (query.empty()) {
     StopSearch();
     return;
@@ -545,7 +549,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
         base::BindRepeating(&PickerView::PublishCategoryResults,
                             weak_ptr_factory_.GetWeakPtr(), category));
   } else {
-    StartSearch(std::u16string(query));
+    StartSearch();
   }
 }
 
@@ -574,8 +578,8 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
   search_field_view_ = main_container_view_->AddSearchFieldView(
       views::Builder<PickerSearchFieldView>(
           std::make_unique<PickerSearchFieldView>(
-              base::BindRepeating(&PickerView::StartSearch,
-                                  base::Unretained(this)),
+              base::IgnoreArgs<const std::u16string&>(base::BindRepeating(
+                  &PickerView::StartSearch, base::Unretained(this))),
               base::BindRepeating(&PickerView::OnSearchBackButtonPressed,
                                   base::Unretained(this)),
               &key_event_handler_, &performance_metrics_))

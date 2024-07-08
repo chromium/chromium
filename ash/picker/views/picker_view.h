@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
@@ -133,10 +135,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerEmojiBarView* emoji_bar_view_for_testing() { return emoji_bar_view_; }
 
  private:
-  // Starts a search with `query`, with search results being returned to
-  // `PublishSearchResults` and `PublishEmojiResults`.
-  // If `query` is empty, this calls `StopSearch` instead.
-  void StartSearch(const std::u16string& query);
+  // Starts a search with the current query, with search results being returned
+  // to `PublishSearchResults` and `PublishEmojiResults`.
+  // If the query is empty, this calls `StopSearch` instead.
+  void StartSearch();
 
   // Stops any previous searches, and sets the active page to the zero state /
   // category results view.
