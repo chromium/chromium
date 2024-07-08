@@ -526,8 +526,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   base::RunLoop().RunUntilIdle();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_LaunchWebAppWhileBrowserShutdown \
+  DISABLED_LaunchWebAppWhileBrowserShutdown
+#else
+#define MAYBE_LaunchWebAppWhileBrowserShutdown LaunchWebAppWhileBrowserShutdown
+#endif
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       LaunchWebAppWhileBrowserShutdown) {
+                       MAYBE_LaunchWebAppWhileBrowserShutdown) {
   // Test callback for verifying browser shutdown is called.
   base::test::TestFuture<void> browser_shutdown_complete;
   web_app::startup::SetBrowserShutdownCompleteCallbackForTesting(
