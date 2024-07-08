@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
+#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -575,6 +576,14 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback);
+
+  // Displays IPH for manual fallbacks if the form can be autofilled and the
+  // user has profiles which can fill the current field.
+  void MaybeShowIphForManualFallback(
+      const FormFieldData& field,
+      const AutofillField* autofill_field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuppressReason suppress_reason);
 
   // The function receives a the list of `suggestions` from
   // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`

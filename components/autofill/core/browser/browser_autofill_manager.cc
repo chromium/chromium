@@ -619,8 +619,7 @@ bool ShouldOfferSingleFieldFormFill(
     const FormFieldData& field,
     const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
-    const SuggestionsContext& context,
-    AutofillClient& client) {
+    SuppressReason suppress_reason) {
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
     return false;
@@ -630,11 +629,10 @@ bool ShouldOfferSingleFieldFormFill(
   // re-authenticate the use of a credit card the website has on file) will be
   // handled separately because those have the field type
   // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-  FieldType server_type =
+  FieldType type =
       autofill_field ? autofill_field->Type().GetStorableType() : UNKNOWN_TYPE;
-  if (data_util::IsCreditCardExpirationType(server_type) ||
-      server_type == CREDIT_CARD_VERIFICATION_CODE ||
-      server_type == CREDIT_CARD_NUMBER) {
+  if (data_util::IsCreditCardExpirationType(type) ||
+      type == CREDIT_CARD_VERIFICATION_CODE || type == CREDIT_CARD_NUMBER) {
     return false;
   }
 
@@ -644,24 +642,7 @@ bool ShouldOfferSingleFieldFormFill(
   // suppressed due to an unrecognized autocomplete attribute.
   // TODO(crbug.com/40853053): Revisit here to see whether we should offer
   // IBAN filling for fields with unrecognized autocomplete attribute
-  if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
-    // Display the IPH only if the form can be autofilled and the user has
-    // profiles which can fill the current field.
-    if (autofill_field &&
-        FieldTypeGroupToFormType(autofill_field->Type().group()) ==
-            FormType::kAddressForm &&
-        base::ranges::any_of(
-            client.GetPersonalDataManager()
-                ->address_data_manager()
-                .GetProfiles(),
-            [field_type = autofill_field->Type().GetStorableType()](
-                const AutofillProfile* profile) {
-              return profile->HasInfo(field_type);
-            }) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableManualFallbackIPH)) {
-      client.ShowAutofillFieldIphForManualFallbackFeature(field);
-    }
+  if (suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
     return false;
   }
 
@@ -672,10 +653,7 @@ bool ShouldOfferSingleFieldFormFill(
   }
 
   // Finally, check that the scheme is secure.
-  if (context.suppress_reason == SuppressReason::kInsecureForm) {
-    return false;
-  }
-  return true;
+  return suppress_reason != SuppressReason::kInsecureForm;
 }
 
 }  // namespace
@@ -1505,9 +1483,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
+  if (should_offer_other_suggestions) {
+    MaybeShowIphForManualFallback(field, autofill_field, trigger_source,
+                                  context.suppress_reason);
+  }
+
   if (should_offer_other_suggestions &&
       ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
-                                     context, client())) {
+                                     context.suppress_reason)) {
     bool handled_by_single_field_form_filler =
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
             form_structure, field, autofill_field, client(),
@@ -1533,6 +1516,44 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   // Make sure that the callback is resolved by calling it with an empty list of
   // suggestions.
   std::move(callback).Run(/*show_suggestions=*/true, {});
+}
+
+void BrowserAutofillManager::MaybeShowIphForManualFallback(
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    AutofillSuggestionTriggerSource trigger_source,
+    SuppressReason suppress_reason) {
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
+    return;
+  }
+  if (suppress_reason != SuppressReason::kAutocompleteUnrecognized) {
+    return;
+  }
+  if (!autofill_field) {
+    return;
+  }
+  if (FieldTypeGroupToFormType(autofill_field->Type().group()) !=
+      FormType::kAddressForm) {
+    return;
+  }
+  if (base::ranges::none_of(client()
+                                .GetPersonalDataManager()
+                                ->address_data_manager()
+                                .GetProfiles(),
+                            [type = autofill_field->Type().GetStorableType()](
+                                const AutofillProfile* profile) {
+                              return profile->HasInfo(type);
+                            })) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableManualFallbackIPH)) {
+    return;
+  }
+
+  client().ShowAutofillFieldIphForManualFallbackFeature(field);
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
