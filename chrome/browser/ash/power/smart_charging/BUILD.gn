@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("smart_charging") {
+  sources = [
+    "smart_charging_manager.cc",
+    "smart_charging_manager.h",
+    "smart_charging_ukm_logger.cc",
+    "smart_charging_ukm_logger.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/power/ml",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/constants",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/session_manager/core",
+    "//components/viz/host",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/viz/public/mojom",
+    "//ui/aura",
+    "//ui/compositor",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "smart_charging_manager_unittest.cc",
+    "smart_charging_ukm_logger_unittest.cc",
+  ]
+
+  deps = [
+    ":smart_charging",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/components/sensors",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//components/assist_ranker/proto",
+    "//components/session_manager/core",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gtest",
+    "//ui/events",
+  ]
+}
