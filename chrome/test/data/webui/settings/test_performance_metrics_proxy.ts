@@ -14,6 +14,7 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
       'recordMemorySaverModeAggressivenessChanged',
       'recordDiscardRingTreatmentEnabledChanged',
       'recordExceptionListAction',
+      'recordPerformanceInterventionToggleButtonChanged',
     ]);
   }
 
@@ -37,5 +38,10 @@ export class TestPerformanceMetricsProxy extends TestBrowserProxy implements
 
   recordExceptionListAction(action: MemorySaverModeExceptionListAction) {
     this.methodCalled('recordExceptionListAction', action);
+  }
+
+  recordPerformanceInterventionToggleButtonChanged(enabled: boolean) {
+    this.methodCalled(
+        'recordPerformanceInterventionToggleButtonChanged', enabled);
   }
 }

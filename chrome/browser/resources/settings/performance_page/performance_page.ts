@@ -112,7 +112,9 @@ export class SettingsPerformancePageElement extends
   }
 
   private onPerformanceInterventionToggleButtonChange_() {
-    // TODO(crbug.com/341138308): Record metrics when toggle is clicked
+    this.metricsProxy_.recordPerformanceInterventionToggleButtonChanged(
+        this.getPref<boolean>(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
+            .value);
   }
 }
 

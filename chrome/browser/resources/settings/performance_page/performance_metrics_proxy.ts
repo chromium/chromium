@@ -61,6 +61,7 @@ export interface PerformanceMetricsProxy {
       aggressiveness: MemorySaverModeAggressiveness): void;
   recordDiscardRingTreatmentEnabledChanged(enabled: boolean): void;
   recordExceptionListAction(action: MemorySaverModeExceptionListAction): void;
+  recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void;
 }
 
 export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
@@ -92,6 +93,11 @@ export class PerformanceMetricsProxyImpl implements PerformanceMetricsProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         'PerformanceControls.MemorySaver.SettingsChangeExceptionList', action,
         MemorySaverModeExceptionListAction.COUNT);
+  }
+
+  recordPerformanceInterventionToggleButtonChanged(enabled: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'PerformanceControls.Intervention.SettingsChangeNotification', enabled);
   }
 
   static getInstance(): PerformanceMetricsProxy {

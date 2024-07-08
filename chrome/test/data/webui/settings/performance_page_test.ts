@@ -97,8 +97,12 @@ suite('DiscardIndicator', function() {
 
 suite('PerformanceIntervention', function() {
   let performancePage: SettingsPerformancePageElement;
+  let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
   setup(function() {
+    performanceMetricsProxy = new TestPerformanceMetricsProxy();
+    PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
@@ -125,10 +129,14 @@ suite('PerformanceIntervention', function() {
         '#performanceInterventionToggleButton');
     assertTrue(!!toggle);
     toggle.click();
+    assertTrue(await performanceMetricsProxy.whenCalled(
+        'recordPerformanceInterventionToggleButtonChanged'));
     assertTrue(
         performancePage.getPref(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
             .value);
     toggle.click();
+    assertTrue(await performanceMetricsProxy.whenCalled(
+        'recordPerformanceInterventionToggleButtonChanged'));
     assertFalse(
         performancePage.getPref(PERFORMANCE_INTERVENTION_NOTIFICATION_PREF)
             .value);

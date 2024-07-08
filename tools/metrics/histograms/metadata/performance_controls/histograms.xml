@@ -118,6 +118,19 @@ each histogram. Maybe add here or add a new performance controls one
   </token>
 </histogram>
 
+<histogram name="PerformanceControls.Intervention.SettingsChangeNotification"
+    enum="BooleanEnabled" expires_after="2024-09-02">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the performance intervention notification pref is enabled,
+    whenever the user makes a change to it through the settings page. This will
+    be used to measure how many users opt out of seeing performance intervention
+    notifications.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.BubbleAction"
     enum="MemorySaverBubbleActionType" expires_after="2024-12-08">
   <owner>agale@chromium.org</owner>
