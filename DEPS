@@ -5208,6 +5208,7 @@ hooks = [
         'python3',
         'src/tools/remove_stale_files.py',
         'src/third_party/test_fonts/test_fonts.tar.gz', # Remove after 20240901
+        'src/third_party/node/node_modules.tar.gz', # TODO: Remove after 20241201, see https://crbug.com/351092787
     ],
   },
   {
