@@ -28,4 +28,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
+  "+components/invalidation",
 ]

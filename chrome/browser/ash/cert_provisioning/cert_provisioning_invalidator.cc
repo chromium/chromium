@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "base/functional/overloaded.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -42,6 +44,21 @@ const char* CertScopeToString(CertScope scope) {
   return "";
 }
 
+template <typename T, typename U>
+auto PointerVariantToRawPointer(
+    const std::variant<T*, U*>& invalidation_service_or_listener) {
+  return std::visit(
+      [](auto&& arg) -> std::variant<raw_ptr<T>, raw_ptr<U>> { return arg; },
+      invalidation_service_or_listener);
+}
+
+template <typename T, typename U>
+auto RawPointerVariantToPointer(const std::variant<raw_ptr<T>, raw_ptr<U>>&
+                                    invalidation_service_or_listener) {
+  return std::visit([](auto&& arg) -> std::variant<T*, U*> { return arg; },
+                    invalidation_service_or_listener);
+}
+
 }  // namespace
 
 //=============== CertProvisioningInvalidationHandler ==========================
@@ -52,11 +69,13 @@ namespace internal {
 std::unique_ptr<CertProvisioningInvalidationHandler>
 CertProvisioningInvalidationHandler::BuildAndRegister(
     CertScope scope,
-    invalidation::InvalidationService* invalidation_service,
+    std::variant<invalidation::InvalidationService*,
+                 invalidation::InvalidationListener*>
+        invalidation_service_or_listener,
     const invalidation::Topic& topic,
     OnInvalidationEventCallback on_invalidation_event_callback) {
   auto invalidator = std::make_unique<CertProvisioningInvalidationHandler>(
-      scope, invalidation_service, topic,
+      scope, std::move(invalidation_service_or_listener), topic,
       std::move(on_invalidation_event_callback));
 
   if (!invalidator->Register()) {
@@ -68,16 +87,28 @@ CertProvisioningInvalidationHandler::BuildAndRegister(
 
 CertProvisioningInvalidationHandler::CertProvisioningInvalidationHandler(
     CertScope scope,
-    invalidation::InvalidationService* invalidation_service,
+    std::variant<invalidation::InvalidationService*,
+                 invalidation::InvalidationListener*>
+        invalidation_service_or_listener,
     const invalidation::Topic& topic,
     OnInvalidationEventCallback on_invalidation_event_callback)
     : scope_(scope),
-      invalidation_service_(invalidation_service),
+      invalidation_service_or_listener_(
+          PointerVariantToRawPointer(invalidation_service_or_listener)),
       topic_(topic),
       on_invalidation_event_callback_(
           std::move(on_invalidation_event_callback)) {
-  DCHECK(invalidation_service_);
-  DCHECK(!on_invalidation_event_callback_.is_null());
+  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
+            invalidation_service_or_listener_) ||
+        std::get<raw_ptr<invalidation::InvalidationService>>(
+            invalidation_service_or_listener_))
+      << "InvalidationService is used but is null";
+  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_or_listener_) ||
+        std::get<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_or_listener_))
+      << "InvalidationListener is used but is null";
+  CHECK(!on_invalidation_event_callback_.is_null());
 }
 
 CertProvisioningInvalidationHandler::~CertProvisioningInvalidationHandler() {
@@ -91,12 +122,24 @@ bool CertProvisioningInvalidationHandler::Register() {
     return true;
   }
 
-  OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
+  return std::visit(
+      base::Overloaded{[this](invalidation::InvalidationService* service) {
+                         return RegisterWithInvalidationService(service);
+                       },
+                       [this](invalidation::InvalidationListener* listener) {
+                         invalidation_listener_observation_.Observe(listener);
+                         return true;
+                       }},
+      invalidation_service_or_listener_);
+}
 
-  invalidation_service_observation_.Observe(invalidation_service_.get());
+bool CertProvisioningInvalidationHandler::RegisterWithInvalidationService(
+    invalidation::InvalidationService* service) {
+  OnInvalidatorStateChange(service->GetInvalidatorState());
+  invalidation_service_observation_.Observe(service);
 
-  if (!invalidation_service_->UpdateInterestedTopics(this,
-                                                     /*topics=*/{topic_})) {
+  if (!service->UpdateInterestedTopics(this,
+                                       /*topics=*/{topic_})) {
     LOG(WARNING) << "Failed to register with topic " << topic_;
     return false;
   }
@@ -109,15 +152,19 @@ void CertProvisioningInvalidationHandler::Unregister() {
     return;
   }
 
-  // Assuming that updating invalidator's topics with empty set can never fail
-  // since failure is only possible non-empty set with topic associated with
-  // some other invalidator.
-  const bool topics_reset = invalidation_service_->UpdateInterestedTopics(
-      this, invalidation::TopicSet());
-  DCHECK(topics_reset);
-  DCHECK(invalidation_service_observation_.IsObservingSource(
-      invalidation_service_.get()));
+  if (std::holds_alternative<raw_ptr<invalidation::InvalidationService>>(
+          invalidation_service_or_listener_)) {
+    const auto service = std::get<raw_ptr<invalidation::InvalidationService>>(
+        invalidation_service_or_listener_);
+    // Assuming that updating invalidator's topics with an empty set can never
+    // fail. Failure is only possible when setting a non-empty topic that is
+    // already associated with some other invalidator.
+    const bool topics_reset =
+        service->UpdateInterestedTopics(this, invalidation::TopicSet());
+    CHECK(topics_reset);
+  }
   invalidation_service_observation_.Reset();
+  invalidation_listener_observation_.Reset();
 }
 
 void CertProvisioningInvalidationHandler::OnInvalidatorStateChange(
@@ -161,13 +208,53 @@ bool CertProvisioningInvalidationHandler::IsPublicTopic(
                           base::CompareCase::SENSITIVE);
 }
 
+void CertProvisioningInvalidationHandler::OnExpectationChanged(
+    invalidation::InvalidationsExpected expected) {
+  are_invalidations_expected_ = expected;
+  // TODO(b/336989561) Maybe we need different polling frequencies?
+}
+
+void CertProvisioningInvalidationHandler::OnInvalidationReceived(
+    const invalidation::DirectInvalidation& invalidation) {
+  on_invalidation_event_callback_.Run(InvalidationEvent::kInvalidationReceived);
+}
+
+std::string CertProvisioningInvalidationHandler::GetType() const {
+  // TODO(b/336989561) Not sure what to use here.
+  // Note that context can be pretty much any string. It /would/ be an option to
+  // use `topic_`.
+  std::string certificate_profile_id = "replace me";
+  return "certificate-" + certificate_profile_id;
+}
+
 bool CertProvisioningInvalidationHandler::IsRegistered() const {
-  return invalidation_service_ && invalidation_service_->HasObserver(this);
+  return std::visit(
+      base::Overloaded{
+          [this](invalidation::InvalidationService* service) {
+            return invalidation_service_observation_.IsObservingSource(service);
+          },
+          [this](invalidation::InvalidationListener* listener) {
+            return invalidation_listener_observation_.IsObservingSource(
+                listener);
+          }},
+      invalidation_service_or_listener_);
 }
 
 bool CertProvisioningInvalidationHandler::AreInvalidationsEnabled() const {
-  return IsRegistered() && invalidation_service_->GetInvalidatorState() ==
-                               invalidation::InvalidatorState::kEnabled;
+  if (!IsRegistered()) {
+    return false;
+  }
+
+  return std::visit(
+      base::Overloaded{[](invalidation::InvalidationService* service) {
+                         return service->GetInvalidatorState() ==
+                                invalidation::InvalidatorState::kEnabled;
+                       },
+                       [this](invalidation::InvalidationListener* listener) {
+                         return are_invalidations_expected_ ==
+                                invalidation::InvalidationsExpected::kYes;
+                       }},
+      invalidation_service_or_listener_);
 }
 
 }  // namespace internal
@@ -189,7 +276,7 @@ void CertProvisioningInvalidator::Unregister() {
 CertProvisioningUserInvalidatorFactory::CertProvisioningUserInvalidatorFactory(
     Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_);
 }
 
 std::unique_ptr<CertProvisioningInvalidator>
@@ -202,7 +289,7 @@ CertProvisioningUserInvalidatorFactory::Create() {
 CertProvisioningUserInvalidator::CertProvisioningUserInvalidator(
     Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_);
 }
 
 void CertProvisioningUserInvalidator::Register(
@@ -210,11 +297,11 @@ void CertProvisioningUserInvalidator::Register(
     OnInvalidationEventCallback on_invalidation_event_callback) {
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
-  DCHECK(invalidation_provider);
+  CHECK(invalidation_provider);
   invalidation::InvalidationService* invalidation_service =
       invalidation_provider->GetInvalidationServiceForCustomSender(
           policy::kPolicyFCMInvalidationSenderID);
-  DCHECK(invalidation_service);
+  CHECK(invalidation_service);
 
   invalidation_handler_ =
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
@@ -229,22 +316,54 @@ void CertProvisioningUserInvalidator::Register(
 
 CertProvisioningDeviceInvalidatorFactory::
     CertProvisioningDeviceInvalidatorFactory(
-        policy::AffiliatedInvalidationServiceProvider* service_provider)
-    : service_provider_(service_provider) {
-  DCHECK(service_provider_);
+        std::variant<policy::AffiliatedInvalidationServiceProvider*,
+                     invalidation::InvalidationListener*>
+            invalidation_service_provider_or_listener)
+    : invalidation_service_provider_or_listener_(PointerVariantToRawPointer(
+          invalidation_service_provider_or_listener)) {
+  CHECK(!std::holds_alternative<
+            raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
+            invalidation_service_provider_or_listener_) ||
+        std::get<raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
+            invalidation_service_provider_or_listener_))
+      << "AffiliatedInvalidationServiceProvider is used but is null";
+  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_provider_or_listener_) ||
+        std::get<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_provider_or_listener_))
+      << "InvalidationListener is used but is null";
 }
+
+CertProvisioningDeviceInvalidatorFactory::
+    CertProvisioningDeviceInvalidatorFactory() = default;
+CertProvisioningDeviceInvalidatorFactory::
+    ~CertProvisioningDeviceInvalidatorFactory() = default;
 
 std::unique_ptr<CertProvisioningInvalidator>
 CertProvisioningDeviceInvalidatorFactory::Create() {
-  return std::make_unique<CertProvisioningDeviceInvalidator>(service_provider_);
+  return std::make_unique<CertProvisioningDeviceInvalidator>(
+      RawPointerVariantToPointer(invalidation_service_provider_or_listener_));
 }
 
 //=============== CertProvisioningDeviceInvalidator ============================
 
 CertProvisioningDeviceInvalidator::CertProvisioningDeviceInvalidator(
-    policy::AffiliatedInvalidationServiceProvider* service_provider)
-    : service_provider_(service_provider) {
-  DCHECK(service_provider_);
+    std::variant<policy::AffiliatedInvalidationServiceProvider*,
+                 invalidation::InvalidationListener*>
+        invalidation_service_provider_or_listener)
+    : invalidation_service_provider_or_listener_(PointerVariantToRawPointer(
+          invalidation_service_provider_or_listener)) {
+  CHECK(!std::holds_alternative<
+            raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
+            invalidation_service_provider_or_listener_) ||
+        std::get<raw_ptr<policy::AffiliatedInvalidationServiceProvider>>(
+            invalidation_service_provider_or_listener_))
+      << "AffiliatedInvalidationServiceProvider is used but is null";
+  CHECK(!std::holds_alternative<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_provider_or_listener_) ||
+        std::get<raw_ptr<invalidation::InvalidationListener>>(
+            invalidation_service_provider_or_listener_))
+      << "InvalidationListener is used but is null";
 }
 
 CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
@@ -253,20 +372,50 @@ CertProvisioningDeviceInvalidator::~CertProvisioningDeviceInvalidator() {
   //
   // Note that it is OK to call this even if this instance has not called
   // RegisterConsumer yet.
-  service_provider_->UnregisterConsumer(this);
+  std::visit(
+      base::Overloaded{
+          [this](
+              policy::AffiliatedInvalidationServiceProvider* service_provider) {
+            service_provider->UnregisterConsumer(this);
+          },
+          [](invalidation::InvalidationListener* listener) {
+            // Do nothing.
+          }},
+      invalidation_service_provider_or_listener_);
 }
 
 void CertProvisioningDeviceInvalidator::Register(
     const invalidation::Topic& topic,
     OnInvalidationEventCallback on_invalidation_event_callback) {
   topic_ = topic;
-  DCHECK(!topic_.empty());
+  CHECK(!topic_.empty());
   on_invalidation_event_callback_ = std::move(on_invalidation_event_callback);
-  service_provider_->RegisterConsumer(this);
+  std::visit(
+      base::Overloaded{
+          [this](
+              policy::AffiliatedInvalidationServiceProvider* service_provider) {
+            service_provider->RegisterConsumer(this);
+          },
+          [this](invalidation::InvalidationListener* listener) {
+            invalidation_handler_ =
+                internal::CertProvisioningInvalidationHandler::BuildAndRegister(
+                    CertScope::kDevice, listener, topic_,
+                    on_invalidation_event_callback_);
+          }},
+      invalidation_service_provider_or_listener_);
 }
 
 void CertProvisioningDeviceInvalidator::Unregister() {
-  service_provider_->UnregisterConsumer(this);
+  std::visit(
+      base::Overloaded{
+          [this](
+              policy::AffiliatedInvalidationServiceProvider* service_provider) {
+            service_provider->UnregisterConsumer(this);
+          },
+          [](invalidation::InvalidationListener* listener) {
+            // Do nothing.
+          }},
+      invalidation_service_provider_or_listener_);
   CertProvisioningInvalidator::Unregister();
   topic_.clear();
 }
@@ -275,7 +424,7 @@ void CertProvisioningDeviceInvalidator::OnInvalidationServiceSet(
     invalidation::InvalidationService* invalidation_service) {
   // This can only be called after Register() has been called, so the `topic_`
   // must be non-empty.
-  DCHECK(!topic_.empty());
+  CHECK(!topic_.empty());
 
   // Reset any previously active `invalidation_handler` as it could be referring
   // to the previous `invalidation_service`.
