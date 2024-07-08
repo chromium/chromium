@@ -95,11 +95,8 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
                           .use_right_to_left_language = true}},
     {.pixel_test_param = {.test_suffix = "SmallWindow",
                           .use_small_window = true}},
-    // TODO(crbug.com/336964850): this test is flaky on windows.
-#if !BUILDFLAG(IS_WIN)
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged},
-#endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Restricted mode is only implemented for these platforms.
