@@ -21,6 +21,11 @@
 #include "base/files/file_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/check_deref.h"
+#include "base/containers/flat_set.h"
+#endif
+
 namespace gfx {
 
 namespace {
@@ -97,6 +102,33 @@ class GFX_EXPORT GlobalFontConfig {
     return fc_config_;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool AddAppFontDir(const base::FilePath& dir) {
+    if (dir.ReferencesParent()) {
+      // Possible path traversal.
+      return false;
+    }
+    if (!base::FilePath(kImageloaderMountBase).IsParent(dir)) {
+      // Not a DLC path.
+      return false;
+    }
+    if (app_font_dirs_added_.contains(dir)) {
+      // Added before.
+      return false;
+    }
+    app_font_dirs_added_.insert(dir);
+
+    // Points to memory owned by `dir`.
+    const FcChar8* dir_fcstring =
+        reinterpret_cast<const FcChar8*>(dir.value().c_str());
+
+    // Adds the folder to the available fonts in the application. Returns
+    // false only when fonts cannot be added due to "allocation failure".
+    // https://www.freedesktop.org/software/fontconfig/fontconfig-devel/fcconfigappfontadddir.html
+    return FcConfigAppFontAddDir(fc_config_, dir_fcstring);
+  }
+#endif
+
   // Override the font-config configuration.
   void OverrideForTesting(FcConfig* config) {
     FcConfigSetCurrent(config);
@@ -111,6 +143,9 @@ class GFX_EXPORT GlobalFontConfig {
 
  private:
   raw_ptr<FcConfig> fc_config_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::flat_set<base::FilePath> app_font_dirs_added_;
+#endif
 };
 
 // Converts Fontconfig FC_HINT_STYLE to FontRenderParams::Hinting.
@@ -287,26 +322,8 @@ void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool AddAppFontDir(base::FilePath dir) {
-  if (dir.ReferencesParent()) {
-    // Possible path traversal.
-    return false;
-  }
-  if (!base::FilePath(kImageloaderMountBase).IsParent(dir)) {
-    // Not a DLC path.
-    return false;
-  }
-
-  FcConfig* config = GetGlobalFontConfig();
-
-  // Points to memory owned by `dir`.
-  const FcChar8* dir_fcstring =
-      reinterpret_cast<const FcChar8*>(dir.value().c_str());
-
-  // Adds the folder to the available fonts in the application. Returns
-  // false only when fonts cannot be added due to "allocation failure".
-  // https://www.freedesktop.org/software/fontconfig/fontconfig-devel/fcconfigappfontadddir.html
-  return FcConfigAppFontAddDir(config, dir_fcstring);
+bool AddAppFontDir(const base::FilePath& dir) {
+  return CHECK_DEREF(GlobalFontConfig::GetInstance()).AddAppFontDir(dir);
 }
 #endif
 

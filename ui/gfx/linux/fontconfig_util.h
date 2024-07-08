@@ -50,8 +50,9 @@ GFX_EXPORT void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds a given directory to the available fonts in the application.
 // Directory must start with `/run/imageloader/` (guaranteed by DLC).
-// Returns whether the fonts were added or not.
-GFX_EXPORT bool AddAppFontDir(base::FilePath dir);
+// Returns whether the fonts were added or not. Will not add the same directory
+// more than once.
+GFX_EXPORT bool AddAppFontDir(const base::FilePath& dir);
 #endif
 
 }  // namespace gfx
