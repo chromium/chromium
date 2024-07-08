@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -38,6 +39,8 @@
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface AccountMenuCoordinator () <
     AccountMenuMediatorDelegate,
@@ -290,7 +293,9 @@
 }
 
 - (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:(void (^)())completion {
+                             completion:
+                                 (void (^)(id<SystemIdentity> systemIdentity))
+                                     completion {
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:identity
@@ -300,8 +305,22 @@
       presentingViewController:_navigationController];
 
   [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    completion();
+    completion(identity);
   }];
+}
+
+- (void)triggerAccountSwitchSnackbarWithIdentity:
+    (id<SystemIdentity>)systemIdentity {
+  NSString* accountName = systemIdentity.userGivenName
+                              ? systemIdentity.userGivenName
+                              : systemIdentity.userEmail;
+  MDCSnackbarMessage* snackbarTitle = CreateSnackbarMessage(
+      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                              base::SysNSStringToUTF16(accountName)));
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarCommandsHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarCommandsHandler showSnackbarMessage:snackbarTitle bottomOffset:0];
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

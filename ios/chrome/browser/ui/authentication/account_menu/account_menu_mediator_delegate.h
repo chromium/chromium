@@ -20,7 +20,12 @@
                           completion:(void (^)(BOOL success))completion;
 
 - (void)triggerSigninWithSystemIdentity:(id<SystemIdentity>)identity
-                             completion:(void (^)())completion;
+                             completion:
+                                 (void (^)(id<SystemIdentity> systemIdentity))
+                                     completion;
+
+- (void)triggerAccountSwitchSnackbarWithIdentity:
+    (id<SystemIdentity>)systemIdentity;
 
 @end
 

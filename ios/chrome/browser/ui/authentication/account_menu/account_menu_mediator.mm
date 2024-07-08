@@ -298,14 +298,16 @@
     return;
   }
   __weak __typeof(self) weakSelf = self;
-  [self.delegate triggerSigninWithSystemIdentity:systemIdentity
-                                      completion:^() {
-                                        [weakSelf signinDone];
-                                      }];
+  [self.delegate
+      triggerSigninWithSystemIdentity:systemIdentity
+                           completion:^(id<SystemIdentity> signedInIdentity) {
+                             [weakSelf signinDone:signedInIdentity];
+                           }];
 }
 
-- (void)signinDone {
+- (void)signinDone:(id<SystemIdentity>)systemIdentity {
   _accountSwitchingInProgress = NO;
+  [_delegate triggerAccountSwitchSnackbarWithIdentity:systemIdentity];
   [_delegate mediatorWantsToBeDismissed:self];
 }
 
