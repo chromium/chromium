@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] HKDF derivation with 0 as 'length' parameter
+  assert_unreached: deriveBits should have thrown an OperationError exception. Reached unreachable code
+[FAIL] HKDF derivation with null as 'length' parameter
+  assert_unreached: deriveBits should have thrown an OperationError exception. Reached unreachable code
+[FAIL] HKDF derivation with undefined as 'length' parameter
+  assert_unreached: deriveBits should have thrown an OperationError exception. Reached unreachable code
+[FAIL] HKDF derivation with omitted as 'length' parameter
+  assert_equals: deriveBits correctly threw OperationError: Failed to execute 'deriveBits' on 'SubtleCrypto': 3 arguments required, but only 2 present. expected "OperationError" but got "TypeError"
+[FAIL] PBKDF2 derivation with omitted as 'length' parameter
+  assert_equals: deriveBits correctly threw OperationError: Failed to execute 'deriveBits' on 'SubtleCrypto': 3 arguments required, but only 2 present. expected "OperationError" but got "TypeError"
+[FAIL] ECDH derivation with null as 'length' parameter
+  assert_array_equals: Derived bits do not match the expected result. lengths differ, expected array object "87,31,26,232,151,28,227,35,250,17,131,137,203,95,65,196,59,61,181,161" length 32, got object "" length 0
+[FAIL] ECDH derivation with undefined as 'length' parameter
+  assert_array_equals: Derived bits do not match the expected result. lengths differ, expected array object "87,31,26,232,151,28,227,35,250,17,131,137,203,95,65,196,59,61,181,161" length 32, got object "" length 0
+[FAIL] ECDH derivation with omitted as 'length' parameter
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': 3 arguments required, but only 2 present."
+[FAIL] X25519 derivation with null as 'length' parameter
+  assert_array_equals: Derived bits do not match the expected result. lengths differ, expected array object "63,245,136,2,149,247,97,118,8,143,137,228,61,254,190,126,161,149,0,8" length 32, got object "" length 0
+[FAIL] X25519 derivation with undefined as 'length' parameter
+  assert_array_equals: Derived bits do not match the expected result. lengths differ, expected array object "63,245,136,2,149,247,97,118,8,143,137,228,61,254,190,126,161,149,0,8" length 32, got object "" length 0
+[FAIL] X25519 derivation with omitted as 'length' parameter
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': 3 arguments required, but only 2 present."
+Harness: the test ran to completion.
+

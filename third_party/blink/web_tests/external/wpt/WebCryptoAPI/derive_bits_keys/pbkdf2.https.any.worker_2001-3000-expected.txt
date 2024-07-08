@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Derived key of type name: AES-CBC length: 192  using short password, empty salt, SHA-384, with 1000 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
+Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-CTR length: 192  using short password, empty salt, SHA-384, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-GCM length: 192  using short password, empty salt, SHA-384, with 1000 iterations
@@ -97,6 +95,12 @@ Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-KW length: 192  using long password, short salt, SHA-384, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using long password, short salt, SHA-384, with 1000 iterations
+  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
+[FAIL] Derived key of type name: AES-CTR length: 192  using long password, short salt, SHA-384, with 1000 iterations
+  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
+[FAIL] Derived key of type name: AES-GCM length: 192  using long password, short salt, SHA-384, with 1000 iterations
+  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
+[FAIL] Derived key of type name: AES-KW length: 192  using long password, short salt, SHA-384, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 Harness: the test ran to completion.
 

@@ -1,19 +1,5 @@
 This is a testharness.js-based test.
-Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-512, with 1 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-512, with 1 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-GCM length: 192  using empty password, empty salt, SHA-512, with 1 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-512, with 1 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-GCM length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
+Found 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-512, with 100000 iterations

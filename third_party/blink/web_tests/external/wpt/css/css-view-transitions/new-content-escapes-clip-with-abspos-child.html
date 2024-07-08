@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
 <title>View transitions: view-transition-name element, when captured escapes its clips even if it has an abspos child</title>
-<link rel="help" href="https://www.w3.org/TR/css-transitions-1/">
-<link rel="author" href="mailto:vmpstr@chromium.org">
-<link rel="match" href="element-escapes-clip-with-abspos-child-ref.html">
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
+<link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
+<link rel="match" href="content-escapes-clip-with-abspos-child-ref.html">
 <script src="/common/reftest-wait.js"></script>
 
 <style>
@@ -34,11 +34,11 @@
 
 ::view-transition-old(*) {
   animation: unset;
-  opacity: 1;
+  opacity: 0;
 }
 ::view-transition-new(*) {
   animation: unset;
-  opacity: 0;
+  opacity: 1;
 }
 ::view-transition-group(*) {
   animation-play-state: paused;

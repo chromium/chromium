@@ -1,0 +1,8 @@
+This is a wdspec test.
+[FAIL] test_one_context
+  AttributeError: 'Network' object has no attribute 'set_cache_behavior'
+[FAIL] test_new_context[tab]
+  AttributeError: 'Network' object has no attribute 'set_cache_behavior'
+[FAIL] test_new_context[window]
+  AttributeError: 'Network' object has no attribute 'set_cache_behavior'
+Harness: the test ran to completion.
