@@ -131,6 +131,9 @@ class WebStateObserver : public base::CheckedObserver {
   virtual void PermissionStateChanged(WebState* web_state,
                                       Permission permission) {}
 
+  // Invoked when the under page background color of the WebState has changed.
+  virtual void UnderPageBackgroundColorChanged(WebState* web_state) {}
+
   // Called when the web process is terminated (usually by crashing, though
   // possibly by other means).
   virtual void RenderProcessGone(WebState* web_state) {}

@@ -313,6 +313,13 @@ TEST_F(WebStateImplTest, ObserverTest) {
   ASSERT_TRUE(observer->title_was_set_info());
   EXPECT_EQ(web_state.get(), observer->title_was_set_info()->web_state);
 
+  // Test that UnderPageBackgroundColorChanged() is called.
+  ASSERT_FALSE(observer->under_page_background_color_changed_info());
+  web_state->OnUnderPageBackgroundColorChanged();
+  ASSERT_TRUE(observer->under_page_background_color_changed_info());
+  EXPECT_EQ(web_state.get(),
+            observer->under_page_background_color_changed_info()->web_state);
+
   // Test that WebStateDestroyed() is called.
   EXPECT_FALSE(observer->web_state_destroyed_info());
   web_state.reset();

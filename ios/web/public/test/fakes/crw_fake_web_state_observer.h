@@ -44,6 +44,9 @@
 // Arguments passed to `webState:didUpdateFaviconURLCandidates`.
 @property(nonatomic, readonly)
     web::TestUpdateFaviconUrlCandidatesInfo* updateFaviconUrlCandidatesInfo;
+// Arguments passed to `webStateDidChangeUnderPageBackgroundColor:`.
+@property(nonatomic, readonly) web::TestUnderPageBackgroundColorChangedInfo*
+    underPageBackgroundColorChangedInfo;
 // Arguments passed to `renderProcessGoneForWebState:`.
 @property(nonatomic, readonly)
     web::TestRenderProcessGoneInfo* renderProcessGoneInfo;

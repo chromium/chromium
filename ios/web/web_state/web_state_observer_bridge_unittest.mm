@@ -261,6 +261,16 @@ TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
             [observer_ permissionStateChangedInfo]->permission);
 }
 
+// Tests `webStateDidChangeTitle:` forwarding.
+TEST_F(WebStateObserverBridgeTest, UnderPageBackgroundColorChanged) {
+  ASSERT_FALSE([observer_ underPageBackgroundColorChangedInfo]);
+
+  observer_bridge_.UnderPageBackgroundColorChanged(&fake_web_state_);
+  ASSERT_TRUE([observer_ underPageBackgroundColorChangedInfo]);
+  EXPECT_EQ(&fake_web_state_,
+            [observer_ underPageBackgroundColorChangedInfo]->web_state);
+}
+
 // Tests `renderProcessGoneForWebState:` forwarding.
 TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   ASSERT_FALSE([observer_ renderProcessGoneInfo]);

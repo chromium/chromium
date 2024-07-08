@@ -912,6 +912,12 @@ void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
   }
 }
 
+void WebStateImpl::RealizedWebState::OnUnderPageBackgroundColorChanged() {
+  for (auto& observer : observers()) {
+    observer.UnderPageBackgroundColorChanged(owner_);
+  }
+}
+
 void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     NSArray<NSNumber*>* permissions,
     const GURL& origin,

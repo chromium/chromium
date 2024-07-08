@@ -133,6 +133,7 @@ class FakeWebState : public WebState {
   void SetBrowserState(BrowserState* browser_state);
   void SetIsRealized(bool value);
   void SetTitle(const std::u16string& title);
+  void SetUnderPageBackgroundColor(UIColor* color);
   void SetContentIsHTML(bool content_is_html);
   void SetContentsMimeType(const std::string& mime_type);
   void SetLoading(bool is_loading);
@@ -213,6 +214,7 @@ class FakeWebState : public WebState {
   NSData* last_loaded_data_ = nil;
   PermissionState camera_permission_state_ = PermissionStateNotAccessible;
   PermissionState microphone_permission_state_ = PermissionStateNotAccessible;
+  UIColor* under_page_background_color_ = nil;
   id<CRWFindInteraction> find_interaction_ API_AVAILABLE(ios(16));
   id<CRWWebViewDownload> web_view_download_;
   id<CRWWebViewDownloadDelegate> download_delegate_;

@@ -142,6 +142,9 @@ class WebStateImpl final : public WebState {
   // changed.
   void OnStateChangedForPermission(Permission permission);
 
+  // Notifies the observers that the under pagebackground color was changed.
+  void OnUnderPageBackgroundColorChanged();
+
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
 

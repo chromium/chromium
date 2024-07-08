@@ -406,6 +406,8 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
         @"title" : @"webViewTitleDidChange",
         @"cameraCaptureState" : @"webViewCameraCaptureStateDidChange",
         @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
+        @"underPageBackgroundColor" :
+            @"webViewUnderPageBackgroundColorDidChange",
       }];
 
   if (web::GetWebClient()->EnableFullscreenAPI()) {
@@ -1660,6 +1662,11 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 // Called when WKWebView microphoneCaptureState property has changed.
 - (void)webViewMicrophoneCaptureStateDidChange {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
+}
+
+// Called when WKWebView underPageBackgroundColor property has changed.
+- (void)webViewUnderPageBackgroundColorDidChange {
+  self.webStateImpl->OnUnderPageBackgroundColorChanged();
 }
 
 - (void)fullscreenStateDidChange {

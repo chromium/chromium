@@ -130,6 +130,14 @@ void WebStateObserverBridge::PermissionStateChanged(
   }
 }
 
+void WebStateObserverBridge::UnderPageBackgroundColorChanged(
+    web::WebState* web_state) {
+  SEL selector = @selector(webStateDidChangeUnderPageBackgroundColor:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ webStateDidChangeUnderPageBackgroundColor:web_state];
+  }
+}
+
 void WebStateObserverBridge::RenderProcessGone(web::WebState* web_state) {
   if ([observer_ respondsToSelector:@selector(renderProcessGoneForWebState:)]) {
     [observer_ renderProcessGoneForWebState:web_state];

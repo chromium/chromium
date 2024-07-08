@@ -122,6 +122,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetIsLoading(bool is_loading);
   void OnPageLoaded(const GURL& url, bool load_success);
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
+  void OnUnderPageBackgroundColorChanged();
   void CreateWebUI(const GURL& url);
   void ClearWebUI();
   bool HasWebUI() const;

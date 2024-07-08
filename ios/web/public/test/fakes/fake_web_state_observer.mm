@@ -126,6 +126,14 @@ void FakeWebStateObserver::FaviconUrlUpdated(
   update_favicon_url_candidates_info_->candidates = candidates;
 }
 
+void FakeWebStateObserver::UnderPageBackgroundColorChanged(
+    WebState* web_state) {
+  ASSERT_EQ(web_state_, web_state);
+  under_page_background_color_changed_info_ =
+      std::make_unique<web::TestUnderPageBackgroundColorChangedInfo>();
+  under_page_background_color_changed_info_->web_state = web_state;
+}
+
 void FakeWebStateObserver::RenderProcessGone(WebState* web_state) {
   ASSERT_EQ(web_state_, web_state);
   render_process_gone_info_ =

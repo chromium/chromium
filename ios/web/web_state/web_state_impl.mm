@@ -263,6 +263,10 @@ void WebStateImpl::OnStateChangedForPermission(Permission permission) {
   RealizedState()->OnStateChangedForPermission(permission);
 }
 
+void WebStateImpl::OnUnderPageBackgroundColorChanged() {
+  RealizedState()->OnUnderPageBackgroundColorChanged();
+}
+
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
   return RealizedState()->GetNavigationManager();
 }
