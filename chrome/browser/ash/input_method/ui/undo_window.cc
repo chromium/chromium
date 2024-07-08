@@ -45,16 +45,13 @@ void SetHighlighted(views::View& view, bool highlighted) {
 }  // namespace
 
 UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
-    : BubbleDialogDelegateView(nullptr,
-                               views::BubbleBorder::Arrow::BOTTOM_LEFT,
-                               views::BubbleBorder::DIALOG_SHADOW,
-                               true),
-      delegate_(delegate) {
+    : delegate_(delegate) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
   set_parent_window(parent);
   set_margins(gfx::Insets(kPadding));
+  SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 
@@ -139,6 +136,7 @@ void UndoWindow::Hide() {
 void UndoWindow::Show(const bool show_setting_link) {
   learn_more_button_->SetVisible(show_setting_link);
   GetWidget()->Show();
+  SizeToContents();
 }
 
 void UndoWindow::SetBounds(const gfx::Rect& word_bounds) {
