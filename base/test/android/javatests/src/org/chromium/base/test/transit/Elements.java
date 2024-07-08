@@ -39,7 +39,7 @@ public class Elements {
 
     Elements() {}
 
-    public Builder newBuilder() {
+    Builder newBuilder() {
         return new Builder(this);
     }
 
@@ -81,7 +81,6 @@ public class Elements {
      * ConditionalState's elements by calling the declare___() methods.
      */
     public static class Builder {
-
         private Elements mOwner;
         private ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
         private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
@@ -95,6 +94,7 @@ public class Elements {
 
         /** Declare as an element an Android Activity of type |activityClass|. */
         public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+            assertNotBuilt();
             ActivityElement<T> element = new ActivityElement<>(activityClass);
             mElementsInState.add(element);
             return element;
@@ -102,6 +102,7 @@ public class Elements {
 
         /** Declare as an element a View that matches |viewMatcher|. */
         public ViewElementInState declareView(ViewElement viewElement) {
+            assertNotBuilt();
             ViewElementInState inState = new ViewElementInState(viewElement, /* gate= */ null);
             mElementsInState.add(inState);
             return inState;
@@ -110,6 +111,7 @@ public class Elements {
         /** Declare an {@link ElementFactory} that is gated by a Condition. */
         public <T extends Condition> T declareElementFactory(
                 T condition, Callback<Elements.Builder> delayedDeclarations) {
+            assertNotBuilt();
             mElementFactories.put(condition, new ElementFactory(mOwner, delayedDeclarations));
             return condition;
         }
@@ -120,6 +122,7 @@ public class Elements {
          * <p>The element is only expected if |gate| returns true.
          */
         public ViewElementInState declareViewIf(ViewElement viewElement, Condition gate) {
+            assertNotBuilt();
             ViewElementInState inState = new ViewElementInState(viewElement, gate);
             mElementsInState.add(inState);
             return inState;
@@ -127,6 +130,7 @@ public class Elements {
 
         /** Declare as a Condition that a View is not displayed. */
         public void declareNoView(Matcher<View> viewMatcher) {
+            assertNotBuilt();
             mOtherEnterConditions.add(new NotDisplayedAnymoreCondition(viewMatcher));
         }
 
@@ -139,6 +143,7 @@ public class Elements {
          * with the same LogicalElement.
          */
         public LogicalElement<?> declareLogicalElement(LogicalElement<?> logicalElement) {
+            assertNotBuilt();
             mElementsInState.add(logicalElement);
             return logicalElement;
         }
@@ -154,6 +159,7 @@ public class Elements {
          * a scoped {@link LogicalElement} in this case.
          */
         public <T extends Condition> T declareEnterCondition(T condition) {
+            assertNotBuilt();
             mOtherEnterConditions.add(condition);
             return condition;
         }
@@ -166,12 +172,14 @@ public class Elements {
          * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
          */
         public <T extends Condition> T declareExitCondition(T condition) {
+            assertNotBuilt();
             mOtherExitConditions.add(condition);
             return condition;
         }
 
         /** Declare a custom element, already rendered to an ElementInState. */
         public <T extends ElementInState<?>> T declareElementInState(T elementInState) {
+            assertNotBuilt();
             mElementsInState.add(elementInState);
             return elementInState;
         }
@@ -181,7 +189,7 @@ public class Elements {
          * the original {@link Elements} owned by a ConditionalState.
          */
         Elements consolidate() {
-            assert mOwner != null;
+            assertNotBuilt();
             Elements newElements = new Elements();
             newElements.mElementsInState.addAll(mElementsInState);
             newElements.mElementFactories.putAll(mElementFactories);
@@ -190,6 +198,12 @@ public class Elements {
             mOwner.addAll(newElements);
             mOwner = null;
             return newElements;
+        }
+
+        private void assertNotBuilt() {
+            assert mOwner != null
+                    : "Elements.Builder already built; if in declareElementFactory(), probably"
+                            + " using the outer Elements.Builder instead of the nested one";
         }
     }
 }
