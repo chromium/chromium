@@ -13,14 +13,16 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/model_type_store.h"
 
 namespace ash::floating_sso {
 
 FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    syncer::OnceModelTypeStoreFactory create_store_callback)
     : prefs_(prefs),
-      bridge_(std::move(change_processor)),
+      bridge_(std::move(change_processor), std::move(create_store_callback)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(prefs_);
   pref_change_registrar_->Add(

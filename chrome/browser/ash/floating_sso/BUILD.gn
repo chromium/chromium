@@ -21,6 +21,7 @@ static_library("floating_sso") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//components/keyed_service/core",
@@ -35,6 +36,8 @@ source_set("unit_tests") {
 
   sources = [
     "cookie_sync_conversions_unittest.cc",
+    "cookie_sync_test_util.cc",
+    "cookie_sync_test_util.h",
     "floating_sso_sync_bridge_unittest.cc",
   ]
 
