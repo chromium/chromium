@@ -310,12 +310,13 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
 }
 
 void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
-    autofill::AutofillClient::PaymentsRpcResult result,
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
         response_details) {
   base::TimeDelta latency =
       base::TimeTicks::Now() - initiate_payment_network_start_time_;
-  if (result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result !=
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     // TODO(b/300335703): Show the error message.
     LogInitiatePaymentResult(/*result=*/false, latency);
     client_->DismissPrompt();

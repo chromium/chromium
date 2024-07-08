@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
@@ -265,7 +265,7 @@ class FacilitatedPaymentsManager {
   // Called after receiving the `result` of the initiate payment call. The
   // `response_details` contains the action token used for payment.
   void OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult result,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details);
 

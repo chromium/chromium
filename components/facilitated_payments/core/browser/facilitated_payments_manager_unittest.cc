@@ -1316,7 +1316,8 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+          kPermanentFailure,
       std::move(response_details));
 }
 
@@ -1333,7 +1334,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 }
 
@@ -1351,7 +1352,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 }
 
@@ -1368,7 +1369,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 }
 
@@ -1386,7 +1387,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 }
 
@@ -1442,7 +1443,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 
   FastForwardBy(base::Seconds(2));
@@ -1472,7 +1473,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 
   FastForwardBy(base::Seconds(2));
   manager_->OnInitiatePaymentResponseReceived(
-      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
 
   histogram_tester.ExpectUniqueSample(
