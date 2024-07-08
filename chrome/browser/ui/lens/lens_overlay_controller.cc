@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/lens/lens_overlay_event_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -198,6 +199,8 @@ LensOverlayController::LensOverlayController(
       &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
   search_bubble_controller_ =
       std::make_unique<lens::LensSearchBubbleController>(this);
+  lens_overlay_event_handler_ =
+      std::make_unique<lens::LensOverlayEventHandler>(this);
 }
 
 LensOverlayController::~LensOverlayController() {
@@ -1349,11 +1352,11 @@ bool LensOverlayController::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   // This can be called before the overlay web view is attached to the overlay
   // view. In that case, the focus manager could be null.
-  if (overlay_web_view_ && overlay_web_view_->GetFocusManager()) {
-    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-        event, overlay_web_view_->GetFocusManager());
+  if (!overlay_web_view_ || !overlay_web_view_->GetFocusManager()) {
+    return false;
   }
-  return false;
+  return lens_overlay_event_handler_->HandleKeyboardEvent(
+      source, event, overlay_web_view_->GetFocusManager());
 }
 
 void LensOverlayController::OnFullscreenStateChanged() {
@@ -1608,14 +1611,6 @@ void LensOverlayController::CloseRequestedByOverlayCloseButton() {
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
   CloseUIAsync(lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
-}
-
-void LensOverlayController::CloseRequestedByOverlayEscapeKeyPress() {
-  CloseUIAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
-}
-
-void LensOverlayController::CloseRequestedBySidePanelEscapeKeyPress() {
-  CloseUIAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {

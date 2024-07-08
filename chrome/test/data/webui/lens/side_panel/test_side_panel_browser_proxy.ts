@@ -14,13 +14,8 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
     LensSidePanelPageHandlerInterface {
   constructor() {
     super([
-      'closeRequestedBySidePanelEscapeKeyPress',
       'popAndLoadQueryFromHistory',
     ]);
-  }
-
-  closeRequestedBySidePanelEscapeKeyPress() {
-    this.methodCalled('closeRequestedBySidePanelEscapeKeyPress');
   }
 
   popAndLoadQueryFromHistory() {

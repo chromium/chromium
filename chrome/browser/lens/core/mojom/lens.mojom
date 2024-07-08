@@ -8,10 +8,10 @@ import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "skia/public/mojom/skcolor.mojom";
-import "url/mojom/url.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
 
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
@@ -51,9 +51,6 @@ interface LensPageHandler {
 
   // Like above, but when dismissed by clicking on the overlay background.
   CloseRequestedByOverlayBackgroundClick();
-
-  // Like above, but when dismissed by pressing the escape key.
-  CloseRequestedByOverlayEscapeKeyPress();
 
   // When this method is called, the C++ coordinator will add a blur to the
   // tab contents.
@@ -146,10 +143,6 @@ interface LensPage {
 // Browser-side handler for requests from Side PanelWebUI page.
 // (TypeScript -> C++)
 interface LensSidePanelPageHandler {
-  // When this method is called, the C++ coordinator will begin the tear-down
-  // flow.
-  CloseRequestedBySidePanelEscapeKeyPress();
-
   // Pops the most recent search query from the history stack to load in the
   // side panel.
   PopAndLoadQueryFromHistory();

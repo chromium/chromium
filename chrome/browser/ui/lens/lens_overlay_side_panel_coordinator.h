@@ -58,6 +58,11 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
 
   content::WebContents* GetSidePanelWebContents();
 
+  // Return the LensOverlayController that owns this side panel coordinator.
+  LensOverlayController* GetLensOverlayController() {
+    return lens_overlay_controller_.get();
+  }
+
   // Whether the lens overlay entry is currently the active entry in the side
   // panel UI.
   bool IsEntryShowing();

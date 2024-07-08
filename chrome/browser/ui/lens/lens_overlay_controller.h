@@ -39,7 +39,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view_observer.h"
 
 namespace lens {
@@ -47,6 +46,7 @@ class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
 class LensSearchBubbleController;
+class LensOverlayEventHandler;
 }  // namespace lens
 
 namespace views {
@@ -271,6 +271,11 @@ class LensOverlayController : public LensSearchboxClient,
   // memory. When a tab is in the foreground it is guaranteed to have a
   // WebContents.
   const content::WebContents* tab_contents() { return tab_->GetContents(); }
+
+  // Returns the event handler for this instance of the Lens Overlay.
+  lens::LensOverlayEventHandler* lens_overlay_event_handler() {
+    return lens_overlay_event_handler_.get();
+  }
 
   // Testing helper method for checking view housing our overlay.
   views::View* GetOverlayViewForTesting();
@@ -632,7 +637,6 @@ class LensOverlayController : public LensSearchboxClient,
   void AddBackgroundBlur() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
-  void CloseRequestedByOverlayEscapeKeyPress() override;
   void FeedbackRequestedByOverlay() override;
   void GetOverlayInvocationSource(
       GetOverlayInvocationSourceCallback callback) override;
@@ -647,8 +651,6 @@ class LensOverlayController : public LensSearchboxClient,
                                       const std::string& content_language,
                                       int selection_start_index,
                                       int selection_end_index) override;
-  // lens::mojom::LensSidePanelPageHandler overrides.
-  void CloseRequestedBySidePanelEscapeKeyPress() override;
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().
@@ -800,9 +802,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
 
-  // Class for handling key events from the renderer that were not handled.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is
   // backgrounded, since the tab may move between browser windows.
@@ -840,6 +839,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Side panel coordinator for showing results in the panel.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
+
+  // Class for handling key events from the renderer that were not handled.
+  std::unique_ptr<lens::LensOverlayEventHandler> lens_overlay_event_handler_;
 
   // Pointer to the view that houses our overlay as a child of the tab
   // contents web view.
