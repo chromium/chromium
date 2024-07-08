@@ -6,6 +6,9 @@
 
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/passkey_model.h"
+#import "ios/chrome/browser/credential_provider/model/archivable_credential+passkey.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
@@ -18,7 +21,10 @@ typedef enum : NSInteger {
   CredentialProviderMigratorErrorAlreadyRunning,
 } CredentialProviderMigratorErrors;
 
-@interface CredentialProviderMigrator ()
+@interface CredentialProviderMigrator () {
+  // Passkey store.
+  raw_ptr<webauthn::PasskeyModel> _passkeyStore;
+}
 
 // Key used to retrieve the temporal storage.
 @property(nonatomic, copy) NSString* key;
@@ -39,13 +45,15 @@ typedef enum : NSInteger {
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
                                  key:(NSString*)key
-                       passwordStore:(scoped_refptr<PasswordStoreInterface>)
-                                         passwordStore {
+                       passwordStore:
+                           (scoped_refptr<PasswordStoreInterface>)passwordStore
+                        passkeyStore:(webauthn::PasskeyModel*)passkeyStore {
   self = [super init];
   if (self) {
     _key = key;
     _userDefaults = userDefaults;
     _passwordStore = passwordStore;
+    _passkeyStore = passkeyStore;
   }
   return self;
 }
@@ -65,9 +73,22 @@ typedef enum : NSInteger {
                        key:self.key];
   NSArray<id<Credential>>* credentials = self.temporalStore.credentials.copy;
   for (id<Credential> credential in credentials) {
-    password_manager::PasswordForm form =
-        PasswordFormFromCredential(credential);
-    self.passwordStore->AddLogin(form);
+    if (credential.isPasskey) {
+      // TODO(crbug.com/330355124): this can happen too early (before
+      // PasskeySyncBridge::store_ is created in _passkeyStore) if it happens
+      // at startup, so add a mechanism to re-trigger the migration later.
+      if (!_passkeyStore || !_passkeyStore->IsReady()) {
+        continue;
+      }
+
+      sync_pb::WebauthnCredentialSpecifics passkey =
+          PasskeyFromCredential(credential);
+      _passkeyStore->CreatePasskey(passkey);
+    } else {
+      password_manager::PasswordForm form =
+          PasswordFormFromCredential(credential);
+      self.passwordStore->AddLogin(form);
+    }
     [self.temporalStore
         removeCredentialWithRecordIdentifier:credential.recordIdentifier];
   }

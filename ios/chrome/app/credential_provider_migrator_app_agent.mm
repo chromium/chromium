@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
@@ -57,6 +58,8 @@
       continue;
     }
 
+    webauthn::PasskeyModel* passkeyStore =
+        IOSPasskeyModelFactory::GetForBrowserState(browserState);
     password_manager::PasswordForm::Store defaultStore =
         password_manager::features_util::GetDefaultPasswordStore(
             browserState->GetPrefs(),
@@ -70,7 +73,8 @@
     CredentialProviderMigrator* migrator =
         [[CredentialProviderMigrator alloc] initWithUserDefaults:userDefaults
                                                              key:key
-                                                   passwordStore:storeToSave];
+                                                   passwordStore:storeToSave
+                                                    passkeyStore:passkeyStore];
     [self.migratingTracker addObject:browserStatePathString];
     __weak __typeof__(self) weakSelf = self;
     [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {

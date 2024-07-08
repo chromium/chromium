@@ -11,6 +11,10 @@ namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }  // namespace sync_pb
 
+// Convenience method to create a WebauthnCredentialSpecifics from a Credential.
+sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
+    id<Credential> credential);
+
 // Category for adding convenience logic related to WebauthnCredentialSpecifics.
 @interface ArchivableCredential (Passkey)
 

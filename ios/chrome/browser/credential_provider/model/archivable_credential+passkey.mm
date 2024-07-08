@@ -9,7 +9,47 @@
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 
 using base::HexEncode;
+using base::HexStringToString;
+using base::SysNSStringToUTF8;
 using base::SysUTF8ToNSString;
+
+namespace {
+
+std::string HexNSStringToString(NSString* str) {
+  std::string decoded;
+  if (!HexStringToString(SysNSStringToUTF8(str), &decoded)) {
+    return nil;
+  }
+
+  return decoded;
+}
+
+}  // namespace
+
+sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
+    id<Credential> credential) {
+  sync_pb::WebauthnCredentialSpecifics credential_specifics;
+
+  credential_specifics.set_sync_id(HexNSStringToString(credential.syncId));
+  credential_specifics.set_credential_id(
+      HexNSStringToString(credential.credentialId));
+  credential_specifics.set_user_name(SysNSStringToUTF8(credential.username));
+  credential_specifics.set_user_display_name(
+      SysNSStringToUTF8(credential.userDisplayName));
+  credential_specifics.set_rp_id(SysNSStringToUTF8(credential.rpId));
+  credential_specifics.set_user_id(HexNSStringToString(credential.userId));
+  credential_specifics.set_creation_time(credential.creationTime);
+
+  if ([credential.privateKey length] > 0) {
+    credential_specifics.set_private_key(
+        HexNSStringToString(credential.privateKey));
+  } else {
+    credential_specifics.set_encrypted(
+        HexNSStringToString(credential.encrypted));
+  }
+
+  return credential_specifics;
+}
 
 @implementation ArchivableCredential (WebauthnCredentialSpecifics)
 

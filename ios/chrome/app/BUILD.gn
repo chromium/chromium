@@ -232,6 +232,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/shared/model/application_context",
       "//ios/chrome/browser/shared/model/browser_state",
       "//ios/chrome/browser/sync/model",
+      "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
     ]
