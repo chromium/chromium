@@ -37,6 +37,7 @@ HEADLESS_EXPORT extern const char kProxyServer[];
 HEADLESS_EXPORT extern const char kForceNewBrowsingInstance[];
 HEADLESS_EXPORT extern const char kUserAgent[];
 HEADLESS_EXPORT extern const char kUserDataDir[];
+HEADLESS_EXPORT extern const char kVersion[];
 HEADLESS_EXPORT extern const char kWindowSize[];
 
 }  // namespace switches

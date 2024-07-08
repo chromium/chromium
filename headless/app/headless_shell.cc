@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
@@ -265,6 +266,12 @@ int HeadlessShellMain(content::ContentMainParams params) {
   // TODO(fuchsia): Remove this when GPU accelerated compositing is ready.
   command_line.AppendSwitch(::switches::kDisableGpu);
 #endif
+
+  if (command_line.HasSwitch(switches::kVersion)) {
+    printf("%s %s\n", version_info::GetProductName().data(),
+           version_info::GetVersionNumber().data());
+    return EXIT_SUCCESS;
+  }
 
   if (command_line.GetArgs().size() > 1) {
     LOG(ERROR) << "Multiple targets are not supported.";

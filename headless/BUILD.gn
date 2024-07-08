@@ -765,6 +765,7 @@ if (is_win) {
     ]
     deps = [
       ":headless_non_renderer",
+      "//base/version_info",
       "//build:branding_buildflags",
       "//components/crash/core/app:app",
       "//components/crash/core/app:run_as_crashpad_handler",
@@ -815,6 +816,7 @@ static_library("headless_shell_lib") {
   }
 
   deps = [
+    "//base/version_info",
     "//build:branding_buildflags",
     "//components/devtools/simple_devtools_protocol_client",
     "//components/embedder_support",
