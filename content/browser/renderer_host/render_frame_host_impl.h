@@ -524,8 +524,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const gfx::Point& viewport_position,
       const gfx::Size& max_size,
       int max_area,
-      base::OnceCallback<void(const gfx::ImageSkia&, const gfx::Rect&)>
-          callback) override;
+      base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback)
+      override;
   bool CreateNetworkServiceDefaultFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>
           default_factory_receiver) override;

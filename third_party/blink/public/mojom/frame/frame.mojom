@@ -938,7 +938,7 @@ interface LocalFrame {
   RequestVideoFrameAtWithBoundsDiagnostics(gfx.mojom.Point location,
                                            gfx.mojom.Size max_size,
                                            int32 max_area)
-      => (gfx.mojom.ImageSkia image, gfx.mojom.Rect bounds);
+      => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
 
   // Tells the renderer to perform the given action on the plugin location at
   // the given point in the view coordinate space.
