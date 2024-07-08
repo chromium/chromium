@@ -2594,8 +2594,8 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
-[ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Timeout ]
+crbug.com/351876774 [ Win11-arm64 ] virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
+crbug.com/351904556 [ Win11-arm64 ] virtual/fedcm-authz/external/wpt/credential-management/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Timeout ]
 [ Win11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disable-untrusted-network.https.html [ Timeout ]
 crbug.com/351703751 [ Win11-arm64 ] external/wpt/WebCryptoAPI/derive_bits_keys/cfrg_curves_bits.https.any.html [ Failure Timeout ]
 crbug.com/350770678 [ Mac11-arm64 ] external/wpt/css/css-writing-modes/forms/select-multiple-options-visual-order.html [ Timeout ]
