@@ -14,4 +14,12 @@ bool IsKeyRotationEnabled() {
   return base::FeatureList::IsEnabled(kDTCKeyRotationEnabled);
 }
 
+BASE_FEATURE(kDTCKeyUploadedBySharedAPIEnabled,
+             "DTCKeyUploadedBySharedAPIEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDTCKeyUploadedBySharedAPI() {
+  return base::FeatureList::IsEnabled(kDTCKeyUploadedBySharedAPIEnabled);
+}
+
 }  // namespace enterprise_connectors
