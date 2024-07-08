@@ -55,7 +55,7 @@ void TestSyncService::SetSignedIn(signin::ConsentLevel consent_level) {
 
 void TestSyncService::SetSignedIn(signin::ConsentLevel consent_level,
                                   const CoreAccountInfo& account_info) {
-  disable_reasons_ = {};
+  disable_reasons_.Remove(DISABLE_REASON_NOT_SIGNED_IN);
   account_info_ = account_info;
   if (consent_level == signin::ConsentLevel::kSync) {
     has_sync_consent_ = true;
@@ -71,7 +71,7 @@ void TestSyncService::SetSignedOut() {
   user_settings_.ClearInitialSyncFeatureSetupComplete();
   account_info_ = CoreAccountInfo();
   has_persistent_auth_error_ = false;
-  disable_reasons_ = {DISABLE_REASON_NOT_SIGNED_IN};
+  disable_reasons_.Put(DISABLE_REASON_NOT_SIGNED_IN);
   CHECK_EQ(GetTransportState(), TransportState::DISABLED);
 }
 

@@ -41,12 +41,9 @@ class TestSyncService : public SyncService {
 
   ~TestSyncService() override;
 
-  // High-level setters that configure common scenarios. These will override
-  // any previous call to SetAllowedByEnterprisePolicy()
-  // and SetHasUnrecoverableError(). Passing ConsentLevel::kSync will also
-  // mark the first sync-the-feature setup as complete.
-  // TODO(crbug.com/350495915): This currently resets the above but not things
-  // like SetPassphraseRequired(). It should override all or none.
+  // High-level setters that configure common scenarios. Passing
+  // ConsentLevel::kSync will also mark the first sync-the-feature setup as
+  // complete.
   void SetSignedIn(signin::ConsentLevel consent_level);
   void SetSignedIn(signin::ConsentLevel consent_level,
                    const CoreAccountInfo& account_info);
