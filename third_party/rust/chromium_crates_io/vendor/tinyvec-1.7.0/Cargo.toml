@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "tinyvec"
-version = "1.6.1"
+version = "1.7.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 build = false
 exclude = [
@@ -140,4 +140,5 @@ real_blackbox = ["criterion/real_blackbox"]
 rustc_1_40 = []
 rustc_1_55 = []
 rustc_1_57 = ["rustc_1_55"]
+rustc_1_61 = []
 std = ["alloc"]

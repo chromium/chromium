@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7
+
+* [Fuuzetsu](https://github.com/Fuuzetsu) added the `rustc_1_61` cargo feature, which adds the `retain_mut` method.
+  [pr 198](https://github.com/Lokathor/tinyvec/pull/198) 
+
 ## 1.6.1
 
 * [e00E](https://github.com/e00E) fixed the Arbitrary impl to work on Stable

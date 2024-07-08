@@ -1,9 +1,9 @@
 Name: tinyvec
 URL: https://crates.io/crates/tinyvec
 Description: `tinyvec` provides 100% safe vec-like data structures.
-Version: 1.6.1
+Version: 1.7.0
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/tinyvec-1.6.1/LICENSE-APACHE.md
-Revision: 612c87d0d799b98c662ca44943b6531120d2168b
+License File: //third_party/rust/chromium_crates_io/vendor/tinyvec-1.7.0/LICENSE-APACHE.md
+Revision: ed22e15f2959ece08cfcf831e524e36775480a7f

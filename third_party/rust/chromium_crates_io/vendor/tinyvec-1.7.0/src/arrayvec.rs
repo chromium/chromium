@@ -816,6 +816,63 @@ impl<A: Array> ArrayVec<A> {
     }
   }
 
+  /// Retains only the elements specified by the predicate, passing a mutable
+  /// reference to it.
+  ///
+  /// In other words, remove all elements e such that f(&mut e) returns false.
+  /// This method operates in place, visiting each element exactly once in the
+  /// original order, and preserves the order of the retained elements.
+  ///
+  ///
+  /// ## Example
+  ///
+  /// ```rust
+  /// # use tinyvec::*;
+  ///
+  /// let mut av = array_vec!([i32; 10] => 1, 1, 2, 3, 3, 4);
+  /// av.retain_mut(|x| if *x % 2 == 0 { *x *= 2; true } else { false });
+  /// assert_eq!(&av[..], [4, 8]);
+  /// ```
+  #[inline]
+  pub fn retain_mut<F>(&mut self, mut acceptable: F)
+  where
+    F: FnMut(&mut A::Item) -> bool,
+  {
+    // Drop guard to contain exactly the remaining elements when the test
+    // panics.
+    struct JoinOnDrop<'vec, Item> {
+      items: &'vec mut [Item],
+      done_end: usize,
+      // Start of tail relative to `done_end`.
+      tail_start: usize,
+    }
+
+    impl<Item> Drop for JoinOnDrop<'_, Item> {
+      fn drop(&mut self) {
+        self.items[self.done_end..].rotate_left(self.tail_start);
+      }
+    }
+
+    let mut rest = JoinOnDrop {
+      items: &mut self.data.as_slice_mut()[..self.len as usize],
+      done_end: 0,
+      tail_start: 0,
+    };
+
+    let len = self.len as usize;
+    for idx in 0..len {
+      // Loop start invariant: idx = rest.done_end + rest.tail_start
+      if !acceptable(&mut rest.items[idx]) {
+        let _ = core::mem::take(&mut rest.items[idx]);
+        self.len -= 1;
+        rest.tail_start += 1;
+      } else {
+        rest.items.swap(rest.done_end, idx);
+        rest.done_end += 1;
+      }
+    }
+  }
+
   /// Forces the length of the vector to `new_len`.
   ///
   /// ## Panics
@@ -1891,5 +1948,47 @@ where
     }
 
     Ok(new_arrayvec)
+  }
+}
+
+#[cfg(test)]
+mod test {
+  use super::*;
+
+  #[test]
+  fn retain_mut_empty_vec() {
+    let mut av: ArrayVec<[i32; 4]> = ArrayVec::new();
+    av.retain_mut(|&mut x| x % 2 == 0);
+    assert_eq!(av.len(), 0);
+  }
+
+  #[test]
+  fn retain_mut_all_elements() {
+    let mut av: ArrayVec<[i32; 4]> = array_vec!([i32; 4] => 2, 4, 6, 8);
+    av.retain_mut(|&mut x| x % 2 == 0);
+    assert_eq!(av.len(), 4);
+    assert_eq!(av.as_slice(), &[2, 4, 6, 8]);
+  }
+
+  #[test]
+  fn retain_mut_some_elements() {
+    let mut av: ArrayVec<[i32; 4]> = array_vec!([i32; 4] => 1, 2, 3, 4);
+    av.retain_mut(|&mut x| x % 2 == 0);
+    assert_eq!(av.len(), 2);
+    assert_eq!(av.as_slice(), &[2, 4]);
+  }
+
+  #[test]
+  fn retain_mut_no_elements() {
+    let mut av: ArrayVec<[i32; 4]> = array_vec!([i32; 4] => 1, 3, 5, 7);
+    av.retain_mut(|&mut x| x % 2 == 0);
+    assert_eq!(av.len(), 0);
+  }
+
+  #[test]
+  fn retain_mut_zero_capacity() {
+    let mut av: ArrayVec<[i32; 0]> = ArrayVec::new();
+    av.retain_mut(|&mut x| x % 2 == 0);
+    assert_eq!(av.len(), 0);
   }
 }

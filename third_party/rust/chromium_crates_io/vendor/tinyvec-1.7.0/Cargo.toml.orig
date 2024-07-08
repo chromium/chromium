@@ -1,7 +1,7 @@
 [package]
 name = "tinyvec"
 description = "`tinyvec` provides 100% safe vec-like data structures."
-version = "1.6.1"
+version = "1.7.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 edition = "2018"
 license = "Zlib OR Apache-2.0 OR MIT"
@@ -40,6 +40,10 @@ rustc_1_55 = []
 # features that require rustc 1.57
 # add try_reserve functions to types that heap allocate.
 rustc_1_57 = ["rustc_1_55"]
+
+# features that require rustc 1.61
+# add retain_mut function to TinyVec
+rustc_1_61 = []
 
 # allow use of nightly feature `slice_partition_dedup`,
 # will become useless once that is stabilized:

@@ -647,6 +647,27 @@ impl<A: Array> TinyVec<A> {
     }
   }
 
+  /// Walk the vec and keep only the elements that pass the predicate given,
+  /// having the opportunity to modify the elements at the same time.
+  ///
+  /// ## Example
+  ///
+  /// ```rust
+  /// use tinyvec::*;
+  ///
+  /// let mut tv = tiny_vec!([i32; 10] => 1, 2, 3, 4);
+  /// tv.retain_mut(|x| if *x % 2 == 0 { *x *= 2; true } else { false });
+  /// assert_eq!(tv.as_slice(), &[4, 8][..]);
+  /// ```
+  #[inline]
+  #[cfg(feature = "rustc_1_61")]
+  pub fn retain_mut<F: FnMut(&mut A::Item) -> bool>(&mut self, acceptable: F) {
+    match self {
+      TinyVec::Inline(i) => i.retain_mut(acceptable),
+      TinyVec::Heap(h) => h.retain_mut(acceptable),
+    }
+  }
+
   /// Helper for getting the mut slice.
   #[inline(always)]
   #[must_use]
