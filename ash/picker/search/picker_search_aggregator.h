@@ -62,10 +62,6 @@ class ASH_EXPORT PickerSearchAggregator {
 
   void PublishBurnInResults();
 
-  void HandleSearchSourceResultsImpl(PickerSearchSource source,
-                                     std::vector<PickerSearchResult> results,
-                                     bool has_more_results);
-
   base::OneShotTimer burn_in_timer_;
 
   PickerViewDelegate::SearchResultsCallback current_callback_;

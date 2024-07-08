@@ -85,8 +85,34 @@ void PickerSearchAggregator::HandleSearchSourceResults(
     bool has_more_results) {
   CHECK(!current_callback_.is_null())
       << "Results were obtained after \"no more results\"";
-  // TODO: b/349891147 - Inline this.
-  HandleSearchSourceResultsImpl(source, std::move(results), has_more_results);
+  const PickerSectionType section_type = SectionTypeFromSearchSource(source);
+  // Suggested results have multiple sources, which we store in any order and
+  // explicitly do not append if post-burn-in.
+  // TODO: b/351224614 - This should include all the section types that do not
+  // have a title.
+  if (section_type == PickerSectionType::kSuggestions) {
+    // Suggested results cannot have more results, since it's not a proper
+    // category.
+    CHECK(!has_more_results);
+    base::ranges::move(
+        results,
+        std::back_inserter(results_[PickerSectionType::kSuggestions].results));
+    return;
+  }
+
+  if (IsPostBurnIn()) {
+    // Publish post-burn-in results and skip assignment.
+    if (!results.empty()) {
+      std::vector<PickerSearchResultsSection> sections;
+      sections.emplace_back(section_type, std::move(results), has_more_results);
+      current_callback_.Run(std::move(sections));
+    }
+    return;
+  }
+
+  const auto& [unused, inserted] = results_.emplace(
+      section_type, PickerSearchResults(std::move(results), has_more_results));
+  CHECK(inserted);
 }
 
 void PickerSearchAggregator::HandleNoMoreResults(bool interrupted) {
@@ -173,40 +199,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
   if (!sections.empty()) {
     current_callback_.Run(std::move(sections));
   }
-}
-
-void PickerSearchAggregator::HandleSearchSourceResultsImpl(
-    PickerSearchSource source,
-    std::vector<PickerSearchResult> results,
-    bool has_more_results) {
-  const PickerSectionType section_type = SectionTypeFromSearchSource(source);
-  // Suggested results have multiple sources, which we store in any order and
-  // explicitly do not append if post-burn-in.
-  // TODO: b/351224614 - This should include all the section types that do not
-  // have a title.
-  if (section_type == PickerSectionType::kSuggestions) {
-    // Suggested results cannot have more results, since it's not a proper
-    // category.
-    CHECK(!has_more_results);
-    base::ranges::move(
-        results,
-        std::back_inserter(results_[PickerSectionType::kSuggestions].results));
-    return;
-  }
-
-  if (IsPostBurnIn()) {
-    // Publish post-burn-in results and skip assignment.
-    if (!results.empty()) {
-      std::vector<PickerSearchResultsSection> sections;
-      sections.emplace_back(section_type, std::move(results), has_more_results);
-      current_callback_.Run(std::move(sections));
-    }
-    return;
-  }
-
-  const auto& [unused, inserted] = results_.emplace(
-      section_type, PickerSearchResults(std::move(results), has_more_results));
-  CHECK(inserted);
 }
 
 base::WeakPtr<PickerSearchAggregator> PickerSearchAggregator::GetWeakPtr() {
