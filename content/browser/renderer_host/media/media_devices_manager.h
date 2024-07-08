@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
@@ -68,24 +67,6 @@ class CONTENT_EXPORT MediaDevicesManager
    public:
     BoolDeviceTypes() { fill(false); }
   };
-
-  // These constants are parameters that control how caching works.
-  // A spurious invalidation is one where a subsequent enumeration has the same
-  // result as before the invalidation. If a device class receives
-  // `kMaxSpuriousInvalidations` consecutive invalidations, the cache for that
-  // device class enters a relaxed mode, where the cache becomes less
-  // aggressive in trying to return the latest enumeration value.
-  // This situation has been observed in practice when issuing an enumeration
-  // causes some monitors to always report a new invalidation, even if the set
-  // of devices does not change. See crbug.com/325590346.
-  // In weak-consistency mode, cache entries have an expiration time
-  // (`kExpireTimeInRelaxedMode`). In this mode, new cached values are assumed
-  // valid until they expire and any invalidations received during this period
-  // are ignored. Effectively, this works as a rate limiter in relaxed
-  // mode and protects against a situation where a buggy device or device
-  // monitor continuously produces repeated invalidations.
-  static constexpr int kMaxSpuriousInvalidations = 5;
-  static constexpr base::TimeDelta kExpireTimeInRelaxedMode = base::Seconds(2);
 
   using EnumerationCallback =
       base::OnceCallback<void(const MediaDeviceEnumeration&)>;
@@ -349,8 +330,8 @@ class CONTENT_EXPORT MediaDevicesManager
                          const blink::WebMediaDeviceInfoArray& snapshot);
   void UpdateSnapshot(MediaDeviceType type,
                       const blink::WebMediaDeviceInfoArray& new_snapshot,
-                      bool use_group_id = false);
-  void ProcessClientRequests();
+                      bool ignore_group_id = true);
+  void ProcessRequests();
   bool IsEnumerationRequestReady(const EnumerationRequest& request_info);
 
   // Helpers to handle device-change notification.
@@ -410,8 +391,7 @@ class CONTENT_EXPORT MediaDevicesManager
   CacheInfos cache_infos_;
 
   BoolDeviceTypes has_seen_result_;
-  std::vector<EnumerationRequest> client_requests_;
-  BoolDeviceTypes client_requests_can_be_resolved_;
+  std::vector<EnumerationRequest> requests_;
   MediaDeviceEnumeration current_snapshot_;
   bool monitoring_started_;
 
