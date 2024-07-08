@@ -37,15 +37,6 @@ void ResetTransformForLayer(cc::slim::Layer* layer) {
   layer->SetTransform(transform);
 }
 
-void PutScreenshotBack(NavigationControllerImpl* controller,
-                       std::unique_ptr<NavigationEntryScreenshot> screenshot) {
-  if (auto* entry =
-          controller->GetEntryWithUniqueID(screenshot->navigation_entry_id())) {
-    auto* cache = controller->GetNavigationEntryScreenshotCache();
-    cache->SetScreenshot(entry, std::move(screenshot));
-  }
-}
-
 SkColor4f GetBackgroundColor(const std::optional<SkColor4f>& background_color) {
   // The default background color if the CSS has not computed one.
   static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
@@ -178,8 +169,10 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
     if (navigation_state_ != NavigationState::kCommitted) {
       CHECK(screenshot_);
-      PutScreenshotBack(animation_manager_->navigation_controller(),
-                        std::move(screenshot_));
+      animation_manager_->navigation_controller()
+          ->GetNavigationEntryScreenshotCache()
+          ->SetScreenshot(nullptr, std::move(screenshot_),
+                          is_copied_from_embedder_);
     } else {
       // If the navigation has committed then the destination entry is active.
       // We don't persist the screenshot for the active entry.
@@ -358,8 +351,8 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // the same if the old page was early-swapped out, which can happen in
         // navigations from a crashed page.
         //
-        // TODO(https://crbug.com/346308473): Clone the old surface layer for
-        // same-RFH navigations as well.
+        // This is done sooner (in ReadyToCommit) for same-RFH navigations
+        // since the SurfaceID changes before DidCommit for these navigations.
         if (old_host != new_host) {
           CloneOldSurfaceLayer(old_host->GetView());
         }
@@ -661,6 +654,25 @@ void BackForwardTransitionAnimator::ReadyToCommitNavigation(
 
   SubscribeToNewRenderWidgetHost(
       static_cast<NavigationRequest*>(navigation_handle));
+
+  // Clone the Surface of the outgoing page for same-RFH navigations. We need to
+  // this sooner for these navigations since the SurfaceID is updated when
+  // sending the commit message.
+  // For cross-RFH navigations, this is done as a part of processing the
+  // DidCommit ack from the renderer.
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+  auto* old_rfh = RenderFrameHostImpl::FromID(
+      navigation_request->GetPreviousRenderFrameHostId());
+  auto* new_rfh = navigation_request->GetRenderFrameHost();
+
+  // Ignore early swap cases for example crashed pages. They are same-RFH
+  // navigations but the current SurfaceID of this RFH doesn't refer to content
+  // from the old Document.
+  if (navigation_request->early_render_frame_host_swap_type() ==
+          NavigationRequest::EarlyRenderFrameHostSwapType::kNone &&
+      old_rfh == new_rfh) {
+    CloneOldSurfaceLayer(old_rfh->GetView());
+  }
 }
 
 // We only use `DidFinishNavigation()` for navigations that never commit
@@ -1142,7 +1154,8 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
       ->SetTransform(foreground_transform);
 
   if (old_surface_clone_) {
-    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
+    CHECK(navigation_state_ == NavigationState::kCommitted ||
+          navigation_state_ == NavigationState::kStarted);
     CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
     old_surface_clone_->SetTransform(foreground_transform);
   }
