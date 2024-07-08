@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 
 namespace storage {
 
@@ -75,7 +76,8 @@ int64_t DatabaseConnections::GetOpenDatabaseSize(
   auto origin_it = connections_.find(origin_identifier);
   DCHECK(origin_it != connections_.end()) << "Database not opened";
   auto it = origin_it->second.find(database_name);
-  DCHECK(it != origin_it->second.end()) << "Database not opened";
+  CHECK(it != origin_it->second.end(), base::NotFatalUntil::M130)
+      << "Database not opened";
   return it->second.second;
 }
 
@@ -103,7 +105,7 @@ bool DatabaseConnections::RemoveConnectionsHelper(
     const std::u16string& database_name,
     int num_connections) {
   auto origin_iterator = connections_.find(origin_identifier);
-  DCHECK(origin_iterator != connections_.end());
+  CHECK(origin_iterator != connections_.end(), base::NotFatalUntil::M130);
   DBConnections& db_connections = origin_iterator->second;
   int& count = db_connections[database_name].first;
   DCHECK(count >= num_connections);

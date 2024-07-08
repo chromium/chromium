@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
@@ -388,7 +389,8 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
                            f->expected_modification_time.value_or(base::Time()),
                            base::NullCallback());
     } else if (element->is_blob()) {
-      DCHECK(blob_uuid_it != referenced_blob_uuids_.end());
+      CHECK(blob_uuid_it != referenced_blob_uuids_.end(),
+            base::NotFatalUntil::M130);
       const std::string& blob_uuid = *blob_uuid_it++;
       builder_->AppendBlob(blob_uuid, element->get_blob()->offset,
                            element->get_blob()->length, context()->registry());

@@ -31,6 +31,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -566,7 +567,8 @@ class QuotaManagerImpl::StorageKeyGathererTask {
                              base::ConcurrentClosures& concurrent) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto client_map_it = manager_->client_types_.find(type);
-    DCHECK(client_map_it != manager_->client_types_.end());
+    CHECK(client_map_it != manager_->client_types_.end(),
+          base::NotFatalUntil::M130);
 
     for (const auto& client_and_type : client_map_it->second) {
       client_and_type.first->GetStorageKeysForType(
