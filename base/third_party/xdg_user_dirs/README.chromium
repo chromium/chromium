@@ -1,5 +1,7 @@
 Name: xdg-user-dirs
 URL: http://www.freedesktop.org/wiki/Software/xdg-user-dirs
+Revision: 2f28f353ec3cf9288da70bab3ca963f2144808f0
+Date: 2009-02-26
 License: MIT
 License File: LICENSE
 Shipped: yes
