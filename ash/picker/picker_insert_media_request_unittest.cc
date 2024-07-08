@@ -4,22 +4,34 @@
 
 #include "ash/picker/picker_insert_media_request.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/picker/picker_rich_media.h"
 #include "ash/test/ash_test_base.h"
+#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/fake_text_input_client.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -40,7 +52,7 @@ class TestCase {
 
   // The expected image in the input field if the insertion was successful.
   // Can be nullptr.
-  virtual std::optional<GURL>& expected_image_url() = 0;
+  virtual std::optional<GURL> expected_image_url() = 0;
 };
 
 // Both `testing::Values` and `testing::ValuesIn` do not support move-only
@@ -69,7 +81,7 @@ class BasicTestCase : public TestCase {
 
   std::u16string_view expected_text() override { return expected_text_; }
 
-  std::optional<GURL>& expected_image_url() override {
+  std::optional<GURL> expected_image_url() override {
     return expected_image_url_;
   }
 
@@ -79,19 +91,50 @@ class BasicTestCase : public TestCase {
   std::optional<GURL> expected_image_url_;
 };
 
+class LocalPngTestCase : public TestCase {
+ public:
+  LocalPngTestCase() : media_(PickerLocalFileMedia(base::FilePath())) {
+    CHECK(temp_dir_.CreateUniqueTempDir()) << "Could not create temp dir";
+
+    SkBitmap bitmap = gfx::test::CreateBitmap(1);
+    CHECK(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &image_bytes_))
+        << "Encoding bitmap failed";
+
+    base::FilePath path = temp_dir_.GetPath().Append("test_image.png");
+    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    CHECK(file.WriteAndCheck(0, image_bytes_))
+        << "Writing to " << path << " failed";
+
+    CHECK_DEREF(std::get_if<PickerLocalFileMedia>(&media_)).path = path;
+  }
+
+  const PickerRichMedia& media_to_insert() override { return media_; }
+
+  std::u16string_view expected_text() override { return u""; }
+
+  std::optional<GURL> expected_image_url() override {
+    return GURL(base::StrCat(
+        {"data:image/png;base64,", base::Base64Encode(image_bytes_)}));
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+  std::vector<uint8_t> image_bytes_;
+
+  PickerRichMedia media_;
+};
+
 class PickerInsertMediaRequestTest
     : public testing::TestWithParam<TestCaseCallback> {
  protected:
   PickerInsertMediaRequestTest() : test_case_(GetParam().Run()) {}
 
   std::unique_ptr<TestCase>& test_case() { return test_case_; }
-  base::test::SingleThreadTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
   std::unique_ptr<TestCase> test_case_;
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
@@ -112,7 +155,10 @@ INSTANTIATE_TEST_SUITE_P(
         BasicTestCase(
             /*media_to_insert=*/PickerLinkMedia(GURL("http://foo.com")),
             /*expected_text=*/u"http://foo.com/")
-            .ToCallback()));
+            .ToCallback(),
+        base::BindRepeating([]() -> std::unique_ptr<TestCase> {
+          return std::make_unique<LocalPngTestCase>();
+        })));
 
 TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenBlurred) {
   ui::FakeTextInputClient client(
