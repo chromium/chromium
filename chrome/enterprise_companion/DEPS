@@ -8,4 +8,5 @@ include_rules = [
     "+services/network/public",
     "+services/network/test",
     "+services/network/transitional_url_loader_factory_owner.h",
+    "+third_party/crashpad",
 ]

@@ -5,12 +5,16 @@
 import("//build/config/chrome_build.gni")
 
 if (is_chrome_branded) {
+  crash_product_name = "Chrome_Enterprise_Companion"
+  crash_upload_url = "https://clients2.google.com/cr/report"
   enterprise_companion_company_short_name = "Google"
   enterprise_companion_company_short_name_uppercase = "GOOGLE"
   enterprise_companion_product_full_name = "ChromeEnterpriseCompanion"
   mac_enterprise_companion_bundle_identifier =
       "com.google.ChromeEnterpriseCompanion"
 } else {
+  crash_product_name = "Chromium_Enterprise_Companion"
+  crash_upload_url = "https://clients2.google.com/cr/staging_report"
   enterprise_companion_company_short_name = "Chromium"
   enterprise_companion_company_short_name_uppercase = "CHROMIUM"
   enterprise_companion_product_full_name = "ChromiumEnterpriseCompanion"

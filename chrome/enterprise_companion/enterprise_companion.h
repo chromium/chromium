@@ -7,6 +7,13 @@
 
 namespace enterprise_companion {
 
+// Specifies the logging module filter.
+extern const char kLoggingModuleSwitch[];
+// Runs as the embedded Crashpad handler.
+extern const char kCrashHandlerSwitch[];
+// Crash the program for testing purposes.
+extern const char kCrashMeSwitch[];
+
 int EnterpriseCompanionMain(int argc, const char* const* argv);
 
 }  // namespace enterprise_companion

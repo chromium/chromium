@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,6 +26,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/enterprise_companion/crash_client.h"
 #include "chrome/enterprise_companion/dm_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_service.h"
 #include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
@@ -39,9 +41,13 @@
 
 namespace enterprise_companion {
 
+// Command line arguments.
+const char kLoggingModuleSwitch[] = "vmodule";
+const char kCrashHandlerSwitch[] = "crash-handler";
+const char kCrashMeSwitch[] = "crash-me";
+
 namespace {
 
-constexpr char kLoggingModuleSwitch[] = "vmodule";
 constexpr char kLoggingModuleSwitchValue[] =
     "*/chrome/enterprise_companion/*=2";
 constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
@@ -148,11 +154,23 @@ class EnterpriseCompanionApp {
 
 int EnterpriseCompanionMain(int argc, const char* const* argv) {
   base::CommandLine::Init(argc, argv);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   InitLogging();
   InitThreadPool();
   base::AtExitManager exit_manager;
 
   base::SingleThreadTaskExecutor main_task_executor;
+
+  if (command_line->HasSwitch(kCrashHandlerSwitch)) {
+    return CrashReporterMain();
+  }
+  InitializeCrashReporting();
+
+  // Records a backtrace in the log, crashes the program, saves a crash dump,
+  // and reports the crash.
+  CHECK(!command_line->HasSwitch(kCrashMeSwitch))
+      << kCrashMeSwitch << " switch was used.";
+
   ScopedIPCSupportWrapper ipc_support;
 
   std::unique_ptr<ScopedLock> lock = CreateScopedLock();
