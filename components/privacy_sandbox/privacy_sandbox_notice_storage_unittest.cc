@@ -4,6 +4,8 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/histogram_variants_reader.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
@@ -24,15 +26,14 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
   }
 
   PrivacySandboxNoticeData NoticeTestData() {
-    return PrivacySandboxNoticeData{
-        /*schema_version=*/0,
-        /*notice_action_taken=*/NoticeActionTaken::kAck,
-        /*notice_action_taken_time=*/
-        base::Time::FromMillisecondsSinceUnixEpoch(100),
-        /*notice_first_shown=*/base::Time::FromMillisecondsSinceUnixEpoch(200),
-        /*notice_last_shown=*/base::Time::FromMillisecondsSinceUnixEpoch(200),
-        /*notice_shown_duration=*/base::Microseconds(199000),
-    };
+    PrivacySandboxNoticeData data;
+    data.notice_action_taken = NoticeActionTaken::kAck;
+    data.notice_action_taken_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(200);
+    data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(100);
+    data.notice_last_shown = base::Time::FromMillisecondsSinceUnixEpoch(100);
+    data.notice_shown_duration = base::Milliseconds(100);
+    return data;
   }
 
   PrivacySandboxNoticeStorage* notice_storage() {
@@ -44,13 +45,13 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
                       std::string_view notice) {
     notice_storage()->SetSchemaVersion(prefs(), notice,
                                        notice_data.schema_version);
+    notice_storage()->SetNoticeShown(prefs(), notice,
+                                     notice_data.notice_first_shown);
+    notice_storage()->SetNoticeShown(prefs(), notice,
+                                     notice_data.notice_last_shown);
     notice_storage()->SetNoticeActionTaken(
         prefs(), notice, notice_data.notice_action_taken,
         notice_data.notice_action_taken_time);
-    notice_storage()->SetNoticeShown(prefs(), notice,
-                                     notice_data.notice_last_shown);
-    notice_storage()->SetNoticeShownDuration(prefs(), notice,
-                                             notice_data.notice_shown_duration);
   }
 
   // Compares notice related data.
@@ -65,19 +66,142 @@ class PrivacySandboxNoticeStorageTest : public testing::Test {
     EXPECT_EQ(expected.notice_shown_duration, actual.notice_shown_duration);
   }
 
+  std::string GetNoticeActionString(NoticeActionTaken action) {
+    switch (action) {
+      case NoticeActionTaken::kNotSet:
+      case NoticeActionTaken::kUnknownActionPreMigration:
+        return "";
+      case NoticeActionTaken::kAck:
+        return "Ack";
+      case NoticeActionTaken::kClosed:
+        return "Closed";
+      case NoticeActionTaken::kLearnMore:
+        return "LearnMore";
+      case NoticeActionTaken::kOptIn:
+        return "OptIn";
+      case NoticeActionTaken::kOptOut:
+        return "OptOut";
+      case NoticeActionTaken::kSettings:
+        return "Settings";
+      case NoticeActionTaken::kOther:
+        return "Other";
+    }
+  }
+
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
- private:
+ protected:
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };
+
+TEST_F(PrivacySandboxNoticeStorageTest, CheckPSNoticeActionHistograms) {
+  std::optional<base::HistogramVariantsEntryMap> actions;
+  std::vector<std::string> missing_actions;
+  {
+    actions = base::ReadVariantsFromHistogramsXml("PSNoticeAction", "privacy");
+    ASSERT_TRUE(actions.has_value());
+  }
+
+  for (int i = static_cast<int>(NoticeActionTaken::kNotSet);
+       i <= static_cast<int>(NoticeActionTaken::kMaxValue); ++i) {
+    std::string notice_name =
+        GetNoticeActionString(static_cast<NoticeActionTaken>(i));
+    if (!notice_name.empty() && !base::Contains(*actions, notice_name)) {
+      missing_actions.emplace_back(notice_name);
+    }
+  }
+  ASSERT_TRUE(missing_actions.empty())
+      << "Actions:\n"
+      << base::JoinString(missing_actions, ", ")
+      << "\nconfigured in privacy_sandbox_notice_storage.cc but no "
+         "corresponding variants were added to PSNoticeAction variants in "
+         "//tools/metrics/histograms/metadata/privacy/histograms.xml";
+}
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
   const auto actual =
       notice_storage()->ReadNoticeData(prefs(),
                                        /*notice=*/"NoticeTest1_v0");
   EXPECT_FALSE(actual.has_value());
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateNotShown) {
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kPromptNotShown, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateUnknownState) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kUnknownActionPreMigration;
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kUnknownState, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateWaiting) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kNotSet;
+  data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(200);
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kPromptWaiting, 1);
+}
+
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowComplete) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kClosed;
+  data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(200);
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kFlowCompleted, 1);
+}
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptIn) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kOptIn;
+  data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(200);
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kFlowCompletedWithOptIn, 1);
+}
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteOptOut) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kOptOut;
+  data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(200);
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kFlowCompletedWithOptOut, 1);
+}
+TEST_F(PrivacySandboxNoticeStorageTest, StartupStateFlowCompleteAck) {
+  PrivacySandboxNoticeData data;
+  data.notice_action_taken = NoticeActionTaken::kAck;
+  data.notice_first_shown = base::Time::FromMillisecondsSinceUnixEpoch(200);
+  SaveNoticeData(data, /*notice=*/"NoticeTest1_v0");
+  notice_storage()->RecordHistogramsOnStartup(prefs(),
+                                              /*notice=*/"NoticeTest1_v0");
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeStartupState.NoticeTest1_v0",
+      NoticeStartupState::kFlowCompleted, 1);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, NoNoticeDataSet) {
@@ -106,26 +230,50 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetsValuesAndReadsData) {
       notice_storage()->ReadNoticeData(prefs(),
                                        /*notice=*/"NoticeTest1_v0");
   CompareNoticeData(expected, *actual);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
 }
 
 TEST_F(PrivacySandboxNoticeStorageTest, UpdateNoticeShownValue) {
   SaveNoticeData(NoticeTestData(), /*notice=*/"NoticeTest1_v0");
   auto actual = notice_storage()->ReadNoticeData(prefs(),
                                                  /*notice=*/"NoticeTest1_v0");
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(200),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
             actual->notice_first_shown);
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(200),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
             actual->notice_last_shown);
+  EXPECT_EQ(base::Milliseconds(100), actual->notice_shown_duration);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
 
   // Set notice shown value again.
   notice_storage()->SetNoticeShown(
       prefs(), "NoticeTest1_v0",
-      base::Time::FromMillisecondsSinceUnixEpoch(400));
+      base::Time::FromMillisecondsSinceUnixEpoch(150));
   actual = notice_storage()->ReadNoticeData(prefs(),
                                             /*notice=*/"NoticeTest1_v0");
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(200),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
             actual->notice_first_shown);
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(400),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(150),
             actual->notice_last_shown);
 }
 
@@ -142,13 +290,38 @@ TEST_F(PrivacySandboxNoticeStorageTest, SetMultipleNotices) {
   expected_notice2.notice_action_taken = NoticeActionTaken::kSettings;
   expected_notice2.notice_action_taken_time =
       base::Time::FromMillisecondsSinceUnixEpoch(300);
+  expected_notice2.notice_shown_duration = base::Milliseconds(200);
   SaveNoticeData(expected_notice2, /*notice=*/"NoticeTest2_v0");
   const auto actual_notice2 =
       notice_storage()->ReadNoticeData(prefs(),
                                        /*notice=*/"NoticeTest2_v0");
 
   CompareNoticeData(expected_notice1, *actual_notice1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest1_v0",
+      NoticeActionTaken::kAck, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest1_v0_Ack",
+      base::Milliseconds(100), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest1_v0", true, 1);
   CompareNoticeData(expected_notice2, *actual_notice2);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeAction.NoticeTest2_v0",
+      NoticeActionTaken::kSettings, 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.FirstShownToInteractedDuration.NoticeTest2_v0_"
+      "Settings",
+      base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.Notice.LastShownToInteractedDuration.NoticeTest2_v0_"
+      "Settings",
+      base::Milliseconds(200), 1);
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.Notice.NoticeShown.NoticeTest2_v0", true, 1);
 }
 
 }  // namespace

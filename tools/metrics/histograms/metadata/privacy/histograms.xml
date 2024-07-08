@@ -77,6 +77,34 @@ reviewer.
   <variant name="Server" summary="server-side"/>
 </variants>
 
+<variants name="PSNotice">
+  <variant name="TopicsConsentModal"
+      summary="Consent notice with Topics API enabled on Desktop."/>
+  <variant name="TopicsConsentModalClank"
+      summary="Consent notice with Topics API enabled on Clank."/>
+</variants>
+
+<!-- TODO(crbug.com/333408794): Add user action metrics for these. -->
+
+<variants name="PSNoticeAction">
+  <variant name="Ack"
+      summary="Got it or any other ack action on a privacy sandbox notice."/>
+  <variant name="Closed"
+      summary="Closed (x) action on a privacy sandbox notice"/>
+  <variant name="LearnMore"
+      summary="Learn more action on a privacy sandbox notice."/>
+  <variant name="OptIn"
+      summary="Turn it on or any other opt in action on a privacy sandbox
+               notice."/>
+  <variant name="OptOut"
+      summary="No Thanks action or any other opt out action on a privacy
+               sandbox notice."/>
+  <variant name="Other"
+      summary="Any other action on a privacy sandbox notice."/>
+  <variant name="Settings"
+      summary="Settings action on a privacy sandbox notice."/>
+</variants>
+
 <histogram name="Privacy.3PCD.AdsHeuristicAddedToOverrides"
     enum="AdsHeuristicCookieOverride" expires_after="2024-11-03">
   <owner>johnidel@chromium.org</owner>
@@ -1167,21 +1195,75 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
-    enum="Boolean" expires_after="2024-12-08">
+<histogram
+    name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
+    units="ms" expires_after="2025-04-29">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    Records whether or not the variation country is empty for profiles. This can
-    occur if the country itself is empty, or if the variation service is null.
-    This histogram will be used to determine if the variation country being
-    empty leads to an increased spike of Privacy Sandbox notice APIs being
-    disabled.
+    Records the duration from when a notice {PSNotice} was first shown to a
+    profile to when a action {PSNoticeAction} was taken on the notice.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+  <token key="PSNoticeAction" variants="PSNoticeAction"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.Notice.LastShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
+    units="ms" expires_after="2025-04-29">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration from when a notice {PSNotice} was last shown to a
+    profile to when a action {PSNoticeAction} was taken on the notice.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+  <token key="PSNoticeAction" variants="PSNoticeAction"/>
+</histogram>
+
+<histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
+    enum="PrivacySandboxNoticeAction" expires_after="2025-04-29">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <owner>koilos-team@google.com</owner>
+  <summary>
+    Records the action performed on a notice {PSNotice} for a profile.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
+<histogram name="PrivacySandbox.Notice.NoticeShown.{PSNotice}" enum="Boolean"
+    expires_after="2025-04-29">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records if a notice {PSNotice} was shown to a profile.</summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
+<histogram name="PrivacySandbox.Notice.NoticeStartupState.{PSNotice}"
+    enum="PrivacySandboxNoticeStartupState" expires_after="2025-04-29">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <owner>koilos-team@google.com</owner>
+  <summary>
+    Records startup state of a notice {PSNotice} during the profile start up.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
+<histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records whether or not the variation country is empty for profiles. This
+    histogram will be used to determine if the variation country being empty
+    leads to an increased spike of Privacy Sandbox notice APIs being disabled.
   </summary>
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationServiceReady"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2024-09-30">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

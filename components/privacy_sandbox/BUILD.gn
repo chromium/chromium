@@ -254,6 +254,8 @@ source_set("unit_tests") {
     "tracking_protection_survey_service_unittest.cc",
   ]
 
+  data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
+
   deps = [
     ":features",
     ":privacy_sandbox_notice_storage",

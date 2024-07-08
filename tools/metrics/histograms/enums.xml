@@ -29766,6 +29766,36 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Downloaded"/>
 </enum>
 
+<!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
+
+<enum name="PrivacySandboxNoticeAction">
+  <int value="0" label="NotSet"/>
+  <int value="1" label="Ack"/>
+  <int value="2" label="Closed"/>
+  <int value="3" label="LearnMore"/>
+  <int value="4" label="OptIn"/>
+  <int value="5" label="OptOut"/>
+  <int value="6" label="Other"/>
+  <int value="7" label="Settings"/>
+  <int value="8" label="UnknownActionPreMigration"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionTaken) -->
+
+<!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
+
+<enum name="PrivacySandboxNoticeStartupState">
+  <int value="0" label="UnknownState"/>
+  <int value="1" label="PromptNotShown"/>
+  <int value="2" label="FlowCompleted"/>
+  <int value="3" label="FlowCompletedWithOptIn"/>
+  <int value="4" label="FlowCompletedWithOptOut"/>
+  <int value="5" label="PromptWaiting"/>
+  <int value="6" label="PromptOtherAction"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeStartupState) -->
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>
