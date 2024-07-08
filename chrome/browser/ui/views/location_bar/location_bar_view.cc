@@ -1615,10 +1615,10 @@ void LocationBarView::RecordPageInfoMetrics() {
 ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
   bool dark_mode = false;
-    if (location_icon_view_ && location_icon_view_->GetBackground()) {
-      dark_mode = color_utils::IsDark(
-          location_icon_view_->GetBackground()->get_color());
-    }
+  if (location_icon_view_ && location_icon_view_->GetBackground()) {
+    dark_mode =
+        color_utils::IsDark(location_icon_view_->GetBackground()->get_color());
+  }
 
   return omnibox_view_
              ? omnibox_view_->GetIcon(

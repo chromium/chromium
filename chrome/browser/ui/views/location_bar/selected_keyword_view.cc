@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -19,7 +20,13 @@
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 // static
@@ -84,17 +91,26 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
     return;
   }
 
-  // The @gemini starter pack isn't a search engine, so use the spark icon
-  // instead of the search icon. Use the search icon for all other keywords
-  // without a custom image.
+  // Use the search icon for most keywords. Use special icons for '@gemini' and
+  // @history'.
   const TemplateURL* template_url =
       template_url_service_->GetTemplateURLForKeyword(keyword_);
-  bool use_spark_icon =
-      template_url &&
-      template_url->starter_pack_id() == TemplateURLStarterPackData::kAskGoogle;
+
+  auto* vector_icon = &vector_icons::kSearchIcon;
+  if (template_url && template_url->starter_pack_id() ==
+                          TemplateURLStarterPackData::kAskGoogle) {
+    vector_icon = &omnibox::kSparkIcon;
+  } else if (base::FeatureList::IsEnabled(
+                 history_embeddings::kHistoryEmbeddings) &&
+             template_url &&
+             template_url->starter_pack_id() ==
+                 TemplateURLStarterPackData::kHistory) {
+    vector_icon = &omnibox::kSearchSparkIcon;
+  }
+
   IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(
-      use_spark_icon ? omnibox::kSparkIcon : vector_icons::kSearchIcon,
-      GetForegroundColor(), GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
+      *vector_icon, GetForegroundColor(),
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
 }
 
 void SelectedKeywordView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
