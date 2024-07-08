@@ -14,15 +14,14 @@ import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -33,7 +32,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -57,25 +55,12 @@ public class VoiceRecognitionHandler {
      */
     @VisibleForTesting public static final float VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD = 0.9f;
 
-    /** Extra containing the current timestamp (in epoch time) used for tracking intent latency. */
-    @VisibleForTesting
-    static final String EXTRA_INTENT_SENT_TIMESTAMP =
-            "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
-
-    /**
-     * Extra containing an integer that indicates which voice entrypoint the intent was initiated
-     * from.
-     *
-     * <p>See VoiceInteractionEventSource for possible values.
-     */
-    @VisibleForTesting
-    static final String EXTRA_VOICE_ENTRYPOINT = "com.android.chrome.voice.VOICE_ENTRYPOINT";
-
-    private static Boolean sIsRecognitionIntentPresentForTesting;
     private final Delegate mDelegate;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ApplicationStateListener mApplicationStateListener =
+            this::onApplicationStateChange;
     private Long mQueryStartTimeMs;
     private WebContentsObserver mVoiceSearchWebContentsObserver;
-    private final ObserverList<Observer> mObservers = new ObserverList<>();
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<Profile> mProfileSupplier;
     private Boolean mIsVoiceSearchEnabledCached;
@@ -240,6 +225,14 @@ public class VoiceRecognitionHandler {
 
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
+    }
+
+    public void destroy() {
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
+        ApplicationStatus.unregisterApplicationStateListener(mApplicationStateListener);
     }
 
     private void notifyVoiceAvailabilityImpacted() {
@@ -543,24 +536,6 @@ public class VoiceRecognitionHandler {
     }
 
     /**
-     * Returns the URL of the tab associated with this VoiceRecognitionHandler or null if it is not
-     * available.
-     */
-    private @Nullable String getUrl() {
-        LocationBarDataProvider locationBarDataProvider = mDelegate.getLocationBarDataProvider();
-        if (locationBarDataProvider == null) return null;
-
-        Tab currentTab = locationBarDataProvider.getTab();
-        if (currentTab == null || currentTab.isIncognito()) {
-            return null;
-        }
-
-        GURL pageUrl = currentTab.getUrl();
-        if (!UrlUtilities.isHttpOrHttps(pageUrl)) return null;
-        return pageUrl.getSpec();
-    }
-
-    /**
      * Shows a cancelable speech recognition intent, returning a boolean that indicates if it was
      * successfully shown.
      *
@@ -568,8 +543,6 @@ public class VoiceRecognitionHandler {
      * @param intent The speech recognition {@link Intent}.
      * @param source Where the request to launch this {@link Intent} originated, such as NTP or
      *     omnibox.
-     * @param target The intended destination of this {@link Intent}, such as the system voice
-     *     transcription service or Assistant.
      * @return True if showing the {@link Intent} was successful.
      */
     private boolean showSpeechRecognitionIntent(
@@ -601,17 +574,18 @@ public class VoiceRecognitionHandler {
             // In both scenarios, the state of the application will change to being paused before
             // the permission is changed, so we invalidate the cache here.
             if (!mRegisteredActivityStateListener) {
-                ApplicationStatus.registerApplicationStateListener(
-                        newState -> {
-                            if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
-                                mIsVoiceSearchEnabledCached = null;
-                            }
-                        });
+                ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
                 mRegisteredActivityStateListener = true;
             }
         }
 
         return mIsVoiceSearchEnabledCached;
+    }
+
+    private void onApplicationStateChange(@ApplicationState int newState) {
+        if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
+            mIsVoiceSearchEnabledCached = null;
+        }
     }
 
     /** Start tracking query duration by capturing when it started */
@@ -755,16 +729,7 @@ public class VoiceRecognitionHandler {
      */
     @VisibleForTesting
     protected static boolean isRecognitionIntentPresent(boolean useCachedValue) {
-        if (sIsRecognitionIntentPresentForTesting != null) {
-            return sIsRecognitionIntentPresentForTesting;
-        }
         return VoiceRecognitionUtil.isRecognitionIntentPresent(useCachedValue);
-    }
-
-    /*package*/ static void setIsRecognitionIntentPresentForTesting(
-            Boolean isRecognitionIntentPresent) {
-        sIsRecognitionIntentPresentForTesting = isRecognitionIntentPresent;
-        ResettersForTesting.register(() -> sIsRecognitionIntentPresentForTesting = null);
     }
 
     /** Sets the start time for testing. */

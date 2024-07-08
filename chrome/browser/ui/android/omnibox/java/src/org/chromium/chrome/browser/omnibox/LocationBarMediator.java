@@ -283,6 +283,7 @@ class LocationBarMediator
         mUrlCoordinator = null;
         mPrivacyPreferencesManager = null;
         mVoiceRecognitionHandler.removeObserver(this);
+        mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
         mDeferredNativeRunnables.clear();
