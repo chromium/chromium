@@ -236,11 +236,11 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // the user-visible pref value has changed. Triggers the change notification
   // if the effective value of the preference has changed, or if the store
   // controlling the pref has changed.
-  void NotifyPrefChanged(const std::string& path, PrefStoreType new_store);
+  void NotifyPrefChanged(std::string_view, PrefStoreType new_store);
 
   // Called from the PrefStoreKeeper implementation when a pref value for |key|
   // changed in the pref store for |type|.
-  void OnPrefValueChanged(PrefStoreType type, const std::string& key);
+  void OnPrefValueChanged(PrefStoreType type, std::string_view key);
 
   // Handle the event that the store for |type| has completed initialization.
   void OnInitializationCompleted(PrefStoreType type, bool succeeded);

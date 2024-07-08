@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_
 #define COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_
 
+#include <functional>
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -60,7 +62,7 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   bool IsEmpty() const;
 
   // Check whether |pref| is in the set of preferences being observed.
-  bool IsObserved(const std::string& pref);
+  bool IsObserved(std::string_view pref);
 
   // Return the PrefService for this registrar.
   PrefService* prefs();
@@ -69,12 +71,12 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
  private:
   // PrefObserver:
   void OnPreferenceChanged(PrefService* service,
-                           const std::string& pref_name) override;
+                           std::string_view pref_name) override;
 
   static void InvokeUnnamedCallback(const base::RepeatingClosure& callback,
                                     const std::string& pref_name);
 
-  using ObserverMap = std::map<std::string, NamedChangeCallback>;
+  using ObserverMap = std::map<std::string, NamedChangeCallback, std::less<>>;
 
   ObserverMap observers_;
   raw_ptr<PrefService, AcrossTasksDanglingUntriaged> service_;

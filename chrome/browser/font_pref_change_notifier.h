@@ -74,7 +74,7 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
 
   // PrefObserver implementation.
   void OnPreferenceChanged(PrefService* service,
-                           const std::string& pref_name) override;
+                           std::string_view pref_name) override;
 
   raw_ptr<PrefService> pref_service_;  // Non-owning.
 

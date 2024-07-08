@@ -63,16 +63,16 @@ PrefNotifierImpl::~PrefNotifierImpl() {
   init_observers_.clear();
 }
 
-void PrefNotifierImpl::AddPrefObserver(const std::string& path,
+void PrefNotifierImpl::AddPrefObserver(std::string_view path,
                                        PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Add the pref observer. ObserverList hits a DCHECK if it already is
   // in the list.
-  pref_observers_[path].AddObserver(obs);
+  pref_observers_[std::string(path)].AddObserver(obs);
 }
 
-void PrefNotifierImpl::RemovePrefObserver(const std::string& path,
+void PrefNotifierImpl::RemovePrefObserver(std::string_view path,
                                           PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -99,7 +99,7 @@ void PrefNotifierImpl::AddInitObserver(base::OnceCallback<void(bool)> obs) {
   init_observers_.push_back(std::move(obs));
 }
 
-void PrefNotifierImpl::OnPreferenceChanged(const std::string& path) {
+void PrefNotifierImpl::OnPreferenceChanged(std::string_view path) {
   FireObservers(path);
 }
 
@@ -116,7 +116,7 @@ void PrefNotifierImpl::OnInitializationCompleted(bool succeeded) {
     std::move(observer).Run(succeeded);
 }
 
-void PrefNotifierImpl::FireObservers(const std::string& path) {
+void PrefNotifierImpl::FireObservers(std::string_view path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Only send notifications for registered preferences.

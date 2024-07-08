@@ -23,7 +23,7 @@ namespace {
 // Allows to capture pref notifications through gmock.
 class MockPrefNotifier : public PrefNotifier {
  public:
-  MOCK_METHOD(void, OnPreferenceChanged, (const std::string&), (override));
+  MOCK_METHOD(void, OnPreferenceChanged, (std::string_view), (override));
   MOCK_METHOD(void, OnInitializationCompleted, (bool), (override));
 };
 

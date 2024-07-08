@@ -111,9 +111,9 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
 
   void MoveToSequence(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // PrefObserver
+  // PrefObserver:
   void OnPreferenceChanged(PrefService* service,
-                           const std::string& pref_name) override;
+                           std::string_view pref_name) override;
 
   void VerifyValuePrefName() const {
     DCHECK(!pref_name_.empty());

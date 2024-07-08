@@ -60,10 +60,10 @@ void PrefMemberBase::MoveToSequence(
 }
 
 void PrefMemberBase::OnPreferenceChanged(PrefService* service,
-                                         const std::string& pref_name) {
+                                         std::string_view pref_name) {
   VerifyValuePrefName();
   UpdateValueFromPref((!setting_value_ && !observer_.is_null())
-                          ? base::BindOnce(observer_, pref_name)
+                          ? base::BindOnce(observer_, std::string(pref_name))
                           : base::OnceClosure());
 }
 

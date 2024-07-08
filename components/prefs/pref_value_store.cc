@@ -40,9 +40,7 @@ void PrefValueStore::PrefStoreKeeper::Initialize(
 }
 
 void PrefValueStore::PrefStoreKeeper::OnPrefValueChanged(std::string_view key) {
-  // TODO: crbug.com/349741884 - Pass `std::string_view` once the interface is
-  // changed.
-  pref_value_store_->OnPrefValueChanged(type_, std::string(key));
+  pref_value_store_->OnPrefValueChanged(type_, key);
 }
 
 void PrefValueStore::PrefStoreKeeper::OnInitializationCompleted(
@@ -138,7 +136,7 @@ bool PrefValueStore::GetRecommendedValue(const std::string& name,
 }
 
 void PrefValueStore::NotifyPrefChanged(
-    const std::string& path,
+    std::string_view path,
     PrefValueStore::PrefStoreType new_store) {
   DCHECK(new_store != INVALID_STORE);
   // A notification is sent when the pref value in any store changes. If this
@@ -280,7 +278,7 @@ bool PrefValueStore::GetValueFromStoreWithType(
 }
 
 void PrefValueStore::OnPrefValueChanged(PrefValueStore::PrefStoreType type,
-                                        const std::string& key) {
+                                        std::string_view key) {
   NotifyPrefChanged(key, type);
 }
 
