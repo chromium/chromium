@@ -488,6 +488,7 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     /**
      * This tests ensure that onClickListeners are attached to the accept/decline buttons when the
      * HistorySyncCoordinator is created without a view and the MinorModeHelper resolves before a
