@@ -50,7 +50,8 @@ ObservationBuffer::ObservationBuffer(const ObservationBuffer& other)
 
 ObservationBuffer::~ObservationBuffer() = default;
 
-void ObservationBuffer::AddObservation(const Observation& observation) {
+std::optional<Observation> ObservationBuffer::AddObservation(
+    const Observation& observation) {
   DCHECK_LE(observations_.size(), params_->observation_buffer_size());
 
   // Observations must be in the non-decreasing order of the timestamps.
@@ -61,12 +62,16 @@ void ObservationBuffer::AddObservation(const Observation& observation) {
          (observation.signal_strength() >= 0 &&
           observation.signal_strength() <= 4));
 
+  std::optional<Observation> evicted_observation;
   // Evict the oldest element if the buffer is already full.
-  if (observations_.size() == params_->observation_buffer_size())
+  if (observations_.size() == params_->observation_buffer_size()) {
+    evicted_observation = observations_.front();
     observations_.pop_front();
+  }
 
   observations_.push_back(observation);
   DCHECK_LE(observations_.size(), params_->observation_buffer_size());
+  return evicted_observation;
 }
 
 std::optional<int32_t> ObservationBuffer::GetPercentile(

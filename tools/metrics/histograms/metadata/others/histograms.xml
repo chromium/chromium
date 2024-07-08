@@ -6103,6 +6103,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NQE.RTT.ObservationBufferLifeTime.{Category}" units="ms"
+    expires_after="2025-02-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    NQE's estimated RTT comes from weighted medium value in an
+    ObservationBuffer. This is a metrics for {Category}. This metrics tells the
+    duration on how long an observation is kept in the ObservationBuffer so that
+    we can understand how fast the new status will be reflected. Recorded when
+    an observation is added to the buffer and an old observation gets evicted.
+  </summary>
+  <token key="Category">
+    <variant name="All"
+        summary="All ObservationBuffer (&quot;All&quot; represents sum of all
+                 categories)"/>
+    <variant name="EndToEnd"
+        summary="EndToEnd ObservationBuffer (lifetime of the end to end
+                 category)"/>
+    <variant name="HTTP"
+        summary="HTTP ObservationBuffer (lifetime of the HTTP category)"/>
+    <variant name="Transport"
+        summary="Transport ObservationBuffer (lifetime of the transport
+                 category)"/>
+  </token>
+</histogram>
+
 <histogram name="NQE.RTT.ObservationSource" enum="NQEObservationSource"
     expires_after="2024-10-01">
   <owner>yyanagisawa@chromium.org</owner>
