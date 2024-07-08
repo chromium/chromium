@@ -8121,11 +8121,6 @@
     "expiry_milestone" : 110
   },
   {
-    "name": "simplified-bookmark-save-flow",
-    "owners": [ "mdjones@google.com", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "simplified-tab-drag-ui",
     "owners": [ "max@igalia.com", "nickdiego@igalia.com", "thomasanderson@chromium.org"],
     "expiry_milestone": 138
