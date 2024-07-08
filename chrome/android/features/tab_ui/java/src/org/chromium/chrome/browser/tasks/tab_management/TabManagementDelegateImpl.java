@@ -11,7 +11,6 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -38,14 +37,12 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.List;
 import java.util.function.DoubleConsumer;
 
 /** Impl class that will resolve components for tab management. */
@@ -178,24 +175,5 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 () -> hubManagerSupplier.get().getPaneManager(),
                 tabGroupUiActionHandlerSupplier,
                 modalDialogManagerSupplier);
-    }
-
-    @Override
-    public ColorPicker createColorPickerCoordinator(
-            @NonNull Context context,
-            @NonNull List<Integer> colors,
-            @NonNull @LayoutRes int colorPickerLayout,
-            @NonNull @ColorPickerType int colorPickerType,
-            @NonNull boolean isIncognito,
-            @NonNull @ColorPickerLayoutType int layoutType,
-            @Nullable Runnable onColorItemClicked) {
-        return new ColorPickerCoordinator(
-                context,
-                colors,
-                colorPickerLayout,
-                colorPickerType,
-                isIncognito,
-                layoutType,
-                onColorItemClicked);
     }
 }

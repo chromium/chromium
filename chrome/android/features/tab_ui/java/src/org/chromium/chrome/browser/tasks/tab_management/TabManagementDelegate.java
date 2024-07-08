@@ -10,7 +10,6 @@ import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,13 +31,11 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.List;
 import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
@@ -141,24 +138,4 @@ public interface TabManagementDelegate {
             @NonNull OneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
-
-    /**
-     * Create a {@link ColorPicker} when creating a custom color picker component.
-     *
-     * @param context The current Android's context.
-     * @param colors The list of colors used for this color picker component.
-     * @param colorPickerLayout The layout resource to be inflated.
-     * @param colorPickerType The {@link ColorPickerType} that this color picker use.
-     * @param isIncognito Whether the current tab model is in incognito mode.
-     * @param layoutType The {@ColorPickerLayoutType} that the component will be arranged as.
-     * @param onColorItemClicked The runnable for performing an action on each color click event.
-     */
-    ColorPicker createColorPickerCoordinator(
-            @NonNull Context context,
-            @NonNull List<Integer> colors,
-            @NonNull @LayoutRes int colorPickerLayout,
-            @NonNull @ColorPickerType int colorPickerType,
-            @NonNull boolean isIncognito,
-            @NonNull @ColorPickerLayoutType int layoutType,
-            @Nullable Runnable onColorItemClicked);
 }
