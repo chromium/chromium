@@ -29,7 +29,7 @@ namespace {
 
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-constexpr int kBubbleOverlapOverPicker = 8;
+constexpr int kBubbleOverlapOverPicker = 4;
 constexpr int kPickerBubbleCornerRadius = 12;
 // TODO(b/322899031): Translate these strings.
 constexpr std::u16string_view kLinkLabelText = u"Link";

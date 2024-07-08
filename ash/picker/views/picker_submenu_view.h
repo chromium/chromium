@@ -49,7 +49,7 @@ class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
   bool ContainsItem(views::View* item) override;
 
  private:
-  gfx::Rect GetDesiredBounds(const gfx::Rect& anchor_rect);
+  gfx::Rect GetDesiredBounds(gfx::Rect anchor_rect);
 
   // Section which contains the submenu items.
   raw_ptr<PickerSectionView> section_view_;

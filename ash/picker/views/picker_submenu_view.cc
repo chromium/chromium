@@ -27,6 +27,7 @@ namespace {
 
 constexpr int kSubmenuWidth = 256;
 constexpr auto kInsets = gfx::Insets::VH(8, 0);
+constexpr int kSubmenuHorizontalOverlap = 4;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
@@ -110,7 +111,11 @@ bool PickerSubmenuView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-gfx::Rect PickerSubmenuView::GetDesiredBounds(const gfx::Rect& anchor_rect) {
+gfx::Rect PickerSubmenuView::GetDesiredBounds(gfx::Rect anchor_rect) {
+  // Inset the anchor rect so that the submenu overlaps slightly with the
+  // anchor.
+  anchor_rect.Inset(gfx::Insets::VH(0, kSubmenuHorizontalOverlap));
+
   auto* bubble_frame_view = static_cast<views::BubbleFrameView*>(
       GetWidget()->non_client_view()->frame_view());
   gfx::Rect bounds = bubble_frame_view->GetUpdatedWindowBounds(
