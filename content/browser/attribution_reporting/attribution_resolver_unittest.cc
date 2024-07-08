@@ -2091,6 +2091,35 @@ TEST_F(AttributionResolverTest, TriggerPriority_AttributionRateLimitAdjusted) {
               ElementsAre(TriggerDebugKeyIs(1u), TriggerDebugKeyIs(2u)));
 }
 
+TEST_F(AttributionResolverTest,
+       TriggerPriority_ReplacementSkipAttributionRateLimitCheck) {
+  delegate()->set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.max_attributions = 1;
+    return r;
+  }());
+
+  storage()->StoreSource(SourceBuilder()
+                             .SetTriggerSpecs(TriggerSpecs(
+                                 SourceType::kNavigation,
+                                 attribution_reporting::EventReportWindows(),
+                                 MaxEventLevelReports(1)))
+                             .Build());
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetPriority(0).Build()));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
+            MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder().SetPriority(1).Build()));
+
+  storage()->StoreSource(SourceBuilder().Build());
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveAttributions,
+            MaybeCreateAndStoreEventLevelReport(TriggerBuilder().Build()));
+}
+
 TEST_F(AttributionResolverTest, DedupKey_Dedups) {
   storage()->StoreSource(
       SourceBuilder()

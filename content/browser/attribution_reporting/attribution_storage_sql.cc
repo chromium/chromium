@@ -1341,10 +1341,9 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   std::optional<uint64_t> dedup_key;
   if (!event_level_status.has_value()) {
     if (EventLevelResult create_event_level_status =
-            MaybeCreateEventLevelReport(
-                attribution_info, source_to_attribute->source, trigger,
-                new_event_level_report, dedup_key,
-                limits.rate_limits_max_attributions);
+            MaybeCreateEventLevelReport(attribution_info,
+                                        source_to_attribute->source, trigger,
+                                        new_event_level_report, dedup_key);
         create_event_level_status != EventLevelResult::kSuccess) {
       event_level_status = create_event_level_status;
     }
@@ -1398,7 +1397,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         *new_event_level_report, dedup_key,
         source_to_attribute->num_attributions, replaced_event_level_report,
         dropped_event_level_report,
-        limits.max_event_level_reports_per_destination);
+        limits.max_event_level_reports_per_destination,
+        limits.rate_limits_max_attributions);
   }
 
   std::optional<AggregatableResult> store_aggregatable_status;
@@ -1547,8 +1547,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const StoredSource& source,
     const AttributionTrigger& trigger,
     std::optional<AttributionReport>& report,
-    std::optional<uint64_t>& dedup_key,
-    std::optional<int64_t>& rate_limits_max_attributions) {
+    std::optional<uint64_t>& dedup_key) {
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(source.active_state(),
               StoredSource::ActiveState::kReachedEventLevelAttributionLimit);
@@ -1594,19 +1593,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kReportWindowPassed;
   }
 
-  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      &db_, attribution_info, source,
-      RateLimitTable::Scope::kEventLevelAttribution)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
-      rate_limits_max_attributions =
-          delegate_->GetRateLimits().max_attributions;
-      return EventLevelResult::kExcessiveAttributions;
-    case RateLimitResult::kError:
-      return EventLevelResult::kInternalError;
-  }
-
   const base::Time report_time = delegate_->GetEventLevelReportTime(
       trigger_spec.event_report_windows(), source.source_time(),
       attribution_info.time);
@@ -1629,7 +1615,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     int num_attributions,
     std::optional<AttributionReport>& replaced_report,
     std::optional<AttributionReport>& dropped_report,
-    std::optional<int>& max_event_level_reports_per_destination) {
+    std::optional<int>& max_event_level_reports_per_destination,
+    std::optional<int64_t>& rate_limits_max_attributions) {
   auto* event_level_data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(event_level_data);
@@ -1651,34 +1638,45 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
                                                 event_level_data->priority,
                                                 replaced_report);
 
+  const auto commit_and_return = [&](EventLevelResult result) {
+    return transaction.Commit() ? result : EventLevelResult::kInternalError;
+  };
+
   switch (maybe_replace_lower_priority_report_result) {
     case ReplaceReportResult::kError:
       return EventLevelResult::kInternalError;
     case ReplaceReportResult::kDropNewReport:
     case ReplaceReportResult::kDropNewReportSourceDeactivated:
-      if (!transaction.Commit()) {
-        return EventLevelResult::kInternalError;
-      }
-
       dropped_report = std::move(report);
 
-      return maybe_replace_lower_priority_report_result ==
-                     ReplaceReportResult::kDropNewReport
-                 ? EventLevelResult::kPriorityTooLow
-                 : EventLevelResult::kExcessiveReports;
+      return commit_and_return(maybe_replace_lower_priority_report_result ==
+                                       ReplaceReportResult::kDropNewReport
+                                   ? EventLevelResult::kPriorityTooLow
+                                   : EventLevelResult::kExcessiveReports);
     case ReplaceReportResult::kAddNewReport: {
+      switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
+          &db_, report.attribution_info(), source,
+          RateLimitTable::Scope::kEventLevelAttribution)) {
+        case RateLimitResult::kAllowed:
+          break;
+        case RateLimitResult::kNotAllowed:
+          rate_limits_max_attributions =
+              delegate_->GetRateLimits().max_attributions;
+          return commit_and_return(EventLevelResult::kExcessiveAttributions);
+        case RateLimitResult::kError:
+          return EventLevelResult::kInternalError;
+      }
+
       switch (CapacityForStoringReport(report.attribution_info().context_origin,
                                        AttributionReport::Type::kEventLevel)) {
         case ConversionCapacityStatus::kHasCapacity:
           break;
         case ConversionCapacityStatus::kNoCapacity:
-          if (!transaction.Commit()) {
-            return EventLevelResult::kInternalError;
-          }
           max_event_level_reports_per_destination =
               delegate_->GetMaxReportsPerDestination(
                   AttributionReport::Type::kEventLevel);
-          return EventLevelResult::kNoCapacityForConversionDestination;
+          return commit_and_return(
+              EventLevelResult::kNoCapacityForConversionDestination);
         case ConversionCapacityStatus::kError:
           return EventLevelResult::kInternalError;
       }
@@ -1723,18 +1721,12 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     return EventLevelResult::kInternalError;
   }
 
-  if (!transaction.Commit()) {
-    return EventLevelResult::kInternalError;
-  }
-
-  if (!create_report) {
-    return EventLevelResult::kNeverAttributedSource;
-  }
-
-  return maybe_replace_lower_priority_report_result ==
-                 ReplaceReportResult::kReplaceOldReport
-             ? EventLevelResult::kSuccessDroppedLowerPriority
-             : EventLevelResult::kSuccess;
+  return commit_and_return(
+      create_report ? (maybe_replace_lower_priority_report_result ==
+                               ReplaceReportResult::kReplaceOldReport
+                           ? EventLevelResult::kSuccessDroppedLowerPriority
+                           : EventLevelResult::kSuccess)
+                    : EventLevelResult::kNeverAttributedSource);
 }
 
 // Helper to deserialize report rows. See `GetReport()` for the expected

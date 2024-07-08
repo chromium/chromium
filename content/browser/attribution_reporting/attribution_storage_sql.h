@@ -300,8 +300,7 @@ class CONTENT_EXPORT AttributionStorageSql {
       const StoredSource&,
       const AttributionTrigger& trigger,
       std::optional<AttributionReport>& report,
-      std::optional<uint64_t>& dedup_key,
-      std::optional<int64_t>& rate_limits_max_attributions)
+      std::optional<uint64_t>& dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   AttributionTrigger::EventLevelResult MaybeStoreEventLevelReport(
@@ -310,7 +309,8 @@ class CONTENT_EXPORT AttributionStorageSql {
       int num_attributions,
       std::optional<AttributionReport>& replaced_report,
       std::optional<AttributionReport>& dropped_report,
-      std::optional<int>& max_event_level_reports_per_destination)
+      std::optional<int>& max_event_level_reports_per_destination,
+      std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
