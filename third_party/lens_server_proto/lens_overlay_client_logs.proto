@@ -27,4 +27,7 @@ message LensOverlayClientLogs {
 
   // The Lens Overlay entry point used to access lens.
   optional LensOverlayEntryPoint lens_overlay_entry_point = 2;
+
+  // A unique identifier for associating events logged by lens asynchronously.
+  optional uint64 paella_id = 3;
 }
