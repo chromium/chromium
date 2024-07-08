@@ -846,4 +846,103 @@ TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
   EXPECT_TRUE(exchange_data->IsFromPrivileged());
 }
 
+TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
+  const char kGoogleUrl[] = "https://google.com/";
+
+  // Declare an empty but NON-NULL string
+  std::u16string empty_string;
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.text = empty_string;
+
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_TRUE(exchange_data);
+  EXPECT_EQ(exchange_data->GetString(), empty_string);
+}
+
+TEST_F(WebContentsViewAuraTest,
+       EmptyTextWithUrlInDropDataIsEmptyInOSExchangeDataGetString) {
+  const char kGoogleUrl[] = "https://google.com/";
+
+  // Declare an empty but NON-NULL string
+  std::u16string empty_string;
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.text = empty_string;
+  drop_data.url = GURL(kGoogleUrl);
+
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_TRUE(exchange_data);
+  EXPECT_EQ(exchange_data->GetString(), empty_string);
+}
+
+TEST_F(WebContentsViewAuraTest,
+       UrlInDropDataReturnsUrlInOSExchangeDataGetString) {
+  const char kGoogleUrl[] = "https://google.com/";
+
+  std::u16string url_string = u"https://google.com/";
+
+  NavigateAndCommit(GURL(kGoogleUrl));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.url = GURL(kGoogleUrl);
+
+  view->StartDragging(drop_data, url::Origin::Create(GURL(kGoogleUrl)),
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_TRUE(exchange_data);
+  EXPECT_EQ(exchange_data->GetString(), url_string);
+}
+
 }  // namespace content

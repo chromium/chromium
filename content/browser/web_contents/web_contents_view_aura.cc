@@ -269,8 +269,9 @@ void PrepareDragData(const DropData& drop_data,
   // SetURL() will itself do SetString() when a string hasn't been set yet,
   // but we want to prefer drop_data.text.string() over the URL string if it
   // exists.
-  if (drop_data.text && !drop_data.text->empty())
+  if (drop_data.text) {
     provider->SetString(*drop_data.text);
+  }
   if (drop_data.url.is_valid())
     provider->SetURL(drop_data.url, drop_data.url_title);
   if (drop_data.html && !drop_data.html->empty())

@@ -159,6 +159,13 @@ class CONTENT_EXPORT WebContentsViewAura
       RejectDragFromNonPrivilegedWebContentsToPrivilegedWebContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            StartDragFromPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           EmptyTextInDropDataIsNonNullInOSExchangeData);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      EmptyTextWithUrlInDropDataIsEmptyInOSExchangeDataGetString);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           UrlInDropDataReturnsUrlInOSExchangeDataGetString);
 
   class WindowObserver;
 
