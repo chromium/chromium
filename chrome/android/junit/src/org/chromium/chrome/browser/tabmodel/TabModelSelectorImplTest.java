@@ -166,9 +166,7 @@ public class TabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModelSelector
-                .getModel(false)
-                .setIndex(0, TabSelectionType.FROM_USER, /* skipLoadingTab= */ true);
+        mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(normalTab, mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
         assertEquals(
@@ -188,9 +186,7 @@ public class TabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModelSelector
-                .getModel(true)
-                .setIndex(0, TabSelectionType.FROM_USER, /* skipLoadingTab= */ true);
+        mTabModelSelector.getModel(true).setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
         assertEquals(
                 mTabModelSelector.getModel(false),

@@ -200,8 +200,8 @@ public class TabbedModeTabPersistencePolicyTest {
                                 addTabToSaveQueue(
                                         store, incognitoTabModel, incognitoTabModel.addTab(tabId));
                             }
-                            TabModelUtils.setIndex(normalTabModel, 0, false);
-                            TabModelUtils.setIndex(incognitoTabModel, 0, false);
+                            TabModelUtils.setIndex(normalTabModel, 0);
+                            TabModelUtils.setIndex(incognitoTabModel, 0);
                         });
         callbackSignal.waitForCallback(callCount);
         return orchestrator;

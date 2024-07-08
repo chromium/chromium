@@ -128,8 +128,7 @@ public class TabStripTest {
                                                 .getActivity()
                                                 .getTabModelSelector()
                                                 .getModel(false),
-                                        0,
-                                        false);
+                                        0);
                             }
                         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

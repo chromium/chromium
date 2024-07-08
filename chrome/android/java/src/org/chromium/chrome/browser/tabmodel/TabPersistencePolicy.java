@@ -120,15 +120,8 @@ public interface TabPersistencePolicy {
     default void setTaskRunner(SequencedTaskRunner taskRunner) {}
 
     /**
-     * @return Whether allows to skip loading the first active Tab during Startup when an overview
-     *         page is showing.
-     */
-    default boolean allowSkipLoadingTab() {
-        return false;
-    }
-
-    /**
      * Acquire all {@link Tab} identifiers across all windows.
+     *
      * @param tabIdsCallback callback to pass {@link Tab} identifiers back in.
      */
     void getAllTabIds(Callback<SparseBooleanArray> tabIdsCallback);

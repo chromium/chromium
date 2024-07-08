@@ -81,11 +81,11 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mRegularTabModel = spy(new MockTabModel(mRegularProfile, null));
         mRegularTabModel.addTab(REGULAR_TAB_0_ID);
         mRegularTabModel.addTab(REGULAR_TAB_1_ID);
-        mRegularTabModel.setIndex(REGULAR_TAB_0_INDEX, FROM_USER, false);
+        mRegularTabModel.setIndex(REGULAR_TAB_0_INDEX, FROM_USER);
         mIncognitoTabModel = spy(new MockTabModel(mIncognitoProfile, null));
         mIncognitoTabModel.addTab(INCOGNITO_TAB_0_ID);
         mIncognitoTabModel.addTab(INCOGNITO_TAB_1_ID);
-        mIncognitoTabModel.setIndex(INCOGNITO_TAB_0_INDEX, FROM_USER, false);
+        mIncognitoTabModel.setIndex(INCOGNITO_TAB_0_INDEX, FROM_USER);
 
         Tab regularTab0 = mRegularTabModel.getTabAt(REGULAR_TAB_0_INDEX);
         Tab regularTab1 = mRegularTabModel.getTabAt(REGULAR_TAB_1_INDEX);
@@ -163,7 +163,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
-        mRegularTabModel.setIndex(REGULAR_TAB_0_INDEX, FROM_USER, false);
+        mRegularTabModel.setIndex(REGULAR_TAB_0_INDEX, FROM_USER);
 
         assertEquals(1, mActionTester.getActionCount("MobileTabReturnedToCurrentTab.TabGrid"));
         assertEquals(1, mActionTester.getActionCount("MobileTabReturnedToCurrentTab"));
@@ -181,7 +181,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabOffsetOfSwitch.GridTabSwitcher", -1);
-        mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER, false);
+        mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER);
 
         assertEquals(0, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
         watcher.assertExpected();
@@ -196,7 +196,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tabs.TabOffsetOfSwitch.GridTabSwitcher", -1);
-        mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER, false);
+        mRegularTabModel.setIndex(REGULAR_TAB_1_INDEX, FROM_USER);
 
         assertEquals(1, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
         watcher.assertExpected();
@@ -208,7 +208,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         changePanes();
 
-        mIncognitoTabModel.setIndex(INCOGNITO_TAB_0_INDEX, FROM_USER, false);
+        mIncognitoTabModel.setIndex(INCOGNITO_TAB_0_INDEX, FROM_USER);
 
         assertEquals(1, mActionTester.getActionCount("MobileTabSwitched"));
         assertEquals(1, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
@@ -223,7 +223,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         changePanes();
 
-        mIncognitoTabModel.setIndex(INCOGNITO_TAB_1_INDEX, FROM_USER, false);
+        mIncognitoTabModel.setIndex(INCOGNITO_TAB_1_INDEX, FROM_USER);
 
         assertEquals(0, mActionTester.getActionCount("MobileTabSwitched"));
         assertEquals(0, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));
@@ -235,7 +235,7 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
         mHubVisibilitySupplier.set(true);
         changePanes();
 
-        mIncognitoTabModel.setIndex(INCOGNITO_TAB_1_INDEX, FROM_USER, false);
+        mIncognitoTabModel.setIndex(INCOGNITO_TAB_1_INDEX, FROM_USER);
 
         assertEquals(0, mActionTester.getActionCount("MobileTabSwitched"));
         assertEquals(1, mActionTester.getActionCount("MobileTabSwitched.GridTabSwitcher"));

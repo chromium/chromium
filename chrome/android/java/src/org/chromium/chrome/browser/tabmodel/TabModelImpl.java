@@ -135,8 +135,7 @@ public class TabModelImpl extends TabModelJniBridge {
                 // Reset the index first so the event is raised properly as a index change and not
                 // re-using the current index.
                 mIndex = INVALID_TAB_INDEX;
-                TabModelUtils.setIndex(
-                        TabModelImpl.this, insertIndex, false, TabSelectionType.FROM_UNDO);
+                TabModelUtils.setIndex(TabModelImpl.this, insertIndex, TabSelectionType.FROM_UNDO);
             } else if (wasInvalidIndex && !isActiveModel()) {
                 mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(TabModelImpl.this));
             }
@@ -238,7 +237,7 @@ public class TabModelImpl extends TabModelJniBridge {
         if (hasValidTab() && mIndex == INVALID_TAB_INDEX) {
             // Actually select the first tab if it is the active model, otherwise just set mIndex.
             if (isActiveModel()) {
-                TabModelUtils.setIndex(this, 0, false);
+                TabModelUtils.setIndex(this, 0);
             } else {
                 mIndex = 0;
                 mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
@@ -327,7 +326,7 @@ public class TabModelImpl extends TabModelJniBridge {
             }
 
             // setIndex takes care of making sure the appropriate model is active.
-            if (selectTab) setIndex(newIndex, TabSelectionType.FROM_NEW, false);
+            if (selectTab) setIndex(newIndex, TabSelectionType.FROM_NEW);
         } finally {
             TraceEvent.end("TabModelImpl.addTab");
         }
@@ -684,7 +683,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     // This function is complex and its behavior depends on persisted state, including mIndex.
     @Override
-    public void setIndex(int i, final @TabSelectionType int type, boolean skipLoadingTab) {
+    public void setIndex(int i, final @TabSelectionType int type) {
         try {
             TraceEvent.begin("TabModelImpl.setIndex");
             int lastId = getLastId(type);
@@ -701,7 +700,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
             Tab tab = TabModelUtils.getCurrentTab(this);
 
-            if (!skipLoadingTab || tab == null) mModelDelegate.requestToShowTab(tab, type);
+            mModelDelegate.requestToShowTab(tab, type);
 
             mCurrentTabSupplier.set(tab);
             if (tab != null) {
@@ -815,7 +814,7 @@ public class TabModelImpl extends TabModelJniBridge {
             }
 
             TabModel nextModel = mModelDelegate.getModel(nextIsIncognito);
-            nextModel.setIndex(nextTabIndex, selectionType, false);
+            nextModel.setIndex(nextTabIndex, selectionType);
         } else {
             mIndex = nextTabIndex;
             mCurrentTabSupplier.set(TabModelUtils.getCurrentTab(this));
@@ -928,7 +927,7 @@ public class TabModelImpl extends TabModelJniBridge {
         // tab restore service.
         mModelDelegate.openMostRecentlyClosedEntry(this);
         // If there is only one tab, select it.
-        if (getCount() == 1) setIndex(0, TabSelectionType.FROM_NEW, false);
+        if (getCount() == 1) setIndex(0, TabSelectionType.FROM_NEW);
     }
 
     @Override

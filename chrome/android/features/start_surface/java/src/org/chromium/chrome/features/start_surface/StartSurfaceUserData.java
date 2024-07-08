@@ -126,14 +126,6 @@ public class StartSurfaceUserData implements UserData {
         mUnusedTabRestoredAtStartup = overviewShownAtStartup;
     }
 
-    /**
-     * Gets whether an unused Tab is restored at startup due to an overview page is showing at the
-     * startup.
-     */
-    public boolean getUnusedTabRestoredAtStartup() {
-        return mUnusedTabRestoredAtStartup;
-    }
-
     static boolean hasInstanceForTesting() {
         return sHasInstance;
     }

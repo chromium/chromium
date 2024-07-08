@@ -291,8 +291,7 @@ public class TabTest {
                             () -> {
                                 TabModel model =
                                         sActivityTestRule.getActivity().getCurrentTabModel();
-                                TabModelUtils.setIndex(
-                                        model, /* index= */ 0, /* skipLoadingTab= */ false);
+                                TabModelUtils.setIndex(model, /* index= */ 0);
                             });
                     return tab;
                 },
@@ -315,8 +314,7 @@ public class TabTest {
                             () -> {
                                 TabModel model =
                                         sActivityTestRule.getActivity().getCurrentTabModel();
-                                TabModelUtils.setIndex(
-                                        model, /* index= */ 0, /* skipLoadingTab= */ false);
+                                TabModelUtils.setIndex(model, /* index= */ 0);
                             });
                     assertTrue(tab.isNativePage());
                     return tab;
@@ -376,8 +374,7 @@ public class TabTest {
                             () -> {
                                 TabModel model =
                                         sActivityTestRule.getActivity().getCurrentTabModel();
-                                TabModelUtils.setIndex(
-                                        model, model.indexOf(bgTab), /* skipLoadingTab= */ false);
+                                TabModelUtils.setIndex(model, model.indexOf(bgTab));
                             });
                 };
         ChromeTabUtils.waitForTabPageLoaded(bgTab, secondUrl, loadPage);

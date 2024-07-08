@@ -71,7 +71,7 @@ public class TestTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+    public void setIndex(int i, @TabSelectionType int type) {
         mIndex = i;
     }
 

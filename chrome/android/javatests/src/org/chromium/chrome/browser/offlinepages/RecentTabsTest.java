@@ -144,7 +144,7 @@ public class RecentTabsTest {
                 () -> {
                     tabModel.cancelTabClosure(tab.getId());
                     int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-                    TabModelUtils.setIndex(tabModel, tabIndex, false);
+                    TabModelUtils.setIndex(tabModel, tabIndex);
                 });
         Assert.assertFalse(tab.isHidden());
         Assert.assertFalse(tab.isClosing());

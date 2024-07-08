@@ -511,7 +511,7 @@ public final class ReturnToChromeUtil {
                 }
 
                 // Sets the found NTP as home surface.
-                TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
+                TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp);
                 showHomeSurfaceUiOnNtp(ntpTab, lastActiveTab, homeSurfaceTracker);
             } else {
                 // There isn't any existing NTP, create one.

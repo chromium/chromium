@@ -182,7 +182,7 @@ public class LocationBarModelTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                            .setIndex(0, TabSelectionType.FROM_USER);
                 });
 
         assertEquals(toIncognito, locationBarModel.isIncognito());

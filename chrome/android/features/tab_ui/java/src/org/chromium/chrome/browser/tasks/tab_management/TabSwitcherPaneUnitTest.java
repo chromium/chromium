@@ -639,18 +639,18 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         ShadowLooper.runUiThreadTasks();
 
-        mTabModel.setIndex(0, TabSelectionType.FROM_USER, false);
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER);
         assertEquals(1, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
 
         mTabModel.addTab(TAB_ID + 1);
-        mTabModel.setIndex(1, TabSelectionType.FROM_USER, false);
+        mTabModel.setIndex(1, TabSelectionType.FROM_USER);
         assertEquals(2, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
 
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
         ShadowLooper.runUiThreadTasks();
 
         mTabModel.addTab(TAB_ID + 2);
-        mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
+        mTabModel.setIndex(2, TabSelectionType.FROM_USER);
         assertEquals(2, mActionTester.getActionCount("Commerce.TabGridSwitched.NoPriceDrop"));
     }
 
@@ -854,6 +854,6 @@ public class TabSwitcherPaneUnitTest {
 
     private void createSelectedTab() {
         mTabModel.addTab(TAB_ID);
-        mTabModel.setIndex(0, TabSelectionType.FROM_USER, false);
+        mTabModel.setIndex(0, TabSelectionType.FROM_USER);
     }
 }

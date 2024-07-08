@@ -3369,7 +3369,7 @@ public class StripLayoutHelperTest {
         int expectedActiveTabId = 0;
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
@@ -3394,7 +3394,7 @@ public class StripLayoutHelperTest {
         int expectedActiveTabId = 0;
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper = createStripLayoutHelper(false, false);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
@@ -3433,7 +3433,7 @@ public class StripLayoutHelperTest {
         int expectedActiveTabId = 0;
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedActiveTabId);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 
@@ -3493,7 +3493,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(2);
         tabModel.addTab(3);
         tabModel.addTab(4);
-        tabModel.setIndex(2, TabSelectionType.FROM_NEW, true);
+        tabModel.setIndex(2, TabSelectionType.FROM_NEW);
         mStripLayoutHelper.onTabStateInitialized();
 
         // Verify the placeholders have been replaced.
@@ -3544,7 +3544,7 @@ public class StripLayoutHelperTest {
         int expectedCreatedTabId = 4;
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.addTab(expectedCreatedTabId);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
 

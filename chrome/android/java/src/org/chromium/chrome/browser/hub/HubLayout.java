@@ -165,7 +165,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void selectTabAndHideHubLayout(int tabId) {
-        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
         startHiding();
     }
 

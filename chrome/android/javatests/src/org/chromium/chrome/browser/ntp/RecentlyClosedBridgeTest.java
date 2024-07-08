@@ -190,7 +190,7 @@ public class RecentlyClosedBridgeTest {
         final String[] titles = new String[2];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.setIndex(mTabModel.indexOf(tabC), TabSelectionType.FROM_USER, false);
+                    mTabModel.setIndex(mTabModel.indexOf(tabC), TabSelectionType.FROM_USER);
                     titles[0] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     mTabModel.closeTab(tabB);

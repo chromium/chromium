@@ -79,7 +79,7 @@ public class TabModelUtilsUnitTest {
     @SmallTest
     public void testSelectTabById() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
-        TabModelUtils.selectTabById(mTabModelSelector, TAB_ID, TabSelectionType.FROM_USER, false);
+        TabModelUtils.selectTabById(mTabModelSelector, TAB_ID, TabSelectionType.FROM_USER);
         assertEquals(TAB_ID, mTabModel.getTabAt(mTabModel.index()).getId());
     }
 
@@ -88,7 +88,7 @@ public class TabModelUtilsUnitTest {
     public void testSelectTabByIdIncognito() {
         assertEquals(TabList.INVALID_TAB_INDEX, mIncognitoTabModel.index());
         TabModelUtils.selectTabById(
-                mTabModelSelector, INCOGNITO_TAB_ID, TabSelectionType.FROM_USER, false);
+                mTabModelSelector, INCOGNITO_TAB_ID, TabSelectionType.FROM_USER);
         assertEquals(
                 INCOGNITO_TAB_ID, mIncognitoTabModel.getTabAt(mIncognitoTabModel.index()).getId());
     }
@@ -98,7 +98,7 @@ public class TabModelUtilsUnitTest {
     public void testSelectTabByIdNoOpInvalidTabId() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
         TabModelUtils.selectTabById(
-                mTabModelSelector, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER, false);
+                mTabModelSelector, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
     }
 
@@ -106,8 +106,7 @@ public class TabModelUtilsUnitTest {
     @SmallTest
     public void testSelectTabByIdNoOpNotFound() {
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
-        TabModelUtils.selectTabById(
-                mTabModelSelector, UNUSED_TAB_ID, TabSelectionType.FROM_USER, false);
+        TabModelUtils.selectTabById(mTabModelSelector, UNUSED_TAB_ID, TabSelectionType.FROM_USER);
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
     }
 

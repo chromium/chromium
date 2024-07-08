@@ -1760,7 +1760,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 int tabToBeClobberedIndex = TabModelUtils.getTabIndexByUrl(tabModel, url);
                 Tab tabToBeClobbered = tabModel.getTabAt(tabToBeClobberedIndex);
                 if (tabToBeClobbered != null) {
-                    TabModelUtils.setIndex(tabModel, tabToBeClobberedIndex, false);
+                    TabModelUtils.setIndex(tabModel, tabToBeClobberedIndex);
                     tabToBeClobbered.reload();
                 } else {
                     launchIntent(loadUrlParams, externalAppId, true, intent);
@@ -1781,13 +1781,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     tabIndex = TabModelUtils.getTabIndexById(otherModel, tabIdToBringToFront);
                     if (tabIndex != TabModel.INVALID_TAB_INDEX) {
                         getTabModelSelector().selectModel(otherModel.isIncognito());
-                        TabModelUtils.setIndex(otherModel, tabIndex, false);
+                        TabModelUtils.setIndex(otherModel, tabIndex);
                     } else {
                         Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
                         return;
                     }
                 } else {
-                    TabModelUtils.setIndex(tabModel, tabIndex, false);
+                    TabModelUtils.setIndex(tabModel, tabIndex);
                 }
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:
@@ -1822,7 +1822,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                         IntentUtils.safeGetStringExtra(
                                                 intent,
                                                 TabOpenType.REUSE_TAB_ORIGINAL_URL_STRING))) {
-                            tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER, false);
+                            tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER);
                             tab.loadUrl(loadUrlParams);
                             loaded = true;
                         }

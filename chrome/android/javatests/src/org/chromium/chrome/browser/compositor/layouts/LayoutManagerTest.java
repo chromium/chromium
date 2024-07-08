@@ -186,10 +186,10 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         incognitoTabCount,
                         this);
         if (standardIndexSelected != TabModel.INVALID_TAB_INDEX) {
-            TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected, false);
+            TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected);
         }
         if (incognitoIndexSelected != TabModel.INVALID_TAB_INDEX) {
-            TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected, false);
+            TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
         Assert.assertNotNull(

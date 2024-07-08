@@ -1246,8 +1246,7 @@ public class NewTabPage
      * last active Tab is selected, updates the mHomeSurfaceTracker too.
      */
     private void onTabClicked(int tabId) {
-        TabModelUtils.selectTabById(
-                mTabModelSelector, tabId, TabSelectionType.FROM_USER, /* skipLoadingTab= */ false);
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
 
         mTabModelSelector.getModel(false).closeTab(mTab);
         if (mHomeSurfaceTracker != null) {

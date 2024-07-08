@@ -204,7 +204,7 @@ public class ActivityTabProviderTest {
                     mActivity
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                            .setIndex(0, TabSelectionType.FROM_USER);
                 });
         mActivityTabChangedHelper.waitForCallback(callCount);
 

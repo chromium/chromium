@@ -347,8 +347,7 @@ public class ReturnToChromeUtilUnitTest {
                 mTabCreater,
                 mHomeSurfaceTracker);
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
-        verify(mCurrentTabModel, never())
-                .setIndex(anyInt(), eq(TabSelectionType.FROM_USER), eq(false));
+        verify(mCurrentTabModel, never()).setIndex(anyInt(), eq(TabSelectionType.FROM_USER));
         verify(mNewTabPage, never()).showMagicStack(any());
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(null));
         histogram.assertExpected();
@@ -387,7 +386,7 @@ public class ReturnToChromeUtilUnitTest {
                 mTabCreater,
                 mHomeSurfaceTracker);
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
-        verify(mCurrentTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER), eq(false));
+        verify(mCurrentTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
         verify(mNewTabPage).showMagicStack(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
         histogram.assertExpected();

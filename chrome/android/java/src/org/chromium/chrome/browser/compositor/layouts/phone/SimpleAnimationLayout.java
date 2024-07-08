@@ -87,8 +87,7 @@ public class SimpleAnimationLayout extends Layout {
 
     @Override
     public void doneHiding() {
-        TabModelUtils.selectTabById(
-                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        TabModelUtils.selectTabById(mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER);
         super.doneHiding();
     }
 

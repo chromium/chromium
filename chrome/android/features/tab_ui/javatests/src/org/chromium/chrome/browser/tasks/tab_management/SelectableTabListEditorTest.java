@@ -697,9 +697,7 @@ public class SelectableTabListEditorTest {
         Tab selectedTab = beforeTabOrder.get(4);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModelSelector
-                            .getCurrentModel()
-                            .setIndex(4, TabSelectionType.FROM_USER, false);
+                    mTabModelSelector.getCurrentModel().setIndex(4, TabSelectionType.FROM_USER);
                 });
         assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
 

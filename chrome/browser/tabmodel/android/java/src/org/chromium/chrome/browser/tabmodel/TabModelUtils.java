@@ -154,43 +154,38 @@ public class TabModelUtils {
      * @param selector The {@link TabModelSelector} to act on.
      * @param tabId The tab ID to select.
      * @param type {@link TabSelectionType} how the tab selection was initiated.
-     * @param skipLoadingTab Whether to skip loading the Tab.
      */
     public static void selectTabById(
-            @NonNull TabModelSelector selector,
-            int tabId,
-            @TabSelectionType int tabSelectionType,
-            boolean skipLoadingTab) {
+            @NonNull TabModelSelector selector, int tabId, @TabSelectionType int tabSelectionType) {
         if (tabId == Tab.INVALID_TAB_ID) return;
 
         TabModel model = selector.getModelForTabId(tabId);
         if (model == null) return;
 
-        model.setIndex(getTabIndexById(model, tabId), tabSelectionType, skipLoadingTab);
+        model.setIndex(getTabIndexById(model, tabId), tabSelectionType);
     }
 
     /**
      * A helper method that automatically passes {@link TabSelectionType#FROM_USER} as the selection
      * type to {@link TabModel#setIndex(int, TabSelectionType)}.
+     *
      * @param model The {@link TabModel} to act on.
      * @param index The index of the {@link Tab} to select.
-     * @param skipLoadingTab Whether to skip loading the Tab.
      */
-    public static void setIndex(TabModel model, int index, boolean skipLoadingTab) {
-        setIndex(model, index, skipLoadingTab, TabSelectionType.FROM_USER);
+    public static void setIndex(TabModel model, int index) {
+        setIndex(model, index, TabSelectionType.FROM_USER);
     }
 
     /**
-     * A helper method that allows specifying a {@link TabSelectionType}
-     * type to {@link TabModel#setIndex(int, TabSelectionType)}.
+     * A helper method that allows specifying a {@link TabSelectionType} type to {@link
+     * TabModel#setIndex(int, TabSelectionType)}.
+     *
      * @param model The {@link TabModel} to act on.
      * @param index The index of the {@link Tab} to select.
-     * @param skipLoadingTab Whether to skip loading the Tab.
      * @param type {@link TabSelectionType} how the tab selection was initiated.
      */
-    public static void setIndex(
-            TabModel model, int index, boolean skipLoadingTab, @TabSelectionType int type) {
-        model.setIndex(index, type, skipLoadingTab);
+    public static void setIndex(TabModel model, int index, @TabSelectionType int type) {
+        model.setIndex(index, type);
     }
 
     /**

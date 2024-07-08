@@ -367,7 +367,7 @@ public class TabGroupsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
+                    mTabModel.setIndex(2, TabSelectionType.FROM_USER);
                     mTabModel.closeAllTabs();
                 });
 

@@ -22,6 +22,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -175,7 +176,7 @@ public class TabThemeTest {
     @Feature({"Toolbar-Theme-Color"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testOverlayColorOnFrozenNativePages() throws ExecutionException, TimeoutException {
+    public void testOverlayColorOnNativePages() throws ExecutionException, TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -213,7 +214,7 @@ public class TabThemeTest {
 
         CriteriaHelper.pollUiThread(() -> tab.getNativePage() instanceof FrozenNativePage);
 
-        // Switch back to the now frozen tab.
+        // Switch back to the native tab.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model =
@@ -222,18 +223,18 @@ public class TabThemeTest {
                                     .getTabModelSelectorSupplier()
                                     .get()
                                     .getCurrentModel();
-                    model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, true);
+                    model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER);
                 });
 
         Assert.assertEquals(
-                "The tab should still be frozen!",
+                "The tab shouldn't be frozen!",
                 mActivityTestRule
                         .getActivity()
                         .getActivityTabProvider()
                         .get()
                         .getNativePage()
                         .getClass(),
-                FrozenNativePage.class);
+                NewTabPage.class);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

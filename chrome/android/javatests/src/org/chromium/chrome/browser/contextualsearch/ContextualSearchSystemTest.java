@@ -127,8 +127,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelUtils.setIndex(
-                            sActivityTestRule.getActivity().getCurrentTabModel(), 0, false);
+                    TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(), 0);
                 });
 
         triggerResolve(SEARCH_NODE);

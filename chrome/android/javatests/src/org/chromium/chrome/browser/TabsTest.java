@@ -764,7 +764,7 @@ public class TabsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.setIndex(model.indexOf(oldTab), TabSelectionType.FROM_USER, false);
+                    model.setIndex(model.indexOf(oldTab), TabSelectionType.FROM_USER);
                 });
 
         Assert.assertEquals(

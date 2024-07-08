@@ -193,7 +193,7 @@ public class TabSuspensionTest {
                     mActivity
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER, false);
+                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER);
                 });
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
     }
@@ -361,7 +361,7 @@ public class TabSuspensionTest {
                     mActivity
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER, false);
+                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER);
                 });
 
         assertSuspendedTabHidden(mTab);

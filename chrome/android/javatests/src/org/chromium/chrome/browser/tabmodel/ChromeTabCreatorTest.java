@@ -99,8 +99,7 @@ public class ChromeTabCreatorTest {
                                 () -> {
                                     TabModelUtils.setIndex(
                                             sActivityTestRule.getActivity().getCurrentTabModel(),
-                                            indexOf(bgTab),
-                                            false);
+                                            indexOf(bgTab));
                                 });
                     }
                 });
@@ -241,8 +240,7 @@ public class ChromeTabCreatorTest {
                             () -> {
                                 TabModelUtils.setIndex(
                                         sActivityTestRule.getActivity().getCurrentTabModel(),
-                                        indexOf(bgTab),
-                                        /* skipLoadingTab= */ false);
+                                        indexOf(bgTab));
                             });
                 };
         ChromeTabUtils.waitForTabPageLoaded(bgTab, url, loadPage);

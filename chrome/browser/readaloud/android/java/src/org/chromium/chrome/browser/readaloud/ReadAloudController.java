@@ -1313,8 +1313,7 @@ public class ReadAloudController
             return;
         }
         if (mTabModel.indexOf(mCurrentlyPlayingTab) != TabModel.INVALID_TAB_INDEX) {
-            mTabModel.setIndex(
-                    mTabModel.indexOf(mCurrentlyPlayingTab), TabSelectionType.FROM_USER, false);
+            mTabModel.setIndex(mTabModel.indexOf(mCurrentlyPlayingTab), TabSelectionType.FROM_USER);
         }
     }
 

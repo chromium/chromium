@@ -185,9 +185,8 @@ public interface TabModel extends TabList {
      *
      * @param i The index of the tab to select.
      * @param type The type of selection.
-     * @param skipLoadingTab Whether to skip loading the Tab.
      */
-    void setIndex(int i, final @TabSelectionType int type, boolean skipLoadingTab);
+    void setIndex(int i, final @TabSelectionType int type);
 
     /**
      * @return Whether this tab model is currently selected in the correspond {@link

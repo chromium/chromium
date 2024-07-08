@@ -134,7 +134,7 @@ public class TabModelImplUnitTest {
     }
 
     private void selectTab(final TabModel model, final Tab tab) {
-        model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, false);
+        model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER);
     }
 
     /** Create a {@link TabModel} to use for the test. */

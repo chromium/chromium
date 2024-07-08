@@ -645,7 +645,7 @@ class AutocompleteMediator
         // In the event the user deleted the tab as part during the interaction with the
         // Omnibox, reject the switch to tab action.
         if (tabIndex == TabModel.INVALID_TAB_INDEX) return false;
-        tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
+        tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         return true;
     }
 

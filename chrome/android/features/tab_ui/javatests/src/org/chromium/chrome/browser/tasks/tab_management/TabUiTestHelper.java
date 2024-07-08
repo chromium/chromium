@@ -604,7 +604,7 @@ public class TabUiTestHelper {
                 TestThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 previousTabModel.setIndex(
-                                        previousTabIndex, TabSelectionType.FROM_USER, false));
+                                        previousTabIndex, TabSelectionType.FROM_USER));
             }
 
             checkThumbnailsExist(previousTab);
@@ -613,7 +613,7 @@ public class TabUiTestHelper {
                 TestThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 currentTabModel.setIndex(
-                                        currentTabIndex, TabSelectionType.FROM_USER, false));
+                                        currentTabIndex, TabSelectionType.FROM_USER));
             }
         }
 

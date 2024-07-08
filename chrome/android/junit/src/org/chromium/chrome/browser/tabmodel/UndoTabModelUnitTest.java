@@ -210,7 +210,7 @@ public class UndoTabModelUnitTest {
     }
 
     private void selectTab(final TabModel model, final Tab tab) {
-        model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, false);
+        model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER);
     }
 
     private void closeTab(final TabModel model, final Tab tab, final boolean undoable)

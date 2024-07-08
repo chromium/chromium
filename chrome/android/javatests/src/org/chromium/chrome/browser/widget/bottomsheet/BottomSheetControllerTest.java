@@ -419,7 +419,7 @@ public class BottomSheetControllerTest {
                     mActivity
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                            .setIndex(0, TabSelectionType.FROM_USER);
                 });
 
         // Exit tab switcher.
@@ -533,7 +533,7 @@ public class BottomSheetControllerTest {
                     mActivity
                             .getTabModelSelector()
                             .getCurrentModel()
-                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER, false);
+                            .setIndex(originalTabIndex, TabSelectionType.FROM_USER);
                 });
 
         // Request content be shown again.

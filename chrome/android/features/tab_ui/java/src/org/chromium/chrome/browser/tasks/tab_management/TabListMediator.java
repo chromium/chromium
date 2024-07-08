@@ -418,8 +418,7 @@ class TabListMediator {
                     } else {
                         tabModel.setIndex(
                                 TabModelUtils.getTabIndexById(tabModel, tabId),
-                                TabSelectionType.FROM_USER,
-                                false);
+                                TabSelectionType.FROM_USER);
                     }
                 }
 

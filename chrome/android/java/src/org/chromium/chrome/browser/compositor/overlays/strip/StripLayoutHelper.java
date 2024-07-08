@@ -2171,7 +2171,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (getSelectedTabId() == tab.getId()) {
             int nextIndex = getNearbyExpandedTabIndex();
             if (nextIndex != TabModel.INVALID_TAB_INDEX) {
-                TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+                TabModelUtils.setIndex(mModel, nextIndex);
             }
         }
     }
@@ -2243,16 +2243,17 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // Early return, since placeholder tabs are known to not have tab ids.
         if (newIndex == Tab.INVALID_TAB_ID) return;
 
-        TabModelUtils.setIndex(mModel, newIndex, false);
+        TabModelUtils.setIndex(mModel, newIndex);
     }
 
     /**
      * Called on click. This is called before the onUpOrCancel event.
-     * @param time      The current time of the app in ms.
-     * @param x         The x coordinate of the position of the click.
-     * @param y         The y coordinate of the position of the click.
+     *
+     * @param time The current time of the app in ms.
+     * @param x The x coordinate of the position of the click.
+     * @param y The y coordinate of the position of the click.
      * @param fromMouse Whether the event originates from a mouse.
-     * @param buttons   State of all buttons that were pressed when onDown was invoked.
+     * @param buttons State of all buttons that were pressed when onDown was invoked.
      */
     public void click(long time, float x, float y, boolean fromMouse, int buttons) {
         resetResizeTimeout(false);
@@ -2672,7 +2673,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             if (selectedTab != null && selectedTab.getRootId() == groupTitle.getRootId()) {
                 int nextIndex = getNearbyExpandedTabIndex();
                 if (nextIndex != TabModel.INVALID_TAB_INDEX) {
-                    TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+                    TabModelUtils.setIndex(mModel, nextIndex);
                 } else {
                     mTabCreator.launchNtp();
                 }
@@ -3667,7 +3668,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 3. Select this tab so that it is always in the foreground.
         TabModelUtils.setIndex(
-                mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()), false);
+                mModel, TabModelUtils.getTabIndexById(mModel, mInteractingTab.getId()));
 
         // 4. Set initial state.
         ArrayList<Animator> animationList = updateStripForReorder(startX);
@@ -5101,7 +5102,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     void showTabMenu(StripLayoutTab anchorTab) {
         // 1. Bring the anchor tab to the foreground.
         int tabIndex = TabModelUtils.getTabIndexById(mModel, anchorTab.getId());
-        TabModelUtils.setIndex(mModel, tabIndex, false);
+        TabModelUtils.setIndex(mModel, tabIndex);
 
         // 2. Anchor the popupMenu to the view associated with the tab
         View tabView = TabModelUtils.getCurrentTab(mModel).getView();

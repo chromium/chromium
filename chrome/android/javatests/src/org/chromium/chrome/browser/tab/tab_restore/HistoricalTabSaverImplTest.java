@@ -573,9 +573,7 @@ public class HistoricalTabSaverImplTest {
     private void selectFirstTab() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModelSelector
-                            .getCurrentModel()
-                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                    mTabModelSelector.getCurrentModel().setIndex(0, TabSelectionType.FROM_USER);
                 });
     }
 }

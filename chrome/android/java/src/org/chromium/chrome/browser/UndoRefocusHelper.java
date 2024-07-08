@@ -243,7 +243,7 @@ public class UndoRefocusHelper implements DestroyObserver {
 
         int prevSelectedIndex = TabModelUtils.getTabIndexById(model, mSelectedTabIdWhenTabClosed);
 
-        TabModelUtils.setIndex(model, prevSelectedIndex, false, TabSelectionType.FROM_UNDO);
+        TabModelUtils.setIndex(model, prevSelectedIndex, TabSelectionType.FROM_UNDO);
         resetSelectionsForUndo();
     }
 

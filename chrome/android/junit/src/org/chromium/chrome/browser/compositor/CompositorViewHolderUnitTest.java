@@ -183,7 +183,7 @@ public class CompositorViewHolderUnitTest {
                         (id, incognito) ->
                                 spy(new MockTab(id, incognito ? mIncognitoProfile : mProfile)));
         mTab = mTabModelSelector.addMockTab();
-        mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_NEW, false);
+        mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_NEW);
 
         // Setup for BrowserControlsManager which initiates content/control offset changes
         // for CompositorViewHolder.
