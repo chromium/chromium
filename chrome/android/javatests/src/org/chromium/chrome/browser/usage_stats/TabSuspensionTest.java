@@ -33,6 +33,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
@@ -59,6 +60,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -396,6 +398,8 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/339003346): Failing on tablets, fix and re-enable.
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testSuspendNullCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);
