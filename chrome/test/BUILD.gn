@@ -2917,6 +2917,7 @@ if (!is_android) {
       "../browser/ui/prefs/prefs_tab_helper_browsertest.cc",
       "../browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper_browsertest.cc",
       "../browser/ui/profiles/profile_error_browsertest.cc",
+      "../browser/ui/qrcode_generator/qrcode_generator_bubble_controller_policy_browsertest.cc",
       "../browser/ui/renderer_event_injection_browsertest.cc",
       "../browser/ui/safety_hub/mock_safe_browsing_database_manager.cc",
       "../browser/ui/safety_hub/mock_safe_browsing_database_manager.h",

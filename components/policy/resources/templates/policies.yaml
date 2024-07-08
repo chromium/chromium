@@ -1279,6 +1279,7 @@ policies:
   1278: JavaScriptOptimizerAllowedForSites
   1279: JavaScriptOptimizerBlockedForSites
   1280: PromotionsEnabled
+  1281: QRCodeGeneratorEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

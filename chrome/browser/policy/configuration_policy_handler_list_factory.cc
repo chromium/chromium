@@ -385,6 +385,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrefixedVideoFullscreenApiAvailability,
     prefs::kPrefixedVideoFullscreenApiAvailability,
     base::Value::Type::STRING },
+  { key::kQRCodeGeneratorEnabled,
+    prefs::kQRCodeGeneratorEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

@@ -3172,6 +3172,10 @@ inline constexpr char kUiAutomationProviderEnabled[] =
     "accessibility.ui_automation_provider_enabled";
 #endif
 
+// A boolean pref which determines whether the QR Code generator feature is
+// enabled. Controlled by QRCodeGeneratorEnabled policy.
+inline constexpr char kQRCodeGeneratorEnabled[] = "qr_code_generator_enabled";
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

@@ -1820,6 +1820,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUiAutomationProviderEnabled, false);
 #endif
 
+  registry->RegisterBooleanPref(prefs::kQRCodeGeneratorEnabled, true);
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }
