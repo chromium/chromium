@@ -36,16 +36,10 @@ all_web_component_files = [
 if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
-    "cart.mojom-webui.js",
-    "discount.mojom-webui.js",
     "chrome_cart.mojom-webui.js",
     "feed.mojom-webui.js",
     "file_suggestion.mojom-webui.js",
     "google_calendar.mojom-webui.js",
-    "history_cluster_types.mojom-webui.js",
-    "history_clusters.mojom-webui.js",
-    "history_clusters_v2.mojom-webui.js",
-    "history_clusters_layout_type.mojom-webui.js",
     "history_types.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "photos.mojom-webui.js",
