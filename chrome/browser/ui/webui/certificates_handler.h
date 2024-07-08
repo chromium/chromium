@@ -73,10 +73,8 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void CertificatesRefreshed() override;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Register profile preferences.
@@ -84,6 +82,13 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  enum PendingOperation {
+    EXPORT_PERSONAL_FILE,
+    IMPORT_PERSONAL_FILE,
+    IMPORT_SERVER_FILE,
+    IMPORT_CA_FILE,
+  };
+
   // View certificate.
   void HandleViewCertificate(const base::Value::List& args);
 
@@ -252,6 +257,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   std::string file_data_;
   net::ScopedCERTCertificateList selected_cert_list_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::optional<PendingOperation> pending_operation_;
   crypto::ScopedPK11Slot slot_;
 
   // Used in reading and writing certificate files.

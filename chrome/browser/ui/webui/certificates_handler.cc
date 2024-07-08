@@ -75,15 +75,6 @@ static const char kCertificatesHandlerErrorDescription[] = "description";
 static const char kCertificatesHandlerErrorField[] = "error";
 static const char kCertificatesHandlerErrorTitle[] = "title";
 
-// Enumeration of different callers of SelectFile.  (Start counting at 1 so
-// if SelectFile is accidentally called with params=nullptr it won't match any.)
-enum {
-  EXPORT_PERSONAL_FILE_SELECTED = 1,
-  IMPORT_PERSONAL_FILE_SELECTED,
-  IMPORT_SERVER_FILE_SELECTED,
-  IMPORT_CA_FILE_SELECTED,
-};
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Before this experiment on ChromeOS it was possible to import a PKCS#12 file
 // (a client certificate with a key pair for it) on the
@@ -389,25 +380,25 @@ void CertificatesHandler::CertificatesRefreshed() {
 }
 
 void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                       int index,
-                                       void* params) {
-  switch (reinterpret_cast<intptr_t>(params)) {
-    case EXPORT_PERSONAL_FILE_SELECTED:
+                                       int index) {
+  CHECK(pending_operation_.has_value());
+  switch (*pending_operation_) {
+    case EXPORT_PERSONAL_FILE:
       ExportPersonalFileSelected(file.path());
       break;
-    case IMPORT_PERSONAL_FILE_SELECTED:
+    case IMPORT_PERSONAL_FILE:
       file_access::RequestFilesAccessForSystem(
           {file.path()},
           base::BindOnce(&CertificatesHandler::ImportPersonalFileSelected,
                          weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
-    case IMPORT_SERVER_FILE_SELECTED:
+    case IMPORT_SERVER_FILE:
       file_access::RequestFilesAccessForSystem(
           {file.path()},
           base::BindOnce(&CertificatesHandler::ImportServerFileSelected,
                          weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
-    case IMPORT_CA_FILE_SELECTED:
+    case IMPORT_CA_FILE:
       file_access::RequestFilesAccessForSystem(
           {file.path()},
           base::BindOnce(&CertificatesHandler::ImportCAFileSelected,
@@ -418,20 +409,12 @@ void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
   }
 
   select_file_dialog_.reset();
+  pending_operation_ = std::nullopt;
 }
 
-void CertificatesHandler::FileSelectionCanceled(void* params) {
-  switch (reinterpret_cast<intptr_t>(params)) {
-    case EXPORT_PERSONAL_FILE_SELECTED:
-    case IMPORT_PERSONAL_FILE_SELECTED:
-    case IMPORT_SERVER_FILE_SELECTED:
-    case IMPORT_CA_FILE_SELECTED:
-      ImportExportCleanup();
-      RejectCallback(base::Value());
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
+void CertificatesHandler::FileSelectionCanceled() {
+  ImportExportCleanup();
+  RejectCallback(base::Value());
 }
 
 void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
@@ -554,11 +537,11 @@ void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
-      base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-      GetParentWindow(),
-      reinterpret_cast<void*>(EXPORT_PERSONAL_FILE_SELECTED));
+  pending_operation_ = EXPORT_PERSONAL_FILE;
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
+                                  std::u16string(), base::FilePath(),
+                                  &file_type_info, 1, FILE_PATH_LITERAL("p12"),
+                                  GetParentWindow(), nullptr);
 }
 
 void CertificatesHandler::ExportPersonalFileSelected(
@@ -656,11 +639,11 @@ void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
-      base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
-      GetParentWindow(),
-      reinterpret_cast<void*>(IMPORT_PERSONAL_FILE_SELECTED));
+  pending_operation_ = IMPORT_PERSONAL_FILE;
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                  std::u16string(), base::FilePath(),
+                                  &file_type_info, 1, FILE_PATH_LITERAL("p12"),
+                                  GetParentWindow(), nullptr);
 }
 
 void CertificatesHandler::ImportPersonalFileSelected(
@@ -807,6 +790,7 @@ void CertificatesHandler::ImportExportCleanup() {
   if (select_file_dialog_.get())
     select_file_dialog_->ListenerDestroyed();
   select_file_dialog_.reset();
+  pending_operation_ = std::nullopt;
 }
 
 void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
@@ -823,10 +807,10 @@ void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  ShowCertSelectFileDialog(
-      select_file_dialog_.get(), ui::SelectFileDialog::SELECT_OPEN_FILE,
-      base::FilePath(), GetParentWindow(),
-      reinterpret_cast<void*>(IMPORT_SERVER_FILE_SELECTED));
+  pending_operation_ = IMPORT_SERVER_FILE;
+  ShowCertSelectFileDialog(select_file_dialog_.get(),
+                           ui::SelectFileDialog::SELECT_OPEN_FILE,
+                           base::FilePath(), GetParentWindow(), nullptr);
 }
 
 void CertificatesHandler::ImportServerFileSelected(
@@ -906,10 +890,10 @@ void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
+  pending_operation_ = IMPORT_CA_FILE;
   ShowCertSelectFileDialog(select_file_dialog_.get(),
                            ui::SelectFileDialog::SELECT_OPEN_FILE,
-                           base::FilePath(), GetParentWindow(),
-                           reinterpret_cast<void*>(IMPORT_CA_FILE_SELECTED));
+                           base::FilePath(), GetParentWindow(), nullptr);
 }
 
 void CertificatesHandler::ImportCAFileSelected(
