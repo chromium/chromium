@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -177,8 +178,12 @@ PopupRowWithButtonView::PopupRowWithButtonView(
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           button_.get())));
 
-  static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager())
-      ->SetFlexForView(button_placeholder_, 0);
+  auto* content_layout =
+      static_cast<views::BoxLayout*>(GetContentView().GetLayoutManager());
+  content_layout->set_between_child_spacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  content_layout->SetFlexForView(button_placeholder_, 0);
 }
 
 PopupRowWithButtonView::~PopupRowWithButtonView() = default;

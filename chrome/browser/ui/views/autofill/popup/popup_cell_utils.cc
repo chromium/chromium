@@ -393,20 +393,24 @@ void AddSuggestionContentTableToView(
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupRowContentView& content_view) {
-  const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+  const bool kHasTwoColumns = !!description_label;
   auto content_table =
       views::Builder<views::TableLayoutView>()
           .AddColumn(views::LayoutAlignment::kStart,
                      views::LayoutAlignment::kStretch,
                      views::TableLayout::kFixedSize,
                      views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-          .AddPaddingColumn(views::TableLayout::kFixedSize, kDividerSpacing)
-          .AddColumn(views::LayoutAlignment::kStart,
-                     views::LayoutAlignment::kStretch,
-                     views::TableLayout::kFixedSize,
-                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
           .Build();
+  if (kHasTwoColumns) {
+    const int kDividerSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+    content_table->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                    kDividerSpacing);
+    content_table->AddColumn(
+        views::LayoutAlignment::kStart, views::LayoutAlignment::kStretch,
+        views::TableLayout::kFixedSize,
+        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  }
 
   // Major and minor text go into the first row, first column.
   content_table->AddRows(1, 0);
@@ -433,10 +437,10 @@ void AddSuggestionContentTableToView(
   }
 
   // The description goes into the first row, second column.
-  if (description_label) {
-    content_table->AddChildView(std::move(description_label));
-  } else {
-    content_table->AddChildView(std::make_unique<views::View>());
+  if (kHasTwoColumns) {
+    content_table->AddChildView(description_label
+                                    ? std::move(description_label)
+                                    : std::make_unique<views::View>());
   }
 
   // Every subtext label goes into an additional row.
@@ -444,7 +448,9 @@ void AddSuggestionContentTableToView(
     content_table->AddPaddingRow(0, kAdjacentLabelsVerticalSpacing)
         .AddRows(1, 0);
     content_table->AddChildView(std::move(subtext_view));
-    content_table->AddChildView(std::make_unique<views::View>());
+    if (kHasTwoColumns) {
+      content_table->AddChildView(std::make_unique<views::View>());
+    }
   }
   content_view.AddChildView(std::move(content_table));
 }
