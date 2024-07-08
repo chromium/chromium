@@ -114,16 +114,6 @@ void BlobURLStoreImpl::Revoke(const GURL& url) {
   urls_.erase(url);
 }
 
-void BlobURLStoreImpl::Resolve(const GURL& url, ResolveCallback callback) {
-  if (!registry_) {
-    std::move(callback).Run(mojo::NullRemote(), std::nullopt);
-    return;
-  }
-  mojo::PendingRemote<blink::mojom::Blob> blob = registry_->GetBlobFromUrl(url);
-  std::move(callback).Run(std::move(blob),
-                          registry_->GetUnsafeAgentClusterID(url));
-}
-
 void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,

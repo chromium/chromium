@@ -148,28 +148,6 @@ class BlobURLStoreImplTestP
     loop.Run();
   }
 
-  mojo::PendingRemote<blink::mojom::Blob> ResolveURL(BlobURLStore* store,
-                                                     const GURL& url) {
-    mojo::PendingRemote<blink::mojom::Blob> result;
-    base::RunLoop loop;
-    store->Resolve(kValidUrl,
-                   base::BindOnce(
-                       [](base::OnceClosure done,
-                          mojo::PendingRemote<blink::mojom::Blob>* blob_out,
-                          const base::UnguessableToken& agent_registered,
-                          mojo::PendingRemote<blink::mojom::Blob> blob,
-                          const std::optional<base::UnguessableToken>&
-                              unsafe_agent_cluster_id) {
-                         if (blob)
-                           EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
-                         *blob_out = std::move(blob);
-                         std::move(done).Run();
-                       },
-                       loop.QuitClosure(), &result, agent_cluster_id_));
-    loop.Run();
-    return result;
-  }
-
   const std::string kId = "id";
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
   const blink::StorageKey kStorageKey =
@@ -323,40 +301,65 @@ TEST_P(BlobURLStoreImplTestP, RevokeWrongStorageKey) {
   }
 }
 
-TEST_P(BlobURLStoreImplTestP, Resolve) {
-  mojo::PendingRemote<blink::mojom::Blob> blob =
-      CreateBlobFromString(kId, "hello world");
-
+TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryNonExistentURL) {
   BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
-  RegisterURL(&url_store, std::move(blob), kValidUrl);
-
-  blob = ResolveURL(&url_store, kValidUrl);
-  ASSERT_TRUE(blob);
-  mojo::Remote<blink::mojom::Blob> blob_remote(std::move(blob));
-  EXPECT_EQ(kId, UUIDFromBlob(blob_remote.get()));
-  blob = ResolveURL(&url_store, kFragmentUrl);
-  ASSERT_TRUE(blob);
-  blob_remote.reset();
-  blob_remote.Bind(std::move(blob));
-  EXPECT_EQ(kId, UUIDFromBlob(blob_remote.get()));
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  base::RunLoop resolve_loop;
+  url_store.ResolveAsURLLoaderFactory(
+      kValidUrl, factory.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](base::OnceClosure done,
+             const std::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id,
+             const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
+            EXPECT_FALSE(unsafe_agent_cluster_id.has_value());
+            EXPECT_FALSE(unsafe_top_level_site.has_value());
+            std::move(done).Run();
+          },
+          resolve_loop.QuitClosure()));
+  resolve_loop.Run();
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = kValidUrl;
+  auto loader = network::SimpleURLLoader::Create(std::move(request),
+                                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  base::RunLoop download_loop;
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      factory.get(), base::BindLambdaForTesting(
+                         [&](std::unique_ptr<std::string> response_body) {
+                           download_loop.Quit();
+                           EXPECT_FALSE(response_body);
+                         }));
+  download_loop.Run();
 }
-
-TEST_P(BlobURLStoreImplTestP, ResolveNonExistentURL) {
+TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryInvalidURL) {
   BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
-
-  mojo::PendingRemote<blink::mojom::Blob> blob =
-      ResolveURL(&url_store, kValidUrl);
-  EXPECT_FALSE(blob);
-  blob = ResolveURL(&url_store, kFragmentUrl);
-  EXPECT_FALSE(blob);
-}
-
-TEST_P(BlobURLStoreImplTestP, ResolveInvalidURL) {
-  BlobURLStoreImpl url_store(kStorageKey, url_registry_.AsWeakPtr());
-
-  mojo::PendingRemote<blink::mojom::Blob> blob =
-      ResolveURL(&url_store, kInvalidUrl);
-  EXPECT_FALSE(blob);
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  base::RunLoop resolve_loop;
+  url_store.ResolveAsURLLoaderFactory(
+      kInvalidUrl, factory.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](base::OnceClosure done,
+             const std::optional<base::UnguessableToken>&
+                 unsafe_agent_cluster_id,
+             const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
+            EXPECT_FALSE(unsafe_agent_cluster_id.has_value());
+            EXPECT_FALSE(unsafe_top_level_site.has_value());
+            std::move(done).Run();
+          },
+          resolve_loop.QuitClosure()));
+  resolve_loop.Run();
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = kInvalidUrl;
+  auto loader = network::SimpleURLLoader::Create(std::move(request),
+                                                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  base::RunLoop download_loop;
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      factory.get(), base::BindLambdaForTesting(
+                         [&](std::unique_ptr<std::string> response_body) {
+                           download_loop.Quit();
+                           EXPECT_FALSE(response_body);
+                         }));
+  download_loop.Run();
 }
 
 TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactory) {

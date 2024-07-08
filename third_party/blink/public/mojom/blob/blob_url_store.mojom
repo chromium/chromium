@@ -32,12 +32,6 @@ interface BlobURLStore {
   // Revokes a public Blob URL.
   Revoke(url.mojom.Url url);
 
-  // Resolves a public Blob URL.
-  Resolve(url.mojom.Url url) => (
-    pending_remote<blink.mojom.Blob>? blob,
-    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
-
   // Resolves a public Blob URL to a URLLoaderFactory that can only load the
   // specified URL. The reason the API is shaped like this rather than just
   // having a URLLoaderFactory for all Blob URLs is that resolution of blob URLs

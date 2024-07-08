@@ -15,6 +15,7 @@
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 
 namespace storage {
@@ -42,7 +43,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
       const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
-  void Resolve(const GURL& url, ResolveCallback callback) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
