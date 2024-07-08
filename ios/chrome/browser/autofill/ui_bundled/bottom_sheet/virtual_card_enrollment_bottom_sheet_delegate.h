@@ -7,13 +7,15 @@
 
 @class CrURL;
 
+// Delegate for presentation events from the virtual card enrollment bottom
+// sheet view controller.
 @protocol VirtualCardEnrollmentBottomSheetDelegate <NSObject>
 
-// Called when the user tapped on a link in the legal message or the learn more
+// Handles the user tapping on a link in the legal message or the learn more
 // link. The text of the link is included.
-- (void)didTapLinkURL:(CrURL*)url text:(NSString*)text;
+- (void)didTapLinkURL:(CrURL*)URL text:(NSString*)text;
 
-// Called when the view disappeared.
+// Handles the view disappearing.
 - (void)viewDidDisappear:(BOOL)animated;
 
 @end

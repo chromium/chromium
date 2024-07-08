@@ -51,6 +51,8 @@ CGFloat const kCreditCardCellHeight = 64;
   UIStackView* _customUnderTitleView;
 }
 
+#pragma mark - UIViewController
+
 - (void)viewDidLoad {
   self.actionHandler = self;
 
@@ -79,7 +81,6 @@ CGFloat const kCreditCardCellHeight = 64;
 
 #pragma mark - VirtualCardEnrollmentBottomSheetConsumer
 
-// Set the virtual card enrollment bottom sheet data.
 - (void)setCardData:(VirtualCardEnrollmentBottomSheetData*)data {
   _bottomSheetData = data;
   self.primaryActionString = data.acceptActionText;
@@ -140,8 +141,9 @@ CGFloat const kCreditCardCellHeight = 64;
   return cell;
 }
 
-#pragma mark Private
+#pragma mark - Private
 
+// Create the view containing the logo, illustration, title and message.
 - (UIStackView*)createAboveTitleStackView {
   UIStackView* aboveTitleStackView =
       [[UIStackView alloc] initWithFrame:CGRectZero];
@@ -274,6 +276,7 @@ CGFloat const kCreditCardCellHeight = 64;
   return cardContainerTable;
 }
 
+// Adds a text view for the given legal message to the under title view.
 - (void)addLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)messages {
   for (SaveCardMessageWithLinks* message in messages) {
     UITextView* textView = CreateUITextViewWithTextKit1();
@@ -324,7 +327,7 @@ CGFloat const kCreditCardCellHeight = 64;
   return attributedText;
 }
 
-#pragma mark UITextViewDelegate
+#pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
@@ -350,17 +353,17 @@ CGFloat const kCreditCardCellHeight = 64;
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
-  CrURL* url = nil;
+  CrURL* URL = nil;
   if (textView == _explanatoryMessageView) {
-    url = [[CrURL alloc]
+    URL = [[CrURL alloc]
         initWithGURL:autofill::payments::GetVirtualCardEnrollmentSupportUrl()];
   } else {
-    url = [[CrURL alloc] initWithNSURL:textItem.link];
+    URL = [[CrURL alloc] initWithNSURL:textItem.link];
   }
-  __weak VirtualCardEnrollmentBottomSheetViewController* weakSelf = self;
+  __weak __typeof__(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf.delegate
-        didTapLinkURL:url
+        didTapLinkURL:URL
                  text:[textView.text substringWithRange:textItem.range]];
   }];
 }

@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+// Delegate to handle actions from the virtual card enrollment bottom sheet view
+// controller.
 @protocol VirtualCardEnrollmentBottomSheetMutator <NSObject>
 
-// Called when the user accepted the virtual card enrollment prompt.
+// Handles the user accepting the virtual card enrollment prompt.
 - (void)didAccept;
 
-// Called when the user dismissed the virtual card enrollment prompt.
+// Handles the user dismissing the virtual card enrollment prompt.
 - (void)didCancel;
 
 @end

@@ -18,15 +18,16 @@
     : NSObject <VirtualCardEnrollmentBottomSheetMutator>
 
 // The consumer interface for updating the virtual card enrollment display.
-@property(nonatomic) id<VirtualCardEnrollmentBottomSheetConsumer> consumer;
+@property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetConsumer>
+    consumer;
 
 // Initialize this mediator with the ui model and callbacks from autofill.
-- (instancetype)initWithUiModel:
+- (instancetype)initWithUIModel:
                     (std::unique_ptr<autofill::VirtualCardEnrollUiModel>)model
                       callbacks:
                           (autofill::VirtualCardEnrollmentCallbacks)callbacks
-     browserCoordinatorCommands:
-         (id<BrowserCoordinatorCommands>)browserCoordinatorCommands;
+      browserCoordinatorHandler:
+          (id<BrowserCoordinatorCommands>)browserCoordinatorHandler;
 
 #pragma mark - VirtualCardEnrollUiModel Observer methods
 

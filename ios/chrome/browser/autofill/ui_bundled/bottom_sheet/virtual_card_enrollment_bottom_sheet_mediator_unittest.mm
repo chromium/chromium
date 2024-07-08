@@ -48,8 +48,8 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
   VirtualCardEnrollmentBottomSheetMediatorTest()
       : histogram_tester_(),
         fake_card_art_(gfx::test::CreateImageSkia(60, 24)),
-        mock_commands_(OCMProtocolMock(@protocol(BrowserCoordinatorCommands))) {
-  }
+        mock_browser_coordinator_handler_(
+            OCMProtocolMock(@protocol(BrowserCoordinatorCommands))) {}
 
  protected:
   // Creates a virtual card enrollment model with required properties.
@@ -70,9 +70,9 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
       std::unique_ptr<autofill::VirtualCardEnrollUiModel> model) {
     model_ = model->GetWeakPtr();
     return [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                   initWithUiModel:std::move(model)
-                         callbacks:MakeFakeCallbacks()
-        browserCoordinatorCommands:mock_commands_];
+                  initWithUIModel:std::move(model)
+                        callbacks:MakeFakeCallbacks()
+        browserCoordinatorHandler:mock_browser_coordinator_handler_];
   }
 
   autofill::VirtualCardEnrollmentCallbacks MakeFakeCallbacks() {
@@ -91,7 +91,7 @@ class VirtualCardEnrollmentBottomSheetMediatorTest : public PlatformTest {
 
   base::HistogramTester histogram_tester_;
   gfx::ImageSkia fake_card_art_;
-  id<BrowserCoordinatorCommands> mock_commands_;
+  id<BrowserCoordinatorCommands> mock_browser_coordinator_handler_;
   VirtualCardEnrollmentBottomSheetMediator* mediator_;
   base::WeakPtr<autofill::VirtualCardEnrollUiModel> model_;
 };
@@ -211,11 +211,12 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   VirtualCardEnrollmentBottomSheetMediator* mediator =
       MakeMediator(MakeModel());
 
-  OCMExpect([mock_commands_ dismissVirtualCardEnrollmentBottomSheet]);
+  OCMExpect([mock_browser_coordinator_handler_
+      dismissVirtualCardEnrollmentBottomSheet]);
 
   [mediator didAccept];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_commands_);
+  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
@@ -268,11 +269,12 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   VirtualCardEnrollmentBottomSheetMediator* mediator =
       MakeMediator(MakeModel());
 
-  OCMExpect([mock_commands_ dismissVirtualCardEnrollmentBottomSheet]);
+  OCMExpect([mock_browser_coordinator_handler_
+      dismissVirtualCardEnrollmentBottomSheet]);
 
   [mediator didCancel];
 
-  EXPECT_OCMOCK_VERIFY((id)mock_commands_);
+  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }
 
 // Test that the result metric is logged when the prompt is accepted.
@@ -315,10 +317,11 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
       MakeMediator(MakeModel());
 
-  OCMExpect([mock_commands_ dismissVirtualCardEnrollmentBottomSheet]);
+  OCMExpect([mock_browser_coordinator_handler_
+      dismissVirtualCardEnrollmentBottomSheet]);
 
   model_->SetEnrollmentProgress(
       autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
 
-  EXPECT_OCMOCK_VERIFY((id)mock_commands_);
+  EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }

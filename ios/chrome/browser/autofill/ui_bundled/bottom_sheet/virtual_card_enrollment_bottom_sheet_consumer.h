@@ -9,7 +9,7 @@
 
 @protocol VirtualCardEnrollmentBottomSheetConsumer <NSObject>
 
-// Set the virtual card enrollment bottom sheet data.
+// Sets the virtual card enrollment bottom sheet data.
 - (void)setCardData:(VirtualCardEnrollmentBottomSheetData*)data;
 
 // Shows the loading stating indicating that enrollment is in progress.

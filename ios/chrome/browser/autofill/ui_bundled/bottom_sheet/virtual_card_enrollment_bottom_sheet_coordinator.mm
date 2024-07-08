@@ -32,12 +32,10 @@
 @implementation VirtualCardEnrollmentBottomSheetCoordinator {
   std::unique_ptr<autofill::VirtualCardEnrollUiModel> _model;
   std::optional<autofill::VirtualCardEnrollmentCallbacks> _callbacks;
-  Browser* _browser;
-  ChromeBrowserState* _browser_state;
 
   // Opening links on the enrollment bottom sheet is delegated to this
-  // dispatcher.
-  __weak id<ApplicationCommands> _dispatcher;
+  // handler.
+  __weak id<ApplicationCommands> _applicationHandler;
 }
 
 @synthesize mediator;
@@ -50,25 +48,23 @@
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     web::WebState* activeWebState =
-        self.browser->GetWebStateList()->GetActiveWebState();
+        browser->GetWebStateList()->GetActiveWebState();
     _model = std::move(model);
     _callbacks = AutofillBottomSheetTabHelper::FromWebState(activeWebState)
                      ->GetVirtualCardEnrollmentCallbacks();
-    _browser = browser;
-    _browser_state = self.browser->GetBrowserState();
-    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                     ApplicationCommands);
+    _applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
   }
   return self;
 }
 
 - (void)start {
   self.mediator = [[VirtualCardEnrollmentBottomSheetMediator alloc]
-                 initWithUiModel:std::move(_model)
-                       callbacks:std::move(_callbacks.value())
-      browserCoordinatorCommands:HandlerForProtocol(
-                                     self.browser->GetCommandDispatcher(),
-                                     BrowserCoordinatorCommands)];
+                initWithUIModel:std::move(_model)
+                      callbacks:std::move(_callbacks.value())
+      browserCoordinatorHandler:HandlerForProtocol(
+                                    self.browser->GetCommandDispatcher(),
+                                    BrowserCoordinatorCommands)];
   self.viewController =
       [[VirtualCardEnrollmentBottomSheetViewController alloc] init];
   self.viewController.delegate = self;
@@ -99,10 +95,10 @@
 
 #pragma mark VirtualCardEnrollmentBottomSheetDelegate
 
-- (void)didTapLinkURL:(CrURL*)url text:(NSString*)text {
-  [_dispatcher
+- (void)didTapLinkURL:(CrURL*)URL text:(NSString*)text {
+  [_applicationHandler
       openURLInNewTab:[OpenNewTabCommand
-                          commandWithURLFromChrome:url.gurl
+                          commandWithURLFromChrome:URL.gurl
                                        inIncognito:self.browser
                                                        ->GetBrowserState()
                                                        ->IsOffTheRecord()]];

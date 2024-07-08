@@ -81,9 +81,9 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
     std::unique_ptr<autofill::VirtualCardEnrollUiModel> model =
         std::make_unique<autofill::VirtualCardEnrollUiModel>(enrollment_fields);
 
-    application_commands_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:application_commands_
+        startDispatchingToTarget:application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
 
     id<BrowserCoordinatorCommands> browserCoordinatorCommands =
@@ -109,7 +109,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  id<ApplicationCommands> application_commands_;
+  id<ApplicationCommands> application_handler_;
   UIWindow* window_;
   VirtualCardEnrollmentBottomSheetCoordinator* coordinator_;
   base::WeakPtrFactory<VirtualCardEnrollmentBottomSheetCoordinatorTest>
@@ -123,7 +123,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetCoordinatorTest, OpensNewTabForLinks) {
   CrURL* url = [[CrURL alloc]
       initWithNSURL:[NSURL URLWithString:@"https://example.test"]];
 
-  OCMExpect([application_commands_
+  OCMExpect([application_handler_
       openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
         return command.URL == url.gurl;
       }]]);
