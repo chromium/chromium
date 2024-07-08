@@ -2825,6 +2825,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kBirchUseLastActive);
   profile_prefs->ClearPref(kBirchUseMostVisited);
   profile_prefs->ClearPref(kBirchUseSelfShare);
+
+  // Added 07/2024.
+  ChromeShelfPrefs::CleanupPreloadPrefs(profile_prefs);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)

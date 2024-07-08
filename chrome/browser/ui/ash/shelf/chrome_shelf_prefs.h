@@ -44,6 +44,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // All prefs must be registered early in the process lifecycle.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Cleanup multiple values of 'preload' added to ShelfDefaultPinLayoutRolls.
+  static void CleanupPreloadPrefs(PrefService* profile_prefs);
+
   // Init a local pref from a synced pref, if the local pref has no user
   // setting. This is used to init shelf alignment and auto-hide on the first
   // user sync. The goal is to apply the last elected shelf alignment and
@@ -142,6 +145,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // in prefs. It is never run again if that pref is present. It causes several
   // default apps to be shown in the shelf.
   void AddDefaultApps();
+
+  // Whether App Preload Service apps have already been added.
+  bool DidAddPreloadApps() const;
 
   // Pin preload apps received along with desired order via OnAppPreloadReady().
   void PinPreloadApps();
