@@ -17,6 +17,7 @@ static_library("online_reauth") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/login/saml",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
@@ -35,6 +36,8 @@ static_library("online_reauth") {
     "//components/user_manager",
     "//content/public/browser",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/saml" ]
 }
 
 source_set("unit_tests") {
@@ -51,6 +54,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/saml:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth",

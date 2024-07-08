@@ -821,8 +821,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.cc",
-      "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h",
       "../browser/ash/login/test/enrollment_helper_mixin.cc",
       "../browser/ash/login/test/enrollment_helper_mixin.h",
       "../browser/ash/login/test/enrollment_ui_mixin.cc",
@@ -841,6 +839,8 @@ static_library("test_support") {
       "../browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h",
       "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.cc",
       "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h",
+      "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
+      "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.h",
       "../browser/enterprise/connectors/analysis/mock_file_transfer_analysis_delegate.cc",
@@ -3389,8 +3389,6 @@ if (!is_android) {
       ]
       sources += [
         "../browser/browser_process_platform_part_chromeos_browsertest.cc",
-        "../browser/certificate_provider/test_certificate_provider_extension_mixin.cc",
-        "../browser/certificate_provider/test_certificate_provider_extension_mixin.h",
         "../browser/chromeos/enterprise/incognito_navigation_throttle_browsertest.cc",
         "../browser/chromeos/kcer/kcer_factory_nss_browsertest.cc",
         "../browser/chromeos/policy/default_notifications_setting_browsertest.cc",
@@ -4602,16 +4600,6 @@ if (!is_android) {
         "../browser/ash/login/password_change_browsertest.cc",
         "../browser/ash/login/proxy_auth_dialog_browsertest.cc",
         "../browser/ash/login/reset_browsertest.cc",
-        "../browser/ash/login/saml/fake_saml_idp_mixin.cc",
-        "../browser/ash/login/saml/password_change_extension_browsertest.cc",
-        "../browser/ash/login/saml/password_change_success_detection_browsertest.cc",
-        "../browser/ash/login/saml/saml_browsertest.cc",
-        "../browser/ash/login/saml/saml_lockscreen_browsertest.cc",
-        "../browser/ash/login/saml/security_token_saml_browsertest.cc",
-        "../browser/ash/login/saml/security_token_saml_test.cc",
-        "../browser/ash/login/saml/security_token_saml_test.h",
-        "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.cc",
-        "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.h",
         "../browser/ash/login/screens/add_child_screen_browsertest.cc",
         "../browser/ash/login/screens/app_downloading_screen_browsertest.cc",
         "../browser/ash/login/screens/assistant_optin_flow_screen_browsertest.cc",
@@ -5122,6 +5110,7 @@ if (!is_android) {
         "//chrome/browser/ash/login/lock/online_reauth",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
         "//chrome/browser/ash/login/quick_unlock",
+        "//chrome/browser/ash/login/saml:test_support",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/notifications",
         "//chrome/browser/ash/os_feedback",

@@ -239,6 +239,7 @@ source_set("policy_specific_browser_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash/login/lock:test_support",
+      "//chrome/browser/ash/login/saml:test_support",
       "//chrome/browser/ash/net",
       "//components/session_manager/core",
       "//components/user_manager",
