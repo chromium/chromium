@@ -1005,6 +1005,30 @@ void DismissPaymentBottomSheet() {
   }
 }
 
+// Tests that the overflow menu button is never visible in virtual card cells.
+- (void)testOverflowMenuVisibilityForVirtualCards {
+  // Create & save credit card enrolled in virtual card program.
+  [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard Should be Shown");
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  // Assert presence of virtual card.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"Mastercard \nVirtual card")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // The overflow menu button should not be visible.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Tests that the "Edit" action of a local card's overflow menu button displays
 // the card's details in edit mode.
 - (void)testEditLocalCardFromOverflowMenu {

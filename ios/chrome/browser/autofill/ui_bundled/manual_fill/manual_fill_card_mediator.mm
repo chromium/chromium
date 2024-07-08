@@ -45,6 +45,19 @@ NSString* const kManagePaymentMethodsAccessibilityIdentifier =
 NSString* const kAddPaymentMethodAccessibilityIdentifier =
     @"kAddPaymentMethodAccessibilityIdentifier";
 
+// Returns `true` if overflow menu actions should be made available in the
+// manual fill cell of a card with the given `record_type`.
+bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
+  switch (record_type) {
+    case autofill::CreditCard::RecordType::kLocalCard:
+    case autofill::CreditCard::RecordType::kFullServerCard:
+    case autofill::CreditCard::RecordType::kMaskedServerCard:
+      return IsKeyboardAccessoryUpgradeEnabled();
+    case autofill::CreditCard::RecordType::kVirtualCard:
+      return NO;
+  }
+}
+
 }  // namespace manual_fill
 
 @interface ManualFillCardMediator () <PersonalDataManagerObserver>
@@ -158,9 +171,10 @@ NSString* const kAddPaymentMethodAccessibilityIdentifier =
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
       initWithCreditCard:*card
                     icon:[self iconForCreditCard:card]];
-  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
-                                        ? [self createMenuActionsForCard:card]
-                                        : @[];
+  NSArray<UIAction*>* menuActions =
+      manual_fill::ShouldShowMenuActionsInManualFallback(card->record_type())
+          ? [self createMenuActionsForCard:card]
+          : @[];
 
   return [[ManualFillCardItem alloc]
                initWithCreditCard:manualFillCreditCard
