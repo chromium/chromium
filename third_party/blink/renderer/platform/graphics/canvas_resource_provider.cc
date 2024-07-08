@@ -336,7 +336,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return nullptr;
 
-    return CanvasResourceRasterSharedImage::Create(
+    return CanvasResourceSharedImage::Create(
         GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
         FilterQuality(), IsOriginTopLeft(), is_accelerated_,
         shared_image_usage_flags_);

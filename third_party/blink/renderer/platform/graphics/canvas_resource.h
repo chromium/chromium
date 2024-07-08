@@ -316,33 +316,10 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool is_origin_clean_ = true;
 };
 
-// Intermediate class for all SharedImage implementations.
-class PLATFORM_EXPORT CanvasResourceSharedImage : public CanvasResource {
+// Resource type for SharedImage
+class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
  public:
-  virtual void BeginReadAccess() = 0;
-  virtual void EndReadAccess() = 0;
-  virtual void BeginWriteAccess() = 0;
-  virtual void EndWriteAccess() = 0;
-  virtual GrBackendTexture CreateGrTexture() const = 0;
-  virtual void WillDraw() = 0;
-  virtual bool HasReadAccess() const = 0;
-  virtual bool IsLost() const = 0;
-  virtual void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>&) = 0;
-  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                            const std::string& parent_path,
-                            size_t bytes_per_pixel) const {}
-
- protected:
-  CanvasResourceSharedImage(base::WeakPtr<CanvasResourceProvider>,
-                            cc::PaintFlags::FilterQuality,
-                            const SkColorInfo&);
-};
-
-// Resource type for Raster-based SharedImage
-class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
-    : public CanvasResourceSharedImage {
- public:
-  static scoped_refptr<CanvasResourceRasterSharedImage> Create(
+  static scoped_refptr<CanvasResourceSharedImage> Create(
       const SkImageInfo&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
@@ -350,7 +327,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
       bool is_origin_top_left,
       bool is_accelerated,
       uint32_t shared_image_usage_flags);
-  ~CanvasResourceRasterSharedImage() override;
+  ~CanvasResourceSharedImage() override;
 
   bool IsRecycleable() const final { return true; }
   bool IsAccelerated() const final { return is_accelerated_; }
@@ -371,11 +348,11 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
     // the resource is returned by the display compositor.
     return !is_accelerated_;
   }
-  void BeginReadAccess() final;
-  void EndReadAccess() final;
-  void BeginWriteAccess() final;
-  void EndWriteAccess() final;
-  GrBackendTexture CreateGrTexture() const final;
+  void BeginReadAccess();
+  void EndReadAccess();
+  void BeginWriteAccess();
+  void EndWriteAccess();
+  GrBackendTexture CreateGrTexture() const;
 
   GLuint GetTextureIdForReadAccess() const {
     return owning_thread_data().texture_id_for_read_access;
@@ -385,16 +362,16 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   }
   GLenum TextureTarget() const override;
 
-  void WillDraw() final;
-  bool HasReadAccess() const final {
+  void WillDraw();
+  bool HasReadAccess() const {
     return owning_thread_data().bitmap_image_read_refs > 0u;
   }
-  bool IsLost() const final { return owning_thread_data().is_lost; }
-  void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image) final;
+  bool IsLost() const { return owning_thread_data().is_lost; }
+  void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
   const gpu::Mailbox& GetMailbox(MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     const std::string& parent_path,
-                    size_t bytes_per_pixel) const override;
+                    size_t bytes_per_pixel) const;
   // Whether this type of CanvasResource can provide detailed memory data. If
   // true, then the CanvasResourceProvider will not report data, to avoid
   // double-countintg.
@@ -423,7 +400,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   };
 
   static void OnBitmapImageDestroyed(
-      scoped_refptr<CanvasResourceRasterSharedImage> resource,
+      scoped_refptr<CanvasResourceSharedImage> resource,
       bool has_read_ref_on_texture,
       const gpu::SyncToken& sync_token,
       bool is_lost);
@@ -435,14 +412,13 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const gpu::SyncToken GetSyncToken() override;
   bool IsOverlayCandidate() const final { return is_overlay_candidate_; }
 
-  CanvasResourceRasterSharedImage(
-      const SkImageInfo&,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>,
-      cc::PaintFlags::FilterQuality,
-      bool is_origin_top_left,
-      bool is_accelerated,
-      uint32_t shared_image_usage_flags);
+  CanvasResourceSharedImage(const SkImageInfo&,
+                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                            base::WeakPtr<CanvasResourceProvider>,
+                            cc::PaintFlags::FilterQuality,
+                            bool is_origin_top_left,
+                            bool is_accelerated,
+                            uint32_t shared_image_usage_flags);
 
   OwningThreadData& owning_thread_data() {
     DCHECK(!is_cross_thread());
@@ -456,7 +432,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   // Can be read on any thread.
 
   // NOTE: This is guaranteed to be non-null for the lifetime of this instance:
-  // * CanvasResourceRasterSharedImage::Create() (which is the only public way
+  // * CanvasResourceSharedImage::Create() (which is the only public way
   // to create an instance of this class) returns null if the ClientSI couldn't
   // be created.
   // * The pointer is not cleared until TearDown(), which is only called from

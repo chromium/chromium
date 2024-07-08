@@ -381,15 +381,6 @@ void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
 //==============================================================================
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
-    base::WeakPtr<CanvasResourceProvider> provider,
-    cc::PaintFlags::FilterQuality filter_quality,
-    const SkColorInfo& info)
-    : CanvasResource(provider, filter_quality, info) {}
-
-// CanvasResourceRasterSharedImage
-//==============================================================================
-
-CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     const SkImageInfo& info,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
@@ -397,9 +388,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     bool is_origin_top_left,
     bool is_accelerated,
     uint32_t shared_image_usage_flags)
-    : CanvasResourceSharedImage(std::move(provider),
-                                filter_quality,
-                                info.colorInfo()),
+    : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
       is_origin_top_left_(is_origin_top_left),
@@ -493,8 +482,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   }
 }
 
-scoped_refptr<CanvasResourceRasterSharedImage>
-CanvasResourceRasterSharedImage::Create(
+scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     const SkImageInfo& info,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
@@ -502,40 +490,40 @@ CanvasResourceRasterSharedImage::Create(
     bool is_origin_top_left,
     bool is_accelerated,
     uint32_t shared_image_usage_flags) {
-  TRACE_EVENT0("blink", "CanvasResourceRasterSharedImage::Create");
-  auto resource = base::AdoptRef(new CanvasResourceRasterSharedImage(
+  TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
+  auto resource = base::AdoptRef(new CanvasResourceSharedImage(
       info, std::move(context_provider_wrapper), std::move(provider),
       filter_quality, is_origin_top_left, is_accelerated,
       shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;
 }
 
-bool CanvasResourceRasterSharedImage::IsValid() const {
+bool CanvasResourceSharedImage::IsValid() const {
   return client_shared_image() != nullptr;
 }
 
-void CanvasResourceRasterSharedImage::BeginReadAccess() {
+void CanvasResourceSharedImage::BeginReadAccess() {
   RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
       GetTextureIdForReadAccess(), GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 }
 
-void CanvasResourceRasterSharedImage::EndReadAccess() {
+void CanvasResourceSharedImage::EndReadAccess() {
   RasterInterface()->EndSharedImageAccessDirectCHROMIUM(
       GetTextureIdForReadAccess());
 }
 
-void CanvasResourceRasterSharedImage::BeginWriteAccess() {
+void CanvasResourceSharedImage::BeginWriteAccess() {
   RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
       GetTextureIdForWriteAccess(),
       GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 }
 
-void CanvasResourceRasterSharedImage::EndWriteAccess() {
+void CanvasResourceSharedImage::EndWriteAccess() {
   RasterInterface()->EndSharedImageAccessDirectCHROMIUM(
       GetTextureIdForWriteAccess());
 }
 
-GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
+GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   GrGLTextureInfo texture_info = {};
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = TextureTarget();
@@ -546,11 +534,11 @@ GrBackendTexture CanvasResourceRasterSharedImage::CreateGrTexture() const {
                                    skgpu::Mipmapped::kNo, texture_info);
 }
 
-CanvasResourceRasterSharedImage::~CanvasResourceRasterSharedImage() {
+CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   OnDestroy();
 }
 
-void CanvasResourceRasterSharedImage::TearDown() {
+void CanvasResourceSharedImage::TearDown() {
   DCHECK(!is_cross_thread());
 
   // The context deletes all shared images on destruction which means no
@@ -585,12 +573,12 @@ void CanvasResourceRasterSharedImage::TearDown() {
   owning_thread_data().texture_id_for_write_access = 0u;
 }
 
-void CanvasResourceRasterSharedImage::Abandon() {
+void CanvasResourceSharedImage::Abandon() {
   // Called when the owning thread has been torn down which will destroy the
   // context on which the shared image was created so no cleanup is necessary.
 }
 
-void CanvasResourceRasterSharedImage::WillDraw() {
+void CanvasResourceSharedImage::WillDraw() {
   DCHECK(!is_cross_thread())
       << "Write access is only allowed on the owning thread";
 
@@ -603,8 +591,8 @@ void CanvasResourceRasterSharedImage::WillDraw() {
 }
 
 // static
-void CanvasResourceRasterSharedImage::OnBitmapImageDestroyed(
-    scoped_refptr<CanvasResourceRasterSharedImage> resource,
+void CanvasResourceSharedImage::OnBitmapImageDestroyed(
+    scoped_refptr<CanvasResourceSharedImage> resource,
     bool has_read_ref_on_texture,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
@@ -627,7 +615,7 @@ void CanvasResourceRasterSharedImage::OnBitmapImageDestroyed(
                         std::move(resource), sync_token, is_lost);
 }
 
-void CanvasResourceRasterSharedImage::Transfer() {
+void CanvasResourceSharedImage::Transfer() {
   if (is_cross_thread() || !ContextProviderWrapper())
     return;
 
@@ -638,8 +626,8 @@ void CanvasResourceRasterSharedImage::Transfer() {
   GetSyncToken();
 }
 
-scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
-  TRACE_EVENT0("blink", "CanvasResourceRasterSharedImage::Bitmap");
+scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
+  TRACE_EVENT0("blink", "CanvasResourceSharedImage::Bitmap");
 
   SkImageInfo image_info = CreateSkImageInfo();
   if (!is_accelerated_) {
@@ -689,10 +677,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
-  auto release_callback =
-      base::BindOnce(&OnBitmapImageDestroyed,
-                     scoped_refptr<CanvasResourceRasterSharedImage>(this),
-                     has_read_ref_on_texture);
+  auto release_callback = base::BindOnce(
+      &OnBitmapImageDestroyed, scoped_refptr<CanvasResourceSharedImage>(this),
+      has_read_ref_on_texture);
 
   scoped_refptr<StaticBitmapImage> image;
 
@@ -711,7 +698,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
   return image;
 }
 
-void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
+void CanvasResourceSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
     const sk_sp<SkImage>& image) {
   DCHECK(!is_cross_thread());
 
@@ -742,7 +729,7 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }
 
-const gpu::Mailbox& CanvasResourceRasterSharedImage::GetMailbox(
+const gpu::Mailbox& CanvasResourceSharedImage::GetMailbox(
     MailboxSyncMode sync_mode) {
   if (!is_cross_thread()) {
     owning_thread_data().mailbox_sync_mode = sync_mode;
@@ -751,11 +738,11 @@ const gpu::Mailbox& CanvasResourceRasterSharedImage::GetMailbox(
   return client_shared_image()->mailbox();
 }
 
-GLenum CanvasResourceRasterSharedImage::TextureTarget() const {
+GLenum CanvasResourceSharedImage::TextureTarget() const {
   return client_shared_image()->GetTextureTarget();
 }
 
-const gpu::SyncToken CanvasResourceRasterSharedImage::GetSyncToken() {
+const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
   if (is_cross_thread()) {
     // Sync token should be generated at Transfer time, which must always be
     // called before cross-thread usage. And since we don't allow writes on
@@ -788,7 +775,7 @@ const gpu::SyncToken CanvasResourceRasterSharedImage::GetSyncToken() {
   return sync_token();
 }
 
-void CanvasResourceRasterSharedImage::NotifyResourceLost() {
+void CanvasResourceSharedImage::NotifyResourceLost() {
   owning_thread_data().is_lost = true;
 
   if (WeakProvider())
@@ -796,12 +783,12 @@ void CanvasResourceRasterSharedImage::NotifyResourceLost() {
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-CanvasResourceRasterSharedImage::ContextProviderWrapper() const {
+CanvasResourceSharedImage::ContextProviderWrapper() const {
   DCHECK(!is_cross_thread());
   return context_provider_wrapper_;
 }
 
-void CanvasResourceRasterSharedImage::OnMemoryDump(
+void CanvasResourceSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_path,
     size_t bytes_per_pixel) const {
