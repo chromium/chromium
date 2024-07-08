@@ -263,8 +263,7 @@ sk_sp<SkImage> ReadImage(
   if (gr_context) {
     max_size = gr_context->maxTextureSize();
   } else if (graphite_recorder) {
-    // TODO(b/279234024): Retrieve correct max texture size for graphite.
-    max_size = 8192;
+    max_size = graphite_recorder->maxTextureSize();
   } else {
     // Allow a nullptr context for testing using the software renderer.
     max_size = 0;

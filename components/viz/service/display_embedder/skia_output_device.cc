@@ -108,10 +108,8 @@ SkiaOutputDevice::SkiaOutputDevice(
     capabilities_.max_texture_size = gr_context->maxTextureSize();
   } else {
     CHECK(graphite_context_);
-    // TODO(crbug.com/40264581): Determine correct texture/render_target size
-    // once Graphite exposes it.
-    capabilities_.max_render_target_size = 8192;
-    capabilities_.max_texture_size = 8192;
+    capabilities_.max_render_target_size = graphite_context->maxTextureSize();
+    capabilities_.max_texture_size = graphite_context->maxTextureSize();
   }
 }
 
