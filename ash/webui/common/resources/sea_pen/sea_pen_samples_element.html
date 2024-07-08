@@ -2,6 +2,25 @@
   #grid {
     overflow-y: auto;
   }
+
+  wallpaper-grid-item {
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    --wallpaper-grid-item-width: calc(100% / 3 - 0.34px);
+  }
+
+  wallpaper-grid-item::part(item) {
+    border-radius: 45px;
+  }
+
+  wallpaper-grid-item::part(text) {
+    overflow: visible;
+    position: relative;
+    top: 26px;
+    white-space: normal;
+    width: calc(100% - 38px);
+  }
 </style>
 <h2 class="wallpaper-collections-heading">Sample Prompts</h2>
 <iron-list id="grid"
