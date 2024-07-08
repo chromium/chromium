@@ -50,13 +50,14 @@ class DataProtectionPageUserData
   // primary main RFH.  During navigations this should only be called after the
   // page is ready to be committed, otherwise the state will be saved to an
   // intermediate Page.
-  static void UpdateScreenshotState(content::Page& page,
-                                    const std::string& identifier,
-                                    bool allow);
+  static void UpdateDataControlsScreenshotState(content::Page& page,
+                                                const std::string& identifier,
+                                                bool allow);
 
   ~DataProtectionPageUserData() override;
 
-  const UrlSettings& settings() { return settings_; }
+  // This function will return
+  UrlSettings settings() const;
 
   void set_rt_lookup_response(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
@@ -75,13 +76,13 @@ class DataProtectionPageUserData
       UrlSettings settings,
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
 
-  // Updates the `watermark_text` in `settings_` based on the current
-  // watermark text in `rt_lookup_response_`.  If there is no response or
-  // if the response does not contain watermark text, the field in
-  // `settings_` is cleared.
-  void UpdateWatermarkStringInSettings(const std::string& identifier);
-
-  UrlSettings settings_;
+  // There are two sources for data protection settings as of this writing: data
+  // controls and URL filtering. data_controls_settings_, as the name suggests,
+  // will store data protection settings obtained from data controls. The URL
+  // filtering Data Protection settings are implicitly stored in
+  // rt_lookup_response_.
+  std::string identifier_;
+  UrlSettings data_controls_settings_;
   std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response_;
 
   PAGE_USER_DATA_KEY_DECL();
@@ -91,7 +92,7 @@ class DataProtectionPageUserData
 // for testing
 std::string GetWatermarkString(
     const std::string& identifier,
-    const safe_browsing::RTLookupResponse::ThreatInfo& threat_info);
+    const safe_browsing::MatchedUrlNavigationRule& rule);
 
 }  // namespace enterprise_data_protection
 

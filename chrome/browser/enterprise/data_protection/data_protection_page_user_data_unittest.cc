@@ -36,7 +36,8 @@ class DataProtectionPageUserDataTest
 };
 
 std::unique_ptr<safe_browsing::RTLookupResponse> BuildDummyResponse(
-    const char* watermark_text) {
+    const char* watermark_text,
+    bool allow_screenshot) {
   auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
   auto* threat_info = rt_lookup_response->add_threat_info();
   threat_info->set_verdict_type(
@@ -48,13 +49,14 @@ std::unique_ptr<safe_browsing::RTLookupResponse> BuildDummyResponse(
   matched_url_navigation_rule->set_matched_url_category("test rule category");
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message(watermark_text);
+  matched_url_navigation_rule->set_block_screenshot(!allow_screenshot);
   return rt_lookup_response;
 }
 
 }  // namespace
 
 TEST_F(DataProtectionPageUserDataTest, TestCreateForPage) {
-  auto rt_lookup_response = BuildDummyResponse("example");
+  auto rt_lookup_response = BuildDummyResponse("example", true);
 
   content::Page& page = web_contents_->GetPrimaryPage();
   content::PageUserData<
@@ -106,7 +108,7 @@ TEST_F(DataProtectionPageUserDataTest, NoThreatInfo) {
 }
 
 TEST_F(DataProtectionPageUserDataTest, UpdateRTLookupResponse) {
-  auto rt_lookup_response = BuildDummyResponse("first");
+  auto rt_lookup_response = BuildDummyResponse("first", true);
 
   content::Page& page = web_contents_->GetPrimaryPage();
   enterprise_data_protection::DataProtectionPageUserData::
@@ -116,7 +118,7 @@ TEST_F(DataProtectionPageUserDataTest, UpdateRTLookupResponse) {
       enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
   ASSERT_NE(ud->settings().watermark_text.find("first"), std::string::npos);
 
-  rt_lookup_response = BuildDummyResponse("second");
+  rt_lookup_response = BuildDummyResponse("second", true);
   enterprise_data_protection::DataProtectionPageUserData::
       UpdateRTLookupResponse(page, std::string(),
                              std::move(rt_lookup_response));
@@ -126,16 +128,39 @@ TEST_F(DataProtectionPageUserDataTest, UpdateRTLookupResponse) {
 
 TEST_F(DataProtectionPageUserDataTest, UpdateScreenshotState) {
   content::Page& page = web_contents_->GetPrimaryPage();
-  enterprise_data_protection::DataProtectionPageUserData::UpdateScreenshotState(
-      page, std::string(), false);
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(page, std::string(), false);
   auto* ud =
       enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
   ASSERT_FALSE(ud->settings().allow_screenshots);
 
-  enterprise_data_protection::DataProtectionPageUserData::UpdateScreenshotState(
-      page, std::string(), true);
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(page, std::string(), true);
   ud = enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
   ASSERT_TRUE(ud->settings().allow_screenshots);
+}
+
+TEST_F(DataProtectionPageUserDataTest, MergedScreenshotState) {
+  content::Page& page = web_contents_->GetPrimaryPage();
+
+  auto rt_lookup_response = BuildDummyResponse("first", false);
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateRTLookupResponse(page, std::string(),
+                             std::move(rt_lookup_response));
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(page, std::string(), true);
+  auto* ud =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
+  ASSERT_FALSE(ud->settings().allow_screenshots);
+
+  rt_lookup_response = BuildDummyResponse("second", true);
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateRTLookupResponse(page, std::string(),
+                             std::move(rt_lookup_response));
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(page, std::string(), false);
+  ud = enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
+  ASSERT_FALSE(ud->settings().allow_screenshots);
 }
 
 }  // namespace enterprise_data_protection

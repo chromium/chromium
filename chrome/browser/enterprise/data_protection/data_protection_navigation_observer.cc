@@ -240,7 +240,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
   std::string identifier = GetIdentifier(profile);
 
   if (IsScreenshotProtectionEnabled()) {
-    DataProtectionPageUserData::UpdateScreenshotState(
+    DataProtectionPageUserData::UpdateDataControlsScreenshotState(
         GetPageFromWebContents(web_contents), identifier,
         IsScreenshotAllowedByDataControls(profile,
                                           web_contents->GetLastCommittedURL()));
@@ -382,7 +382,7 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
     return;
   }
 
-  DataProtectionPageUserData::UpdateScreenshotState(
+  DataProtectionPageUserData::UpdateDataControlsScreenshotState(
       GetPageFromWebContents(navigation_handle->GetWebContents()), identifier_,
       allow_screenshot_);
 

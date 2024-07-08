@@ -37,65 +37,62 @@ void DataProtectionPageUserData::UpdateRTLookupResponse(
     // UpdateWatermarkStringInSettings() should be called after settings
     // the lookup response.
     ud->set_rt_lookup_response(std::move(rt_lookup_response));
-    ud->UpdateWatermarkStringInSettings(identifier);
-
-    // TODO: Check response for screenshot protection and set as needed.
     return;
   }
-
-  // TODO: Check response for screenshot protection and initialize UrlSettings
-  // as needed before passing to CreateForPage().
   CreateForPage(page, identifier, UrlSettings(), std::move(rt_lookup_response));
 }
 
 // static
-void DataProtectionPageUserData::UpdateScreenshotState(
+void DataProtectionPageUserData::UpdateDataControlsScreenshotState(
     content::Page& page,
     const std::string& identifier,
     bool allow) {
   auto* ud = GetForPage(page);
   if (ud) {
-    ud->settings_.allow_screenshots = allow;
+    ud->data_controls_settings_.allow_screenshots = allow;
     return;
   }
 
-  UrlSettings settings;
-  settings.allow_screenshots = allow;
-  CreateForPage(page, identifier, settings, nullptr);
+  UrlSettings data_controls_settings;
+  data_controls_settings.allow_screenshots = allow;
+  CreateForPage(page, identifier, data_controls_settings, nullptr);
 }
 
 DataProtectionPageUserData::DataProtectionPageUserData(
     content::Page& page,
     const std::string& identifier,
-    UrlSettings settings,
+    UrlSettings data_controls_settings,
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response)
     : PageUserData(page),
-      settings_(std::move(settings)),
-      rt_lookup_response_(std::move(rt_lookup_response)) {
-  UpdateWatermarkStringInSettings(identifier);
-}
+      identifier_(identifier),
+      data_controls_settings_(std::move(data_controls_settings)),
+      rt_lookup_response_(std::move(rt_lookup_response)) {}
 
 DataProtectionPageUserData::~DataProtectionPageUserData() = default;
 
-void DataProtectionPageUserData::UpdateWatermarkStringInSettings(
-    const std::string& identifier) {
-  settings_.watermark_text =
-      (rt_lookup_response_ && rt_lookup_response_->threat_info_size() > 0)
-          ? GetWatermarkString(identifier, rt_lookup_response_->threat_info(0))
-          : std::string();
+UrlSettings DataProtectionPageUserData::settings() const {
+  if (!rt_lookup_response_ || rt_lookup_response_->threat_info().empty()) {
+    return data_controls_settings_;
+  }
+  const safe_browsing::RTLookupResponse::ThreatInfo& threat_info =
+      rt_lookup_response_->threat_info(0);
+  if (!threat_info.has_matched_url_navigation_rule()) {
+    return data_controls_settings_;
+  }
+  const safe_browsing::MatchedUrlNavigationRule& rule =
+      threat_info.matched_url_navigation_rule();
+  UrlSettings merged_settings;
+  merged_settings.watermark_text = GetWatermarkString(identifier_, rule);
+  merged_settings.allow_screenshots =
+      data_controls_settings_.allow_screenshots && !rule.block_screenshot();
+  return merged_settings;
 }
 
 PAGE_USER_DATA_KEY_IMPL(DataProtectionPageUserData);
 
 std::string GetWatermarkString(
     const std::string& identifier,
-    const safe_browsing::RTLookupResponse::ThreatInfo& threat_info) {
-  if (!threat_info.has_matched_url_navigation_rule()) {
-    return std::string();
-  }
-
-  const safe_browsing::MatchedUrlNavigationRule& rule =
-      threat_info.matched_url_navigation_rule();
+    const safe_browsing::MatchedUrlNavigationRule& rule) {
   if (!rule.has_watermark_message()) {
     return std::string();
   }

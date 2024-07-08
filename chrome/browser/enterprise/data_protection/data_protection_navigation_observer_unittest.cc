@@ -783,9 +783,10 @@ TEST_P(DataProtectionWatermarkStringTest,
        TestGetWatermarkStringFromThreatInfo) {
   safe_browsing::RTLookupResponse::ThreatInfo threat_info = GetTestThreatInfo(
       GetParam().custom_message, GetParam().timestamp_seconds);
-  EXPECT_EQ(enterprise_data_protection::GetWatermarkString(
-                GetParam().identifier, threat_info),
-            GetParam().expected);
+  EXPECT_EQ(
+      enterprise_data_protection::GetWatermarkString(
+          GetParam().identifier, threat_info.matched_url_navigation_rule()),
+      GetParam().expected);
 }
 
 }  // namespace enterprise_data_protection
