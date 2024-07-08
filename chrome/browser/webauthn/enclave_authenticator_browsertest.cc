@@ -3175,8 +3175,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
 // Verify that GPM will do UV on a uv=preferred request if and only if
 // biometrics are available.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserVerificationPolicy DISABLED_UserVerificationPolicy
+#else
+#define MAYBE_UserVerificationPolicy UserVerificationPolicy
+#endif
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       UserVerificationPolicy) {
+                       MAYBE_UserVerificationPolicy) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
