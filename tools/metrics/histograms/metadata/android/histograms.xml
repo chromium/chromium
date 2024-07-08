@@ -5105,6 +5105,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.ApiCall.Duration.Framework.LOAD_DATA_WITH_BASE_URL"
+    units="ms" expires_after="2025-06-30">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long the WebView loadDataWithBaseURL API takes to run. This measures the
+    sync time the API takes to return not the actual time until the page loads.
+    This is logged only when the app calls loadDataWithBaseURL explicitly.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ApiCall.Duration.Framework.LOAD_URL"
+    units="ms" expires_after="2025-06-30">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long the WebView loadUrl API takes to run. This measures the sync time
+    the API takes to return not the actual time until the page loads. This is
+    logged only when the app calls loadUrl explicitly.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.ApiCall.Duration.Framework.LOAD_URL_ADDITIONAL_HEADERS"
+    units="ms" expires_after="2025-06-30">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long the WebView loadUrl with addtional headers API takes to run. This
+    measures the sync time the API takes to return not the actual time until the
+    page loads. This is logged only when the app calls loadUrl with addtional
+    headers explicitly.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ApiCall.Overridden.WebChromeClient"
     enum="WebChromeClientMethod" expires_after="2025-05-31">
   <owner>pbirk@chromium.org</owner>

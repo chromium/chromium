@@ -1189,20 +1189,23 @@ class WebViewChromium
                     new Runnable() {
                         @Override
                         public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
-                                recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
-                                mAwContents.loadUrl(url, additionalHttpHeaders);
-                            }
+                            loadUrlNoPost(url, additionalHttpHeaders);
                         }
                     });
             return;
         }
+        loadUrlNoPost(url, additionalHttpHeaders);
+    }
+
+    private void loadUrlNoPost(final String url, final Map<String, String> additionalHttpHeaders) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
             recordWebViewApiCall(ApiCall.LOAD_URL_ADDITIONAL_HEADERS);
+            long startTime = SystemClock.uptimeMillis();
             mAwContents.loadUrl(url, additionalHttpHeaders);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.ApiCall.Duration.Framework.LOAD_URL_ADDITIONAL_HEADERS",
+                    SystemClock.uptimeMillis() - startTime);
         }
     }
 
@@ -1216,18 +1219,22 @@ class WebViewChromium
                     new Runnable() {
                         @Override
                         public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
-                                recordWebViewApiCall(ApiCall.LOAD_URL);
-                                mAwContents.loadUrl(url);
-                            }
+                            loadUrlNoPost(url);
                         }
                     });
             return;
         }
+        loadUrlNoPost(url);
+    }
+
+    private void loadUrlNoPost(final String url) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
             recordWebViewApiCall(ApiCall.LOAD_URL);
+            long startTime = SystemClock.uptimeMillis();
             mAwContents.loadUrl(url);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.ApiCall.Duration.Framework.LOAD_URL",
+                    SystemClock.uptimeMillis() - startTime);
         }
     }
 
@@ -1296,21 +1303,29 @@ class WebViewChromium
                     new Runnable() {
                         @Override
                         public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.LOAD_DATA_WITH_BASE_URL")) {
-                                recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
-                                mAwContents.loadDataWithBaseURL(
-                                        baseUrl, data, mimeType, encoding, historyUrl);
-                            }
+                            loadDataWithBaseURLNoPost(
+                                    baseUrl, data, mimeType, encoding, historyUrl);
                         }
                     });
             return;
         }
+        loadDataWithBaseURLNoPost(baseUrl, data, mimeType, encoding, historyUrl);
+    }
+
+    private void loadDataWithBaseURLNoPost(
+            final String baseUrl,
+            final String data,
+            final String mimeType,
+            final String encoding,
+            final String historyUrl) {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA_WITH_BASE_URL")) {
             recordWebViewApiCall(ApiCall.LOAD_DATA_WITH_BASE_URL);
+            long startTime = SystemClock.uptimeMillis();
             mAwContents.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.ApiCall.Duration.Framework.LOAD_DATA_WITH_BASE_URL",
+                    SystemClock.uptimeMillis() - startTime);
         }
     }
 
