@@ -8,8 +8,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 
 import java.lang.annotation.Retention;
@@ -134,20 +132,16 @@ class GoogleBottomBarLogger {
      * Determines the appropriate {@link GoogleBottomBarButtonEvent} based on button configuration
      * and Page Insights availability.
      *
-     * @param pageInsightsCoordinatorSupplier A supplier for the PageInsightsCoordinator.
      * @param buttonConfig The configuration of the button being logged.
      * @return The corresponding event type from {@link GoogleBottomBarButtonEvent}.
      */
     static @GoogleBottomBarButtonEvent int getGoogleBottomBarButtonEvent(
-            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier,
             BottomBarConfig.ButtonConfig buttonConfig) {
         switch (buttonConfig.getId()) {
             case ButtonId.PIH_BASIC, ButtonId.PIH_COLORED, ButtonId.PIH_EXPANDED -> {
-                return pageInsightsCoordinatorSupplier.hasValue()
-                        ? GoogleBottomBarButtonEvent.PIH_CHROME
-                        : buttonConfig.getPendingIntent() != null
-                                ? GoogleBottomBarButtonEvent.PIH_EMBEDDER
-                                : GoogleBottomBarButtonEvent.UNKNOWN;
+                return buttonConfig.getPendingIntent() != null
+                        ? GoogleBottomBarButtonEvent.PIH_EMBEDDER
+                        : GoogleBottomBarButtonEvent.UNKNOWN;
             }
             case ButtonId.SHARE -> {
                 return buttonConfig.getPendingIntent() != null

@@ -8,14 +8,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
@@ -41,7 +38,6 @@ public class GoogleBottomBarCoordinator {
 
     private final Context mContext;
     private final GoogleBottomBarViewCreator mGoogleBottomBarViewCreator;
-    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
 
     private boolean mHasNativeInitializationFinished;
 
@@ -51,7 +47,6 @@ public class GoogleBottomBarCoordinator {
      * @param activity The associated {@link Activity}.
      * @param tabProvider Supplier for the current activity tab.
      * @param shareDelegateSupplier Supplier for the the share delegate.
-     * @param pageInsightsCoordinatorSupplier Supplier for the page insights coordinator.
      * @param googleBottomBarIntentParams The encoded button list provided through IntentParams
      * @param customButtonsOnGoogleBottomBar List of {@link CustomButtonParams} provided by the
      *     embedder to be displayed in the Bottom Bar.
@@ -60,17 +55,14 @@ public class GoogleBottomBarCoordinator {
             Activity activity,
             Supplier<Tab> tabProvider,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier,
             GoogleBottomBarIntentParams googleBottomBarIntentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         mContext = activity;
-        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
         mGoogleBottomBarViewCreator =
                 new GoogleBottomBarViewCreator(
                         activity,
                         tabProvider,
                         shareDelegateSupplier,
-                        this::getPageInsightsCoordinator,
                         getButtonConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }
@@ -103,6 +95,7 @@ public class GoogleBottomBarCoordinator {
      * Bottom Bar View have finished their initialization.
      */
     public void onFinishNativeInitialization() {
+        // TODO(b/345129005): Clean this stuff up.
         if (!mHasNativeInitializationFinished) {
             mHasNativeInitializationFinished = true;
             mGoogleBottomBarViewCreator.logButtons();
@@ -119,15 +112,5 @@ public class GoogleBottomBarCoordinator {
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         BottomBarConfigCreator configCreator = new BottomBarConfigCreator(mContext);
         return configCreator.create(intentParams, customButtonsOnGoogleBottomBar);
-    }
-
-    private @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
-        if (mHasNativeInitializationFinished) {
-            return mPageInsightsCoordinatorSupplier.get();
-        }
-        Log.e(
-                TAG,
-                "Can't access PageInsights Coordinator before native initialization is finished.");
-        return null;
     }
 }

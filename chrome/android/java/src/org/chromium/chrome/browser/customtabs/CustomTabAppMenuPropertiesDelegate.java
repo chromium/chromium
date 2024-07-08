@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 
 /** App menu properties delegate for {@link CustomTabActivity}. */
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
@@ -62,7 +61,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private final boolean mIsOpenedByChrome;
     private final boolean mIsIncognito;
     private final boolean mIsStartIconMenu;
-    private final BooleanSupplier mIsPageInsightsHubEnabled;
 
     private final List<String> mMenuEntries;
     private final Map<String, Integer> mTitleToItemIdMap = new HashMap<String, Integer>();
@@ -88,7 +86,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean showDownload,
             boolean isIncognito,
             boolean isStartIconMenu,
-            BooleanSupplier isPageInsightsHubEnabled,
             Supplier<ReadAloudController> readAloudControllerSupplier,
             boolean hasClientPackage) {
         super(
@@ -111,7 +108,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         mShowDownload = showDownload;
         mIsIncognito = isIncognito;
         mIsStartIconMenu = isStartIconMenu;
-        mIsPageInsightsHubEnabled = isPageInsightsHubEnabled;
         mHasClientPackage = hasClientPackage;
     }
 
@@ -271,10 +267,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItem.setTitle(title);
             } else {
                 openInChromeItem.setVisible(false);
-            }
-
-            if (mIsPageInsightsHubEnabled.getAsBoolean()) {
-                menu.findItem(R.id.page_insights_id).setVisible(true);
             }
 
             // Add custom menu items.

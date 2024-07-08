@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
@@ -38,17 +37,14 @@ class GoogleBottomBarActionsHandler {
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
-    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
 
     GoogleBottomBarActionsHandler(
             Activity activity,
             Supplier<Tab> tabProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier) {
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mShareDelegateSupplier = shareDelegateSupplier;
-        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
     }
 
     View.OnClickListener getClickListener(ButtonConfig buttonConfig) {
@@ -97,17 +93,12 @@ class GoogleBottomBarActionsHandler {
     }
 
     private void onPageInsightsButtonClick(ButtonConfig buttonConfig) {
-        if (mPageInsightsCoordinatorSupplier.get() != null) {
-            mPageInsightsCoordinatorSupplier.get().launch();
-            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_CHROME);
+        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+        if (pendingIntent != null) {
+            sendPendingIntentWithUrl(pendingIntent);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_EMBEDDER);
         } else {
-            PendingIntent pendingIntent = buttonConfig.getPendingIntent();
-            if (pendingIntent != null) {
-                sendPendingIntentWithUrl(pendingIntent);
-                GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.PIH_EMBEDDER);
-            } else {
-                Log.e(TAG, "Can't perform page insights action as pending intent is null.");
-            }
+            Log.e(TAG, "Can't perform page insights action as pending intent is null.");
         }
     }
 

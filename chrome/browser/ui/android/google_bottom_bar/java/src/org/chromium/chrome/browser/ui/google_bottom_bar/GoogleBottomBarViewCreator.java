@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
@@ -35,7 +34,6 @@ public class GoogleBottomBarViewCreator {
     private final Context mContext;
     private final BottomBarConfig mConfig;
     private final GoogleBottomBarActionsHandler mActionsHandler;
-    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
     private ViewGroup mRootView;
 
     /**
@@ -44,24 +42,17 @@ public class GoogleBottomBarViewCreator {
      * @param activity An Android activity.
      * @param tabProvider Supplier for the current activity tab.
      * @param shareDelegateSupplier Supplier for the the share delegate.
-     * @param pageInsightsCoordinatorSupplier Supplier for the page insights coordinator.
      * @param config Bottom bar configuration for the buttons that will be displayed.
      */
     public GoogleBottomBarViewCreator(
             Activity activity,
             Supplier<Tab> tabProvider,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier,
             BottomBarConfig config) {
         mContext = activity;
         mConfig = config;
         mActionsHandler =
-                new GoogleBottomBarActionsHandler(
-                        activity,
-                        tabProvider,
-                        shareDelegateSupplier,
-                        pageInsightsCoordinatorSupplier);
-        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
+                new GoogleBottomBarActionsHandler(activity, tabProvider, shareDelegateSupplier);
     }
 
     /**
@@ -171,9 +162,7 @@ public class GoogleBottomBarViewCreator {
         for (ButtonConfig buttonConfig : mConfig.getButtonList()) {
             View button = mRootView.findViewById(buttonConfig.getId());
             if (button != null) {
-                int buttonEvent =
-                        GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
-                                mPageInsightsCoordinatorSupplier, buttonConfig);
+                int buttonEvent = GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(buttonConfig);
                 GoogleBottomBarLogger.logButtonShown(buttonEvent);
             }
         }
@@ -236,9 +225,7 @@ public class GoogleBottomBarViewCreator {
         button.setVisibility(View.VISIBLE);
 
         if (!isFirstTimeShown) {
-            int buttonEvent =
-                    GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(
-                            mPageInsightsCoordinatorSupplier, buttonConfig);
+            int buttonEvent = GoogleBottomBarLogger.getGoogleBottomBarButtonEvent(buttonConfig);
             GoogleBottomBarLogger.logButtonUpdated(buttonEvent);
         }
         return true;

@@ -585,13 +585,6 @@ public class RootUiCoordinator
         return mTopUiThemeColorProvider;
     }
 
-    /** Returns the controller for the Page Insights bottom sheet, if it is enabled. */
-    // TODO(b/307046796): Remove this once we have found better way to integrate with back handling
-    // logic.
-    public @Nullable ManagedBottomSheetController getPageInsightsBottomSheetController() {
-        return null;
-    }
-
     /**
      * @return The {@link DesktopWindowStateProvider} instance associated with the current activity.
      */

@@ -33,7 +33,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
@@ -64,9 +63,6 @@ public class GoogleBottomBarCoordinatorTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
-    @Mock private PageInsightsCoordinator mPageInsightsCoordinator;
-    @Mock private Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
-
     private Activity mActivity;
     private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
 
@@ -83,7 +79,6 @@ public class GoogleBottomBarCoordinatorTest {
                         mActivity,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        mPageInsightsCoordinatorSupplier,
                         googleBottomBarIntentParams,
                         customButtonParamsList);
 
@@ -133,38 +128,12 @@ public class GoogleBottomBarCoordinatorTest {
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
                         .build();
-        when(mPageInsightsCoordinatorSupplier.hasValue()).thenReturn(true);
-        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
         mGoogleBottomBarCoordinator =
                 createGoogleBottomBarCoordinator(
                         List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE), new ArrayList<>());
         mGoogleBottomBarCoordinator.createGoogleBottomBarView();
 
         mGoogleBottomBarCoordinator.getGoogleBottomBarViewCreatorForTesting().logButtons();
-
-        histogramWatcher.assertExpected();
-        histogramWatcher.close();
-    }
-
-    @Test
-    public void
-            testOnFinishNativeInitialization_pageInsightsSupplierIsPresent_logsPageInsightsChrome() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                BUTTON_SHOWN_HISTOGRAM,
-                                GoogleBottomBarButtonEvent.PIH_CHROME,
-                                GoogleBottomBarButtonEvent.SHARE_CHROME,
-                                GoogleBottomBarButtonEvent.SAVE_DISABLED)
-                        .build();
-        when(mPageInsightsCoordinatorSupplier.hasValue()).thenReturn(true);
-        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
-        mGoogleBottomBarCoordinator =
-                createGoogleBottomBarCoordinator(
-                        List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE), new ArrayList<>());
-        mGoogleBottomBarCoordinator.createGoogleBottomBarView();
-
-        mGoogleBottomBarCoordinator.onFinishNativeInitialization();
 
         histogramWatcher.assertExpected();
         histogramWatcher.close();
@@ -181,8 +150,6 @@ public class GoogleBottomBarCoordinatorTest {
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
                         .build();
-        when(mPageInsightsCoordinatorSupplier.hasValue()).thenReturn(false);
-        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(null);
         mGoogleBottomBarCoordinator =
                 createGoogleBottomBarCoordinator(
                         List.of(PIH_BASIC, PIH_BASIC, SHARE, SAVE),
@@ -206,7 +173,6 @@ public class GoogleBottomBarCoordinatorTest {
                 mActivity,
                 mTabSupplier,
                 mShareDelegateSupplier,
-                mPageInsightsCoordinatorSupplier,
                 googleBottomBarIntentParams,
                 customButtonParamsList);
     }

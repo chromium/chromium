@@ -46,7 +46,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
@@ -92,9 +91,6 @@ public class GoogleBottomBarActionsHandlerTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
-    @Mock private PageInsightsCoordinator mPageInsightsCoordinator;
-    @Mock private Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
-
     @Captor private ArgumentCaptor<LensIntentParams> mLensIntentParamsArgumentCaptor;
 
     private Activity mActivity;
@@ -106,11 +102,7 @@ public class GoogleBottomBarActionsHandlerTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
         mGoogleBottomBarActionsHandler =
-                new GoogleBottomBarActionsHandler(
-                        mActivity,
-                        mTabSupplier,
-                        mShareDelegateSupplier,
-                        mPageInsightsCoordinatorSupplier);
+                new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mGURL);
@@ -223,30 +215,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
         verify(mShareDelegate)
                 .share(eq(mTab), eq(false), eq(ShareDelegate.ShareOrigin.GOOGLE_BOTTOM_BAR));
-    }
-
-    @Test
-    public void
-            testPageInsightsAction_pageInsightCoordinatorNotNull_initiatePageInsightsCoordinatorLaunch() {
-        mHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.PIH_CHROME);
-        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
-        Context context = mActivity.getApplicationContext();
-        View buttonView = new View(context);
-        BottomBarConfig.ButtonConfig buttonConfig =
-                new BottomBarConfig.ButtonConfig(
-                        PIH_BASIC,
-                        context.getDrawable(R.drawable.page_insights_icon),
-                        context.getString(
-                                R.string.google_bottom_bar_page_insights_button_description),
-                        /* pendingIntent= */ null);
-
-        View.OnClickListener clickListener =
-                mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
-        clickListener.onClick(buttonView);
-
-        verify(mPageInsightsCoordinator).launch();
     }
 
     @Test

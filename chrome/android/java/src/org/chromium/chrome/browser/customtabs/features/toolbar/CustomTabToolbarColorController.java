@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -199,13 +198,6 @@ public class CustomTabToolbarColorController {
                 && CustomTabsConnection.getInstance()
                         .shouldEnableGoogleBottomBarForIntent(mIntentDataProvider)) {
             return mActivity.getColor(R.color.google_bottom_bar_background_color);
-        }
-        // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after Page Insights Hub is
-        // launched
-        else if (PageInsightsCoordinator.isFeatureEnabled()
-                && CustomTabsConnection.getInstance()
-                        .shouldEnablePageInsightsForIntent(mIntentDataProvider)) {
-            return mActivity.getColor(R.color.gm3_baseline_surface_container);
         }
         return switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR -> mTopUiThemeColorProvider.calculateColor(

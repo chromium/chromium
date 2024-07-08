@@ -156,13 +156,6 @@ found in the LICENSE file.
             android:layout_gravity="start|bottom"
             android:inflatedId="@+id/readaloud_mini_player" />
 
-        <ViewStub
-            android:id="@+id/page_insights_hub_container_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/page_insights_hub_container"
-            android:layout="@layout/page_insights_hub_container" />
-
         <FrameLayout
             android:id="@+id/survey_container"
             android:layout_width="wrap_content"

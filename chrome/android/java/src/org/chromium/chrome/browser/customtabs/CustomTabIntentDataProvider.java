@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsFeature;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -296,14 +295,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     ALLOWLIST_ENTRIES_PARAM_NAME,
                     "");
 
-    // TODO(b/306597895): Remove the String when Page Insights Hub (Chrome Side Implementation)
-    // experiment is completed
-    public static final String EXTRA_PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE =
-            "org.chromium.chrome.browser.customtabs.extra.PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE";
-
     /**
      * Extra that specifies the {@link PendingIntent} to be sent when the user swipes up from the
      * secondary (bottom) toolbar.
+     *
      * <p>Use {@link CustomTabsIntent.Builder#setSecondaryToolbarSwipeUpGesture(PendingIntent)} or
      * {@link CustomTabsIntent#EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_GESTURE} as this is deprecated.
      */
@@ -726,35 +721,24 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
         if (menuItems == null) return;
-        boolean isPageInsightsHubEnabled = isPageInsightsHubEnabled();
-        String pihOverflowMenuItemTitle =
-                IntentUtils.safeGetStringExtra(mIntent, EXTRA_PAGE_INSIGHTS_OVERFLOW_ITEM_TITLE);
         for (int i = 0; i < Math.min(MAX_CUSTOM_MENU_ITEMS, menuItems.size()); i++) {
             Bundle bundle = menuItems.get(i);
             String title = IntentUtils.safeGetString(bundle, CustomTabsIntent.KEY_MENU_ITEM_TITLE);
             PendingIntent pendingIntent =
                     IntentUtils.safeGetParcelable(bundle, CustomTabsIntent.KEY_PENDING_INTENT);
-            if (TextUtils.isEmpty(title)
-                    || pendingIntent == null
-                    // Discard Page Insights overflow menu item provided by embedder if the Chrome
-                    // implementation is enabled
-                    || (isPageInsightsHubEnabled && title.equals(pihOverflowMenuItemTitle))) {
+            if (TextUtils.isEmpty(title) || pendingIntent == null) {
                 continue;
             }
             mMenuEntries.add(new Pair<String, PendingIntent>(title, pendingIntent));
         }
     }
 
-    private boolean isPageInsightsHubEnabled() {
-        return (PageInsightsCoordinator.isFeatureEnabled()
-                && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(this));
-    }
-
     /**
      * Triggers the client-defined action when the user clicks a custom menu item.
+     *
      * @param activity The {@link Activity} to use for sending the {@link PendingIntent}.
-     * @param menuIndex The index that the menu item is shown in the result of
-     *                  {@link #getMenuTitles()}.
+     * @param menuIndex The index that the menu item is shown in the result of {@link
+     *     #getMenuTitles()}.
      * @param url The URL to attach as additional data to the {@link PendingIntent}.
      * @param title The title to attach as additional data to the {@link PendingIntent}.
      */

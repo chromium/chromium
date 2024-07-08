@@ -44,7 +44,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
@@ -75,9 +74,6 @@ public class GoogleBottomBarViewCreatorTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
-    @Mock private PageInsightsCoordinator mPageInsightsCoordinator;
-    @Mock private Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
-
     private Activity mActivity;
 
     private BottomBarConfigCreator mConfigCreator;
@@ -97,11 +93,7 @@ public class GoogleBottomBarViewCreatorTest {
     private GoogleBottomBarViewCreator getGoogleBottomBarViewCreator(
             BottomBarConfig bottomBarConfig) {
         return new GoogleBottomBarViewCreator(
-                mActivity,
-                mTabSupplier,
-                mShareDelegateSupplier,
-                mPageInsightsCoordinatorSupplier,
-                bottomBarConfig);
+                mActivity, mTabSupplier, mShareDelegateSupplier, bottomBarConfig);
     }
 
     private BottomBarConfig getEvenLayoutConfig() {
@@ -111,17 +103,11 @@ public class GoogleBottomBarViewCreatorTest {
                 new ArrayList<>());
     }
 
-    private void setUpPageInsightsCoordinatorSupplier() {
-        when(mPageInsightsCoordinatorSupplier.get()).thenReturn(mPageInsightsCoordinator);
-        when(mPageInsightsCoordinatorSupplier.hasValue()).thenReturn(true);
-    }
-
     private BottomBarConfig getAllChromeButtonsConfig() {
-        return getAllChromeButtonsConfig(List.of(0, PIH_BASIC, SHARE, SAVE));
+        return getAllChromeButtonsConfig(List.of(0, SHARE, SAVE));
     }
 
     private BottomBarConfig getAllChromeButtonsConfig(List<Integer> buttonIdList) {
-        setUpPageInsightsCoordinatorSupplier();
         return mConfigCreator.create(
                 GoogleBottomBarIntentParams.newBuilder().addAllEncodedButton(buttonIdList).build(),
                 new ArrayList<>());
@@ -278,7 +264,6 @@ public class GoogleBottomBarViewCreatorTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
                                 BUTTON_SHOWN_HISTOGRAM,
-                                GoogleBottomBarButtonEvent.PIH_CHROME,
                                 GoogleBottomBarButtonEvent.SHARE_CHROME,
                                 GoogleBottomBarButtonEvent.SAVE_DISABLED)
                         .build();
@@ -311,8 +296,7 @@ public class GoogleBottomBarViewCreatorTest {
     }
 
     @Test
-    public void
-            testLogButtons_pageInsightCoordinatorIsNullAndPendingIntentIsNull_logsUnknownButtons() {
+    public void testLogButtons_pageInsightsPendingIntentIsNull_logsUnknownButtons() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_SHOWN_HISTOGRAM, GoogleBottomBarButtonEvent.UNKNOWN);
