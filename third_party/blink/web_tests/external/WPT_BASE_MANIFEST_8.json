@@ -21592,6 +21592,45 @@
        {}
       ]
      ],
+     "page-background-001-print.html": [
+      "e1bc2196940047d8948f819c32d65aedd0e76416",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-background-001-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-background-002-print.html": [
+      "240d468ce4438ee29a6afb74aee1539b897b5ea5",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-background-002-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-background-003-print.html": [
+      "fbc72ecd7d77bd0a2382149019495736e7be34ce",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-background-003-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-background-image-print.html": [
       "633cd4ec6c9027902782f271c2161394cf6cb5e6",
       [
@@ -331607,6 +331646,18 @@
       "d8468e3b14dc0346f178727336572f5122b0e4bf",
       []
      ],
+     "page-background-001-print-ref.html": [
+      "8269582d04172ac593bea8026d74cc80128a91e1",
+      []
+     ],
+     "page-background-002-print-ref.html": [
+      "997a28c65acaf09babec8dd37ac9187af5d224e9",
+      []
+     ],
+     "page-background-003-print-ref.html": [
+      "93f3c7e95adc32a674f213cd273a887f76b57f20",
+      []
+     ],
      "page-background-image-print-ref.html": [
       "f38cc89838027f5f862cbd08459c1694f4a30e01",
       []
@@ -359875,7 +359926,7 @@
        []
       ],
       "post-to-owner.py": [
-       "256dd6e49dcca90d503b9b7c2a4d1cf04cb330d0",
+       "2d4896867bb8f4708fa041f7677d85ad7c77de38",
        []
       ],
       "record-header.py": [
@@ -736690,7 +736741,7 @@
          ]
         ],
         "prompt_unload.py": [
-         "2dc241ba396fd5988c6c95f36afedcab950077b6",
+         "e7d88ad272d0ae0a3cabef1bfb2b675475e70698",
          [
           null,
           {}
@@ -736830,7 +736881,7 @@
        },
        "handle_user_prompt": {
         "handle_user_prompt.py": [
-         "5bbc616960fa0461e9cf14ceca918217f633b381",
+         "9044f220bcc8d242a15b415a76882f102ee9d9dc",
          [
           null,
           {}
@@ -737120,7 +737171,7 @@
        },
        "user_prompt_closed": {
         "beforeunload.py": [
-         "6b2e788a05879aa6a2326196f415701d7449573d",
+         "ab16526fdb177417269ff93c2e3d8abfdf730e56",
          [
           null,
           {}
@@ -737362,7 +737413,7 @@
       },
       "integration": {
        "cookies_with_network_events.py": [
-        "16ca358e23be51d2de3047fd28ec47b66ece4163",
+        "30ba8e3bd7b8009070c4a6c1739b43efc8235f50",
         [
          null,
          {}
