@@ -34,14 +34,14 @@
 // Initializer used for passkey credentials.
 - (instancetype)initWithFavicon:(NSString*)favicon
                recordIdentifier:(NSString*)recordIdentifier
-                         syncId:(NSString*)syncId
+                         syncId:(NSData*)syncId
                        username:(NSString*)username
                 userDisplayName:(NSString*)userDisplayName
-                         userId:(NSString*)userId
-                   credentialId:(NSString*)credentialId
+                         userId:(NSData*)userId
+                   credentialId:(NSData*)credentialId
                            rpId:(NSString*)rpId
-                     privateKey:(NSString*)privateKey
-                      encrypted:(NSString*)encrypted
+                     privateKey:(NSData*)privateKey
+                      encrypted:(NSData*)encrypted
                    creationTime:(int64_t)creationTime NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

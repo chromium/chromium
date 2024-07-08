@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
-#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -24,14 +22,16 @@ namespace {
 
 constexpr int64_t kJan1st2024 = 1704085200;
 
-using base::HexEncode;
 using base::SysNSStringToUTF8;
-using base::SysUTF8ToNSString;
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
 using ::testing::_;
+
+NSData* StringToData(std::string str) {
+  return [NSData dataWithBytes:str.data() length:str.length()];
+}
 
 ArchivableCredential* TestPasswordCredential() {
   NSString* username = @"username_value";
@@ -50,18 +50,18 @@ ArchivableCredential* TestPasswordCredential() {
 }
 
 ArchivableCredential* TestPasskeyCredential() {
-  return [[ArchivableCredential alloc]
-       initWithFavicon:nil
-      recordIdentifier:@"recordIdentifier"
-                syncId:SysUTF8ToNSString(HexEncode("syncId"))
-              username:@"username"
-       userDisplayName:@"userDisplayName"
-                userId:SysUTF8ToNSString(HexEncode("userId"))
-          credentialId:SysUTF8ToNSString(HexEncode("credentialId"))
-                  rpId:@"rpId"
-            privateKey:SysUTF8ToNSString(HexEncode("privateKey"))
-             encrypted:SysUTF8ToNSString(HexEncode("encrypted"))
-          creationTime:kJan1st2024];
+  return
+      [[ArchivableCredential alloc] initWithFavicon:nil
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:StringToData("privateKey")
+                                          encrypted:StringToData("encrypted")
+                                       creationTime:kJan1st2024];
 }
 
 class CredentialProviderMigratorTest : public PlatformTest {

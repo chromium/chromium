@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/strings/string_number_conversions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/ASPasswordCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
-
-using base::HexEncode;
-using base::SysUTF8ToNSString;
 
 namespace {
 
@@ -19,6 +14,10 @@ constexpr int64_t kJan1st2024 = 1704085200;
 
 using ASPasskeyCredentialIdentity_CredentialTest = PlatformTest;
 using ASPasswordCredentialIdentity_CredentialTest = PlatformTest;
+
+NSData* StringToData(std::string str) {
+  return [NSData dataWithBytes:str.data() length:str.length()];
+}
 
 // Tests that ASPasswordCredentialIdentity can be created from Credential.
 TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
@@ -48,14 +47,14 @@ TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
     ArchivableCredential* credential = [[ArchivableCredential alloc]
          initWithFavicon:@"favicon"
         recordIdentifier:@"recordIdentifier"
-                  syncId:SysUTF8ToNSString(HexEncode("syncId"))
+                  syncId:StringToData("syncId")
                 username:@"username"
          userDisplayName:@"userDisplayName"
-                  userId:SysUTF8ToNSString(HexEncode("userId"))
-            credentialId:SysUTF8ToNSString(HexEncode("credentialId"))
+                  userId:StringToData("userId")
+            credentialId:StringToData("credentialId")
                     rpId:@"rpId"
-              privateKey:SysUTF8ToNSString(HexEncode("privateKey"))
-               encrypted:SysUTF8ToNSString(HexEncode("encrypted"))
+              privateKey:StringToData("privateKey")
+               encrypted:StringToData("encrypted")
             creationTime:kJan1st2024];
     ASPasskeyCredentialIdentity* credentialIdentity =
         [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];

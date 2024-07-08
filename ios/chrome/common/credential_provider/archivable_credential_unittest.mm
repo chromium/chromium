@@ -14,6 +14,10 @@ constexpr int64_t kJan1st2024 = 1704085200;
 
 using ArchivableCredentialTest = PlatformTest;
 
+NSData* StringToData(std::string str) {
+  return [NSData dataWithBytes:str.data() length:str.length()];
+}
+
 ArchivableCredential* TestCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
                                               password:@"qwery123"
@@ -26,17 +30,18 @@ ArchivableCredential* TestCredential() {
 }
 
 ArchivableCredential* TestPasskeyCredential() {
-  return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                      recordIdentifier:@"recordIdentifier"
-                                                syncId:@"syncId"
-                                              username:@"username"
-                                       userDisplayName:@"userDisplayName"
-                                                userId:@"userId"
-                                          credentialId:@"credentialId"
-                                                  rpId:@"rpId"
-                                            privateKey:@"privateKey"
-                                             encrypted:@"encrypted"
-                                          creationTime:kJan1st2024];
+  return
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:StringToData("privateKey")
+                                          encrypted:StringToData("encrypted")
+                                       creationTime:kJan1st2024];
 }
 
 // Tests that an ArchivableCredential can be created.
@@ -64,29 +69,30 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
                                    recordIdentifier:@"recordIdentifier"
-                                             syncId:@"syncId"
+                                             syncId:StringToData("syncId")
                                            username:@"username"
                                     userDisplayName:@"userDisplayName"
-                                             userId:@"userId"
-                                       credentialId:@"credentialId"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
                                                rpId:@"rpId"
-                                         privateKey:@"test"
+                                         privateKey:StringToData("test")
                                           encrypted:nil
                                        creationTime:kJan1st2024];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 
-  credential = [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                            recordIdentifier:@"recordIdentifier"
-                                                      syncId:@"syncId"
-                                                    username:@"username"
-                                             userDisplayName:@"userDisplayName"
-                                                      userId:@"userId"
-                                                credentialId:@"credentialId"
-                                                        rpId:@"rpId"
-                                                  privateKey:nil
-                                                   encrypted:@"test"
-                                                creationTime:kJan1st2024];
+  credential =
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:nil
+                                          encrypted:StringToData("test")
+                                       creationTime:kJan1st2024];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 }
@@ -217,31 +223,31 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
   EXPECT_NSEQ(credential, credentialIdentical);
   EXPECT_EQ(credential.hash, credentialIdentical.hash);
 
-  ArchivableCredential* credentialSameIdentifier =
-      [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
-                                   recordIdentifier:@"recordIdentifier"
-                                             syncId:@"other_syncId"
-                                           username:@"other_username"
-                                    userDisplayName:@"other_userDisplayName"
-                                             userId:@"other_userId"
-                                       credentialId:@"other_credentialId"
-                                               rpId:@"other_rpId"
-                                         privateKey:@"other_privateKey"
-                                          encrypted:@"other_encrypted"
-                                       creationTime:kJan1st2024 + 10];
+  ArchivableCredential* credentialSameIdentifier = [[ArchivableCredential alloc]
+       initWithFavicon:@"other_favicon"
+      recordIdentifier:@"recordIdentifier"
+                syncId:StringToData("other_syncId")
+              username:@"other_username"
+       userDisplayName:@"other_userDisplayName"
+                userId:StringToData("other_userId")
+          credentialId:StringToData("other_credentialId")
+                  rpId:@"other_rpId"
+            privateKey:StringToData("other_privateKey")
+             encrypted:StringToData("other_encrypted")
+          creationTime:kJan1st2024 + 10];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
   ArchivableCredential* credentialDiferentIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
                                    recordIdentifier:@"other_recordIdentifier"
-                                             syncId:@"syncId"
+                                             syncId:StringToData("syncId")
                                            username:@"username"
                                     userDisplayName:@"userDisplayName"
-                                             userId:@"userId"
-                                       credentialId:@"credentialId"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
                                                rpId:@"rpId"
-                                         privateKey:@"privateKey"
-                                          encrypted:@"encrypted"
+                                         privateKey:StringToData("privateKey")
+                                          encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 

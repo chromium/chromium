@@ -28,8 +28,14 @@ NSString* const kACCreationTimeKey = @"creationTime";
 
 // Returns whether the strings are the same (including if both are nil) or if
 // both strings have the same contents.
-BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
+BOOL stringsAreEqual(NSString* lhs, NSString* rhs) {
   return rhs == lhs || [rhs isEqualToString:lhs];
+}
+
+// Returns whether the data are the same (including if both are nil) or if
+// both data have the same contents.
+BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
+  return rhs == lhs || [rhs isEqualToData:lhs];
 }
 
 }  // namespace
@@ -38,6 +44,10 @@ BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
 
 - (id)decodeNSStringForKey:(NSString*)key {
   return [self decodeObjectOfClass:[NSString class] forKey:key];
+}
+
+- (id)decodeNSDataForKey:(NSString*)key {
+  return [self decodeObjectOfClass:[NSData class] forKey:key];
 }
 
 @end
@@ -114,14 +124,14 @@ BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
 
 - (instancetype)initWithFavicon:(NSString*)favicon
                recordIdentifier:(NSString*)recordIdentifier
-                         syncId:(NSString*)syncId
+                         syncId:(NSData*)syncId
                        username:(NSString*)username
                 userDisplayName:(NSString*)userDisplayName
-                         userId:(NSString*)userId
-                   credentialId:(NSString*)credentialId
+                         userId:(NSData*)userId
+                   credentialId:(NSData*)credentialId
                            rpId:(NSString*)rpId
-                     privateKey:(NSString*)privateKey
-                      encrypted:(NSString*)encrypted
+                     privateKey:(NSData*)privateKey
+                      encrypted:(NSData*)encrypted
                    creationTime:(int64_t)creationTime {
   CHECK(credentialId.length > 0);
   self = [super init];
@@ -175,14 +185,14 @@ BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
            stringsAreEqual(self.serviceName, otherCredential.serviceName) &&
            stringsAreEqual(self.username, otherCredential.username) &&
            stringsAreEqual(self.note, otherCredential.note) &&
-           stringsAreEqual(self.syncId, otherCredential.syncId) &&
+           dataAreEqual(self.syncId, otherCredential.syncId) &&
            stringsAreEqual(self.userDisplayName,
                            otherCredential.userDisplayName) &&
-           stringsAreEqual(self.userId, otherCredential.userId) &&
-           stringsAreEqual(self.credentialId, otherCredential.credentialId) &&
+           dataAreEqual(self.userId, otherCredential.userId) &&
+           dataAreEqual(self.credentialId, otherCredential.credentialId) &&
            stringsAreEqual(self.rpId, otherCredential.rpId) &&
-           stringsAreEqual(self.privateKey, otherCredential.privateKey) &&
-           stringsAreEqual(self.encrypted, otherCredential.encrypted) &&
+           dataAreEqual(self.privateKey, otherCredential.privateKey) &&
+           dataAreEqual(self.encrypted, otherCredential.encrypted) &&
            self.creationTime == otherCredential.creationTime;
   }
 }
@@ -222,21 +232,21 @@ BOOL stringsAreEqual(NSString* rhs, NSString* lhs) {
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
-  NSString* credentialId = [coder decodeNSStringForKey:kACCredentialIdKey];
+  NSData* credentialId = [coder decodeNSDataForKey:kACCredentialIdKey];
 
   if (credentialId.length > 0) {
     // Use the passkey initilizer
     return [self
          initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
         recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]
-                  syncId:[coder decodeNSStringForKey:kACSyncIdKey]
+                  syncId:[coder decodeNSDataForKey:kACSyncIdKey]
                 username:[coder decodeNSStringForKey:kACUserKey]
          userDisplayName:[coder decodeNSStringForKey:kACUserDisplayNameKey]
-                  userId:[coder decodeNSStringForKey:kACUserIdKey]
+                  userId:[coder decodeNSDataForKey:kACUserIdKey]
             credentialId:credentialId
                     rpId:[coder decodeNSStringForKey:kACRpIdKey]
-              privateKey:[coder decodeNSStringForKey:kACPrivateKeyKey]
-               encrypted:[coder decodeNSStringForKey:kACEncryptedKey]
+              privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
+               encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
             creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]];
   } else {
     // Use the password initializer
