@@ -711,6 +711,11 @@ inline constexpr char kHatsPeripheralsIsSelected[] =
 inline constexpr char kHatsLastInteractionTimestamp[] =
     "hats_last_interaction_timestamp";
 
+// An int64 pref. This is a timestamp, microseconds after epoch, of the most
+// recent time the profile took or dismissed prioritized HaTS survey.
+inline constexpr char kHatsPrioritizedLastInteractionTimestamp[] =
+    "hats_prioritized_last_interaction_timestamp";
+
 // An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent survey cycle (general survey).
 inline constexpr char kHatsSurveyCycleEndTimestamp[] =

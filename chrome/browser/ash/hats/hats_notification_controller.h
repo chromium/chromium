@@ -79,7 +79,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
       HatsNotificationControllerTest,
       Disconnected_RemoveNotification_Connected_AddNotification);
   FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
-                           DismissNotification_OptOutShouldUpdatePref);
+                           DismissNotification_PrioritizedShouldUpdatePref);
 
   ~HatsNotificationController() override;
 

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_dialog.h"
@@ -60,6 +61,9 @@ constexpr base::TimeDelta kHatsThreshold = base::Days(60);
 // The threshold for a Googler is less.
 constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
 
+// Prioritized HaTS has much shorter threshold.
+constexpr base::TimeDelta kPrioritizedHatsThreshold = base::Days(10);
+
 // The state specific UMA enumerations
 const int kSurveyTriggeredEnumeration = 1;
 
@@ -101,7 +105,7 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
 // dismissing the notification or taking the survey within a given
 // |threshold_time|.
 bool DidShowHatsToProfileRecently(Profile* profile,
-                                  base::TimeDelta threshold_time) {
+                                  const base::TimeDelta& threshold_time) {
   int64_t serialized_timestamp =
       profile->GetPrefs()->GetInt64(prefs::kHatsLastInteractionTimestamp);
 
@@ -111,10 +115,19 @@ bool DidShowHatsToProfileRecently(Profile* profile,
 }
 
 // Returns true if the given |profile| interacted with survey |hats_config|
-// by either dismissing the notification or taking the survey within a given
-// |threshold_time|.
-bool DidShowSurveyToProfileRecently(Profile* profile,
-                                    const HatsConfig& hats_config) {
+// by either dismissing the notification or taking another prioritized survey
+// within |prioritized_threshold_time|.
+bool DidShowSurveyToProfileRecently(
+    Profile* profile,
+    const HatsConfig& hats_config,
+    const base::TimeDelta& prioritized_threshold_time) {
+  base::Time prev_prioritized_interaction = profile->GetPrefs()->GetTime(
+      prefs::kHatsPrioritizedLastInteractionTimestamp);
+  if (prev_prioritized_interaction + prioritized_threshold_time >
+      base::Time::Now()) {
+    return true;
+  }
+
   base::Time previous_interaction_timestamp = profile->GetPrefs()->GetTime(
       hats_config.survey_last_interaction_timestamp_pref_name);
 
@@ -281,11 +294,14 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
           ? kHatsGooglerThreshold
           : kHatsThreshold;
 
-  if (hats_config.global_cap_opt_out) {
-    // Do not show survey to user if the survey has opted out of the global cap
-    // and the user has interacted with this particular survey within the
-    // threshold set in the config.
-    if (DidShowSurveyToProfileRecently(profile, hats_config)) {
+  if (hats_config.prioritized) {
+    // Do not show survey to user if the survey is prioritized and:
+    // - User already interacted with the survey within
+    //   the threshold set in the config, or
+    // - User already interacted with other prioritized survey within
+    //   the past |kPrioritizedHatsThreshold|.
+    if (DidShowSurveyToProfileRecently(profile, hats_config,
+                                       kPrioritizedHatsThreshold)) {
       return false;
     }
   } else {
@@ -449,13 +465,15 @@ void HatsNotificationController::UpdateLastInteractionTime() {
   CHECK(profile_) << "Profile must NOT be null.";
 
   PrefService* pref_service = profile_->GetPrefs();
-  if (!hats_config_->global_cap_opt_out) {
+  if (!hats_config_->prioritized) {
     pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
                            base::Time::Now().since_origin().InMicroseconds());
   } else {
     pref_service->SetTime(
         hats_config_->survey_last_interaction_timestamp_pref_name,
         base::Time::Now());
+    pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
+                           base::Time::Now());
   }
 }
 

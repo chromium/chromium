@@ -433,6 +433,9 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterInt64Pref(::prefs::kHatsLastInteractionTimestamp, 0);
 
+  registry->RegisterTimePref(::prefs::kHatsPrioritizedLastInteractionTimestamp,
+                             base::Time());
+
   registry->RegisterInt64Pref(::prefs::kHatsSurveyCycleEndTimestamp, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsDeviceIsSelected, false);

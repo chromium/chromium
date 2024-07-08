@@ -24,7 +24,7 @@ HatsConfig::HatsConfig(const base::Feature& feature,
       cycle_end_timestamp_pref_name(cycle_end_timestamp_pref_name),
       survey_last_interaction_timestamp_pref_name(nullptr),
       threshold_time(base::TimeDelta()),
-      global_cap_opt_out(false) {
+      prioritized(false) {
   DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
 }
 
@@ -42,7 +42,7 @@ HatsConfig::HatsConfig(
       survey_last_interaction_timestamp_pref_name(
           survey_last_interaction_timestamp_pref_name),
       threshold_time(threshold_time),
-      global_cap_opt_out(true) {
+      prioritized(true) {
   DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
 }
 

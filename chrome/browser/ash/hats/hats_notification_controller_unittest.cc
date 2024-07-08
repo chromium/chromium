@@ -251,7 +251,7 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
 }
 
 TEST_F(HatsNotificationControllerTest,
-       DismissNotification_OptOutShouldUpdatePref) {
+       DismissNotification_PrioritizedShouldUpdatePref) {
   base::Time now_timestamp = base::Time::Now();
   PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
@@ -275,9 +275,14 @@ TEST_F(HatsNotificationControllerTest,
   // Simulate closing notification via user interaction.
   hats_notification_controller->Close(true);
 
-  base::Time new_timestamp = pref_service->GetTime(kTestTimePref);
+  base::Time survey_timestamp = pref_service->GetTime(kTestTimePref);
   // The flag should be updated to a new timestamp.
-  EXPECT_GT(new_timestamp, now_timestamp);
+  EXPECT_GT(survey_timestamp, now_timestamp);
+
+  base::Time global_timestamp =
+      pref_service->GetTime(prefs::kHatsPrioritizedLastInteractionTimestamp);
+  // All prioritized HaTS has its own cooldown timestamp, should be updated.
+  EXPECT_GT(global_timestamp, now_timestamp);
 
   // The general HaTS timestamp should not be changed.
   int64_t hats_timestamp =
