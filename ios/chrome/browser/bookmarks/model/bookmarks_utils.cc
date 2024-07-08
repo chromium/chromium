@@ -122,12 +122,6 @@ std::vector<const BookmarkNode*> PrimaryPermanentNodes(
   return nodes;
 }
 
-bool IsPrimaryPermanentNode(const BookmarkNode* node,
-                            LegacyBookmarkModel* model) {
-  std::vector<const BookmarkNode*> primary_nodes(PrimaryPermanentNodes(model));
-  return base::Contains(primary_nodes, node);
-}
-
 bool IsLastUsedBookmarkFolderSet(PrefService* prefs) {
   return prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks) ==
          kLastUsedBookmarkFolderNone;

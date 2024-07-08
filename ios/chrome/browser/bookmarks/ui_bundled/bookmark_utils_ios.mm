@@ -134,13 +134,11 @@ NodeSet FindNodesByNodeReferences(const bookmarks::BookmarkModel* model,
   return nodes;
 }
 
-const BookmarkNode* FindNodeById(LegacyBookmarkModel* model, int64_t id) {
-  DCHECK(model);
-  return model->GetNodeById(id);
-}
-
-const BookmarkNode* FindFolderById(LegacyBookmarkModel* model, int64_t id) {
-  const BookmarkNode* node = FindNodeById(model, id);
+const BookmarkNode* FindFolderById(const bookmarks::BookmarkModel* model,
+                                   int64_t id) {
+  CHECK(model);
+  const bookmarks::BookmarkNode* node =
+      bookmarks::GetBookmarkNodeByID(model, id);
   return (node && node->is_folder()) ? node : nullptr;
 }
 
@@ -844,7 +842,7 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 
 #pragma mark - Cache position in table view.
 
-NSArray<NSNumber*>* CreateBookmarkPath(LegacyBookmarkModel* model,
+NSArray<NSNumber*>* CreateBookmarkPath(const bookmarks::BookmarkModel* model,
                                        int64_t folder_id) {
   const BookmarkNode* bookmark = FindFolderById(model, folder_id);
   if (!bookmark || bookmark->is_root()) {

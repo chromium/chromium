@@ -65,11 +65,6 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     LegacyBookmarkModel* model);
 
-// Returns whether `node` is a primary permanent node in the sense of
-// `PrimaryPermanentNodes`.
-bool IsPrimaryPermanentNode(const bookmarks::BookmarkNode* node,
-                            LegacyBookmarkModel* model);
-
 // Whether a bookmark was manually moved by the user to a different folder since
 // last signin/signout.
 bool IsLastUsedBookmarkFolderSet(PrefService* prefs);

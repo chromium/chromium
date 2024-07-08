@@ -70,14 +70,11 @@ const bookmarks::BookmarkNode* FindNodeByNodeReference(
 NodeSet FindNodesByNodeReferences(const bookmarks::BookmarkModel* model,
                                   const NodeReferenceSet& references);
 
-// Finds bookmark node passed in `id`, in the `model`.
-const bookmarks::BookmarkNode* FindNodeById(LegacyBookmarkModel* model,
-                                            int64_t id);
-
 // Finds bookmark node passed in `id`, in the `model`. Returns null if the
 // node is found but not a folder.
-const bookmarks::BookmarkNode* FindFolderById(LegacyBookmarkModel* model,
-                                              int64_t id);
+const bookmarks::BookmarkNode* FindFolderById(
+    const bookmarks::BookmarkModel* model,
+    int64_t id);
 
 // The iOS code is doing some munging of the bookmark folder names in order
 // to display a slighly different wording for the default folders.
@@ -312,7 +309,7 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 // MobileBookmarks (3) --> Test1(76) will be returned as [3, 76], where the
 // first element always represents a permanent folder. Returns nullptr if the
 // folder is not found or is the root node.
-NSArray<NSNumber*>* CreateBookmarkPath(LegacyBookmarkModel* model,
+NSArray<NSNumber*>* CreateBookmarkPath(const bookmarks::BookmarkModel* model,
                                        int64_t folder_id);
 
 // Converts NSString entered by the user to a GURL.

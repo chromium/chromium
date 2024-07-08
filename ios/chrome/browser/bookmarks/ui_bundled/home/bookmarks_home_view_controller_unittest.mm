@@ -198,4 +198,58 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
   }
 }
 
+TEST_F(BookmarksHomeViewControllerTest, CachedViewControllerStack) {
+  @autoreleasepool {
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to SettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockSettingsCommandHandler =
+        OCMProtocolMock(@protocol(SettingsCommands));
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
+                             forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
+                             forProtocol:@protocol(SettingsCommands)];
+
+    const bookmarks::BookmarkNode* mobileNode =
+        local_or_syncable_bookmark_model_->subtle_mobile_node();
+    const bookmarks::BookmarkNode* folder = AddFolder(mobileNode, u"foo");
+    AddBookmark(folder, u"bar");
+
+    BookmarksHomeViewController* controller =
+        [[BookmarksHomeViewController alloc] initWithBrowser:browser_.get()];
+    controller.applicationCommandsHandler = mockApplicationCommandHandler;
+    controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
+    controller.displayedFolderNode = folder;
+
+    // Closing should populate the cache.
+    [controller keyCommand_close];
+
+    controller.displayedFolderNode =
+        local_or_syncable_bookmark_model_
+            ->subtle_root_node_with_unspecified_children();
+
+    NSArray<BookmarksHomeViewController*>* stack =
+        [controller cachedViewControllerStack];
+    ASSERT_EQ(3u, stack.count);
+    EXPECT_EQ(folder, stack[2].displayedFolderNode);
+    EXPECT_EQ(mobileNode, stack[1].displayedFolderNode);
+    EXPECT_EQ(local_or_syncable_bookmark_model_
+                  ->subtle_root_node_with_unspecified_children(),
+              stack[0].displayedFolderNode);
+
+    [stack[0] shutdown];
+    [stack[1] shutdown];
+    [stack[2] shutdown];
+  }
+}
+
 }  // namespace

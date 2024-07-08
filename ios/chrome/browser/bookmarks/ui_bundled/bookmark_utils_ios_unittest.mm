@@ -217,11 +217,9 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
-  const BookmarkNode* mobileNode =
-      local_or_syncable_bookmark_model_->subtle_mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
-  NSArray<NSNumber*>* path =
-      CreateBookmarkPath(local_or_syncable_bookmark_model_, f1->id());
+  NSArray<NSNumber*>* path = CreateBookmarkPath(bookmark_model_, f1->id());
   NSMutableArray<NSNumber*>* expectedPath = [NSMutableArray array];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
   [expectedPath addObject:[NSNumber numberWithLongLong:f1->id()]];
@@ -229,8 +227,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
-  NSArray<NSNumber*>* path =
-      CreateBookmarkPath(local_or_syncable_bookmark_model_, 999);
+  NSArray<NSNumber*>* path = CreateBookmarkPath(bookmark_model_, 999);
   EXPECT_TRUE(path == nil);
 }
 

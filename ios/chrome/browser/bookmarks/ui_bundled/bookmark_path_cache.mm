@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_path_cache.h"
 
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 using bookmarks::BookmarkNode;
 
@@ -38,33 +38,22 @@ const int64_t kFolderNone = -1;
   prefService->SetInteger(prefs::kIosBookmarkCachedTopMostRow, topMostRow);
 }
 
-+ (BOOL)getBookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
-                             localOrSyncableModel:
-                                 (LegacyBookmarkModel*)localOrSyncableModel
-                                     accountModel:
-                                         (LegacyBookmarkModel*)accountModel
-                                         folderId:(int64_t*)folderId
-                                        modelType:(BookmarkModelType*)modelType
-                                       topMostRow:(int*)topMostRow {
++ (BOOL)bookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
+                                 bookmarkModel:(const bookmarks::BookmarkModel*)
+                                                   bookmarkModel
+                                      folderId:(int64_t*)folderId
+                                    topMostRow:(int*)topMostRow {
   *folderId = prefService->GetInt64(prefs::kIosBookmarkCachedFolderId);
-  *modelType = static_cast<BookmarkModelType>(
-      prefService->GetInt64(prefs::kIosBookmarkCachedFolderModel));
-  LegacyBookmarkModel* model;
-  if (*modelType == BookmarkModelType::kLocalOrSyncable) {
-    model = localOrSyncableModel;
-  } else {
-    model = accountModel;
-  }
 
   // If the cache was at root node, consider it as nothing was cached.
   if (*folderId == kFolderNone ||
-      *folderId == model->subtle_root_node_with_unspecified_children()->id()) {
+      *folderId == bookmarkModel->root_node()->id()) {
     return NO;
   }
 
   // Create bookmark Path.
   const BookmarkNode* bookmark =
-      bookmark_utils_ios::FindFolderById(model, *folderId);
+      bookmark_utils_ios::FindFolderById(bookmarkModel, *folderId);
   // The bookmark node is gone from model, maybe deleted remotely.
   if (!bookmark) {
     return NO;

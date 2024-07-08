@@ -8,8 +8,11 @@
 #import <UIKit/UIKit.h>
 
 enum class BookmarkModelType;
-class LegacyBookmarkModel;
 class PrefService;
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -31,14 +34,11 @@ class PrefRegistrySyncable;
 // Gets the bookmark top most row that the user was last viewing. Returns YES if
 // a valid cache exists. `folderId` and `topMostRow` are out variables, only
 // populated if the return is YES.
-+ (BOOL)getBookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
-                             localOrSyncableModel:
-                                 (LegacyBookmarkModel*)localOrSyncableModel
-                                     accountModel:
-                                         (LegacyBookmarkModel*)accountModel
-                                         folderId:(int64_t*)folderId
-                                        modelType:(BookmarkModelType*)modelType
-                                       topMostRow:(int*)topMostRow;
++ (BOOL)bookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService
+                                 bookmarkModel:
+                                     (const bookmarks::BookmarkModel*)model
+                                      folderId:(int64_t*)folderId
+                                    topMostRow:(int*)topMostRow;
 
 // Clears the bookmark top most row cache.
 + (void)clearBookmarkTopMostRowCacheWithPrefService:(PrefService*)prefService;
