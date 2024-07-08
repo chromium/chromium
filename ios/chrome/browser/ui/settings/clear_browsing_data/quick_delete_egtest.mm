@@ -438,7 +438,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 2))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
       assertWithMatcher:grey_nil()];
 
   // Tap the browsing data button.
@@ -450,6 +450,103 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Check that the history entry was not deleted.
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 1,
                   @"History entries were deleted.");
+}
+
+// Tests that tabs are shown as a possible type to be deleted on the browsing
+// data row when tabs are selected as a data type for deletion.
+- (void)testTabsForDeletion {
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row and the tabs substring are presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tabs are shown as a possible type to be deleted on the browsing
+// data row when tabs are selected as a data type for deletion. The number of
+// tabs should include tabs in all windows, not just the ones where quick delete
+// is triggered from.
+- (void)testTabsForDeletionInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Load page in first window.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // Open page in second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // In the first window, open quick delete and check that the browsing data row
+  // and the tabs substring are presented.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  [self openQuickDeleteFromThreeDotMenu];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the number of tabs are not shown on the browsing data row when
+// tabs are not selected as a data type to be deleted.
+- (void)testKeepTabs {
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row is present but that the tabs substring is
+  // not.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that cookies are shown as a possible type to be deleted on the browsing

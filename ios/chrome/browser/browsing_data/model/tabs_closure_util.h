@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
+#define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_
+
+#import "base/time/time.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
+#import "ios/web/public/web_state_id.h"
+
+namespace tabs_closure_util {
+
+// Map WebStateID to timestamp.
+using WebStateIDToTime = std::map<web::WebStateID, base::Time>;
+
+// Extracts the timestamp of the last committed item from `storage`.
+base::Time GetLastCommittedTimestampFromStorage(
+    web::proto::WebStateStorage storage);
+
+// Returns the tabs in `tabs_to_last_navigation_time` and their timestamp that
+// have a last navigation time between `begin_time` and `end_time`.
+WebStateIDToTime GetTabsToClose(
+    const WebStateIDToTime& tabs_to_last_navigation_time,
+    base::Time begin_time,
+    base::Time end_time);
+
+}  // namespace tabs_closure_util
+
+#endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_TABS_CLOSURE_UTIL_H_

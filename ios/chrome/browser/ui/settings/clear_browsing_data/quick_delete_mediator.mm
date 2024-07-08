@@ -14,6 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
@@ -34,6 +35,7 @@
   // means that the counter for the browsing data type in `_counters` has not
   // yet returned.
   NSString* _browsingHistorySummary;
+  NSString* _tabsSummary;
   NSString* _passwordsSummary;
   NSString* _addressesSummary;
   NSString* _paymentMethodsSummary;
@@ -180,6 +182,7 @@
 // update of the browsing data summary in the ViewController.
 - (void)createCounters {
   [self createCounter:browsing_data::prefs::kDeleteBrowsingHistory];
+  [self createCounter:browsing_data::prefs::kCloseTabs];
   [self createCounter:browsing_data::prefs::kDeletePasswords];
   [self createCounter:browsing_data::prefs::kDeleteFormData];
 }
@@ -204,6 +207,7 @@
 // results on the browsing data summary being updated in the ViewController.
 - (void)restartCounters {
   _browsingHistorySummary = nil;
+  _tabsSummary = nil;
   _passwordsSummary = nil;
   _addressesSummary = nil;
   _paymentMethodsSummary = nil;
@@ -249,6 +253,9 @@
         browsingHistorySummary:
             static_cast<const browsing_data::HistoryCounter::HistoryResult*>(
                 result)];
+  } else if (prefName == browsing_data::prefs::kCloseTabs) {
+    _tabsSummary =
+        [self tabsSummary:static_cast<const TabsCounter::TabsResult*>(result)];
   } else if (prefName == browsing_data::prefs::kDeletePasswords) {
     _passwordsSummary = [self
         passwordsSummary:static_cast<const browsing_data::PasswordsCounter::
@@ -268,8 +275,8 @@
   // `BrowsingDataCounter::Result`. Meaning that eventually this if condition
   // will evaluate to true and a non-placeholder browsing data summary will be
   // dispatched.
-  if (_browsingHistorySummary && _passwordsSummary && _addressesSummary &&
-      _paymentMethodsSummary && _suggestionsSummary) {
+  if (_browsingHistorySummary && _tabsSummary && _passwordsSummary &&
+      _addressesSummary && _paymentMethodsSummary && _suggestionsSummary) {
     [self dispatchBrowsingDataSummary];
   }
 }
@@ -281,6 +288,12 @@
   if (_prefs->GetBoolean(browsing_data::prefs::kDeleteBrowsingHistory)) {
     if (_browsingHistorySummary && _browsingHistorySummary.length > 0) {
       [summaryItems addObject:_browsingHistorySummary];
+    }
+  }
+
+  if (_prefs->GetBoolean(browsing_data::prefs::kCloseTabs)) {
+    if (_tabsSummary && _tabsSummary.length > 0) {
+      [summaryItems addObject:_tabsSummary];
     }
   }
 
@@ -353,6 +366,20 @@
                    historyCount)
              : l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, historyCount);
+}
+
+// Returns the tabs summary based on `result`. If the count of tabs in
+// `result ` is less than 1, then returns an empty string.
+- (NSString*)tabsSummary:
+    (const browsing_data::PasswordsCounter::FinishedResult*)result {
+  browsing_data::BrowsingDataCounter::ResultInt tabsCount = result->Value();
+
+  if (tabsCount < 1) {
+    return @"";
+  }
+
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, tabsCount);
 }
 
 // Returns the passwords summary based on `result`. If the count of passwords in

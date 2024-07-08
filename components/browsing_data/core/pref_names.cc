@@ -37,9 +37,9 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterInt64Pref(prefs::kLastClearBrowsingDataTime, 0);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(kCloseTabs, false);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   registry->RegisterIntegerPref(kLastClearBrowsingDataTab, 0);
 }

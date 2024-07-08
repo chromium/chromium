@@ -2,31 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_counter_wrapper.h"
 
-#include <string_view>
+#import <string_view>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/ptr_util.h"
-#include "components/browsing_data/core/counters/autofill_counter.h"
-#include "components/browsing_data/core/counters/browsing_data_counter.h"
-#include "components/browsing_data/core/counters/history_counter.h"
-#include "components/browsing_data/core/counters/passwords_counter.h"
-#include "components/browsing_data/core/pref_names.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/service/sync_service.h"
-#include "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
-#include "ios/chrome/browser/browsing_data/model/cache_counter.h"
-#include "ios/chrome/browser/history/model/history_service_factory.h"
-#include "ios/chrome/browser/history/model/web_history_service_factory.h"
-#include "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#include "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/model/sync_service_factory.h"
-#include "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/memory/ptr_util.h"
+#import "components/browsing_data/core/counters/autofill_counter.h"
+#import "components/browsing_data/core/counters/browsing_data_counter.h"
+#import "components/browsing_data/core/counters/history_counter.h"
+#import "components/browsing_data/core/counters/passwords_counter.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
+#import "ios/chrome/browser/browsing_data/model/cache_counter.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/history/model/web_history_service_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 namespace {
 
@@ -63,6 +66,12 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
         ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForBrowserState(browser_state));
+  }
+
+  if (pref_name == browsing_data::prefs::kCloseTabs) {
+    return std::make_unique<TabsCounter>(
+        BrowserListFactory::GetForBrowserState(browser_state),
+        SessionRestorationServiceFactory::GetForBrowserState(browser_state));
   }
 
   return nullptr;

@@ -16,8 +16,11 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/browsing_data/model/tabs_counter.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -107,6 +110,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     prefs()->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                         static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
     prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, false);
+    prefs()->SetBoolean(browsing_data::prefs::kCloseTabs, false);
     prefs()->SetBoolean(browsing_data::prefs::kDeleteCookies, false);
     prefs()->SetBoolean(browsing_data::prefs::kDeleteCache, false);
     prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, false);
@@ -130,6 +134,20 @@ class QuickDeleteMediatorTest : public PlatformTest {
         &historyCounter, num_history_items, false, false);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:historyResult];
+  }
+
+  // Triggers the tabs callback passed to
+  // `FakeBrowsingDataCounterWrapperProducer` with a `FinishedyResult` with
+  // `num_tabs`.
+  void triggerUpdateUICallbackForTabsResults(int num_tabs) {
+    TabsCounter tabsCounter(
+        BrowserListFactory::GetForBrowserState(browser_state_.get()),
+        SessionRestorationServiceFactory::GetForBrowserState(
+            browser_state_.get()));
+    const TabsCounter::TabsResult tabsResult(&tabsCounter, num_tabs,
+                                             /*num_windows=*/0);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:tabsResult];
   }
 
   // Triggers the passwords callback passed to
@@ -180,6 +198,7 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForPasswordsResults(0);
   triggerUpdateUICallbackForAutofillResults(0, 0, 0);
 
@@ -224,6 +243,60 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
   }
 }
 
+// Tests the construction of the tabs summary with different inputs.
+TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
+  // Select tabs for deletion.
+  prefs()->SetBoolean(browsing_data::prefs::kCloseTabs, true);
+
+  // Trigger creating the counters for browsing data types.
+  mediator_.consumer = consumer_;
+
+  // Trigger the callback for data types not in test. The summary is only
+  // dispatches if all counters have returned.
+  triggerUpdateUICallbackForHistoryResults(0);
+  triggerUpdateUICallbackForPasswordsResults(0);
+  triggerUpdateUICallbackForAutofillResults(0, 0, 0);
+
+  // clang-format off
+    const struct TestCase {
+        int num_tabs;
+        int num_windows;
+        NSString* expected_output;
+    } kTestCases[] = {
+        {0, 0, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {0, 1, l10n_util::GetNSString(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
+        {1, 0, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS,
+                   1)},
+        {1, 1, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS,
+                   1)},
+        {2, 0, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS,
+                   2)},
+        {2, 1, l10n_util::GetPluralNSStringF(
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS,
+                   2)},
+    };
+  // clang-format on
+
+  TabsCounter counter(
+      BrowserListFactory::GetForBrowserState(browser_state_.get()),
+      SessionRestorationServiceFactory::GetForBrowserState(
+          browser_state_.get()));
+
+  for (const TestCase& test_case : kTestCases) {
+    const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
+                                         test_case.num_windows);
+    OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    [fake_browsing_data_counter_wrapper_producer_
+        triggerUpdateUICallbackForResult:result];
+    EXPECT_OCMOCK_VERIFY(consumer_);
+  }
+}
+
 // Tests the construction of the passwords summary with different inputs.
 TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
   // Select passwords for deletion.
@@ -234,6 +307,7 @@ TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
   triggerUpdateUICallbackForAutofillResults(0, 0, 0);
 
@@ -289,6 +363,7 @@ TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
   triggerUpdateUICallbackForPasswordsResults(0);
 
@@ -335,6 +410,7 @@ TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
   triggerUpdateUICallbackForPasswordsResults(0);
 
@@ -382,6 +458,7 @@ TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForHistoryResults(0);
   triggerUpdateUICallbackForPasswordsResults(0);
 
@@ -430,6 +507,7 @@ TEST_F(QuickDeleteMediatorTest,
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForAutofillResults(0, 0, 0);
 
   int num_history_items = 2;
@@ -457,6 +535,7 @@ TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
 
   // Trigger the callback for data types not in test. The summary is only
   // dispatches if all counters have returned.
+  triggerUpdateUICallbackForTabsResults(0);
   triggerUpdateUICallbackForAutofillResults(0, 0, 0);
 
   int num_history_items = 2;

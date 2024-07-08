@@ -1328,13 +1328,13 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES" translateable="false" desc="Summary of the cached data to be deleted when deleting browsing data. Should be lower case since it's shown in a list of browsing data items descriptions. [iOS only]">
        **cached files**
       </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA" translateable="false" desc="Placeholder for the browsing data summary when there is no browsing data to delete. [iOS only]">
+        **None**
+      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS" translateable="false" desc="Summary of the payment methods to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,
           =1 {1 payment method}
           other {# payment method}}**
-      </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA" translateable="false" desc="Placeholder for the browsing data summary when there is no browsing data to delete. [iOS only]">
-        **None**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS" translateable="false" desc="Summary of the passwords to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,
@@ -1362,6 +1362,11 @@ See your search engine’s instructions for deleting your search history, if app
        {COUNT, plural,
           =1 {1 suggestion}
           other {# suggestion}}
+      </message>
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS" translateable="false" desc="Summary of the tabs to be deleted when deleting browsing data. [iOS only]">
+       **{COUNT, plural,
+          =1 {1 tab}
+          other {# tabs}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_TITLE" translateable="false" desc="Label for the option that summarises the browsing data to be deleted. [iOS only]">
         **Browsing Data**
