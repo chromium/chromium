@@ -1155,7 +1155,8 @@ bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
 
   if (old_surface_clone_) {
     CHECK(navigation_state_ == NavigationState::kCommitted ||
-          navigation_state_ == NavigationState::kStarted);
+          navigation_state_ == NavigationState::kStarted)
+        << ToString(navigation_state_);
     CHECK_EQ(state_, State::kDisplayingInvokeAnimation);
     old_surface_clone_->SetTransform(foreground_transform);
   }

@@ -401,6 +401,11 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
     BackForwardTransitionAnimator::OnCrossFadeAnimationDisplayed();
   }
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
+    last_navigation_request_ =
+        NavigationRequest::From(navigation_handle)->GetWeakPtr();
+    BackForwardTransitionAnimator::DidStartNavigation(navigation_handle);
+  }
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
     BackForwardTransitionAnimator::ReadyToCommitNavigation(navigation_handle);
     if (post_ready_to_commit_callback_) {
@@ -414,6 +419,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     BackForwardTransitionAnimator::DidFinishNavigation(navigation_handle);
   }
 
+  NavigationRequest* LastNavigationRequest() {
+    CHECK(last_navigation_request_);
+    return last_navigation_request_.get();
+  }
   void PauseAnimationAtDisplayingCancelAnimation() {
     ASSERT_FALSE(pause_on_animate_at_state_.has_value()) << "Already paused.";
     pause_on_animate_at_state_ = State::kDisplayingCancelAnimation;
@@ -537,6 +546,8 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
   std::optional<State> pause_on_animate_at_state_;
 
+  base::WeakPtr<NavigationRequest> last_navigation_request_;
+
   base::OnceClosure on_cancel_animation_displayed_;
   base::OnceClosure on_invoke_animation_displayed_;
   base::OnceClosure on_cross_fade_animation_displayed_;
@@ -591,9 +602,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{});
-
-    InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
-                                       RenderDocumentFeatureFullyEnabled()[0]);
 
     ContentBrowserTest::SetUp();
   }
@@ -786,7 +794,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedFeatureList scoped_feature_list_render_document_;
 };
 
 // Simulates the gesture sequence: start, 30%, 60%, 90%, 60%, 30%, 60%, 90% and
@@ -1411,11 +1418,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // `OnRenderFrameMetadataChangedAfterActivation()` to simulate a frame
   // activation.
   {
-    RenderFrameHostImpl* red_rfh = web_contents()
-                                       ->GetPrimaryMainFrame()
-                                       ->frame_tree_node()
-                                       ->render_manager()
-                                       ->speculative_frame_host();
+    RenderFrameHostImpl* red_rfh =
+        GetAnimatorForTesting()->LastNavigationRequest()->GetRenderFrameHost();
     auto* new_widget_host = red_rfh->GetRenderWidgetHost();
     ASSERT_TRUE(new_widget_host);
     auto* new_view = new_widget_host->GetView();
@@ -1470,11 +1474,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // activation. Do this at the end of the "DidCommit" stack to simulate the
   // viz activates the first frame while the invoke animation is still playing.
   {
-    RenderFrameHostImpl* red_rfh = web_contents()
-                                       ->GetPrimaryMainFrame()
-                                       ->frame_tree_node()
-                                       ->render_manager()
-                                       ->speculative_frame_host();
+    RenderFrameHostImpl* red_rfh =
+        GetAnimatorForTesting()->LastNavigationRequest()->GetRenderFrameHost();
     auto* new_widget_host = red_rfh->GetRenderWidgetHost();
     ASSERT_TRUE(new_widget_host);
     auto* new_view = new_widget_host->GetView();
@@ -2129,11 +2130,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // manager is displaying the cross-fade animation while the redirec to blue
   // is happening.
   {
-    RenderFrameHostImpl* red_rfh = web_contents()
-                                       ->GetPrimaryMainFrame()
-                                       ->frame_tree_node()
-                                       ->render_manager()
-                                       ->speculative_frame_host();
+    RenderFrameHostImpl* red_rfh =
+        GetAnimatorForTesting()->LastNavigationRequest()->GetRenderFrameHost();
     auto* new_widget_host = red_rfh->GetRenderWidgetHost();
     ASSERT_TRUE(new_widget_host);
     auto* new_view = new_widget_host->GetView();
