@@ -207,8 +207,8 @@ StickinessRange ComputeStickinessRange(
     double target_pos) {
   // Need to know: when the sticky box is stuck, where is the view-timeline
   // target in relation to the scroller's viewport?
-  double target_pos_in_viewport =
-      sticky_box_stuck_pos_in_viewport + target_pos - sticky_box_static_pos;
+  double target_pos_in_viewport = sticky_box_stuck_pos_in_viewport +
+                                  target_pos - sticky_box_static_pos.ToDouble();
 
   if (target_pos_in_viewport < 0 &&
       target_pos_in_viewport + target_size > viewport_size) {
@@ -442,7 +442,8 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
     if (constraints->right_inset) {
       max_backward_adjust = (container.X() - sticky_rect.X()).ToDouble();
       backward_stickiness = ComputeStickinessRange(
-          viewport_size - *constraints->right_inset - sticky_rect.Width(),
+          LayoutUnit(viewport_size) - *constraints->right_inset -
+              sticky_rect.Width(),
           sticky_rect.X(), viewport_size, target_size, target_offset);
     }
   } else {  // Vertical.
@@ -456,7 +457,8 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
     if (constraints->bottom_inset) {
       max_backward_adjust = (container.Y() - sticky_rect.Y()).ToDouble();
       backward_stickiness = ComputeStickinessRange(
-          viewport_size - *constraints->bottom_inset - sticky_rect.Height(),
+          LayoutUnit(viewport_size) - *constraints->bottom_inset -
+              sticky_rect.Height(),
           sticky_rect.Y(), viewport_size, target_size, target_offset);
     }
   }

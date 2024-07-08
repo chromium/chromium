@@ -81,12 +81,11 @@ class PLATFORM_EXPORT LayoutUnit {
   // LayoutUnit can represent, the new LayoutUnit is equivalent to
   // LayoutUnit(LayoutUnit::kIntMax) in 32-bit Arm, or is equivalent to
   // LayoutUnit::Max() otherwise.
-  template <typename IntegerType>
-  constexpr explicit LayoutUnit(IntegerType value) : value_(0) {
-    if (std::is_signed<IntegerType>::value)
-      SaturatedSet(static_cast<int>(value));
-    else
-      SaturatedSet(static_cast<unsigned>(value));
+  constexpr explicit LayoutUnit(std::signed_integral auto value) : value_(0) {
+    SaturatedSet(static_cast<int>(value));
+  }
+  constexpr explicit LayoutUnit(std::unsigned_integral auto value) : value_(0) {
+    SaturatedSet(static_cast<unsigned>(value));
   }
   constexpr explicit LayoutUnit(uint64_t value)
       : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
@@ -564,13 +563,11 @@ inline float operator*(const LayoutUnit& a, float b) {
   return a.ToFloat() * b;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator*(const LayoutUnit& a, IntegerType b) {
+inline LayoutUnit operator*(const LayoutUnit& a, std::integral auto b) {
   return a * LayoutUnit(b);
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator*(IntegerType a, const LayoutUnit& b) {
+inline LayoutUnit operator*(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) * b;
 }
 
@@ -604,8 +601,7 @@ constexpr double operator/(const LayoutUnit& a, double b) {
   return a.ToDouble() / b;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator/(const LayoutUnit& a, IntegerType b) {
+inline LayoutUnit operator/(const LayoutUnit& a, std::integral auto b) {
   return a / LayoutUnit(b);
 }
 
@@ -617,8 +613,7 @@ constexpr double operator/(const double a, const LayoutUnit& b) {
   return a / b.ToDouble();
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator/(const IntegerType a, const LayoutUnit& b) {
+inline LayoutUnit operator/(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) / b;
 }
 
@@ -628,8 +623,7 @@ ALWAYS_INLINE LayoutUnit operator+(const LayoutUnit& a, const LayoutUnit& b) {
   return return_val;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator+(const LayoutUnit& a, IntegerType b) {
+inline LayoutUnit operator+(const LayoutUnit& a, std::integral auto b) {
   return a + LayoutUnit(b);
 }
 
@@ -641,8 +635,7 @@ inline double operator+(const LayoutUnit& a, double b) {
   return a.ToDouble() + b;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator+(const IntegerType a, const LayoutUnit& b) {
+inline LayoutUnit operator+(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) + b;
 }
 
@@ -660,8 +653,7 @@ ALWAYS_INLINE LayoutUnit operator-(const LayoutUnit& a, const LayoutUnit& b) {
   return return_val;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator-(const LayoutUnit& a, IntegerType b) {
+inline LayoutUnit operator-(const LayoutUnit& a, std::integral auto b) {
   return a - LayoutUnit(b);
 }
 
@@ -673,8 +665,7 @@ constexpr double operator-(const LayoutUnit& a, double b) {
   return a.ToDouble() - b;
 }
 
-template <typename IntegerType>
-inline LayoutUnit operator-(const IntegerType a, const LayoutUnit& b) {
+inline LayoutUnit operator-(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) - b;
 }
 
@@ -702,8 +693,7 @@ inline LayoutUnit& operator+=(LayoutUnit& a, const LayoutUnit& b) {
   return a;
 }
 
-template <typename IntegerType>
-inline LayoutUnit& operator+=(LayoutUnit& a, IntegerType b) {
+inline LayoutUnit& operator+=(LayoutUnit& a, std::integral auto b) {
   a = a + LayoutUnit(b);
   return a;
 }
@@ -718,8 +708,7 @@ inline float& operator+=(float& a, const LayoutUnit& b) {
   return a;
 }
 
-template <typename IntegerType>
-inline LayoutUnit& operator-=(LayoutUnit& a, IntegerType b) {
+inline LayoutUnit& operator-=(LayoutUnit& a, std::integral auto b) {
   a = a - LayoutUnit(b);
   return a;
 }
