@@ -103,7 +103,10 @@ public class RequestDesktopSiteTest {
     @SmallTest
     public void testGlobalSiteSettingsAndException() throws TimeoutException {
         Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
-        assertUsingDesktopUserAgent(tab, false, "Default user agent should be mobile.");
+        // Explicitly set the global setting to mobile to avoid flakiness.
+        updateGlobalSetting(tab, false);
+        assertUsingDesktopUserAgent(
+                tab, false, "User agent should be mobile according to global site settings.");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
