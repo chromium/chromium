@@ -30,7 +30,8 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "android",
-                  "siso_latest"
+                  "siso_latest",
+                  "ninja_staging"
                 ],
                 "config": "chromium"
               }

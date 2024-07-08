@@ -122,6 +122,7 @@ cq_build_perf_builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "ninja_staging",
                 "android",
             ],
         ),
@@ -192,6 +193,10 @@ cq_build_perf_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "android",
+                "ninja_staging",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -249,6 +254,9 @@ cq_build_perf_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "ninja_staging",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -308,6 +316,7 @@ cq_build_perf_builder(
             config = "chromium",
             apply_configs = [
                 "chromeos",
+                "ninja_staging",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -367,6 +376,9 @@ cq_build_perf_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
+            apply_configs = [
+                "ninja_staging",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -430,6 +442,9 @@ cq_build_perf_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
+            apply_configs = [
+                "ninja_staging",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -511,6 +526,7 @@ This builder measures build performance for Android developer builds, by simulat
             apply_configs = [
                 "android",
                 "siso_latest",
+                "ninja_staging",
             ],
         ),
         chromium_config = builder_config.chromium_config(

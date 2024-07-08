@@ -23,6 +23,9 @@
                 "target_platform": "win"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "ninja_staging"
+                ],
                 "config": "chromium"
               }
             }

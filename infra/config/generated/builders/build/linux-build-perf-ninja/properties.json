@@ -23,6 +23,10 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "ninja_staging"
+                ],
                 "config": "chromium"
               }
             }

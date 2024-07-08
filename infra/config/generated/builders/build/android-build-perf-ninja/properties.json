@@ -29,6 +29,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "ninja_staging",
                   "android"
                 ],
                 "config": "chromium"

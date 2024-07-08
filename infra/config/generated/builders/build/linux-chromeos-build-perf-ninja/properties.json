@@ -24,7 +24,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos"
+                  "chromeos",
+                  "ninja_staging"
                 ],
                 "config": "chromium"
               }

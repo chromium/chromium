@@ -26,6 +26,9 @@
                 "target_platform": "ios"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "ninja_staging"
+                ],
                 "config": "ios"
               }
             }
