@@ -558,7 +558,7 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
       if (chromeos::IsSnappedWindowStateType(*state_type)) {
-        base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
+        base::AutoReset<raw_ptr<aura::Window>> auto_reset_to_be_snapped(
             &to_be_snapped_window_, window);
         // Use the window restore info snap percentage as the target snap ratio.
         const float snap_ratio = window_info->snap_percentage.value_or(
