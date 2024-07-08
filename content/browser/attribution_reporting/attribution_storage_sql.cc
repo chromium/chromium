@@ -131,6 +131,8 @@ void RecordReportsDeleted(int event_count, int aggregatable_count) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(DestinationLimitResult)
 enum class DestinationLimitResult {
   // Destinations allowed without hitting the limit.
   kAllowed = 0,
@@ -141,6 +143,7 @@ enum class DestinationLimitResult {
   kNotAllowed = 2,
   kMaxValue = kNotAllowed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AttributionSourceDestinationLimitResult)
 
 DestinationLimitResult GetDestinationLimitResult(
     const std::vector<StoredSource::Id>& sources_to_deactivate) {
@@ -1155,12 +1158,15 @@ bool HasAggregatableData(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AttributionResult)
 enum class AttributionResult {
   kEventLevelOnly = 0,
   kAggregatableOnly = 1,
   kBoth = 2,
   kMaxValue = kBoth,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAttributionResult)
 
 void RecordAttributionResult(AttributionResult result) {
   base::UmaHistogramEnumeration("Conversions.AttributionResult", result);
@@ -2478,10 +2484,6 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
       ReportCorruptionStatusSetAndIds corruption_case = report.error();
       for (ReportCorruptionStatus corruption_cause :
            corruption_case.status_set) {
-        static_assert(
-            ReportCorruptionStatus::kMaxValue ==
-                ReportCorruptionStatus::kSourceInvalidRandomizedResponseRate,
-            "bump metric version");
         base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase5",
                                       corruption_cause);
       }

@@ -39,6 +39,8 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(Status)
 enum class Status {
   kOk = 0,
   // Corresponds to a non-zero NET_ERROR.
@@ -47,6 +49,7 @@ enum class Status {
   kExternalError = 2,
   kMaxValue = kExternalError
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportStatus)
 
 #define NETWORK_HISTOGRAM(suffix, hist_func, is_debug_report, \
                           has_trigger_context_id, value)      \

@@ -110,6 +110,8 @@ using ::attribution_reporting::mojom::RegistrationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ConversionReportSendOutcome)
 enum class ConversionReportSendOutcome {
   kSent = 0,
   kFailed = 1,
@@ -117,6 +119,12 @@ enum class ConversionReportSendOutcome {
   kFailedToAssemble = 3,
   kMaxValue = kFailedToAssemble,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportSendOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ConversionReportSendRetryCount)
 enum class ConversionReportSendRetryCount {
   kNone = 0,
   kOnce = 1,
@@ -124,6 +132,7 @@ enum class ConversionReportSendRetryCount {
   kFailed = 3,
   kMaxValue = kFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionReportSendRetryCount)
 
 const base::TimeDelta kPrivacySandboxAttestationsTimeout = base::Minutes(5);
 
@@ -206,25 +215,13 @@ const base::TimeDelta ReportRetryDelay(bool is_first_retry) {
 }
 
 void RecordStoreSourceStatus(const StoreSourceResult& result) {
-  static_assert(
-      StorableSource::Result::kMaxValue ==
-          StorableSource::Result::kDestinationPerDayReportingLimitReached,
-      "Update `ConversionStorageSourceStatus enum` in `enums.xml`.");
   base::UmaHistogramEnumeration("Conversions.SourceStoredStatus8",
                                 result.status());
 }
 
 void RecordCreateReportStatus(const CreateReportResult& result) {
-  static_assert(
-      AttributionTrigger::EventLevelResult::kMaxValue ==
-          AttributionTrigger::EventLevelResult::kNoMatchingTriggerData,
-      "Update `ConversionStorageCreateReportStatus` enum in `enums.xml`.");
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus9",
                                 result.event_level_status());
-  static_assert(
-      AttributionTrigger::AggregatableResult::kMaxValue ==
-          AttributionTrigger::AggregatableResult::kExcessiveReports,
-      "Update `ConversionCreateAggregatableReportStatus` enum in `enums.xml`.");
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus4",
       result.aggregatable_status());

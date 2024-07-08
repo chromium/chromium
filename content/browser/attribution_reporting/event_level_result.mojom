@@ -9,6 +9,8 @@ module attribution_reporting.mojom;
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(EventLevelResult)
 enum EventLevelResult {
   kSuccess = 0,
   // The report was stored successfully, but it replaced an existing report
@@ -33,3 +35,4 @@ enum EventLevelResult {
   kReportWindowNotStarted = 17,
   kNoMatchingTriggerData = 18,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageCreateReportStatus)

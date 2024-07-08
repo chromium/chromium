@@ -75,6 +75,8 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitStatus)
   enum class InitStatus {
     kSuccess = 0,
     kFailedToOpenDbInMemory = 1,
@@ -83,6 +85,12 @@ class CONTENT_EXPORT AttributionStorageSql {
     kFailedToInitializeSchema = 4,
     kMaxValue = kFailedToInitializeSchema,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionStorageSqlInitStatus)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReportCorruptionStatus)
   enum class ReportCorruptionStatus {
     // Tracks total number of corrupted reports for analysis purposes.
     kAnyFieldCorrupted = 0,
@@ -119,6 +127,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     kSourceInvalidRandomizedResponseRate = 31,
     kMaxValue = kSourceInvalidRandomizedResponseRate,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionCorruptReportStatus)
 
   struct DeletionCounts {
     int sources = 0;

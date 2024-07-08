@@ -777,11 +777,15 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Internal error"/>
 </enum>
 
-<enum name="AttributionSourceDestinationRateLimitResult">
+<!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
+
+<enum name="AttributionSourceDestinationLimitResult">
   <int value="0" label="Allowed"/>
   <int value="1" label="Allowed but limit hit"/>
   <int value="2" label="Disallowed"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.cc:DestinationLimitResult) -->
 
 <enum name="AuctionInvalidServerResponseReason">
   <int value="0" label="Unknown"/>
@@ -3316,6 +3320,8 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/attribution_reporting/aggregatable_debug_reporting_config.h:AggregatableDebugReportingConfigError) -->
 
+<!-- LINT.IfChange(ConversionAggregatableDebugReportProcessResult) -->
+
 <enum name="ConversionAggregatableDebugReportProcessResult">
   <int value="0" label="Success"/>
   <int value="1" label="No debug data"/>
@@ -3326,6 +3332,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Both rate-limits reached"/>
   <int value="7" label="Internal error"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom:ProcessAggregatableDebugReportResult) -->
 
 <enum name="ConversionAndroidOperationResult">
   <int value="0" label="Success"/>
@@ -3352,12 +3360,16 @@ Called by update_net_error_codes.py.-->
   <int value="21" label="Invalid object from the server"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionAssembleAggregatableReportStatus) -->
+
 <enum name="ConversionAssembleAggregatableReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Aggregation service unavailable"/>
   <int value="2" label="Failed to create request"/>
   <int value="3" label="Failed to assemble report"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_attribution_utils.h:AssembleAggregatableReportStatus) -->
 
 <enum name="ConversionAttributionBehavior">
   <int value="0" label="Disabled"/>
@@ -3371,11 +3383,15 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Enabled"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionAttributionResult) -->
+
 <enum name="ConversionAttributionResult">
   <int value="0" label="Event-level report only"/>
   <int value="1" label="Aggregatable report only"/>
   <int value="2" label="Both"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.cc:AttributionResult) -->
 
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>
@@ -3383,12 +3399,18 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failed"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionBackgroundNavigationOutcome) -->
+
 <enum name="ConversionBackgroundNavigationOutcome">
   <int value="0" label="Tied immediately"/>
   <int value="1" label="Tied with delay"/>
   <int value="2" label="Never tied: Timeout"/>
   <int value="3" label="Never tied: Ineligible navigation"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:BackgroundNavigationOutcome) -->
+
+<!-- LINT.IfChange(ConversionCorruptReportStatus) -->
 
 <enum name="ConversionCorruptReportStatus">
   <int value="0" label="Any field corrupted"/>
@@ -3433,6 +3455,10 @@ Called by update_net_error_codes.py.-->
       label="Corresponding source - invalid randomized response rate"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
+
+<!-- LINT.IfChange(ConversionCreateAggregatableReportStatus) -->
+
 <enum name="ConversionCreateAggregatableReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>
@@ -3450,6 +3476,10 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Excessive reports"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
+
+<!-- LINT.IfChange(ConversionNavigationDataHostStatus) -->
+
 <enum name="ConversionNavigationDataHostStatus">
   <int value="0" label="Registered"/>
   <int value="1" label="Not found"/>
@@ -3457,10 +3487,18 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Processed"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationDataHostStatus) -->
+
+<!-- LINT.IfChange(ConversionNavigationUnexpectedRegistration) -->
+
 <enum name="ConversionNavigationUnexpectedRegistration">
   <int value="0" label="Registration already exists"/>
   <int value="1" label="Registration missing upon receiving data"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:NavigationUnexpectedRegistration) -->
+
+<!-- LINT.IfChange(ConversionOsRegistrationResult) -->
 
 <enum name="ConversionOsRegistrationResult">
   <int value="0" label="Passed to OS"/>
@@ -3470,17 +3508,23 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Rejected by OS"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_reporting.mojom:OsRegistrationResult) -->
+
 <enum name="ConversionOsRegistrationsBufferFlushReason">
   <int value="0" label="Navigation is done"/>
   <int value="1" label="Buffer is full"/>
   <int value="2" label="Timeout reached"/>
 </enum>
 
+<!-- LINT.IfChange(ConversionRegisterDataHostOutcome) -->
+
 <enum name="ConversionRegisterDataHostOutcome">
   <int value="0" label="Processed immediately"/>
   <int value="1" label="Deferred"/>
   <int value="2" label="Dropped"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegisterDataHostOutcome) -->
 
 <!-- LINT.IfChange(ConversionRegistrationInfoError) -->
 
@@ -3504,12 +3548,18 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
 
+<!-- LINT.IfChange(ConversionReportSendOutcome) -->
+
 <enum name="ConversionReportSendOutcome">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed due to error"/>
   <int value="2" label="Dropped due to embedder disabling the API"/>
   <int value="3" label="Failed to assemble"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendOutcome) -->
+
+<!-- LINT.IfChange(ConversionReportSendRetryCount) -->
 
 <enum name="ConversionReportSendRetryCount">
   <int value="0" label="None"/>
@@ -3518,11 +3568,17 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failed"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
+
+<!-- LINT.IfChange(ConversionReportStatus) -->
+
 <enum name="ConversionReportStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Internal network error"/>
   <int value="2" label="External non-200 HTTP error"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_report_network_sender.cc:Status) -->
 
 <enum name="ConversionRequestSupportHeader">
   <int value="0" label="Web"/>
@@ -3586,6 +3642,8 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
 
+<!-- LINT.IfChange(ConversionsRegistrationMethod) -->
+
 <enum name="ConversionsRegistrationMethod">
   <int value="0" label="kNavForeground: Registered via foreground navigation"/>
   <int value="1"
@@ -3619,6 +3677,10 @@ Called by update_net_error_codes.py.-->
              foreground or background request"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:RegistrationMethod) -->
+
+<!-- LINT.IfChange(ConversionStorageCreateReportStatus) -->
+
 <enum name="ConversionStorageCreateReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Success, but dropped lower-priority report"/>
@@ -3641,6 +3703,10 @@ Called by update_net_error_codes.py.-->
   <int value="18" label="No matching trigger data"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/event_level_result.mojom:EventLevelResult) -->
+
+<!-- LINT.IfChange(ConversionStorageSourceStatus) -->
+
 <enum name="ConversionStorageSourceStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Internal error"/>
@@ -3661,6 +3727,10 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Excessive destinations (per reporting site per day)"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/store_source_result.mojom:StoreSourceResult) -->
+
+<!-- LINT.IfChange(ConversionStorageSqlInitStatus) -->
+
 <enum name="ConversionStorageSqlInitStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open DB in memory"/>
@@ -3668,6 +3738,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failed to create directory"/>
   <int value="4" label="Failed to initialize schema"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:InitStatus) -->
 
 <enum name="ConversionsTriggerVerificationDestinationOriginStatus">
   <int value="0"

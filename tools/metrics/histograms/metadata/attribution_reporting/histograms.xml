@@ -1120,8 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.SourceDestinationLimitResult"
-    enum="AttributionSourceDestinationRateLimitResult"
-    expires_after="2024-11-20">
+    enum="AttributionSourceDestinationLimitResult" expires_after="2024-11-20">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

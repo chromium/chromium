@@ -50,6 +50,8 @@ CreateAggregatableHistogram(
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AssembleAggregatableReportStatus)
 enum class AssembleAggregatableReportStatus {
   kSuccess = 0,
   kAggregationServiceUnavailable = 1,
@@ -57,6 +59,7 @@ enum class AssembleAggregatableReportStatus {
   kAssembleReportFailed = 3,
   kMaxValue = kAssembleReportFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAssembleAggregatableReportStatus)
 
 CONTENT_EXPORT std::optional<AggregatableReportRequest>
 CreateAggregatableReportRequest(const AttributionReport& report);

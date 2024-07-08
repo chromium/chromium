@@ -105,6 +105,8 @@ using AttributionReportingOsRegistrars =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(NavigationDataHostStatus)
 enum class NavigationDataHostStatus {
   kRegistered = 0,
   kNotFound = 1,
@@ -115,6 +117,7 @@ enum class NavigationDataHostStatus {
 
   kMaxValue = kProcessed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionNavigationDataHostStatus)
 
 void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
   base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus3", event);
@@ -122,6 +125,8 @@ void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(RegistrationMethod)
 enum class RegistrationMethod {
   kNavForeground = 0,
   kNavBackgroundBlink = 1,
@@ -136,6 +141,7 @@ enum class RegistrationMethod {
   kForegroundOrBackgroundBrowser = 10,
   kMaxValue = kForegroundOrBackgroundBrowser,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionsRegistrationMethod)
 
 void RecordRegistrationMethod(RegistrationMethod method) {
   base::UmaHistogramEnumeration("Conversions.RegistrationMethod2", method);
@@ -143,12 +149,15 @@ void RecordRegistrationMethod(RegistrationMethod method) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(RegisterDataHostOutcome)
 enum class RegisterDataHostOutcome {
   kProcessedImmediately = 0,
   kDeferred = 1,
   kDropped = 2,
   kMaxValue = kDropped,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRegisterDataHostOutcome)
 
 void RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome status) {
   base::UmaHistogramEnumeration("Conversions.RegisterDataHostOutcome", status);
@@ -156,11 +165,14 @@ void RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome status) {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(NavigationUnexpectedRegistration)
 enum class NavigationUnexpectedRegistration {
   kRegistrationAlreadyExists = 0,
   kRegistrationMissingUponReceivingData = 1,
   kMaxValue = kRegistrationMissingUponReceivingData,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionNavigationUnexpectedRegistration)
 
 // See https://crbug.com/1500667 for details. There are assumptions that a
 // navigation registration can only be registered once and that it must be
@@ -172,6 +184,10 @@ void RecordNavigationUnexpectedRegistration(
                                 status);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BackgroundNavigationOutcome)
 enum class BackgroundNavigationOutcome {
   kTiedImmediately = 0,
   kTiedWithDelay = 1,
@@ -179,6 +195,7 @@ enum class BackgroundNavigationOutcome {
   kNeverTiedIneligible = 3,
   kMaxValue = kNeverTiedIneligible,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionBackgroundNavigationOutcome)
 
 void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
   base::UmaHistogramEnumeration("Conversions.BackgroundNavigation.Outcome",

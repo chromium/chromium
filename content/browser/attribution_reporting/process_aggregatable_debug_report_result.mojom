@@ -9,6 +9,8 @@ module attribution_reporting.mojom;
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(ProcessAggregatableDebugReportResult)
 enum ProcessAggregatableDebugReportResult {
   kSuccess = 0,
   kNoDebugData = 1,
@@ -19,3 +21,4 @@ enum ProcessAggregatableDebugReportResult {
   kBothRateLimitsReached = 6,
   kInternalError = 7,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionAggregatableDebugReportProcessResult)
