@@ -155,6 +155,10 @@ interface PageHandler {
   // chrome://downloads warning dialog, for dangerous files.
   SaveDangerousFromDialogRequiringGesture(string id);
 
+  // Called when "Download <dangerous file name>" is clicked from the
+  // chrome://downloads warning interstitial, for dangerous files.
+  SaveDangerousFromInterstitialNeedGesture(string id);
+
   // Called when "Cancel" is clicked on the chrome://downloads warning bypass
   // dialog, or the dialog is closed by dismissing it. Only records the event
   // and potentially sends a report.

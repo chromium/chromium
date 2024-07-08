@@ -496,6 +496,42 @@ TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
                   .empty());
 }
 
+TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
+       SaveDangerousFromInterstitialNeedGesture) {
+  SimulateMouseGestureOnWebUI();
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+  handler_->SaveDangerousFromInterstitialNeedGesture("1");
+
+  histogram_tester_.ExpectUniqueSample(
+      "Download.DangerousDownloadInterstitial.Action",
+      DangerousDownloadInterstitialAction::kSaveDangerous, 1);
+
+  // Verify that dangerous download report is sent.
+  safe_browsing::ClientSafeBrowsingReportRequest expected_report;
+  std::string expected_serialized_report;
+  expected_report.set_url(GURL(kTestDangerousDownloadUrl).spec());
+  expected_report.set_type(safe_browsing::ClientSafeBrowsingReportRequest::
+                               DANGEROUS_DOWNLOAD_RECOVERY);
+  expected_report.set_did_proceed(true);
+  expected_report.set_download_verdict(
+      safe_browsing::ClientDownloadResponse::DANGEROUS);
+  expected_report.set_token("token");
+  expected_report.SerializeToString(&expected_serialized_report);
+  EXPECT_EQ(expected_serialized_report,
+            test_safe_browsing_factory_->test_safe_browsing_service()
+                ->serialized_download_report());
+}
+
+TEST_F(DownloadsDOMHandlerTestDangerousDownloadInterstitial,
+       SaveDangerousFromInterstitialNeedGesture_NoRecentInteraction) {
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload()).Times(0);
+  handler_->SaveDangerousFromInterstitialNeedGesture("1");
+  histogram_tester_.ExpectUniqueSample(
+      "Download.DangerousDownloadInterstitial.Action",
+      DangerousDownloadInterstitialAction::kSaveDangerous, 0);
+}
+
 class DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService
     : public DownloadsDOMHandlerWithFakeSafeBrowsingTest {
  public:
@@ -565,4 +601,25 @@ TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
 
   EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
   handler.SaveDangerousFromDialogRequiringGesture("1");
+}
+
+TEST_F(DownloadsDOMHandlerWithFakeSafeBrowsingTestTrustSafetySentimentService,
+       SaveDangerousFromInterstitial_CallsTrustSafetySentimentService) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      safe_browsing::kDangerousDownloadInterstitial);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+  SetUpDangerousDownload();
+  ExpectTrustSafetySentimentServiceCall(
+      DownloadItemWarningData::WarningSurface::DOWNLOAD_PROMPT,
+      DownloadItemWarningData::WarningAction::PROCEED);
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+
+  SimulateMouseGestureOnWebUI();
+
+  EXPECT_CALL(dangerous_download_, ValidateDangerousDownload());
+  handler.SaveDangerousFromInterstitialNeedGesture("1");
 }

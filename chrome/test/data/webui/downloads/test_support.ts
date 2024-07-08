@@ -37,6 +37,7 @@ class FakePageHandler implements PageHandlerInterface {
     'recordOpenSurveyOnDangerousInterstitial',
     'remove',
     'saveDangerousFromDialogRequiringGesture',
+    'saveDangerousFromInterstitialNeedGesture',
     'saveSuspiciousRequiringGesture',
   ]);
 
@@ -82,6 +83,11 @@ class FakePageHandler implements PageHandlerInterface {
   saveDangerousFromDialogRequiringGesture(id: string) {
     this.callTracker_.methodCalled(
         'saveDangerousFromDialogRequiringGesture', id);
+  }
+
+  saveDangerousFromInterstitialNeedGesture(id: string) {
+    this.callTracker_.methodCalled(
+        'saveDangerousFromInterstitialNeedGesture', id);
   }
 
   saveSuspiciousRequiringGesture(id: string) {

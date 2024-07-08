@@ -408,6 +408,40 @@ void DownloadsDOMHandler::SaveDangerousFromDialogRequiringGesture(
   file->ValidateDangerousDownload();
 }
 
+void DownloadsDOMHandler::SaveDangerousFromInterstitialNeedGesture(
+    const std::string& id) {
+  CHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kDangerousDownloadInterstitial));
+  if (!GetWebUIWebContents()->HasRecentInteraction()) {
+    LOG(ERROR) << "SaveDangerousFromInterstitialNeedGesture received without "
+                  "recent user interaction";
+    return;
+  }
+
+  CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_SAVE_DANGEROUS_FROM_PROMPT);
+  download::DownloadItem* file = GetDownloadByStringId(id);
+  if (!CanLogWarningMetrics(file)) {
+    return;
+  }
+
+  RecordDangerousDownloadInterstitialActionHistogram(
+      DangerousDownloadInterstitialAction::kSaveDangerous);
+
+  RecordDownloadDangerPromptHistogram("Proceed", *file);
+
+  MaybeReportBypassAction(file, WarningSurface::DOWNLOAD_PROMPT,
+                          WarningAction::PROCEED);
+  MaybeTriggerDownloadWarningHatsSurvey(
+      file, DownloadWarningHatsType::kDownloadsPageBypass);
+  MaybeTriggerTrustSafetySurvey(file, WarningSurface::DOWNLOAD_PROMPT,
+                                WarningAction::PROCEED);
+
+  RecordDownloadsPageValidatedHistogram(file);
+
+  // `file` is potentially deleted.
+  file->ValidateDangerousDownload();
+}
+
 void DownloadsDOMHandler::RecordCancelBypassWarningDialog(
     const std::string& id) {
   CountDownloadsDOMEvents(DOWNLOADS_DOM_EVENT_CANCEL_BYPASS_WARNING_PROMPT);
