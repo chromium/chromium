@@ -105,10 +105,7 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_SORT_ORDER = "Chrome.Bookmarks.BookmarkRowSortOrder";
     public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
-    /**
-     * Whether Chrome is set as the default browser.
-     * Default value is false.
-     */
+    /** Whether Chrome is set as the default browser. Default value is false. */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
     /**
@@ -311,6 +308,10 @@ public final class ChromePreferenceKeys {
      */
     public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
             "Chrome.IsolatedSplits.VersionCode";
+
+    /** Whether Google is set as Chrome's default search engine. Default value is false. */
+    public static final String IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE =
+            "Chrome.GoogleBottomBar.IsDefaultSearchEngineGoogle";
 
     /** Whether the device is from an EEA country. */
     public static final String IS_EEA_CHOICE_COUNTRY = "Chrome.SearchEngine.IsEeaChoiceCountry";
@@ -967,6 +968,7 @@ public final class ChromePreferenceKeys {
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 INCOGNITO_TAB_COUNT,
+                IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
                 IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,

@@ -355,6 +355,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mProfileSupplier);
     }
 
+    @Override
+    protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
+        super.initProfileDependentFeatures(currentlySelectedProfile);
+
+        GoogleBottomBarCoordinator googleBottomBarCoordinator = getGoogleBottomBarCoordinator();
+
+        if (googleBottomBarCoordinator != null) {
+            googleBottomBarCoordinator.initDefaultSearchEngine(
+                    currentlySelectedProfile.getOriginalProfile());
+        }
+    }
+
     private void initializeTrackingProtectionSnackbarController() {
         if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)

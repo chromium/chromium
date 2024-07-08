@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
@@ -63,7 +64,7 @@ public class GoogleBottomBarCoordinator {
                         activity,
                         tabProvider,
                         shareDelegateSupplier,
-                        getButtonConfig(
+                        getBottomBarConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }
 
@@ -102,12 +103,21 @@ public class GoogleBottomBarCoordinator {
         }
     }
 
+    /**
+     * Stores default search engine information.
+     *
+     * @param originalProfile The profile to check for default search engine information.
+     */
+    public void initDefaultSearchEngine(Profile originalProfile) {
+        BottomBarConfigCreator.initDefaultSearchEngine(originalProfile);
+    }
+
     @VisibleForTesting
     GoogleBottomBarViewCreator getGoogleBottomBarViewCreatorForTesting() {
         return mGoogleBottomBarViewCreator;
     }
 
-    private BottomBarConfig getButtonConfig(
+    private BottomBarConfig getBottomBarConfig(
             GoogleBottomBarIntentParams intentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         BottomBarConfigCreator configCreator = new BottomBarConfigCreator(mContext);

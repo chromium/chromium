@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.CUSTOM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SAVE;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SEARCH;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.SHARE;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BOTTOM_BAR_CREATED_HISTOGRAM;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_SHOWN_HISTOGRAM;
 
@@ -31,14 +36,20 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -63,6 +74,9 @@ public class GoogleBottomBarCoordinatorTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
 
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private Profile mProfile;
+
     private Activity mActivity;
     private GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
 
@@ -84,6 +98,7 @@ public class GoogleBottomBarCoordinatorTest {
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
     }
 
     @Test
@@ -160,6 +175,62 @@ public class GoogleBottomBarCoordinatorTest {
 
         histogramWatcher.assertExpected();
         histogramWatcher.close();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabled_doesNotCheckDefaultSearchEngine() {
+        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        mGoogleBottomBarCoordinator.initDefaultSearchEngine(mProfile);
+
+        verifyNoInteractions(mTemplateUrlService);
+        // Verify that true value is not written to Shared preferences
+        // Use true as default value as we expect to get false
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, /* defaultValue= */ true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndNotEqualToGoogle_writesFalse() {
+        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, true);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+
+        mGoogleBottomBarCoordinator.initDefaultSearchEngine(mProfile);
+
+        // Use true as default value as we expect to get false
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, /* defaultValue= */ true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
+    public void
+            initDefaultSearchEngine_variantLayoutsEnabled_defaultSearchEngineCheckEnabledAndEqualsToGoogle_writesTrue() {
+        IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.setForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, false);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+
+        mGoogleBottomBarCoordinator.initDefaultSearchEngine(mProfile);
+
+        // Use false as default value as we expect to get true
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE, /* defaultValue= */ false));
     }
 
     private GoogleBottomBarCoordinator createGoogleBottomBarCoordinator(
