@@ -67,6 +67,12 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
   html_source->AddLocalizedString("selectText", IDS_LENS_OVERLAY_SELECT_TEXT);
+  html_source->AddLocalizedString(
+      "networkErrorPageTopLine",
+      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_FIRST_LINE);
+  html_source->AddLocalizedString(
+      "networkErrorPageBottomLine",
+      IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -129,6 +135,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddDouble(
       "postSelectionComparisonThreshold",
       lens::features::GetLensOverlayPostSelectionComparisonThreshold());
+  html_source->AddBoolean("enableErrorPage",
+                          lens::features::GetLensOverlayEnableErrorPage());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

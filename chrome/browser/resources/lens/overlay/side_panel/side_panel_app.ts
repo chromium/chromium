@@ -35,6 +35,7 @@ export interface LensSidePanelAppElement {
   $: {
     results: HTMLIFrameElement,
     ghostLoader: SidePanelGhostLoaderElement,
+    networkErrorPage: HTMLDivElement,
   };
 }
 
@@ -50,6 +51,11 @@ export class LensSidePanelAppElement extends PolymerElement {
   static get properties() {
     return {
       isBackArrowVisible: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      isErrorPageVisible: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
@@ -79,6 +85,7 @@ export class LensSidePanelAppElement extends PolymerElement {
 
   // Public for use in browser tests.
   isBackArrowVisible: boolean;
+  private isErrorPageVisible: boolean;
   // Whether the results iframe is currently loading. This needs to be done via
   // browser because the iframe is cross-origin. Default true since the side
   // panel can open before a navigation has started.
@@ -119,6 +126,8 @@ export class LensSidePanelAppElement extends PolymerElement {
           this.setIsLoadingResults.bind(this)),
       this.browserProxy.callbackRouter.setBackArrowVisible.addListener(
           this.setBackArrowVisible.bind(this)),
+      this.browserProxy.callbackRouter.setShowErrorPage.addListener(
+          this.setShowErrorPage.bind(this)),
     ];
     window.addEventListener('keyup', maybeCloseOverlay);
   }
@@ -165,6 +174,11 @@ export class LensSidePanelAppElement extends PolymerElement {
   private setBackArrowVisible(visible: boolean) {
     this.isBackArrowVisible = visible;
     this.wasBackArrowAvailable = visible;
+  }
+
+  private setShowErrorPage(shouldShowErrorPage: boolean) {
+    this.isErrorPageVisible =
+        shouldShowErrorPage && loadTimeData.getBoolean('enableErrorPage');
   }
 
   private onSearchboxFocusIn_() {
