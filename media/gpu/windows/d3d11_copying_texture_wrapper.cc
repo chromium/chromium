@@ -31,7 +31,7 @@ D3D11Status CopyingTexture2DWrapper::BeginSharedImageAccess() {
 
 D3D11Status CopyingTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
-    gpu::MailboxHolder* mailbox_dest,
+    ClientSharedImageOrMailboxHolder& shared_image_dest,
     gfx::ColorSpace* output_color_space) {
   // Acquire keyed mutex for VideoProcessorBlt ops.
   D3D11Status status = output_texture_wrapper_->BeginSharedImageAccess();
@@ -84,8 +84,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   if (!SUCCEEDED(hr))
     return {D3D11Status::Codes::kVideoProcessorBltFailed, hr};
 
-  return output_texture_wrapper_->ProcessTexture(copy_color_space, mailbox_dest,
-                                                 output_color_space);
+  return output_texture_wrapper_->ProcessTexture(
+      copy_color_space, shared_image_dest, output_color_space);
 }
 
 D3D11Status CopyingTexture2DWrapper::Init(

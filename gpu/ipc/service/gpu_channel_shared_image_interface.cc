@@ -112,6 +112,54 @@ GpuChannelSharedImageInterface::CreateSharedImageForAndroidVideo(
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
+    const SharedImageInfo& si_info,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+    scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state,
+    size_t array_slice) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  if (!shared_image_stub_) {
+    return nullptr;
+  }
+
+  auto mailbox = Mailbox::Generate();
+  auto metadata = si_info.meta;
+  auto caps = shared_image_stub_->shared_context_state()->GetGLFormatCaps();
+  // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
+  // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
+  // framebuffer. To prevent Skia trying to bind it for read pixels, we need
+  // it to be GL_TEXTURE_EXTERNAL_OES.
+  std::unique_ptr<gpu::SharedImageBacking> backing =
+      gpu::D3DImageBacking::Create(
+          mailbox, metadata.format, metadata.size, metadata.color_space,
+          metadata.surface_origin, metadata.alpha_type, metadata.usage,
+          si_info.debug_label, texture, std::move(dxgi_shared_handle_state),
+          caps, GL_TEXTURE_EXTERNAL_OES, array_slice, /*plane_index=*/0u);
+
+  if (!backing) {
+    return nullptr;
+  }
+
+  // Need to clear the backing since the D3D11 Video Decoder will initialize
+  // the textures.
+  backing->SetCleared();
+
+  // auto* shared_image_manager = helper_->GetSharedImageManager();
+  // auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
+  DCHECK(shared_image_stub_->channel()
+             ->gpu_channel_manager()
+             ->shared_image_manager());
+  shared_image_stub_->factory()->RegisterBacking(std::move(backing));
+
+  return base::WrapRefCounted<ClientSharedImage>(
+      new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
+                            GL_TEXTURE_EXTERNAL_OES));
+}
+#endif
+
 bool GpuChannelSharedImageInterface::MakeContextCurrent(bool needs_gl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!shared_image_stub_) {

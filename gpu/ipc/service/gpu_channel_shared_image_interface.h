@@ -17,6 +17,14 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <d3d11.h>
+#include <wrl/client.h>
+
+#include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
+#include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#endif
+
 namespace base {
 class WaitableEvent;
 }
@@ -109,6 +117,15 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
       scoped_refptr<StreamTextureSharedImageInterface> image,
       scoped_refptr<RefCountedLock> drdc_lock);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<ClientSharedImage> CreateSharedImageForD3D11Video(
+      const SharedImageInfo& si_info,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+      scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state,
+      size_t array_slice);
+#endif
+
   SequenceId sequence() { return sequence_; }
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state() {
     return sync_point_client_state_;

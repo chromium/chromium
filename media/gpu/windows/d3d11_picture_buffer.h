@@ -74,13 +74,14 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   D3D11PictureBuffer(const D3D11PictureBuffer&) = delete;
   D3D11PictureBuffer& operator=(const D3D11PictureBuffer&) = delete;
 
-  // Set the contents of a mailbox holder array, return true if successful.
+  // Initialize |shared_image_dest|; return true if successful.
   // |input_color_space| is the color space of our input texture, and
   // |output_color_space| will be set, on success, to the color space that the
   // processed texture has.
-  D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             gpu::MailboxHolder* mailbox_dest,
-                             gfx::ColorSpace* output_color_space);
+  D3D11Status ProcessTexture(
+      const gfx::ColorSpace& input_color_space,
+      ClientSharedImageOrMailboxHolder& shared_image_dest,
+      gfx::ColorSpace* output_color_space);
   ComD3D11Texture2D Texture() const;
   D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 

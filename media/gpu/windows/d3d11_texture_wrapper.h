@@ -28,11 +28,16 @@
 
 namespace media {
 
+BASE_DECLARE_FEATURE(kUseClientSharedImageForD3D11Video);
+
 class D3D11PictureBuffer;
 
 using CommandBufferHelperPtr = scoped_refptr<CommandBufferHelper>;
 using GetCommandBufferHelperCB =
     base::RepeatingCallback<CommandBufferHelperPtr()>;
+
+using ClientSharedImageOrMailboxHolder =
+    absl::variant<scoped_refptr<gpu::ClientSharedImage>, gpu::MailboxHolder>;
 
 // Support different strategies for processing pictures - some may need copying,
 // for example.  Each wrapper owns the resources for a single texture, so it's
@@ -65,11 +70,12 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // And need reset the scoped access object to end access.
   virtual D3D11Status BeginSharedImageAccess() = 0;
 
-  // Import |texture|, |array_slice| and return the mailbox(es) that can be
+  // Import |texture|, |array_slice| and return the shared image that can be
   // used to refer to it.
-  virtual D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                                     gpu::MailboxHolder* mailbox_dest_out,
-                                     gfx::ColorSpace* output_color_space) = 0;
+  virtual D3D11Status ProcessTexture(
+      const gfx::ColorSpace& input_color_space,
+      media::ClientSharedImageOrMailboxHolder& shared_image_dest_out,
+      gfx::ColorSpace* output_color_space) = 0;
 
   virtual void SetStreamHDRMetadata(
       const gfx::HDRMetadata& stream_metadata) = 0;
@@ -90,7 +96,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   // after gpu resource initialization.
   using GPUResourceInitCB = base::OnceCallback<void(
       scoped_refptr<media::D3D11PictureBuffer>,
-      std::unique_ptr<gpu::VideoDecodeImageRepresentation>)>;
+      std::unique_ptr<gpu::VideoDecodeImageRepresentation>,
+      scoped_refptr<gpu::ClientSharedImage>)>;
 
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
@@ -110,16 +117,18 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
 
   D3D11Status BeginSharedImageAccess() override;
 
-  D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                             gpu::MailboxHolder* mailbox_dest,
-                             gfx::ColorSpace* output_color_space) override;
+  D3D11Status ProcessTexture(
+      const gfx::ColorSpace& input_color_space,
+      ClientSharedImageOrMailboxHolder& shared_image_dest,
+      gfx::ColorSpace* output_color_space) override;
 
   void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
   void OnGPUResourceInitDone(
       scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
-      std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep);
+      std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep,
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image);
 
   ComD3D11Device GetVideoDevice() { return video_device_; }
 
@@ -160,7 +169,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   gfx::Size size_;
   gfx::ColorSpace color_space_;
   base::SequenceBound<GpuResources> gpu_resources_;
-  gpu::MailboxHolder mailbox_holder_;
+  ClientSharedImageOrMailboxHolder shared_image_;
   DXGI_FORMAT dxgi_format_;
 
   std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep_;

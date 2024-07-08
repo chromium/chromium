@@ -810,7 +810,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
-    if (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle)) {
+    if (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) ||
+        base::FeatureList::IsEnabled(kUseClientSharedImageForD3D11Video)) {
       // WebGPU requires interop on the picture buffer to achieve zero copy.
       // This requires a picture buffer to produce a shared image representation
       // during initialization. Add picture buffer in_client_use count to idle
@@ -900,19 +901,34 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     picture_color_space = config_.color_space_info().ToGfxColorSpace();
   }
 
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+  media::ClientSharedImageOrMailboxHolder shared_image;
   gfx::ColorSpace output_color_space;
   D3D11Status result = picture_buffer->ProcessTexture(
-      picture_color_space, &mailbox_holders[0], &output_color_space);
+      picture_color_space, shared_image, &output_color_space);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
   }
 
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-      texture_selector_->PixelFormat(), mailbox_holders,
-      VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-      natural_size, timestamp);
+  scoped_refptr<VideoFrame> frame;
+  if (absl::holds_alternative<scoped_refptr<gpu::ClientSharedImage>>(
+          shared_image)) {
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
+        absl::get<scoped_refptr<gpu::ClientSharedImage>>(
+            std::move(shared_image));
+    frame = VideoFrame::WrapSharedImage(
+        texture_selector_->PixelFormat(), client_shared_image,
+        client_shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
+        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
+        natural_size, timestamp);
+  } else {
+    gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
+        absl::get<gpu::MailboxHolder>(std::move(shared_image))};
+    frame = VideoFrame::WrapNativeTextures(
+        texture_selector_->PixelFormat(), mailbox_holders,
+        VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
+        natural_size, timestamp);
+  }
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of
