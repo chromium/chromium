@@ -270,6 +270,18 @@ PATH_CONTEXT = {
         }
     },
     'snapshot': {
+        'android-arm': {
+            'binary_name': None,
+            'listing_platform_dir': 'Android/',
+            'archive_name': 'chrome-android.zip',
+            'archive_extract_dir': 'chrome-android'
+        },
+        'android-arm64': {
+            'binary_name': None,
+            'listing_platform_dir': 'Android_Arm64/',
+            'archive_name': 'chrome-android.zip',
+            'archive_extract_dir': 'chrome-android'
+        },
         'linux64': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'Linux_x64/',
@@ -1086,18 +1098,22 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
     pass
 
 
-def GetAndroidApkFilename(context):
+def _GetMappingFromAndroidApk(context, apk):
   sdk = context.device.build_version_sdk
-  if 'webview' in context.apk:
-    return WEBVIEW_APK_FILENAMES[context.apk]
+  if 'webview' in apk.lower():
+    return WEBVIEW_APK_FILENAMES
   # Need these logic to bisect very old build. Release binaries are stored
   # forever and occasionally there are requests to bisect issues introduced
   # in very old versions.
   elif sdk < version_codes.LOLLIPOP:
-    return CHROME_APK_FILENAMES[context.apk]
+    return CHROME_APK_FILENAMES
   elif sdk < version_codes.NOUGAT:
-    return CHROME_MODERN_APK_FILENAMES[context.apk]
-  return MONOCHROME_APK_FILENAMES[context.apk]
+    return CHROME_MODERN_APK_FILENAMES
+  return MONOCHROME_APK_FILENAMES
+
+
+def GetAndroidApkFilename(context):
+  return _GetMappingFromAndroidApk(context, context.apk)[context.apk]
 
 
 def RunRevisionForAndroid(context, revision, zip_file):
@@ -1107,7 +1123,7 @@ def RunRevisionForAndroid(context, revision, zip_file):
   # For non-release, we download a zip file first, then un-zip the file
   # to a temporary folder and locate the apk file.
   if context.is_release:
-    InstallonAndroid(context.device, zip_file)
+    InstallOnAndroid(context.device, zip_file)
     LaunchOnAndroid(context.device, context.apk)
     return (0, sys.stdout, sys.stderr)
 
@@ -1120,11 +1136,23 @@ def RunRevisionForAndroid(context, revision, zip_file):
     if not os.path.exists(apk_path):
       print('%s does not exist.' % apk_path)
       if os.path.exists(apk_dir):
-        print('Are you using the correct apk? The list of available apks:')
+        print('\nAre you passing the correct --apk flag? Some older revisions '
+              'do not build all apk types.')
+        print(f'The list of available --apk options for {revision=}:')
         apk_files = [f for f in os.listdir(apk_dir) if f.endswith('.apk')]
-        print(apk_files)
+        not_available = []
+        for apk_file in apk_files:
+          mapping = _GetMappingFromAndroidApk(context, apk_file)
+          for apk_opt, apk_name in mapping.items():
+            if apk_file == apk_name:
+              print(f'- {apk_file}, use this by passing --apk={apk_opt}')
+              break
+          else:
+            not_available.append(apk_file)
+        print('\nThese filenames do not map to any configured APK variants: '
+              f'{not_available}')
       exit(1)
-    InstallonAndroid(context.device, apk_path)
+    InstallOnAndroid(context.device, apk_path)
     LaunchOnAndroid(context.device, context.apk)
   finally:
     try:
@@ -1239,7 +1267,6 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
               context.GetLaunchPath(revision))).replace('%s',
                                                         ' '.join(testargs)))
 
-  results = []
   if is_verbose:
     print(('Running ' + str(runcommand)))
 
@@ -1816,7 +1843,7 @@ def InitializeAndroidDevice(device_id, apk, chrome_flags):
   return device
 
 
-def InstallonAndroid(device, apk_path):
+def InstallOnAndroid(device, apk_path):
   """Installs the chromium build on a given device."""
   print('Installing %s on android device...' % apk_path)
   device.Install(apk_path)
@@ -2080,6 +2107,16 @@ def main():
     if not IsVersionNumber(opts.good):
       print('For release, you can only use chrome version to bisect.')
       return 1
+    if opts.archive.startswith('android-'):
+      # Channel builds have _ in their names, e.g. chrome_canary or chrome_beta.
+      # Non-channel builds don't, e.g. chrome or chromium. Make this a warning
+      # instead of an error since older archives might have non-channel builds.
+      if '_' not in context.apk:
+        print('WARNING: Android release typically only uploads channel builds, '
+              f'so you will often see "Found 0 builds" with --apk={context.apk}'
+              '. Switch to using --apk=chrome_stable or one of the other '
+              'channels if you see `RuntimeError: We don\'t have enough builds '
+              'to bisect. revlist: []`.\n')
   else:
     # For official and snapshot, we convert good and bad to commit position
     # as int.
