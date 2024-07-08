@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -10,17 +12,18 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
-#include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -73,15 +76,20 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
  protected:
   void OpenAppUiUrlAndSetCertificateWithStatus(const GURL& url,
                                                net::CertStatus cert_status) {
+    AddTab(browser(), url);
+
+    // AddTab() adds a new tab at index 0.
+    auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+    SetCertificateWithStatus(web_contents, cert_status);
+  }
+
+  void SetCertificateWithStatus(content::WebContents* web_contents,
+                                net::CertStatus cert_status) {
     const base::FilePath certs_dir = net::GetTestCertsDirectory();
     scoped_refptr<net::X509Certificate> test_cert(
         net::ImportCertFromFile(certs_dir, "ok_cert.pem"));
     ASSERT_TRUE(test_cert);
 
-    AddTab(browser(), url);
-
-    // AddTab() adds a new tab at index 0.
-    auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
     auto* entry = web_contents->GetController().GetVisibleEntry();
     content::SSLStatus& ssl = entry->GetSSL();
     ssl.certificate = test_cert;
@@ -871,10 +879,13 @@ TEST_F(TelemetryExtensionEventManagerTest, RegisterEventIWASuccess) {
       extension_id, crosapi::TelemetryEventCategoryEnum::kAudioJack));
 
   // Open IWA.
-  OpenAppUiUrlAndSetCertificateWithStatus(
+  AddTab(browser(), GURL("about:blank"));
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  web_app::SimulateIsolatedWebAppNavigation(
+      web_contents,
       GURL("isolated-app://"
-           "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic"),
-      /*cert_status=*/net::OK);
+           "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic"));
+  SetCertificateWithStatus(web_contents, net::OK);
   EXPECT_TRUE(app_ui_observers().contains(extension_id));
   EXPECT_TRUE(event_router().IsExtensionObserving(extension_id));
   EXPECT_TRUE(event_router().IsExtensionAllowedForCategory(

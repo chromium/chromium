@@ -27,6 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/common/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -172,8 +173,20 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   void TryCreatingService(
       const GURL& url,
       std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // Isolated Web Apps require Cross Origin Isolation headers to be included
+    // in the response.
+    if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+      web_app::SimulateIsolatedWebAppNavigation(web_contents(), url);
+    } else {
+      content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                                 url);
+    }
+#else
     content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                                url);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     DeviceServiceImpl::CreateForTest(main_rfh(),
                                      remote_.BindNewPipeAndPassReceiver(),
                                      std::move(device_attribute_api));

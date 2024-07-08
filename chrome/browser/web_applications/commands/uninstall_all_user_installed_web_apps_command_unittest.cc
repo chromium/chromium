@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -28,6 +29,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +41,24 @@
 namespace web_app {
 
 namespace {
+
+void WaitForPendingDataClearingTasks(Profile* profile) {
+  content::BrowsingDataRemover* browsing_data_remover =
+      profile->GetBrowsingDataRemover();
+  if (browsing_data_remover->GetPendingTaskCountForTesting() == 0) {
+    return;
+  }
+
+  base::test::TestFuture<void> future;
+  browsing_data_remover->SetWouldCompleteCallbackForTesting(
+      base::BindLambdaForTesting([&](base::OnceClosure callback) {
+        if (browsing_data_remover->GetPendingTaskCountForTesting() == 1) {
+          future.SetValue();
+        }
+        std::move(callback).Run();
+      }));
+  CHECK(future.Wait());
+}
 
 #if BUILDFLAG(ENABLE_NACL)
 class ScopedNaClBrowserDelegate {
@@ -72,6 +92,9 @@ class UninstallAllUserInstalledWebAppsCommandTest : public WebAppTest {
   }
 
   void TearDown() override {
+    // IWAs will start a data clearing job when uninstalled, which needs to
+    // complete before we delete the Profile.
+    WaitForPendingDataClearingTasks(profile());
     provider()->Shutdown();
 #if BUILDFLAG(ENABLE_NACL)
     nacl_browser_delegate_.reset();

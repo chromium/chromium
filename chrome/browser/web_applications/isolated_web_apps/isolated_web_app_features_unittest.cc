@@ -36,60 +36,70 @@ class IsolatedWebAppFeaturesTest : public WebAppTest {
   }
 };
 
-TEST_F(IsolatedWebAppFeaturesTest, IsIwaDevModeEnabled) {
-  base::test::ScopedFeatureList base_scoped_feature_list{
-      features::kIsolatedWebApps};
+TEST_F(IsolatedWebAppFeaturesTest, IwaAndDevModeEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kIsolatedWebAppDevMode},
+                                       {features::kIsolatedWebApps});
+  EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledDevModeDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kIsolatedWebApps},
+                                       {features::kIsolatedWebAppDevMode});
+  EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledDevPolicyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kIsolatedWebApps};
 
   SetDeveloperToolsAvailabilityPolicy(
       policy::DeveloperToolsPolicyHandler::Availability::
           kDisallowedForForceInstalledExtensions);
   EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({features::kIsolatedWebAppDevMode},
-                                         {features::kIsolatedWebApps});
-    // `features::kIsolatedWebApps` is not enabled.
-    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
-  }
-  {
-    // `features::kIsolatedWebAppDevMode` is not enabled.
-    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
-    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsTrue());
-
-    SetDeveloperToolsAvailabilityPolicy(
-        policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
-    EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
-  }
 }
 
-TEST_F(IsolatedWebAppFeaturesTest, IsIwaUnmanagedInstallEnabled) {
-  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledDevModeEnabledDevPolicyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
+  EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsTrue());
 
-  {
-    base::test::ScopedFeatureList scoped_feature_list{
-        features::kIsolatedWebAppUnmanagedInstall};
-    // `features::kIsolatedWebApps` is not enabled.
-    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list{
-        features::kIsolatedWebApps};
-    // `features::kIsolatedWebAppUnmanagedInstall` is not enabled.
-    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
-  }
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
-        {});
-    EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsTrue());
-  }
+  SetDeveloperToolsAvailabilityPolicy(
+      policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
+  EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaDisabledUnmanagedInstallDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {},
+      {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall});
+  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaDisabledUnmanagedInstallEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kIsolatedWebAppUnmanagedInstall},
+      {features::kIsolatedWebApps});
+  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledUnmanagedInstallDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kIsolatedWebApps},
+      {features::kIsolatedWebAppUnmanagedInstall});
+  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsFalse());
+}
+
+TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledUnmanagedInstallEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kIsolatedWebApps, features::kIsolatedWebAppUnmanagedInstall},
+      {});
+  EXPECT_THAT(IsIwaUnmanagedInstallEnabled(profile()), IsTrue());
 }
 
 }  // namespace

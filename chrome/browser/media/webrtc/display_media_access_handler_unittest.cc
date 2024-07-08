@@ -34,9 +34,12 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -507,13 +510,23 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
-  const GURL app_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  const std::string app_name("Test IWA Name");
-
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-  web_app::AddDummyIsolatedAppToRegistry(profile(), app_url, app_name);
+
+  const std::string app_name("Test IWA Name");
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> iwa =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName(app_name)
+              .AddPermissionsPolicyWildcard(
+                  blink::mojom::PermissionsPolicyFeature::kDisplayCapture))
+          .BuildBundle();
+  iwa->TrustSigningKey();
+  iwa->FakeInstallPageState(profile());
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo url_info,
+                       iwa->Install(profile()));
+  web_app::SimulateIsolatedWebAppNavigation(web_contents(),
+                                            url_info.origin().GetURL());
 
   const int render_process_id =
       web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
@@ -536,13 +549,8 @@ TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
       /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
       /*captured_surface_control_active=*/false);
   content::MediaResponseCallback callback;
-  content::WebContents* test_web_contents = web_contents();
-  std::unique_ptr<content::NavigationSimulator> navigation =
-      content::NavigationSimulator::CreateBrowserInitiated(app_url,
-                                                           test_web_contents);
-  navigation->Commit();
-  access_handler_->HandleRequest(test_web_contents, request,
-                                 std::move(callback), nullptr /* extension */);
+  access_handler_->HandleRequest(web_contents(), request, std::move(callback),
+                                 nullptr /* extension */);
   DesktopMediaPicker::Params params = GetParams();
   access_handler_->UpdateMediaRequestState(
       render_process_id, render_frame_id, page_request_id, video_stream_type,
