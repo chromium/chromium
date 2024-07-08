@@ -821,8 +821,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/ash/login/lock/screen_locker_tester.cc",
-      "../browser/ash/login/lock/screen_locker_tester.h",
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.cc",
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h",
       "../browser/ash/login/test/enrollment_helper_mixin.cc",
@@ -4588,9 +4586,6 @@ if (!is_android) {
         "../browser/ash/login/error_screen_browsertest.cc",
         "../browser/ash/login/existing_user_controller_browsertest.cc",
         "../browser/ash/login/guest_login_browsertest.cc",
-        "../browser/ash/login/lock/fingerprint_unlock_browsertest.cc",
-        "../browser/ash/login/lock/lock_screen_browsertest.cc",
-        "../browser/ash/login/lock/screen_locker_browsertest.cc",
         "../browser/ash/login/login_after_update_to_flex_browsertest.cc",
         "../browser/ash/login/login_auth_recorder_browsertest.cc",
         "../browser/ash/login/login_browsertest.cc",
@@ -5125,6 +5120,9 @@ if (!is_android) {
         "//chrome/browser/ash/login/demo_mode",
         "//chrome/browser/ash/login/demo_mode:test_support",
         "//chrome/browser/ash/login/enrollment",
+        "//chrome/browser/ash/login/lock",
+        "//chrome/browser/ash/login/lock:test_support",
+        "//chrome/browser/ash/login/lock/online_reauth",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
         "//chrome/browser/ash/net",
         "//chrome/browser/ash/notifications",

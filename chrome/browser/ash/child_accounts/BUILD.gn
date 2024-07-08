@@ -193,6 +193,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/child_accounts/time_limits:browser_tests",
     "//chrome/browser/ash/child_accounts/time_limits:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

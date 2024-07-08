@@ -235,11 +235,13 @@ source_set("policy_specific_browser_tests") {
       "//crypto:test_support",
     ]
   }
+
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash/login/lock:test_support",
       "//chrome/browser/ash/net",
-      "//components/session_manager/core:core",
-      "//components/user_manager:user_manager",
+      "//components/session_manager/core",
+      "//components/user_manager",
     ]
   }
 
