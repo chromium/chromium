@@ -115,6 +115,9 @@ void HTMLSelectedOptionElement::CloneContentsFromOptionElement() {
       nodes.push_back(child.cloneNode(/*deep=*/true));
     }
   }
+  // `ASSERT_NO_EXCEPTION` is safe here because `ReplaceChildren()` only throws
+  // exceptions when encountering DOM hierarchy errors, which shouldn't happen
+  // here.
   ReplaceChildren(nodes, ASSERT_NO_EXCEPTION);
 }
 
