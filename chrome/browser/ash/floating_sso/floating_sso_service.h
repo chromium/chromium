@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/model/model_type_store.h"
 
 namespace syncer {
 class ModelTypeChangeProcessor;
@@ -26,8 +25,7 @@ class FloatingSsoService : public KeyedService {
  public:
   FloatingSsoService(
       PrefService* prefs,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 
