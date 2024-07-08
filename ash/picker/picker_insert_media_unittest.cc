@@ -81,36 +81,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert = PickerImageMedia(GURL("http://foo.com/fake.jpg"),
-                                                gfx::Size(10, 10)),
-            .expected_image_url = GURL("http://foo.com/fake.jpg"),
-        },
-        TestCase{
             .media_to_insert = PickerLinkMedia(GURL("http://foo.com")),
             .expected_text = u"http://foo.com/",
         }));
-
-TEST(PickerInsertImageMediaTest, UnsupportedInputField) {
-  ui::FakeTextInputClient client(
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
-
-  EXPECT_FALSE(InputFieldSupportsInsertingMedia(
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client));
-}
-
-TEST(PickerInsertImageMediaTest,
-     InsertingUnsupportedInputFieldFailsAsynchronously) {
-  ui::FakeTextInputClient client(
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
-
-  base::test::TestFuture<InsertMediaResult> future;
-  InsertMediaToInputField(
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client,
-      future.GetCallback());
-
-  EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
-  EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
-}
 
 TEST(PickerInsertLocalFileMediaTest, SupportedInputField) {
   ui::FakeTextInputClient client(

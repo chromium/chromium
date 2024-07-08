@@ -174,11 +174,6 @@ const TestCaseCallback kTextTestCases[] = {
 };
 
 const TestCaseCallback kImageTestCases[] = {
-    BasicTestCase(
-        /*media_to_insert=*/PickerImageMedia(GURL("http://foo.com/fake.jpg"),
-                                             gfx::Size(10, 10)),
-        /*expected_image_url=*/GURL("http://foo.com/fake.jpg"))
-        .ToCallback(),
     MakeLocalImageTestCaseCallback(
         "png",
         base::BindRepeating(

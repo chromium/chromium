@@ -64,9 +64,6 @@ bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
                                       ui::TextInputClient& client) {
   return std::visit(base::Overloaded{
                         [](const PickerTextMedia& media) { return true; },
-                        [&client](const PickerImageMedia& media) {
-                          return client.CanInsertImage();
-                        },
                         [](const PickerLinkMedia& media) { return true; },
                         [&client](const PickerLocalFileMedia& media) {
                           return client.CanInsertImage();
@@ -84,14 +81,6 @@ void InsertMediaToInputField(PickerRichMedia media,
             client.InsertText(media.text,
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
-            std::move(callback).Run(InsertMediaResult::kSuccess);
-          },
-          [&client, &callback](PickerImageMedia media) mutable {
-            if (!client.CanInsertImage()) {
-              std::move(callback).Run(InsertMediaResult::kUnsupported);
-              return;
-            }
-            client.InsertImage(media.url);
             std::move(callback).Run(InsertMediaResult::kSuccess);
           },
           [&client, &callback](PickerLinkMedia media) mutable {
