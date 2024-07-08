@@ -10,6 +10,7 @@
 
 import '../icons.html.js';
 import '../settings_shared.css.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -19,9 +20,11 @@ import '../controls/settings_toggle_button.js';
 import './input_device_settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
+import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,7 +36,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {CustomizationRestriction, InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
-import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
+import {createBluetoothDeviceProperties, getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
 const SettingsPerDeviceMouseSubsectionElementBase =
@@ -212,6 +215,10 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       deviceImageDataUrl: {
         type: String,
       },
+
+      bluetoothDevice: {
+        type: Object,
+      },
     };
   }
 
@@ -240,6 +247,11 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       this.currentMouseChanged = false;
       return;
     }
+    if (this.mouse?.batteryInfo) {
+      this.bluetoothDevice = createBluetoothDeviceProperties(
+          `${this.mouse.id}`, this.mouse.name,
+          this.mouse?.batteryInfo.batteryPercentage);
+    }
     if (this.isWelcomeExperienceEnabled) {
       this.deviceImageDataUrl =
           (await this.inputDeviceSettingsProvider.getDeviceIconImage(
@@ -266,6 +278,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
 
   isWelcomeExperienceEnabled: boolean;
   deviceImageDataUrl: string|null = null;
+  bluetoothDevice: BluetoothDeviceProperties;
   private mouse: Mouse;
   protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
@@ -412,6 +425,14 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       return this.i18n('mouseAccelerationDescription');
     }
     return '';
+  }
+
+  showBatteryInfo(): boolean {
+    return !!this.mouse?.batteryInfo;
+  }
+
+  getDefaultBatteryType(): BatteryType {
+    return BatteryType.DEFAULT;
   }
 }
 
