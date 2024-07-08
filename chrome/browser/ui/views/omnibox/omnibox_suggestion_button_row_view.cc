@@ -46,17 +46,18 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+// A button, like the switch-to-tab or keyword buttons. Contains icon & text.
+// Can be focused and selected.
 class OmniboxSuggestionRowButton : public views::MdTextButton {
   METADATA_HEADER(OmniboxSuggestionRowButton, views::MdTextButton)
 
  public:
   OmniboxSuggestionRowButton(PressedCallback callback,
-                             const std::u16string& text,
                              const gfx::VectorIcon& icon,
                              OmniboxPopupViewViews* popup_view,
                              OmniboxPopupSelection selection)
       : MdTextButton(std::move(callback),
-                     text,
+                     u"",
                      CONTEXT_OMNIBOX_PRIMARY,
                      /*use_text_color_for_icon=*/false),
         icon_(&icon),
@@ -113,14 +114,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                       GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
-      ConfigureInkDropForRefresh2023(
-          this,
-          /*hover_color_id=*/
-          selected ? kColorOmniboxResultsButtonInkDropRowSelected
-                   : kColorOmniboxResultsButtonInkDropRowHovered,
-          /*ripple_color_id=*/
-          selected ? kColorOmniboxResultsButtonInkDropSelectedRowSelected
-                   : kColorOmniboxResultsButtonInkDropSelectedRowHovered);
+    ConfigureInkDropForRefresh2023(
+        this,
+        /*hover_color_id=*/
+        selected ? kColorOmniboxResultsButtonInkDropRowSelected
+                 : kColorOmniboxResultsButtonInkDropRowHovered,
+        /*ripple_color_id=*/
+        selected ? kColorOmniboxResultsButtonInkDropSelectedRowSelected
+                 : kColorOmniboxResultsButtonInkDropSelectedRowHovered);
 
     views::FocusRing::Get(this)->SchedulePaint();
   }
@@ -169,30 +170,35 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     : popup_view_(popup_view), model_index_(model_index) {
   const auto insets = gfx::Insets::TLBR(6, 0, 6, 0);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true)
       .SetInteriorMargin(insets)
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                 views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+          // Set left margin to 4 instead of
+          // `DISTANCE_RELATED_BUTTON_HORIZONTAL` (8) because there's already
+          // built-in padding between the suggestion text and the button row.
+          gfx::Insets::TLBR(0, 4, 0,
+                            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   BuildViews();
 
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
 void OmniboxSuggestionButtonRowView::BuildViews() {
-  // Clear and reset existing views.
-  {
-    // Reset all raw_ptr instances first to avoid dangling.
-    previous_active_button_ = nullptr;
-    keyword_button_ = nullptr;
-    action_buttons_.clear();
+  // Clear and reset existing views. Reset all raw_ptr instances first to avoid
+  // dangling.
+  previous_active_button_ = nullptr;
+  keyword_button_ = nullptr;
+  action_buttons_.clear();
+  RemoveAllChildViews();
 
-    RemoveAllChildViews();
-  }
+  // Skip remaining code that depends on `match()`.
+  if (!HasMatch())
+    return;
 
-  // For all of these buttons, the visibility set from UpdateFromModel().
+  // For all of these buttons, the visibility is set from `UpdateFromModel()`.
   // The Keyword and Pedal buttons also get their text from there, since the
   // text depends on the actual match. That shouldn't produce a flicker, because
   // it's called directly from OmniboxResultView::SetMatch(). If this flickers,
@@ -203,13 +209,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        std::u16string(), vector_icons::kSearchChromeRefreshIcon, popup_view_,
-        selection));
-  }
-
-  if (!HasMatch()) {
-    // Skip remaining code that depends on `match()`.
-    return;
+        vector_icons::kSearchChromeRefreshIcon, popup_view_, selection));
   }
 
   // Only create buttons for existent actions.
@@ -221,8 +221,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        std::u16string(), match().actions[action_index]->GetVectorIcon(),
-        popup_view_, selection));
+        match().actions[action_index]->GetVectorIcon(), popup_view_,
+        selection));
     action_buttons_.push_back(button);
   }
 }
@@ -250,10 +250,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     BuildViews();
   }
 
-  // Used to keep track of which OmniboxSuggestionRowButton is the first in
-  // the row, which can then be used to apply different layout/styling.
-  OmniboxSuggestionRowButton* first_button = nullptr;
-
   if (match().HasInstantKeyword(
           popup_view_->controller()->client()->GetTemplateURLService())) {
     keyword_button_->SetVisible(false);
@@ -261,8 +257,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     SetPillButtonVisibility(keyword_button_,
                             OmniboxPopupSelection::KEYWORD_MODE);
     if (keyword_button_->GetVisible()) {
-      first_button = keyword_button_;
-
       std::u16string keyword;
       bool is_keyword_hint = false;
       match().GetKeywordUIState(
@@ -282,10 +276,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     SetPillButtonVisibility(action_button,
                             OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
     if (action_button->GetVisible()) {
-      if (!first_button) {
-        first_button = action_button;
-      }
-
       const OmniboxAction* action =
           match().actions[action_button->selection().action_index].get();
       const auto label_strings = action->GetLabelStrings();
@@ -295,16 +285,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
           label_strings.accessibility_hint);
       action_button->SetIcon(action->GetVectorIcon());
     }
-  }
-
-  if (first_button) {
-    // Apply a left margin of 4px (rather than zero) in order to make room for
-    // the focus ring that gets rendered around action chips.
-    first_button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(0, 4, 0,
-                          ChromeLayoutProvider::Get()->GetDistanceMetric(
-                              views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   }
 
   bool is_any_button_visible =
@@ -331,16 +311,18 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
 
 void OmniboxSuggestionButtonRowView::SetThemeState(
     OmniboxPartState theme_state) {
-  keyword_button_->SetThemeState(theme_state);
+  if (keyword_button_)
+    keyword_button_->SetThemeState(theme_state);
   for (const auto& action_button : action_buttons_) {
     action_button->SetThemeState(theme_state);
   }
 }
 
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
-  std::vector<OmniboxSuggestionRowButton*> buttons{
-      keyword_button_,
-  };
+  if (!HasMatch())
+    return nullptr;
+
+  std::vector<OmniboxSuggestionRowButton*> buttons{keyword_button_};
   buttons.insert(buttons.end(), action_buttons_.begin(), action_buttons_.end());
 
   // Find the button that matches model selection.
