@@ -190,6 +190,23 @@ const HatsConfig kHatsGeneralCameraSurvey = {
     prefs::kHatsGeneralCameraSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Prioritized General Camera Survey -- shown after camera is closed after being
+// open for at least 15 seconds by using any app (e.g. Chrome or Android app).
+const HatsConfig kHatsGeneralCameraPrioritizedSurvey = {
+    // feature
+    ::features::kHappinessTrackingGeneralCameraPrioritized,
+    // new_device_threshold
+    base::Days(7),
+    // is_selected_pref_name
+    prefs::kHatsGeneralCameraPrioritizedIsSelected,
+    // cycle_end_timestamp_pref_name
+    prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs,
+    // survey_last_interaction_timestamp_pref_name
+    prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
+    // threshold_time
+    base::Days(120),
+};
+
 // Bluetooth revamp experience survey -- shown 5 mins after interacting with new
 // Bluetooth UI surfaces.
 const HatsConfig kHatsBluetoothRevampSurvey = {

@@ -873,6 +873,21 @@ inline constexpr char kHatsGeneralCameraSurveyCycleEndTs[] =
 inline constexpr char kHatsGeneralCameraIsSelected[] =
     "hats_general_camera_is_selected";
 
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicated the end of the most recent prioritized general camera survey cycle.
+inline constexpr char kHatsGeneralCameraPrioritizedSurveyCycleEndTs[] =
+    "hats_general_camera_prioritized_cycle_end_timestamp";
+
+// A boolean pref. Indicated if the device is selected for the prioritized
+// general camera survey.
+inline constexpr char kHatsGeneralCameraPrioritizedIsSelected[] =
+    "hats_general_camera_prioritized_is_selected";
+
+// An base::Time pref. This is the timestamp that indicates the end of the
+// most recent prioritized general camera survey.
+inline constexpr char kHatsGeneralCameraPrioritizedLastInteractionTimestamp[] =
+    "hats_general_camera_prioritized_last_interaction_timestamp";
+
 // A boolean pref. Indicated if the device is selected for the Privacy Hub
 // post launch survey.
 inline constexpr char kHatsPrivacyHubPostLaunchIsSelected[] =

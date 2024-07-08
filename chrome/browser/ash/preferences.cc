@@ -484,6 +484,16 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsGeneralCameraIsSelected, false);
 
+  registry->RegisterInt64Pref(
+      ::prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(
+      ::prefs::kHatsGeneralCameraPrioritizedIsSelected, false);
+
+  registry->RegisterTimePref(
+      ::prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
+      base::Time());
+
   registry->RegisterInt64Pref(::prefs::kHatsBluetoothRevampCycleEndTs, 0);
 
   registry->RegisterBooleanPref(::prefs::kHatsBluetoothRevampIsSelected, false);

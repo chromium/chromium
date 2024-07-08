@@ -702,6 +702,10 @@ BASE_FEATURE(kHappinessTrackingPhotosExperience,
 BASE_FEATURE(kHappinessTrackingGeneralCamera,
              "HappinessTrackingGeneralCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for Prioritized General Camera survey.
+BASE_FEATURE(kHappinessTrackingGeneralCameraPrioritized,
+             "HappinessTrackingGeneralCameraPrioritized",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Happiness Tracking System for Privacy Hub post launch survey.
 BASE_FEATURE(kHappinessTrackingPrivacyHubPostLaunch,
              "HappinessTrackingPrivacyHubPostLaunch",
