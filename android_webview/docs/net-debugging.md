@@ -1,16 +1,53 @@
 # Net debugging in WebView
 
-## Net log
+This guide explains how to capture network logs [net logs](https://www.chromium.org/for-testers/providing-network-details/)
+for debugging WebView using DevTools. Net logs provide detailed information about
+network requests and responses made by your WebView, helping you diagnose
+network-related issues.
+
+## Net Logs In WebView DevTools
+
+*** note
+**Important**: Enabling net logging through DevTools requires enabling
+[setWebContentsDebuggingEnabled](https://developer.chrome.com/docs/devtools/remote-debugging/webviews)
+in your app. This setting is automatically enabled by default if you use a
+either a `userdebug` or `eng` Android image. it is also enabled by default if
+you use a debug app build. See [device setup](device-setup.md) and [commandline flags](commandline-flags.md)
+for more information.
+
+Net Logs in the DevTools are available from M128
+***
+
+### Steps:
+
+1. Open [WebView DevTools](https://chromium.googlesource.com/chromium/src/+/a326b853919f482d7e9c67fe7e492ae060cb4851/android_webview/docs/developer-ui.md)
+and navigate to the "Flags" section.
+1. Locate the "net-log" flag and enable it within the DevTools flags menu.
+1. Launch your app and perform actions that trigger the network behavior you
+want to debug. Once you've reproduced the issue, close your app.
+1. Locate and share the net log file generated using [Android's Quick Share](https://support.google.com/android/answer/9286773?hl=en).
+
+*** note
+Please note, there are file limitations:
+
+**File Size:** Net log files are limited to 100 MB each.
+
+**File Age:** Files older than 30 days will be automatically deleted.
+
+**Storage Capacity:** If the total net log storage exceeds 1 GB, older files
+will be deleted until the total storage is under the threshold.
+***
+
+## Manually setting the flag (WebView developers only)
 
 WebView supports the `kLogNetLog` flag to log debugging network info to a JSON
 file on disk.
 
-### Please do not request netlogs from reporters
-
 *** note
-**Important**: at the moment, WebView netlog requires applying commandline
-flags. **It's not typically possible for external reporters to apply commandline
-flags, so please do not ask them to follow this guide.**
+**Important**: if you are unable to use net logs in WebView DevTools, all
+alternate approaches require applying commandline flags. **It's not typically
+possible for external reporters to apply commandline flags, so please do not
+ask them to follow this guide.**
 
 This guide is only for chromium developers who are set up for WebView
 development. Specifically, this guide requires the reader to use a `userdebug`
