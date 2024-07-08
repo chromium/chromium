@@ -93,6 +93,10 @@ id<GREYMatcher> ManageUMALinkMatcher() {
     config.features_disabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }
+  if ([self isRunningTest:@selector
+            (testHistorySyncShownWithEquallyWeightedButtons)]) {
+    config.features_enabled.push_back(switches::kAlwaysLoadDeviceAccounts);
+  }
 
   return config;
 }
@@ -675,7 +679,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Verify that latency metrics are recorded.
   GREYAssertNil([MetricsAppInterface
                     expectUniqueSampleWithCount:1
-                                      forBucket:false
+                                      forBucket:true
                                    forHistogram:@"Signin.AccountCapabilities."
                                                 @"ImmediatelyAvailable"],
                 @"Incorrect immediate availability histogram");
@@ -686,7 +690,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       @"Failed to record user visibile latency histogram");
   GREYAssertNil(
       [MetricsAppInterface
-          expectTotalCount:1
+          expectTotalCount:0
               forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
       @"Failed to record fetch latency histogram.");
   // Verify that History Sync buttons metrics are recorded.

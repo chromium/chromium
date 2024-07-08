@@ -78,16 +78,25 @@ void SupervisedUserCapabilitiesObserver::OnExtendedAccountInfoUpdated(
 
 void SupervisedUserCapabilitiesObserver::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  // Ignore non-signout events.
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-      signin::PrimaryAccountChangeEvent::Type::kCleared) {
-    return;
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      AccountInfo primary_account_info =
+          identity_manager_->FindExtendedAccountInfo(
+              event_details.GetCurrentState().primary_account);
+      OnExtendedAccountInfoUpdated(primary_account_info);
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      // Update and notify previously known capabilities.
+      for (const auto& kv : capabilities_map_) {
+        NotifyCapabilityChange(/*name=*/kv.first,
+                               CapabilityUpdateState::kDetached);
+      }
+      capabilities_map_.clear();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
   }
-  // Update and notify previously known capabilities.
-  for (const auto& kv : capabilities_map_) {
-    NotifyCapabilityChange(/*name=*/kv.first, CapabilityUpdateState::kDetached);
-  }
-  capabilities_map_.clear();
 }
 
 void SupervisedUserCapabilitiesObserver::OnIdentityManagerShutdown(

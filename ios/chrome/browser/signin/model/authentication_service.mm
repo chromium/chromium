@@ -18,6 +18,7 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -494,7 +495,8 @@ void AuthenticationService::OnPrimaryAccountChanged(
 void AuthenticationService::OnIdentityListChanged(bool notify_user) {
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
     // IdentityManager::HasPrimaryAccount() needs to be called instead of
     // AuthenticationService::HasPrimaryIdentity() or
     // AuthenticationService::GetPrimaryIdentity().
@@ -672,8 +674,10 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
   HandleForgottenIdentity(nil, should_prompt, /*device_restore=*/false);
-  if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin))
+  if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
     return;
+  }
 
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(

@@ -172,7 +172,7 @@ BASE_FEATURE(kUpdateMetricsServicesStateInRestore,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kAlwaysLoadDeviceAccounts,
              "kAlwaysLoadDeviceAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace switches

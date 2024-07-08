@@ -8,10 +8,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -342,4 +344,24 @@ TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, GetAuthError) {
   EXPECT_EQ(
       GoogleServiceAuthError::AuthErrorNone(),
       oauth2_delegate_->GetAuthError(CoreAccountId::FromGaiaId("gaia_2")));
+}
+
+// Tests that ProfileOAuth2TokenServiceIOSDelegate loads credentials when there
+// is no primary account. kAlwaysLoadDeviceAccounts flag is enabled.
+TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest, LoadCredentialWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAlwaysLoadDeviceAccounts);
+  ProviderAccount account1 = fake_provider_->AddAccount("gaia_1", "email_1@x");
+  ProviderAccount account2 = fake_provider_->AddAccount("gaia_2", "email_2@x");
+  oauth2_delegate_->LoadCredentials(CoreAccountId(), /*is_syncing=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2, token_available_count_);
+  EXPECT_EQ(1, tokens_loaded_count_);
+  EXPECT_EQ(0, token_revoked_count_);
+  EXPECT_EQ(2U, oauth2_delegate_->GetAccounts().size());
+  EXPECT_TRUE(
+      oauth2_delegate_->RefreshTokenIsAvailable(GetAccountId(account1)));
+  EXPECT_TRUE(
+      oauth2_delegate_->RefreshTokenIsAvailable(GetAccountId(account2)));
 }

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
@@ -45,6 +47,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/refresh_access_token_error.h"
@@ -144,10 +147,6 @@ class AuthenticationServiceTest : public PlatformTest {
   void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     id<RefreshAccessTokenError> error) {
     authentication_service()->OnAccessTokenRefreshFailed(identity, error);
-  }
-
-  void FireIdentityListChanged(bool notify_user) {
-    authentication_service()->OnIdentityListChanged(notify_user);
   }
 
   // Simulates that fetching access token for `identity` fails with a given
@@ -850,4 +849,22 @@ TEST_F(AuthenticationServiceTest, TestGetServiceStatus) {
   // Expect onServiceStatus notification called.
   EXPECT_EQ(4, observer_test.GetOnServiceStatusChangedCounter());
   authentication_service()->RemoveObserver(&observer_test);
+}
+
+// Tests that identity manager loads identities while being signed out.
+// And also tests that an identity being added is loaded by identity manager.
+// kAlwaysLoadDeviceAccounts flag is enabled.
+TEST_F(AuthenticationServiceTest,
+       TestAccountsLoadedByIdentityManagerWhenSignedOut) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAlwaysLoadDeviceAccounts);
+  std::vector<AccountInfo> account_info_vector =
+      identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
+  EXPECT_EQ(2ul, account_info_vector.size());
+  id<SystemIdentity> fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(fake_identity);
+  base::RunLoop().RunUntilIdle();
+  account_info_vector =
+      identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
+  EXPECT_EQ(3ul, account_info_vector.size());
 }

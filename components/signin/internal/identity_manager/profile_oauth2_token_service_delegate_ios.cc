@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -176,7 +177,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
 
-  if (primary_account_id.empty()) {
+  if (!base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts) &&
+      primary_account_id.empty()) {
     // On startup, always fire refresh token loaded even if there is nothing
     // to load (not authenticated).
     set_load_credentials_state(
@@ -186,7 +188,8 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
   }
 
   ReloadCredentials(primary_account_id);
-  if (RefreshTokenIsAvailable(primary_account_id)) {
+  if (primary_account_id.empty() ||
+      RefreshTokenIsAvailable(primary_account_id)) {
     set_load_credentials_state(
         signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
   } else {
