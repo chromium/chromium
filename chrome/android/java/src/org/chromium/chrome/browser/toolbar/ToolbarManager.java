@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -221,7 +222,8 @@ public class ToolbarManager
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
-    private final Callback<BookmarkModel> mBookmarkModelSupplierObserver;
+    private final ValueChangedCallback<BookmarkModel> mBookmarkModelSupplierObserver =
+            new ValueChangedCallback<>(this::setBookmarkModel);
     private TemplateUrlService mTemplateUrlService;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
@@ -622,10 +624,6 @@ public class ToolbarManager
         mToolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        // We need to capture a reference to setBookmarkModel/setCurrentProfile in order to remove
-        // them later; there is no guarantee in the JLS that referencing the same method later will
-        // reference the same object.
-        mBookmarkModelSupplierObserver = this::setBookmarkModel;
         mBookmarkModelSupplier.addObserver(mBookmarkModelSupplierObserver);
 
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
@@ -2320,9 +2318,14 @@ public class ToolbarManager
         }
     }
 
-    private void setBookmarkModel(BookmarkModel bookmarkModel) {
-        if (bookmarkModel == null) return;
-        bookmarkModel.addObserver(mBookmarksObserver);
+    private void setBookmarkModel(
+            @Nullable BookmarkModel newBookmarkModel, @Nullable BookmarkModel oldBookmarkModel) {
+        if (oldBookmarkModel != null) {
+            oldBookmarkModel.removeObserver(mBookmarksObserver);
+        }
+        if (newBookmarkModel != null) {
+            newBookmarkModel.addObserver(mBookmarksObserver);
+        }
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
