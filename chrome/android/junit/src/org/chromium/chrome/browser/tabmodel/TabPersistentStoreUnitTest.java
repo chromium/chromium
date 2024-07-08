@@ -84,6 +84,7 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
+    @Mock private TabWindowManager mTabWindowManager;
 
     private TabModelFilter mNormalTabModelFilter;
     private TabModelFilter mIncognitoTabModelFilter;
@@ -128,7 +129,11 @@ public class TabPersistentStoreUnitTest {
         when(mIncognitoTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
 
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager) {
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager) {
                     @Override
                     protected void saveNextTab() {
                         // Intentionally ignore to avoid triggering async task creation.
@@ -152,7 +157,11 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNotActiveEmptyNtpIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -167,7 +176,11 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNotActiveEmptyNtpNotIgnoredDuringRestoreWithSkipNonActiveNtpsFlagEnabled() {
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
         mPersistentStore.setSkipSavingNonActiveNtps(true);
 
@@ -191,7 +204,11 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -220,7 +237,11 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -255,7 +276,11 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNtpWithStateNotIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails ntpDetails =
@@ -274,7 +299,11 @@ public class TabPersistentStoreUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
 
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
@@ -300,7 +329,11 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testNotActiveIncognitoNtpIgnoredDuringRestore() {
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(false);
 
         TabRestoreDetails emptyNtpDetails =
@@ -315,7 +348,11 @@ public class TabPersistentStoreUnitTest {
     @Feature("TabPersistentStore")
     public void testActiveEmptyIncognitoNtpIgnoredDuringRestoreIfIncognitoLoadingIsDisabled() {
         mPersistentStore =
-                new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);
+                new TabPersistentStore(
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager);
         mPersistentStore.initializeRestoreVars(true);
 
         TabRestoreDetails emptyNtpDetails =

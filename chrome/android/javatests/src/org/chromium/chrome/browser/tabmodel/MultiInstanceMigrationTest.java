@@ -91,7 +91,11 @@ public class MultiInstanceMigrationTest {
                     TabbedModeTabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(0, false, true);
                     TabPersistentStore store =
-                            new TabPersistentStore(persistencePolicy, selector, null);
+                            new TabPersistentStore(
+                                    persistencePolicy,
+                                    selector,
+                                    null,
+                                    TabWindowManagerSingleton.getInstance());
                     store.waitForMigrationToFinish();
                 });
     }

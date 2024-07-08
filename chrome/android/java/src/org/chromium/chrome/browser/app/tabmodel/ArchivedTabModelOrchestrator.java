@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -80,6 +81,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private final TabCreatorManager mArchivedTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final TabWindowManager mTabWindowManager;
 
     private TaskRunner mTaskRunner;
     private WindowAndroid mWindow;
@@ -142,6 +144,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                     }
                 };
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
+        mTabWindowManager = TabWindowManagerSingleton.getInstance();
     }
 
     @Override
@@ -199,6 +202,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         new ChromeTabModelFilterFactory(context),
                         () -> NextTabPolicy.LOCATIONAL,
                         mAsyncTabParamsManager);
+        mTabWindowManager.setArchivedTabModelSelector(mTabModelSelector);
 
         mTabPersistencePolicy =
                 new TabbedModeTabPersistencePolicy(
@@ -208,7 +212,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         /* tabMergingEnabled= */ false);
         mTabPersistentStore =
                 new TabPersistentStore(
-                        mTabPersistencePolicy, mTabModelSelector, mArchivedTabCreatorManager);
+                        mTabPersistencePolicy,
+                        mTabModelSelector,
+                        mArchivedTabCreatorManager,
+                        mTabWindowManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

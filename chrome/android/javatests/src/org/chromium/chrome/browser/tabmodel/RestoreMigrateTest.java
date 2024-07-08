@@ -127,7 +127,11 @@ public class RestoreMigrateTest {
                     TabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
                     TabPersistentStore store =
-                            new TabPersistentStore(persistencePolicy, selector, null);
+                            new TabPersistentStore(
+                                    persistencePolicy,
+                                    selector,
+                                    null,
+                                    TabWindowManagerSingleton.getInstance());
                     return store;
                 });
     }

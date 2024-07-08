@@ -35,6 +35,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -101,6 +102,7 @@ import java.util.stream.Collectors;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
+@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class TabPersistentStoreTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
@@ -168,7 +170,8 @@ public class TabPersistentStoreTest {
                                             new TabPersistentStore(
                                                     persistencePolicy,
                                                     TestTabModelSelector.this,
-                                                    getTabCreatorManager());
+                                                    getTabCreatorManager(),
+                                                    TabWindowManagerSingleton.getInstance());
                                     tabPersistentStore.addObserver(mTabPersistentStoreObserver);
                                     return tabPersistentStore;
                                 }
@@ -424,7 +427,11 @@ public class TabPersistentStoreTest {
             final TabCreatorManager creatorManager) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
-                    return new TabPersistentStore(persistencePolicy, modelSelector, creatorManager);
+                    return new TabPersistentStore(
+                            persistencePolicy,
+                            modelSelector,
+                            creatorManager,
+                            TabWindowManagerSingleton.getInstance());
                 });
     }
 
@@ -827,8 +834,8 @@ public class TabPersistentStoreTest {
     /**
      * TabStateExtractor expects a Tab to be initialized in order to acquire a TabState. In the
      * absence of this, TabStateExtractor#from has an early return which can be set via
-     * setTabStateForTesting. This method creates a dummy TabState for each Tab to activate this
-     * early return.
+     * setTabStateForTesting. This method creates a placeholder TabState for each Tab to activate
+     * this early return.
      *
      * @param tabs {@link Tab}s to setTabStateForTesting for
      */

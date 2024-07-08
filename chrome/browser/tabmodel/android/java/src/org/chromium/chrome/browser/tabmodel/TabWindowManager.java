@@ -114,8 +114,15 @@ public interface TabWindowManager {
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
+     *
      * @param index The index of {@link TabModelSelector} to get.
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     TabModelSelector getTabModelSelectorById(int index);
+
+    /** Returns whether the tab with the given id can safely be deleted. */
+    boolean canTabBeDeleted(int tabId);
+
+    /** Sets the given archived {@link TabModelSelector} singleton instance. */
+    void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);
 }

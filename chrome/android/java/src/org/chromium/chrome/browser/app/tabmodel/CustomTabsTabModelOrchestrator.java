@@ -51,7 +51,11 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
         // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
-                new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
+                new TabPersistentStore(
+                        mTabPersistencePolicy,
+                        mTabModelSelector,
+                        tabCreatorManager,
+                        TabWindowManagerSingleton.getInstance());
 
         wireSelectorAndStore();
         markTabModelsInitialized();

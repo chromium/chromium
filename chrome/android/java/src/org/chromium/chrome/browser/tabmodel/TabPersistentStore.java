@@ -292,6 +292,7 @@ public class TabPersistentStore {
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
+    private final TabWindowManager mTabWindowManager;
     private final ObserverList<TabPersistentStoreObserver> mObservers;
 
     private final Deque<Tab> mTabsToSave;
@@ -327,16 +328,19 @@ public class TabPersistentStore {
 
     /**
      * Creates an instance of a TabPersistentStore.
+     *
      * @param modelSelector The {@link TabModelSelector} to restore to and save from.
      * @param tabCreatorManager The {@link TabCreatorManager} to use.
      */
     public TabPersistentStore(
             TabPersistencePolicy policy,
             TabModelSelector modelSelector,
-            TabCreatorManager tabCreatorManager) {
+            TabCreatorManager tabCreatorManager,
+            TabWindowManager tabWindowManager) {
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
+        mTabWindowManager = tabWindowManager;
         mTabsToSave = new ArrayDeque<>();
         mTabsToMigrate = new ArrayDeque<>();
         mTabsToRestore = new ArrayDeque<>();
@@ -995,7 +999,11 @@ public class TabPersistentStore {
             mMigrateTabTask = null;
             migrateNextTabIfApplicable(nextNumMigration);
         }
-        cleanupPersistentData(tab.getId(), tab.isIncognito());
+
+        // If the tab can't be found in any selector, then cleanup it's data.
+        if (mTabWindowManager.canTabBeDeleted(tab.getId())) {
+            cleanupPersistentData(tab.getId(), tab.isIncognito());
+        }
     }
 
     private TabRestoreDetails getTabToRestoreByUrl(String url) {

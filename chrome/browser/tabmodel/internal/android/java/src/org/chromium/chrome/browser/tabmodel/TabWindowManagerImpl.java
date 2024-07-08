@@ -80,6 +80,8 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final int mMaxSelectors;
 
+    private TabModelSelector mArchivedTabModelSelector;
+
     TabWindowManagerImpl(
             TabModelSelectorFactory selectorFactory,
             AsyncTabParamsManager asyncTabParamsManager,
@@ -428,12 +430,33 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             return mAsyncTabParamsManager.getAsyncTabParams().get(tabId).getTabToReparent();
         }
 
+        if (mArchivedTabModelSelector != null) {
+            final Tab tab = mArchivedTabModelSelector.getTabById(tabId);
+            if (tab != null) return tab;
+        }
+
         return null;
     }
 
     @Override
     public TabModelSelector getTabModelSelectorById(int index) {
         return mSelectors.get(index);
+    }
+
+    @Override
+    public void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector) {
+        mArchivedTabModelSelector = archivedTabModelSelector;
+    }
+
+    @Override
+    public boolean canTabBeDeleted(int tabId) {
+        boolean isPossiblyAnArchivedTab =
+                ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
+                        && (mArchivedTabModelSelector == null
+                                || !mArchivedTabModelSelector.isTabStateInitialized());
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.TabCleanupAbortedByArchive", isPossiblyAnArchivedTab);
+        return !isPossiblyAnArchivedTab && getTabById(tabId) == null;
     }
 
     // ActivityStateListener
