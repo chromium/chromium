@@ -24,8 +24,9 @@ import json
 import os
 import re
 import sys
-from typing import List, Tuple, Optional, Generator
+from typing import List, Tuple, Optional, Generator, Iterable
 import subprocess
+import requests
 
 # The location of the DumpAccessibilityTree html test files and expectations.
 TEST_DATA_PATH = os.path.join(os.getcwd(), 'content/test/data/accessibility')
@@ -77,7 +78,7 @@ def _get_individual_test_logs(
       if result := TEST_NAME_REGEX.search(line):
         expected_file = result.group(1)
     elif TEST_END_STR in line:
-      assert expected_file, "Malformed log."
+      assert expected_file, 'Malformed log.'
       if expected_file not in completed_files:
         yield (log[start_i:i + 1])
         completed_files.add(expected_file)
@@ -88,7 +89,7 @@ def _write_file(filename: str, data: List[str], directory=TEST_DATA_PATH):
   with open(full_path := os.path.join(directory, filename), 'w') as f:
     f.writelines(data)
     completed_files.add(full_path)
-    print(f'Wrote to expectations file: {full_path}')
+    print(f'Wrote expectations file: {filename}')
 
 
 def _parse_log(lines: List[str]) -> Tuple[str, str]:
@@ -119,47 +120,90 @@ def _parse_log(lines: List[str]) -> Tuple[str, str]:
 def get_trybot_log(patch_set: Optional[int]) -> List:
   '''Get trybot data for the current branch's issue.'''
   patch_set_arg = f'--patchset={patch_set}' if patch_set is not None else ''
+  if not (output := subprocess.run(
+      f'git cl try-results --json=- {patch_set_arg}',
+      shell=True,
+      capture_output=True,
+      text=True,
+  ).stdout):
+    raise ValueError('Did not find an issue attached to the current branch.')
+  return json.loads(output)
 
-  return json.loads(
-      subprocess.run(f'git cl try-results --json=- {patch_set_arg}',
-                     shell=True,
-                     capture_output=True,
-                     text=True).stdout)
+
+def _rdb_rpc(method: str, request: dict) -> dict:
+  '''Calls a given `rdb` RPC method.
+
+  Args:
+    method: The method to call. Must be within luci.resultdb.v1.ResultDB.
+    request: The request, in dict format.
+
+  Returns:
+    The response from ResultDB, in dict format.
+  '''
+  p = subprocess.Popen(
+      f'rdb rpc luci.resultdb.v1.ResultDB {method}',
+      shell=True,
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      text=True,
+  )
+  stdout, stderr = p.communicate(json.dumps(request))
+  if p.returncode != 0:
+    raise Exception(f'rdb rpc {method} failed with: {stderr}')
+  return json.loads(stdout)
 
 
-def _get_builder_steps(
-    builder_ids: Generator[str, None, None]
-) -> Generator[Tuple[str, str], None, None]:
-  '''Yields (builder_id, content_test_step_name) for the provided builders.'''
+def _get_artifacts_for_failing_tests(builder_id: str) -> List[str]:
+  '''Gets all the failing artifact URLs for a builder.
 
-  def _is_content_test(name: str) -> bool:
-    return (name.startswith('content_shell_test_apk') or
-            name.startswith('content_browsertests')) and '(with patch)' in name
+  Queries one builder at a time, because querying for more may timeout (see
+  b/350991029 for context).
+  '''
+  response = _rdb_rpc(
+      'QueryArtifacts',
+      {
+          'invocations': [f'invocations/build-{builder_id}'],
+          'pageSize': 1000,
+          'predicate': {
+              'testResultPredicate': {
+                  'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
+              }
+          },
+      },
+  )
+  if 'artifacts' not in response:
+    return []
 
-  for b in builder_ids:
-    steps = json.loads(
-        subprocess.run(f'bb get {b} -steps -json',
-                       shell=True,
-                       capture_output=True,
-                       text=True).stdout)['steps']
-    step_names = (s["name"] for s in steps if _is_content_test(s["name"]))
-    for s in step_names:
-      yield (b, s)
+  def _has_text_log(artifact: dict) -> bool:
+    '''Returns whether an artifact is a text log.'''
+    return 'contentType' in artifact and artifact['contentType'] == 'text/plain'
+
+  return [
+      artifact['fetchUrl'] for artifact in response['artifacts']
+      if _has_text_log(artifact)
+  ]
 
 
 def main():
   patch_set = sys.argv[1] if len(sys.argv) > 1 else None
 
-  failing_builder_ids = (b["id"] for b in get_trybot_log(patch_set)
-                         if b['status'] == 'FAILURE')
+  failing_builder_ids = [
+      b['id'] for b in get_trybot_log(patch_set) if b['status'] == 'FAILURE'
+  ]
+  if not failing_builder_ids:
+    print('No failing builders found for the current branch.')
+    return
 
-  for (b, s) in _get_builder_steps(failing_builder_ids):
-    output = subprocess.run(f'bb log {b} "{s}"',
-                            shell=True,
-                            capture_output=True,
-                            text=True).stdout.split('\n')
-    for log in _get_individual_test_logs(output):
-      _write_file(*_parse_log(log))
+  # A single session to prevent throttling and timeouts.
+  s = requests.Session()
+
+  for builder_id in failing_builder_ids:
+    for url in _get_artifacts_for_failing_tests(builder_id):
+      test_log = s.get(url).text.split('\n')
+      for log in _get_individual_test_logs(test_log):
+        expected_file, actual_text = _parse_log(log)
+        _write_file(expected_file, actual_text)
 
 if __name__ == '__main__':
   sys.exit(main())
