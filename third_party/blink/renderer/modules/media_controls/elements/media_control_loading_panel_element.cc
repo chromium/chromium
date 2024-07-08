@@ -38,6 +38,7 @@ MediaControlLoadingPanelElement::MediaControlLoadingPanelElement(
     MediaControlsImpl& media_controls)
     : MediaControlDivElement(media_controls) {
   SetShadowPseudoId(AtomicString("-internal-media-controls-loading-panel"));
+  setAttribute(html_names::kRoleAttr, AtomicString("group"));
   setAttribute(
       html_names::kAriaLabelAttr,
       WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_LOADING_PANEL)));

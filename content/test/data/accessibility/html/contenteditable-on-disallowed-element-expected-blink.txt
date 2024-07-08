@@ -20,7 +20,7 @@ rootWebArea focusable
 ++++++++inlineTextBox
 ++++++video editable focusable multiline restriction=disabled nonAtomicTextFieldRoot=true
 ++++++++genericContainer ignored
-++++++++++genericContainer ignored invisible
+++++++++++group ignored invisible
 ++++++++++genericContainer
 ++++++++++++button ignored invisible
 ++++++++++genericContainer ignored
