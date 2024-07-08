@@ -248,4 +248,28 @@ public class ArchivedTabModelOrchestratorTest {
         // The PKM is already destroyed, but the ATMO shouldn't crash when it
         // receives an activity destroyed event.
     }
+
+    @Test
+    @MediumTest
+    public void testDeclutterAfterDestroy() {
+        finishLoading();
+        mOrchestrator.getTabArchiveSettings().setArchiveEnabled(false);
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+
+        setupDeclutterSettingsForTest();
+        mTaskRunner.mDelayedTasks.clear();
+        runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
+        runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
+
+        assertEquals(1, mTaskRunner.mDelayedTasks.size());
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+
+        runOnUiThreadBlocking(() -> ArchivedTabModelOrchestrator.destroyProfileKeyedMap());
+        runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
+        // Running the archive task should have had no effect after the destroy.
+        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(0, mArchivedTabModel.getCount());
+    }
 }

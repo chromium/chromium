@@ -12,6 +12,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -55,7 +56,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         /**
          * Called when the archived {@link TabModel} is created.
          *
-         * @param TabModel The {@link TabModel} that was created.
+         * @param archivedTabModel The {@link TabModel} that was created.
          */
         public void onTabModelCreated(TabModel archivedTabModel);
     }
@@ -94,7 +95,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private boolean mRestoreTabsCalled;
     private boolean mDeclutterInitializationCalled;
     private boolean mRescueTabsCalled;
-    private boolean mArchiveAllButActiveCalled;
+    private CallbackController mCallbackController = new CallbackController();
 
     /**
      * Returns the ArchivedTabModelOrchestrator that corresponds to the given profile. Must be
@@ -111,6 +112,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                             ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
             ApplicationStatus.registerApplicationStateListener(sApplicationStateListener);
         }
+
         return sProfileMap.getForProfile(
                 profile,
                 (originalProfile) ->
@@ -149,6 +151,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     @Override
     public void destroy() {
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
+
         if (mWindow != null) {
             mWindow.destroy();
             mWindow = null;
@@ -173,7 +180,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     }
 
     /**
-     * Creates and initiailzes the class and fields, this must be called in the UI thread and can be
+     * Creates and initializes the class and fields, this must be called in the UI thread and can be
      * expensive therefore it should be called from DeferredStartupHandler. Although the lifecycle
      * methods inherited from {@link TabModelOrchestrator} are public, they aren't meant to be
      * called directly. - The {@link TabModelSelector} and the {@link TabPersistentStore} are
@@ -327,7 +334,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private void runDeclutterAndScheduleNext() {
         mTabArchiver.triggerScheduledDeclutter();
         mTaskRunner.postDelayedTask(
-                this::runDeclutterAndScheduleNext,
+                mCallbackController.makeCancelable(this::runDeclutterAndScheduleNext),
                 TimeUnit.HOURS.toMillis(mTabArchiveSettings.getDeclutterIntervalTimeDeltaHours()));
     }
 
