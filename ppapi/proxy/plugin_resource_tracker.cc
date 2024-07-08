@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/singleton.h"
+#include "base/not_fatal_until.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -60,8 +61,9 @@ void PluginResourceTracker::RemoveResource(Resource* object) {
   if (!object->host_resource().is_null()) {
     // The host_resource will be NULL for proxy-only resources, which we
     // obviously don't need to tell the host about.
-    DCHECK(host_resource_map_.find(object->host_resource()) !=
-           host_resource_map_.end());
+    CHECK(host_resource_map_.find(object->host_resource()) !=
+              host_resource_map_.end(),
+          base::NotFatalUntil::M130);
     host_resource_map_.erase(object->host_resource());
 
     bool abandoned = false;
