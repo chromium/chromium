@@ -319,7 +319,7 @@ TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
+      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -340,7 +340,7 @@ TEST_F(PickerSearchResultsViewTest,
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
 
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kGifs, {}, /*has_more_results=*/false));
+      PickerSectionType::kFiles, {}, /*has_more_results=*/false));
 
   ASSERT_THAT(
       view->section_views_for_testing(),
@@ -361,9 +361,9 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
           &mock_delegate, kPickerWidth, &asset_fetcher, &submenu_controller));
   widget->Show();
   view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
+      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
 
-  EXPECT_CALL(mock_delegate, SelectMoreResults(PickerSectionType::kGifs));
+  EXPECT_CALL(mock_delegate, SelectMoreResults(PickerSectionType::kFiles));
 
   views::View* trailing_link =
       view->section_views_for_testing()[0]->title_trailing_link_for_testing();
@@ -416,7 +416,7 @@ TEST_F(PickerSearchResultsViewTest,
                                &submenu_controller);
 
   view.AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kGifs, {}, /*has_more_results=*/true));
+      PickerSectionType::kFiles, {}, /*has_more_results=*/true));
   EXPECT_FALSE(view.SearchStopped({}, u""));
 
   EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());

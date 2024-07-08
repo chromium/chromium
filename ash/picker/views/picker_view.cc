@@ -151,8 +151,6 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
       return PickerCategory::kLocalFiles;
     case PickerSectionType::kDriveFiles:
       return PickerCategory::kDriveFiles;
-    case PickerSectionType::kGifs:
-      return PickerCategory::kExpressions;
   }
 }
 
@@ -474,15 +472,10 @@ void PickerView::PublishSearchResults(
     return;
   }
 
-  bool appended_results = false;
+  // TODO: b/349891147 - This is always true. Inline this.
+  bool appended_results = !results.empty();
   for (PickerSearchResultsSection& result : results) {
-    // Do not show GIFs.
-    if (result.type() == PickerSectionType::kGifs) {
-      continue;
-    } else {
-      search_results_view_->AppendSearchResults(std::move(result));
-      appended_results = true;
-    }
+    search_results_view_->AppendSearchResults(std::move(result));
   }
 
   PickerPerformanceMetrics::SearchResultsUpdate update;

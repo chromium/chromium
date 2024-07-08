@@ -160,7 +160,6 @@ void PickerSearchAggregator::PublishBurnInResults() {
            PickerSectionType::kLinks,
            PickerSectionType::kFiles,
            PickerSectionType::kDriveFiles,
-           PickerSectionType::kGifs,
        }) {
     if (published_types.contains(type)) {
       continue;

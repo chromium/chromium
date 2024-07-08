@@ -126,8 +126,6 @@ std::u16string GetSectionTitleForPickerSectionType(
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
     case PickerSectionType::kDriveFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
-    case PickerSectionType::kGifs:
-      return u"Other expressions";
   }
 }
 
