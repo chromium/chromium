@@ -42,7 +42,7 @@ This is a testharness.js-based test.
 [FAIL] Upper-case element names #0: "svg:FEBLEND"
   Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #0: "feBlend" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:feBlend"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
+  assert_array_equals: lengths differ, expected array ["svg:feBlend"] length 1, got […, "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"] length 117
 [FAIL] Mixed-case element names #1: "svg:feColorMatrix"
   Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Lower-case element names #1: "svg:fecolormatrix"
@@ -50,7 +50,7 @@ This is a testharness.js-based test.
 [FAIL] Upper-case element names #1: "svg:FECOLORMATRIX"
   Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #1: "feColorMatrix" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:feColorMatrix"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
+  assert_array_equals: lengths differ, expected array ["svg:feColorMatrix"] length 1, got […, "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"] length 117
 [FAIL] Mixed-case element names #2: "svg:textPath"
   Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Lower-case element names #2: "svg:textpath"
@@ -58,6 +58,6 @@ This is a testharness.js-based test.
 [FAIL] Upper-case element names #2: "svg:TEXTPATH"
   Failed to execute 'setHTML' on 'Element': Failed to read the 'sanitizer' property from 'ElementSetHTMLOptions': Failed to convert value to 'Sanitizer'.
 [FAIL] Mixed case element names #2: "textPath" is preserved in config.
-  assert_array_equals: lengths differ, expected array ["svg:textPath"] length 1, got […, "p", "colgroup", "map", "listing", "td", "article", "body", "center", "dt", "fieldset", "br", "strike", "header", "dir", "nav", "label", "samp", "selectlist", "i", "input"] length 117
+  assert_array_equals: lengths differ, expected array ["svg:textPath"] length 1, got […, "strong", "style", "sub", "summary", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"] length 117
 Harness: the test ran to completion.
 
