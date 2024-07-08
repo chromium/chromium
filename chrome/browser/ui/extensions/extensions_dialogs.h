@@ -71,6 +71,14 @@ void ShowExtensionMultipleUninstallDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
 
+// Shows a dialog when `extension_ids` were disabled due to the MV2 deprecation.
+void ShowMv2DeprecationDisabledDialog(
+    Profile* profile,
+    gfx::NativeWindow parent,
+    const std::vector<ExtensionId>& extension_ids,
+    base::OnceClosure remove_callback,
+    base::OnceClosure manage_callback);
+
 // Shows a dialog when the user triggers the warning dismissal for an extension
 // affected by the MV2 deprecation.
 void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
