@@ -395,10 +395,8 @@ v8::Local<Arr> MakeArray(v8::Isolate* isolate, size_t size) {
   return arr;
 }
 
-using PassAsSpanShared =
-    PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::kAllowShared>;
-using PassAsSpanNoShared =
-    PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::kDoNotAllowShared>;
+using PassAsSpanShared = PassAsSpan<PassAsSpanMarkerBase::Flags::kAllowShared>;
+using PassAsSpanNoShared = PassAsSpan<PassAsSpanMarkerBase::Flags::kNone>;
 
 TEST(NativeValueTraitsImplTest, PassAsSpanBasic) {
   constexpr size_t kBufferSize = 4;
@@ -568,10 +566,10 @@ TEST(NativeValueTraitsImplTest, PassAsSpanCopy) {
 
 template <typename T>
 using TypedPassAsSpanShared =
-    PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::kAllowShared, T>;
+    PassAsSpan<PassAsSpanMarkerBase::Flags::kAllowShared, T>;
 template <typename T>
 using TypedPassAsSpanNoShared =
-    PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::kDoNotAllowShared, T>;
+    PassAsSpan<PassAsSpanMarkerBase::Flags::kNone, T>;
 
 TEST(NativeValueTraitsImplTest, TypedPassAsSpanBasic) {
   test::TaskEnvironment task_environment;

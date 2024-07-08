@@ -427,6 +427,26 @@ def native_value_tag(idl_type, argument=None, apply_optional_to_last_arg=True):
     return _native_value_tag_impl(idl_type)
 
 
+def _pass_as_span_conversion_arguments(idl_type):
+    real_type = idl_type.unwrap(typedef=True)
+    types = real_type.flattened_member_types if real_type.is_union else [
+        real_type
+    ]
+    is_buffer_source_type = all(t.is_buffer_source_type for t in types)
+    assert is_buffer_source_type, (
+        "PassAsSpan is only supported for buffer source types")
+    native_type = typed_array_element_type(
+        real_type) if real_type.is_typed_array_type else "void"
+    flags = []
+    allow_shared = "AllowShared" in idl_type.effective_annotations or any(
+        "AllowShared" in t.effective_annotations for t in types)
+    if allow_shared:
+        flags.append("PassAsSpanMarkerBase::Flags::kAllowShared")
+    return [
+        " | ".join(flags) or "PassAsSpanMarkerBase::Flags::kNone", native_type
+    ]
+
+
 def _native_value_tag_impl(idl_type):
     """Returns the tag type of NativeValueTraits."""
     assert isinstance(idl_type, web_idl.IdlType)
@@ -437,19 +457,8 @@ def _native_value_tag_impl(idl_type):
     real_type = idl_type.unwrap(typedef=True)
 
     if "PassAsSpan" in idl_type.effective_annotations:
-        types = real_type.flattened_member_types if real_type.is_union else [
-            real_type
-        ]
-        is_buffer_source_type = all(t.is_buffer_source_type for t in types)
-        assert is_buffer_source_type, (
-            "PassAsSpan is only supported for buffer source types")
-        element_type = (", " + typed_array_element_type(real_type)
-                        if real_type.is_typed_array_type else "")
-        allow_shared = "AllowShared" in idl_type.effective_annotations or any(
-            "AllowShared" in t.effective_annotations for t in types)
-        shared_marker = "kAllowShared" if allow_shared else "kDoNotAllowShared"
-        return "PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::{}{}>".format(
-            shared_marker, element_type)
+        conversion_arguments = _pass_as_span_conversion_arguments(idl_type)
+        return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
             or real_type.is_any or real_type.is_object or real_type.is_bigint):

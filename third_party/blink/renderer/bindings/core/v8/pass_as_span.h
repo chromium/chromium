@@ -118,13 +118,23 @@ struct TypedArrayElementTraits<uint8_t> {
 // (whether shared array buffers should be allowed, whether a typed array
 // is expected etc).
 struct PassAsSpanMarkerBase {
-  enum class AllowSharedFlag { kAllowShared, kDoNotAllowShared };
+  enum Flags {
+    kNone,
+    kAllowShared = 1 << 0,
+  };
 };
 
-template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared, typename T = void>
+constexpr PassAsSpanMarkerBase::Flags operator|(PassAsSpanMarkerBase::Flags a,
+                                                PassAsSpanMarkerBase::Flags b) {
+  return static_cast<PassAsSpanMarkerBase::Flags>(static_cast<int>(a) |
+                                                  static_cast<int>(b));
+}
+
+template <PassAsSpanMarkerBase::Flags flags =
+              PassAsSpanMarkerBase::Flags::kNone,
+          typename T = void>
 struct PassAsSpan : public PassAsSpanMarkerBase {
-  static constexpr bool allow_shared =
-      AllowShared == AllowSharedFlag::kAllowShared;
+  static constexpr bool allow_shared = flags & Flags::kAllowShared;
   static constexpr bool is_typed = !std::is_same_v<T, void>;
   using ElementType = T;
   using ReturnType =
