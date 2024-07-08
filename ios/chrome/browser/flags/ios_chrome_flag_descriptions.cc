@@ -515,10 +515,10 @@ const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
-const char kIdentityDiscAccountSwitchName[] = "Identity Disc Account Switcher";
-const char kIdentityDiscAccountSwitchDescription[] =
-    "When enabled, tapping the identity disc on the New Tab page shows an "
-    "account switcher UI.";
+const char kIdentityDiscAccountMenuName[] = "Identity Disc Account Menu";
+const char kIdentityDiscAccountMenuDescription[] =
+    "When enabled, tapping the identity disc on the New Tab page shows the "
+    "account menu UI.";
 
 const char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";

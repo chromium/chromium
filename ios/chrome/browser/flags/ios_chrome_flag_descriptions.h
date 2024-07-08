@@ -438,10 +438,10 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 
-// Title and description for the flag to enable account-switching UI when
+// Title and description for the flag to enable account menu UI when
 // tapping the identity disc on the New Tab page.
-extern const char kIdentityDiscAccountSwitchName[];
-extern const char kIdentityDiscAccountSwitchDescription[];
+extern const char kIdentityDiscAccountMenuName[];
+extern const char kIdentityDiscAccountMenuDescription[];
 
 // Title and description for the flag to indicate the identity error in
 // the overflow menu.

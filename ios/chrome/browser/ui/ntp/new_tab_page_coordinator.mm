@@ -843,7 +843,7 @@
   if (![self isSignInAllowed]) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
-    if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
+    if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
       _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];

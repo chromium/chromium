@@ -59,8 +59,8 @@ BASE_FEATURE(kEnableiPadFeedGhostCards,
              "EnableiPadFeedGhostCards",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIdentityDiscAccountSwitch,
-             "IdentityDiscAccountSwitch",
+BASE_FEATURE(kIdentityDiscAccountMenu,
+             "IdentityDiscAccountMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters

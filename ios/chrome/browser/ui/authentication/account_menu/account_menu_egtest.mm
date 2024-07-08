@@ -26,7 +26,7 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kIdentityDiscAccountSwitch);
+  config.features_enabled.push_back(kIdentityDiscAccountMenu);
 
   return config;
 }

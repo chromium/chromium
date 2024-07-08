@@ -311,7 +311,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
         _selectionModeFixedSpace, trailingButton
       ]];
     } else {
-      trailingButton = base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)
+      trailingButton = base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
                            ? _identityDiscItem
                            : _spaceItem;
       [self setItems:@[
@@ -357,7 +357,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
     [items addObject:_selectionModeFixedSpace];
   }
 
-  if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
+  if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // In Landscape mode, the upper right corner will have the identity disc
     // before the "Done" button.
     [items addObject:_identityDiscItem];

@@ -49,7 +49,7 @@ BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 
 // Feature flag to enable account-switching UI when tapping the NTP identity
 // disc.
-BASE_DECLARE_FEATURE(kIdentityDiscAccountSwitch);
+BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 
 #pragma mark - Feature parameters
 

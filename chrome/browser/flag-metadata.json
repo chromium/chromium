@@ -5100,7 +5100,7 @@
     "expiry_milestone": 125
   },
   {
-    "name": "identity-disc-account-switch",
+    "name": "identity-disc-account-menu",
     "owners": ["treib@chromium.org", "chrome-sync-dev@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 130
   },
