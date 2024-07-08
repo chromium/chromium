@@ -271,8 +271,6 @@ const base::flat_map<PackSpecPair, std::string>& GetAllLanguagePackDlcIds() {
   // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
   // Whenever a new DLC is created, it needs to be added here.
   // Clients of Language Packs don't need to know the IDs.
-  // Note: if you add new languages here, make sure to add them to the metrics
-  //       test `LanguagePackMetricsTest.CheckLanguageCodes`.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
           // Handwriting Recognition.
@@ -476,6 +474,8 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
     return;
   }
 
+  // TODO: b/351723265 - Split this language code metric into a metric for each
+  // feature.
   base::UmaHistogramSparse("ChromeOS.LanguagePacks.GetPackState.LanguageCode",
                            static_cast<int32_t>(base::PersistentHash(locale)));
   base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.GetPackState.FeatureId",
