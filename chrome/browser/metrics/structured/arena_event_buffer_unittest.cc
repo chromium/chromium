@@ -258,4 +258,16 @@ TEST_F(ArenaEventBufferTest, ProfileUpdatePath) {
   EXPECT_EQ(static_cast<uint64_t>(size), buffer->proto()->ByteSizeLong());
 }
 
+TEST_F(ArenaEventBufferTest, PreInitEvents) {
+  std::unique_ptr<ArenaEventBuffer> buffer = CreateTestBuffer(/*max_size=*/512);
+
+  EXPECT_EQ(buffer->AddEvent(TestEvent(1)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(2)), Result::kOk);
+  EXPECT_EQ(buffer->AddEvent(TestEvent(3)), Result::kOk);
+
+  Wait();
+
+  EXPECT_EQ(buffer->proto()->events_size(), 3);
+}
+
 }  // namespace metrics::structured

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/metrics/structured/arena_event_buffer.h"
 
+#include <iterator>
 #include <memory>
-#include <streambuf>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -53,6 +54,7 @@ base::expected<FlushedKey, FlushError> WriteEvents(const base::FilePath& path,
       .creation_time = info.creation_time,
   };
 }
+
 }  // namespace
 
 ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
@@ -73,13 +75,18 @@ ArenaEventBuffer::ArenaEventBuffer(const base::FilePath& path,
 ArenaEventBuffer::~ArenaEventBuffer() = default;
 
 Result ArenaEventBuffer::AddEvent(StructuredEventProto event) {
+  if (!proto()) {
+    pre_init_events_.emplace_back(std::move(event));
+    return Result::kOk;
+  }
+
   const uint64_t event_size = EstimateEventSize(event);
 
   if (!resource_info_.HasRoom(event_size)) {
     return Result::kFull;
   }
 
-  (*events_)->mutable_events()->Add(std::move(event));
+  proto()->mutable_events()->Add(std::move(event));
 
   resource_info_.Consume(event_size);
 
@@ -164,6 +171,22 @@ void ArenaEventBuffer::OnEventRead(const ReadStatus status) {
     case ReadStatus::kParseError:
       LogInternalError(StructuredMetricsError::kEventParseError);
       break;
+  }
+
+  // Once the proto has been read, any pre-init events need to be added to
+  // the storage. The result is ignored. |pre_init_events_| shouldn't be very
+  // large, inlining this operation should be fine.
+  if (!pre_init_events_.empty()) {
+    for (auto begin = std::make_move_iterator(pre_init_events_.begin()),
+              end = std::make_move_iterator(pre_init_events_.end());
+         begin != end; ++begin) {
+      AddEvent(std::move(*begin));
+    }
+
+    // Clear |pre_init_events_| such that it is using as little memory as
+    // possible.
+    std::vector<StructuredEventProto> temp;
+    pre_init_events_.swap(temp);
   }
 
   if (!backup_timer_.IsRunning()) {

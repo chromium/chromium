@@ -89,6 +89,9 @@ class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,
   // A timer to periodically backup |event_| to disk.
   base::RepeatingTimer backup_timer_;
 
+  // A cache of events recieved before the buffer was ready store them.
+  std::vector<StructuredEventProto> pre_init_events_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ArenaEventBuffer> weak_factory_{this};
 };
