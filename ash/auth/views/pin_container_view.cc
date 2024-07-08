@@ -50,6 +50,10 @@ raw_ptr<PinKeyboardView> PinContainerView::TestApi::GetPinKeyboardView() {
   return view_->pin_keyboard_;
 }
 
+raw_ptr<PinContainerView> PinContainerView::TestApi::GetView() {
+  return view_;
+}
+
 PinContainerView::PinContainerView() {
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);

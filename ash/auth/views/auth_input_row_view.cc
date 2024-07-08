@@ -141,6 +141,10 @@ raw_ptr<views::ImageView> AuthInputRowView::TestApi::GetCapsLockIcon() const {
   return view_->capslock_icon_;
 }
 
+raw_ptr<views::View> AuthInputRowView::TestApi::GetView() const {
+  return view_;
+}
+
 AuthInputRowView::AuthInputRowView(AuthType auth_type) : auth_type_(auth_type) {
   input_methods_observer_.Observe(Shell::Get()->ime_controller());
 

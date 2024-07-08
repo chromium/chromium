@@ -41,6 +41,8 @@ class ASH_EXPORT PinContainerView : public views::View {
     raw_ptr<AuthInputRowView> GetAuthInputRowView();
     raw_ptr<PinKeyboardView> GetPinKeyboardView();
 
+    raw_ptr<PinContainerView> GetView();
+
    private:
     const raw_ptr<PinContainerView> view_;
   };

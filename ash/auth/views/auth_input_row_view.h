@@ -63,6 +63,7 @@ class ASH_EXPORT AuthInputRowView : public views::View,
     raw_ptr<views::ToggleImageButton> GetDisplayTextButton() const;
     raw_ptr<IconButton> GetSubmitButton() const;
     raw_ptr<views::ImageView> GetCapsLockIcon() const;
+    raw_ptr<views::View> GetView() const;
 
    private:
     const raw_ptr<AuthInputRowView> view_;
