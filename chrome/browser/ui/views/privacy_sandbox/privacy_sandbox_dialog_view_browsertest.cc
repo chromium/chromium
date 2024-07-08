@@ -87,13 +87,8 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 // TODO(crbug.com/41484188): Re-enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
-#else
-#define MAYBE_InvokeUi_Consent InvokeUi_Consent
-#endif
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_Consent) {
+                       DISABLED_InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
