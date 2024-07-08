@@ -8,10 +8,12 @@
 #include <bitset>
 #include <cmath>
 #include <memory>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
@@ -81,10 +83,23 @@ class CC_EXPORT FrameSequenceMetrics {
 
   void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
-  struct CustomReportData {
+  struct CC_EXPORT CustomReportData {
+    CustomReportData();
+    CustomReportData(uint32_t frames_expected,
+                     uint32_t frames_dropped,
+                     uint32_t jank_count,
+                     std::vector<base::TimeDelta> jank_durations);
+
+    CustomReportData(const CustomReportData&);
+    CustomReportData& operator=(const CustomReportData&);
+
+    ~CustomReportData();
+
     uint32_t frames_expected_v3 = 0;
     uint32_t frames_dropped_v3 = 0;
     uint32_t jank_count_v3 = 0;
+    // A vector of TimeDelta that captures the duration of each jank recorded.
+    std::vector<base::TimeDelta> jank_durations;
   };
   using CustomReporter = base::OnceCallback<void(const CustomReportData& data)>;
   // Sets reporter callback for kCustom typed sequence.
@@ -145,6 +160,9 @@ class CC_EXPORT FrameSequenceMetrics {
     FrameInfo last_presented_frame;
     base::TimeDelta last_frame_delta;
     base::TimeDelta no_update_duration;
+    // The durations of the janks recorded. Only used for kCustom typed
+    // sequence.
+    std::vector<base::TimeDelta> jank_durations;
   } v3_;
 
   struct V4 {

@@ -136,6 +136,25 @@ std::string GetThroughputV3HistogramName(FrameSequenceTrackerType type,
 FrameSequenceMetrics::V3::V3() = default;
 FrameSequenceMetrics::V3::~V3() = default;
 
+FrameSequenceMetrics::CustomReportData::CustomReportData(
+    uint32_t frames_expected,
+    uint32_t frames_dropped,
+    uint32_t jank_count,
+    std::vector<base::TimeDelta> jank_durations)
+    : frames_expected_v3(frames_expected),
+      frames_dropped_v3(frames_dropped),
+      jank_count_v3(jank_count),
+      jank_durations(std::move(jank_durations)) {}
+FrameSequenceMetrics::CustomReportData::CustomReportData() = default;
+
+FrameSequenceMetrics::CustomReportData::CustomReportData(
+    const CustomReportData&) = default;
+FrameSequenceMetrics::CustomReportData&
+FrameSequenceMetrics::CustomReportData::operator=(const CustomReportData&) =
+    default;
+
+FrameSequenceMetrics::CustomReportData::~CustomReportData() = default;
+
 FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type)
     : type_(type) {}
 
@@ -211,6 +230,9 @@ void FrameSequenceMetrics::Merge(
   v3_.frames_dropped += metrics->v3_.frames_dropped;
   v3_.frames_missing_content += metrics->v3_.frames_missing_content;
   v3_.jank_count += metrics->v3_.jank_count;
+  for (base::TimeDelta duration : metrics->v3_.jank_durations) {
+    v3_.jank_durations.push_back(duration);
+  }
   v3_.no_update_count += metrics->v3_.no_update_count;
   if (v3_.last_begin_frame_args.frame_time <
       metrics->v3_.last_begin_frame_args.frame_time) {
@@ -253,17 +275,15 @@ void FrameSequenceMetrics::ReportMetrics() {
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
     std::move(custom_reporter_)
-        .Run({
-            v3_.frames_expected,
-            v3_.frames_dropped,
-            v3_.jank_count,
-        });
+        .Run(CustomReportData(v3_.frames_expected, v3_.frames_dropped,
+                              v3_.jank_count, std::move(v3_.jank_durations)));
 
     v3_.frames_expected = 0u;
     v3_.frames_dropped = 0u;
     v3_.frames_missing_content = 0u;
     v3_.no_update_count = 0u;
     v3_.jank_count = 0u;
+    v3_.jank_durations.clear();
     v4_.frames_checkerboarded = 0u;
     v4_.frames_checkerboarded_need_raster = 0u;
     v4_.frames_checkerboarded_need_record = 0u;
@@ -603,6 +623,10 @@ void FrameSequenceMetrics::CalculateJankV3(
       if (!v3_.last_frame_delta.is_zero() &&
           current_frame_delta > v3_.last_frame_delta + 0.5 * args.interval) {
         ++v3_.jank_count;
+        if (type_ == FrameSequenceTrackerType::kCustom) {
+          // Record |current_frame_dela| as the duration of the current jank.
+          v3_.jank_durations.push_back(current_frame_delta);
+        }
         TraceJankV3(frame_info.sequence_number, last_presented_termination_time,
                     termination_time);
       }

@@ -718,6 +718,8 @@ namespace autotestPrivate {
     long jankCount;
     // Display throughput percentage at fixed intervals.
     long[] throughput;
+    // The durations of the janks during this animation in millisecond.
+    double[] jankDurations;
   };
 
   // Callback invoked to report the smoothness after StopSmoothnessTracking is
