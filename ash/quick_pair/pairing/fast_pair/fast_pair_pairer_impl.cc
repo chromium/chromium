@@ -38,6 +38,8 @@ namespace {
 
 // 15s timeouts chosen to align with Android's Fast Pair implementation.
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
+// Advertisement flag indicating BR/EDR support
+constexpr uint8_t kBrEdrNotSupportedFlag = 0x04;
 
 std::string MessageTypeToString(
     ash::quick_pair::FastPairMessageType message_type) {
@@ -199,6 +201,17 @@ void FastPairPairerImpl::StartPairing() {
               FROM_HERE, kCreateBondTimeout,
               base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
                              weak_ptr_factory_.GetWeakPtr()));
+          // On Floss, always connect via classic unless device explicitly
+          // doesn't support BREDR
+          if (floss::features::IsFlossEnabled() &&
+              !(bt_device->GetAdvertisingDataFlags().value_or(0) &
+                kBrEdrNotSupportedFlag)) {
+            bt_device->ConnectClassic(
+                /*pairing_delegate=*/this,
+                base::BindOnce(&FastPairPairerImpl::OnConnected,
+                               weak_ptr_factory_.GetWeakPtr()));
+            return;
+          }
           bt_device->Connect(/*pairing_delegate=*/this,
                              base::BindOnce(&FastPairPairerImpl::OnConnected,
                                             weak_ptr_factory_.GetWeakPtr()));
@@ -239,6 +252,17 @@ void FastPairPairerImpl::StartPairing() {
       // `device::BluetoothDevice::Pair` because the device profile is ready.
       if (bt_device) {
         pairing_flow_ = FastPairPairingFlow::kPair;
+        // On Floss, always connect via classic unless device explicitly
+        // doesn't support BREDR. ConnectClassic is equivalent to Pair.
+        if (floss::features::IsFlossEnabled() &&
+            !(bt_device->GetAdvertisingDataFlags().value_or(0) &
+              kBrEdrNotSupportedFlag)) {
+          bt_device->ConnectClassic(
+              /*pairing_delegate=*/this,
+              base::BindOnce(&FastPairPairerImpl::OnPairConnected,
+                             weak_ptr_factory_.GetWeakPtr()));
+          return;
+        }
         bt_device->Pair(/*pairing_delegate=*/this,
                         base::BindOnce(&FastPairPairerImpl::OnPairConnected,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -274,6 +298,18 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
     // a new device object so we have to follow up with actually Pair()-ing
     // to it.
     CD_LOG(INFO, Feature::FP) << __func__ << " on Floss";
+
+    // Always connect via classic unless device explicitly
+    // doesn't support BREDR. ConnectClassic is equivalent to Pair.
+    if (!(device->GetAdvertisingDataFlags().value_or(0) &
+          kBrEdrNotSupportedFlag)) {
+      device->ConnectClassic(
+          /*pairing_delegate=*/this,
+          base::BindOnce(&FastPairPairerImpl::OnPairConnected,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
     device->Pair(/*pairing_delegate=*/this,
                  base::BindOnce(&FastPairPairerImpl::OnPairConnected,
                                 weak_ptr_factory_.GetWeakPtr()));

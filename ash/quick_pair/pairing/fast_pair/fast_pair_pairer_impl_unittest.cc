@@ -163,6 +163,18 @@ class FakeBluetoothDevice
     std::move(callback).Run(std::nullopt);
   }
 
+  void ConnectClassic(
+      BluetoothDevice::PairingDelegate* pairing_delegate,
+      base::OnceCallback<void(std::optional<ConnectErrorCode> error_code)>
+          callback) override {
+    if (floss::features::IsFlossEnabled()) {
+      // On Floss, ConnectClassic is equivalent to Pair
+      Pair(pairing_delegate, std::move(callback));
+      return;
+    }
+    Connect(pairing_delegate, std::move(callback));
+  }
+
   // This method is called in DevicePairedChanged to ensure we are setting the
   // classic address only if the device's address has the correct type (public).
   device::BluetoothDevice::AddressType GetAddressType() const override {
