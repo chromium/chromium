@@ -86,7 +86,9 @@ bool WvrApi::PresentingGenerationChanged() {
 
 bool WvrApi::SyncState(bool is_frame_submmitted,
                        int32_t texture_handle,
-                       const gfx::Size& size) {
+                       const gfx::Size& size,
+                       mozilla::gfx::VRDisplayBlendMode blend_mode,
+                       mozilla::gfx::ImmersiveXRSessionType session_type) {
   if (is_frame_submmitted) {
     ++sync_frame_index_;
   }
@@ -109,6 +111,8 @@ bool WvrApi::SyncState(bool is_frame_submmitted,
   }
 
   browser_state_.dropFame = !is_frame_submmitted;
+  browser_state_.blendMode = blend_mode;
+  browser_state_.sessionType = session_type;
   uint64_t oldDroppedFrameCount = system_state_.displayState.droppedFrameCount;
   PushState(NotifyCondition::YES);
   PullState([this, oldDroppedFrameCount]() {

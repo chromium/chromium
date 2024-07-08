@@ -49,6 +49,7 @@ WvrDevice::WvrDevice()
   }
 
   SetSupportedFeatures(device_features);
+  SetArBlendModeSupported(true);
 }
 
 WvrDevice::~WvrDevice() {

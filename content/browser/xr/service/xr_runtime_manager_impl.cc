@@ -337,6 +337,11 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
   }
 #endif
 
+  auto* wolvic_runtime = GetRuntime(device::mojom::XRDeviceId::WVR_DEVICE_ID);
+  if (wolvic_runtime && wolvic_runtime->SupportsArBlendMode()) {
+    return wolvic_runtime;
+  }
+
   return nullptr;
 }
 

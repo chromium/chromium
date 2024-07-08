@@ -50,7 +50,7 @@ namespace gfx {
 // running at the same time? Or...what if we have multiple
 // release builds running on same machine? (Bug 1563232)
 #define SHMEM_VERSION "0.0.11"
-static const int32_t kVRExternalVersion = 19;
+static const int32_t kVRExternalVersion = 20;
 
 // We assign VR presentations to groups with a bitmask.
 // Currently, we will only display either content or chrome.
@@ -70,6 +70,7 @@ static const int kVRControllerMaxButtons = 64;
 static const int kVRControllerMaxAxis = 16;
 static const int kVRLayerMaxCount = 8;
 static const int kVRHapticsMaxCount = 32;
+static const int kVRBlendModesMaxLen = 3;
 
 #if defined(__ANDROID__)
 typedef uint64_t VRLayerTextureHandle;
@@ -164,7 +165,14 @@ enum class TargetRayMode : uint8_t { Gaze, TrackedPointer, Screen };
 
 enum class GamepadMappingType : uint8_t { _empty, Standard, XRStandard };
 
-enum class VRDisplayBlendMode : uint8_t { Opaque, Additive, AlphaBlend };
+enum class VRDisplayBlendMode : uint8_t {
+  _empty,
+  Opaque,
+  Additive,
+  AlphaBlend
+};
+
+enum class ImmersiveXRSessionType : uint8_t { VR, AR };
 
 enum class VRDisplayCapabilityFlags : uint16_t {
   Cap_None = 0,
@@ -348,7 +356,7 @@ struct VRDisplayState {
   //                             ('B'<<8) + 'A').
   uint64_t eightCC;
   VRDisplayCapabilityFlags capabilityFlags;
-  VRDisplayBlendMode blendMode;
+  VRDisplayBlendMode blendModes[kVRBlendModesMaxLen];
   VRFieldOfView eyeFOV[VRDisplayState::NumEyes];
   float eyeTransform[VRDisplayState::NumEyes][16];
   IntSize_POD eyeResolution;
@@ -544,6 +552,8 @@ struct VRBrowserState {
   bool dropFame;
   VRLayerState layerState[kVRLayerMaxCount];
   VRHapticState hapticState[kVRHapticsMaxCount];
+  VRDisplayBlendMode blendMode;
+  ImmersiveXRSessionType sessionType;
 
 #ifdef MOZILLA_INTERNAL_API
   void Clear() { memset(this, 0, sizeof(VRBrowserState)); }

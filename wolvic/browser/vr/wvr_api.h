@@ -28,7 +28,9 @@ class WvrApi {
   bool PresentingGenerationChanged();
   bool SyncState(bool is_frame_submmitted,
                  int32_t texture_handle,
-                 const gfx::Size& size);
+                 const gfx::Size& size,
+                 mozilla::gfx::VRDisplayBlendMode,
+                 mozilla::gfx::ImmersiveXRSessionType);
   void PullSystemState();
 
   mozilla::gfx::VRSystemState get_system_state() { return system_state_; }

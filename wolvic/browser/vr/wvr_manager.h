@@ -117,6 +117,9 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void ClosePresentationBindings();
   void OnSubmitClientMojoConnectionError();
 
+  device::mojom::XREnvironmentBlendMode PickEnvironmentBlendModeForSession(
+      device::mojom::XRSessionMode);
+
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
 
@@ -146,6 +149,9 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   mozilla::gfx::VRControllerState
       controller_state_[mozilla::gfx::kVRControllerMaxCount];
+
+  mozilla::gfx::VRDisplayBlendMode blend_mode_;
+  mozilla::gfx::ImmersiveXRSessionType session_type_;
 
   base::WeakPtrFactory<WvrManager> weak_ptr_factory_{this};
 };

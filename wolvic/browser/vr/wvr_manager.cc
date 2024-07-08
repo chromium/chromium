@@ -318,10 +318,35 @@ void WvrManager::ConnectPresentingService(
   config->views = std::move(views);
   config->supports_viewport_scaling = true;
   session->enviroment_blend_mode =
-      device::mojom::XREnvironmentBlendMode::kOpaque;
+      PickEnvironmentBlendModeForSession(options->mode);
   config->default_framebuffer_scale =
       wvr_api_->get_system_state().displayState.nativeFramebufferScaleFactor;
   session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
+
+  auto toGfxBlendMode = [](device::mojom::XREnvironmentBlendMode mode) {
+    switch (mode) {
+      case device::mojom::XREnvironmentBlendMode::kOpaque:
+        return mozilla::gfx::VRDisplayBlendMode::Opaque;
+      case device::mojom::XREnvironmentBlendMode::kAlphaBlend:
+        return mozilla::gfx::VRDisplayBlendMode::AlphaBlend;
+      case device::mojom::XREnvironmentBlendMode::kAdditive:
+        return mozilla::gfx::VRDisplayBlendMode::Additive;
+    }
+  };
+  blend_mode_ = toGfxBlendMode(session->enviroment_blend_mode);
+
+  auto toGfxSessionType = [](device::mojom::XRSessionMode mode) {
+    switch (mode) {
+      case device::mojom::XRSessionMode::kImmersiveVr:
+        return mozilla::gfx::ImmersiveXRSessionType::VR;
+      case device::mojom::XRSessionMode::kImmersiveAr:
+        return mozilla::gfx::ImmersiveXRSessionType::AR;
+      case device::mojom::XRSessionMode::kInline:
+        NOTREACHED();
+        return mozilla::gfx::ImmersiveXRSessionType::VR;
+    }
+  };
+  session_type_ = toGfxSessionType(options->mode);
 
   std::move(callback).Run(std::move(session));
 }
@@ -710,9 +735,9 @@ bool WvrManager::SubmitFrameInternal(int16_t frame_index) {
     return false;
   }
 
-  if (!wvr_api_->SyncState(is_frame_submmitted_,
-                           graphics_->webxr_texture_handle(),
-                           graphics_->webxr_surface_size())) {
+  if (!wvr_api_->SyncState(
+          is_frame_submmitted_, graphics_->webxr_texture_handle(),
+          graphics_->webxr_surface_size(), blend_mode_, session_type_)) {
     DLOG(WARNING) << __func__
                   << "SyncState failed. Don't submit frame";
     return false;
@@ -848,6 +873,66 @@ void WvrManager::UpdateLayerBounds(int16_t frame_index,
   }
 
   CreateOrResizeWebXrSurface(source_size);
+}
+
+device::mojom::XREnvironmentBlendMode
+WvrManager::PickEnvironmentBlendModeForSession(
+    device::mojom::XRSessionMode session_mode) {
+  DCHECK(wvr_api_->get_system_state().enumerationCompleted);
+
+  const auto& display_state = wvr_api_->get_system_state().displayState;
+  auto supportsBlendMode =
+      [&display_state](const mozilla::gfx::VRDisplayBlendMode blend_mode) {
+        for (auto& supported_blend_mode : display_state.blendModes) {
+          if (supported_blend_mode ==
+              mozilla::gfx::VRDisplayBlendMode::_empty) {
+            return false;
+          }
+          if (supported_blend_mode == blend_mode) {
+            return true;
+          }
+        }
+        return false;
+      };
+
+  switch (session_mode) {
+    case device::mojom::XRSessionMode::kImmersiveVr:
+      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::Opaque)) {
+        return device::mojom::XREnvironmentBlendMode::kOpaque;
+      }
+      break;
+    case device::mojom::XRSessionMode::kImmersiveAr:
+      // Prefer Alpha Blend when both Alpha Blend and Additive modes are
+      // supported. This only concerns video see through devices with an
+      // Additive compatibility mode
+      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::AlphaBlend)) {
+        return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
+      }
+
+      if (supportsBlendMode(mozilla::gfx::VRDisplayBlendMode::Additive)) {
+        return device::mojom::XREnvironmentBlendMode::kAdditive;
+      }
+
+      break;
+    case device::mojom::XRSessionMode::kInline:
+      NOTREACHED();
+  }
+
+  auto toMojoBlendMode = [](mozilla::gfx::VRDisplayBlendMode mode) {
+    switch (mode) {
+      case mozilla::gfx::VRDisplayBlendMode::Opaque:
+        return device::mojom::XREnvironmentBlendMode::kOpaque;
+      case mozilla::gfx::VRDisplayBlendMode::AlphaBlend:
+        return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
+      case mozilla::gfx::VRDisplayBlendMode::Additive:
+        return device::mojom::XREnvironmentBlendMode::kAdditive;
+      case mozilla::gfx::VRDisplayBlendMode::_empty:
+        NOTREACHED();
+        return device::mojom::XREnvironmentBlendMode::kOpaque;
+    }
+  };
+
+  return toMojoBlendMode(display_state.blendModes[0]);
 }
 
 }  // namespace wolvic
