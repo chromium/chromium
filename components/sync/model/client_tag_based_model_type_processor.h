@@ -193,13 +193,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
-  // ModelTypeSyncBridge::GetData() callback for pending loading data upon
-  // GetLocalChanges call.
-  void OnPendingDataLoaded(size_t max_entries,
-                           GetLocalChangesCallback callback,
-                           std::unordered_set<std::string> storage_keys_to_load,
-                           std::unique_ptr<DataBatch> data_batch);
-
   // Caches EntityData from the |data_batch| in the entity and checks
   // that every entity in |storage_keys_to_load| was successfully loaded (or is
   // not tracked by the processor any more). Reports failed checks to UMA.

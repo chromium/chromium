@@ -659,20 +659,23 @@ void ClientTagBasedModelTypeProcessor::GetLocalChanges(
     }
   }
   if (!entities_requiring_data.empty()) {
-    // Make a copy for the callback so that we can check if everything was
-    // loaded successfully.
+    // Make a copy to later check if everything was loaded successfully.
     std::unordered_set<std::string> storage_keys_to_load(
         entities_requiring_data.begin(), entities_requiring_data.end());
-    bridge_->GetDataForCommit(
-        std::move(entities_requiring_data),
-        base::BindOnce(&ClientTagBasedModelTypeProcessor::OnPendingDataLoaded,
-                       weak_ptr_factory_for_worker_.GetWeakPtr(), max_entries,
-                       std::move(callback), std::move(storage_keys_to_load)));
-  } else {
-    // All commit data can be available in memory for those entries passed in
-    // the .put() method.
-    CommitLocalChanges(max_entries, std::move(callback));
+    std::unique_ptr<DataBatch> data_batch =
+        bridge_->GetDataForCommit(std::move(entities_requiring_data));
+    // The `GetDataForCommit` call may have produced a `model_error_` (if the
+    // bridge called `ReportError`), in which case the `data_batch` should also
+    // be null.
+    // TODO(crbug.com/347649753): CHECK that the batch is null exactly when
+    // there is a model error.
+    if (model_error_ || !data_batch) {
+      return;
+    }
+    ConsumeDataBatch(std::move(storage_keys_to_load), std::move(data_batch));
   }
+
+  CommitLocalChanges(max_entries, std::move(callback));
 }
 
 void ClientTagBasedModelTypeProcessor::OnCommitCompleted(
@@ -1063,21 +1066,6 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
       model_type_state, std::move(updates), std::move(gc_directive));
 }
 
-void ClientTagBasedModelTypeProcessor::OnPendingDataLoaded(
-    size_t max_entries,
-    GetLocalChangesCallback callback,
-    std::unordered_set<std::string> storage_keys_to_load,
-    std::unique_ptr<DataBatch> data_batch) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // The model already experienced an error; abort;
-  if (model_error_)
-    return;
-
-  ConsumeDataBatch(std::move(storage_keys_to_load), std::move(data_batch));
-  CommitLocalChanges(max_entries, std::move(callback));
-}
-
 void ClientTagBasedModelTypeProcessor::ConsumeDataBatch(
     std::unordered_set<std::string> storage_keys_to_load,
     std::unique_ptr<DataBatch> data_batch) {
@@ -1232,16 +1220,20 @@ void ClientTagBasedModelTypeProcessor::ResetState(
 
 void ClientTagBasedModelTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
-  if (!bridge_)
+  if (!bridge_) {
     return;
-  bridge_->GetAllDataForDebugging(base::BindOnce(
-      &ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging,
-      weak_ptr_factory_for_worker_.GetWeakPtr(), std::move(callback)));
-}
+  }
 
-void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
-    AllNodesCallback callback,
-    std::unique_ptr<DataBatch> batch) {
+  std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
+  if (!batch) {
+    // TODO(crbug.com/347649753): This preserves the historic behavior from the
+    // asynchronous version of GetAllDataForDebugging(), which was to not run
+    // the callback at all in case of errors. It would probably be better to run
+    // it with empty results instead, to avoid hangs in sync-internals if any
+    // data type encounters an error.
+    return;
+  }
+
   base::Value::List all_nodes;
   std::string type_string = ModelTypeToDebugString(type_);
 

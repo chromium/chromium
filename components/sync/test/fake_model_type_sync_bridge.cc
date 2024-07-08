@@ -282,12 +282,12 @@ void FakeModelTypeSyncBridge::ApplyMetadataChangeList(
   in_memory_mcl->TransferChangesTo(&db_mcl);
 }
 
-void FakeModelTypeSyncBridge::GetDataForCommit(StorageKeyList keys,
-                                               DataCallback callback) {
+std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetDataForCommit(
+    StorageKeyList keys) {
   if (error_next_) {
     error_next_ = false;
     change_processor()->ReportError({FROM_HERE, "boom"});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<MutableDataBatch>();
@@ -298,21 +298,21 @@ void FakeModelTypeSyncBridge::GetDataForCommit(StorageKeyList keys,
       DLOG(WARNING) << "No data for " << key;
     }
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
-void FakeModelTypeSyncBridge::GetAllDataForDebugging(DataCallback callback) {
+std::unique_ptr<DataBatch> FakeModelTypeSyncBridge::GetAllDataForDebugging() {
   if (error_next_) {
     error_next_ = false;
     change_processor()->ReportError({FROM_HERE, "boom"});
-    return;
+    return nullptr;
   }
 
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& [storage_key, entity_data] : db_->all_data()) {
     batch->Put(storage_key, CopyEntityData(*entity_data));
   }
-  std::move(callback).Run(std::move(batch));
+  return batch;
 }
 
 std::string FakeModelTypeSyncBridge::GetClientTag(
